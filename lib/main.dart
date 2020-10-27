@@ -17,7 +17,8 @@ class MyApp extends StatelessWidget {
       ),
       home: MyHomePage(title: 'Flutter Demo Home Page'),
       //通过统一方法处理页面跳转路由
-      onGenerateRoute: (RouteSettings settings) => AppRouter.dispatchRoute(settings),
+      onGenerateRoute: (RouteSettings settings) =>
+          AppRouter.dispatchRoute(settings),
     );
   }
 }
@@ -46,6 +47,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() async {
     _result = await requestUserSearch("十五", 10, false);
+    if (_result == null) {
+      _result = "请求失败";
+    }
     setState(() {
       _counter++;
     });
