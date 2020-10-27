@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       ),
       home: MyHomePage(title: 'Flutter Demo Home Page'),
       //通过统一方法处理页面跳转路由
-      onGenerateRoute: (RouteSettings settings) => dispatchRoute(settings),
+      onGenerateRoute: (RouteSettings settings) => AppRouter.dispatchRoute(settings),
     );
   }
 }
@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Text("跳转到测试页"),
               textColor: Colors.orangeAccent,
               onPressed: () {
-                Navigator.pushNamed(context, "test");
+                AppRouter.goToTestPage(context);
               },
             ),
             Text(
