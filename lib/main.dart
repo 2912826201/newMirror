@@ -35,12 +35,19 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   String _result = "";
 
-  void _incrementCounter() {
-    requestUserSearch("十五", 10, false).then((result) {
-      setState(() {
-        _counter++;
-        _result = result;
-      });
+  // void _incrementCounter() {
+  //   requestUserSearch("十五", 10, false).then((result) {
+  //     setState(() {
+  //       _counter++;
+  //       _result = result;
+  //     });
+  //   });
+  // }
+
+  void _incrementCounter() async {
+    _result = await requestUserSearch("十五", 10, false);
+    setState(() {
+      _counter++;
     });
   }
 
