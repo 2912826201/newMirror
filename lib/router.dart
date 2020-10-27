@@ -2,6 +2,7 @@
 /// Created by yangjiayi on 2020/10/26.
 
 import 'package:flutter/material.dart';
+import 'package:mirror/page/test_page.dart';
 
 import 'main.dart';
 
@@ -34,6 +35,9 @@ Route<dynamic> dispatchRoute(RouteSettings settings) {
         });
       case PageName.LOGIN:
       case PageName.TEST:
+        return MaterialPageRoute(builder: (context) {
+          return TestPage();
+        });
       default:
         return MaterialPageRoute(builder: (BuildContext context) {
           return Scaffold(
