@@ -28,8 +28,7 @@ class _TestState extends State<TestPage> {
               height: 100.0,
             ),
             Image(
-              image: NetworkImage(
-                  "http://i2.hdslb.com/bfs/face/c2d82a7e6512a85657e997dc8f84ab538e87a8cc.jpg"),
+              image: NetworkImage("http://i2.hdslb.com/bfs/face/c2d82a7e6512a85657e997dc8f84ab538e87a8cc.jpg"),
               width: 100.0,
               height: 100.0,
             ),

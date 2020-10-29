@@ -17,8 +17,7 @@ class MyApp extends StatelessWidget {
       ),
       home: MyHomePage(title: 'Flutter Demo Home Page'),
       //通过统一方法处理页面跳转路由
-      onGenerateRoute: (RouteSettings settings) =>
-          AppRouter.dispatchRoute(settings),
+      onGenerateRoute: (RouteSettings settings) => AppRouter.dispatchRoute(settings),
     );
   }
 }
