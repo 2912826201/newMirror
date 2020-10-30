@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:mirror/api/user_api.dart';
-import 'package:mirror/router.dart';
+import 'package:provider/provider.dart';
+
+import 'api/user_api.dart';
+import 'data/notifier/user_notifier.dart';
+import 'router.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserNotifier()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
