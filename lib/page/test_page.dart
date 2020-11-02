@@ -60,7 +60,7 @@ class _TestState extends State<TestPage> {
               },
             ),
             //用Selector的方式监听数据
-            Selector<UserNotifier, String>(builder: (context, uid, child) {
+            Selector<UserNotifier, int>(builder: (context, uid, child) {
               return Text("用户ID：${uid}");
             }, selector: (context, notifier) {
               return notifier.user.uid;
@@ -104,7 +104,7 @@ void _changeUser(BuildContext context) {
   String userName = pair.first;
   String avatarUri = "http://www.abc.com/${pair.second}.png";
   UserModel user = context.read<UserNotifier>().user;
-  user.uid = randomNum.toString();
+  user.uid = randomNum;
   user.userName = userName;
   user.avatarUri = avatarUri;
   context.read<UserNotifier>().setUser(user);

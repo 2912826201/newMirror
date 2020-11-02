@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:mirror/config.dart';
+import '../config.dart';
 
 /// api
 /// Created by yangjiayi on 2020/10/26.
@@ -7,10 +7,6 @@ import 'package:mirror/config.dart';
 //超时时长 单位毫秒
 const int CONNECT_TIMEOUT = 10000;
 const int RECEIVE_TIMEOUT = 20000;
-//各环境api请求基础路径
-const String DEV_HOST = "http://alitadev.aimymusic.com";
-const String MIRROR_HOST = "https://alitamirror.aimymusic.com";
-const String PROD_HOST = "https://alita.aimymusic.com";
 
 Dio _dio;
 
@@ -30,7 +26,7 @@ Future<String> requestApi(String path, Map<String, dynamic> queryParameters) asy
 Dio _getDioInstance() {
   if (_dio == null) {
     _dio = Dio();
-    _dio.options.baseUrl = _getApiHost();
+    _dio.options.baseUrl = AppConfig.getApiHost();
     _dio.options.connectTimeout = CONNECT_TIMEOUT;
     _dio.options.receiveTimeout = RECEIVE_TIMEOUT;
     //TODO 还需要更多详细的参数
@@ -71,16 +67,4 @@ class _LogInterceptors extends InterceptorsWrapper {
   }
 }
 
-//根据环境获取api的host地址
-String _getApiHost() {
-  switch (AppConfig.ENV) {
-    case Env.DEV:
-      return DEV_HOST;
-    case Env.MIRROR:
-      return MIRROR_HOST;
-    case Env.PROD:
-      return PROD_HOST;
-    default:
-      return "";
-  }
-}
+

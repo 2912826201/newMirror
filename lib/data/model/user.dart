@@ -5,7 +5,7 @@
 class UserModel {
   UserModel(this.uid, this.userName, this.avatarUri);
 
-  String uid;
+  int uid;
   String userName;
   String avatarUri;
 }

@@ -6,14 +6,19 @@ import 'data/notifier/user_notifier.dart';
 import 'router.dart';
 
 void main() {
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => UserNotifier()),
-      ],
-      child: MyApp(),
-    ),
-  );
+  _initApp().then((value) => runApp(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (_) => UserNotifier()),
+          ],
+          child: MyApp(),
+        ),
+      ));
+}
+
+//初始化APP
+Future _initApp() async {
+  //TODO 初始化融云IM 无法在runApp之前执行 需要进一步研究
 }
 
 class MyApp extends StatelessWidget {
@@ -79,6 +84,13 @@ class _MyHomePageState extends State<MyHomePage> {
               textColor: Colors.orangeAccent,
               onPressed: () {
                 AppRouter.goToTestPage(context);
+              },
+            ),
+            FlatButton(
+              child: Text("跳转到融云测试页"),
+              textColor: Colors.orangeAccent,
+              onPressed: () {
+                AppRouter.goToRCTestPage(context);
               },
             ),
             Text(

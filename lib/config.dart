@@ -8,6 +8,44 @@ class AppConfig {
   //版本号
   //TODO 暂时先写在这 之后需要和打包配置联动
   static const String VER = "0.0.1";
+
+  //各环境api请求基础路径
+  static const String _DEV_HOST = "http://alitadev.aimymusic.com";
+  static const String _MIRROR_HOST = "https://alitamirror.aimymusic.com";
+  static const String _PROD_HOST = "https://alita.aimymusic.com";
+
+  //根据环境获取api的host地址
+  static String getApiHost() {
+    switch (AppConfig.ENV) {
+      case Env.DEV:
+        return _DEV_HOST;
+      case Env.MIRROR:
+        return _MIRROR_HOST;
+      case Env.PROD:
+        return _PROD_HOST;
+      default:
+        return "";
+    }
+  }
+
+  //各环境融云appkey
+  static const String _DEV_RCAPPKEY = "c9kqb3rdc4pvj";
+  static const String _MIRROR_RCAPPKEY = "c9kqb3rdc4pvj";
+  static const String _PROD_RCAPPKEY = "c9kqb3rdc4pvj";
+
+  //根据环境获取融云appkey
+  static String getRCAppKey() {
+    switch (AppConfig.ENV) {
+      case Env.DEV:
+        return _DEV_RCAPPKEY;
+      case Env.MIRROR:
+        return _MIRROR_RCAPPKEY;
+      case Env.PROD:
+        return _PROD_RCAPPKEY;
+      default:
+        return "";
+    }
+  }
 }
 
 enum Env {
@@ -15,3 +53,4 @@ enum Env {
   MIRROR, //镜像服
   PROD //正式服
 }
+

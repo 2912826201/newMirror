@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/page/test_page.dart';
 
 import 'main.dart';
+import 'page/rc_test_page.dart';
 
 class AppRouter {
   // 主页面路由分发处理
@@ -39,6 +40,10 @@ class AppRouter {
           return MaterialPageRoute(builder: (context) {
             return TestPage();
           });
+        case PageName.RC_TEST:
+          return MaterialPageRoute(builder: (context) {
+            return RCTestPage();
+          });
         default:
           return MaterialPageRoute(builder: (BuildContext context) {
             return Scaffold(
@@ -57,10 +62,15 @@ class AppRouter {
   static void goToTestPage(BuildContext context) {
     Navigator.pushNamed(context, "test");
   }
+
+  static void goToRCTestPage(BuildContext context) {
+    Navigator.pushNamed(context, "rc_test");
+  }
 }
 
 class PageName {
   static const String HOME = "home";
   static const String LOGIN = "login";
   static const String TEST = "test";
+  static const String RC_TEST = "rc_test";
 }
