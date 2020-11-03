@@ -5,12 +5,12 @@ import '../config.dart';
 /// rongcloud
 /// Created by yangjiayi on 2020/11/2.
 
-RongCloudCore _core;
+_RongCloudCore _core;
 
 //TODO 为了保证使用融云服务时 client被初始化过 暂时采用的方案
-RongCloudCore _getCore() {
+_RongCloudCore _getCore() {
   if(_core == null){
-    _core = RongCloudCore();
+    _core = _RongCloudCore();
     _core._init();
   }
   return _core;
@@ -27,7 +27,7 @@ class RongCloud {
   }
 }
 
-class RongCloudCore {
+class _RongCloudCore {
   void _init() {
     RongIMClient.init(AppConfig.getRCAppKey());
   }
