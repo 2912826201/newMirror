@@ -1,4 +1,4 @@
-/// user
+/// user_model
 /// Created by yangjiayi on 2020/10/29.
 
 //TODO 暂时测试用的数据模型

@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:mirror/data/model/user.dart';
+import 'package:mirror/data/model/user_model.dart';
 
 /// user_notifier
 /// Created by yangjiayi on 2020/10/29.
