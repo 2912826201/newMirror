@@ -29,7 +29,7 @@ class UserDto {
   }
 
   UserModel toModel() {
-    var model = UserModel(uid, userName, avatarUri);
+    var model = UserModel(uid: uid, userName: userName, avatarUri: avatarUri);
     return model;
   }
 

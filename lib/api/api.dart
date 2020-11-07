@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:mirror/data/model/base_response_model.dart';
 import '../config.dart';
 
 /// api
@@ -8,17 +11,28 @@ import '../config.dart';
 const int CONNECT_TIMEOUT = 10000;
 const int RECEIVE_TIMEOUT = 20000;
 
+//服务端接口返回code
+const int CODE_SERVER_ERROR = 500;
+
 Dio _dio;
 
 //通用的请求api的方法，请在具体的子api中进行入参封装和结果处理
-//TODO 这里返回的出参是String，可能不能满足复杂的使用场景，需要考虑是否进一步封装
-Future<String> requestApi(String path, Map<String, dynamic> queryParameters) async {
+Future<BaseResponseModel> requestApi(String path, Map<String, dynamic> queryParameters) async {
+  BaseResponseModel responseModel;
   try {
     _setHeaders();
     Response response = await _getDioInstance().post(path, queryParameters: queryParameters);
-    return response.toString();
+    responseModel = BaseResponseModel.fromJson(json.decode(response.toString()));
+    responseModel.isSuccess = responseModel.code != CODE_SERVER_ERROR;
+    return responseModel;
   } on DioError catch (e) {
-    return null;
+    responseModel = BaseResponseModel(message: e.message);
+    responseModel.isSuccess = false;
+    return responseModel;
+  } catch (e) {
+    responseModel = BaseResponseModel(message: "Unknown error");
+    responseModel.isSuccess = false;
+    return responseModel;
   }
 }
 
@@ -66,5 +80,3 @@ class _LogInterceptors extends InterceptorsWrapper {
     return super.onError(err);
   }
 }
-
-

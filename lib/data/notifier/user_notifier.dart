@@ -5,7 +5,7 @@ import 'package:mirror/data/model/user_model.dart';
 /// Created by yangjiayi on 2020/10/29.
 
 class UserNotifier with ChangeNotifier {
-  UserModel _user = UserModel(0, "默认用户", "http://www.abc.com/default.png");
+  UserModel _user = UserModel(uid: 0, userName: "默认用户", avatarUri: "http://www.abc.com/default.png");
 
   UserModel get user => _user;
 
