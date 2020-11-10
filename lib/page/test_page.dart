@@ -6,6 +6,7 @@ import 'package:mirror/data/database/user_db_helper.dart';
 import 'package:mirror/data/dto/user_dto.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/user_notifier.dart';
+import 'package:mirror/page/media_picker_page.dart';
 import 'package:provider/provider.dart';
 
 /// test_page
@@ -112,6 +113,14 @@ class _TestState extends State<TestPage> {
                   print(model.uid.toString() + "," + model.userName + "," + model.avatarUri);
                 },
                 child: Text("查询数据库"),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return MediaPickerPage();
+                  }));
+                },
+                child: Text("选图片视频"),
               ),
             ],
           ),
