@@ -7,6 +7,8 @@ import 'package:mirror/data/dto/user_dto.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/user_notifier.dart';
 import 'package:mirror/page/media_picker_page.dart';
+import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/text.dart';
 import 'package:provider/provider.dart';
 
 /// test_page
@@ -34,18 +36,29 @@ class _TestState extends State<TestPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Container(
+                    color: Colors.redAccent,
+                    // width: ScreenUtil.instance.setWidth(28.0),
+                    width:28.0,
+                    height:28.0,
+                    // height:ScreenUtil.instance.setHeight(28.0),
+                    margin: EdgeInsets.only( right:10),
+                  ),
                   Image(
                     image: AssetImage("images/test.png"),
                     color: Colors.redAccent,
                     colorBlendMode: BlendMode.darken,
-                    width: 100.0,
-                    height: 100.0,
+                    width: ScreenUtil.instance.setWidth(100.0),
+                    height: ScreenUtil.instance.setHeight(100.0),
                   ),
                   Image(
                     image: NetworkImage("http://i2.hdslb.com/bfs/face/c2d82a7e6512a85657e997dc8f84ab538e87a8cc.jpg"),
                     width: 100.0,
                     height: 100.0,
                   ),
+                  Padding(padding: EdgeInsets.only(left: 12),child: Container(
+                    child: Text("组件设置偏移"),
+                  ),)
                 ],
               ),
               //watch会监听全部数据
@@ -111,6 +124,8 @@ class _TestState extends State<TestPage> {
                   UserDto dto = await UserDBHelper().queryUser();
                   UserModel model = dto.toModel();
                   print(model.uid.toString() + "," + model.userName + "," + model.avatarUri);
+                  Size c = getTextSize("写入数据库", TextStyle(fontSize: 16));
+                  print("++++++++++++++++$c+++++++++++++++++++++++");
                 },
                 child: Text("查询数据库"),
               ),
