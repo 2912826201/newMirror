@@ -48,8 +48,8 @@ class _TestState extends State<TestPage> {
                     image: AssetImage("images/test.png"),
                     color: Colors.redAccent,
                     colorBlendMode: BlendMode.darken,
-                    width: ScreenUtil.instance.setWidth(100.0),
-                    height: ScreenUtil.instance.setHeight(100.0),
+                    width: 100.0,
+                    height: 100.0,
                   ),
                   Image(
                     image: NetworkImage("http://i2.hdslb.com/bfs/face/c2d82a7e6512a85657e997dc8f84ab538e87a8cc.jpg"),

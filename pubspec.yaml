@@ -65,6 +65,14 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - images/test.png
+    - images/test/comment-filling.png
+    - images/test/comment-filling1.png
+    - images/test/home-filling.png
+    - images/test/home-filling1.png
+    - images/test/user-filling.png
+    - images/test/user-filling1.png
+    - images/test/work-filling.png
+    - images/test/work-filling1.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

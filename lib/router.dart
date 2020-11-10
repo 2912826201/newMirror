@@ -2,6 +2,7 @@
 /// Created by yangjiayi on 2020/10/26.
 
 import 'package:flutter/material.dart';
+import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/test_page.dart';
 
 import 'main.dart';
@@ -34,6 +35,10 @@ class AppRouter {
             return MyHomePage(
               title: 'Flutter Demo Home Page',
             );
+          });
+        case PageName.MAIN_Page:
+          return MaterialPageRoute(builder: (context) {
+            MainPage();
           });
         case PageName.LOGIN:
         case PageName.TEST:
@@ -70,6 +75,7 @@ class AppRouter {
 
 class PageName {
   static const String HOME = "home";
+  static const String MAIN_Page = "main_page";
   static const String LOGIN = "login";
   static const String TEST = "test";
   static const String RC_TEST = "rc_test";

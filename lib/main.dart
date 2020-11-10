@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/page/main_page.dart';
 import 'package:provider/provider.dart';
 
 import 'api/user_api.dart';
@@ -25,12 +26,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      // title: 'Flutter Demo',
+      // theme: ThemeData(
+      //   primarySwatch: Colors.blue,
+      //   visualDensity: VisualDensity.adaptivePlatformDensity,
+      // ),
+      home: MainPage(),
       //通过统一方法处理页面跳转路由
       onGenerateRoute: (RouteSettings settings) => AppRouter.dispatchRoute(settings),
     );
