@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 
-class NewsPage extends StatelessWidget {
+class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text("消息页"),
+      child: Text("我的页"),
     );
   }
 }

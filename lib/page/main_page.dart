@@ -1,8 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/page/home_page/home_page.dart';
-import 'package:mirror/page/mine_page/mine_page.dart';
-import 'package:mirror/page/news_page/news_page.dart';
+import 'package:mirror/page/home/home_page.dart';
+import 'package:mirror/page/profile/profile_page.dart';
+import 'package:mirror/page/message/message_page.dart';
 import 'package:mirror/page/test_page.dart';
 
 class MainPage extends StatefulWidget {
@@ -13,7 +12,7 @@ class MainPage extends StatefulWidget {
 
 class MainPageState extends State<MainPage> {
   int currentIndex;
-  final pages = [HomePage(), TestPage(), NewsPage(), MinePage()];
+  final pages = [HomePage(), TestPage(), MessagePage(), ProfilePage()];
   List titles = ["首页", "训练", "消息", "我的"];
   List normalImgUrls = [
     "images/test/home-filling1.png",

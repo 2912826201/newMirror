@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 
-class MinePage extends StatelessWidget {
+class MessagePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text("我的页"),
+      child: Text("消息页"),
     );
   }
 }
