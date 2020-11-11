@@ -7,7 +7,6 @@ import 'package:mirror/data/dto/user_dto.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/user_notifier.dart';
 import 'package:mirror/page/media_picker_page.dart';
-import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text.dart';
 import 'package:provider/provider.dart';
 

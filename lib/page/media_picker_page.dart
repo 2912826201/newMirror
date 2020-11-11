@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:provider/provider.dart';
 
 /// media_picker_page
 /// Created by yangjiayi on 2020/11/9.
@@ -124,7 +125,6 @@ class _GalleryGrid extends StatefulWidget {
 
 class _GalleryGridState extends State<_GalleryGrid> with AutomaticKeepAliveClientMixin {
   List<AssetEntity> _galleryList = [];
-  Map<String, _OrderedAssetEntity> _selectedMap = Map<String, _OrderedAssetEntity>();
 
   @override
   void initState() {
@@ -156,76 +156,85 @@ class _GalleryGridState extends State<_GalleryGrid> with AutomaticKeepAliveClien
   Widget build(BuildContext context) {
     //TODO 获取屏幕宽高以设置图片大小 获取方法需要统一封装
     double screenWidth = MediaQuery.of(context).size.width;
-    print("屏幕宽为：${screenWidth}");
+    print("屏幕宽为：$screenWidth");
     _itemSize = (screenWidth - _itemMargin * (_horizontalCount - 1)) / _horizontalCount;
-    print("item宽为：${_itemSize}");
-    return GridView.builder(
-        itemCount: _galleryList.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: _horizontalCount,
-            childAspectRatio: 1,
-            mainAxisSpacing: _itemMargin,
-            crossAxisSpacing: _itemMargin),
-        itemBuilder: (BuildContext context, int index) {
-          AssetEntity entity = _galleryList[index];
-          bool isSelected = _selectedMap.keys.contains(entity.id);
-          return FutureBuilder(
-            future: entity.thumbDataWithSize(_itemSize.toInt(), _itemSize.toInt()),
-            builder: (BuildContext context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                // print("#${index} item loaded");
-                return GestureDetector(
-                    onTap: () => _onGridItemTap(index),
-                    child: Stack(overflow: Overflow.clip, children: [
-                      Image.memory(
-                        snapshot.data,
-                        fit: BoxFit.cover,
-                        height: _itemSize,
-                        width: _itemSize,
-                      ),
-                      Positioned(
-                        top: 10,
-                        right: 10,
-                        child: isSelected
-                            ? Text(
-                                _selectedMap[entity.id].order.toString(),
-                                style: TextStyle(color: Colors.white, fontSize: 18),
-                              )
-                            : Icon(
-                                Icons.add_circle_outline,
-                                size: 20,
-                                color: Colors.white,
-                              ),
-                      )
-                    ]));
-              } else {
-                return Container();
-              }
-            },
-          );
-        });
+    print("item宽为：$_itemSize");
+    return ChangeNotifierProvider(
+      create: (_) => _SelectedMapNotifier(widget.maxAmount),
+      child: GridView.builder(
+          itemCount: _galleryList.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: _horizontalCount,
+              childAspectRatio: 1,
+              mainAxisSpacing: _itemMargin,
+              crossAxisSpacing: _itemMargin),
+          itemBuilder: (BuildContext context, int index) {
+            AssetEntity entity = _galleryList[index];
+            return FutureBuilder(
+              future: entity.thumbDataWithSize(_itemSize.toInt(), _itemSize.toInt()),
+              builder: (BuildContext context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  // print("#${index} item loaded");
+                  return GestureDetector(
+                      onTap: () => _onGridItemTap(context, index),
+                      child: Stack(overflow: Overflow.clip, children: [
+                        Image.memory(
+                          snapshot.data,
+                          fit: BoxFit.cover,
+                          height: _itemSize,
+                          width: _itemSize,
+                        ),
+                        Positioned(
+                          top: 10,
+                          right: 10,
+                          child: context.watch<_SelectedMapNotifier>().selectedMap.containsKey(entity.id)
+                              ? Text(
+                                  context.watch<_SelectedMapNotifier>().selectedMap[entity.id].order.toString(),
+                                  style: TextStyle(color: Colors.white, fontSize: 18),
+                                )
+                              : Icon(
+                                  Icons.add_circle_outline,
+                                  size: 20,
+                                  color: Colors.white,
+                                ),
+                        )
+                      ]));
+                } else {
+                  return Container();
+                }
+              },
+            );
+          }),
+    );
   }
 
   @override
   bool get wantKeepAlive => true;
 
-  //TODO 点击事件 需要区分是本体还是选框 更新数据不能让全局刷新 需要监听数据
-  _onGridItemTap(int index) {
-    print("点了第${index}张图");
+  //TODO 点击事件 需要区分是本体还是选框
+  _onGridItemTap(BuildContext context, int index) {
+    print("点了第$index张图");
     AssetEntity entity = _galleryList[index];
     entity.file.then((value) => print(entity.id + ":" + value.uri.toString()));
-    if (_selectedMap.keys.contains(entity.id)) {
-      //已在所选列表中
-      setState(() {
-        _removeFromSelectedMap(entity);
-      });
-    } else if (_selectedMap.length < widget.maxAmount) {
-      //未在所选列表中 且已选数量未达到上限
-      setState(() {
-        _addToSelectedMap(entity);
-      });
-    }
+    context.read<_SelectedMapNotifier>().handleMapChange(entity);
   }
+}
+
+class _OrderedAssetEntity {
+  _OrderedAssetEntity(this.order, this.entity);
+
+  int order;
+  AssetEntity entity;
+}
+
+class _SelectedMapNotifier with ChangeNotifier {
+  _SelectedMapNotifier(this.maxAmount);
+
+  int maxAmount;
+
+  Map<String, _OrderedAssetEntity> _selectedMap = Map<String, _OrderedAssetEntity>();
+
+  Map<String, _OrderedAssetEntity> get selectedMap => _selectedMap;
 
   _removeFromSelectedMap(AssetEntity entity) {
     //删掉目标entity还要将排序重新整理
@@ -244,11 +253,16 @@ class _GalleryGridState extends State<_GalleryGrid> with AutomaticKeepAliveClien
     _OrderedAssetEntity orderedEntity = _OrderedAssetEntity(_selectedMap.length + 1, entity);
     _selectedMap[entity.id] = orderedEntity;
   }
-}
 
-class _OrderedAssetEntity {
-  _OrderedAssetEntity(this.order, this.entity);
-
-  int order;
-  AssetEntity entity;
+  handleMapChange(AssetEntity entity) {
+    if (_selectedMap.keys.contains(entity.id)) {
+      //已在所选列表中
+      _removeFromSelectedMap(entity);
+      notifyListeners();
+    } else if (_selectedMap.length < maxAmount) {
+      //未在所选列表中 且已选数量未达到上限
+      _addToSelectedMap(entity);
+      notifyListeners();
+    }
+  }
 }
