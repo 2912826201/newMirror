@@ -70,6 +70,10 @@ flutter:
   assets:
     - images/
     - images/test/
+    - images/resource/
+    - images/resource/2.0x/
+    - images/resource/3.0x/
+    - images/resource/2.0x/ic_big_nav_closepage@2x.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

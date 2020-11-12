@@ -39,6 +39,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin{
     // 获取屏幕宽度，只能在home内才可调用。
     double screen_width = MediaQuery.of(context).size.width;
     double screen_top = MediaQuery.of(context).padding.top;
+    print(screen_top);
     return Container(
       // 设置背景色
       decoration: BoxDecoration(color: Colors.white),

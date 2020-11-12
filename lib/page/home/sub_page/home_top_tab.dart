@@ -16,10 +16,10 @@ class _TopTabState extends State<HomeTopTab> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
-          flex: 2,
+          flex: 23,
           child: GestureDetector(
             child: Image.asset(
-              "images/test/customer_service.png",
+              "images/resource/2.0x/Nav_Camera_icon@2x.png",
               width: 28,
               height: 28,
             ),
@@ -29,7 +29,7 @@ class _TopTabState extends State<HomeTopTab> {
           ),
         ),
         Expanded(
-            flex: 8,
+            flex: 100,
             child: Container(
               width: 240,
               padding: EdgeInsets.symmetric(horizontal: 50),
@@ -39,22 +39,22 @@ class _TopTabState extends State<HomeTopTab> {
                 labelStyle: TextStyle(fontSize: 18),
                 labelColor: Colors.black,
                 // indicatorPadding: EdgeInsets.symmetric(horizontal: 24),
-                unselectedLabelColor: Color.fromRGBO(153, 153, 153, 1),
-                unselectedLabelStyle: TextStyle(fontSize: 18),
+                // unselectedLabelColor: Color.fromRGBO(153, 153, 153, 1),
+                unselectedLabelStyle: TextStyle(fontSize: 16),
                 indicator: RoundUnderlineTabIndicator(
                   borderSide: BorderSide(
-                    width: 2,
-                    color: Color.fromRGBO(48, 209, 139, 1),
+                    width: 3,
+                    color: Color.fromRGBO(253, 137, 140, 1),
                   ),
-                  insets: EdgeInsets.only(bottom: -4),
-                  wantWidth: 20,
+                  insets: EdgeInsets.only(bottom: -6),
+                  wantWidth: 16,
                 ),
               ),
             )),
         Expanded(
-          flex: 2,
+          flex: 23,
           child: GestureDetector(
-            child: Image.asset("images/test/search.png", width: 28, height: 28),
+            child: Image.asset("images/resource/2.0x/Nav_search_icon @2x.png", width: 28, height: 28),
             onTap: () {
               print("点击了搜索");
             },

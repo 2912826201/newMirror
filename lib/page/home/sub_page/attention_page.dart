@@ -8,6 +8,7 @@ import 'package:mirror/widget/bottom_sheet.dart' as CustomBottomSheet;
 import 'package:mirror/widget/expandable_text.dart';
 import 'package:mirror/widget/rach_text_widget.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+
 // 关注
 class AttentionPage extends StatefulWidget {
   AttentionPage({Key key, this.coverUrls}) : super(key: key);
@@ -18,16 +19,21 @@ class AttentionPage extends StatefulWidget {
 
 class AttentionPageState extends State<AttentionPage> {
   PanelController _pc = new PanelController();
+
   @override
   Widget build(BuildContext context) {
     return SlidingUpPanel(
-        panel: Center(
-          child: TikTokCommentBottomSheet(),
-        ),
+      panel: Center(
+        child: TikTokCommentBottomSheet(pc: _pc,),
+      ),
       backdropEnabled: true,
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(10.0),
+        topRight: Radius.circular(10.0),
+      ),
       controller: _pc,
       minHeight: 0,
-      body:Container(
+      body: Container(
           margin: EdgeInsets.only(top: 68),
           child: NotificationListener<ScrollNotification>(
               onNotification: (ScrollNotification notification) {
@@ -67,36 +73,55 @@ class AttentionPageState extends State<AttentionPage> {
                     }, childCount: 19),
                   )
                 ],
-              ))) ,
+              ))),
     );
-
   }
 
   // 课程横向布局
   getCourse() {
     return Container(
-      margin: EdgeInsets.only(top: 16),
-      height: 120,
+      margin: EdgeInsets.only(top: 24, bottom: 18),
+      height: 93,
       child: ListView(
         scrollDirection: Axis.horizontal,
         shrinkWrap: true,
         children: widget.coverUrls.map((e) {
           var index = e.index;
-          return Column(
-            children: [
-              Container(
-                margin: EdgeInsets.only(
-                    left: index > 0 ? 5 : 16, right: index == widget.coverUrls.length - 1 ? 16 : 0, top: 5, bottom: 5),
-                height: 80,
-                width: 80,
-                decoration: BoxDecoration(
-                  // color: Colors.redAccent,
-                  image: DecorationImage(image: NetworkImage(e.avatar), fit: BoxFit.cover),
-                  borderRadius: BorderRadius.all(Radius.circular(40)),
+          return Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  margin: EdgeInsets.only(
+                      left: index > 0 ? 24 : 16,
+                      right: index == widget.coverUrls.length - 1 ? 16 : 0,
+                      top: 0,
+                      bottom: 8.5),
+                  height: 53,
+                  width: 53,
+                  decoration: BoxDecoration(
+                    // color: Colors.redAccent,
+                    image: DecorationImage(image: NetworkImage(e.avatar), fit: BoxFit.cover),
+                    borderRadius: BorderRadius.all(Radius.circular(26.5)),
+                  ),
                 ),
-              ),
-              Text("小课$index")
-            ],
+                Container(
+                  width: 53,
+                  margin: EdgeInsets.only(
+                      left: index > 0 ? 24 : 16,
+                      right: index == widget.coverUrls.length - 1 ? 16 : 0,
+                      top: 0,
+                      bottom: 8.5),
+                  child: Center(
+                    child: Text(
+                      "小课${index}",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                )
+              ],
+            ),
           );
         }).toList(),
       ),
@@ -106,15 +131,19 @@ class AttentionPageState extends State<AttentionPage> {
 
 
 //垂直列表推荐列表布局
-class recommendListLayout extends StatefulWidget{
-  recommendListLayout({Key key, this.index,this.pc}) : super(key: key);
+class recommendListLayout extends StatefulWidget {
+  recommendListLayout({Key key, this.index, this.pc}) : super(key: key);
   final index;
   PanelController pc;
+
   recommendListLayoutState createState() => recommendListLayoutState(index: index);
 }
+
 class recommendListLayoutState extends State<recommendListLayout> {
   final index;
+
   recommendListLayoutState({this.index});
+
   String longText =
       "1、信息展示：- 发布人相关：（1）用户：头像、昵称/备注（2）话题：话题头像、话题名- 动态相关：发布时间、图片/视频、文字、话题名- 社交相关：点赞数、评论数、分享数- 更多…： 点击…按键出现选框：- 图片：1:1、4:5、1.9:1为常规尺寸，对于纵图或者横图，未达到比例阈值前正常展示，超过比例阈值后只展示阈值中的部分。纵图阈值4:5、横图阈值1.9:1，具体展示情况看UI图，最多展示9张照片2、点击用户区域，除【…】外跳转至个人主页3、点击【更多】，出现弹窗我的动态：删除他人动态：取消关注、举报、图片区域- 图片最多展示9张，左右滑动切换- 当只有一张图片时，没有翻页符和张数提示";
   List<String> tags = [
@@ -122,6 +151,7 @@ class recommendListLayoutState extends State<recommendListLayout> {
     "成都~福年广场",
     "陈建华教练",
   ];
+
   void childFun() {
     print("hahahhahahahah");
     const timeout = const Duration(seconds: 3);
@@ -129,9 +159,13 @@ class recommendListLayoutState extends State<recommendListLayout> {
       print("hahahhahahahah");
     });
   }
+
   @override
   Widget build(BuildContext context) {
-    double screen_width = MediaQuery.of(context).size.width;
+    double screen_width = MediaQuery
+        .of(context)
+        .size
+        .width;
     return Column(
       children: [
         // 头部头像时间
@@ -139,20 +173,20 @@ class recommendListLayoutState extends State<recommendListLayout> {
         // 图片
         getPhoto(this.index, screen_width),
         // 点赞，转发，评论三连区域
-        getTripleArea(num: 2,pc:widget.pc),
+        getTripleArea(num: 3, pc: widget.pc),
         // 课程信息和地址
         Container(
-          margin: EdgeInsets.only(left: 13, right: 16),
+          margin: EdgeInsets.only(left: 4, right: 16),
           width: screen_width,
           child: getCourseInfo(tags),
         ),
         // 文本文案
         Container(
-          margin: EdgeInsets.only(left: 16, right: 16,bottom: 8),
+          margin: EdgeInsets.only(left: 16, right: 16, bottom: 8),
           child: ExpandableText(
             text: longText,
             maxLines: 2,
-            style: TextStyle(fontSize: 15, color: Colors.black),
+            style: TextStyle(fontSize: 14, color: Colors.black),
           ),
         ),
         getAttention(this.index),
@@ -165,8 +199,8 @@ class recommendListLayoutState extends State<recommendListLayout> {
         // ),
         // 分割块
         Container(
-          height: 10,
-          color: Color.fromARGB(255, 234, 233, 234),
+          height: 18,
+          color: Colors.white,
         )
       ],
     );
@@ -175,14 +209,14 @@ class recommendListLayoutState extends State<recommendListLayout> {
   // 头部
   Widget getHead(var width) {
     return Container(
-        height: 60,
+        height: 62,
         child: Row(
           children: [
             Container(
-              margin: EdgeInsets.only(left: 16, right: 8),
+              margin: EdgeInsets.only(left: 16, right: 11),
               child: CircleAvatar(
                 backgroundImage: NetworkImage("https://pic2.zhimg.com/v2-639b49f2f6578eabddc458b84eb3c6a1.jpg"),
-                maxRadius: 25,
+                maxRadius: 19,
               ),
             ),
             Container(
@@ -193,12 +227,12 @@ class recommendListLayoutState extends State<recommendListLayout> {
                     GestureDetector(
                       child: Text(
                         "哈哈哈",
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
                       ),
                       onTap: () {},
                     ),
                     Padding(
-                      padding: EdgeInsets.only(top: 4),
+                      padding: EdgeInsets.only(top: 7),
                       child: Text("3小时前",
                           style: TextStyle(
                             fontSize: 12,
@@ -210,7 +244,7 @@ class recommendListLayoutState extends State<recommendListLayout> {
             Container(
               // color: Colors.deepOrangeAccent,
               margin: EdgeInsets.only(
-                  left: width - 16 - 50 - 8 - 16 - 28 - getTextSize("哈哈哈", TextStyle(fontSize: 14)).width),
+                  left: width - 16 - 38 - 11 - 16 - 28 - getTextSize("哈哈哈", TextStyle(fontSize: 15)).width),
               child: GestureDetector(
                 child: Image.asset("images/test/ic_big_dynamic_more.png", fit: BoxFit.cover, width: 28, height: 28),
               ),
@@ -299,7 +333,7 @@ class TagItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 3, horizontal: 3),
+      margin: EdgeInsets.symmetric(vertical: 3, horizontal: 12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(12)),
         color: Color.fromRGBO(242, 242, 242, 1),
@@ -313,8 +347,8 @@ class TagItem extends StatelessWidget {
                 maxRadius: 8,
               ),
               Container(
-                child: Text(text),
-                margin: EdgeInsets.only(left: 20),
+                child: Text(text, style: TextStyle(fontSize: 12),),
+                margin: EdgeInsets.only(left: 20, top: 2),
               ),
             ],
           )),
@@ -327,7 +361,8 @@ class getTripleArea extends StatefulWidget {
   var model;
   int num;
   PanelController pc;
-  getTripleArea({Key key, this.model, this.num,this.pc}) : super(key: key);
+
+  getTripleArea({Key key, this.model, this.num, this.pc}) : super(key: key);
 
   getTripleAreaState createState() => getTripleAreaState();
 }
@@ -351,12 +386,12 @@ class getTripleAreaState extends State<getTripleArea> {
       return Stack(
         overflow: Overflow.clip,
         children: [
-          Positioned(left: 16, top: 9, child: roundedAvatar()),
-          Positioned(child: roundedLikeNum(), top: 16, left: 50),
+          Positioned(left: 16, top: 13.5, child: roundedAvatar()),
+          Positioned(child: roundedLikeNum(), top: 18, left: 42),
           Positioned(
-            top: 10,
-            right: 16,
-            child: roundedTriple(pc: widget.pc)
+              top: 12,
+              right: 16,
+              child: roundedTriple(pc: widget.pc)
           )
         ],
       );
@@ -364,17 +399,17 @@ class getTripleAreaState extends State<getTripleArea> {
       return Stack(
         overflow: Overflow.clip,
         children: [
-          Positioned(left: 16, top: 9, child: roundedAvatar()),
+          Positioned(left: 16, top: 13.5, child: roundedAvatar()),
           Positioned(
             child: roundedAvatar(),
-            left: 41,
-            top: 9,
+            left: 27,
+            top: 13.5,
           ),
-          Positioned(child: roundedLikeNum(), top: 16, left: 75),
+          Positioned(child: roundedLikeNum(), top: 18, left: 53),
           Positioned(
-            top: 10,
-            right: 16,
-            child: roundedTriple(pc:widget.pc)
+              top: 12,
+              right: 16,
+              child: roundedTriple(pc: widget.pc)
           )
         ],
       );
@@ -382,12 +417,12 @@ class getTripleAreaState extends State<getTripleArea> {
       return Stack(
         overflow: Overflow.clip,
         children: [
-          Positioned(top: 9, left: 16, child: roundedAvatar()),
-          Positioned(child: roundedAvatar(), top: 9, left: 41),
-          Positioned(child: roundedAvatar(), top: 9, left: 66),
-          Positioned(child: roundedLikeNum(), top: 16, left: 100),
+          Positioned(top: 13.5, left: 16, child: roundedAvatar()),
+          Positioned(child: roundedAvatar(), top: 13.5, left: 27),
+          Positioned(child: roundedAvatar(), top: 13.5, left: 38),
+          Positioned(child: roundedLikeNum(), top: 18, left: 64),
           Positioned(
-            top: 10,
+            top: 12,
             right: 16,
             child: roundedTriple(pc: widget.pc),
           )
@@ -400,7 +435,7 @@ class getTripleAreaState extends State<getTripleArea> {
   roundedAvatar() {
     return CircleAvatar(
       backgroundImage: AssetImage("images/test/yxlm9.jpeg"),
-      maxRadius: 15,
+      maxRadius: 10.5,
     );
   }
 
@@ -408,17 +443,19 @@ class getTripleAreaState extends State<getTripleArea> {
   roundedLikeNum() {
     return Container(
       // margin: EdgeInsets.only(left: 6),
-      child: Text("3次赞"),
+      child: Text("3次赞", style: TextStyle(fontSize: 12),),
     );
   }
 }
 
 // 横排三连布局
 class roundedTriple extends StatefulWidget {
-  roundedTriple({Key key,this.pc}) : super(key: key);
+  roundedTriple({Key key, this.pc}) : super(key: key);
   PanelController pc;
+
   roundedTripleState createState() => roundedTripleState();
 }
+
 class roundedTripleState extends State<roundedTriple> {
   @override
   Widget build(BuildContext context) {
@@ -427,25 +464,25 @@ class roundedTripleState extends State<roundedTriple> {
         Container(
           child: Image.asset(
             "images/test/爱心.png",
-            width: 28,
-            height: 28,
+            width: 24,
+            height: 24,
           ),
         ),
         Container(
-          margin: EdgeInsets.only(left: 12),
+          margin: EdgeInsets.only(left: 16),
           child: Image.asset(
             "images/test/分享.png",
-            width: 28,
-            height: 28,
+            width: 24,
+            height: 24,
           ),
         ),
         Container(
-            margin: EdgeInsets.only(left: 12),
-            child:GestureDetector(
+            margin: EdgeInsets.only(left: 16),
+            child: GestureDetector(
                 child: Image.asset(
                   "images/test/消息.png",
-                  width: 28,
-                  height: 28,
+                  width: 24,
+                  height: 24,
                 ),
                 onTap: () {
                   widget.pc.open();
@@ -461,100 +498,106 @@ class roundedTripleState extends State<roundedTriple> {
 // 隐藏的输入框
 class inputBox extends StatefulWidget {
   inputBox({Key key}) : super(key: key);
+
   inputBoxState createState() => inputBoxState();
 }
+
 class inputBoxState extends State<inputBox> {
   var offstage = true;
+
   inputHide() {
     setState(() {
       offstage = false;
     });
   }
+
   @override
   Widget build(BuildContext context) {
-   return Offstage(
-     offstage: offstage,
-     child: Container(
-       color: Colors.limeAccent,
-       height: 40,
-       width: 300,
-     ),
-   );
+    return Offstage(
+      offstage: offstage,
+      child: Container(
+        color: Colors.limeAccent,
+        height: 40,
+        width: 300,
+      ),
+    );
   }
 }
 // 评论排版
 class commentText extends StatefulWidget {
-  commentText({Key key,this.commenNum}) : super(key: key);
+  commentText({Key key, this.commenNum}) : super(key: key);
   final commenNum;
+
   commentTextState createState() => commentTextState();
 }
+
 class commentTextState extends State<commentText> {
-  var userName = ["张珊","李思","王武","赵柳"];
+  var userName = ["张珊", "李思", "王武", "赵柳"];
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 400,
-      margin: EdgeInsets.only(left: 16,right: 16),
+      margin: EdgeInsets.only(left: 16, right: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-           Container(
-             margin: EdgeInsets.only(bottom: 8),
-             child:
-             Text(
-               "共${widget.commenNum}条评论",
-               style: TextStyle(
-                 fontSize: 14,
-                 color: Color.fromRGBO(153, 153, 153, 1)
-               ),
-             )
-           ),
+          Container(
+              margin: EdgeInsets.only(bottom: 6),
+              child:
+              Text(
+                "共${widget.commenNum}条评论",
+                style: TextStyle(
+                    fontSize: 12,
+                    color: Color.fromRGBO(153, 153, 153, 1)
+                ),
+              )
+          ),
 
           MyRichTextWidget(
             Text(
-              "${userName[0]} 这是评论的内容，如果很长最多只显示一行。",
+              "${userName[0]}: 这是评论的内容，如果很长最多只显示一行。",
               style: TextStyle(
-                fontSize: 12,
-                color: Color.fromRGBO(151, 151, 151, 1)
+                  fontSize: 13,
+                  color: Color.fromRGBO(151, 151, 151, 1)
               ),
             ),
             maxLines: 1,
             textOverflow: TextOverflow.ellipsis,
             richTexts: [
               BaseRichText(
-                  userName[0],
-                style: TextStyle(color: Colors.black,fontSize: 14),
+                "${userName[0]}:",
+                style: TextStyle(color: Colors.black, fontSize: 14),
                 onTap: () {
-                    print("点击用户${userName[0]}");
+                  print("点击用户${userName[0]}");
                 },
               )
             ],
           ),
           Container(
-            margin: EdgeInsets.only(top: 4,bottom: 4),
-            child:  MyRichTextWidget(
+            margin: EdgeInsets.only(top: 4, bottom: 4),
+            child: MyRichTextWidget(
               Text(
-                "${userName[1]} 回复 ${userName[2]} 回复的其他人的评论内容超过这是评论的内容，如果很长最多只显示一行。",
+                "${userName[1]}: 回复 ${userName[2]} 回复的其他人的评论内容超过这是评论的内容，如果很长最多只显示一行。",
                 overflow: TextOverflow.visible,
                 style: TextStyle(
                     fontSize: 12,
                     color: Color.fromRGBO(151, 151, 151, 1)
                 ),
               ),
-              maxLines:1,
+              maxLines: 1,
               textOverflow: TextOverflow.ellipsis,
               richTexts: [
                 BaseRichText(
-                  userName[1],
-                  style: TextStyle(color: Colors.black,fontSize: 14),
+                  "${userName[1]}: 回复",
+                  style: TextStyle(color: Colors.black, fontSize: 14),
                   onTap: () {
                     print("点击用户${userName[1]}");
                   },
                 ),
                 BaseRichText(
                   userName[2],
-                  style: TextStyle(color: Colors.black,fontSize: 14),
+                  style: TextStyle(color: Colors.black, fontSize: 14),
                   onTap: () {
                     print("点击用户${userName[2]}");
                   },
@@ -570,64 +613,83 @@ class commentTextState extends State<commentText> {
 }
 
 
-
 class TikTokCommentBottomSheet extends StatelessWidget {
-  const TikTokCommentBottomSheet({
-    Key key,
+   TikTokCommentBottomSheet({
+    Key key,this.pc
   }) : super(key: key);
-
+  PanelController pc;
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 500,
-      margin: EdgeInsets.zero,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
       child: Column(
         children: <Widget>[
           Container(
-            margin: EdgeInsets.all(4),
-            height: 4,
-            width: 32,
+            height: 48,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(2),
+              // color: Colors.white.withOpacity(0.2),
+              //   color: Colors.purple,
+              //   gradient: LinearGradient(
+              //     colors: [Colors.red, Colors.cyan],
+              //   ),
+                border:Border(bottom:BorderSide(width: 0.5,color: Color(0xffe5e5e5))),
+              // borderRadius: BorderRadius.only(
+              //   topLeft: Radius.circular(10.0),
+              //   topRight: Radius.circular(10.0),
+              // ),
             ),
-          ),
-          Container(
-            height: 24,
-            alignment: Alignment.center,
-            // color: Colors.white.withOpacity(0.2),
-            child: Text(
-              '128条评论',
+            child: Stack(
+              overflow: Overflow.clip,
+              children: [
+                Positioned(
+                  left: 16,
+                    top: 17,
+                    child:Text(
+                        "共150条评论",
+                      style: TextStyle(
+                        fontSize: 14
+                      ),
+                    )
+                ),
+                Positioned(
+                    top: 15,
+                    right: 16,
+                    child: GestureDetector(
+                      child: Image.asset("images/resource/2.0x/ic_big_nav_closepage@2x.png",width: 18,height: 18),
+                      onTap: (){
+                         pc.close();
+                      },
+                    )
+                )
+              ],
             ),
           ),
           Expanded(
-            child: ListView(
-              physics: AlwaysScrollableScrollPhysics(
-                parent: BouncingScrollPhysics(),
+            child:Container(
+              child: ListView(
+                // physics: AlwaysScrollableScrollPhysics(
+                //   parent: BouncingScrollPhysics(),
+                // ),
+                children: <Widget>[
+                  _CommentRow(),
+                  _CommentRow(),
+                  _CommentRow(),
+                  _CommentRow(),
+                  _CommentRow(),
+                  _CommentRow(),
+                  _CommentRow(),
+                  _CommentRow(),
+                  _CommentRow(),
+                  _CommentRow(),
+                ],
               ),
-              children: <Widget>[
-                _CommentRow(),
-                _CommentRow(),
-                _CommentRow(),
-                _CommentRow(),
-                _CommentRow(),
-                _CommentRow(),
-                _CommentRow(),
-                _CommentRow(),
-                _CommentRow(),
-                _CommentRow(),
-              ],
-            ),
+            )
           ),
         ],
       ),
     );
   }
 }
+
 class _CommentRow extends StatelessWidget {
   const _CommentRow({
     Key key,
@@ -654,7 +716,7 @@ class _CommentRow extends StatelessWidget {
       children: <Widget>[
         Icon(
           Icons.favorite,
-          color: Colors.white,
+          color: Colors.grey,
         ),
         Text(
           '54',
@@ -662,24 +724,27 @@ class _CommentRow extends StatelessWidget {
         ),
       ],
     );
-    right = Opacity(
-      opacity: 0.3,
-      child: right,
-    );
+    // right = Opacity(
+    //   opacity: 0.3,
+    //   child: right,
+    // );
     var avatar = Container(
-      margin: EdgeInsets.fromLTRB(0, 8, 10, 8),
+      color: Colors.grey,
+      // margin: EdgeInsets.fromLTRB(0, 8, 10, 8),
+      margin: EdgeInsets.only(left: 11,right: 13,bottom: 12),
       child: Container(
-        height: 36,
-        width: 36,
+        height: 42,
+        width: 42,
         child: ClipOval(
           child: Image.network(
-            "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif",fit: BoxFit.cover,
+            "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif", fit: BoxFit.cover,
           ),
         ),
       ),
     );
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+       padding: EdgeInsets.only(right: 25),
+      // padding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
       child: Row(
         children: <Widget>[
           avatar,
