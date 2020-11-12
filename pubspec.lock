@@ -151,6 +151,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.3.2+2"
+  rich_text_widget:
+    dependency: "direct main"
+    description:
+      name: rich_text_widget
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.2.4"
   rongcloud_im_plugin:
     dependency: "direct main"
     description:
@@ -163,6 +170,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  sliding_up_panel:
+    dependency: "direct main"
+    description:
+      name: sliding_up_panel
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.3.6"
   source_span:
     dependency: transitive
     description:
