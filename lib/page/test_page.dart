@@ -6,7 +6,7 @@ import 'package:mirror/data/database/user_db_helper.dart';
 import 'package:mirror/data/dto/user_dto.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/user_notifier.dart';
-import 'package:mirror/page/media_picker_page.dart';
+import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:provider/provider.dart';
 
@@ -38,10 +38,10 @@ class _TestState extends State<TestPage> {
                   Container(
                     color: Colors.redAccent,
                     // width: ScreenUtil.instance.setWidth(28.0),
-                    width:28.0,
-                    height:28.0,
+                    width: 28.0,
+                    height: 28.0,
                     // height:ScreenUtil.instance.setHeight(28.0),
-                    margin: EdgeInsets.only( right:10),
+                    margin: EdgeInsets.only(right: 10),
                   ),
                   Image(
                     image: AssetImage("images/test.png"),
@@ -55,9 +55,12 @@ class _TestState extends State<TestPage> {
                     width: 100.0,
                     height: 100.0,
                   ),
-                  Padding(padding: EdgeInsets.only(left: 12),child: Container(
-                    child: Text("组件设置偏移"),
-                  ),)
+                  Padding(
+                    padding: EdgeInsets.only(left: 12),
+                    child: Container(
+                      child: Text("组件设置偏移"),
+                    ),
+                  )
                 ],
               ),
               //watch会监听全部数据
@@ -131,7 +134,7 @@ class _TestState extends State<TestPage> {
               RaisedButton(
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return MediaPickerPage();
+                    return MediaPickerPage(9, MediaType.imageAndVideo);
                   }));
                 },
                 child: Text("选图片视频"),

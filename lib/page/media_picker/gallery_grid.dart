@@ -1,166 +1,84 @@
 import 'package:flutter/material.dart';
-import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
+import 'package:photo_manager/photo_manager.dart';
 
-/// media_picker_page
-/// Created by yangjiayi on 2020/11/9.
+/// gallery_grid
+/// Created by yangjiayi on 2020/11/12.
+
 
 int _horizontalCount = 4;
 double _itemMargin = 2;
 double _itemSize = 0;
-int _galleryIndex = 0;
-int _photoIndex = 1;
-int _videoIndex = 2;
 int _galleryPageSize = 100;
 
-class MediaPickerPage extends StatefulWidget {
-  @override
-  _MediaPickerState createState() => _MediaPickerState();
-}
-
-class _MediaPickerState extends State<MediaPickerPage> {
-  int _selectedIndex = _galleryIndex;
-  PageController _pageController;
-  List<Widget> _pageList = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController(initialPage: _selectedIndex);
-    //FIXME 测试用暂时写9 需要上个页面传参进来
-    _pageList.add(_GalleryGrid(maxAmount: 9));
-    _pageList.add(Container(
-      color: Colors.grey,
-    ));
-    _pageList.add(Container(
-      color: Colors.greenAccent,
-    ));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: PageView(
-        controller: _pageController,
-        children: _pageList,
-        onPageChanged: null,
-        //禁止左右划切换页面
-        physics: NeverScrollableScrollPhysics(),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: SizedBox(
-          height: 48,
-          child: Flex(
-            direction: Axis.horizontal,
-            children: [
-              Expanded(
-                  flex: 1,
-                  child: FlatButton(
-                    height: 48,
-                    padding: EdgeInsets.zero,
-                    onPressed: _onGallerySelected,
-                    child: Text("相册", style: TextStyle(color: _selectedIndex == 0 ? Colors.red : Colors.black)),
-                  )),
-              Expanded(
-                  flex: 1,
-                  child: FlatButton(
-                    height: 48,
-                    padding: EdgeInsets.zero,
-                    onPressed: _onPhotoSelected,
-                    child: Text("拍照", style: TextStyle(color: _selectedIndex == 1 ? Colors.red : Colors.black)),
-                  )),
-              Expanded(
-                  flex: 1,
-                  child: FlatButton(
-                    height: 48,
-                    padding: EdgeInsets.zero,
-                    onPressed: _onVideoSelected,
-                    child: Text("拍视频", style: TextStyle(color: _selectedIndex == 2 ? Colors.red : Colors.black)),
-                  )),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _onGallerySelected() {
-    if (_selectedIndex != _galleryIndex) {
-      setState(() {
-        _selectedIndex = _galleryIndex;
-        _pageController.jumpToPage(_selectedIndex);
-      });
-    }
-  }
-
-  void _onPhotoSelected() {
-    if (_selectedIndex != _photoIndex) {
-      setState(() {
-        _selectedIndex = _photoIndex;
-        _pageController.jumpToPage(_selectedIndex);
-      });
-    }
-  }
-
-  void _onVideoSelected() {
-    if (_selectedIndex != _videoIndex) {
-      setState(() {
-        _selectedIndex = _videoIndex;
-        _pageController.jumpToPage(_selectedIndex);
-      });
-    }
-  }
-}
-
 // 相册的GridView视图 需要能够区分选择图片或视频 选择图片数量
-class _GalleryGrid extends StatefulWidget {
-  _GalleryGrid({Key key, this.maxAmount}) : super(key: key);
+class GalleryGrid extends StatefulWidget {
+  GalleryGrid({Key key, this.maxImageAmount = 1, this.requestType = RequestType.common}) : super(key: key);
 
-  final int maxAmount;
+  final int maxImageAmount;
+  final int maxVideoAmount = 1;
+
+  // image是图片 common是图片和视频 目前需求只会用到这两种
+  final RequestType requestType;
 
   @override
   _GalleryGridState createState() => _GalleryGridState();
 }
 
-class _GalleryGridState extends State<_GalleryGrid> with AutomaticKeepAliveClientMixin {
+class _GalleryGridState extends State<GalleryGrid> with AutomaticKeepAliveClientMixin {
+  // 是否正在获取数据 防止同时重复请求
+  bool _isFetchingData = false;
+
+  // 当前路径的图片视频数
+  int _mediaAmount = 0;
   List<AssetEntity> _galleryList = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchGalleryData();
+    _fetchGalleryData(true);
   }
 
-  _fetchGalleryData() async {
+  _fetchGalleryData(bool isNew) async {
+    if (_isFetchingData) {
+      // 正在获取过程中则不做操作
+      return;
+    }
+    _isFetchingData = true;
     var result = await PhotoManager.requestPermission();
     if (result) {
       // success
       // load the album list
       //TODO 这里需要设置路径
-      List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(onlyAll: true);
+      List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(onlyAll: true, type: widget.requestType);
       print(albums);
+      _mediaAmount = albums[0].assetCount;
       //TODO 需要完善翻页机制
-      List<AssetEntity> media = await albums[0].getAssetListPaged(0, _galleryPageSize);
+      List<AssetEntity> media =
+      await albums[0].getAssetListRange(start: _galleryList.length, end: _galleryList.length + _galleryPageSize);
       print(media);
+      //FIXME 会闪一下
       setState(() {
-        _galleryList = media;
+        _galleryList.addAll(media);
       });
+      _isFetchingData = false;
     } else {
       // fail
       /// if result is fail, you can call `PhotoManager.openSetting();`  to open android/ios applicaton's setting to get permission
+      _isFetchingData = false;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     //TODO 获取屏幕宽高以设置图片大小 获取方法需要统一封装
     double screenWidth = MediaQuery.of(context).size.width;
     print("屏幕宽为：$screenWidth");
     _itemSize = (screenWidth - _itemMargin * (_horizontalCount - 1)) / _horizontalCount;
     print("item宽为：$_itemSize");
     return ChangeNotifierProvider(
-      create: (_) => _SelectedMapNotifier(widget.maxAmount),
+      create: (_) => _SelectedMapNotifier(widget.maxImageAmount, widget.maxVideoAmount),
       child: GridView.builder(
           itemCount: _galleryList.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -175,6 +93,10 @@ class _GalleryGridState extends State<_GalleryGrid> with AutomaticKeepAliveClien
               builder: (BuildContext context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   // print("#${index} item loaded");
+                  // 当加载到距离list的长度还有一行时 请求下一页数据
+                  if (_galleryList.length < _mediaAmount && _galleryList.length - index <= _horizontalCount * 2) {
+                    _fetchGalleryData(false);
+                  }
                   return GestureDetector(
                       onTap: () => _onGridItemTap(context, index),
                       child: Stack(overflow: Overflow.clip, children: [
@@ -189,14 +111,26 @@ class _GalleryGridState extends State<_GalleryGrid> with AutomaticKeepAliveClien
                           right: 10,
                           child: context.watch<_SelectedMapNotifier>().selectedMap.containsKey(entity.id)
                               ? Text(
-                                  context.watch<_SelectedMapNotifier>().selectedMap[entity.id].order.toString(),
-                                  style: TextStyle(color: Colors.white, fontSize: 18),
-                                )
+                            context.watch<_SelectedMapNotifier>().selectedMap[entity.id].order.toString(),
+                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          )
                               : Icon(
-                                  Icons.add_circle_outline,
-                                  size: 20,
-                                  color: Colors.white,
-                                ),
+                            Icons.add_circle_outline,
+                            size: 20,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 10,
+                          right: 10,
+                          child: Text(
+                            entity.type == AssetType.image
+                                ? "I"
+                                : entity.type == AssetType.video
+                                ? "V"
+                                : "",
+                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          ),
                         )
                       ]));
                 } else {
@@ -228,9 +162,15 @@ class _OrderedAssetEntity {
 }
 
 class _SelectedMapNotifier with ChangeNotifier {
-  _SelectedMapNotifier(this.maxAmount);
+  _SelectedMapNotifier(this.maxImageAmount, this.maxVideoAmount);
 
-  int maxAmount;
+  int maxImageAmount;
+  int maxVideoAmount;
+
+  // 所选类型只能有一种
+  AssetType _selectedType;
+
+  AssetType get selectedType => _selectedType;
 
   Map<String, _OrderedAssetEntity> _selectedMap = Map<String, _OrderedAssetEntity>();
 
@@ -246,20 +186,42 @@ class _SelectedMapNotifier with ChangeNotifier {
         e.order--;
       }
     }
+    if (_selectedMap.isEmpty) {
+      // 如果已选列表为空时 清空已选类型
+      _selectedType = null;
+    }
   }
 
   _addToSelectedMap(AssetEntity entity) {
+    if (_selectedMap.isEmpty) {
+      // 如果是第一条数据 则设置已选类型
+      _selectedType = entity.type;
+    }
     //在添加数据时 排序为已选数量+1
     _OrderedAssetEntity orderedEntity = _OrderedAssetEntity(_selectedMap.length + 1, entity);
     _selectedMap[entity.id] = orderedEntity;
   }
 
+  bool isFull() {
+    // 未知类型时先给个最低的1张上限
+    int maxAmount = _selectedType == AssetType.image
+        ? maxImageAmount
+        : _selectedType == AssetType.video
+        ? maxVideoAmount
+        : 1;
+    return _selectedMap.length >= maxAmount;
+  }
+
   handleMapChange(AssetEntity entity) {
+    if (_selectedType != null && entity.type != _selectedType) {
+      // 已选类型不为空 且与所选文件类型不符时不做操作
+      return;
+    }
     if (_selectedMap.keys.contains(entity.id)) {
       //已在所选列表中
       _removeFromSelectedMap(entity);
       notifyListeners();
-    } else if (_selectedMap.length < maxAmount) {
+    } else if (!isFull()) {
       //未在所选列表中 且已选数量未达到上限
       _addToSelectedMap(entity);
       notifyListeners();
