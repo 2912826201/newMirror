@@ -7,6 +7,7 @@ import 'package:mirror/data/dto/user_dto.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/user_notifier.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
+import 'package:mirror/page/qiniu_test_page.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:provider/provider.dart';
 
@@ -138,6 +139,14 @@ class _TestState extends State<TestPage> {
                   }));
                 },
                 child: Text("选图片视频"),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return QiniuTest();
+                  }));
+                },
+                child: Text("七牛上传测试"),
               ),
             ],
           ),
