@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:provider/provider.dart';
 
 import 'gallery_grid.dart';
 
@@ -32,10 +33,14 @@ class _MediaPickerState extends State<MediaPickerPage> {
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: _selectedIndex);
-    _pageList.add(GalleryGrid(
-      maxImageAmount: widget.maxImageAmount,
-      requestType: widget.mediaType == MediaType.imageAndVideo ? RequestType.common : RequestType.image,
-    ));
+    _pageList.add(
+        //需要在这里就把provider创建出来，以便页面内的所有context都能在provider下
+        ChangeNotifierProvider(
+            create: (_) => SelectedMapNotifier(widget.maxImageAmount, 1),
+            child: GalleryGrid(
+              maxImageAmount: widget.maxImageAmount,
+              requestType: widget.mediaType == MediaType.imageAndVideo ? RequestType.common : RequestType.image,
+            )));
     _pageList.add(Container(
       color: Colors.grey,
     ));
@@ -47,7 +52,6 @@ class _MediaPickerState extends State<MediaPickerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
       body: PageView(
         controller: _pageController,
         children: _pageList,

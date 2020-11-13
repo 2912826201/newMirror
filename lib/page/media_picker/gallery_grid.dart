@@ -5,7 +5,6 @@ import 'package:photo_manager/photo_manager.dart';
 /// gallery_grid
 /// Created by yangjiayi on 2020/11/12.
 
-
 int _horizontalCount = 4;
 double _itemMargin = 2;
 double _itemSize = 0;
@@ -50,12 +49,14 @@ class _GalleryGridState extends State<GalleryGrid> with AutomaticKeepAliveClient
       // success
       // load the album list
       //TODO 这里需要设置路径
-      List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(onlyAll: true, type: widget.requestType);
+      List<AssetPathEntity> albums =
+          await PhotoManager.getAssetPathList(hasAll: true, onlyAll: false, type: widget.requestType);
       print(albums);
       _mediaAmount = albums[0].assetCount;
+      context.read<SelectedMapNotifier>().setFolderName(albums[0].name);
       //TODO 需要完善翻页机制
       List<AssetEntity> media =
-      await albums[0].getAssetListRange(start: _galleryList.length, end: _galleryList.length + _galleryPageSize);
+          await albums[0].getAssetListRange(start: _galleryList.length, end: _galleryList.length + _galleryPageSize);
       print(media);
       //FIXME 会闪一下
       setState(() {
@@ -77,9 +78,12 @@ class _GalleryGridState extends State<GalleryGrid> with AutomaticKeepAliveClient
     print("屏幕宽为：$screenWidth");
     _itemSize = (screenWidth - _itemMargin * (_horizontalCount - 1)) / _horizontalCount;
     print("item宽为：$_itemSize");
-    return ChangeNotifierProvider(
-      create: (_) => _SelectedMapNotifier(widget.maxImageAmount, widget.maxVideoAmount),
-      child: GridView.builder(
+    return Scaffold(
+      appBar: AppBar(title: Builder(builder: (context) {
+        // return Text(context.watch<_SelectedMapNotifier>().folderName);
+        return Text(context.select((SelectedMapNotifier value) => value.folderName));
+      })),
+      body: GridView.builder(
           itemCount: _galleryList.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: _horizontalCount,
@@ -109,16 +113,16 @@ class _GalleryGridState extends State<GalleryGrid> with AutomaticKeepAliveClient
                         Positioned(
                           top: 10,
                           right: 10,
-                          child: context.watch<_SelectedMapNotifier>().selectedMap.containsKey(entity.id)
+                          child: context.watch<SelectedMapNotifier>().selectedMap.containsKey(entity.id)
                               ? Text(
-                            context.watch<_SelectedMapNotifier>().selectedMap[entity.id].order.toString(),
-                            style: TextStyle(color: Colors.white, fontSize: 18),
-                          )
+                                  context.watch<SelectedMapNotifier>().selectedMap[entity.id].order.toString(),
+                                  style: TextStyle(color: Colors.white, fontSize: 18),
+                                )
                               : Icon(
-                            Icons.add_circle_outline,
-                            size: 20,
-                            color: Colors.white,
-                          ),
+                                  Icons.add_circle_outline,
+                                  size: 20,
+                                  color: Colors.white,
+                                ),
                         ),
                         Positioned(
                           bottom: 10,
@@ -127,8 +131,8 @@ class _GalleryGridState extends State<GalleryGrid> with AutomaticKeepAliveClient
                             entity.type == AssetType.image
                                 ? "I"
                                 : entity.type == AssetType.video
-                                ? "V"
-                                : "",
+                                    ? "V"
+                                    : "",
                             style: TextStyle(color: Colors.white, fontSize: 18),
                           ),
                         )
@@ -150,7 +154,7 @@ class _GalleryGridState extends State<GalleryGrid> with AutomaticKeepAliveClient
     print("点了第$index张图");
     AssetEntity entity = _galleryList[index];
     entity.file.then((value) => print(entity.id + ":" + value.uri.toString()));
-    context.read<_SelectedMapNotifier>().handleMapChange(entity);
+    context.read<SelectedMapNotifier>().handleMapChange(entity);
   }
 }
 
@@ -161,11 +165,15 @@ class _OrderedAssetEntity {
   AssetEntity entity;
 }
 
-class _SelectedMapNotifier with ChangeNotifier {
-  _SelectedMapNotifier(this.maxImageAmount, this.maxVideoAmount);
+class SelectedMapNotifier with ChangeNotifier {
+  SelectedMapNotifier(this.maxImageAmount, this.maxVideoAmount);
 
   int maxImageAmount;
   int maxVideoAmount;
+
+  String _folderName = "";
+
+  String get folderName => _folderName;
 
   // 所选类型只能有一种
   AssetType _selectedType;
@@ -207,8 +215,8 @@ class _SelectedMapNotifier with ChangeNotifier {
     int maxAmount = _selectedType == AssetType.image
         ? maxImageAmount
         : _selectedType == AssetType.video
-        ? maxVideoAmount
-        : 1;
+            ? maxVideoAmount
+            : 1;
     return _selectedMap.length >= maxAmount;
   }
 
@@ -226,5 +234,10 @@ class _SelectedMapNotifier with ChangeNotifier {
       _addToSelectedMap(entity);
       notifyListeners();
     }
+  }
+
+  setFolderName(String name) {
+    _folderName = name;
+    notifyListeners();
   }
 }
