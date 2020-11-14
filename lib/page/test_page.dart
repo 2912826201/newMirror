@@ -136,7 +136,10 @@ class _TestState extends State<TestPage> {
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return MediaPickerPage(9, MediaType.imageAndVideo);
-                  }));
+                  })).then((result) {
+                    Map map = result as Map;
+                    print(map.toString());
+                  });
                 },
                 child: Text("选图片视频"),
               ),

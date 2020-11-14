@@ -27,10 +27,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       // title: 'Flutter Demo',
-      // theme: ThemeData(
-      //   primarySwatch: Colors.blue,
-      //   visualDensity: VisualDensity.adaptivePlatformDensity,
-      // ),
+      theme: ThemeData(
+        // primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
       home: MainPage(),
       //通过统一方法处理页面跳转路由
       onGenerateRoute: (RouteSettings settings) => AppRouter.dispatchRoute(settings),

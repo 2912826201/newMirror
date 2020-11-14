@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:provider/provider.dart';
 import 'package:photo_manager/photo_manager.dart';
 
@@ -6,7 +7,7 @@ import 'package:photo_manager/photo_manager.dart';
 /// Created by yangjiayi on 2020/11/12.
 
 int _horizontalCount = 4;
-double _itemMargin = 2;
+double _itemMargin = 0;
 double _itemSize = 0;
 int _galleryPageSize = 100;
 
@@ -79,10 +80,38 @@ class _GalleryGridState extends State<GalleryGrid> with AutomaticKeepAliveClient
     _itemSize = (screenWidth - _itemMargin * (_horizontalCount - 1)) / _horizontalCount;
     print("item宽为：$_itemSize");
     return Scaffold(
-      appBar: AppBar(title: Builder(builder: (context) {
-        // return Text(context.watch<_SelectedMapNotifier>().folderName);
-        return Text(context.select((SelectedMapNotifier value) => value.folderName));
-      })),
+      appBar: AppBar(
+        backgroundColor: AppColor.bgBlack,
+        title: Builder(builder: (context) {
+          return Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Expanded(
+                child: Text(context.select((SelectedMapNotifier value) => value.folderName)),
+              ),
+              GestureDetector(
+                onTap: () {
+                  Map<String, _OrderedAssetEntity> result = context.read<SelectedMapNotifier>().selectedMap;
+                  if (!result.isEmpty) {
+                    Navigator.pop(context, result);
+                  }
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  height: 28,
+                  width: 60,
+                  decoration: BoxDecoration(
+                      color: context.select((SelectedMapNotifier value) => value.selectedMap.isEmpty)
+                          ? AppColor.bgWhite
+                          : AppColor.mainRed,
+                      borderRadius: BorderRadius.circular(14)),
+                  child: Text("完成", style: TextStyle(color: AppColor.white, fontSize: 14)),
+                ),
+              )
+            ],
+          );
+        }),
+      ),
       body: GridView.builder(
           itemCount: _galleryList.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
