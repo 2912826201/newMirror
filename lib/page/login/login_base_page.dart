@@ -1,21 +1,26 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-abstract class BasePageBehavior{
+abstract class BasePageBehavior {
   uiInitialization();
+
   dataInitialization();
 }
-abstract class SteeringPageCapabilities extends BasePageBehavior{
+
+abstract class SteeringPageCapabilities extends BasePageBehavior {
   back();
+
   then();
+
   skip();
 }
 
- class LogRegisterBasePageState extends State<StatefulWidget> implements SteeringPageCapabilities{
+class LoginBasePageState extends State<StatefulWidget> implements SteeringPageCapabilities {
   FlatButton popBtn;
   FlatButton skipBtn;
   int popBtnOpaque = 0;
   int skitBtnOpaque = 0;
+
   @override
   void initState() {
     super.initState();
@@ -24,21 +29,16 @@ abstract class SteeringPageCapabilities extends BasePageBehavior{
   }
 
   @mustCallSuper
-  uiInitialization(){
+  uiInitialization() {
     popBtn = FlatButton(onPressed: back, child: null);
     skipBtn = FlatButton(onPressed: skip, child: null);
   }
 
   @mustCallSuper
-  dataInitialization(){
-
-  }
+  dataInitialization() {}
 
   @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
-  }
+  Widget build(BuildContext context) {}
 
   @override
   @mustCallSuper
@@ -47,13 +47,8 @@ abstract class SteeringPageCapabilities extends BasePageBehavior{
   }
 
   @override
-  skip() {
-  }
+  skip() {}
 
   @override
-  then() {
-  }
-
-
-
+  then() {}
 }

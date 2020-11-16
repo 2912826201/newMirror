@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 /// color
 /// Created by yangjiayi on 2020/11/12.
 
+// 根据蓝湖上设计规范内容更新
 class AppColor {
   //MR 主题红
   static const mainRed = Color.fromRGBO(0xFF, 0x40, 0x59, 1.0);
