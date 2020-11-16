@@ -25,8 +25,9 @@ class DBHelper {
   }
 }
 
+//TODO 创建数据库的方法需要根据需要写好
 Future<void> _createDB(Database db, int version) async {
-  return await db.execute("create table user (" +
+  return await db.execute("create table profile (" +
       "uid bigint(20) primary key," +
       "userName varchar(128) not null," +
       "avatarUri varchar(256) not null)");

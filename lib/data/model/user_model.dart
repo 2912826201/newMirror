@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 /// user_model
 /// Created by yangjiayi on 2020/10/29.
 
@@ -11,10 +9,10 @@ class UserModel {
 
   UserModel({this.uid, this.userName, this.avatarUri});
 
-  UserModel.fromJson(Map<String, dynamic> jsonMap) {
-    uid = jsonMap["uid"];
-    userName = jsonMap["userName"];
-    avatarUri = jsonMap["avatarUri"];
+  UserModel.fromJson(Map<String, dynamic> json) {
+    uid = json["uid"];
+    userName = json["userName"];
+    avatarUri = json["avatarUri"];
   }
 
   Map<String, dynamic> toJson() {
