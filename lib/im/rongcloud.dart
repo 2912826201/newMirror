@@ -1,6 +1,6 @@
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
-import '../config.dart';
+import '../config/config.dart';
 
 /// rongcloud
 /// Created by yangjiayi on 2020/11/2.

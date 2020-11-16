@@ -1,10 +1,11 @@
+import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/page/main_page.dart';
 import 'package:provider/provider.dart';
 
 import 'api/user_api.dart';
+import 'config/application.dart';
 import 'data/notifier/user_notifier.dart';
-import 'router.dart';
+import 'route/router.dart';
 
 void main() {
   _initApp().then((value) => runApp(
@@ -22,7 +23,18 @@ Future _initApp() async {
   //TODO 初始化融云IM 无法在runApp之前执行 需要进一步研究
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  MyAppState createState() => MyAppState();
+}
+
+class MyAppState extends State<MyApp> {
+  MyAppState() {
+    final router = FluroRouter();
+    AppRouter.configureRouter(router);
+    Application.router = router;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -31,9 +43,8 @@ class MyApp extends StatelessWidget {
         // primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MainPage(),
       //通过统一方法处理页面跳转路由
-      onGenerateRoute: (RouteSettings settings) => AppRouter.dispatchRoute(settings),
+      onGenerateRoute: Application.router.generator,
     );
   }
 }
@@ -84,14 +95,14 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Text("跳转到测试页"),
               textColor: Colors.orangeAccent,
               onPressed: () {
-                AppRouter.goToTestPage(context);
+                // AppRouter.goToTestPage(context);
               },
             ),
             FlatButton(
               child: Text("跳转到融云测试页"),
               textColor: Colors.orangeAccent,
               onPressed: () {
-                AppRouter.goToRCTestPage(context);
+                // AppRouter.goToRCTestPage(context);
               },
             ),
             Text(

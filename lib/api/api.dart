@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:mirror/data/model/base_response_model.dart';
-import '../config.dart';
+import '../config/config.dart';
 
 /// api
 /// Created by yangjiayi on 2020/10/26.

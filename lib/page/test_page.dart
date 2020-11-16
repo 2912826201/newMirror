@@ -8,6 +8,7 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/user_notifier.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/qiniu_test_page.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:provider/provider.dart';
 
@@ -134,9 +135,7 @@ class _TestState extends State<TestPage> {
               ),
               RaisedButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return MediaPickerPage(9, MediaType.imageAndVideo);
-                  })).then((result) {
+                  AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, (result) {
                     Map map = result as Map;
                     print(map.toString());
                   });
@@ -150,6 +149,12 @@ class _TestState extends State<TestPage> {
                   }));
                 },
                 child: Text("七牛上传测试"),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  AppRouter.navigateToRCTestPage(context, context.read<UserNotifier>().user);
+                },
+                child: Text("Fluro跳转传参测试"),
               ),
             ],
           ),

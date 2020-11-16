@@ -12,13 +12,14 @@ int _photoIndex = 1; // 拍照
 int _videoIndex = 2; // 拍视频
 
 //限定一下文件类型的入参范围
-enum MediaType { image, imageAndVideo }
+int typeImage = 0;
+int typeImageAndVideo = 1;
 
 class MediaPickerPage extends StatefulWidget {
   MediaPickerPage(this.maxImageAmount, this.mediaType, {Key key}) : super(key: key);
 
   final int maxImageAmount;
-  final MediaType mediaType;
+  final int mediaType;
 
   @override
   _MediaPickerState createState() => _MediaPickerState();
@@ -39,7 +40,7 @@ class _MediaPickerState extends State<MediaPickerPage> {
             create: (_) => SelectedMapNotifier(widget.maxImageAmount, 1),
             child: GalleryGrid(
               maxImageAmount: widget.maxImageAmount,
-              requestType: widget.mediaType == MediaType.imageAndVideo ? RequestType.common : RequestType.image,
+              requestType: widget.mediaType == typeImageAndVideo ? RequestType.common : RequestType.image,
             )));
     _pageList.add(Container(
       color: Colors.grey,

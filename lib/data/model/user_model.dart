@@ -11,8 +11,7 @@ class UserModel {
 
   UserModel({this.uid, this.userName, this.avatarUri});
 
-  UserModel.fromJson(String jsonStr) {
-    Map<String, dynamic> jsonMap = json.decode(jsonStr);
+  UserModel.fromJson(Map<String, dynamic> jsonMap) {
     uid = jsonMap["uid"];
     userName = jsonMap["userName"];
     avatarUri = jsonMap["avatarUri"];
