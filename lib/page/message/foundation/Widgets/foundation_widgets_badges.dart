@@ -2,18 +2,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 //消息数量提示视图
-class Badge extends StatefulWidget{
+class MPBadge extends StatefulWidget{
   final int count;
   final int maxCount ;
-  Badge({Key key,this.count,int maxNum}):this.maxCount = (maxNum ??= 99),super(key: key);
+  MPBadge({Key key,this.count,int maxNum}):this.maxCount = (maxNum ??= 99),super(key: key);
   @override
   State<StatefulWidget> createState() {
-   return _BadgeState();
+   return _MPBadgeState();
   }
 
 }
 
-class _BadgeState extends State<Badge>{
+class _MPBadgeState extends State<MPBadge>{
   @override
   Widget build(BuildContext context) {
    return Container(

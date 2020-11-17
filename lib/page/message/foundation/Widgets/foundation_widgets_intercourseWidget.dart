@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 //点赞\评论点击控件
-class IntercourseWidget extends StatefulWidget{
+class MPIntercourseWidget extends StatefulWidget{
   final String backImage;
   final Text title;
   final int badges;
@@ -8,7 +8,7 @@ class IntercourseWidget extends StatefulWidget{
   final VoidCallback onTap;
   final double width;
   final double height;
-  IntercourseWidget({Key key,
+  MPIntercourseWidget({Key key,
     this.backImage,
     this.title,
     this.badges,
@@ -19,11 +19,11 @@ class IntercourseWidget extends StatefulWidget{
   }):super(key: key);
   @override
   State<StatefulWidget> createState() {
-   return _IntercourseWidgetState();
+   return _MPIntercourseWidgetState();
   }
 
 }
-class _IntercourseWidgetState extends State<IntercourseWidget>{
+class _MPIntercourseWidgetState extends State<MPIntercourseWidget>{
   final _maxBadgesNum = 99;
   @override
   Widget build(BuildContext context) {

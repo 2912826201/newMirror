@@ -1,10 +1,9 @@
 import 'package:flutter/cupertino.dart';
 
-class EmergentBanner extends StatelessWidget{
+class MPEmergentBanner extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     throw UnimplementedError();
   }
-
 }
