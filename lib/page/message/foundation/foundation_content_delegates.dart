@@ -9,6 +9,8 @@ abstract class MPUiProvider{
   Widget mainContent();
   //断网时横幅
   Widget loseConnectionBanner();
+  //通知开启提醒的横幅
+  Widget notificationBanner();
   //突发型横幅（位于聊天列表上方）
   Widget emergentBanner();
 }
