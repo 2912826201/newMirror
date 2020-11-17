@@ -8,8 +8,7 @@ abstract class MPBusiness {
   void eventsDidCome<T extends MPIntercourses>(T type);
   //消息事件
   void msgDidCome<T extends MPChatVarieties>(T type);
-  //通知开启消息
-  void activateNotification();
+
 }
 // //评论事件
 // void commentEvent();
