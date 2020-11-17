@@ -10,7 +10,7 @@ abstract class MPUiProvider{
   //断网时横幅
   Widget loseConnectionBanner();
   //突发型横幅（位于聊天列表上方）
-  Widget emergencyBanner();
+  Widget emergentBanner();
 }
 //数据源
 abstract class MPModuleDataSource{

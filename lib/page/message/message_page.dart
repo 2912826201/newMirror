@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
-import 'package:mirror/page/message/foundation/foundation_network.dart';
+import 'package:mirror/page/message/foundation/foundation_network_events.dart';
 import 'foundation/foundation_hooks.dart';
 import 'foundation/foundation_message_types.dart';
 import 'foundation/foundation_RegularEvents.dart';
 import 'foundation/foundation_business.dart';
-import 'foundation/foundation_delegates.dart';
+import 'foundation/foundation_content_delegates.dart';
 import 'foundation/foundation_frame.dart';
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -79,6 +79,11 @@ class _MessagePageState extends State<MessagePage> implements MPBasements,MPHook
   @override
   void connecting() {
     // TODO: implement connecting
+  }
+
+  @override
+  void activateNotification() {
+    // TODO: implement activateNotification
   }
 
 }

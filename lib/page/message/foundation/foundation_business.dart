@@ -4,12 +4,12 @@ import 'package:mirror/page/message/foundation/foundation_message_types.dart';
 
 //消息页业务行为
 abstract class MPBusiness {
-
   //社交事件
   void eventsDidCome<T extends MPIntercourses>(T type);
   //消息事件
   void msgDidCome<T extends MPChatVarieties>(T type);
-
+  //通知开启消息
+  void activateNotification();
 }
 // //评论事件
 // void commentEvent();
