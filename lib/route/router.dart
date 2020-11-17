@@ -48,10 +48,13 @@ class AppRouter {
   }
 
   static void navigateToMediaPickerPage(
-      BuildContext context, int maxImageAmount, int mediaType, Function(dynamic result) callback) {
+      BuildContext context, int maxImageAmount, int mediaType, bool needCrop, Function(dynamic result) callback,
+      {bool cropOnlySquare}) {
     Map<String, dynamic> map = Map();
     map["maxImageAmount"] = maxImageAmount;
     map["mediaType"] = mediaType;
+    map["needCrop"] = needCrop;
+    map["cropOnlySquare"] = cropOnlySquare;
     _navigateToPage(context, pathMediaPicker, map, callback: callback);
   }
 }

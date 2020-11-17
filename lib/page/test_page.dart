@@ -126,9 +126,9 @@ class _TestState extends State<TestPage> {
               RaisedButton(
                 onPressed: () async {
                   ProfileDto dto = await ProfileDBHelper().queryProfile();
-                  if(dto == null){
+                  if (dto == null) {
                     print("数据库中没有用户");
-                  }else {
+                  } else {
                     UserModel model = dto.toUserModel();
                     print(model.uid.toString() + "," + model.userName + "," + model.avatarUri);
                     Size c = getTextSize("写入数据库", TextStyle(fontSize: 16));
@@ -139,7 +139,7 @@ class _TestState extends State<TestPage> {
               ),
               RaisedButton(
                 onPressed: () {
-                  AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, (result) {
+                  AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, true, (result) {
                     Map map = result as Map;
                     print(map.toString());
                   });

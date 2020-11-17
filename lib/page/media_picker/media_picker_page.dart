@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
 
-import 'gallery_grid.dart';
+import 'gallery_page.dart';
 
 /// media_picker_page
 /// Created by yangjiayi on 2020/11/9.
@@ -16,10 +16,13 @@ int typeImage = 0;
 int typeImageAndVideo = 1;
 
 class MediaPickerPage extends StatefulWidget {
-  MediaPickerPage(this.maxImageAmount, this.mediaType, {Key key}) : super(key: key);
+  MediaPickerPage(this.maxImageAmount, this.mediaType, this.needCrop, {Key key, this.cropOnlySquare = false})
+      : super(key: key);
 
   final int maxImageAmount;
   final int mediaType;
+  final bool needCrop;
+  final bool cropOnlySquare;
 
   @override
   _MediaPickerState createState() => _MediaPickerState();
@@ -38,9 +41,11 @@ class _MediaPickerState extends State<MediaPickerPage> {
         //需要在这里就把provider创建出来，以便页面内的所有context都能在provider下
         ChangeNotifierProvider(
             create: (_) => SelectedMapNotifier(widget.maxImageAmount, 1),
-            child: GalleryGrid(
+            child: GalleryPage(
               maxImageAmount: widget.maxImageAmount,
               requestType: widget.mediaType == typeImageAndVideo ? RequestType.common : RequestType.image,
+              needCrop: widget.needCrop,
+              cropOnlySquare: widget.cropOnlySquare,
             )));
     _pageList.add(Container(
       color: Colors.grey,
