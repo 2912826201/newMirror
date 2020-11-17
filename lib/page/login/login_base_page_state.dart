@@ -9,7 +9,7 @@ abstract class LoginBasePageState extends State<StatefulWidget> {
   var hiddenSkip = true;
   var backBtnImage;
 
-  final _backBtnImage = "assets/images/back.png";
+  final _backBtnImage = "images/test/back.png";
 
   @override
   void initState() {

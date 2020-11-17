@@ -47,7 +47,7 @@ class _LoginPageState extends LoginBasePageState {
   Widget _backImage() {
     return Expanded(
         child: Image.asset(
-      "assets/images/bg.png",
+      "images/test/bg.png",
       fit: BoxFit.cover,
       height: _backImageHeight,
     ));
@@ -177,7 +177,7 @@ class _LoginPageState extends LoginBasePageState {
   Widget _phoneLoginBtn() {
     var t = Container(
       child: Image.asset(
-        'assets/images/281.png',
+        'images/test/281.png',
         fit: BoxFit.contain,
       ),
       width: imageWidthOnBtn,
@@ -201,7 +201,7 @@ class _LoginPageState extends LoginBasePageState {
   Widget _appleLoginBtn() {
     var t = Container(
       child: Image.asset(
-        'assets/images/281.png',
+        'images/test/281.png',
         fit: BoxFit.cover,
       ),
       decoration: BoxDecoration(
@@ -223,7 +223,7 @@ class _LoginPageState extends LoginBasePageState {
   Widget _wechatLoginBtn() {
     var t = Container(
       child: Image.asset(
-        'assets/images/ic_big_share_wechat.png',
+        'images/test/ic_big_share_wechat.png',
         fit: BoxFit.cover,
       ),
       width: imageWidthOnBtn,
@@ -246,7 +246,7 @@ class _LoginPageState extends LoginBasePageState {
   Widget _qqLoginBtn() {
     var t = Container(
       child: Image.asset(
-        'assets/images/ic_big_share_qq.png',
+        'images/test/ic_big_share_qq.png',
       ),
       width: imageWidthOnBtn,
       height: imageWidthOnBtn,

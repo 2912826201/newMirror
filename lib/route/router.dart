@@ -11,7 +11,6 @@ import 'package:mirror/route/route_handler.dart';
 
 class AppRouter {
   static String paramData = "data";
-
   static String pathMain = "/";
   static String pathLogin = "/login";
   static String pathTest = "/test";
@@ -25,7 +24,7 @@ class AppRouter {
     router.define(pathMain, handler: handlerMain);
     router.define(pathRCTest, handler: handlerRCTest);
     router.define(pathMediaPicker, handler: handlerMediaPicker);
-    // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
+    router.define(pathLogin, handler: handlerLogin, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
   }
 
@@ -53,5 +52,8 @@ class AppRouter {
     map["maxImageAmount"] = maxImageAmount;
     map["mediaType"] = mediaType;
     _navigateToPage(context, pathMediaPicker, map, callback: callback);
+  }
+  static void navigatorToLogin(BuildContext context){
+    _navigateToPage(context, pathLogin,{});
   }
 }

@@ -2,21 +2,25 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 abstract class BasePageBehavior {
+  //ui的初始化
   uiInitialization();
-
+  //数据的初始化
   dataInitialization();
 }
 
 abstract class SteeringPageCapabilities extends BasePageBehavior {
+  //返回
   back();
-
+  //下一步
   then();
-
+ //跳过
   skip();
 }
 
 class LoginBasePageState extends State<StatefulWidget> implements SteeringPageCapabilities {
+  //回退按钮
   FlatButton popBtn;
+  //跳过按钮
   FlatButton skipBtn;
   int popBtnOpaque = 0;
   int skitBtnOpaque = 0;

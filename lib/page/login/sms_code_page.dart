@@ -37,7 +37,7 @@ class _SmsCodePageState extends LoginBasePageState {
   //默认的标题颜色
   final _sendSmsOriginTitleColor = Color.fromRGBO(153, 153, 153, 1);
   bool _sendSmsValid = false;
-  final _backImage = "assets/images/cross.png";
+  final _backImage = "images/test/cross.png";
 
   @override
   void initState() {

@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/page/login/sms_code_page.dart';
 
 import 'login_base_page_state.dart';
-import 'phone_binding_page.dart';
+
 
 class PhoneLoginPage extends StatefulWidget {
   @override
@@ -138,7 +139,7 @@ class _PhoneLoginPageState extends LoginBasePageState {
     if (_sendSmsValid == false) {
     } else {
       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-        return PhoneBindingPage();
+        return SmsCodePage(phoneNumber:this.inputController.text,);
       }));
     }
   }
