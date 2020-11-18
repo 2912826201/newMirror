@@ -8,8 +8,8 @@ import '../config/config.dart';
 /// Created by yangjiayi on 2020/10/26.
 
 //超时时长 单位毫秒
-const int CONNECT_TIMEOUT = 10000;
-const int RECEIVE_TIMEOUT = 20000;
+const int _CONNECT_TIMEOUT = 10000;
+const int _RECEIVE_TIMEOUT = 20000;
 
 //服务端接口返回code
 const int CODE_SERVER_ERROR = 500;
@@ -41,8 +41,8 @@ Dio _getDioInstance() {
   if (_dio == null) {
     _dio = Dio();
     _dio.options.baseUrl = AppConfig.getApiHost();
-    _dio.options.connectTimeout = CONNECT_TIMEOUT;
-    _dio.options.receiveTimeout = RECEIVE_TIMEOUT;
+    _dio.options.connectTimeout = _CONNECT_TIMEOUT;
+    _dio.options.receiveTimeout = _RECEIVE_TIMEOUT;
     //TODO 还需要更多详细的参数
     //设置拦截器用于打印log
     _dio.interceptors.add(_LogInterceptors());

@@ -26,5 +26,10 @@ var handlerRCTest = Handler(handlerFunc: (BuildContext context, Map<String, List
 
 var handlerMediaPicker = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return MediaPickerPage(data["maxImageAmount"], data["mediaType"]);
+  return MediaPickerPage(
+    data["maxImageAmount"],
+    data["mediaType"],
+    data["needCrop"],
+    cropOnlySquare: data["cropOnlySquare"],
+  );
 });
