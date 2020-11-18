@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mirror/page/message/foundation/foundation_regular_events.dart';
-import 'package:mirror/page/message/foundation/foundation_message_types.dart';
+import 'package:mirror/page/message/foundation/regular_events.dart';
+import 'package:mirror/page/message/foundation/message_types.dart';
 //UI的构成
 abstract class MPUiProvider{
   //导航栏

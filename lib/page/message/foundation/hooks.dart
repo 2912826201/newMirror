@@ -1,7 +1,7 @@
 
 
-import 'foundation_regular_events.dart';
-import 'foundation_message_types.dart';
+import 'regular_events.dart';
+import 'message_types.dart';
 //消息页逻辑埋点行为
 abstract class MPHookFunc {
   //新聊天来临时
