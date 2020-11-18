@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
-import 'package:mirror/page/message/foundation/system_service_events.dart';
-import 'foundation/hooks.dart';
-import 'foundation/message_types.dart';
-import 'foundation/regular_events.dart';
-import 'foundation/business.dart';
-import 'foundation/content_delegates.dart';
-import 'foundation/frame.dart';
+import 'package:mirror/page/message/delegate/system_service_events.dart';
+import 'delegate/hooks.dart';
+import 'delegate/message_types.dart';
+import 'delegate/regular_events.dart';
+import 'delegate/business.dart';
+import 'delegate/content_delegates.dart';
+import 'delegate/frame.dart';
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class MessagePage extends StatefulWidget {

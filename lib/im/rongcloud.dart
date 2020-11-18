@@ -1,3 +1,5 @@
+import 'package:mirror/im/rongcloud_receive_manager.dart';
+import 'package:mirror/im/rongcloud_status_manager.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import '../config/config.dart';
@@ -16,7 +18,19 @@ _RongCloudCore _getCore() {
   return _core;
 }
 
-class RongCloud {
+abstract class RongCloud {
+  static RongCloud _me;
+  static RongCloud shareInstance(){
+    if (_me==null){
+      _me = _getCore();
+      _me.statusManager = RongCloudStatusManager.shareInstance();
+      _me.receiveManager = RongCloudReceiveManager.shareInstance();
+    }
+    return _me;
+  }
+  //关联一下融云状态管理和消息接受管理
+  RongCloudStatusManager statusManager;
+  RongCloudReceiveManager receiveManager;
   //连接融云服务器
   void connect(String token, Function(int code, String userId) finished) {
     _getCore()._connect(token, finished);
@@ -27,16 +41,16 @@ class RongCloud {
   }
 }
 
-class _RongCloudCore {
+class _RongCloudCore extends RongCloud{
   void _init() {
     RongIMClient.init(AppConfig.getRCAppKey());
-  }
 
+  }
   void _connect(String token, Function(int code, String userId) finished) {
     RongIMClient.connect(token, finished);
   }
-
   void _disconnect() {
     RongIMClient.disconnect(false);
   }
+
 }

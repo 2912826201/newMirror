@@ -1,6 +1,6 @@
 
-import 'package:mirror/page/message/foundation/regular_events.dart';
-import 'package:mirror/page/message/foundation/message_types.dart';
+import 'package:mirror/page/message/delegate/regular_events.dart';
+import 'package:mirror/page/message/delegate/message_types.dart';
 
 //消息页业务行为
 abstract class MPBusiness {
