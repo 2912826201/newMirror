@@ -1,4 +1,6 @@
-//消息页的网络处理
+
+//消息页的系统服务事件
+
 abstract class MPNetworkEvents{
     //断网时
     void loseConnection();
@@ -6,6 +8,6 @@ abstract class MPNetworkEvents{
     void reconnected();
     //进行连接
     void connecting();
-    //通知开启消息
+    //通知开启消息提示
     void activateNotification();
 }

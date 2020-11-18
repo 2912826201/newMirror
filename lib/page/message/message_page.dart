@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:mirror/page/message/foundation/foundation_system_service_events.dart';
 import 'foundation/foundation_hooks.dart';
 import 'foundation/foundation_message_types.dart';
-import 'foundation/foundation_RegularEvents.dart';
+import 'foundation/foundation_regular_events.dart';
 import 'foundation/foundation_business.dart';
 import 'foundation/foundation_content_delegates.dart';
 import 'foundation/foundation_frame.dart';

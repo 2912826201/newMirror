@@ -1,6 +1,6 @@
 
 
-import 'foundation_RegularEvents.dart';
+import 'foundation_regular_events.dart';
 import 'foundation_message_types.dart';
 //消息页逻辑埋点行为
 abstract class MPHookFunc {

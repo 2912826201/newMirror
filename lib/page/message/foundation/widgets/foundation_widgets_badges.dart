@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+
 //消息数量提示视图
+
 class MPBadge extends StatefulWidget{
   final int count;
   final int maxCount ;
@@ -14,6 +16,7 @@ class MPBadge extends StatefulWidget{
 }
 
 class _MPBadgeState extends State<MPBadge>{
+
   @override
   Widget build(BuildContext context) {
    return Container(

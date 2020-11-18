@@ -1,5 +1,5 @@
 
-import 'package:mirror/page/message/foundation/foundation_RegularEvents.dart';
+import 'package:mirror/page/message/foundation/foundation_regular_events.dart';
 import 'package:mirror/page/message/foundation/foundation_message_types.dart';
 
 //消息页业务行为
