@@ -3,6 +3,7 @@ import 'package:mirror/page/home/home_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/page/message/message_page.dart';
 import 'package:mirror/page/test_page.dart';
+import 'package:mirror/util/screen_util.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({Key key}) : super(key: key);
@@ -36,23 +37,30 @@ class MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     double itemWidth = MediaQuery.of(context).size.width / 5;
+    // 初始化获取屏幕数据
+    ScreenUtil.init(maxPhysicalSize: MediaQuery.of(context).size.width);
+    print(ScreenUtil.instance.screenWidthDp);
+    print("加那架飞机安检房价按房间安静房价按房间安静房间啊");
     return Scaffold(
+      // 此属性是重新计算布局空间大小
+      // 内部元素要监听键盘高度必需要设置为false,
+      resizeToAvoidBottomInset:false,
       bottomNavigationBar: BottomAppBar(
         child: Row(children: <Widget>[
           Expanded(
-            child: SizedBox(height: 49, width: itemWidth, child: tabbar(0)),
+            child: SizedBox(height: 51, width: itemWidth, child: tabbar(0)),
             flex: 1,
           ),
           Expanded(
-            child: SizedBox(height: 49, width: itemWidth, child: tabbar(1)),
+            child: SizedBox(height: 51, width: itemWidth, child: tabbar(1)),
             flex: 1,
           ),
           Expanded(
-            child: SizedBox(height: 49, width: itemWidth, child: tabbar(2)),
+            child: SizedBox(height: 51, width: itemWidth, child: tabbar(2)),
             flex: 1,
           ),
           Expanded(
-            child: SizedBox(height: 49, width: itemWidth, child: tabbar(3)),
+            child: SizedBox(height: 51, width: itemWidth, child: tabbar(3)),
             flex: 1,
           )
         ]),
@@ -64,11 +72,11 @@ class MainPageState extends State<MainPage> {
   // 自定义BottomAppBar
   Widget tabbar(int index) {
     //设置默认未选中的状态
-    TextStyle style = TextStyle(fontSize: 16, color: Colors.black);
+    TextStyle style = TextStyle(fontSize: 15, color: Colors.black);
     String imgUrl = normalImgUrls[index];
     if (currentIndex == index) {
       //选中的话
-      style = TextStyle(fontSize: 16, color: Colors.white);
+      style = TextStyle(fontSize: 15, color: Colors.white);
       imgUrl = selectedImgUrls[index];
     }
     //构造返回的Widget
@@ -80,15 +88,16 @@ class MainPageState extends State<MainPage> {
           GestureDetector(
             child: Card(
               elevation: 0,
-              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
+              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16.0))),
               color: currentIndex == index ? Colors.redAccent : Colors.transparent,
               child: Container(
-                padding: EdgeInsets.all(8),
+                padding: EdgeInsets.only(top:2,bottom: 2,left: 7.5,right: 7.5),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Image.asset(imgUrl, width: 25, height: 25),
+                    Image.asset(imgUrl, width: 28, height: 28),
                     Container(
-                        margin: EdgeInsets.only(left: 4),
+                        margin: EdgeInsets.only(left: 6),
                         child: Offstage(
                           offstage: currentIndex != index,
                           child: Text(

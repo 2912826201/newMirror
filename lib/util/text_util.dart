@@ -8,3 +8,18 @@ Size getTextSize(String text, TextStyle style) {
     ..layout(minWidth: 0, maxWidth: double.infinity);
   return textPainter.size;
 }
+double calculateTextWidth(
+    String value, fontSize, FontWeight fontWeight, double maxWidth, int maxLines) {
+  TextPainter painter = TextPainter(
+      maxLines: maxLines,
+      textDirection: TextDirection.ltr,
+      text: TextSpan(
+          text: value,
+          style: TextStyle(
+            fontWeight: fontWeight,
+            fontSize: fontSize,
+          )));
+  painter.layout(maxWidth: maxWidth);
+  ///文字的宽度:painter.width
+  return painter.width;
+}

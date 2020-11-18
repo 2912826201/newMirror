@@ -10,6 +10,7 @@ class ScreenUtil {
     this.allowFontScaling = false,
     // dp
     this.maxPhysicalSize = 480,
+
   });
 
   static void init(
@@ -26,6 +27,7 @@ class ScreenUtil {
   double height;
   bool allowFontScaling; // 是否允许字体缩放
   double maxPhysicalSize; // 最高尺寸
+  double inputHeight;
   /**
    *  手机屏幕的物理分辨率
    */
@@ -75,6 +77,9 @@ class ScreenUtil {
 
   ///状态栏高度 dp 刘海屏会更高
   double get statusBarHeight => _statusBarHeight;
+
+  // 键盘高度
+  double get statusInputHeight => inputHeight;
 
   ///底部安全区距离 dp
   double get bottomBarHeight => _bottomBarHeight;
