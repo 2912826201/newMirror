@@ -950,7 +950,7 @@ class CommentBottomListViewState extends State<CommentBottomListView> {
       // ),
       MyRichTextWidget(
         Text(
-          "LIUWEN 很喜欢这节课已经练习过55次了加油加油加油加油加油加油加油。",
+          "LIUWEN 很喜欢这节课已经练习过55次了加油加油加油加油加油加油加油啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦了。",
           overflow: TextOverflow.visible,
           style: TextStyle(
               fontSize: 14,
