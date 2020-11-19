@@ -38,8 +38,6 @@ abstract class RongCloudStatusManager{
   void cancelSpecificNotification<T extends RCStatusDelegate >(int status,T target);
   //取消所有通知
   void cancelNotifications<T extends RCStatusDelegate >(T target);
-  //状态变化
-  void _statusChange(int currentStatus);
   static RongCloudStatusManager _me;
   //单例构造函数
   static RongCloudStatusManager shareInstance(){
@@ -56,18 +54,26 @@ class _RongCloudStatusManager extends RongCloudStatusManager{
   }
   //初始化
   _init(){
+    _rongCloudStatusResponse();
+    _alloc();
+  }
+  //融云回调
+  _rongCloudStatusResponse(){
     //和融云sdk状态回调挂钩
     RongIMClient.onConnectionStatusChange = (int connectionStatus){
       _statusChange(connectionStatus);
     };
+  }
+  //分配相关资源
+  _alloc(){
     //
     for(int i = RCConnectionStatus.Connected;i<=RCConnectionStatus.Timeout;i++)
-      {
-        //处理区间缺口
-        if  (i>RCConnectionStatus.DisConnected&&i<RCConnectionStatus.Suspend) continue;
-        var t =  ValueNotifier(bool);
-        _callChain[i]=t;
-      }
+    {
+      //处理区间缺口
+      if  (i>RCConnectionStatus.DisConnected&&i<RCConnectionStatus.Suspend) continue;
+      var t =  ValueNotifier(bool);
+      _callChain[i]=t;
+    }
   }
   //回调集合
   Map<RCStatusDelegate,VoidCallback> _closures = Map();
@@ -75,39 +81,8 @@ class _RongCloudStatusManager extends RongCloudStatusManager{
   Map<RCStatusDelegate,Set> _listeners = Map();
   //状态和通知的对应关系
   Map<int,ValueNotifier> _callChain = Map();
-  //状态回调
-  @override
+  //状态变化回调
   void _statusChange(int currentStatus) {
-   //  switch (currentStatus){
-   //    case RCConnectionStatus.Connected:
-   //    
-   //      break;
-   //    case RCConnectionStatus.Connecting:
-   //
-   //      break;
-   //    case RCConnectionStatus.DisConnected:
-   //
-   //      break;
-   //    case RCConnectionStatus.KickedByOtherClient:
-   //
-   //      break;
-   //    case RCConnectionStatus.NetworkUnavailable:
-   //
-   //      break;
-   //    case RCConnectionStatus.TokenIncorrect:
-   //
-   //      break;
-   //    case RCConnectionStatus.UserBlocked:
-   //
-   //      break;
-   //    case RCConnectionStatus.Timeout:
-   //
-   //      break;
-   //    case RCConnectionStatus.Suspend:
-   //      break;
-   //    default:
-   //      throw FormatException('Unknown Status');
-   // }
    //触发通知
     _triggerNotification(currentStatus);
   }
@@ -120,7 +95,7 @@ class _RongCloudStatusManager extends RongCloudStatusManager{
     assert((status>=RCConnectionStatus.Connected&&status<=RCConnectionStatus.DisConnected)||(status>=RCConnectionStatus.Suspend&&status<=RCConnectionStatus.Timeout));
     RCStatusDelegate tt = target;
     ValueNotifier nf = _callChain[status];
-    //添加唯一性的回调闭包
+    //添加唯一性的回调闭包，如若需要取消，则需要调用removeListenner
     nf.addListener(_uniqueClosure(target,status));
     if (_listeners[tt] == null){
        Set _set = Set();
@@ -146,9 +121,9 @@ class _RongCloudStatusManager extends RongCloudStatusManager{
      });
     _remove_A_Listener(target);
   }
-
   @override
   void cancelSpecificNotification<T extends RCStatusDelegate>(int status, T target) {
+    assert((status>=RCConnectionStatus.Connected&&status<=RCConnectionStatus.DisConnected)||(status>=RCConnectionStatus.Suspend&&status<=RCConnectionStatus.Timeout));
     _callChain[status].removeListener(_uniqueClosure(target,status));
     _remove_A_Listener(target);
   }

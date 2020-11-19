@@ -39,6 +39,7 @@ abstract class RongCloud {
   void disconnect() {
     _getCore()._disconnect();
   }
+  void imToken();
 }
 
 class _RongCloudCore extends RongCloud{
@@ -51,6 +52,11 @@ class _RongCloudCore extends RongCloud{
   }
   void _disconnect() {
     RongIMClient.disconnect(false);
+  }
+
+  @override
+  void imToken() {
+    // TODO: implement imToken
   }
 
 }
