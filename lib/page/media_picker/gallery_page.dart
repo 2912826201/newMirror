@@ -1,5 +1,9 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/widget/image_cropper.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:provider/provider.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -12,6 +16,7 @@ final double _itemMargin = 0;
 final int _galleryPageSize = 100;
 
 // 相册的选择GridView视图 需要能够区分选择图片或视频 选择图片数量 是否裁剪 裁剪是否只是正方形
+//TODO 目前没有做响应实时相册变化时的处理 完善时可以考虑实现
 class GalleryPage extends StatefulWidget {
   GalleryPage(
       {Key key,
@@ -42,7 +47,15 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
 
   // 当前路径的图片视频数
   int _mediaAmount = 0;
+
+  // 资源实体的列表
   List<AssetEntity> _galleryList = [];
+
+  // 实际资源文件的Map 因AssetEntity获取File是异步的 所以单独把获取后的结果存一下 避免重复耗时获取和减少处理异步回调的工序
+  Map<String, File> _fileMap = {};
+
+  // 资源缩略图的Map 因AssetEntity获取缩略图是异步的 所以单独把获取后的结果存一下 避免重复耗时获取和减少处理异步回调的工序
+  Map<String, Uint8List> _thumbMap = {};
 
   @override
   void initState() {
@@ -82,6 +95,17 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
       /// if result is fail, you can call `PhotoManager.openSetting();`  to open android/ios applicaton's setting to get permission
       _isFetchingData = false;
     }
+
+    // 刷新列表后重置选中项
+    if (widget.needCrop && isNew) {
+      if (_galleryList.isEmpty) {
+        // 列表为空 则清空
+        context.read<SelectedMapNotifier>().setCurrentEntity(null);
+      } else {
+        // 列表不为空 选中第一条
+        context.read<SelectedMapNotifier>().setCurrentEntity(_galleryList.first);
+      }
+    }
   }
 
   @override
@@ -107,37 +131,81 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
   @override
   bool get wantKeepAlive => true;
 
-  //TODO 点击事件 需要区分是本体还是选框
-  _onGridItemTap(BuildContext context, int index) {
-    print("点了第$index张图");
-    AssetEntity entity = _galleryList[index];
-    entity.file.then((value) => print(entity.id + ":" + value.uri.toString()));
+  // item本体点击事件
+  _onGridItemTap(BuildContext context, AssetEntity entity) {
+    if (_fileMap[entity.id] == null) {
+      entity.file.then((value) {
+        _fileMap[entity.id] = value;
+        print(entity.id + ":" + value.path);
+        if (widget.needCrop) {
+          // 裁剪模式需要将其置入裁剪框
+          context.read<SelectedMapNotifier>().setCurrentEntity(entity);
+        } else {
+          //TODO 非裁剪模式跳转展示大图
+        }
+      });
+    } else {
+      print(entity.id + ":" + _fileMap[entity.id].path);
+      if (widget.needCrop) {
+        // 裁剪模式需要将其置入裁剪框
+        context.read<SelectedMapNotifier>().setCurrentEntity(entity);
+      } else {
+        //TODO 非裁剪模式跳转展示大图
+      }
+    }
+  }
+
+  // item选框点击事件
+  //TODO 当点中选框的文件并不是当前预览的文件时 还要将其选中设置预览
+  _onCheckBoxTap(BuildContext context, AssetEntity entity) {
+    entity.file.then((value) => print(entity.id + ":" + value.path));
     context.read<SelectedMapNotifier>().handleMapChange(entity);
   }
 
   Widget _buildGridItem(BuildContext context, int index) {
+    // print("#${index} item loaded");
+    // 当加载到距离list的长度还有一行时 请求下一页数据
+    if (_galleryList.length < _mediaAmount && _galleryList.length - index <= _horizontalCount * 2) {
+      _fetchGalleryData(false);
+    }
     AssetEntity entity = _galleryList[index];
-    return FutureBuilder(
-      future: entity.thumbDataWithSize(_itemSize.toInt(), _itemSize.toInt()),
-      builder: (BuildContext context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          // print("#${index} item loaded");
-          // 当加载到距离list的长度还有一行时 请求下一页数据
-          if (_galleryList.length < _mediaAmount && _galleryList.length - index <= _horizontalCount * 2) {
-            _fetchGalleryData(false);
+    // 一定要返回某种形式的Builder 不然context.select会报错
+    if (_thumbMap[entity.id] == null) {
+      return FutureBuilder(
+        future: entity.thumbDataWithSize(_itemSize.toInt(), _itemSize.toInt()),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            _thumbMap[entity.id] = snapshot.data;
+            return _buildGridItemCell(context, entity);
+          } else {
+            return Container();
           }
-          return GestureDetector(
-              onTap: () => _onGridItemTap(context, index),
-              child: Stack(overflow: Overflow.clip, children: [
-                Image.memory(
-                  snapshot.data,
-                  fit: BoxFit.cover,
-                  height: _itemSize,
-                  width: _itemSize,
-                ),
-                Positioned(
-                  top: 10,
-                  right: 10,
+        },
+      );
+    } else {
+      return Builder(builder: (context) => _buildGridItemCell(context, entity));
+    }
+  }
+
+  Widget _buildGridItemCell(BuildContext context, AssetEntity entity) {
+    return GestureDetector(
+        onTap: () => _onGridItemTap(context, entity),
+        child: Stack(overflow: Overflow.clip, children: [
+          Image.memory(
+            _thumbMap[entity.id],
+            fit: BoxFit.cover,
+            height: _itemSize,
+            width: _itemSize,
+          ),
+          Positioned(
+            top: 10,
+            right: 10,
+            child: GestureDetector(
+                onTap: () => _onCheckBoxTap(context, entity),
+                child: Container(
+                  height: 20,
+                  width: 20,
+                  alignment: Alignment.center,
                   child: context.watch<SelectedMapNotifier>().selectedMap.containsKey(entity.id)
                       ? Text(
                           context.watch<SelectedMapNotifier>().selectedMap[entity.id].order.toString(),
@@ -148,25 +216,32 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                           size: 20,
                           color: Colors.white,
                         ),
-                ),
-                Positioned(
-                  bottom: 10,
-                  right: 10,
-                  child: Text(
-                    entity.type == AssetType.image
-                        ? "I"
-                        : entity.type == AssetType.video
-                            ? "V"
-                            : "",
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                )
-              ]));
-        } else {
-          return Container();
-        }
-      },
-    );
+                )),
+          ),
+          Positioned(
+            bottom: 10,
+            right: 10,
+            child: Text(
+              entity.type == AssetType.image
+                  ? "I"
+                  : entity.type == AssetType.video
+                      ? "V"
+                      : "",
+              style: TextStyle(color: Colors.white, fontSize: 18),
+            ),
+          ),
+          Container(
+              height: _itemSize,
+              width: _itemSize,
+              decoration: BoxDecoration(
+                  border: Border.all(
+                      color: context.select((SelectedMapNotifier notifier) =>
+                          notifier.currentEntity == null || notifier.currentEntity.id != entity.id
+                              ? AppColor.transparent
+                              : AppColor.mainRed),
+                      width: 2,
+                      style: BorderStyle.solid)))
+        ]));
   }
 
   Widget _buildBody() {
@@ -180,14 +255,33 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
               floating: true,
               pinned: false,
               delegate: _PreviewHeaderDelegate(
-                  minHeight: _screenWidth,
-                  maxHeight: _screenWidth,
-                  child: Image(
-                    image: NetworkImage("http://pic1.win4000.com/wallpaper/2020-11-02/5f9f821a8d00a.jpg"),
-                    width: _screenWidth,
-                    height: _screenWidth,
-                    fit: BoxFit.cover,
-                  ))),
+                minHeight: _screenWidth,
+                maxHeight: _screenWidth,
+                child:
+                    // CropperImage(
+                    //   NetworkImage("http://pic1.win4000.com/wallpaper/2020-11-02/5f9f821a8d00a.jpg"),
+                    //   round: 0,
+                    // ),
+                    // context.select((SelectedMapNotifier notifier) => notifier.currentFile == null)
+                    //     ? CropperImage(NetworkImage("http://pic1.win4000.com/wallpaper/2020-11-02/5f9f821a8d00a.jpg"))
+                    //     :
+                    FutureBuilder(
+                  future: context.select((SelectedMapNotifier notifier) =>
+                      notifier.currentEntity == null ? null : notifier.currentEntity.file),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      print(snapshot);
+                      return CropperImage(FileImage(
+                        snapshot.data,
+                      ));
+                    } else {
+                      print(snapshot);
+                      return CropperImage(
+                          NetworkImage("http://pic1.win4000.com/wallpaper/2020-11-02/5f9f821a8d00a.jpg"));
+                    }
+                  },
+                ),
+              )),
           SliverGrid(
               delegate: SliverChildBuilderDelegate(
                 _buildGridItem,
@@ -221,6 +315,10 @@ class SelectedMapNotifier with ChangeNotifier {
   String _folderName = "";
 
   String get folderName => _folderName;
+
+  AssetEntity _currentEntity;
+
+  AssetEntity get currentEntity => _currentEntity;
 
   // 所选类型只能有一种
   AssetType _selectedType;
@@ -285,6 +383,11 @@ class SelectedMapNotifier with ChangeNotifier {
 
   setFolderName(String name) {
     _folderName = name;
+    notifyListeners();
+  }
+
+  setCurrentEntity(AssetEntity entity) {
+    _currentEntity = entity;
     notifyListeners();
   }
 }
