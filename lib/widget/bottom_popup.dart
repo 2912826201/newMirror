@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/util/screen_util.dart';
 
+// 底部弹窗
 class BottomPopup extends StatefulWidget {
   BottomPopup({Key key, this.list, this.onItemClickListener})
       : assert(list != null),

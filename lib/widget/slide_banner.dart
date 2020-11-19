@@ -1,11 +1,12 @@
 import 'dart:async';
 
+import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/screen_util.dart';
-
+// 轮播图
 class SlideBanner extends StatefulWidget {
   SlideBanner({Key key, this.list, this.height}) : super(key: key);
   List<String> list;
@@ -18,7 +19,7 @@ class SlideBanner extends StatefulWidget {
 class _SlideBannerState extends State<SlideBanner> {
   int zindex = 0; //要移入的下标
   Timer timer;
-
+ // 滑动回调
   autoPlay(int index) {
     print("轮播图回调");
     setState(() {
@@ -31,6 +32,40 @@ class _SlideBannerState extends State<SlideBanner> {
     return num * 8.0;
   }
 
+  /// 列表中的每个条目的Widget
+  /// [index] 列表条目对应的索引
+  buildOpenContainerItem(int index) {
+    return OpenContainer(
+      // 动画时长
+      transitionDuration: const Duration(milliseconds: 700),
+      transitionType: ContainerTransitionType.fade,
+      //阴影
+      closedElevation: 0.0,
+      //圆角
+      closedShape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(0.0)),
+      ),
+      ///将要打开的页面
+      openBuilder:
+          (BuildContext context, void Function({Object returnValue}) action) {
+        return Item2Page(PhotoUrl: widget.list ,index: index,);
+      },
+      ///现在显示的页面
+      closedBuilder: (BuildContext context, void Function() action) {
+        ///条目显示的一张图片
+        return buildShowItemContainer(index);
+      },
+    );
+  }
+  // 轮播图图片设置
+  Container buildShowItemContainer(int index) {
+    return Container(
+      child: Image.asset(
+        widget.list [index],
+        fit: BoxFit.cover,
+      ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     final width = ScreenUtil.instance.screenWidthDp;
@@ -44,7 +79,7 @@ class _SlideBannerState extends State<SlideBanner> {
               child: Swiper(
                 itemCount: widget.list.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return new Image.asset(widget.list[index], fit: BoxFit.cover);
+                  return buildOpenContainerItem(index);
                 },
                 loop: widget.list.length > 1,
                 onIndexChanged: (index) {
@@ -96,5 +131,42 @@ class _SlideBannerState extends State<SlideBanner> {
 
       ],
     );
+  }
+}
+
+class Item2Page extends StatefulWidget {
+  List<String> PhotoUrl;
+  int index;
+  Item2Page({Key key,this.PhotoUrl,this.index}) :super (key: key);
+  @override
+  State<StatefulWidget> createState() {
+    return _Item2PageState();
+  }
+}
+
+class _Item2PageState extends State<Item2Page> {
+  @override
+  Widget build(BuildContext context) {
+
+    return Column(
+      children: [
+        Container(
+          child: InkWell(
+            onTap: () {
+              Navigator.of(context).pop(true);
+            },
+            child: Image.asset(
+              widget.PhotoUrl[widget.index],
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        Container(
+          height: 50,
+          color: Colors.red,
+        )
+      ],
+    );
+    ///页面二中的Hero
   }
 }

@@ -57,7 +57,10 @@ dependencies:
   flutter_swiper: ^1.1.6
   # 区分设备
   device_info: ^1.0.0
-
+  # 列表交错动画
+  flutter_staggered_animations: "^0.1.2"
+  # 页面过渡动画此暂时运用到图片过渡
+  animations: ^1.1.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

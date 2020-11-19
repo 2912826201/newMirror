@@ -1,10 +1,12 @@
-/*
- *只有文字的button
- */
+
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+// 自定义按钮
 
+/*
+ *只有文字的button
+ */
 class TextButton extends StatelessWidget {
   const TextButton({
     Key key,

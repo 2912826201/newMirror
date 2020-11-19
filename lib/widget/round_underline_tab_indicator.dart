@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+// 自定义tabbar下滑线
 
 // 未设置Icon时的高度
 const double _kTabHeight = 40.0;
