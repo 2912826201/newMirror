@@ -17,7 +17,7 @@ abstract class MPUiProvider{
 //数据源
 abstract class MPModuleDataSource{
   //会话数据源
-  List chats<T extends MPChatVarieties>(T type);
+  List chats();
   //点赞、评论ui的数据源
-  List operations<T extends MPIntercourses>( T type);
+  List operations();
 }

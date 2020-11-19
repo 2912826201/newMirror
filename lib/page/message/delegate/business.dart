@@ -3,9 +3,11 @@ import 'package:mirror/page/message/delegate/regular_events.dart';
 import 'package:mirror/page/message/delegate/message_types.dart';
 
 //消息页业务行为
-abstract class MPBusiness {
+abstract class MPInterCourses {
   //社交事件
-  void eventsDidCome<T extends MPIntercourses>(T type);
+  void eventsDidCome();
+  //消息来临
+  void imArrived();
 }
 // //评论事件
 // void commentEvent();

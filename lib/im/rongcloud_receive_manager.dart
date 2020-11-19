@@ -1,7 +1,7 @@
 //融云消息接收类,单例
 import 'dart:async';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-//注册监听某种消息类型的接口，需要先进行注册才会收到回调
+//监听消息来到的回调
 abstract class MessageObserver{
   //当注册通知后会受到的消息,第二个参数表示的是是否离线
   Future<void> msgDidCome(Message msg,bool offLine);

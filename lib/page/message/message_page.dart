@@ -17,7 +17,7 @@ class MessagePage extends StatefulWidget {
   }
 }
 
-class _MessagePageState extends State<MessagePage> implements MPBasements,MPHookFunc,MPNetworkEvents,MessageObserver {
+class _MessagePageState extends State<MessagePage> implements MPBasements,MPInterCourses,MPHookFunc,MPNetworkEvents,MessageObserver {
  
   @override
   Widget build(BuildContext context) {
@@ -27,10 +27,8 @@ class _MessagePageState extends State<MessagePage> implements MPBasements,MPHook
   }
   @override
   void initState() {
-    //考虑到此页面可能会涉及到每个消息来临时的处理
+    //考虑到此页面可能会涉及到每个消息来临时的处理,故注册一下
     RongCloudReceiveManager.shareInstance().observeAllMsgs(this);
-
-
 
     super.initState();
   }
@@ -72,7 +70,7 @@ class _MessagePageState extends State<MessagePage> implements MPBasements,MPHook
   }
 
   @override
-  void eventsDidCome<T extends MPIntercourses>(T type) {
+  void eventsDidCome() {
     // TODO: implement eventsDidCome
   }
 
@@ -96,6 +94,11 @@ class _MessagePageState extends State<MessagePage> implements MPBasements,MPHook
   @override
   void activateNotification() {
     // TODO: implement activateNotification
+  }
+
+  @override
+  void imArrived() {
+    // TODO: implement imArrived
   }
 
 }
