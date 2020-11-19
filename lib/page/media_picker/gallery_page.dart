@@ -42,6 +42,8 @@ class GalleryPage extends StatefulWidget {
 class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClientMixin {
   double _screenWidth = 0;
   double _itemSize = 0;
+  double _previewMaxHeight = 0;
+  double _previewMinHeight = 0;
 
   // 是否正在获取数据 防止同时重复请求
   bool _isFetchingData = false;
@@ -117,15 +119,43 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
     print("屏幕宽为：$_screenWidth");
     _itemSize = (_screenWidth - _itemMargin * (_horizontalCount - 1)) / _horizontalCount;
     print("item宽为：$_itemSize");
+    _previewMaxHeight = _screenWidth;
+    _previewMinHeight = _screenWidth / 2;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColor.bgBlack,
         title: _buildAppBar(),
       ),
-      body: ScrollConfiguration(
-        behavior: NoBlueEffectBehavior(),
-        child: _buildBody(),
-      ),
+      body: ChangeNotifierProvider(
+          create: (_) =>
+              _PreviewHeightNotifier(_previewMaxHeight, maxHeight: _previewMaxHeight, minHeight: _previewMinHeight),
+          builder: (context, _) {
+            return Stack(
+              children: [
+                ScrollConfiguration(
+                  behavior: NoBlueEffectBehavior(),
+                  child: _buildScrollBody(),
+                ),
+                Positioned(
+                    top: context.watch<_PreviewHeightNotifier>().previewHeight - _previewMaxHeight,
+                    child: Container(
+                      width: _previewMaxHeight,
+                      height: _previewMaxHeight,
+                      child: Builder(
+                        builder: (context) {
+                          AssetEntity entity = context.select((SelectedMapNotifier notifier) => notifier.currentEntity);
+                          return entity == null
+                              ? Container()
+                              : CropperImage(
+                                  FileImage(_fileMap[entity.id]),
+                                  round: 0,
+                                );
+                        },
+                      ),
+                    ))
+              ],
+            );
+          }),
     );
   }
 
@@ -245,47 +275,61 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
         ]));
   }
 
-  Widget _buildBody() {
+  // 列表界面主体部分
+  Widget _buildScrollBody() {
     if (widget.needCrop) {
       //需要裁剪
-      return CustomScrollView(
-        //禁止回弹效果
-        physics: ClampingScrollPhysics(),
-        slivers: [
-          SliverPersistentHeader(
-              floating: true,
-              pinned: false,
-              delegate: _PreviewHeaderDelegate(
-                minHeight: _screenWidth,
-                maxHeight: _screenWidth,
-                child: Builder(
-                  builder: (context) {
-                    AssetEntity entity = context.select((SelectedMapNotifier notifier) => notifier.currentEntity);
-                    return entity == null
-                        ? Container()
-                        : CropperImage(
-                            FileImage(_fileMap[entity.id]),
-                            round: 0,
-                          );
-                  },
-                ),
-                // CropperImage(
-                //   NetworkImage("http://pic1.win4000.com/wallpaper/2020-11-02/5f9f821a8d00a.jpg"),
-                //   round: 0,
-                // ),
-              )),
-          SliverGrid(
-              delegate: SliverChildBuilderDelegate(
-                _buildGridItem,
-                childCount: _galleryList.length,
-              ),
-              gridDelegate: _galleryGridDelegate())
-        ],
-      );
+      return Builder(builder: (context) {
+        return NotificationListener<ScrollNotification>(
+            onNotification: (ScrollNotification notification) {
+              ScrollMetrics metrics = notification.metrics;
+              // 注册通知回调
+              if (notification is ScrollStartNotification) {
+                // 滚动开始
+              } else if (notification is ScrollUpdateNotification) {
+                // 滚动位置更新
+                // 当前位置
+                // print("metrics.pixels当前值是：${metrics.pixels}");
+                context.read<_PreviewHeightNotifier>().setOffset(metrics.pixels);
+              } else if (notification is ScrollEndNotification) {
+                // 滚动结束
+              }
+              return false;
+            },
+            child: CustomScrollView(
+              //禁止回弹效果
+              physics: ClampingScrollPhysics(),
+              slivers: [
+                SliverPersistentHeader(
+                    floating: true,
+                    pinned: false,
+                    delegate: _PreviewHeaderDelegate(
+                      // 这里就让header是个不可变的高度 所以最小高度传入和最大高度一样
+                      minHeight: _previewMaxHeight,
+                      maxHeight: _previewMaxHeight,
+                      // child:
+                      // CropperImage(
+                      //   NetworkImage("http://pic1.win4000.com/wallpaper/2020-11-02/5f9f821a8d00a.jpg"),
+                      //   round: 0,
+                      // ),
+                    )),
+                SliverGrid(
+                    delegate: SliverChildBuilderDelegate(
+                      _buildGridItem,
+                      childCount: _galleryList.length,
+                    ),
+                    gridDelegate: _galleryGridDelegate())
+              ],
+            ));
+      });
     } else {
       //不需要裁剪
       return GridView.builder(
-          itemCount: _galleryList.length, gridDelegate: _galleryGridDelegate(), itemBuilder: _buildGridItem);
+          //禁止回弹效果
+          physics: ClampingScrollPhysics(),
+          itemCount: _galleryList.length,
+          gridDelegate: _galleryGridDelegate(),
+          itemBuilder: _buildGridItem);
     }
   }
 }
@@ -385,6 +429,39 @@ class SelectedMapNotifier with ChangeNotifier {
   }
 }
 
+class _PreviewHeightNotifier with ChangeNotifier {
+  _PreviewHeightNotifier(this._previewHeight, {@required this.maxHeight, @required this.minHeight});
+
+  double maxHeight;
+  double minHeight;
+
+  double _previewHeight;
+
+  double get previewHeight => _previewHeight;
+
+  double _offset = 0;
+
+  setOffset(double offset) {
+    // 根据滚动距离计算预览框高度
+    // 向上滑动的距离 正即为向上滑 负则为向下滑 0则为没有动
+    double distance = offset - _offset;
+    // 算完后赋值
+    _offset = offset;
+    // 理论上新的高度为旧的高度减去向上滑动的距离
+    double previewHeight = _previewHeight - distance;
+    // 结果如果超出范围 纠正为范围阈值
+    if (previewHeight > maxHeight) {
+      previewHeight = maxHeight;
+    } else if (previewHeight < minHeight) {
+      previewHeight = minHeight;
+    }
+    // 算完后赋值
+    _previewHeight = previewHeight;
+
+    notifyListeners();
+  }
+}
+
 // 构建标题栏
 Widget _buildAppBar() {
   return Builder(builder: (context) {
@@ -432,7 +509,7 @@ class _PreviewHeaderDelegate extends SliverPersistentHeaderDelegate {
   _PreviewHeaderDelegate({
     @required this.minHeight,
     @required this.maxHeight,
-    @required this.child,
+    this.child,
   });
 
   final double minHeight;
@@ -441,6 +518,7 @@ class _PreviewHeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    // print("shrinkOffset当前值是：$shrinkOffset");
     return SizedBox.expand(
       child: child,
     );
