@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/image_cropper.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:provider/provider.dart';
@@ -96,14 +97,14 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
       _isFetchingData = false;
     }
 
-    // 刷新列表后重置选中项
+    // 在裁剪模式中 刷新列表后重置选中项
     if (widget.needCrop && isNew) {
       if (_galleryList.isEmpty) {
         // 列表为空 则清空
         context.read<SelectedMapNotifier>().setCurrentEntity(null);
       } else {
         // 列表不为空 选中第一条
-        context.read<SelectedMapNotifier>().setCurrentEntity(_galleryList.first);
+        _onGridItemTap(context, _galleryList.first);
       }
     }
   }
@@ -111,8 +112,8 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    //TODO 获取屏幕宽高以设置图片大小 获取方法需要统一封装
-    _screenWidth = MediaQuery.of(context).size.width;
+    // 获取屏幕宽以设置各布局大小
+    _screenWidth = ScreenUtil.instance.screenWidthDp;
     print("屏幕宽为：$_screenWidth");
     _itemSize = (_screenWidth - _itemMargin * (_horizontalCount - 1)) / _horizontalCount;
     print("item宽为：$_itemSize");
@@ -257,30 +258,21 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
               delegate: _PreviewHeaderDelegate(
                 minHeight: _screenWidth,
                 maxHeight: _screenWidth,
-                child:
-                    // CropperImage(
-                    //   NetworkImage("http://pic1.win4000.com/wallpaper/2020-11-02/5f9f821a8d00a.jpg"),
-                    //   round: 0,
-                    // ),
-                    // context.select((SelectedMapNotifier notifier) => notifier.currentFile == null)
-                    //     ? CropperImage(NetworkImage("http://pic1.win4000.com/wallpaper/2020-11-02/5f9f821a8d00a.jpg"))
-                    //     :
-                    FutureBuilder(
-                  future: context.select((SelectedMapNotifier notifier) =>
-                      notifier.currentEntity == null ? null : notifier.currentEntity.file),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      print(snapshot);
-                      return CropperImage(FileImage(
-                        snapshot.data,
-                      ));
-                    } else {
-                      print(snapshot);
-                      return CropperImage(
-                          NetworkImage("http://pic1.win4000.com/wallpaper/2020-11-02/5f9f821a8d00a.jpg"));
-                    }
+                child: Builder(
+                  builder: (context) {
+                    AssetEntity entity = context.select((SelectedMapNotifier notifier) => notifier.currentEntity);
+                    return entity == null
+                        ? Container()
+                        : CropperImage(
+                            FileImage(_fileMap[entity.id]),
+                            round: 0,
+                          );
                   },
                 ),
+                // CropperImage(
+                //   NetworkImage("http://pic1.win4000.com/wallpaper/2020-11-02/5f9f821a8d00a.jpg"),
+                //   round: 0,
+                // ),
               )),
           SliverGrid(
               delegate: SliverChildBuilderDelegate(
@@ -298,6 +290,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
   }
 }
 
+// 用来记录排序
 class _OrderedAssetEntity {
   _OrderedAssetEntity(this.order, this.entity);
 
