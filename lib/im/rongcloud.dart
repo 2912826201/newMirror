@@ -32,17 +32,20 @@ abstract class RongCloud {
   RongCloudStatusManager statusManager;
   RongCloudReceiveManager receiveManager;
   //连接融云服务器
-  void connect(String token, Function(int code, String userId) finished) {
+   void connect(String token, Function(int code, String userId) finished) {
     _getCore()._connect(token, finished);
   }
   //断开融云服务器
   void disconnect() {
     _getCore()._disconnect();
   }
+   //获取当前用户的融云token，是从服务端进行获取的
   void imToken();
+   //
 }
 
 class _RongCloudCore extends RongCloud{
+
   void _init() {
     RongIMClient.init(AppConfig.getRCAppKey());
 
@@ -56,7 +59,7 @@ class _RongCloudCore extends RongCloud{
 
   @override
   void imToken() {
-    // TODO: implement imToken
+
   }
 
 }

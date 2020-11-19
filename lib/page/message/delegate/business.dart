@@ -6,9 +6,6 @@ import 'package:mirror/page/message/delegate/message_types.dart';
 abstract class MPBusiness {
   //社交事件
   void eventsDidCome<T extends MPIntercourses>(T type);
-  //消息事件
-  void msgDidCome<T extends MPChatVarieties>(T type);
-
 }
 // //评论事件
 // void commentEvent();

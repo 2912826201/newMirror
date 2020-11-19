@@ -1,14 +1,22 @@
 //融云消息接收类,单例
-import 'dart:ffi';
-
-import 'package:flutter/cupertino.dart';
+import 'dart:async';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-//注册监听某种消息类型的接口
+//注册监听某种消息类型的接口，需要先进行注册才会收到回调
 abstract class MessageObserver{
   //当注册通知后会受到的消息,第二个参数表示的是是否离线
-  Future<void> msgDidCome(Message msg,bool offLine) ;
-  //消息发送成功的通知
-  Future<void> msgDidSend(Message msg);
+  Future<void> msgDidCome(Message msg,bool offLine);
+}
+// RCSentStatus 
+// static const int Sending = 10; //发送中
+//   static const int Failed = 20; //发送失败
+//   static const int Sent = 30; //发送成功
+//   static const int Received = 40; //对方已接收
+//   static const int Read = 50; //对方已阅读
+
+//消息状态的观察接口,需要先在RongCloudReceiveManger中相关方法中注册
+abstract class MessageStatusObserver{
+  //可有的消息状态回调，status参考[RCSentStatus]
+  Future<void> msgStatus(int msgId,int status);
 }
 abstract class RongCloudReceiveManager {
   //获取单例
@@ -18,10 +26,14 @@ abstract class RongCloudReceiveManager {
     }
     return _me;
   }
-  //注册某种消息内型来临的通知，参数值域参考RCConversationType
-  void observeSpecifcMsg<T extends MessageObserver>(int conversationType,T target);
+  //观察所有消息来临的通知
+  void observeAllMsgs<T extends MessageObserver>(T target);
+  //观察特点类型消息来临，参数值域参考RCConversationType
+  void observeSpecificTypeMsg<T extends MessageObserver>(int conversationType,T target);
   //取消某种消息类型消息来临的通知
-  void ignoreSpecificMsg<T extends MessageObserver>(int conversationType,T target);
+  void ignoreSpecificTypeMsg<T extends MessageObserver>(int conversationType,T target);
+  //观察某条消息的状态
+  void observeMsgStatus<T extends MessageStatusObserver>(int msgId, T target);
   static RongCloudReceiveManager _me;
   //是否开启离线消息缓冲
   activeThreshold(bool activate);
@@ -50,6 +62,16 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
            _processCurrentRawMsg(msg,left);
        }
      };
+     //发送消息结果的回调
+     RongIMClient.onMessageSend = (int messageId,int status,int code) {
+       Set<MessageStatusObserver> _t = _msgs[messageId];
+            _t.forEach((element) async{
+              await element.msgStatus(messageId, status);
+            });
+            if (status==RCSentStatus.Read){
+              _msgs.remove(messageId);
+            }
+     };
    }
    //分配资源
    _alloc(){
@@ -69,12 +91,12 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
        _cacheOrDrain((left==0&&hasPackage==false),msg,left);
          break;
        default:
-         _messageDispatch(msg,true);
+         _messageDispatchWithType(msg,true);
      }
    }
    //缓存以及清空
    void _cacheOrDrain(bool drain,Message msg,int left){
-     if (left == 0&&_tempCache.isEmpty){_messageDispatch(msg,true);return;}
+     if (left == 0&&_tempCache.isEmpty){_messageDispatchWithType(msg,true);return;}
      switch (drain){
        case true:
          _drainCache();
@@ -86,7 +108,7 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
    //清空消息缓存池
     _drainCache(){
      _tempCache.forEach((element) {
-       _messageDispatch(element,true);
+       _messageDispatchWithType(element,true);
      });
      _tempCache.clear();
     }
@@ -120,22 +142,22 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
        Map originContentMap;*/
    //处理当前消息，第二个参数为服务端的剩余消息
    _processCurrentRawMsg(Message msg,int left){
-   _messageDispatch(msg,false);
+   _messageDispatchWithType(msg,false);
    }
    @override
-   void ignoreSpecificMsg<T extends MessageObserver>(int conversationType, T target) {
+   void ignoreSpecificTypeMsg<T extends MessageObserver>(int conversationType, T target) {
       assert(conversationType>=RCConversationType.Private&&conversationType<=RCConversationType.System);
       _observers[conversationType].remove(target);
    }
 
    @override
-   void observeSpecifcMsg<T extends MessageObserver>(int conversationType, T target) {
+   void observeSpecificTypeMsg<T extends MessageObserver>(int conversationType, T target) {
       assert(conversationType>=RCConversationType.Private&&conversationType<=RCConversationType.System);
     _observers[conversationType].add(target);
    }
 
-  @override
-  activeThreshold(bool activate) {
+   @override
+   activeThreshold(bool activate) {
     switch(activate){
       case false:
         if(_tempCache.isEmpty==false){
@@ -147,12 +169,26 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
     _activeThreshold = activate;
   }
   //消息出口下发(针对的是消息种类)
-   _messageDispatch( Message msg, bool offline)  {
+   _messageDispatchWithType( Message msg, bool offline)  {
    int msgType = msg.conversationType;
    Set _toNotify = _observers[msgType];
    _toNotify.forEach((element) async {
       MessageObserver tt = element;
       await tt.msgDidCome(msg, offline);
    });
+  }
+   //待观察状态的消息集合
+   Map<int,Set<MessageStatusObserver>> _msgs = Map();
+   @override
+   void observeMsgStatus<T extends MessageStatusObserver>(int msgId, T target) {
+    _msgs[msgId].add(target);
+   }
+
+  @override
+  void observeAllMsgs<T extends MessageObserver>(T target) {
+    this.observeSpecificTypeMsg(RCConversationType.Private, target);
+    this.observeSpecificTypeMsg(RCConversationType.Group, target);
+    this.observeSpecificTypeMsg(RCConversationType.System, target);
+    this.observeSpecificTypeMsg(RCConversationType.ChatRoom, target);
   }
 }

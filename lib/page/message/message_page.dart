@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:mirror/im/rongcloud_receive_manager.dart';
 import 'package:mirror/page/message/delegate/system_service_events.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'delegate/hooks.dart';
 import 'delegate/message_types.dart';
 import 'delegate/regular_events.dart';
@@ -15,13 +17,26 @@ class MessagePage extends StatefulWidget {
   }
 }
 
-class _MessagePageState extends State<MessagePage> implements MPBasements,MPHookFunc,MPBusiness,MPNetworkEvents {
+class _MessagePageState extends State<MessagePage> implements MPBasements,MPHookFunc,MPNetworkEvents,MessageObserver {
  
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Text("消息页"),
     );
+  }
+  @override
+  void initState() {
+    //考虑到此页面可能会涉及到每个消息来临时的处理
+    RongCloudReceiveManager.shareInstance().observeAllMsgs(this);
+
+
+
+    super.initState();
+  }
+  @override
+  Future<void> msgDidCome(Message msg,bool offLine){
+
   }
 
   @override
@@ -61,10 +76,7 @@ class _MessagePageState extends State<MessagePage> implements MPBasements,MPHook
     // TODO: implement eventsDidCome
   }
 
-  @override
-  void msgDidCome<T extends MPChatVarieties>(T type) {
-    // TODO: implement msgDidCome
-  }
+
 
   @override
   void loseConnection() {
