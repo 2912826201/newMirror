@@ -9,6 +9,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/course_model.dart';
 import 'package:mirror/data/model/sub_comments.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/bottom_popup.dart';
@@ -550,22 +551,35 @@ class getTripleAreaState extends State<getTripleArea> {
       );
     }
   }
-
+ // 跳转点赞页
+  jumpLike() {
+    AppRouter.navigateToLikePage(context);
+  }
   // 横排头像默认值
   roundedAvatar() {
-    return CircleAvatar(
-      backgroundImage: AssetImage("images/test/yxlm9.jpeg"),
-      maxRadius: 10.5,
+    return GestureDetector(
+      onTap: () {
+        jumpLike();
+      },
+      child: CircleAvatar(
+        backgroundImage: AssetImage("images/test/yxlm9.jpeg"),
+        maxRadius: 10.5,
+      ),
     );
   }
 
   // 横排
   roundedLikeNum() {
-    return Container(
-      // margin: EdgeInsets.only(left: 6),
-      child: Text(
-        "3次赞",
-        style: TextStyle(fontSize: 12),
+    return GestureDetector(
+      onTap: () {
+        jumpLike();
+      },
+      child:  Container(
+        // margin: EdgeInsets.only(left: 6),
+        child: Text(
+          "3次赞",
+          style: TextStyle(fontSize: 12),
+        ),
       ),
     );
   }

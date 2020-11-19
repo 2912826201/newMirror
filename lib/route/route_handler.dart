@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/page/feed/like.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/rc_test_page.dart';
@@ -32,4 +33,8 @@ var handlerMediaPicker = Handler(handlerFunc: (BuildContext context, Map<String,
     data["needCrop"],
     cropOnlySquare: data["cropOnlySquare"],
   );
+});
+
+var handlerLike = Handler(handlerFunc: (BuildContext context, Map<String,List<String>> params) {
+  return Like();
 });

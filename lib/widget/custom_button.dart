@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 // 自定义按钮
@@ -8,7 +6,7 @@ import 'package:flutter/material.dart';
  *只有文字的button
  */
 class TextButton extends StatelessWidget {
-  const TextButton({
+  TextButton({
     Key key,
     this.onTap,
     this.textColor,
@@ -27,12 +25,13 @@ class TextButton extends StatelessWidget {
   final height; //整体高
   final backColor; //背景颜色
   final circular; //弧度
-  final double borderWidth;
-  final Color borderColor;
-  final Color textColor;
-  final String title;
-  final double fontsize;
-  final EdgeInsetsGeometry padding;
+  double borderWidth;
+  Color borderColor;
+  Color textColor;
+  String title;
+  double fontsize;
+  EdgeInsetsGeometry padding;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -47,7 +46,7 @@ class TextButton extends StatelessWidget {
         child: Text(
           title,
           style: TextStyle(
-            fontSize:fontsize,
+            fontSize: fontsize,
             color: textColor,
             fontWeight: FontWeight.normal,
           ),
@@ -61,27 +60,26 @@ class TextButton extends StatelessWidget {
  *点击带边框按钮
  */
 class ClickLineBtn extends StatelessWidget {
-  const ClickLineBtn(
+  ClickLineBtn(
       {Key key,
-        this.color,
-        this.title,
-        this.onTap,
-        this.circular,
-        this.width,
-        this.backColor,
-        this.height,
-        this.fontSize = 15.0
-      })
+      this.color,
+      this.title,
+      this.onTap,
+      this.circular,
+      this.width,
+      this.backColor,
+      this.height,
+      this.fontSize = 15.0})
       : super(key: key);
 
-  final Color color; //颜色
-  final String title; //文字
+  Color color; //颜色
+  String title; //文字
   final onTap; //点击方法
   final circular; //弧度
-  final width; //整体宽
+  double width; //整体宽
   final backColor; //背景颜色
-  final height; //整体高
-  final double fontSize; //文字大小
+  double height; //整体高
+  double fontSize; //文字大小
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +110,7 @@ class ClickLineBtn extends StatelessWidget {
  *图片的点击按钮  iconBtn
  */
 class MyIconBtn extends StatelessWidget {
-  const MyIconBtn({
+  MyIconBtn({
     Key key,
     this.iconSting,
     this.onPressed,
@@ -122,8 +120,8 @@ class MyIconBtn extends StatelessWidget {
 
   final iconSting; //图片的地址
   final onPressed; //执行的方法
-  final width; //宽
-  final height; //高
+  double width; //宽
+  double height; //高
 
   @override
   Widget build(BuildContext context) {
@@ -143,29 +141,20 @@ class MyIconBtn extends StatelessWidget {
   }
 }
 
-
-
 /*
  *图片 + 文字按钮  icon在左 tiitle在右
  */
 
 class ClickImageAndTitleBtn extends StatelessWidget {
-  const ClickImageAndTitleBtn(
-      {Key key,
-        this.image,
-        this.imageSize,
-        this.title,
-        this.padding,
-        this.fontSize,
-        this.textColor,
-        this.onTap})
+  ClickImageAndTitleBtn(
+      {Key key, this.image, this.imageSize, this.title, this.padding, this.fontSize, this.textColor, this.onTap})
       : super(key: key);
-  final Widget image; //image
-  final Size imageSize; //image的宽高
-  final String title; //文字
-  final double padding; //图片和文字之间的间距
-  final double fontSize; //文字的大小
-  final Color textColor; //文字的颜色
+  Widget image; //image
+  Size imageSize; //image的宽高
+  String title; //文字
+  double padding; //图片和文字之间的间距
+  double fontSize; //文字的大小
+  Color textColor; //文字的颜色
   final onTap; //执行的方法
   @override
   Widget build(BuildContext context) {
@@ -183,7 +172,7 @@ class ClickImageAndTitleBtn extends StatelessWidget {
               child: image,
             ),
             SizedBox(
-              width:padding,
+              width: padding,
             ),
             Container(
               child: Text(
@@ -201,17 +190,15 @@ class ClickImageAndTitleBtn extends StatelessWidget {
   }
 }
 
-
-
 /*
  * iconbutton  icon在上  文字在下
  */
 class ExamIndexIconButton extends StatelessWidget {
-  const ExamIndexIconButton({Key key, this.action, this.icon, this.title})
-      : super(key: key);
+  ExamIndexIconButton({Key key, this.action, this.icon, this.title}) : super(key: key);
   final action;
-  final String icon;
-  final String title;
+  String icon;
+  String title;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -247,29 +234,20 @@ class ExamIndexIconButton extends StatelessWidget {
   }
 }
 
-
-
 /*
 *图片 + 文字按钮 tiitle在左 icon在右
 */
 
 class ClickTitleAndImageBtn extends StatelessWidget {
-  const ClickTitleAndImageBtn(
-      {Key key,
-        this.image,
-        this.imageSize,
-        this.title,
-        this.padding = 0,
-        this.fontSize,
-        this.textColor,
-        this.onTap})
+  ClickTitleAndImageBtn(
+      {Key key, this.image, this.imageSize, this.title, this.padding = 0, this.fontSize, this.textColor, this.onTap})
       : super(key: key);
-  final Widget image; //image
-  final Size imageSize; //image的宽高
-  final String title; //文字
-  final double padding; //图片和文字之间的间距
-  final double fontSize; //文字的大小
-  final Color textColor; //文字的颜色
+  Widget image; //image
+  Size imageSize; //image的宽高
+  String title; //文字
+  double padding; //图片和文字之间的间距
+  double fontSize; //文字的大小
+  Color textColor; //文字的颜色
   final onTap; //执行的方法
   @override
   Widget build(BuildContext context) {
@@ -304,4 +282,3 @@ class ClickTitleAndImageBtn extends StatelessWidget {
     );
   }
 }
-
