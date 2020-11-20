@@ -80,10 +80,11 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
       // load the album list
       //TODO 这里需要设置路径
       List<AssetPathEntity> albums =
-          await PhotoManager.getAssetPathList(hasAll: true, onlyAll: false, type: widget.requestType);
+          await PhotoManager.getAssetPathList(hasAll: true, onlyAll: true, type: widget.requestType);
       print(albums);
-      _mediaAmount = albums[0].assetCount;
-      context.read<SelectedMapNotifier>().setFolderName(albums[0].name);
+      //TODO 默认取第一个
+      _mediaAmount = albums.first.assetCount;
+      context.read<SelectedMapNotifier>().setFolderName(albums.first.name);
       //TODO 需要完善翻页机制
       List<AssetEntity> media =
           await albums[0].getAssetListRange(start: _galleryList.length, end: _galleryList.length + _galleryPageSize);
@@ -131,7 +132,11 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
               _PreviewHeightNotifier(_previewMaxHeight, maxHeight: _previewMaxHeight, minHeight: _previewMinHeight),
           builder: (context, _) {
             return Stack(
+              overflow: Overflow.clip,
               children: [
+                Container(
+                  color: AppColor.bgBlack,
+                ),
                 ScrollConfiguration(
                   behavior: NoBlueEffectBehavior(),
                   child: _buildScrollBody(),
@@ -187,10 +192,13 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
   }
 
   // item选框点击事件
-  //TODO 当点中选框的文件并不是当前预览的文件时 还要将其选中设置预览
+  // 当点中选框的文件并不是当前预览的文件时 还要将其选中设置预览
   _onCheckBoxTap(BuildContext context, AssetEntity entity) {
     entity.file.then((value) => print(entity.id + ":" + value.path));
-    context.read<SelectedMapNotifier>().handleMapChange(entity);
+    bool isNew = context.read<SelectedMapNotifier>().handleMapChange(entity);
+    if (isNew) {
+      _onGridItemTap(context, entity);
+    }
   }
 
   Widget _buildGridItem(BuildContext context, int index) {
@@ -228,6 +236,17 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
             height: _itemSize,
             width: _itemSize,
           ),
+          Container(
+              height: _itemSize,
+              width: _itemSize,
+              decoration: BoxDecoration(
+                  border: Border.all(
+                      color: context.select((SelectedMapNotifier notifier) =>
+                          notifier.currentEntity == null || notifier.currentEntity.id != entity.id
+                              ? AppColor.transparent
+                              : AppColor.mainRed),
+                      width: 2,
+                      style: BorderStyle.solid))),
           Positioned(
             top: 10,
             right: 10,
@@ -260,18 +279,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                       : "",
               style: TextStyle(color: Colors.white, fontSize: 18),
             ),
-          ),
-          Container(
-              height: _itemSize,
-              width: _itemSize,
-              decoration: BoxDecoration(
-                  border: Border.all(
-                      color: context.select((SelectedMapNotifier notifier) =>
-                          notifier.currentEntity == null || notifier.currentEntity.id != entity.id
-                              ? AppColor.transparent
-                              : AppColor.mainRed),
-                      width: 2,
-                      style: BorderStyle.solid)))
+          )
         ]));
   }
 
@@ -402,10 +410,11 @@ class SelectedMapNotifier with ChangeNotifier {
     return _selectedMap.length >= maxAmount;
   }
 
-  handleMapChange(AssetEntity entity) {
+  bool handleMapChange(AssetEntity entity) {
+    bool isNewEntity = false;
     if (_selectedType != null && entity.type != _selectedType) {
       // 已选类型不为空 且与所选文件类型不符时不做操作
-      return;
+      return isNewEntity;
     }
     if (_selectedMap.keys.contains(entity.id)) {
       //已在所选列表中
@@ -414,8 +423,10 @@ class SelectedMapNotifier with ChangeNotifier {
     } else if (!isFull()) {
       //未在所选列表中 且已选数量未达到上限
       _addToSelectedMap(entity);
+      isNewEntity = true;
       notifyListeners();
     }
+    return isNewEntity;
   }
 
   setFolderName(String name) {
@@ -424,11 +435,15 @@ class SelectedMapNotifier with ChangeNotifier {
   }
 
   setCurrentEntity(AssetEntity entity) {
-    _currentEntity = entity;
-    notifyListeners();
+    // 判断是否真的变化 如果一方为null时 统一视为变化
+    if (_currentEntity == null || entity == null || _currentEntity.id != entity.id) {
+      _currentEntity = entity;
+      notifyListeners();
+    }
   }
 }
 
+// 用于监听及更新裁剪预览布局的高度
 class _PreviewHeightNotifier with ChangeNotifier {
   _PreviewHeightNotifier(this._previewHeight, {@required this.maxHeight, @required this.minHeight});
 
@@ -504,7 +519,7 @@ SliverGridDelegateWithFixedCrossAxisCount _galleryGridDelegate() {
       crossAxisSpacing: _itemMargin);
 }
 
-// 裁剪预览区域的delegate
+// 裁剪预览区域的delegate 目前没有把预览区域放到这个header里了 这里只是占个位置
 class _PreviewHeaderDelegate extends SliverPersistentHeaderDelegate {
   _PreviewHeaderDelegate({
     @required this.minHeight,
