@@ -1,5 +1,10 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/image_cropper.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:provider/provider.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -12,6 +17,7 @@ final double _itemMargin = 0;
 final int _galleryPageSize = 100;
 
 // 相册的选择GridView视图 需要能够区分选择图片或视频 选择图片数量 是否裁剪 裁剪是否只是正方形
+//TODO 目前没有做响应实时相册变化时的处理 完善时可以考虑实现
 class GalleryPage extends StatefulWidget {
   GalleryPage(
       {Key key,
@@ -36,13 +42,23 @@ class GalleryPage extends StatefulWidget {
 class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClientMixin {
   double _screenWidth = 0;
   double _itemSize = 0;
+  double _previewMaxHeight = 0;
+  double _previewMinHeight = 0;
 
   // 是否正在获取数据 防止同时重复请求
   bool _isFetchingData = false;
 
   // 当前路径的图片视频数
   int _mediaAmount = 0;
+
+  // 资源实体的列表
   List<AssetEntity> _galleryList = [];
+
+  // 实际资源文件的Map 因AssetEntity获取File是异步的 所以单独把获取后的结果存一下 避免重复耗时获取和减少处理异步回调的工序
+  Map<String, File> _fileMap = {};
+
+  // 资源缩略图的Map 因AssetEntity获取缩略图是异步的 所以单独把获取后的结果存一下 避免重复耗时获取和减少处理异步回调的工序
+  Map<String, Uint8List> _thumbMap = {};
 
   @override
   void initState() {
@@ -64,10 +80,11 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
       // load the album list
       //TODO 这里需要设置路径
       List<AssetPathEntity> albums =
-          await PhotoManager.getAssetPathList(hasAll: true, onlyAll: false, type: widget.requestType);
+          await PhotoManager.getAssetPathList(hasAll: true, onlyAll: true, type: widget.requestType);
       print(albums);
-      _mediaAmount = albums[0].assetCount;
-      context.read<SelectedMapNotifier>().setFolderName(albums[0].name);
+      //TODO 默认取第一个
+      _mediaAmount = albums.first.assetCount;
+      context.read<SelectedMapNotifier>().setFolderName(albums.first.name);
       //TODO 需要完善翻页机制
       List<AssetEntity> media =
           await albums[0].getAssetListRange(start: _galleryList.length, end: _galleryList.length + _galleryPageSize);
@@ -82,62 +99,163 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
       /// if result is fail, you can call `PhotoManager.openSetting();`  to open android/ios applicaton's setting to get permission
       _isFetchingData = false;
     }
+
+    // 在裁剪模式中 刷新列表后重置选中项
+    if (widget.needCrop && isNew) {
+      if (_galleryList.isEmpty) {
+        // 列表为空 则清空
+        context.read<SelectedMapNotifier>().setCurrentEntity(null);
+      } else {
+        // 列表不为空 选中第一条
+        _onGridItemTap(context, _galleryList.first);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    //TODO 获取屏幕宽高以设置图片大小 获取方法需要统一封装
-    _screenWidth = MediaQuery.of(context).size.width;
+    // 获取屏幕宽以设置各布局大小
+    _screenWidth = ScreenUtil.instance.screenWidthDp;
     print("屏幕宽为：$_screenWidth");
     _itemSize = (_screenWidth - _itemMargin * (_horizontalCount - 1)) / _horizontalCount;
     print("item宽为：$_itemSize");
+    _previewMaxHeight = _screenWidth;
+    _previewMinHeight = _screenWidth / 2;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColor.bgBlack,
         title: _buildAppBar(),
       ),
-      body: ScrollConfiguration(
-        behavior: NoBlueEffectBehavior(),
-        child: _buildBody(),
-      ),
+      body: ChangeNotifierProvider(
+          create: (_) =>
+              _PreviewHeightNotifier(_previewMaxHeight, maxHeight: _previewMaxHeight, minHeight: _previewMinHeight),
+          builder: (context, _) {
+            return Stack(
+              overflow: Overflow.clip,
+              children: [
+                Container(
+                  color: AppColor.bgBlack,
+                ),
+                ScrollConfiguration(
+                  behavior: NoBlueEffectBehavior(),
+                  child: _buildScrollBody(),
+                ),
+                Positioned(
+                    top: context.watch<_PreviewHeightNotifier>().previewHeight - _previewMaxHeight,
+                    child: Container(
+                      width: _previewMaxHeight,
+                      height: _previewMaxHeight,
+                      child: Builder(
+                        builder: (context) {
+                          AssetEntity entity = context.select((SelectedMapNotifier notifier) => notifier.currentEntity);
+                          return entity == null
+                              ? Container()
+                              : CropperImage(
+                                  FileImage(_fileMap[entity.id]),
+                                  round: 0,
+                                );
+                        },
+                      ),
+                    ))
+              ],
+            );
+          }),
     );
   }
 
   @override
   bool get wantKeepAlive => true;
 
-  //TODO 点击事件 需要区分是本体还是选框
-  _onGridItemTap(BuildContext context, int index) {
-    print("点了第$index张图");
-    AssetEntity entity = _galleryList[index];
-    entity.file.then((value) => print(entity.id + ":" + value.uri.toString()));
-    context.read<SelectedMapNotifier>().handleMapChange(entity);
+  // item本体点击事件
+  _onGridItemTap(BuildContext context, AssetEntity entity) {
+    if (_fileMap[entity.id] == null) {
+      entity.file.then((value) {
+        _fileMap[entity.id] = value;
+        print(entity.id + ":" + value.path);
+        if (widget.needCrop) {
+          // 裁剪模式需要将其置入裁剪框
+          context.read<SelectedMapNotifier>().setCurrentEntity(entity);
+        } else {
+          //TODO 非裁剪模式跳转展示大图
+        }
+      });
+    } else {
+      print(entity.id + ":" + _fileMap[entity.id].path);
+      if (widget.needCrop) {
+        // 裁剪模式需要将其置入裁剪框
+        context.read<SelectedMapNotifier>().setCurrentEntity(entity);
+      } else {
+        //TODO 非裁剪模式跳转展示大图
+      }
+    }
+  }
+
+  // item选框点击事件
+  // 当点中选框的文件并不是当前预览的文件时 还要将其选中设置预览
+  _onCheckBoxTap(BuildContext context, AssetEntity entity) {
+    entity.file.then((value) => print(entity.id + ":" + value.path));
+    bool isNew = context.read<SelectedMapNotifier>().handleMapChange(entity);
+    if (isNew) {
+      _onGridItemTap(context, entity);
+    }
   }
 
   Widget _buildGridItem(BuildContext context, int index) {
+    // print("#${index} item loaded");
+    // 当加载到距离list的长度还有一行时 请求下一页数据
+    if (_galleryList.length < _mediaAmount && _galleryList.length - index <= _horizontalCount * 2) {
+      _fetchGalleryData(false);
+    }
     AssetEntity entity = _galleryList[index];
-    return FutureBuilder(
-      future: entity.thumbDataWithSize(_itemSize.toInt(), _itemSize.toInt()),
-      builder: (BuildContext context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          // print("#${index} item loaded");
-          // 当加载到距离list的长度还有一行时 请求下一页数据
-          if (_galleryList.length < _mediaAmount && _galleryList.length - index <= _horizontalCount * 2) {
-            _fetchGalleryData(false);
+    // 一定要返回某种形式的Builder 不然context.select会报错
+    if (_thumbMap[entity.id] == null) {
+      return FutureBuilder(
+        future: entity.thumbDataWithSize(_itemSize.toInt(), _itemSize.toInt()),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            _thumbMap[entity.id] = snapshot.data;
+            return _buildGridItemCell(context, entity);
+          } else {
+            return Container();
           }
-          return GestureDetector(
-              onTap: () => _onGridItemTap(context, index),
-              child: Stack(overflow: Overflow.clip, children: [
-                Image.memory(
-                  snapshot.data,
-                  fit: BoxFit.cover,
-                  height: _itemSize,
-                  width: _itemSize,
-                ),
-                Positioned(
-                  top: 10,
-                  right: 10,
+        },
+      );
+    } else {
+      return Builder(builder: (context) => _buildGridItemCell(context, entity));
+    }
+  }
+
+  Widget _buildGridItemCell(BuildContext context, AssetEntity entity) {
+    return GestureDetector(
+        onTap: () => _onGridItemTap(context, entity),
+        child: Stack(overflow: Overflow.clip, children: [
+          Image.memory(
+            _thumbMap[entity.id],
+            fit: BoxFit.cover,
+            height: _itemSize,
+            width: _itemSize,
+          ),
+          Container(
+              height: _itemSize,
+              width: _itemSize,
+              decoration: BoxDecoration(
+                  border: Border.all(
+                      color: context.select((SelectedMapNotifier notifier) =>
+                          notifier.currentEntity == null || notifier.currentEntity.id != entity.id
+                              ? AppColor.transparent
+                              : AppColor.mainRed),
+                      width: 2,
+                      style: BorderStyle.solid))),
+          Positioned(
+            top: 10,
+            right: 10,
+            child: GestureDetector(
+                onTap: () => _onCheckBoxTap(context, entity),
+                child: Container(
+                  height: 20,
+                  width: 20,
+                  alignment: Alignment.center,
                   child: context.watch<SelectedMapNotifier>().selectedMap.containsKey(entity.id)
                       ? Text(
                           context.watch<SelectedMapNotifier>().selectedMap[entity.id].order.toString(),
@@ -148,62 +266,83 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                           size: 20,
                           color: Colors.white,
                         ),
-                ),
-                Positioned(
-                  bottom: 10,
-                  right: 10,
-                  child: Text(
-                    entity.type == AssetType.image
-                        ? "I"
-                        : entity.type == AssetType.video
-                            ? "V"
-                            : "",
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                )
-              ]));
-        } else {
-          return Container();
-        }
-      },
-    );
+                )),
+          ),
+          Positioned(
+            bottom: 10,
+            right: 10,
+            child: Text(
+              entity.type == AssetType.image
+                  ? "I"
+                  : entity.type == AssetType.video
+                      ? "V"
+                      : "",
+              style: TextStyle(color: Colors.white, fontSize: 18),
+            ),
+          )
+        ]));
   }
 
-  Widget _buildBody() {
+  // 列表界面主体部分
+  Widget _buildScrollBody() {
     if (widget.needCrop) {
       //需要裁剪
-      return CustomScrollView(
-        //禁止回弹效果
-        physics: ClampingScrollPhysics(),
-        slivers: [
-          SliverPersistentHeader(
-              floating: true,
-              pinned: false,
-              delegate: _PreviewHeaderDelegate(
-                  minHeight: _screenWidth,
-                  maxHeight: _screenWidth,
-                  child: Image(
-                    image: NetworkImage("http://pic1.win4000.com/wallpaper/2020-11-02/5f9f821a8d00a.jpg"),
-                    width: _screenWidth,
-                    height: _screenWidth,
-                    fit: BoxFit.cover,
-                  ))),
-          SliverGrid(
-              delegate: SliverChildBuilderDelegate(
-                _buildGridItem,
-                childCount: _galleryList.length,
-              ),
-              gridDelegate: _galleryGridDelegate())
-        ],
-      );
+      return Builder(builder: (context) {
+        return NotificationListener<ScrollNotification>(
+            onNotification: (ScrollNotification notification) {
+              ScrollMetrics metrics = notification.metrics;
+              // 注册通知回调
+              if (notification is ScrollStartNotification) {
+                // 滚动开始
+              } else if (notification is ScrollUpdateNotification) {
+                // 滚动位置更新
+                // 当前位置
+                // print("metrics.pixels当前值是：${metrics.pixels}");
+                context.read<_PreviewHeightNotifier>().setOffset(metrics.pixels);
+              } else if (notification is ScrollEndNotification) {
+                // 滚动结束
+              }
+              return false;
+            },
+            child: CustomScrollView(
+              //禁止回弹效果
+              physics: ClampingScrollPhysics(),
+              slivers: [
+                SliverPersistentHeader(
+                    floating: true,
+                    pinned: false,
+                    delegate: _PreviewHeaderDelegate(
+                      // 这里就让header是个不可变的高度 所以最小高度传入和最大高度一样
+                      minHeight: _previewMaxHeight,
+                      maxHeight: _previewMaxHeight,
+                      // child:
+                      // CropperImage(
+                      //   NetworkImage("http://pic1.win4000.com/wallpaper/2020-11-02/5f9f821a8d00a.jpg"),
+                      //   round: 0,
+                      // ),
+                    )),
+                SliverGrid(
+                    delegate: SliverChildBuilderDelegate(
+                      _buildGridItem,
+                      childCount: _galleryList.length,
+                    ),
+                    gridDelegate: _galleryGridDelegate())
+              ],
+            ));
+      });
     } else {
       //不需要裁剪
       return GridView.builder(
-          itemCount: _galleryList.length, gridDelegate: _galleryGridDelegate(), itemBuilder: _buildGridItem);
+          //禁止回弹效果
+          physics: ClampingScrollPhysics(),
+          itemCount: _galleryList.length,
+          gridDelegate: _galleryGridDelegate(),
+          itemBuilder: _buildGridItem);
     }
   }
 }
 
+// 用来记录排序
 class _OrderedAssetEntity {
   _OrderedAssetEntity(this.order, this.entity);
 
@@ -221,6 +360,10 @@ class SelectedMapNotifier with ChangeNotifier {
   String _folderName = "";
 
   String get folderName => _folderName;
+
+  AssetEntity _currentEntity;
+
+  AssetEntity get currentEntity => _currentEntity;
 
   // 所选类型只能有一种
   AssetType _selectedType;
@@ -267,10 +410,11 @@ class SelectedMapNotifier with ChangeNotifier {
     return _selectedMap.length >= maxAmount;
   }
 
-  handleMapChange(AssetEntity entity) {
+  bool handleMapChange(AssetEntity entity) {
+    bool isNewEntity = false;
     if (_selectedType != null && entity.type != _selectedType) {
       // 已选类型不为空 且与所选文件类型不符时不做操作
-      return;
+      return isNewEntity;
     }
     if (_selectedMap.keys.contains(entity.id)) {
       //已在所选列表中
@@ -279,12 +423,56 @@ class SelectedMapNotifier with ChangeNotifier {
     } else if (!isFull()) {
       //未在所选列表中 且已选数量未达到上限
       _addToSelectedMap(entity);
+      isNewEntity = true;
       notifyListeners();
     }
+    return isNewEntity;
   }
 
   setFolderName(String name) {
     _folderName = name;
+    notifyListeners();
+  }
+
+  setCurrentEntity(AssetEntity entity) {
+    // 判断是否真的变化 如果一方为null时 统一视为变化
+    if (_currentEntity == null || entity == null || _currentEntity.id != entity.id) {
+      _currentEntity = entity;
+      notifyListeners();
+    }
+  }
+}
+
+// 用于监听及更新裁剪预览布局的高度
+class _PreviewHeightNotifier with ChangeNotifier {
+  _PreviewHeightNotifier(this._previewHeight, {@required this.maxHeight, @required this.minHeight});
+
+  double maxHeight;
+  double minHeight;
+
+  double _previewHeight;
+
+  double get previewHeight => _previewHeight;
+
+  double _offset = 0;
+
+  setOffset(double offset) {
+    // 根据滚动距离计算预览框高度
+    // 向上滑动的距离 正即为向上滑 负则为向下滑 0则为没有动
+    double distance = offset - _offset;
+    // 算完后赋值
+    _offset = offset;
+    // 理论上新的高度为旧的高度减去向上滑动的距离
+    double previewHeight = _previewHeight - distance;
+    // 结果如果超出范围 纠正为范围阈值
+    if (previewHeight > maxHeight) {
+      previewHeight = maxHeight;
+    } else if (previewHeight < minHeight) {
+      previewHeight = minHeight;
+    }
+    // 算完后赋值
+    _previewHeight = previewHeight;
+
     notifyListeners();
   }
 }
@@ -331,12 +519,12 @@ SliverGridDelegateWithFixedCrossAxisCount _galleryGridDelegate() {
       crossAxisSpacing: _itemMargin);
 }
 
-// 裁剪预览区域的delegate
+// 裁剪预览区域的delegate 目前没有把预览区域放到这个header里了 这里只是占个位置
 class _PreviewHeaderDelegate extends SliverPersistentHeaderDelegate {
   _PreviewHeaderDelegate({
     @required this.minHeight,
     @required this.maxHeight,
-    @required this.child,
+    this.child,
   });
 
   final double minHeight;
@@ -345,6 +533,7 @@ class _PreviewHeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    // print("shrinkOffset当前值是：$shrinkOffset");
     return SizedBox.expand(
       child: child,
     );

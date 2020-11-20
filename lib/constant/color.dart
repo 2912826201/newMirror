@@ -31,4 +31,7 @@ class AppColor {
   static const textSecondary = Color.fromRGBO(0x99, 0x99, 0x99, 1.0);
   //N4 Disable、提示文字
   static const textHint = Color.fromRGBO(0xCC, 0xCC, 0xCC, 1.0);
+
+  //透明
+  static const transparent = Color.fromRGBO(0x00, 0x00, 0x00, 0.0);
 }

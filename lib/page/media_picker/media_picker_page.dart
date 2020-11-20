@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
 
@@ -7,6 +8,9 @@ import 'gallery_page.dart';
 /// media_picker_page
 /// Created by yangjiayi on 2020/11/9.
 
+//TODO 进这个页面前就要请求一下权限 不然很可能会因权限问题导致页面有问题
+
+// 各tab页的index
 int _galleryIndex = 0; // 相册
 int _photoIndex = 1; // 拍照
 int _videoIndex = 2; // 拍视频
@@ -38,7 +42,7 @@ class _MediaPickerState extends State<MediaPickerPage> {
     super.initState();
     _pageController = PageController(initialPage: _selectedIndex);
     _pageList.add(
-        //需要在这里就把provider创建出来，以便页面内的所有context都能在provider下
+      //需要在这里就把provider创建出来，以便页面内的所有context都能在provider下
         ChangeNotifierProvider(
             create: (_) => SelectedMapNotifier(widget.maxImageAmount, 1),
             child: GalleryPage(
@@ -71,30 +75,9 @@ class _MediaPickerState extends State<MediaPickerPage> {
           child: Flex(
             direction: Axis.horizontal,
             children: [
-              Expanded(
-                  flex: 1,
-                  child: FlatButton(
-                    height: 48,
-                    padding: EdgeInsets.zero,
-                    onPressed: _onGallerySelected,
-                    child: Text("相册", style: TextStyle(color: _selectedIndex == 0 ? Colors.red : Colors.black)),
-                  )),
-              Expanded(
-                  flex: 1,
-                  child: FlatButton(
-                    height: 48,
-                    padding: EdgeInsets.zero,
-                    onPressed: _onPhotoSelected,
-                    child: Text("拍照", style: TextStyle(color: _selectedIndex == 1 ? Colors.red : Colors.black)),
-                  )),
-              Expanded(
-                  flex: 1,
-                  child: FlatButton(
-                    height: 48,
-                    padding: EdgeInsets.zero,
-                    onPressed: _onVideoSelected,
-                    child: Text("拍视频", style: TextStyle(color: _selectedIndex == 2 ? Colors.red : Colors.black)),
-                  )),
+              _buildButton(_galleryIndex, "相册", _onGallerySelected),
+              _buildButton(_photoIndex, "拍照", _onPhotoSelected),
+              _buildButton(_videoIndex, "拍视频", _onVideoSelected),
             ],
           ),
         ),
@@ -127,5 +110,36 @@ class _MediaPickerState extends State<MediaPickerPage> {
         _pageController.jumpToPage(_selectedIndex);
       });
     }
+  }
+
+  Widget _buildButton(int index, String text, Function onTap) {
+    return Expanded(
+      flex: 1,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          alignment: Alignment.center,
+          color: AppColor.bgBlack,
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+              Text(text,
+              style: TextStyle(
+                  fontWeight: _selectedIndex == index ? FontWeight.w500 : FontWeight.w400,
+                  fontSize: _selectedIndex == index ? 18 : 16,
+                  color: _selectedIndex == index ? AppColor.white : AppColor.white.withOpacity(0.35))),
+          _selectedIndex == index
+              ? Container(
+              width: 16,
+              height: 3,
+              decoration: BoxDecoration(
+                color: AppColor.mainRed,
+                borderRadius: BorderRadius.circular(1.5),
+              ))
+              : Container(),
+          ],
+        ),
+      ),
+    ));
   }
 }
