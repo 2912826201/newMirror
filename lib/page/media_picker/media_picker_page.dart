@@ -42,7 +42,7 @@ class _MediaPickerState extends State<MediaPickerPage> {
     super.initState();
     _pageController = PageController(initialPage: _selectedIndex);
     _pageList.add(
-      //需要在这里就把provider创建出来，以便页面内的所有context都能在provider下
+        //需要在这里就把provider创建出来，以便页面内的所有context都能在provider下
         ChangeNotifierProvider(
             create: (_) => SelectedMapNotifier(widget.maxImageAmount, 1),
             child: GalleryPage(
@@ -70,6 +70,7 @@ class _MediaPickerState extends State<MediaPickerPage> {
         physics: NeverScrollableScrollPhysics(),
       ),
       bottomNavigationBar: BottomAppBar(
+        color: AppColor.bgBlack,
         child: SizedBox(
           height: 48,
           child: Flex(
@@ -114,32 +115,31 @@ class _MediaPickerState extends State<MediaPickerPage> {
 
   Widget _buildButton(int index, String text, Function onTap) {
     return Expanded(
-      flex: 1,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          alignment: Alignment.center,
-          color: AppColor.bgBlack,
-          child: Column(
+        flex: 1,
+        child: GestureDetector(
+          onTap: onTap,
+          child: Container(
+            alignment: Alignment.center,
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-              Text(text,
-              style: TextStyle(
-                  fontWeight: _selectedIndex == index ? FontWeight.w500 : FontWeight.w400,
-                  fontSize: _selectedIndex == index ? 18 : 16,
-                  color: _selectedIndex == index ? AppColor.white : AppColor.white.withOpacity(0.35))),
-          _selectedIndex == index
-              ? Container(
-              width: 16,
-              height: 3,
-              decoration: BoxDecoration(
-                color: AppColor.mainRed,
-                borderRadius: BorderRadius.circular(1.5),
-              ))
-              : Container(),
-          ],
-        ),
-      ),
-    ));
+                Text(text,
+                    style: _selectedIndex == index
+                        ? TextStyle(fontWeight: FontWeight.w500, fontSize: 18, color: AppColor.white)
+                        : TextStyle(
+                            fontWeight: FontWeight.w400, fontSize: 16, color: AppColor.white.withOpacity(0.35))),
+                _selectedIndex == index
+                    ? Container(
+                        width: 16,
+                        height: 3,
+                        decoration: BoxDecoration(
+                          color: AppColor.mainRed,
+                          borderRadius: BorderRadius.circular(1.5),
+                        ))
+                    : Container(),
+              ],
+            ),
+          ),
+        ));
   }
 }

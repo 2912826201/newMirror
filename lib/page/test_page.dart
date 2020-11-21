@@ -7,6 +7,7 @@ import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/user_notifier.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
+import 'package:mirror/page/media_test_page.dart';
 import 'package:mirror/page/qiniu_test_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/text_util.dart';
@@ -44,18 +45,6 @@ class _TestState extends State<TestPage> {
                     height: 28.0,
                     // height:ScreenUtil.instance.setHeight(28.0),
                     margin: EdgeInsets.only(right: 10),
-                  ),
-                  Image(
-                    image: AssetImage("images/test.png"),
-                    color: Colors.redAccent,
-                    colorBlendMode: BlendMode.darken,
-                    width: 100.0,
-                    height: 100.0,
-                  ),
-                  Image(
-                    image: NetworkImage("http://i2.hdslb.com/bfs/face/c2d82a7e6512a85657e997dc8f84ab538e87a8cc.jpg"),
-                    width: 100.0,
-                    height: 100.0,
                   ),
                   Padding(
                     padding: EdgeInsets.only(left: 12),
@@ -139,12 +128,11 @@ class _TestState extends State<TestPage> {
               ),
               RaisedButton(
                 onPressed: () {
-                  AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, true, (result) {
-                    Map map = result as Map;
-                    print(map.toString());
-                  });
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return MediaTestPage();
+                  }));
                 },
-                child: Text("选图片视频"),
+                child: Text("图片视频测试"),
               ),
               RaisedButton(
                 onPressed: () {

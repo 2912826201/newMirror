@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'dart:ui' as ui;
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/image_cropper.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
@@ -40,6 +42,8 @@ class GalleryPage extends StatefulWidget {
 }
 
 class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClientMixin {
+  var _cropperKey = GlobalKey();
+
   double _screenWidth = 0;
   double _itemSize = 0;
   double _previewMaxHeight = 0;
@@ -89,10 +93,11 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
       List<AssetEntity> media =
           await albums[0].getAssetListRange(start: _galleryList.length, end: _galleryList.length + _galleryPageSize);
       print(media);
-      //FIXME 会闪一下
+
       setState(() {
         _galleryList.addAll(media);
       });
+
       _isFetchingData = false;
     } else {
       // fail
@@ -134,13 +139,16 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
             return Stack(
               overflow: Overflow.clip,
               children: [
+                // 背景
                 Container(
                   color: AppColor.bgBlack,
                 ),
+                // 列表
                 ScrollConfiguration(
                   behavior: NoBlueEffectBehavior(),
                   child: _buildScrollBody(),
                 ),
+                // 裁剪区域
                 Positioned(
                     top: context.watch<_PreviewHeightNotifier>().previewHeight - _previewMaxHeight,
                     child: Container(
@@ -154,10 +162,11 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                               : CropperImage(
                                   FileImage(_fileMap[entity.id]),
                                   round: 0,
+                                  key: _cropperKey,
                                 );
                         },
                       ),
-                    ))
+                    )),
               ],
             );
           }),
@@ -169,13 +178,27 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
 
   // item本体点击事件
   _onGridItemTap(BuildContext context, AssetEntity entity) {
+    final notifier = context.read<SelectedMapNotifier>();
+    if (notifier.currentEntity != null && entity.id == notifier.currentEntity.id) {
+      //如果之前选中的和点到的一样 则不做操作
+      return;
+    }
+
+    // 在裁剪模式中如果之前预览的已被选中 那么获取其图像 保存下来 然后再去预览新点中的图像
+    // 当最后一张图是预览并选中时 需要在点击下一步按钮时获取这张图
+    if (widget.needCrop) {
+      if (notifier.currentEntity != null && notifier.selectedMap.containsKey(notifier.currentEntity.id)) {
+        _getImage(context, notifier.currentEntity.id);
+      }
+    }
+
     if (_fileMap[entity.id] == null) {
       entity.file.then((value) {
         _fileMap[entity.id] = value;
         print(entity.id + ":" + value.path);
         if (widget.needCrop) {
           // 裁剪模式需要将其置入裁剪框
-          context.read<SelectedMapNotifier>().setCurrentEntity(entity);
+          notifier.setCurrentEntity(entity);
         } else {
           //TODO 非裁剪模式跳转展示大图
         }
@@ -184,7 +207,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
       print(entity.id + ":" + _fileMap[entity.id].path);
       if (widget.needCrop) {
         // 裁剪模式需要将其置入裁剪框
-        context.read<SelectedMapNotifier>().setCurrentEntity(entity);
+        notifier.setCurrentEntity(entity);
       } else {
         //TODO 非裁剪模式跳转展示大图
       }
@@ -340,13 +363,108 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
           itemBuilder: _buildGridItem);
     }
   }
+
+  // 构建标题栏
+  Widget _buildAppBar() {
+    return Builder(builder: (context) {
+      return Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Expanded(
+            child: Text(context.select((SelectedMapNotifier value) => value.folderName)),
+          ),
+          GestureDetector(
+            onTap: () async {
+              // 先处理选中的结果
+              final notifier = context.read<SelectedMapNotifier>();
+
+              String type;
+              switch (notifier.selectedType) {
+                case AssetType.image:
+                  type = mediaTypeKeyImage;
+                  break;
+                case AssetType.video:
+                  type = mediaTypeKeyVideo;
+                  break;
+                default:
+                  // 其他类型则程序有错误
+                  return;
+              }
+
+              // 在裁剪模式下 当前预览的图像如果是选中的图 则需要获取下裁剪后的图像
+              if (widget.needCrop) {
+                if (notifier.currentEntity != null && notifier.selectedMap.containsKey(notifier.currentEntity.id)) {
+                  await _getImage(context, notifier.currentEntity.id);
+                }
+              }
+
+              // 最后结果的列表
+              List<MediaFileModel> mediaFileList = [];
+
+              Map<String, _OrderedAssetEntity> selectedMap = notifier.selectedMap;
+              if (selectedMap.isEmpty) {
+                // 如果已选中的列表是空的 则程序有错误
+                return;
+              }
+              // 先根据长度将model放入list
+              for (int i = 0; i < selectedMap.length; i++) {
+                mediaFileList.add(MediaFileModel());
+              }
+              // 遍历所选Map将结果赋值
+              for (_OrderedAssetEntity orderedEntity in selectedMap.values) {
+                // order要减1才是index
+                mediaFileList[orderedEntity.order - 1].file = _fileMap[orderedEntity.entity.id];
+                mediaFileList[orderedEntity.order - 1].thumb = _thumbMap[orderedEntity.entity.id];
+                if (widget.needCrop) {
+                  mediaFileList[orderedEntity.order - 1].croppedImage = notifier._imageMap[orderedEntity.entity.id];
+                }
+              }
+              // 赋值并退出页面
+              SelectedMediaFiles files = SelectedMediaFiles();
+              files.type = type;
+              files.list = mediaFileList;
+              Navigator.pop(context, files);
+            },
+            child: Container(
+              alignment: Alignment.center,
+              height: 28,
+              width: 60,
+              decoration: BoxDecoration(
+                  color: context.select((SelectedMapNotifier value) => value.selectedMap.isEmpty)
+                      ? AppColor.bgWhite
+                      : AppColor.mainRed,
+                  borderRadius: BorderRadius.circular(14)),
+              child: Text("下一步", style: TextStyle(color: AppColor.white, fontSize: 14)),
+            ),
+          )
+        ],
+      );
+    });
+  }
+
+  _getImage(BuildContext context, String id) async {
+    print("开始获取" + DateTime.now().millisecondsSinceEpoch.toString());
+
+    ui.Image image = await (_cropperKey.currentContext as CropperImageElement).outImage();
+
+    print("已获取到ui.Image" + DateTime.now().millisecondsSinceEpoch.toString());
+    print(image);
+    // ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    // print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+    // Uint8List picBytes = byteData.buffer.asUint8List();
+    // print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
+    context.read<SelectedMapNotifier>().addImage(id, image);
+  }
 }
 
 // 用来记录排序
 class _OrderedAssetEntity {
   _OrderedAssetEntity(this.order, this.entity);
 
+  // 顺序
   int order;
+
+  // 资源实体
   AssetEntity entity;
 }
 
@@ -373,6 +491,9 @@ class SelectedMapNotifier with ChangeNotifier {
   Map<String, _OrderedAssetEntity> _selectedMap = Map<String, _OrderedAssetEntity>();
 
   Map<String, _OrderedAssetEntity> get selectedMap => _selectedMap;
+
+  // 用来存放已经裁剪好的图像数据
+  Map<String, ui.Image> _imageMap = Map<String, ui.Image>();
 
   _removeFromSelectedMap(AssetEntity entity) {
     //删掉目标entity还要将排序重新整理
@@ -441,6 +562,14 @@ class SelectedMapNotifier with ChangeNotifier {
       notifyListeners();
     }
   }
+
+  addImage(String id, ui.Image image) {
+    _imageMap[id] = image;
+  }
+
+  removeImage(String id) {
+    _imageMap[id] = null;
+  }
 }
 
 // 用于监听及更新裁剪预览布局的高度
@@ -475,39 +604,6 @@ class _PreviewHeightNotifier with ChangeNotifier {
 
     notifyListeners();
   }
-}
-
-// 构建标题栏
-Widget _buildAppBar() {
-  return Builder(builder: (context) {
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Expanded(
-          child: Text(context.select((SelectedMapNotifier value) => value.folderName)),
-        ),
-        GestureDetector(
-          onTap: () {
-            Map<String, _OrderedAssetEntity> result = context.read<SelectedMapNotifier>().selectedMap;
-            if (!result.isEmpty) {
-              Navigator.pop(context, result);
-            }
-          },
-          child: Container(
-            alignment: Alignment.center,
-            height: 28,
-            width: 60,
-            decoration: BoxDecoration(
-                color: context.select((SelectedMapNotifier value) => value.selectedMap.isEmpty)
-                    ? AppColor.bgWhite
-                    : AppColor.mainRed,
-                borderRadius: BorderRadius.circular(14)),
-            child: Text("完成", style: TextStyle(color: AppColor.white, fontSize: 14)),
-          ),
-        )
-      ],
-    );
-  });
 }
 
 // 约束Grid尺寸样式的delegate
