@@ -50,7 +50,7 @@ class RCTestState extends State<RCTestPage> {
 
   void _connectRC() {
     print("开始连接");
-    RongCloud.shareInstance().connect(_token, (int code, String userId) {
+    RongCloud().connect(_token, (int code, String userId) {
       print('connect result ' + code.toString());
       if (code == 0) {
         print("connect success userId" + userId);
@@ -69,7 +69,7 @@ class RCTestState extends State<RCTestPage> {
   }
 
   void _disconnectRC() {
-    RongCloud.shareInstance().disconnect();
+    RongCloud().disconnect();
     setState(() {
       _status = "已断开连接";
     });
