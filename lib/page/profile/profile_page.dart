@@ -9,7 +9,7 @@ class ProfilePage extends StatelessWidget {
     return Center(
       child: FlatButton(child: Text("我的页"),
       onPressed: (){
-      AppRouter.navigatorToLogin(context);
+      AppRouter.navigateToLoginPage(context);
       },),
     );
   }

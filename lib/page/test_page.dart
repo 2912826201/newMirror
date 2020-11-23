@@ -6,7 +6,6 @@ import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/user_notifier.dart';
-import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/media_test_page.dart';
 import 'package:mirror/page/qiniu_test_page.dart';
 import 'package:mirror/route/router.dart';
@@ -22,7 +21,6 @@ class TestPage extends StatefulWidget {
 }
 
 class _TestState extends State<TestPage> {
-
   @override
   Widget build(BuildContext context) {
     print("测试页");
@@ -149,6 +147,12 @@ class _TestState extends State<TestPage> {
                   AppRouter.navigateToRCTestPage(context, context.read<UserNotifier>().user);
                 },
                 child: Text("Fluro跳转传参测试"),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  AppRouter.navigateToLoginPage(context);
+                },
+                child: Text("去登录"),
               ),
             ],
           ),

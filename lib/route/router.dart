@@ -26,7 +26,7 @@ class AppRouter {
     router.define(pathMain, handler: handlerMain);
     router.define(pathRCTest, handler: handlerRCTest);
     router.define(pathMediaPicker, handler: handlerMediaPicker);
-    router.define(pathLogin, handler: handlerLogin, transitionType: TransitionType.inFromLeft);
+    router.define(pathLogin, handler: handlerLogin);
     router.define(pathLike, handler: handlerLike);
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
@@ -61,12 +61,12 @@ class AppRouter {
     _navigateToPage(context, pathMediaPicker, map, callback: callback);
   }
 
-  static void navigatorToLogin(BuildContext context){
-    _navigateToPage(context, pathLogin,{});
+  static void navigateToLoginPage(BuildContext context) {
+    _navigateToPage(context, pathLogin, {});
   }
 
   static void navigateToLikePage(BuildContext context) {
     Map<String, dynamic> map = Map();
-    _navigateToPage(context, pathLike,map);
+    _navigateToPage(context, pathLike, map);
   }
 }

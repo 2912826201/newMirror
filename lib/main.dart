@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 
 import 'api/user_api.dart';
 import 'config/application.dart';
-import 'config/config.dart';
 import 'data/dto/token_dto.dart';
 import 'data/model/token_model.dart';
 import 'data/notifier/token_notifier.dart';
