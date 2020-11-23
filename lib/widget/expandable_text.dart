@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+// 收起展开的文字
 class ExpandableText extends StatefulWidget {
   final String text;
   final int maxLines;

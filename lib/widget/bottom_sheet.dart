@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
-
+// 未使用flutter的底部修改
 const Duration _bottomSheetDuration = Duration(milliseconds: 240);
 const double _minFlingVelocity = 700.0;
 const double _closeProgressThreshold = 0.5;

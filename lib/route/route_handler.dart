@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/page/feed/like.dart';
 import 'package:mirror/page/login/login_page.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
@@ -27,9 +28,18 @@ var handlerRCTest = Handler(handlerFunc: (BuildContext context, Map<String, List
 
 var handlerMediaPicker = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return MediaPickerPage(data["maxImageAmount"], data["mediaType"]);
+  return MediaPickerPage(
+    data["maxImageAmount"],
+    data["mediaType"],
+    data["needCrop"],
+    cropOnlySquare: data["cropOnlySquare"],
+  );
 });
 
 var handlerLogin = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params){
   return LoginPage();
  });
+
+var handlerLike = Handler(handlerFunc: (BuildContext context, Map<String,List<String>> params) {
+  return Like();
+});

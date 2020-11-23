@@ -53,7 +53,18 @@ dependencies:
   sliding_up_panel: ^0.3.6
   # 测试用从相册或相机获取图片的库
   image_picker: ^0.6.7+14
-
+  # 轮播图插件
+  flutter_swiper: ^1.1.6
+  # 区分设备
+  device_info: ^1.0.0
+  # 列表交错动画
+  flutter_staggered_animations: "^0.1.2"
+  # 页面过渡动画此暂时运用到图片过渡
+  animations: ^1.1.1
+  # ListView滚动插件
+  scroll_to_index: ^1.0.6
+  # 网络图片缓存
+  cached_network_image: ^2.3.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -69,20 +80,19 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-    # To add assets to your application, add an assets section, like this:
+  # To add assets to your application, add an assets section, like this:
+  # assets:
+  #   - images/a_dot_burr.jpeg
+  #   - images/a_dot_ham.jpeg
   assets:
     - images/
     - images/resource/
     - images/resource/2.0x/
     - images/resource/3.0x/
-    - images/resource/Nav_search_icon .png
+    - images/resource/2.0x/ic_big_nav_closepage@2x.png
     - images/test/
     - images/test/2.0x/
     - images/test/3.0x/
-
-
-
-
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

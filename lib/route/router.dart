@@ -11,11 +11,13 @@ import 'package:mirror/route/route_handler.dart';
 
 class AppRouter {
   static String paramData = "data";
+
   static String pathMain = "/";
   static String pathLogin = "/login";
   static String pathTest = "/test";
   static String pathRCTest = "/rctest";
   static String pathMediaPicker = "/mediapicker";
+  static String pathLike = "/like";
 
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
@@ -25,6 +27,8 @@ class AppRouter {
     router.define(pathRCTest, handler: handlerRCTest);
     router.define(pathMediaPicker, handler: handlerMediaPicker);
     router.define(pathLogin, handler: handlerLogin, transitionType: TransitionType.inFromLeft);
+    router.define(pathLike, handler: handlerLike);
+    // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
   }
 
@@ -47,13 +51,22 @@ class AppRouter {
   }
 
   static void navigateToMediaPickerPage(
-      BuildContext context, int maxImageAmount, int mediaType, Function(dynamic result) callback) {
+      BuildContext context, int maxImageAmount, int mediaType, bool needCrop, Function(dynamic result) callback,
+      {bool cropOnlySquare}) {
     Map<String, dynamic> map = Map();
     map["maxImageAmount"] = maxImageAmount;
     map["mediaType"] = mediaType;
+    map["needCrop"] = needCrop;
+    map["cropOnlySquare"] = cropOnlySquare;
     _navigateToPage(context, pathMediaPicker, map, callback: callback);
   }
+
   static void navigatorToLogin(BuildContext context){
     _navigateToPage(context, pathLogin,{});
+  }
+
+  static void navigateToLikePage(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathLike,map);
   }
 }

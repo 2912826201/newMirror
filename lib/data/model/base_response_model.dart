@@ -13,10 +13,10 @@ class BaseResponseModel {
 
   BaseResponseModel({this.data, this.code, this.message});
 
-  BaseResponseModel.fromJson(Map<String, dynamic> jsonMap) {
-    data = jsonMap["data"];
-    code = jsonMap["code"];
-    message = jsonMap["message"];
+  BaseResponseModel.fromJson(Map<String, dynamic> json) {
+    data = json["data"];
+    code = json["code"];
+    message = json["message"];
   }
 
   Map<String, dynamic> toJson() {

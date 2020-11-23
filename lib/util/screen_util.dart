@@ -10,12 +10,13 @@ class ScreenUtil {
     this.allowFontScaling = false,
     // dp
     this.maxPhysicalSize = 480,
+    this.bottomHeight = 0,
   });
 
   static void init(
-      {double width = 1080, double height = 1920, bool allowFontScaling = false, double maxPhysicalSize = 480}) {
+      {double width = 1080, double height = 1920, bool allowFontScaling = false, double maxPhysicalSize = 480, double bottomHeight = 0}) {
     _instance = ScreenUtil._(
-        width: width, height: height, allowFontScaling: allowFontScaling, maxPhysicalSize: maxPhysicalSize);
+        width: width, height: height, allowFontScaling: allowFontScaling, maxPhysicalSize: maxPhysicalSize,bottomHeight: bottomHeight);
   }
 
   static ScreenUtil get instance => _instance;
@@ -26,6 +27,7 @@ class ScreenUtil {
   double height;
   bool allowFontScaling; // 是否允许字体缩放
   double maxPhysicalSize; // 最高尺寸
+  double bottomHeight; // 底部安全距离
   /**
    *  手机屏幕的物理分辨率
    */
@@ -77,7 +79,7 @@ class ScreenUtil {
   double get statusBarHeight => _statusBarHeight;
 
   ///底部安全区距离 dp
-  double get bottomBarHeight => _bottomBarHeight;
+  double get bottomBarHeight => bottomHeight;
 
   ///实际的dp与设计稿px的比例
   double get scaleWidth => _screenWidth / instance.width;

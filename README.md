@@ -30,3 +30,9 @@ samples, guidance on mobile development, and a full API reference.
 2.颜色：统一使用AppColor中的颜色。禁止直接使用Colors中的常量或通过Color.fromRGBO等方法构建颜色。
 3.文字：之后会统一管理APP中用到的文字。暂时先写到各个页面代码中。
 
+## 开发流程
+一、页面路由中新建一个页面的跳转方法
+1./route/router.dart中新建路径。
+2./route/route_handler.dart中编写处理页面入参及创建页面的handler。
+3./route/router.dart的configureRouter方法中加入新建的路径和handler的对应配置。
+4./route/router.dart中编写navigateToXXX，实际规范入参并开放调用的跳转页面方法。

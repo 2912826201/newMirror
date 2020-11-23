@@ -1,7 +1,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
-
+// 富文本文字
 // RichTextWidget
 class MyRichTextWidget extends StatelessWidget {
   final Text defaultText;

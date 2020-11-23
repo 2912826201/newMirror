@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
 
-import 'gallery_grid.dart';
+import 'gallery_page.dart';
 
 /// media_picker_page
 /// Created by yangjiayi on 2020/11/9.
 
+//TODO 进这个页面前就要请求一下权限 不然很可能会因权限问题导致页面有问题
+
+// 各tab页的index
 int _galleryIndex = 0; // 相册
 int _photoIndex = 1; // 拍照
 int _videoIndex = 2; // 拍视频
@@ -16,10 +20,13 @@ int typeImage = 0;
 int typeImageAndVideo = 1;
 
 class MediaPickerPage extends StatefulWidget {
-  MediaPickerPage(this.maxImageAmount, this.mediaType, {Key key}) : super(key: key);
+  MediaPickerPage(this.maxImageAmount, this.mediaType, this.needCrop, {Key key, this.cropOnlySquare = false})
+      : super(key: key);
 
   final int maxImageAmount;
   final int mediaType;
+  final bool needCrop;
+  final bool cropOnlySquare;
 
   @override
   _MediaPickerState createState() => _MediaPickerState();
@@ -38,9 +45,11 @@ class _MediaPickerState extends State<MediaPickerPage> {
         //需要在这里就把provider创建出来，以便页面内的所有context都能在provider下
         ChangeNotifierProvider(
             create: (_) => SelectedMapNotifier(widget.maxImageAmount, 1),
-            child: GalleryGrid(
+            child: GalleryPage(
               maxImageAmount: widget.maxImageAmount,
               requestType: widget.mediaType == typeImageAndVideo ? RequestType.common : RequestType.image,
+              needCrop: widget.needCrop,
+              cropOnlySquare: widget.cropOnlySquare,
             )));
     _pageList.add(Container(
       color: Colors.grey,
@@ -61,35 +70,15 @@ class _MediaPickerState extends State<MediaPickerPage> {
         physics: NeverScrollableScrollPhysics(),
       ),
       bottomNavigationBar: BottomAppBar(
+        color: AppColor.bgBlack,
         child: SizedBox(
           height: 48,
           child: Flex(
             direction: Axis.horizontal,
             children: [
-              Expanded(
-                  flex: 1,
-                  child: FlatButton(
-                    height: 48,
-                    padding: EdgeInsets.zero,
-                    onPressed: _onGallerySelected,
-                    child: Text("相册", style: TextStyle(color: _selectedIndex == 0 ? Colors.red : Colors.black)),
-                  )),
-              Expanded(
-                  flex: 1,
-                  child: FlatButton(
-                    height: 48,
-                    padding: EdgeInsets.zero,
-                    onPressed: _onPhotoSelected,
-                    child: Text("拍照", style: TextStyle(color: _selectedIndex == 1 ? Colors.red : Colors.black)),
-                  )),
-              Expanded(
-                  flex: 1,
-                  child: FlatButton(
-                    height: 48,
-                    padding: EdgeInsets.zero,
-                    onPressed: _onVideoSelected,
-                    child: Text("拍视频", style: TextStyle(color: _selectedIndex == 2 ? Colors.red : Colors.black)),
-                  )),
+              _buildButton(_galleryIndex, "相册", _onGallerySelected),
+              _buildButton(_photoIndex, "拍照", _onPhotoSelected),
+              _buildButton(_videoIndex, "拍视频", _onVideoSelected),
             ],
           ),
         ),
@@ -122,5 +111,35 @@ class _MediaPickerState extends State<MediaPickerPage> {
         _pageController.jumpToPage(_selectedIndex);
       });
     }
+  }
+
+  Widget _buildButton(int index, String text, Function onTap) {
+    return Expanded(
+        flex: 1,
+        child: GestureDetector(
+          onTap: onTap,
+          child: Container(
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(text,
+                    style: _selectedIndex == index
+                        ? TextStyle(fontWeight: FontWeight.w500, fontSize: 18, color: AppColor.white)
+                        : TextStyle(
+                            fontWeight: FontWeight.w400, fontSize: 16, color: AppColor.white.withOpacity(0.35))),
+                _selectedIndex == index
+                    ? Container(
+                        width: 16,
+                        height: 3,
+                        decoration: BoxDecoration(
+                          color: AppColor.mainRed,
+                          borderRadius: BorderRadius.circular(1.5),
+                        ))
+                    : Container(),
+              ],
+            ),
+          ),
+        ));
   }
 }

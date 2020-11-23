@@ -11,9 +11,9 @@ class AppConfig {
   static const String VER = "0.0.1";
 
   //各环境api请求基础路径
-  static const String _DEV_HOST = "http://alitadev.aimymusic.com";
-  static const String _MIRROR_HOST = "https://alitamirror.aimymusic.com";
-  static const String _PROD_HOST = "https://alita.aimymusic.com";
+  static const String _DEV_HOST = "http://ifdev.aimymusic.com";
+  static const String _MIRROR_HOST = "https://ifdev.aimymusic.com";
+  static const String _PROD_HOST = "https://ifdev.aimymusic.com";
 
   //根据环境获取api的host地址
   static String getApiHost() {
@@ -30,9 +30,9 @@ class AppConfig {
   }
 
   //各环境融云appkey
-  static const String _DEV_RCAPPKEY = "c9kqb3rdc4pvj";
-  static const String _MIRROR_RCAPPKEY = "c9kqb3rdc4pvj";
-  static const String _PROD_RCAPPKEY = "c9kqb3rdc4pvj";
+  static const String _DEV_RCAPPKEY = "pwe86ga5psfi6";
+  static const String _MIRROR_RCAPPKEY = "pwe86ga5psfi6";
+  static const String _PROD_RCAPPKEY = "pwe86ga5psfi6";
 
   //根据环境获取融云appkey
   static String getRCAppKey() {
