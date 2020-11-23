@@ -13,6 +13,7 @@ class MainPage extends StatefulWidget {
 
 class MainPageState extends State<MainPage> {
   int currentIndex;
+  bool isInit = false;
   final pages = [HomePage(), TestPage(), MessagePage(), ProfilePage()];
   List titles = ["首页", "训练", "消息", "我的"];
   List normalImgUrls = [
@@ -37,10 +38,17 @@ class MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     double itemWidth = MediaQuery.of(context).size.width / 5;
+    double screen_bottom = MediaQuery.of(context).padding.bottom;
     // 初始化获取屏幕数据
-    ScreenUtil.init(maxPhysicalSize: MediaQuery.of(context).size.width);
-    print(ScreenUtil.instance.screenWidthDp);
-    print("加那架飞机安检房价按房间安静房价按房间安静房间啊");
+    if (isInit == false) {
+      ScreenUtil.init(maxPhysicalSize: MediaQuery
+          .of(context)
+          .size
+          .width,bottomHeight:screen_bottom);
+      isInit = true;
+    };
+    print("初始创建底部页");
+    print(ScreenUtil.instance.bottomBarHeight);
     return Scaffold(
       // 此属性是重新计算布局空间大小
       // 内部元素要监听键盘高度必需要设置为false,

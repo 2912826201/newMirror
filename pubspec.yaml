@@ -61,6 +61,10 @@ dependencies:
   flutter_staggered_animations: "^0.1.2"
   # 页面过渡动画此暂时运用到图片过渡
   animations: ^1.1.1
+  # ListView滚动插件
+  scroll_to_index: ^1.0.6
+  # 网络图片缓存
+  cached_network_image: ^2.3.3
 dev_dependencies:
   flutter_test:
     sdk: flutter

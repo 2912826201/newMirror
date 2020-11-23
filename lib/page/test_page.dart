@@ -22,8 +22,10 @@ class TestPage extends StatefulWidget {
 }
 
 class _TestState extends State<TestPage> {
+
   @override
   Widget build(BuildContext context) {
+    print("测试页");
     print("build");
     return Scaffold(
       appBar: AppBar(

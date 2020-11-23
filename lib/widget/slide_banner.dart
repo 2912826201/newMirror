@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 // 轮播图
 class SlideBanner extends StatefulWidget {
   SlideBanner({Key key, this.list, this.height}) : super(key: key);
@@ -19,19 +20,97 @@ class SlideBanner extends StatefulWidget {
 class _SlideBannerState extends State<SlideBanner> {
   int zindex = 0; //要移入的下标
   Timer timer;
+  // scroll_to_index定位
+  AutoScrollController controller;
+  // 指示器横向布局
+  final scrollDirection = Axis.horizontal;
+  @override
+  void initState() {
+    super.initState();
+    controller = AutoScrollController(
+        viewportBoundaryGetter: () => Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
+        axis: scrollDirection);
+  }
  // 滑动回调
   autoPlay(int index) {
+    slidingPosition(index);
     print("轮播图回调");
     setState(() {
       zindex = index;
     });
   }
 
+  // 返回指示器的总宽度
   double getWidth() {
     var num = widget.list.length;
-    return num * 8.0;
+    if (num <= 5) {
+      return 3 * 8.0 + 6 + 10;
+    } else {
+      if (zindex == 0 || zindex == 1 || zindex == 2 || zindex == num -1 || zindex == num - 2 || zindex == num - 3) {
+        return 3 * 8.0 + 6 + 10;
+      }
+      if (zindex >= 3 && zindex+3 < num ) {
+        return 2 * 8.0 + 2 * 5.0 + 10 + 2;
+      }
+    }
+    return 5 * 8.0;
   }
-
+  // 通过代码滑动指示器位置。
+  slidingPosition(int index) async {
+    print("索引$index");
+    if (widget.list.length > 5) {
+      if (index >= 3 && index+2 < widget.list.length ) {
+        await controller.scrollToIndex(index - 2, preferPosition: AutoScrollPosition.begin);
+        controller.highlight(index - 2);
+      }
+      if (index == 2) {
+        await controller.scrollToIndex(index , preferPosition: AutoScrollPosition.end);
+        controller.highlight(index);
+      }
+    }
+  }
+  // 返回指示器内部元素size。
+  double elementSize(int index) {
+    if (widget.list.length <= 5) {
+      if (index == zindex) {
+        return 7;
+      } else {
+        return 5;
+      }
+    } else {
+      if (zindex == 0 || zindex == 1 || zindex == 2) {
+        if (index == zindex) {
+          return 7;
+        } else if (index == 4) {
+          return 3;
+        } else {
+          return 5;
+        }
+      }
+      if (zindex >= 3 && zindex+3 < widget.list.length ) {
+        if (index == zindex) {
+          return 7;
+        } else if (zindex - index == 2 ||  index -zindex == 2) {
+          return 3;
+        }else {
+          return 5;
+        }
+      }
+      if (zindex == widget.list.length -1 || zindex == widget.list.length - 2 || zindex == widget.list.length - 3) {
+        if (index == zindex) {
+          return 7;
+        } else if (index+2 == zindex && zindex == widget.list.length - 3) {
+          return 3;
+        } else if (index+3 == zindex && zindex == widget.list.length - 2) {
+          return 3;
+        } else if (index+4 == zindex && zindex == widget.list.length - 1) {
+          return 3;
+        }else {
+          return 5;
+        }
+      }
+    }
+  }
   /// 列表中的每个条目的Widget
   /// [index] 列表条目对应的索引
   buildOpenContainerItem(int index) {
@@ -81,13 +160,13 @@ class _SlideBannerState extends State<SlideBanner> {
                 itemBuilder: (BuildContext context, int index) {
                   return buildOpenContainerItem(index);
                 },
-                loop: widget.list.length > 1,
+                  loop: false,
                 onIndexChanged: (index) {
                   autoPlay(index);
                 },
-                onTap: (index) {
-                  print("点击了第$index个图片");
-                },
+                // onTap: (index) {
+                //   print("点击了第$index个图片");
+                // },
               ),
             ),
             Positioned(
@@ -113,19 +192,27 @@ class _SlideBannerState extends State<SlideBanner> {
           offstage: widget.list.length == 1,
           child:Container(
             width: getWidth(),
+            height: 10,
             margin: EdgeInsets.only(top: 5),
             // color: Colors.orange,
-            child: Row(
-                children: widget.list
-                    .asMap()
-                    .keys
-                    .map((i) => Container(
-                    width: 5,
-                    height: 5,
-                    margin: EdgeInsets.only(right: 3),
-                    decoration:
-                    BoxDecoration(color: i == zindex ? Colors.black : Colors.grey, shape: BoxShape.circle)))
-                    .toList()),
+            child: ListView.builder(
+                scrollDirection: scrollDirection,
+                controller: controller,
+                itemCount: widget.list.length,
+                // 禁止手动滑动
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return AutoScrollTag(
+                      key: ValueKey(index),
+                      controller: controller,
+                      index: index,
+                      child: Container(
+                          width: elementSize(index) ,
+                          height: elementSize(index),
+                          margin: EdgeInsets.only(right: 3),
+                          decoration: BoxDecoration(
+                              color: index == zindex ? Colors.black : Colors.grey, shape: BoxShape.circle)));
+                }),
           ),
         )
 

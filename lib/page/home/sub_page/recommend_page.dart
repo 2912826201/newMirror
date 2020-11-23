@@ -6,9 +6,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/course_model.dart';
 import 'package:mirror/data/model/sub_comments.dart';
+import 'package:mirror/page/feed/like.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -30,90 +32,65 @@ class RecommendPage extends StatefulWidget {
   RecommendPageState createState() => RecommendPageState();
 }
 
-class RecommendPageState extends State<RecommendPage> {
+class RecommendPageState extends State<RecommendPage>  with AutomaticKeepAliveClientMixin{
+
+  @override
+  bool get wantKeepAlive => true; //必须重写
+
   @override
   Widget build(BuildContext context) {
     double screen_top = ScreenUtil.instance.statusBarHeight;
     final double bottomPadding = ScreenUtil.instance.bottomBarHeight;
-    double inputHeight = MediaQuery.of(context).viewInsets.bottom;
-    print("更新整个视图$inputHeight");
-    return GestureDetector(
-      onTap: () => print("点击"),
-      onDoubleTap: () => print("双击"),
-      onLongPress: () => print("长按"),
-      onTapCancel: () => print("取消"),
-      onTapUp: (e) => print("松开"),
-      onTapDown: (e) => print("按下"),
-      onPanDown: (DragDownDetails e) {
-        commentFocus.unfocus(); // 失去焦点
-        //打印手指按下的位置
-        print("手指按下：${e.globalPosition}");
-      },
-      //手指滑动
-      onPanUpdate: (DragUpdateDetails e) {
-        print(e.delta.dx);
-        print(e.delta.dy);
-      },
-      onPanEnd: (DragEndDetails e) {
-        //打印滑动结束时在x、y轴上的速度
-        print(e.velocity);
-      },
-      child: Stack(
+
+    print("推荐页");
+    return
+      Stack(
         children: [
           Container(
+              // margin: EdgeInsets.only(),
               margin: EdgeInsets.only(bottom: 51 + bottomPadding),
-              child: NotificationListener<ScrollNotification>(
-                  onNotification: (ScrollNotification notification) {
-                    ScrollMetrics metrics = notification.metrics;
-                    // 注册通知回调
-                    if (notification is ScrollStartNotification) {
-                      // 滚动开始
-                      print('滚动开始');
-                      print("{{{{}}}}}}{{{{{{}}}}}}{{{{{}}}}}}}{{{{{}}}{}{}{}{}{}}{{}}{}}{}}{}}");
-                    } else if (notification is ScrollUpdateNotification) {
-                      // 滚动位置更新
-                      print('滚动位置更新');
-                      // 当前位置
-                      print("当前位置${metrics.pixels}");
-                    } else if (notification is ScrollEndNotification) {
-                      // 滚动结束
-                      print('滚动结束');
-                      print("{{{{}}}}}}{{{{{{}}}}}}{{{{{}}}}}}}{{{{{}}}{}{}{}{}{}}{{}}{}}{}}{}}");
-                    }
-                  },
-                  child: CustomScrollView(
-                    slivers: [
-                      // 因为SliverList并不支持设置滑动方向由CustomScrollView统一管理，所有这里使用自定义滚动
-                      // CustomScrollView要求内部元素为Sliver组件， SliverToBoxAdapter可包裹普通的组件。
-                      // 横向滑动区域
-                      SliverToBoxAdapter(
-                        child: getCourse(),
-                      ),
-                      // 垂直列表
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate((content, index) {
-                          return recommendListLayout(
-                            index: index,
-                            pc: widget.pc,
-                          );
-                        }, childCount: 19),
-                      )
-                    ],
-                  ))),
-          Positioned(
-              bottom: inputHeight,
-              left: 0,
-              child: Offstage(
-                offstage: inputHeight == 0,
-                child: Container(
-                  width: ScreenUtil.instance.screenWidthDp,
-                  color: AppColor.white,
-                  padding: EdgeInsets.only(top: 8, bottom: 8),
-                  child: commentInputBar(),
-                ),
-              ))
+              // child: NotificationListener<ScrollNotification>(
+              // onNotification: (ScrollNotification notification) {
+              //   ScrollMetrics metrics = notification.metrics;
+              //   // 注册通知回调
+              //   if (notification is ScrollStartNotification) {
+              //     // 滚动开始
+              //     print('滚动开始');
+              //   } else if (notification is ScrollUpdateNotification) {
+              //     // 滚动位置更新
+              //     print('滚动位置更新');
+              //     // 当前位置
+              //     print("当前位置${metrics.pixels}");
+              //   } else if (notification is ScrollEndNotification) {
+              //     // 滚动结束
+              //     print('滚动结束');
+              //   }
+              // },
+              child: CustomScrollView(
+                slivers: [
+                  // 因为SliverList并不支持设置滑动方向由CustomScrollView统一管理，所有这里使用自定义滚动
+                  // CustomScrollView要求内部元素为Sliver组件， SliverToBoxAdapter可包裹普通的组件。
+                  // 横向滑动区域
+                  SliverToBoxAdapter(
+                    child: getCourse(),
+                  ),
+                  // 垂直列表
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate((content, index) {
+                      return recommendListLayout(
+                          index: index,
+                          pc: widget.pc,
+                          // 可选参数 子Item的个数
+                          key: GlobalObjectKey("recommend$index"),
+                          isShowRecommendUser: false);
+                    }, childCount: 19),
+                  )
+                ],
+              )
+              // )
+              ),
         ],
-      ),
+      // )
     );
   }
 
@@ -142,6 +119,7 @@ class RecommendPageState extends State<RecommendPage> {
                   decoration: BoxDecoration(
                     // color: Colors.redAccent,
                     image: DecorationImage(image: NetworkImage(e.avatar), fit: BoxFit.cover),
+                    // image
                     borderRadius: BorderRadius.all(Radius.circular(26.5)),
                   ),
                 ),
@@ -170,18 +148,20 @@ class RecommendPageState extends State<RecommendPage> {
 }
 
 //垂直列表推荐列表布局
-class recommendListLayout extends StatefulWidget {
-  recommendListLayout({Key key, this.index, this.pc}) : super(key: key);
+// class recommendListLayout extends StatefulWidget {
+//   recommendListLayout({Key key, this.index, this.pc}) : super(key: key);
+//   final index;
+//   PanelController pc;
+//
+//   recommendListLayoutState createState() => recommendListLayoutState(index: index);
+// }
+
+class recommendListLayout extends StatelessWidget {
   final index;
   PanelController pc;
+  bool isShowRecommendUser;
 
-  recommendListLayoutState createState() => recommendListLayoutState(index: index);
-}
-
-class recommendListLayoutState extends State<recommendListLayout> {
-  final index;
-
-  recommendListLayoutState({this.index});
+  recommendListLayout({Key key, this.index, this.pc, this.isShowRecommendUser}) : super(key: key);
 
   String longText =
       "1、信息展示：- 发布人相关：（1）用户：头像、昵称/备注（2）话题：话题头像、话题名- 动态相关：发布时间、图片/视频、文字、话题名- 社交相关：点赞数、评论数、分享数- 更多…： 点击…按键出现选框：- 图片：1:1、4:5、1.9:1为常规尺寸，对于纵图或者横图，未达到比例阈值前正常展示，超过比例阈值后只展示阈值中的部分。纵图阈值4:5、横图阈值1.9:1，具体展示情况看UI图，最多展示9张照片2、点击用户区域，除【…】外跳转至个人主页3、点击【更多】，出现弹窗我的动态：删除他人动态：取消关注、举报、图片区域- 图片最多展示9张，左右滑动切换- 当只有一张图片时，没有翻页符和张数提示";
@@ -210,49 +190,50 @@ class recommendListLayoutState extends State<recommendListLayout> {
 
   @override
   Widget build(BuildContext context) {
-    double screen_width = MediaQuery.of(context).size.width;
-    return Column(
-      children: [
-        // 头部头像时间
-        getHead(screen_width),
-        // 图片区域
-        SlideBanner(height: 200, list: PhotoUrl),
-        // 点赞，转发，评论三连区域
-        getTripleArea(num: 3, pc: widget.pc),
-        // 课程信息和地址
-        Container(
-          margin: EdgeInsets.only(left: 16, right: 16),
-          // color: Colors.orange,
-          width: screen_width,
-          child: getCourseInfo(tags),
-        ),
-        // 文本文案
-        Container(
-          margin: EdgeInsets.only(left: 16, right: 16, bottom: 8),
-          child: ExpandableText(
-            text: longText,
-            maxLines: 2,
-            style: TextStyle(fontSize: 14, color: Colors.black),
-          ),
-        ),
-        getAttention(this.index),
-        // 评论文本
-        commentLayout(
-          commenNum: 4,
-        ),
-        // 输入框
-        commentInputBox(),
-        // 分割块
-        Container(
-          height: 18,
-          color: Colors.white,
-        )
-      ],
-    );
+    double screen_width = ScreenUtil.instance.screenWidthDp;
+    return  Column(
+          children: [
+            // 头部头像时间
+            getHead(screen_width, context),
+            // 图片区域
+            SlideBanner(height: 200, list: PhotoUrl),
+            // 点赞，转发，评论三连区域
+            getTripleArea(num: 3, pc: pc),
+            // 课程信息和地址
+            Container(
+              margin: EdgeInsets.only(left: 16, right: 16),
+              // color: Colors.orange,
+              width: screen_width,
+              child: getCourseInfo(tags),
+            ),
+            // 文本文案
+            Container(
+              margin: EdgeInsets.only(left: 16, right: 16, bottom: 8),
+              child: ExpandableText(
+                text: longText,
+                maxLines: 2,
+                style: TextStyle(fontSize: 14, color: Colors.black),
+              ),
+            ),
+            // 评论文本
+            commentLayout(
+              commenNum: 4,
+            ),
+            // 输入框
+            commentInputBox(),
+            // 推荐用户
+            getAttention(this.index, this.isShowRecommendUser),
+            // 分割块
+            Container(
+              height: 18,
+              color: Colors.white,
+            )
+          ],
+        );
   }
 
   // 头部
-  Widget getHead(var width) {
+  Widget getHead(double width, BuildContext context) {
     return Container(
         height: 62,
         child: Row(
@@ -261,7 +242,8 @@ class recommendListLayoutState extends State<recommendListLayout> {
             Container(
               margin: EdgeInsets.only(left: 16, right: 11),
               child: CircleAvatar(
-                backgroundImage: NetworkImage("https://pic2.zhimg.com/v2-639b49f2f6578eabddc458b84eb3c6a1.jpg"),
+                backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
+                // backgroundImage: NetworkImage("https://pic2.zhimg.com/v2-639b49f2f6578eabddc458b84eb3c6a1.jpg"),
                 maxRadius: 19,
               ),
             ),
@@ -351,16 +333,9 @@ class recommendListLayoutState extends State<recommendListLayout> {
   }
 
   // 列表3的推荐书籍
-  Widget getAttention(var index) {
-    if (index == 3) {
-      return Container(height: 100, width: 600, color: Colors.redAccent);
-    }
-    if (index == 1) {
-      return Container(
-        height: 80,
-        width: 600,
-        color: Colors.lightBlueAccent,
-      );
+  Widget getAttention(var index, bool isShowRecommendUser) {
+    if (index == 2 && isShowRecommendUser) {
+      return attentionUser();
     }
     return Container(
       width: 0,
@@ -383,7 +358,7 @@ class TagItem extends StatelessWidget {
     // 课程边框最大宽度
     double maxWidth = (screenWidth - 32 - 12) * 0.75; //减去两遍间距 32，再减去和地址的间距12.按照需求最大占剩下的4分之3，地址最大占4分之一
     // 文本最大宽度
-    double textMaxWidth = maxWidth - 16 - 16 - 3; // 文本最大宽度要减去二变间距16，图片 16，文本和图片间距3.
+    double textMaxWidth = maxWidth - 16 - 16 - 3; // 文本最大宽度要减去两边间距16，图片 16，文本和图片间距3.
     // 获取文本宽度
     double textWidth = getTextSize(text, TextStyle(fontSize: 12)).width;
     // 获取背景边框宽度
@@ -425,8 +400,9 @@ class TagItem extends StatelessWidget {
     if (textWidth > getTextWidth()) {
       String frontText = textStr.substring(0, getTextWidth() ~/ 12);
       if (interceptNum(frontText) > 0) {
-        // print(textStr.substring(0, (getTextWidth() ~/ 12 + interceptNum(frontText))));
-        return textStr.substring(0, (getTextWidth() ~/ 12 + (interceptNum(frontText) ~/ 1.8))) + "...";
+        return textStr.substring(
+                0, (getTextWidth() ~/ 12 + (interceptNum(frontText) ~/ (Platform.isIOS ? 2.1 : 1.5)))) +
+            "...";
       }
       ;
       return frontText + "...";
@@ -486,17 +462,23 @@ class TagItem extends StatelessWidget {
 }
 
 //  点赞，转发，评论三连区域
-class getTripleArea extends StatefulWidget {
+// class getTripleArea extends StatefulWidget {
+//   var model;
+//   int num;
+//   PanelController pc;
+//
+//   getTripleArea({Key key, this.model, this.num, this.pc}) : super(key: key);
+//
+//   getTripleAreaState createState() => getTripleAreaState();
+// }
+
+class getTripleArea extends StatelessWidget {
   var model;
   int num;
   PanelController pc;
 
   getTripleArea({Key key, this.model, this.num, this.pc}) : super(key: key);
 
-  getTripleAreaState createState() => getTripleAreaState();
-}
-
-class getTripleAreaState extends State<getTripleArea> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -504,62 +486,67 @@ class getTripleAreaState extends State<getTripleArea> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Expanded(child: avatarOverlap(widget.num)),
+            Expanded(child: avatarOverlap(num, context)),
           ],
         ));
   }
 
   // 横排重叠头像
-  avatarOverlap(var num) {
+  avatarOverlap(var num, BuildContext context) {
     if (num == 1) {
       return Stack(
         overflow: Overflow.clip,
         children: [
-          Positioned(left: 16, top: 13.5, child: roundedAvatar()),
-          Positioned(child: roundedLikeNum(), top: 18, left: 42),
-          Positioned(top: 12, right: 16, child: roundedTriple(pc: widget.pc))
+          Positioned(left: 16, top: 13.5, child: roundedAvatar(context)),
+          Positioned(child: roundedLikeNum(context), top: 18, left: 42),
+          Positioned(top: 12, right: 16, child: roundedTriple(pc: pc))
         ],
       );
     } else if (num == 2) {
       return Stack(
         overflow: Overflow.clip,
         children: [
-          Positioned(left: 16, top: 13.5, child: roundedAvatar()),
+          Positioned(left: 16, top: 13.5, child: roundedAvatar(context)),
           Positioned(
-            child: roundedAvatar(),
+            child: roundedAvatar(context),
             left: 27,
             top: 13.5,
           ),
-          Positioned(child: roundedLikeNum(), top: 18, left: 53),
-          Positioned(top: 12, right: 16, child: roundedTriple(pc: widget.pc))
+          Positioned(child: roundedLikeNum(context), top: 18, left: 53),
+          Positioned(top: 12, right: 16, child: roundedTriple(pc: pc))
         ],
       );
     } else {
       return Stack(
         overflow: Overflow.clip,
         children: [
-          Positioned(top: 13.5, left: 16, child: roundedAvatar()),
-          Positioned(child: roundedAvatar(), top: 13.5, left: 27),
-          Positioned(child: roundedAvatar(), top: 13.5, left: 38),
-          Positioned(child: roundedLikeNum(), top: 18, left: 64),
+          Positioned(top: 13.5, left: 16, child: roundedAvatar(context)),
+          Positioned(child: roundedAvatar(context), top: 13.5, left: 27),
+          Positioned(child: roundedAvatar(context), top: 13.5, left: 38),
+          Positioned(child: roundedLikeNum(context), top: 18, left: 64),
           Positioned(
             top: 12,
             right: 16,
-            child: roundedTriple(pc: widget.pc),
+            child: roundedTriple(pc: pc),
           )
         ],
       );
     }
   }
- // 跳转点赞页
-  jumpLike() {
-    AppRouter.navigateToLikePage(context);
+
+  // 跳转点赞页
+  jumpLike(BuildContext context) {
+    Navigator.push(context, MaterialPageRoute(builder: (_) {
+      return Like();
+    }));
+    // AppRouter.navigateToLikePage(context);
   }
+
   // 横排头像默认值
-  roundedAvatar() {
+  roundedAvatar(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        jumpLike();
+        jumpLike(context);
       },
       child: CircleAvatar(
         backgroundImage: AssetImage("images/test/yxlm9.jpeg"),
@@ -569,12 +556,12 @@ class getTripleAreaState extends State<getTripleArea> {
   }
 
   // 横排
-  roundedLikeNum() {
+  roundedLikeNum(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        jumpLike();
+        jumpLike(context);
       },
-      child:  Container(
+      child: Container(
         // margin: EdgeInsets.only(left: 6),
         child: Text(
           "3次赞",
@@ -670,7 +657,8 @@ class commentInputBoxState extends State<commentInputBox> {
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     image: DecorationImage(
-                        image: NetworkImage('https://pic2.zhimg.com/v2-639b49f2f6578eabddc458b84eb3c6a1.jpg'),
+                        image: AssetImage("images/test/yxlm1.jpeg"),
+                        // image: NetworkImage('https://pic2.zhimg.com/v2-639b49f2f6578eabddc458b84eb3c6a1.jpg'),
                         fit: BoxFit.cover)),
               ),
               GestureDetector(
@@ -700,15 +688,17 @@ class commentInputBoxState extends State<commentInputBox> {
 }
 
 // 评论排版
-class commentLayout extends StatefulWidget {
+// class commentLayout extends StatefulWidget {
+//   commentLayout({Key key, this.commenNum}) : super(key: key);
+//   final commenNum;
+//
+//   commentayoutState createState() => commentayoutState();
+// }
+
+class commentLayout extends StatelessWidget {
   commentLayout({Key key, this.commenNum}) : super(key: key);
-  final commenNum;
-
-  commentayoutState createState() => commentayoutState();
-}
-
-class commentayoutState extends State<commentLayout> {
   var userName = ["张珊", "李思", "王武", "赵柳"];
+  final commenNum;
 
   @override
   Widget build(BuildContext context) {
@@ -721,7 +711,7 @@ class commentayoutState extends State<commentLayout> {
           Container(
               margin: EdgeInsets.only(bottom: 6),
               child: Text(
-                "共${widget.commenNum}条评论",
+                "共${commenNum}条评论",
                 style: TextStyle(fontSize: 12, color: Color.fromRGBO(153, 153, 153, 1)),
               )),
           MyRichTextWidget(
@@ -775,14 +765,429 @@ class commentayoutState extends State<commentLayout> {
   }
 }
 
-// 底部评论框区域
-class commentInputBar extends StatefulWidget {
-  commentInputBar({Key key}) : super(key: key);
+// 推荐用户
+class attentionUser extends StatefulWidget {
+  attentionUser({Key key}) : super(key: key);
 
-  commentInputBarState createState() => commentInputBarState();
+  attentionUserState createState() => attentionUserState();
 }
 
-class commentInputBarState extends State<commentInputBar> {
+class attentionUserState extends State<attentionUser> {
+  final List<String> list = [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Offstage(
+      offstage: list.length == 0,
+      child: Container(
+        child: Column(
+          children: [
+            Container(
+              margin: EdgeInsets.only(left: 16, right: 16),
+              height: 25,
+              width: ScreenUtil.instance.screenWidthDp,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "为你推荐",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColor.textPrimary1),
+                  ),
+                  Spacer(),
+                  Container(
+                      width: getTextSize("查看全部", TextStyle(fontSize: 14)).width + 20,
+                      child: Row(children: [
+                        Container(
+                          margin: EdgeInsets.only(right: 4),
+                          child: Text(
+                            "查看全部",
+                            style: TextStyle(fontSize: 14, color: AppColor.textPrimary3),
+                          ),
+                        ),
+                        MyIconBtn(
+                          width: 16,
+                          height: 16,
+                          iconSting: "images/resource/2.0x/return2x.png",
+                          onPressed: () {},
+                        )
+                      ])),
+                ],
+              ),
+            ),
+            attentionList()
+          ],
+        ),
+      ),
+    );
+  }
+
+  // 横向listView
+  attentionList() {
+    return Container(
+      margin: EdgeInsets.only(top: 18),
+      height: 190,
+      child: attentionUserAnimateList(
+        itemCount: list.length,
+        lists: list,
+        onActionFinished: (index) {
+          list.removeAt(index);
+          if (list.length == 0) {
+            setState(() {});
+          }
+          return list.length;
+        },
+      ),
+    );
+  }
+
+  // 轮播样式
+  slide() {
+    Container(
+      height: 190,
+      margin: EdgeInsets.only(top: 18),
+      child: Swiper(
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+            margin: EdgeInsets.only(right: 10),
+            color: Colors.red,
+            // width: 151,
+            height: 190,
+          );
+        },
+        itemCount: 7,
+        loop: false,
+        viewportFraction: 0.4,
+        scale: 0.9,
+      ),
+    );
+  }
+}
+
+// 推荐用户内部自定义动画List
+typedef OnActionFinished = int Function(int index); // 进行数据清除工作，并返回当前list的length
+typedef AnimateFinishedCallBack = void Function(int index); // 动画结束通知列表进行刷新操作 --- 定义的item当中使用
+
+class attentionUserAnimateList extends StatefulWidget {
+  // final IndexedWidgetBuilder itemBuilder;
+  final OnActionFinished onActionFinished;
+  int itemCount;
+  final Axis scrollDirection;
+  final bool reverse;
+  final ScrollController controller;
+  final bool primary;
+  final ScrollPhysics physics;
+  final bool shrinkWrap;
+  final EdgeInsetsGeometry padding;
+  final List<String> lists;
+
+  attentionUserAnimateList(
+      {Key key,
+      @required this.itemCount,
+      // @required this.itemBuilder,
+      @required this.onActionFinished,
+      this.scrollDirection = Axis.horizontal,
+      this.reverse = false,
+      this.controller,
+      this.primary,
+      this.physics,
+      this.shrinkWrap = false,
+      this.padding,
+      this.lists})
+      : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    return attentionUserAnimateListState();
+  }
+}
+
+class attentionUserAnimateListState<T> extends State<attentionUserAnimateList> {
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+        itemCount: widget.itemCount,
+        scrollDirection: widget.scrollDirection,
+        reverse: widget.reverse,
+        controller: widget.controller,
+        primary: widget.primary,
+        physics:
+            (widget.physics != null ? widget.physics : BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics())),
+        shrinkWrap: widget.shrinkWrap,
+        padding: widget.padding,
+        itemBuilder: (context, index) {
+          return Container(
+            margin: EdgeInsets.only(
+              left: index > 0 ? 12 : 16,
+              right: index == widget.lists.length - 1 ? 16 : 0,
+            ),
+            child: _ListItem(
+              index,
+              removeTargetItem,
+              widget.lists[index],
+            ),
+          );
+        });
+  }
+
+  // 刷新列表，替换数据
+  void removeTargetItem(int index) {
+    setState(() {
+      widget.itemCount = widget.onActionFinished(index);
+    });
+  }
+}
+
+// 自定义动画Item
+class _ListItem extends StatefulWidget {
+  final String str;
+  final int index;
+  final AnimateFinishedCallBack onAnimateFinished;
+  double dragStartPoint = 0.0;
+  double draglength = 0.0;
+
+  _ListItem(this.index, this.onAnimateFinished, this.str);
+
+  @override
+  State<StatefulWidget> createState() {
+    return _ListItemState();
+  }
+}
+
+class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
+  bool _slideEnd = false;
+  bool _sizeEnd = false;
+  var _opacity = 1.0;
+  Size _size;
+  AnimationController _slideController;
+  AnimationController _sizeController;
+
+  Animation<Offset> _slideAnimation;
+  Animation<double> _sizeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    initSlideAnimation();
+    initSizeAnimation();
+    WidgetsBinding.instance.addPostFrameCallback(onAfterRender);
+  }
+
+  @override
+  void didUpdateWidget(_ListItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    WidgetsBinding.instance.addPostFrameCallback(onAfterRender);
+  }
+
+  // 从上向下的动画
+  void initSlideAnimation() {
+    _slideController = AnimationController(vsync: this, duration: Duration(milliseconds: 250));
+    _slideAnimation = Tween(begin: Offset(0.0, 0.0), end: Offset(0.0, 1.0))
+        .animate(CurvedAnimation(parent: _slideController, curve: Curves.easeOut));
+  }
+
+  void initSizeAnimation() {
+    _sizeController = AnimationController(vsync: this, duration: Duration(milliseconds: 250));
+    _sizeAnimation =
+        Tween(begin: 1.0, end: 0.0).animate(CurvedAnimation(parent: _sizeController, curve: Curves.easeOut));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _slideController.dispose();
+    _sizeController.dispose();
+  }
+
+  void onAfterRender(Duration timeStamp) {
+    _size = context.size;
+  }
+
+  bool isToggle = false;
+
+  toggleutton() {
+    isToggle = !isToggle;
+    setState(() {});
+  }
+
+  Widget itemBuilder(BuildContext context) {
+    return AnimatedOpacity(
+        opacity: _opacity,
+        onEnd: () {
+          _slideController.forward().whenComplete(() {
+            _opacity = 1.0;
+            setState(() {
+              _slideEnd = true;
+              _sizeController.forward().whenComplete(() {
+                _sizeEnd = true;
+                // 通知list 进行数据刷新操作
+                widget.onAnimateFinished(widget.index);
+              });
+            });
+          });
+        },
+        duration: Duration(milliseconds: 250),
+        child: Container(
+          height: 190,
+          width: 151,
+          decoration: BoxDecoration(
+            //背景
+            color: Colors.white,
+            //设置四周圆角 角度
+            borderRadius: BorderRadius.all(Radius.circular(4.0)),
+            //设置四周边框
+            border: new Border.all(width: 0.5, color: AppColor.bgWhite),
+          ),
+          child: Stack(
+            children: [
+              Container(
+                margin: EdgeInsets.only(top: 6, left: 127),
+                child: MyIconBtn(
+                  width: 18,
+                  height: 18,
+                  iconSting: "images/resource/2.0x/ic_big_nav_closepage@2x.png",
+                  onPressed: () {
+                    // _slideController.forward().whenComplete(() {
+                    //   setState(() {
+                    //     _slideEnd = true;
+                    //     _sizeController.forward().whenComplete(() {
+                    //       _sizeEnd = true;
+                    //       // 通知list 进行数据刷新操作
+                    //       widget.onAnimateFinished(widget.index);
+                    //     });
+                    //   });
+                    // });
+                    setState(() {
+                      _opacity = 0;
+                    });
+                  },
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 18),
+                width: 151,
+                height: 172,
+                // child: Expanded(
+                child: Column(
+                  // mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      // backgroundImage: NetworkImage("https://pic2.zhimg.com/v2-639b49f2f6578eabddc458b84eb3c6a1.jpg"),
+                      backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
+                      maxRadius: 23.5,
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 8),
+                      child: Text(
+                        "金卡卡西${widget.str}",
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.textPrimary1),
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 2, bottom: 12),
+                      width: 100,
+                      child: Text(
+                        "夕柚和其他2位用户关注了",
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 13, color: AppColor.textSecondary),
+                      ),
+                    ),
+                    Container(
+                      width: 119,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: isToggle ? AppColor.textHint : Colors.black,
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                      ),
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          toggleutton();
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 16,
+                                height: 16,
+                                child: Image.asset(
+                                  isToggle
+                                      ? "images/resource/2.0x/return2x.png"
+                                      : "images/resource/2.0x/ic_big_nav_closepage@2x.png",
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 4,
+                              ),
+                              Container(
+                                child: Text(
+                                  isToggle ? "已关注" : "关注",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: AppColor.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                // ),
+              )
+            ],
+          ),
+        ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_slideEnd && _sizeEnd) {
+      _slideController.value = 0.0;
+      _sizeController.value = 0.0;
+      _slideEnd = false;
+      _sizeEnd = false;
+    }
+    return (_slideEnd
+        ? SizeTransition(
+            axis: Axis.horizontal,
+            sizeFactor: _sizeAnimation,
+            child: Container(
+              color: Colors.transparent,
+              height: 190,
+              width: 151,
+            ),
+          )
+        : SlideTransition(
+            position: _slideAnimation,
+            child: itemBuilder(context),
+          ));
+  }
+}
+
+// 底部评论框区域
+//   class commentInputBar extends StatefulWidget {
+//   commentInputBar({Key key}) : super(key: key);
+//
+//   commentInputBarState createState() => commentInputBarState();
+//   }
+
+class commentInputBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -923,13 +1328,13 @@ class CommentBottomSheet extends StatelessWidget {
 }
 
 // 评论抽屉内的评论列表
-class CommentBottomListView extends StatefulWidget {
-  CommentBottomListView({Key key}) : super(key: key);
+// class CommentBottomListView extends StatefulWidget {
+//   CommentBottomListView({Key key}) : super(key: key);
+//
+//   CommentBottomListViewState createState() => CommentBottomListViewState();
+// }
 
-  CommentBottomListViewState createState() => CommentBottomListViewState();
-}
-
-class CommentBottomListViewState extends State<CommentBottomListView> {
+class CommentBottomListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 头像
@@ -938,10 +1343,12 @@ class CommentBottomListViewState extends State<CommentBottomListView> {
         height: 42,
         width: 42,
         child: ClipOval(
-          child: Image.network(
-            "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif",
-            fit: BoxFit.cover,
-          ),
+          child: Image.asset("images/test/yxlm1.jpeg", fit: BoxFit.cover),
+          // (
+          //   "https://pic2.zhimg.com/v2-639b49f2f6578eabddc458b84eb3c6a1.jpg",
+          //   // "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif",
+          //   fit: BoxFit.cover,
+          // ),
         ),
       ),
     );
@@ -996,10 +1403,7 @@ class CommentBottomListViewState extends State<CommentBottomListView> {
         ),
         Text(
           '54',
-          style:TextStyle(
-              fontSize: 12,
-              color: AppColor.textSecondary
-          ) ,
+          style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
         ),
       ],
     );
@@ -1134,7 +1538,7 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
         // ),
         Expanded(
           child: Container(
-              margin: EdgeInsets.only(left: 12,right: 12),
+              margin: EdgeInsets.only(left: 12, right: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -1190,10 +1594,7 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
             ),
             Text(
               '666',
-              style:TextStyle(
-                  fontSize: 12,
-                  color: AppColor.textSecondary
-              ) ,
+              style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
             ),
           ],
         )
@@ -1208,20 +1609,14 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
     // 是否显示隐藏按钮
     if (isShowHiddenButtons) {
       return GestureDetector(
-        child: Text("─── 隐藏回复", style:TextStyle(
-            fontSize: 12,
-            color: AppColor.textSecondary
-        ) ),
+        child: Text("─── 隐藏回复", style: TextStyle(fontSize: 12, color: AppColor.textSecondary)),
         onTap: () {
           hideData();
         },
       );
     } else {
       return GestureDetector(
-        child: Text("─── 查看${count}条回复", style:TextStyle(
-            fontSize: 12,
-            color: AppColor.textSecondary
-        ) ),
+        child: Text("─── 查看${count}条回复", style: TextStyle(fontSize: 12, color: AppColor.textSecondary)),
         onTap: () {
           loadData();
         },
@@ -1261,15 +1656,9 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
                                 position: index,
                                 duration: const Duration(milliseconds: 375),
                                 child: SlideAnimation(
-                                  verticalOffset: 50.0,
-                                child: FadeInAnimation(
-                                    child: subComments(model[index])
-                                )
-                                )
-                            );
+                                    verticalOffset: 50.0, child: FadeInAnimation(child: subComments(model[index]))));
                           })),
                 ),
-
               )
             ],
           )
