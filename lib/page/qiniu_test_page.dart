@@ -5,6 +5,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mirror/api/qiniu_api.dart';
+import 'package:mirror/data/model/qiniu_token_model.dart';
 import 'package:sy_flutter_qiniu_storage/sy_flutter_qiniu_storage.dart';
 
 class QiniuTest extends StatefulWidget {
@@ -14,16 +16,21 @@ class QiniuTest extends StatefulWidget {
 
 class _QiniuTestState extends State<QiniuTest> {
   double _process = 0.0;
+  String token = "";
+  String domain = "";
 
   @override
   void initState() {
     super.initState();
   }
 
+  _getToken() async {
+    QiniuTokenModel tokenModel = await requestQiniuToken(2);
+    token = tokenModel.upToken;
+    domain = tokenModel.domain;
+  }
+
   _onUpload() async {
-    String token =
-        "YwcBjjrz_J9x5nPioouc4S7H-eb_JLxUpKV4gF4-:-698sxUdUFVkFGXHV5o3Sp8hBZc=:eyJmaWxlLXR5cGUiOjAsImZzaXplLWxpbWl0IjoyMDk3MTUyMDAsInNjb3BlIjoiYWlteW11c2ljLWRldnBpYyIsInJldHVybkJvZHkiOiJ7XCJrZXlcIjpcIiQoa2V5KVwiLFwiaGFzaFwiOlwiJChldGFnKVwiLFwiYnVja2V0XCI6XCIkKGJ1Y2tldClcIixcImZzaXplXCI6JChmc2l6ZSl9IiwiZGVhZGxpbmUiOjE2MDUyNzMyNTR9";
-    String domain = "http://devpic.aimymusic.com";
     File file = await ImagePicker.pickImage(source: ImageSource.gallery);
     if (file == null) {
       return;
@@ -44,7 +51,7 @@ class _QiniuTestState extends State<QiniuTest> {
   }
 
   String _key(File file) {
-    return DateTime.now().millisecondsSinceEpoch.toString() + '.' + file.path.split('.').last;
+    return "ifapp/" + DateTime.now().millisecondsSinceEpoch.toString() + '.' + file.path.split('.').last;
   }
 
   //取消上传
@@ -65,6 +72,10 @@ class _QiniuTestState extends State<QiniuTest> {
           children: <Widget>[
             LinearProgressIndicator(
               value: _process,
+            ),
+            RaisedButton(
+              child: Text('获取token'),
+              onPressed: _getToken,
             ),
             RaisedButton(
               child: Text('上传'),
