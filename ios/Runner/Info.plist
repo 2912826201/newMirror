@@ -22,6 +22,12 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>App正在征用相机，快点同意，否则自爆</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>App正在征用麦克风，快点同意，否则自爆</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>App正在征用相册，快点同意，否则自爆</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -29,8 +35,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
@@ -41,17 +45,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<!-- 声网SDK需要修改此配置为true -->
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
-	<!-- 相册 -->
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>App正在征用相册，快点同意，否则自爆</string>
-    <!-- 相机 -->
-    <key>NSCameraUsageDescription</key>
-    <string>App正在征用相机，快点同意，否则自爆</string>
-    <!-- 麦克风 -->
-    <key>NSMicrophoneUsageDescription</key>
-    <string>App正在征用麦克风，快点同意，否则自爆</string>
 </dict>
 </plist>

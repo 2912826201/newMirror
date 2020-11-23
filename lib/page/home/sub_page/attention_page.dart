@@ -654,7 +654,7 @@ class TikTokCommentBottomSheet extends StatelessWidget {
                     top: 15,
                     right: 16,
                     child: GestureDetector(
-                      child: Image.asset("images/resource/2.0x/ic_big_nav_closepage@2x.png",width: 18,height: 18),
+                      child: Image.asset("images/resource/ic_big_nav_closepage.png",width: 18,height: 18),
                       onTap: (){
                          pc.close();
                       },

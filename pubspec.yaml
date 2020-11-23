@@ -40,7 +40,7 @@ dependencies:
   # 本地媒体库
   photo_manager: ^0.5.8
   # 融云IM
-  rongcloud_im_plugin: ^4.0.3
+  rongcloud_im_plugin: ^4.0.4
   # 七牛上传库
   sy_flutter_qiniu_storage: ^0.2.1
   # 路由管理
@@ -69,19 +69,20 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+    # To add assets to your application, add an assets section, like this:
   assets:
     - images/
-    - images/test/
     - images/resource/
     - images/resource/2.0x/
     - images/resource/3.0x/
-    - images/resource/2.0x/ic_big_nav_closepage@2x.png
+    - images/resource/Nav_search_icon .png
+    - images/test/
     - images/test/2.0x/
     - images/test/3.0x/
+
+
+
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

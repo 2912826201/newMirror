@@ -1,10 +1,11 @@
 //融云消息接收类,单例
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 //监听消息来到的回调
 abstract class MessageObserver{
   //当注册通知后会受到的消息,第二个参数表示的是是否离线
-  Future<void> msgDidCome(Message msg,bool offLine);
+  Future<void> msgDidCome(Set<Message> msg,bool offLine);
 }
 // RCSentStatus 
 // static const int Sending = 10; //发送中
@@ -75,11 +76,9 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
    }
    //分配资源
    _alloc(){
-     for(int i= RCConversationType.Private;i<RCConversationType.System;i++){
-       Set _set =Set();
+     for(int i= RCConversationType.Private;i<=RCConversationType.System;i++){
+       Set _set =Set<MessageObserver>();
        _observers[i] = _set;
-       // ValueNotifier nf = ValueNotifier(bool);
-       // _triggers[i] = nf;
      }
    }
    //处理离线消息,需要使用到Stream和异步的支持等(但是最好做成可选的),
@@ -88,15 +87,31 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
    void _processOffLineRawMsg(Message msg,int left,bool hasPackage){
      switch(_RongCloudReceiveManager._activeThreshold){
        case true:
+         //使用缓冲的情况
        _cacheOrDrain((left==0&&hasPackage==false),msg,left);
          break;
        default:
+         //不使用缓存的情况
          _messageDispatchWithType(msg,true);
      }
    }
    //缓存以及清空
    void _cacheOrDrain(bool drain,Message msg,int left){
-     if (left == 0&&_tempCache.isEmpty){_messageDispatchWithType(msg,true);return;}
+     //单个离线信息无需缓冲
+     if (left == 0&&_tempCache.isEmpty){
+       _messageDispatchWithType(msg,true);
+       int msgType = msg.conversationType;
+       Set _toNotify = _observers[msgType];
+       Set<Message> _singleSet = Set<Message>();
+       _singleSet.add(msg);
+       //直接转发通知出去
+       _toNotify.forEach((element) async {
+         MessageObserver tt = element;
+         await tt.msgDidCome(_singleSet, true);
+       });
+       return;
+     }
+     //大于一个通知的情况
      switch (drain){
        case true:
          _drainCache();
@@ -107,9 +122,7 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
    }
    //清空消息缓存池
     _drainCache(){
-     _tempCache.forEach((element) {
-       _messageDispatchWithType(element,true);
-     });
+     _distributeForType(_tempCache);
      _tempCache.clear();
     }
     //缓存消息
@@ -149,7 +162,6 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
       assert(conversationType>=RCConversationType.Private&&conversationType<=RCConversationType.System);
       _observers[conversationType].remove(target);
    }
-
    @override
    void observeSpecificTypeMsg<T extends MessageObserver>(int conversationType, T target) {
       assert(conversationType>=RCConversationType.Private&&conversationType<=RCConversationType.System);
@@ -168,13 +180,47 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
     }
     _activeThreshold = activate;
   }
-  //消息出口下发(针对的是消息种类)
+  //将不同种类的消息打包发送
+  _distributeForType(Set<Message> msgs){
+    Map<int,Set<Message>> typeStreams = Map();
+    msgs.forEach((element) {
+      if(!typeStreams.keys.contains(element.conversationType)){
+        Set<Message> bag = Set();
+        typeStreams[element.conversationType] = bag;
+      }
+      typeStreams[element.conversationType].add(element);
+    });
+    typeStreams.forEach((key, value) {
+      _messageStreamDispatchWithType(value, key);
+    });
+  }
+  //同一种类型的消息流的发送
+   _messageStreamDispatchWithType(Set<Message> msgs,int type){
+     Set _toNotify = _observers[type];
+     _toNotify.forEach((element) async {
+       MessageObserver tt = element;
+       if(tt == null) {
+         //null对象沉默
+         _toNotify.remove(tt);
+       }else{
+         await tt.msgDidCome(msgs, true);
+       }
+     });
+   }
+  //单个消息出口下发
    _messageDispatchWithType( Message msg, bool offline)  {
    int msgType = msg.conversationType;
    Set _toNotify = _observers[msgType];
+   Set<Message> _set = Set<Message>();
+   _set.add(msg);
    _toNotify.forEach((element) async {
       MessageObserver tt = element;
-      await tt.msgDidCome(msg, offline);
+      if(tt == null) {
+        //null对象沉默
+        _toNotify.remove(tt);
+      }else {
+        await tt.msgDidCome(_set, offline);
+      }
    });
   }
    //待观察状态的消息集合

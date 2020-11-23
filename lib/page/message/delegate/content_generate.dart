@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/page/message/delegate/regular_events.dart';
 import 'package:mirror/page/message/delegate/message_types.dart';
+import 'package:mirror/page/message/message_page.dart';
 //UI的构成
-abstract class MPUiProvider{
+abstract class MPUiProxy{
   //导航栏
   Widget navigationBar();
   //页面主要内容
@@ -13,9 +14,10 @@ abstract class MPUiProvider{
   Widget notificationBanner();
   //突发型横幅（位于聊天列表上方）
   Widget emergentBanner();
+  MPUIActionPortal delegate;
 }
 //数据源
-abstract class MPModuleDataSource{
+abstract class MPDataSourceProxy{
   //会话数据源
   List chats();
   //点赞、评论ui的数据源

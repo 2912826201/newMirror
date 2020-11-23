@@ -1,21 +1,28 @@
 import 'package:flutter/cupertino.dart';
-//点赞\评论点击控件
+import 'package:flutter/material.dart';
+import 'package:mirror/constant/color.dart';
+//点赞、评论点击控件
 class MPIntercourseWidget extends StatefulWidget{
+  //背景图片
   final String backImage;
+  //下方标题
   final Text title;
-  final int badges;
+  //待读数量
+  final String badges;
+  //背景图片的颜色
   final Color imageBackColor;
+  //点击事件的绑定
   final VoidCallback onTap;
   final double width;
   final double height;
   MPIntercourseWidget({Key key,
     this.backImage,
-    this.title,
+    @required this.title,
     this.badges,
-    this.onTap,
+    @required this.onTap,
     this.imageBackColor,
-    this.width = 125.0,
-    this.height = 125.0
+    this.width = 45.0,
+    this.height = 72.5
   }):super(key: key);
   @override
   State<StatefulWidget> createState() {
@@ -24,7 +31,6 @@ class MPIntercourseWidget extends StatefulWidget{
 
 }
 class _MPIntercourseWidgetState extends State<MPIntercourseWidget>{
-  final _maxBadgesNum = 99;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -39,15 +45,38 @@ class _MPIntercourseWidgetState extends State<MPIntercourseWidget>{
             Container(
               width: 45.0,
               height: 45.0,
-              padding: EdgeInsets.all(6.5),
+              color: Colors.grey,
+              alignment: Alignment.topLeft,
+              padding: EdgeInsets.only(left: 30,),
+              //使用overFlow来制作未读消息数量,需要注意alinment的设置
               child: OverflowBox(
+                maxWidth: 300,
+                minHeight: 18,
+                alignment: Alignment.topLeft,
                 child: Container(
-
+                  height: 18,
+                  //描边的设置
+                  decoration: BoxDecoration(
+                    color: AppColor.mainRed,
+                    borderRadius: BorderRadius.circular(9),
+                    border: Border.all(
+                      color: AppColor.bgWhite,
+                      width: 0.5
+                    )
+                  ),
+                  //和内部文字的间距设置
+                  padding: EdgeInsets.only(left: 5,right: 5,top: 2,bottom: 2),
+                  child: Text(widget.badges,
+                    style: TextStyle(color: AppColor.white,
+                        fontFamily: "PingFangSC-Regular",
+                        fontSize: 12,
+                        decoration: TextDecoration.none),),
                 ),
               )
             ),
             //标题显示
-            widget.title
+            Container(child: widget.title,
+            margin: EdgeInsets.only(top: 5),)
           ],
         ),
       ),

@@ -19,7 +19,7 @@ class _TopTabState extends State<HomeTopTab> {
           flex: 23,
           child: GestureDetector(
             child: Image.asset(
-              "images/resource/2.0x/Nav_Camera_icon@2x.png",
+              "images/resource/Nav_Camera_icon.png",
               width: 28,
               height: 28,
             ),
@@ -54,7 +54,7 @@ class _TopTabState extends State<HomeTopTab> {
         Expanded(
           flex: 23,
           child: GestureDetector(
-            child: Image.asset("images/resource/2.0x/Nav_search_icon @2x.png", width: 28, height: 28),
+            child: Image.asset("images/resource/Nav_search_icon .png", width: 28, height: 28),
             onTap: () {
               print("点击了搜索");
             },
