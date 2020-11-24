@@ -34,25 +34,24 @@ class _LoginPageState extends LoginBasePageState {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        //背景图
-        _backImage(),
-        //背景图上方的其他交互性UI元素集合
-        _interactiveItems(),
-      ],
-    );
-  }
-
-  Widget _backImage() {
-    return Expanded(
-        child: Image.asset(
-      "images/test/bg.png",
-      fit: BoxFit.cover,
-      height: _backImageHeight,
+    return Scaffold(
+      body: Stack(
+        children: [
+       _backImage(),
+       _interactiveItems(),
+     ],
     ));
   }
-
+  //背景图片
+  Widget _backImage() {
+    return Container(
+      child: Image.asset("images/test/bg.png",
+      fit: BoxFit.fill,
+      width: double.infinity,
+      height: double.infinity,)
+    );
+  }
+  //可选登录选项
   Widget _interactiveItems() {
     return Container(
       color: Colors.transparent,
