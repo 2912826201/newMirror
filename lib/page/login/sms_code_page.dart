@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/data/model/token_model.dart';
 
@@ -24,7 +25,7 @@ class _SmsCodePageState extends LoginBasePageState {
   final _titleOfSendTextBtn = "验证";
   final String phoneNumber;
   final String _textfieldPlaceholder = "输入验证码";
-
+  final _maxCodeLength =4;
   //"高亮"时的按钮颜色
   final _sendSmsHighLightedColor = Color.fromRGBO(17, 17, 17, 1);
 
@@ -75,7 +76,7 @@ class _SmsCodePageState extends LoginBasePageState {
   }
   //输入合法性的判断
   bool _validationJudge() {
-    if ((inputController.text == "1234")&&(sended == true)) {
+    if ((inputController.text.length == _maxCodeLength)&&(sended == true)) {
       return true;
     }
     return false;
@@ -165,6 +166,10 @@ class _SmsCodePageState extends LoginBasePageState {
   Widget _inputArea() {
     var putfield = TextField(
       controller: inputController,
+      inputFormatters: [
+        WhitelistingTextInputFormatter.digitsOnly,
+        LengthLimitingTextInputFormatter(_maxCodeLength)
+      ],
       showCursor: true,
       decoration: InputDecoration(
           hintText: _textfieldPlaceholder,
@@ -218,9 +223,8 @@ class _SmsCodePageState extends LoginBasePageState {
   //验证/在测试服来说，验证码不需要验证，直接是1234
   _certificate()  async{
     final String  phoneType ="sms";
-    final String fixedCode = "1234";
     SmsCodePage phoneNumPage = this.widget;
-   TokenModel token = await login(phoneType, phoneNumPage.phoneNumber, fixedCode, null);
+   TokenModel token = await login(phoneType, phoneNumPage.phoneNumber, inputController.text, null);
      if (token!=null){
        print("登陆成功");
        Navigator.of(context).pushNamedAndRemoveUntil(
@@ -228,6 +232,9 @@ class _SmsCodePageState extends LoginBasePageState {
              (route) => false,//true 保留当前栈 false 销毁所有 只留下RepeatLogin
          arguments: {},
        );
+     }
+     else{
+       print("验证码错误");
      }
   }
 }
