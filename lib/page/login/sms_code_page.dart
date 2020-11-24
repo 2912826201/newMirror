@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/basic_api.dart';
+import 'package:mirror/data/model/token_model.dart';
 
 import 'login_base_page_state.dart';
 
@@ -30,7 +33,8 @@ class _SmsCodePageState extends LoginBasePageState {
   var _smsBtnTitleColor;
 
   var _smsBtnColor;
-
+  //是否一定调取后端发送了短信
+  bool sended = false;
   //默认的按钮的颜色
   final _sendSmsOriginColor = Color.fromRGBO(235, 235, 235, 1);
 
@@ -54,14 +58,14 @@ class _SmsCodePageState extends LoginBasePageState {
       }
     });
   }
-
+  //ui状态的恢复
   _recoverUi() {
     setState(() {
       _smsBtnColor = _sendSmsOriginColor;
       _smsBtnTitleColor = _sendSmsOriginTitleColor;
     });
   }
-
+  //一切就绪之后
   _everythingReady() {
     _sendSmsValid = true;
     setState(() {
@@ -69,9 +73,9 @@ class _SmsCodePageState extends LoginBasePageState {
       _smsBtnTitleColor = _sendSmsHighLightedTitleColor;
     });
   }
-
+  //输入合法性的判断
   bool _validationJudge() {
-    if (inputController.text.length > 0) {
+    if ((inputController.text == "1234")&&(sended == true)) {
       return true;
     }
     return false;
@@ -165,7 +169,7 @@ class _SmsCodePageState extends LoginBasePageState {
       decoration: InputDecoration(
           hintText: _textfieldPlaceholder,
           hintStyle: TextStyle(color: Color.fromRGBO(204, 204, 204, 1), fontFamily: 'PingFangSC', fontSize: 16),
-          suffixIcon: SmsCounterWidget(5, _smsSendApi),
+          suffixIcon: SmsCounterWidget(60, _smsSendApi,sended),
           suffixIconConstraints: BoxConstraints(minWidth: 70, maxHeight: 24.5),
           isDense: true,
           focusedBorder: UnderlineInputBorder(
@@ -180,9 +184,15 @@ class _SmsCodePageState extends LoginBasePageState {
         ));
   }
 
-  _smsSendApi() {
-    print("calling");
-    print("调取后端的接口。并且开始计时，并且使验证按钮可用");
+  _smsSendApi() async{
+  bool result = await sendSms(phoneNumber, 0);
+  if (result == true){
+    print("验证码已发送~");
+    sended = true;
+  }
+  else{
+    print("验证码发送失败");
+  }
   }
 
   ///提交区域
@@ -205,18 +215,29 @@ class _SmsCodePageState extends LoginBasePageState {
     return returns;
   }
 
-  //验证
-  _certificate() {
-    print("certificate");
+  //验证/在测试服来说，验证码不需要验证，直接是1234
+  _certificate()  async{
+    final String  phoneType ="sms";
+    final String fixedCode = "1234";
+    SmsCodePage phoneNumPage = this.widget;
+   TokenModel token = await login(phoneType, phoneNumPage.phoneNumber, fixedCode, null);
+     if (token!=null){
+       print("登陆成功");
+       Navigator.of(context).pushNamedAndRemoveUntil(
+         '/',
+             (route) => false,//true 保留当前栈 false 销毁所有 只留下RepeatLogin
+         arguments: {},
+       );
+     }
   }
 }
 
 class SmsCounterWidget extends StatefulWidget {
   final VoidCallback requestTask;
   final int seconds;
-
-  SmsCounterWidget(this.seconds, this.requestTask, {Key key})
-      : assert(seconds != null),
+  var sended;
+  SmsCounterWidget(this.seconds, this.requestTask, bool sended,{Key key})
+      : assert(seconds != null),this.sended = sended,
         super(key: key);
 
   @override
@@ -224,7 +245,7 @@ class SmsCounterWidget extends StatefulWidget {
     return _SmsCounterWidgetState(requestTask, seconds: seconds);
   }
 }
-
+                     //倒计时按钮
 class _SmsCounterWidgetState extends State<SmsCounterWidget> {
   final VoidCallback _requestTask;
 
@@ -232,7 +253,10 @@ class _SmsCounterWidgetState extends State<SmsCounterWidget> {
   final _resendText = Text(
     "重新获取",
     style: TextStyle(
-        color: Color.fromRGBO(17, 17, 17, 1), fontFamily: "PingFangSC", fontSize: 13, decoration: TextDecoration.none),
+        color: Color.fromRGBO(17, 17, 17, 1),
+        fontFamily: "PingFangSC",
+        fontSize: 13,
+        decoration: TextDecoration.none),
   );
 
   final BoxDecoration _initialBorderStyle = BoxDecoration(
@@ -314,7 +338,8 @@ class _SmsCounterWidgetState extends State<SmsCounterWidget> {
     print("initialReservations");
     _storedSeconds ??= 60;
     _resetCountingTime();
-
+    //调取接口
+    _correspRquest();
     /// 激活计时器
     _activateTimer();
   }
@@ -347,7 +372,7 @@ class _SmsCounterWidgetState extends State<SmsCounterWidget> {
       _uiForCounting = true;
     });
     _sendSmsPreparation();
-    correspRquest();
+    _correspRquest();
   }
 
   ///发送短信的本地准备
@@ -381,10 +406,11 @@ class _SmsCounterWidgetState extends State<SmsCounterWidget> {
     print("resetUi");
     _resetCountingTime();
     _uiForCounting = false;
+    this.widget.sended = false;
   }
 
   ///调取接口
-  correspRquest() {
+  _correspRquest() {
     _requestTask();
   }
 

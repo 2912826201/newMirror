@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/page/login/sms_code_page.dart';
+import 'package:mirror/util/string_util.dart';
 
 import 'login_base_page_state.dart';
 
@@ -62,6 +63,7 @@ class _PhoneLoginPageState extends LoginBasePageState {
 
   //UI复位
   _recoverUi() {
+    _sendSmsValid = false;
     setState(() {
       _smsBtnColor = _sendSmsOriginColor;
       _smsBtnTitleColor = _sendSmsOriginTitleColor;
@@ -70,7 +72,7 @@ class _PhoneLoginPageState extends LoginBasePageState {
 
   //可发送短信的条件判断
   bool _validationJudge() {
-    if (inputController.text.length >= 9) {
+    if (StringUtil.matchPhoneNumber(inputController.text)==true) {
       return true;
     }
     return false;
@@ -92,7 +94,7 @@ class _PhoneLoginPageState extends LoginBasePageState {
       onTap: () {
         FocusScope.of(context).unfocus();
       },
-      child: Container(
+         child: Container(
           padding: EdgeInsets.only(top: 40),
           color: Colors.white,
           child: Column(
@@ -137,6 +139,7 @@ class _PhoneLoginPageState extends LoginBasePageState {
   //发送验证码的函数
   _sendMessage() {
     if (_sendSmsValid == false) {
+      return;
     } else {
       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
         return SmsCodePage(phoneNumber:this.inputController.text,);
