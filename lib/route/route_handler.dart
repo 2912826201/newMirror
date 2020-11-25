@@ -16,7 +16,9 @@ import 'package:mirror/route/router.dart';
 
 // 在router中已将所有参数装进了map中，并以AppRouter.paramData字段入参，所以处理入参时先解析该map
 // 例：Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-
+var handlerIfPage = Handler(handlerFunc: (BuildContext context, Map<String,List<String>> params) {
+  return IfPage();
+});
 var handlerMain = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return MainPage();
 });
