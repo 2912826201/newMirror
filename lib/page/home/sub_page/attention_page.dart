@@ -21,8 +21,7 @@ class AttentionPage extends StatefulWidget {
   AttentionPageState createState() => AttentionPageState();
 }
 
-class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveClientMixin{
-
+class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true; //必须重写
 
@@ -88,9 +87,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         break;
       case Status.concern:
         return Container(
-            // margin: EdgeInsets.only(bottom:115),
-            margin: EdgeInsets.only(bottom: 51 + bottomPadding),
-            // color: Colors.orange,
             child: NotificationListener<ScrollNotification>(
                 onNotification: (ScrollNotification notification) {
                   ScrollMetrics metrics = notification.metrics;
@@ -114,12 +110,16 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                   child: ListView.builder(
                       itemCount: 19,
                       itemBuilder: (context, index) {
-                        return index == 0 ? Container(height: 14,) : recommendListLayout(
-                            index: index,
-                            pc: widget.pc,
-                            isShowRecommendUser: true,
-                            // 可选参数 子Item的个数
-                            key: GlobalObjectKey("attention$index"));
+                        return index == 0
+                            ? Container(
+                                height: 14,
+                              )
+                            : recommendListLayout(
+                                index: index,
+                                pc: widget.pc,
+                                isShowRecommendUser: true,
+                                // 可选参数 子Item的个数
+                                key: GlobalObjectKey("attention$index"));
                       }),
                 )));
         break;

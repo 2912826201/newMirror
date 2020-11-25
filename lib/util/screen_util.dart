@@ -14,9 +14,17 @@ class ScreenUtil {
   });
 
   static void init(
-      {double width = 1080, double height = 1920, bool allowFontScaling = false, double maxPhysicalSize = 480, double bottomHeight = 0}) {
+      {double width = 1080,
+      double height = 1920,
+      bool allowFontScaling = false,
+      double maxPhysicalSize = 480,
+      double bottomHeight = 0}) {
     _instance = ScreenUtil._(
-        width: width, height: height, allowFontScaling: allowFontScaling, maxPhysicalSize: maxPhysicalSize,bottomHeight: bottomHeight);
+        width: width,
+        height: height,
+        allowFontScaling: allowFontScaling,
+        maxPhysicalSize: maxPhysicalSize,
+        bottomHeight: bottomHeight);
   }
 
   static ScreenUtil get instance => _instance;
@@ -41,16 +49,10 @@ class ScreenUtil {
   double get _pixelRatio => window.devicePixelRatio;
 
   // 状态栏高度 dp 刘海屏会更高
-  double get _statusBarHeight =>
-      EdgeInsets
-          .fromWindowPadding(window.padding, window.devicePixelRatio)
-          .top;
+  double get _statusBarHeight => EdgeInsets.fromWindowPadding(window.padding, window.devicePixelRatio).top;
 
   // 底部安全区距离 dp
-  double get _bottomBarHeight =>
-      EdgeInsets
-          .fromWindowPadding(window.padding, window.devicePixelRatio)
-          .bottom;
+  double get _bottomBarHeight => EdgeInsets.fromWindowPadding(window.padding, window.devicePixelRatio).bottom;
 
   // 字体缩放比例
   double get _textScaleFactor => window.textScaleFactor;

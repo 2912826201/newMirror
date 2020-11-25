@@ -12,18 +12,21 @@ import 'package:mirror/route/route_handler.dart';
 class AppRouter {
   static String paramData = "data";
 
-  static String pathMain = "/";
+  static String pathMain = "/main";
   static String pathLogin = "/login";
   static String pathTest = "/test";
   static String pathRCTest = "/rctest";
   static String pathMediaPicker = "/mediapicker";
   static String pathLike = "/like";
+  static String pathIfPage = "/";
 
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
       print("ROUTE WAS NOT FOUND !!!");
     });
+
     router.define(pathMain, handler: handlerMain);
+    router.define(pathIfPage, handler: handlerIfPage);
     router.define(pathRCTest, handler: handlerRCTest);
     router.define(pathMediaPicker, handler: handlerMediaPicker);
     router.define(pathLogin, handler: handlerLogin);
