@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/constant/text_field_hint_text.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/search/search.dart';
