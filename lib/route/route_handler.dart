@@ -39,6 +39,10 @@ var handlerMediaPicker = Handler(handlerFunc: (BuildContext context, Map<String,
   );
 });
 
+var handlerLogin = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params){
+  return LoginPage();
+});
+
 var handlerLike = Handler(handlerFunc: (BuildContext context, Map<String,List<String>> params) {
   return Like();
 });

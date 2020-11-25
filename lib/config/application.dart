@@ -1,5 +1,6 @@
 import 'package:fluro/fluro.dart';
 import 'package:mirror/data/dto/token_dto.dart';
+import 'package:mirror/data/model/token_model.dart';
 
 /// application
 /// Created by yangjiayi on 2020/11/14.

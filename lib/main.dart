@@ -44,6 +44,8 @@ Future _initApp() async {
   print("token:${token.accessToken}");
   Application.token = token;
 
+  //TODO 如果token不是匿名用户则需要从库里取出保存的用户信息 库里没有的话从接口中取
+
   //初始化融云IM
   RongCloud().init();
 }
