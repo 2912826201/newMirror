@@ -9,7 +9,7 @@ class TokenModel {
   int expiresIn;
   String scope;
   int isPerfect;
-  String uid;
+  int uid;
   int anonymous;
   int isPhone;
   String jti;

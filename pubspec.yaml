@@ -65,6 +65,8 @@ dependencies:
   scroll_to_index: ^1.0.6
   # 网络图片缓存
   cached_network_image: ^2.3.3
+  # tarBar嵌套Tarbar联动
+  union_tabs: ^1.0.0+7
 dev_dependencies:
   flutter_test:
     sdk: flutter

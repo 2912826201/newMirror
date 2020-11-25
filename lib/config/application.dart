@@ -8,4 +8,8 @@ class Application {
   static FluroRouter router;
 
   static TokenDto token;
+
+  static String hintText = "";
+
+  static TokenModel tempToken;
 }

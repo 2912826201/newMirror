@@ -1,10 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/page/login/sms_code_page.dart';
 import 'package:mirror/util/string_util.dart';
 
 import 'login_base_page_state.dart';
-
 
 class PhoneLoginPage extends StatefulWidget {
   @override
@@ -72,7 +71,7 @@ class _PhoneLoginPageState extends LoginBasePageState {
 
   //可发送短信的条件判断
   bool _validationJudge() {
-    if (StringUtil.matchPhoneNumber(inputController.text)==true) {
+    if (StringUtil.matchPhoneNumber(inputController.text) == true) {
       return true;
     }
     return false;
@@ -94,7 +93,7 @@ class _PhoneLoginPageState extends LoginBasePageState {
       onTap: () {
         FocusScope.of(context).unfocus();
       },
-         child: Container(
+      child: Container(
           padding: EdgeInsets.only(top: 40),
           color: Colors.white,
           child: Column(
@@ -137,13 +136,22 @@ class _PhoneLoginPageState extends LoginBasePageState {
   }
 
   //发送验证码的函数
-  _sendMessage() {
+  _sendMessage() async {
     if (_sendSmsValid == false) {
       return;
     } else {
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-        return SmsCodePage(phoneNumber:this.inputController.text,);
-      }));
+      bool result = await sendSms(inputController.text, 0);
+
+      if (result) {
+        print("发送成功");
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+          return SmsCodePage(
+            phoneNumber: inputController.text,
+          );
+        }));
+      } else {
+        print("发送失败");
+      }
     }
   }
 
@@ -207,7 +215,8 @@ class _PhoneLoginPageState extends LoginBasePageState {
     var palceholderTextStyle =
         TextStyle(color: Color.fromRGBO(204, 204, 204, 1), fontFamily: 'PingFangSC', fontSize: 16);
     //输入框的样式
-    var inputfieldDecoration = InputDecoration(
+    var inputFieldDecoration = InputDecoration(
+        counterText: "", // 不显示计数文字
         hintText: _placeholderOfInputField,
         hintStyle: palceholderTextStyle,
         suffix: Container(
@@ -224,9 +233,11 @@ class _PhoneLoginPageState extends LoginBasePageState {
         ));
     if (_textField == null) {
       _textField = TextField(
+        maxLength: 11,
         controller: inputController,
+        keyboardType: TextInputType.phone,
         autofocus: true,
-        decoration: inputfieldDecoration,
+        decoration: inputFieldDecoration,
       );
     }
     var encapsulateBoxArea = Container(

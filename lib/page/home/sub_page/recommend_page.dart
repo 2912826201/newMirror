@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/text_field_hint_text.dart';
 import 'package:mirror/data/model/course_model.dart';
 import 'package:mirror/data/model/sub_comments.dart';
 import 'package:mirror/page/feed/like.dart';
@@ -19,6 +21,7 @@ import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/expandable_text.dart';
 import 'package:mirror/widget/rich_text_widget.dart';
 import 'package:mirror/widget/slide_banner.dart';
+import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 FocusNode commentFocus = FocusNode();
@@ -32,8 +35,7 @@ class RecommendPage extends StatefulWidget {
   RecommendPageState createState() => RecommendPageState();
 }
 
-class RecommendPageState extends State<RecommendPage>  with AutomaticKeepAliveClientMixin{
-
+class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true; //必须重写
 
@@ -43,53 +45,48 @@ class RecommendPageState extends State<RecommendPage>  with AutomaticKeepAliveCl
     final double bottomPadding = ScreenUtil.instance.bottomBarHeight;
 
     print("推荐页");
-    return
-      Stack(
-        children: [
-          Container(
-              // margin: EdgeInsets.only(),
-              margin: EdgeInsets.only(bottom: 51 + bottomPadding),
-              // child: NotificationListener<ScrollNotification>(
-              // onNotification: (ScrollNotification notification) {
-              //   ScrollMetrics metrics = notification.metrics;
-              //   // 注册通知回调
-              //   if (notification is ScrollStartNotification) {
-              //     // 滚动开始
-              //     print('滚动开始');
-              //   } else if (notification is ScrollUpdateNotification) {
-              //     // 滚动位置更新
-              //     print('滚动位置更新');
-              //     // 当前位置
-              //     print("当前位置${metrics.pixels}");
-              //   } else if (notification is ScrollEndNotification) {
-              //     // 滚动结束
-              //     print('滚动结束');
-              //   }
-              // },
-              child: CustomScrollView(
-                slivers: [
-                  // 因为SliverList并不支持设置滑动方向由CustomScrollView统一管理，所有这里使用自定义滚动
-                  // CustomScrollView要求内部元素为Sliver组件， SliverToBoxAdapter可包裹普通的组件。
-                  // 横向滑动区域
-                  SliverToBoxAdapter(
-                    child: getCourse(),
-                  ),
-                  // 垂直列表
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate((content, index) {
-                      return recommendListLayout(
-                          index: index,
-                          pc: widget.pc,
-                          // 可选参数 子Item的个数
-                          key: GlobalObjectKey("recommend$index"),
-                          isShowRecommendUser: false);
-                    }, childCount: 19),
-                  )
-                ],
-              )
-              // )
-              ),
-        ],
+    return Stack(
+      children: [
+        Container(
+            child: NotificationListener<ScrollNotification>(
+                onNotification: (ScrollNotification notification) {
+                  ScrollMetrics metrics = notification.metrics;
+                  // 注册通知回调
+                  if (notification is ScrollStartNotification) {
+                    // 滚动开始
+                    print('滚动开始');
+                  } else if (notification is ScrollUpdateNotification) {
+                    // 滚动位置更新
+                    print('滚动位置更新');
+                    // 当前位置
+                    print("当前位置${metrics.pixels}");
+                  } else if (notification is ScrollEndNotification) {
+                    // 滚动结束
+                    print('滚动结束');
+                  }
+                },
+                child: CustomScrollView(
+                  slivers: [
+                    // 因为SliverList并不支持设置滑动方向由CustomScrollView统一管理，所有这里使用自定义滚动
+                    // CustomScrollView要求内部元素为Sliver组件， SliverToBoxAdapter可包裹普通的组件。
+                    // 横向滑动区域
+                    SliverToBoxAdapter(
+                      child: getCourse(),
+                    ),
+                    // 垂直列表
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate((content, index) {
+                        return recommendListLayout(
+                            index: index,
+                            pc: widget.pc,
+                            // 可选参数 子Item的个数
+                            key: GlobalObjectKey("recommend$index"),
+                            isShowRecommendUser: false);
+                      }, childCount: 19),
+                    )
+                  ],
+                ))),
+      ],
       // )
     );
   }
@@ -191,45 +188,45 @@ class recommendListLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double screen_width = ScreenUtil.instance.screenWidthDp;
-    return  Column(
-          children: [
-            // 头部头像时间
-            getHead(screen_width, context),
-            // 图片区域
-            SlideBanner(height: 200, list: PhotoUrl),
-            // 点赞，转发，评论三连区域
-            getTripleArea(num: 3, pc: pc),
-            // 课程信息和地址
-            Container(
-              margin: EdgeInsets.only(left: 16, right: 16),
-              // color: Colors.orange,
-              width: screen_width,
-              child: getCourseInfo(tags),
-            ),
-            // 文本文案
-            Container(
-              margin: EdgeInsets.only(left: 16, right: 16, bottom: 8),
-              child: ExpandableText(
-                text: longText,
-                maxLines: 2,
-                style: TextStyle(fontSize: 14, color: Colors.black),
-              ),
-            ),
-            // 评论文本
-            commentLayout(
-              commenNum: 4,
-            ),
-            // 输入框
-            commentInputBox(),
-            // 推荐用户
-            getAttention(this.index, this.isShowRecommendUser),
-            // 分割块
-            Container(
-              height: 18,
-              color: Colors.white,
-            )
-          ],
-        );
+    return Column(
+      children: [
+        // 头部头像时间
+        getHead(screen_width, context),
+        // 图片区域
+        SlideBanner(height: 200, list: PhotoUrl),
+        // 点赞，转发，评论三连区域
+        getTripleArea(num: 3, pc: pc),
+        // 课程信息和地址
+        Container(
+          margin: EdgeInsets.only(left: 16, right: 16),
+          // color: Colors.orange,
+          width: screen_width,
+          child: getCourseInfo(tags),
+        ),
+        // 文本文案
+        Container(
+          margin: EdgeInsets.only(left: 16, right: 16, bottom: 8),
+          child: ExpandableText(
+            text: longText,
+            maxLines: 2,
+            style: TextStyle(fontSize: 14, color: Colors.black),
+          ),
+        ),
+        // 评论文本
+        commentLayout(
+          commenNum: 4,
+        ),
+        // 输入框
+        commentInputBox(),
+        // 推荐用户
+        getAttention(this.index, this.isShowRecommendUser),
+        // 分割块
+        Container(
+          height: 18,
+          color: Colors.white,
+        )
+      ],
+    );
   }
 
   // 头部
@@ -672,9 +669,14 @@ class commentInputBoxState extends State<commentInputBox> {
                     borderRadius: BorderRadius.all(Radius.circular(14)),
                     color: AppColor.bgWhite_65,
                   ),
-                  child: Text("喜欢就评论吧~"),
                 ),
                 onTap: () {
+
+                 if(widget.isUnderline) {
+                   Application.hintText = "说点什么吧~";
+                 } else {
+                   Application.hintText = "喜欢就评论吧~";
+                 }
                   // 唤醒键盘获取焦点
                   FocusScope.of(context).requestFocus(commentFocus);
                 },
@@ -1188,87 +1190,132 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
 //   }
 
 class commentInputBar extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: Platform.isIOS
-              ? ScreenUtil.instance.screenWidthDp - 32
-              : ScreenUtil.instance.screenWidthDp - 32 - 52 - 12,
-          margin: EdgeInsets.only(left: 16, right: 16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(16)),
-            color: AppColor.bgWhite_65,
-          ),
-          child: Row(
+    // ChangeNotifierProvider
+    return ChangeNotifierProvider(
+        create: (_) => CommentEnterNotifier(),
+        builder: (context, _) {
+          return Stack(
             children: [
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                    maxHeight: 80.0,
-                    minHeight: 16.0,
-                    maxWidth: Platform.isIOS
-                        ? ScreenUtil.instance.screenWidthDp - 32 - 32 - 64
-                        : ScreenUtil.instance.screenWidthDp - 32 - 32 - 64 - 52 - 12),
-                child: TextField(
-                  // 管理焦点
-                  focusNode: commentFocus,
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  //不限制行数
-                  // 光标颜色
-                  cursorColor: Color.fromRGBO(253, 137, 140, 1),
-                  scrollPadding: EdgeInsets.all(0),
-                  style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
-                  // 装饰器修改外观
-                  decoration: InputDecoration(
-                    // 去除下滑线
-                    border: InputBorder.none,
-                    // 提示文本
-                    hintText: "喜欢就评论吧~",
-                    // 提示文本样式
-                    hintStyle: TextStyle(fontSize: 14, color: AppColor.textHint),
-                    contentPadding: EdgeInsets.only(top: 2, bottom: 2, left: 16),
-                  ),
+              Container(
+                width: Platform.isIOS
+                    ? ScreenUtil.instance.screenWidthDp - 32
+                    : ScreenUtil.instance.screenWidthDp - 32 - 52 - 12,
+                margin: EdgeInsets.only(left: 16, right: 16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(16)),
+                  color: AppColor.bgWhite_65,
+                ),
+                child: Stack(
+                  children: [
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                          maxHeight: 80.0,
+                          minHeight: 16.0,
+                          maxWidth: Platform.isIOS
+                              ? ScreenUtil.instance.screenWidthDp - 32 - 32 - 64
+                              : ScreenUtil.instance.screenWidthDp - 32 - 32 - 64 - 52 - 12),
+                      child: TextField(
+                        // 管理焦点
+                        focusNode: commentFocus,
+                        // 多行展示
+                        keyboardType: TextInputType.multiline,
+                        maxLines: null,
+                        //不限制行数
+                        // 光标颜色
+                        cursorColor: Color.fromRGBO(253, 137, 140, 1),
+                        scrollPadding: EdgeInsets.all(0),
+                        style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
+                        //内容改变的回调
+                        onChanged: (text) {
+                         // 存入最新的值
+                          context.read<CommentEnterNotifier>().changeCallback(text);
+                        },
+                        // 装饰器修改外观
+                        decoration: InputDecoration(
+                          // 去除下滑线
+                          border: InputBorder.none,
+                          // 提示文本
+                          hintText: Application.hintText,
+                          // 提示文本样式
+                          hintStyle: TextStyle(fontSize: 14, color: AppColor.textHint),
+                          // 设置为true,contentPadding才会生效，TextField会有默认高度。
+                          isCollapsed: true,
+                          contentPadding: EdgeInsets.only(top: 8, bottom: 8, left: 16),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 6,
+                      right: 44,
+                      child: Container(
+                        width: 24,
+                        height: 24,
+                        color: Colors.redAccent,
+                      ),
+                    ),
+                    Positioned(
+                        right: 16,
+                        bottom: 6,
+                        child: Container(
+                          width: 24,
+                          height: 24,
+                          color: Colors.redAccent,
+                        ))
+                    // MyIconBtn()
+                  ],
                 ),
               ),
-              Container(
-                width: 24,
-                height: 24,
-                color: Colors.redAccent,
-                margin: EdgeInsets.only(left: 12),
-              ),
-              Container(
-                width: 24,
-                height: 24,
-                color: Colors.redAccent,
-                margin: EdgeInsets.only(left: 4),
-              )
-              // MyIconBtn()
+              Positioned(
+                  right: 16,
+                  bottom: 2,
+                  child: Offstage(
+                    offstage: Platform.isIOS,
+                    child: GestureDetector(
+                        onTap: () {
+                          // 读取输入框最新的值
+                          print(context.read<CommentEnterNotifier>().textFieldStr);
+                          print("点击生效");
+                        },
+                        child: IgnorePointer(
+                          // 监听输入框的值==""使外层点击不生效。非""手势生效。
+                          ignoring: context.watch<CommentEnterNotifier>().textFieldStr == "",
+                          child: Container(
+                              // padding: EdgeInsets.only(top: 6,left: 12,bottom: 6,right: 12),
+                              height: 32,
+                              width: 52,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(16)),
+                                // 监听输入框的值动态改变样式
+                                color: context.watch<CommentEnterNotifier>().textFieldStr != ""
+                                    ? AppColor.textPrimary1
+                                    : AppColor.textSecondary,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "发送",
+                                  style: TextStyle(color: AppColor.white, fontSize: 14),
+                                ),
+                              )),
+                        )),
+                  ))
             ],
-          ),
-        ),
-        Offstage(
-          offstage: Platform.isIOS,
-          child: Container(
-              // padding: EdgeInsets.only(top: 6,left: 12,bottom: 6,right: 12),
-              height: 32,
-              width: 52,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(16)),
-                color: AppColor.textPrimary1,
-              ),
-              child: Center(
-                child: Text(
-                  "发送",
-                  style: TextStyle(color: AppColor.white, fontSize: 14),
-                ),
-              )),
-        )
-      ],
-    );
+          );
+        });
   }
 }
+// 输入框输入文字的监听
+class CommentEnterNotifier extends ChangeNotifier {
+  CommentEnterNotifier({this.textFieldStr});
+  String textFieldStr = "";
+  changeCallback(String str) {
+    this.textFieldStr = str;
+    notifyListeners();
+  }
+}
+
 
 // 底部评论抽屉
 class CommentBottomSheet extends StatelessWidget {
@@ -1672,3 +1719,4 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
     return subCommentsList(subModel);
   }
 }
+

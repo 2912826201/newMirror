@@ -27,12 +27,25 @@ samples, guidance on mobile development, and a full API reference.
 
 二、封装属性、方法调用
 1.页面跳转：统一调用AppRouter.navigateToXXX方法，XXX为页面名。禁止直接使用Navigator.push或fluro的navigateTo等方法。
-2.颜色：统一使用AppColor中的颜色。禁止直接使用Colors中的常量或通过Color.fromRGBO等方法构建颜色。
+2.颜色：统一使用AppColor中的颜色。禁止直接使用Colors中的常量或通过Color.fromRGBO等方法构建颜色。如需要AppColor中的颜色的指定透明度的
+颜色时。使用withOpacity方法设置透明度。
 3.文字：之后会统一管理APP中用到的文字。暂时先写到各个页面代码中。
 
-## 开发流程
+## 开发指南
 一、页面路由中新建一个页面的跳转方法
 1./route/router.dart中新建路径。
 2./route/route_handler.dart中编写处理页面入参及创建页面的handler。
 3./route/router.dart的configureRouter方法中加入新建的路径和handler的对应配置。
 4./route/router.dart中编写navigateToXXX，实际规范入参并开放调用的跳转页面方法。
+
+二、接口网络请求方法
+1.在/api路径下新建对应业务的dart文件。
+2.新增接口路径的常量。
+3.新增请求接口的异步方法，根据需求对入参做一定的约束要求。
+4.入参的Map中，如无必要不要将值为null的键值对写入。
+5.调用api.dart中的requestApi方法执行请求，路径和参数是必需的入参，认证方法一般不需要传入仅在几个特殊接口中设置。
+6.处理requestApi方法返回的BaseResponseModel。该model中isSuccess表示请求是否顺利完成，而非接口对应的业务成功执行。所以还应根据需求对
+不同的code做具体处理。
+
+三、token的管理与用户登录状态监听
+待完善
