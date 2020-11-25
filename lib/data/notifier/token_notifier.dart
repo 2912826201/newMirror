@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/token_dto.dart';
 
 /// token_notifier
@@ -11,8 +12,12 @@ class TokenNotifier with ChangeNotifier {
 
   TokenDto get token => _token;
 
+  bool get isLoggedIn => _token != null && _token.anonymous == 0 && _token.isPhone == 1 && _token.isPerfect == 1;
+
   void setToken(TokenDto token) {
     _token = token;
+    //要将全局的token赋值
+    Application.token = token;
     notifyListeners();
   }
 }

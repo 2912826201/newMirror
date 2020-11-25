@@ -568,7 +568,7 @@ class SelectedMapNotifier with ChangeNotifier {
   }
 
   removeImage(String id) {
-    _imageMap[id] = null;
+    _imageMap.remove(id);
   }
 }
 
