@@ -5,7 +5,7 @@ import 'package:mirror/page/message/delegate/system_service_events.dart';
 import 'package:mirror/page/message/message_page.dart';
 
 //消息界面UI的Proxy
-abstract class MPUiProxy extends MPNetworkEvents {
+abstract class MPUiProxy implements MPNetworkEvents {
   //导航栏
   Widget navigationBar();
 

@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'dart:io';
+
+import 'package:flutter/material.dart';
 enum IFPlatForm{
    IOS,
    ANDROID
@@ -7,6 +9,7 @@ enum IFPlatForm{
 abstract class PlateFormCheck{
   IFPlatForm platForm();
 }
+//网络情况报告页面
  class NetPage extends StatelessWidget implements PlateFormCheck{
    @mustCallSuper
    IFPlatForm platForm(){
@@ -36,7 +39,31 @@ class AndroidNetPage extends NetPage implements PlateFormCheck{
   }
   @override
   Widget build(BuildContext context) {
+   return Column(
+     children: [
+       //头部导航栏
+       Row(
+         children: [
+           Stack(
+             alignment: Alignment.center,
+             children: [
+              Row(children: [
 
+              ],),
+
+
+             ] ,
+           )
+         ],
+       ),
+       //文字显示区域
+       Container(
+         child: Wrap(
+
+         ),
+       )
+     ],
+   );
   }
 
 }

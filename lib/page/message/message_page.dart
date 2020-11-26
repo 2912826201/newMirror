@@ -57,19 +57,25 @@ class _MessagePageState extends State<MessagePage>
      super.initState();
    }
 
-  //一些注册绑定类型的事情
-  _registrations() {
+   //一些注册绑定类型的事情
+   _registrations() {
     //考虑到此页面可能会涉及到消息到来时情景的处理,所以需要进行注册一下
     RongCloudReceiveManager.shareInstance().observeAllMsgs(this);
-  }
+   }
    //数据proxy
    @override
    MPDataSourceProxy dataSource;
    //ui_proxy
    @override
    MPUiProxy uiProvider;
+
+    //需要进行振动等向controller反馈的事件
+    @override
+    void feedBackForSys() {
+
+    }
    //初始化和分配资源的事情
-   _allocations() {
+    _allocations() {
     //UI代理和数据代理生成//
     //数据源
     dataSource = _MessagePageDataSource();
@@ -86,8 +92,8 @@ class _MessagePageState extends State<MessagePage>
     }
    //当删除一个会话cell时调用
     @override
-   // ignore: non_constant_identifier_names
-   void didDelete_a_Chat(MPChatVarieties type) {
+    // ignore: non_constant_identifier_names
+    void didDelete_a_Chat(MPChatVarieties type) {
      // TODO: implement didDelete_a_Chat
     }
    //发生点赞、评论、@事件时
@@ -105,12 +111,12 @@ class _MessagePageState extends State<MessagePage>
     void willDisappear() {
      // TODO: implement willFade
    }
-   //社交时间到来时调用
-   @override
-   void eventsDidCome() {
-    // TODO: implement eventsDidCome
-   }
-   //当网络连接丢失时
+
+   // 下方均为向ui发送消息来处理对应事件，虽然本质上还是
+   // ui将消息代理出来本controller处理，但是可以给ui本身一次处理事件的机会，让controller内部
+   // 事件处理相对清晰一些
+
+   //当网络连接丢失时，向ui源发送对应消息使其变化，
    @override
    void loseConnection() {
     uiProvider.reconnected();
@@ -125,19 +131,58 @@ class _MessagePageState extends State<MessagePage>
    void connecting() {
     uiProvider.connecting();
    }
-   //开启系统通知，通常为跳转到手机的系统设置页面
+   //检测到需要开启系统通知后调用
    @override
-   void activateNotification() {
-    // TODO: implement activateNotification
+   void activateNotificationBanner() {
+    uiProvider.activateNotificationBanner();
    }
-   //有及时消息来临时调用，ui源的修改向ui源发送消息，见MPUiProxy接口
+   //检测到系统通知已经被打开，需要关闭开启通知的横幅
+   @override
+   void dismissNotificationBanner() {
+    uiProvider.dismissNotificationBanner();
+   }
+   ////////////////////////////////////
+   //MPBusiness内协议（接口）
+   ////////////////////////////////////
+    //社交事件到来时调用（通常是调取服务器接口发现未读数不为0）
+    @override
+    void eventsDidCome() {
+
+    }
+
    @override
    void imArrived() {
-     // TODO: implement imArrived
+
    }
+
+   //////////////////////////////////////
+   /////////////////////////////////////
+
+   //  -------------------代理------------------------//
    //融云消息的注册的新消息来临的回调，可以选择性去调用imArrived()去执行ui上的变化
    @override
    Future<void> msgDidCome(Set<Message> msg, bool offLine) {
+      
+      //调取一下页面的消息来临的函数，让页面本身做一些处理
+      this.imArrived();
+      
+      //只有一条消息的情况，一般即为及时的消息
+      if (msg.length == 1){
+       _manipulateRegularMsg(msg.first);
+      }
+      //以消息集合的方式处理，一般为离线消息的来临
+      else{
+      _manipulateOffLineMessage(msg);
+      }
+   }
+
+   //单个在线信息来到的处理
+   void _manipulateRegularMsg(Message msg){
+
+   }
+   //列表性离线信息的来临
+   void _manipulateOffLineMessage(Set<Message> msgs){
+
    }
    //UI源发送来的交互事件
    @override
@@ -181,49 +226,48 @@ class _MessagePageState extends State<MessagePage>
     }
   }
 
-   //需要进行振动等事件
-   @override
-   void feedBackForSys() {
-    // TODO: implement sysfeedBack
-   }
-
    //给聊天cell提供数据
-  @override
-  List<ChatModel> imCellData() {
+   @override
+   List<ChatModel> imCellData() {
    return dataSource.imCellData();
-  }
-  //及时会话的高度的ui代理
-  @override
-  double cellHeightAtIndex(int index) {
+   }
+   //及时会话的高度的ui代理
+   @override
+   double cellHeightAtIndex(int index) {
     return dataSource.cellHeightAtIndex(index);
-  }
-  //社交事件未读数
+   }
+   //社交事件未读数
    @override
    Map<MPIntercourses, int> unreadOfIntercources() {
    return dataSource.unreadOfIntercources();
    }
 
-  
+  @override
+  void newMsgsArrive(Set<Message> msgs) {
+    // TODO: implement newMsgsArrive
+  }
+   //-------------------------------------------------------------------//
 }
-//即时消息数据源
-abstract class MPIMDataSource{
+ //即时消息数据源
+ abstract class MPIMDataSource{
+  void newMsgsArrive(Set<Message> msgs);
   //返回即时聊天的数据集
   List<ChatModel>  imCellData();
   double cellHeightAtIndex(int index);
-}
-//社交事件未读数数据源
-abstract class MPInterCourcesDataSource{
+ }
+ //社交事件未读数数据源
+ abstract class MPInterCourcesDataSource{
   Map<MPIntercourses,int> unreadOfIntercources();
-}
-//消息界面的点击等事件
-abstract class MPUIAction {
-void action(String identifier, {payload: Map});
-}
-//ui绑定的函数出口
-abstract class MPUIActionAndDataPipe implements MPIMDataSource,MPUIAction,MPInterCourcesDataSource{
-}
-//消息页面的ui代理类
-class _MessagePageUiProvider implements MPUiProxy {
+ }
+ //消息界面的点击等事件
+ abstract class MPUIAction {
+ void action(String identifier, {payload: Map});
+ }
+ //ui绑定的函数出口接口
+ abstract class MPUIActionAndDataPipe implements MPIMDataSource,MPUIAction,MPInterCourcesDataSource{
+ }
+ //消息页面的ui代理类
+ class _MessagePageUiProvider implements MPUiProxy {
   //交互事件及数据代理
   MPUIActionAndDataPipe dataActionPipe;
   //在_actionsDispatch（）中的相关函数关联字符
@@ -253,7 +297,7 @@ class _MessagePageUiProvider implements MPUiProxy {
   final int consistsOfMP = 3;
 
   // 是否选择展示一些banner
-  //是否展示网络问题横幅
+  //是否展示网络问题横幅的开关量
   bool _badNetBannerShow = false;
 
   //是否展示系统通知提醒的横幅
@@ -330,8 +374,9 @@ class _MessagePageUiProvider implements MPUiProxy {
           loseConnectionBanner(),
          //除去网络横幅以外的区域
         Expanded(child: ListView.builder(
-          //大致分为4个区域，最后一个区域及n>=4时显示聊天的部分
-          itemCount: this.consistsOfMP + dataActionPipe.imCellData().length,
+          //大致分为3个区域
+          //尾部减一是因为thisConsitsOfMp和dataActionPipe.imCellData().length有一个单位的重合
+          itemCount: this.consistsOfMP + (dataActionPipe.imCellData().length-1),
           itemBuilder: (BuildContext context, int index) {
            //点赞交互区域
            if(index == 0){
@@ -435,14 +480,14 @@ class _MessagePageUiProvider implements MPUiProxy {
     return dataActionPipe.unreadOfIntercources()[type];
   }
 
-  //即时通讯相关的区域,因为本身为一个ListView的item，所以需要高度
+  //即时通讯会话相关的区域,因为本身为一个ListView的item，所以需要高度
   Widget _imArea(int index) {
     //数据源没有数据的时候显示展位图
     if(dataActionPipe.imCellData().length == 0){
       return placeholderWhenNoData();
     }
     //三个板块中需要减去代表会话cell总体作为一部分的"1"
-    int expectedIndex = index - this.consistsOfMP - 1;
+    int expectedIndex = index - (this.consistsOfMP-1) ;
     //构建单个cell的过程
     return Row(children:
     [
@@ -460,7 +505,7 @@ class _MessagePageUiProvider implements MPUiProxy {
     );
   }
 
-  //断网时横幅
+  //断网时横幅生成
   @override
   Widget loseConnectionBanner() {
     return Offstage(
@@ -513,7 +558,7 @@ class _MessagePageUiProvider implements MPUiProxy {
     ),);
   }
 
-  //通知开启提醒的横幅
+  //通知开启提醒的横幅生成
   @override
   Widget notificationBanner() {
     return Offstage(
@@ -528,7 +573,7 @@ class _MessagePageUiProvider implements MPUiProxy {
       ),
     );
   }
-  //没有数据时的占位图
+  //没有数据时的占位图生成
   @override
   Widget placeholderWhenNoData() {
     return Container(
@@ -566,75 +611,83 @@ class _MessagePageUiProvider implements MPUiProxy {
   ///////////////////
   //下面是可向本类发送消息的实现
   //////////////////
-  //进行展示网络有误的横幅
+  //控制展示网络有误的横幅
   @override
   void displayBadNetBanner(bool switchOn) {
     _badNetBannerShow = switchOn;
     _actionsDispatch(FuncOf_setState_);
   }
-  //进行展示系统通知的的横幅
+  //控制展示系统通知的的横幅
   @override
   void displaySysNotiBanner(bool switchOn) {
     _sysNotificationBannerShow = switchOn;
     _actionsDispatch(FuncOf_setState_);
   }
-  //有社交事件的来临
+  //有社交事件的来临走这里
   @override
   void interCourseAction(MPBusiness eventType, {payload}) {
     // TODO: implement interCourseAction
   }
-   //某会话数据来临
+   //某会话数据来临走这里
   @override
   void imFreshData(ChatModel model, {bool incomplete, int identifier, int index}) {
     // TODO: implement imFreshData
   }
-
-  @override
-  void activateNotification() {
-    // TODO: implement activateNotification
-  }
-
+  //
+  
+  //下方为ui跟随变化的消息
+  /////
+  //正在进行重连时
   @override
   void connecting() {
     // TODO: implement connecting
   }
-
+  //断开连接时
   @override
   void loseConnection() {
     // TODO: implement loseConnection
   }
-
+  //重连时
   @override
   void reconnected() {
     // TODO: implement reconnected
   }
+  //需要提示开启系统提醒
+  @override
+  void activateNotificationBanner() {
+    this.displaySysNotiBanner(true);
+  }
+  //关闭系统消息开启引导横幅
+  @override
+  void dismissNotificationBanner() {
+    this.displaySysNotiBanner(false);
+  }
+
+ 
 
 }
 
 
 
-//消息页面的会话数据源代理类
-class _MessagePageDataSource implements MPDataSourceProxy {
+ //消息页面的会话数据源代理类
+ class _MessagePageDataSource implements MPDataSourceProxy {
+  //保存接收到的会话数据
   List<ChatModel> _chatData = List();
+  //保存社交事件未读数
   Map _unreads = Map<MPIntercourses,int>();
 
-
-
-  //新消息来临
-  void newMsgsArrive(List<ChatModel> chats){
-    _chatData.addAll(chats);
-  }
-
+  
+  //为显示的不同index的cell提供高度
   @override
   double cellHeightAtIndex(int index) {
     return 69.0;
   }
-
+  //为会话cell提供数据
   @override
   List<ChatModel> imCellData() {
     // TODO: implement imCellData
     List datas = List<ChatModel>();
-    for(int i=0;i<0;i++){
+    for(int i=0;i<2;i++){
       var model = ChatModel();
       model.portraitUrl = "http://tiebapic.baidu.com/forum/w%3D580%3B/sign=0a77c837c609b3deebbfe460fc846d81/c2cec3fdfc0392458ab18e509094a4c27d1e256c.jpg";
       datas.add(model);
@@ -644,7 +697,7 @@ class _MessagePageDataSource implements MPDataSourceProxy {
     }
     return datas;
   }
-
+  //提供交互事件的未读数量信息
   @override
   Map<MPIntercourses, int> unreadOfIntercources() {
     if(_unreads.isEmpty){
@@ -653,6 +706,13 @@ class _MessagePageDataSource implements MPDataSourceProxy {
       _unreads[MPIntercourses.Comment] = 100;
     }
      return _unreads;
+  }
+  //新消息来临后走这个函数加入到消息集合当中
+  @override
+  void newMsgsArrive(Set<Message> msgs) {
+   
+      
+    
   }
 
 }
