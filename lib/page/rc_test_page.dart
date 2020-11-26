@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/api/rongcloud_api.dart';
 import 'package:mirror/im/rongcloud.dart';
 
 /// rc_test_page
@@ -19,7 +20,7 @@ class RCTestState extends State<RCTestPage> {
   void initState() {
     super.initState();
     //TODO 测试数据 暂时写死 需要从接口获取
-    _token = "LMPunFEPWuljAp+x9rzoylrhQgi6NdICS9L2Q89okn0=@n37a.cn.rongnav.com;n37a.cn.rongcfg.com";
+    _token = "";
   }
 
   @override
@@ -33,6 +34,17 @@ class RCTestState extends State<RCTestPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text("Token：${_token}"),
+            RaisedButton(
+              onPressed: () async {
+                String token = await requestRongCloudToken();
+                if (token != null) {
+                  setState(() {
+                    _token = token;
+                  });
+                }
+              },
+              child: Text("获取token"),
+            ),
             RaisedButton(
               onPressed: _connectRC,
               child: Text("连接"),
