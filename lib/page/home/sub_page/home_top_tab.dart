@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
-
+import 'package:mirror/route/router.dart';
 class HomeTopTab extends StatefulWidget {
   HomeTopTab({Key key, this.callBack, this.controller}) : super(key: key);
   TabController controller;
@@ -25,6 +25,7 @@ class _TopTabState extends State<HomeTopTab> {
               ),
               onTap: () {
                 print("点击了客服");
+                AppRouter.navigateToReleasePage(context);
               },
             ),
           ),

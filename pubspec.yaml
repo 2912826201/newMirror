@@ -101,6 +101,7 @@ flutter:
     - images/resource/2.0x/
     - images/resource/3.0x/
     - images/resource/2.0x/ic_big_nav_closepage@2x.png
+    - images/resource/2.0x/shut_down@2x.png
     - images/test/
     - images/test/2.0x/
     - images/test/3.0x/

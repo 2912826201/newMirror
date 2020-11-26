@@ -669,9 +669,10 @@ class commentInputBoxState extends State<commentInputBox> {
                     borderRadius: BorderRadius.all(Radius.circular(14)),
                     color: AppColor.bgWhite_65,
                   ),
+                  child: Text( widget.isUnderline ? "说点什么吧~" : "喜欢就评论吧~", style:TextStyle(fontSize: 14, color: AppColor.textHint)
+                  ),
                 ),
                 onTap: () {
-
                  if(widget.isUnderline) {
                    Application.hintText = "说点什么吧~";
                  } else {
