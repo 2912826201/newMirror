@@ -19,6 +19,10 @@ final int _horizontalCount = 4;
 final double _itemMargin = 0;
 final int _galleryPageSize = 100;
 
+//1.9:1 和 4:5
+final double maxVideoRatio = 1.9;
+final double minVideoRatio = 0.8;
+
 // 相册的选择GridView视图 需要能够区分选择图片或视频 选择图片数量 是否裁剪 裁剪是否只是正方形
 //TODO 目前没有做响应实时相册变化时的处理 完善时可以考虑实现
 class GalleryPage extends StatefulWidget {
@@ -129,54 +133,54 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
     _previewMaxHeight = _screenWidth;
     _previewMinHeight = _screenWidth / 2;
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColor.bgBlack,
-        title: _buildAppBar(),
-      ),
-      body: ChangeNotifierProvider(
-          create: (_) =>
-              _PreviewHeightNotifier(_previewMaxHeight, maxHeight: _previewMaxHeight, minHeight: _previewMinHeight),
-          builder: (context, _) {
-            return Stack(
-              overflow: Overflow.clip,
-              children: [
-                // 背景
-                Container(
-                  color: AppColor.bgBlack,
-                ),
-                // 列表
-                ScrollConfiguration(
-                  behavior: NoBlueEffectBehavior(),
-                  child: _buildScrollBody(),
-                ),
-                // 裁剪区域
-                Positioned(
-                    top: context.watch<_PreviewHeightNotifier>().previewHeight - _previewMaxHeight,
-                    child: Container(
-                      color: AppColor.bgBlack,
-                      width: _previewMaxHeight,
-                      height: _previewMaxHeight,
-                      child: Builder(
-                        builder: (context) {
-                          AssetEntity entity = context.select((SelectedMapNotifier notifier) => notifier.currentEntity);
-                          return entity == null
-                              ? Container()
-                              : entity.type == AssetType.image
-                                  ? CropperImage(
-                                      FileImage(_fileMap[entity.id]),
-                                      round: 0,
-                                      key: _cropperKey,
-                                    )
-                                  : entity.type == AssetType.video
-                                      ? VideoPreviewArea(_fileMap[entity.id])
-                                      : Container();
-                        },
-                      ),
-                    )),
-              ],
-            );
-          }),
-    );
+        appBar: AppBar(
+          backgroundColor: AppColor.bgBlack,
+          title: _buildAppBar(),
+        ),
+        body: ChangeNotifierProvider(
+            create: (_) =>
+                _PreviewHeightNotifier(_previewMaxHeight, maxHeight: _previewMaxHeight, minHeight: _previewMinHeight),
+            builder: (context, _) {
+              return Stack(
+                overflow: Overflow.clip,
+                children: [
+                  // 背景
+                  Container(
+                    color: AppColor.bgBlack,
+                  ),
+                  // 列表
+                  ScrollConfiguration(
+                    behavior: NoBlueEffectBehavior(),
+                    child: _buildScrollBody(),
+                  ),
+                  // 裁剪区域
+                  Positioned(
+                      top: context.watch<_PreviewHeightNotifier>().previewHeight - _previewMaxHeight,
+                      child: Container(
+                        color: AppColor.bgBlack,
+                        width: _previewMaxHeight,
+                        height: _previewMaxHeight,
+                        child: Builder(
+                          builder: (context) {
+                            AssetEntity entity =
+                                context.select((SelectedMapNotifier notifier) => notifier.currentEntity);
+                            return entity == null
+                                ? Container()
+                                : entity.type == AssetType.video
+                                    ? VideoPreviewArea(_fileMap[entity.id], _screenWidth)
+                                    : entity.type == AssetType.image
+                                        ? CropperImage(
+                                            FileImage(_fileMap[entity.id]),
+                                            round: 0,
+                                            key: _cropperKey,
+                                          )
+                                        : Container();
+                          },
+                        ),
+                      )),
+                ],
+              );
+            }));
   }
 
   @override
@@ -655,9 +659,10 @@ class _PreviewHeaderDelegate extends SliverPersistentHeaderDelegate {
 }
 
 class VideoPreviewArea extends StatefulWidget {
-  VideoPreviewArea(this.file, {Key key}) : super(key: key);
+  VideoPreviewArea(this.file, this.previewWidth, {Key key}) : super(key: key);
 
   final File file;
+  final double previewWidth;
 
   @override
   VideoPreviewState createState() => VideoPreviewState();
@@ -688,20 +693,21 @@ class VideoPreviewState extends State<VideoPreviewArea> {
         future: _initVideoPlayerFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-
-            return AspectRatio(
-              aspectRatio: _controller.value.aspectRatio,
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    if (_controller.value.isPlaying) {
-                      _controller.pause();
-                    } else {
-                      _controller.play();
-                    }
-                  });
-                },
-                child: VideoPlayer(_controller),
+            print("aspectRatio:${_controller.value.aspectRatio}");
+            if (!_controller.value.isPlaying) {
+              _controller.play();
+            }
+            return SingleChildScrollView(
+              //根据比例设置方向
+              scrollDirection: _controller.value.aspectRatio > 1 ? Axis.horizontal : Axis.vertical,
+              child: Container(
+                alignment: Alignment.center,
+                width: _getVideoPreviewSize(_controller.value.aspectRatio, widget.previewWidth).width,
+                height: _getVideoPreviewSize(_controller.value.aspectRatio, widget.previewWidth).height,
+                child: AspectRatio(
+                  aspectRatio: _controller.value.aspectRatio,
+                  child: VideoPlayer(_controller),
+                ),
               ),
             );
           } else {
@@ -711,4 +717,33 @@ class VideoPreviewState extends State<VideoPreviewArea> {
           }
         });
   }
+}
+
+// 获取视频预览区域宽高
+Size _getVideoPreviewSize(double ratio, double _previewWidth) {
+  double _videoWidth;
+  double _videoHeight;
+
+  if (ratio < minVideoRatio) {
+    //细高的情况 先限定最宽的宽度 再根据ratio算出高度
+    _videoWidth = _previewWidth * minVideoRatio;
+    _videoHeight = _previewWidth * minVideoRatio / ratio;
+  } else if (ratio < 1) {
+    //填满高度
+    _videoHeight = _previewWidth;
+    _videoWidth = _previewWidth * ratio;
+  } else if (ratio > maxVideoRatio) {
+    //扁长的情况 先限定最高的高度 再根据ratio算出宽度
+    _videoHeight = _previewWidth / maxVideoRatio;
+    _videoWidth = _previewWidth * ratio / maxVideoRatio;
+  } else if (ratio > 1) {
+    //填满宽度
+    _videoHeight = _previewWidth / ratio;
+    _videoWidth = _previewWidth;
+  } else {
+    //剩余的就是ratio == 1的情况
+    _videoHeight = _previewWidth;
+    _videoWidth = _previewWidth;
+  }
+  return Size(_videoWidth, _videoHeight);
 }
