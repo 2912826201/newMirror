@@ -19,6 +19,7 @@ class AppRouter {
   static String pathMediaPicker = "/mediapicker";
   static String pathLike = "/like";
   static String pathIfPage = "/";
+  static String pathRelease = "/release";
 
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
@@ -31,6 +32,7 @@ class AppRouter {
     router.define(pathMediaPicker, handler: handlerMediaPicker);
     router.define(pathLogin, handler: handlerLogin);
     router.define(pathLike, handler: handlerLike);
+    router.define(pathRelease, handler: handlerReleaseFeed);
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
   }
@@ -72,4 +74,9 @@ class AppRouter {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathLike, map);
   }
+  static void navigateToReleasePage(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathRelease, map);
+  }
+
 }

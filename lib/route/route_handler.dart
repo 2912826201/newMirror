@@ -4,6 +4,7 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/feed/like.dart';
+import 'package:mirror/page/feed/release_page.dart';
 import 'package:mirror/page/if_page.dart';
 import 'package:mirror/page/login/login_page.dart';
 import 'package:mirror/page/main_page.dart';
@@ -45,4 +46,7 @@ var handlerLogin = Handler(handlerFunc: (BuildContext context, Map<String, List<
 
 var handlerLike = Handler(handlerFunc: (BuildContext context, Map<String,List<String>> params) {
   return Like();
+});
+var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context , Map<String,List<String>> params){
+  return ReleasePage();
 });
