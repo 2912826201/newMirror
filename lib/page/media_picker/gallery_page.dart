@@ -10,6 +10,7 @@ import 'package:mirror/widget/image_cropper.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:provider/provider.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:video_player/video_player.dart';
 
 /// gallery_page
 /// Created by yangjiayi on 2020/11/12.
@@ -152,6 +153,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                 Positioned(
                     top: context.watch<_PreviewHeightNotifier>().previewHeight - _previewMaxHeight,
                     child: Container(
+                      color: AppColor.bgBlack,
                       width: _previewMaxHeight,
                       height: _previewMaxHeight,
                       child: Builder(
@@ -159,11 +161,15 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                           AssetEntity entity = context.select((SelectedMapNotifier notifier) => notifier.currentEntity);
                           return entity == null
                               ? Container()
-                              : CropperImage(
-                                  FileImage(_fileMap[entity.id]),
-                                  round: 0,
-                                  key: _cropperKey,
-                                );
+                              : entity.type == AssetType.image
+                                  ? CropperImage(
+                                      FileImage(_fileMap[entity.id]),
+                                      round: 0,
+                                      key: _cropperKey,
+                                    )
+                                  : entity.type == AssetType.video
+                                      ? VideoPreviewArea(_fileMap[entity.id])
+                                      : Container();
                         },
                       ),
                     )),
@@ -177,7 +183,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
   bool get wantKeepAlive => true;
 
   // item本体点击事件
-  _onGridItemTap(BuildContext context, AssetEntity entity) {
+  _onGridItemTap(BuildContext context, AssetEntity entity) async {
     final notifier = context.read<SelectedMapNotifier>();
     if (notifier.currentEntity != null && entity.id == notifier.currentEntity.id) {
       //如果之前选中的和点到的一样 则不做操作
@@ -192,12 +198,13 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
       }
     }
 
+    //FIXME 这里iOS如果文件在iCloud 会取不到。。。
     if (_fileMap[entity.id] == null) {
       entity.file.then((value) {
         _fileMap[entity.id] = value;
         print(entity.id + ":" + value.path);
         if (widget.needCrop) {
-          // 裁剪模式需要将其置入裁剪框
+          // 裁剪模式需要将其置入裁剪框2
           notifier.setCurrentEntity(entity);
         } else {
           //TODO 非裁剪模式跳转展示大图
@@ -644,5 +651,64 @@ class _PreviewHeaderDelegate extends SliverPersistentHeaderDelegate {
   @override
   bool shouldRebuild(_PreviewHeaderDelegate oldDelegate) {
     return maxHeight != oldDelegate.maxHeight || minHeight != oldDelegate.minHeight || child != oldDelegate.child;
+  }
+}
+
+class VideoPreviewArea extends StatefulWidget {
+  VideoPreviewArea(this.file, {Key key}) : super(key: key);
+
+  final File file;
+
+  @override
+  VideoPreviewState createState() => VideoPreviewState();
+}
+
+class VideoPreviewState extends State<VideoPreviewArea> {
+  VideoPlayerController _controller;
+  Future<void> _initVideoPlayerFuture;
+
+  @override
+  void initState() {
+    _controller = VideoPlayerController.file(widget.file);
+    _initVideoPlayerFuture = _controller.initialize();
+    _controller.setLooping(true);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    print("VideoPreview dispose");
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: _initVideoPlayerFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+
+            return AspectRatio(
+              aspectRatio: _controller.value.aspectRatio,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    if (_controller.value.isPlaying) {
+                      _controller.pause();
+                    } else {
+                      _controller.play();
+                    }
+                  });
+                },
+                child: VideoPlayer(_controller),
+              ),
+            );
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        });
   }
 }
