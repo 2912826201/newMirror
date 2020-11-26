@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
@@ -231,12 +233,13 @@ class _MessagePageUiProvider implements MPUiProxy {
   //点击了点赞、评论按钮的事件
   static const String FuncOfinterCourses = "funcOfinterCourses";
 
-  //为上面⬆️提到的函数作区分
+  //为上面⬆️提到的函数在payload中作区分
   static const String IntercoursesKey = "intercourcesKey";
 
   //会话cell的点击
   static const String FuncOfCellTap = "funcOfCellTap";
-
+  //为上面⬆️提到的函数在payload中作区分
+  static const String CellTapKey = "CellTapKey";
   //和setState(）函数关联
   static const String FuncOf_setState_ = "funcOf_setState_";
 
@@ -246,7 +249,7 @@ class _MessagePageUiProvider implements MPUiProxy {
   //和跳转去准许消息提示页面有关
   static const String FuncOfHandleNotify = "FuncOfLocalNotify";
 
-  //消息界面的组成版块
+  //消息界面的组成版块，为三个板块，无数据时的页面构成也为三，但是末尾的index=2时分为两种情况
   final int consistsOfMP = 3;
 
   // 是否选择展示一些banner
@@ -328,7 +331,7 @@ class _MessagePageUiProvider implements MPUiProxy {
          //除去网络横幅以外的区域
         Expanded(child: ListView.builder(
           //大致分为4个区域，最后一个区域及n>=4时显示聊天的部分
-          itemCount: this.consistsOfMP,
+          itemCount: this.consistsOfMP + dataActionPipe.imCellData().length,
           itemBuilder: (BuildContext context, int index) {
            //点赞交互区域
            if(index == 0){
@@ -338,9 +341,9 @@ class _MessagePageUiProvider implements MPUiProxy {
             else if (index ==1){
              return notificationBanner();
            }
-           //即时通讯会话显示区域
-           else {
-           return _imArea();
+            //即时通讯会话显示区域
+            else {
+            return  _imArea(index);
             }
            },
            //ListView的内边距需要设置为0
@@ -433,43 +436,27 @@ class _MessagePageUiProvider implements MPUiProxy {
   }
 
   //即时通讯相关的区域,因为本身为一个ListView的item，所以需要高度
-  Widget _imArea() {
-    int count = 0;
-    if(dataActionPipe != null){
-      count = dataActionPipe.imCellData().length;
+  Widget _imArea(int index) {
+    //数据源没有数据的时候显示展位图
+    if(dataActionPipe.imCellData().length == 0){
+      return placeholderWhenNoData();
     }
-    double totalHeight = 0;
-    //取出会话总体部分的总高度
-    for(int i =0;i<count;i++){
-      totalHeight += dataActionPipe.cellHeightAtIndex(i);
-    }
-    return Container(
-      height: totalHeight,
-      //内部此处去真正承载聊天的流式布局（需要使用column来装载Expanded，否则会有异常）
-      child:Column(
-        children: [
-          Expanded(child: ListView.builder(
-              itemCount: count,
-              itemBuilder: (BuildContext context, int index) {
-                if (dataActionPipe!=null){
-                  //构建cell的地方
-                  return Row(children:
-                  [
-                    Expanded(child:
-                     Container(child:
-                      MPChatCell(model: dataActionPipe.imCellData()[index],),
-                       color: Color.fromRGBO(index*15, index*10, index*11, 0.5),
-                       height: dataActionPipe.cellHeightAtIndex(index),))
-                  ],
-                  );
-                }
-                return null;
-              },
-          padding: EdgeInsets.all(0),
-              //设置为无法滑动,固定于外层的Container中
-              physics: NeverScrollableScrollPhysics()))
-        ],
-      ),
+    //三个板块中需要减去代表会话cell总体作为一部分的"1"
+    int expectedIndex = index - this.consistsOfMP - 1;
+    //构建单个cell的过程
+    return Row(children:
+    [
+      Expanded(child:
+       GestureDetector(
+         //绑定点击事件，传参需要一个索引位置
+         onTap: _actionsDispatch(FuncOfCellTap,payload: {CellTapKey:expectedIndex}),
+         child: Container(child:
+          MPChatCell(model: dataActionPipe.imCellData()[expectedIndex],),
+          color: Color.fromRGBO(expectedIndex*15, expectedIndex*10, expectedIndex*11, 0.5),
+          height: dataActionPipe.cellHeightAtIndex(expectedIndex),),
+      )
+      )
+    ],
     );
   }
 
@@ -541,7 +528,41 @@ class _MessagePageUiProvider implements MPUiProxy {
       ),
     );
   }
-
+  //没有数据时的占位图
+  @override
+  Widget placeholderWhenNoData() {
+    return Container(
+      height: 306,
+      width: 111,
+      padding: EdgeInsets.only(top: 28),
+      child: Row(
+       children: [
+         Expanded(child:
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+             SizedBox(
+               width: 224,
+                 height: 224,
+               child: Container(
+                 color: Colors.red,
+               ),
+             ),
+              Container(
+                margin: EdgeInsets.only(top: 16),
+                child: Text("这里空空如也，去推荐看看吧",
+                  style: TextStyle(color: AppColor.textSecondary,
+                      decoration: TextDecoration.none,
+                      fontFamily: "PingFangSC",
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14),),
+              )
+           ],
+         )),
+       ],
+     ),
+    );
+  }
   ///////////////////
   //下面是可向本类发送消息的实现
   //////////////////
@@ -587,6 +608,7 @@ class _MessagePageUiProvider implements MPUiProxy {
   void reconnected() {
     // TODO: implement reconnected
   }
+
 }
 
 
@@ -612,11 +634,11 @@ class _MessagePageDataSource implements MPDataSourceProxy {
   List<ChatModel> imCellData() {
     // TODO: implement imCellData
     List datas = List<ChatModel>();
-    for(int i=0;i<20;i++){
+    for(int i=0;i<0;i++){
       var model = ChatModel();
       model.portraitUrl = "http://tiebapic.baidu.com/forum/w%3D580%3B/sign=0a77c837c609b3deebbfe460fc846d81/c2cec3fdfc0392458ab18e509094a4c27d1e256c.jpg";
       datas.add(model);
-      model.name = "你好";
+      model.name = "你好${i+1}";
       model.detailDes = "helloWorld,mobilePhone";
       model.time = DateTime(1606304956);
     }

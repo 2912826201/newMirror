@@ -17,7 +17,8 @@ abstract class MPUiProxy extends MPNetworkEvents {
 
   //通知开启提醒的横幅
   Widget notificationBanner();
-
+  //缺省占位图
+  Widget placeholderWhenNoData();
   //ui的交互函数的代理
   MPUIActionAndDataPipe dataActionPipe;
 
