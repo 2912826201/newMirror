@@ -2,12 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
-import 'package:mirror/data/model/message/chat_model.dart';
+
 
 
 
 abstract class ChatCellBehaviors{
-  void refresh(ChatModel model);
+  void refresh(ConversationDto model);
   //消息到来
   void msgsWithCount(int newMsgs);
   //cell被点击
@@ -43,7 +43,7 @@ class MPChatCell extends StatefulWidget implements ChatCellBehaviors{
   }
 
   @override
-  void refresh(ChatModel model) {
+  void refresh(ConversationDto model) {
     _state.refresh(model);
   }
 
@@ -210,11 +210,12 @@ class _MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
   }
 
   @override
-  void refresh(ChatModel model) {
+  void refresh(ConversationDto model) {
     setState(() {
     });
   }
 }
+
 class _IndicateConditons{
   static const int _rawBinary = 0x0;
   //展示小红点

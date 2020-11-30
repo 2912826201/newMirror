@@ -1,11 +1,6 @@
-import 'dart:collection';
-import 'dart:ffi';
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
-import 'package:mirror/data/model/message/chat_model.dart';
 import 'package:mirror/im/rongcloud_receive_manager.dart';
 import 'package:mirror/page/message/delegate/system_service_events.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
