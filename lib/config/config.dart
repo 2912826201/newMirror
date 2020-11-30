@@ -11,9 +11,9 @@ class AppConfig {
   static const String VER = "0.0.1";
 
   //各环境api请求基础路径
-  static const String _DEV_HOST = "http://ifdev.aimymusic.com";
-  static const String _MIRROR_HOST = "https://ifdev.aimymusic.com";
-  static const String _PROD_HOST = "https://ifdev.aimymusic.com";
+  static const String _DEV_HOST = "http://ifdev.i-fitness.cn";
+  static const String _MIRROR_HOST = "http://ifdev.i-fitness.cn";
+  static const String _PROD_HOST = "http://ifdev.i-fitness.cn";
 
   //根据环境获取api的host地址
   static String getApiHost() {
