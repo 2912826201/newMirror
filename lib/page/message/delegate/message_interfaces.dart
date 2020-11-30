@@ -1,8 +1,16 @@
-import 'package:flutter/material.dart';
-import 'package:mirror/data/model/Message/message_ui_related.dart';
-import 'package:mirror/page/message/delegate/business.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/data/model/message/chat_model.dart';
+import 'package:mirror/page/message/delegate/regular_events.dart';
 import 'package:mirror/page/message/delegate/system_service_events.dart';
-import 'package:mirror/page/message/message_page.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'business.dart';
+
+
+
+//
+//对ui的生成和数据源的数据提供定义约定和接口
+//
 
 //消息界面UI的Proxy
 abstract class MPUiProxy implements MPNetworkEvents {
@@ -37,9 +45,28 @@ abstract class MPUiProxy implements MPNetworkEvents {
 abstract class MPIMDataSourceAction{
   //数据源本身的一些事件（工作）的回调
   void signals({Map<String,dynamic> payload});
-  //
+//
 }
 //数据源的Proxy
 abstract class MPDataSourceProxy implements MPInterCourcesDataSource,MPIMDataSource{
   MPIMDataSourceAction delegate;
 }
+
+abstract class MPIMDataSource{
+  void newMsgsArrive(Set<Message> msgs);
+  //返回即时聊天的数据集
+  List<ConversationDto>  imCellData();
+  double cellHeightAtIndex(int index);
+}
+//社交事件未读数数据源
+abstract class MPInterCourcesDataSource{
+  Map<MPIntercourses,int> unreadOfIntercources();
+}
+//消息界面的点击等事件
+abstract class MPUIAction {
+  void action(String identifier, {payload: Map});
+}
+//ui绑定的函数出口接口
+abstract class MPUIActionAndDataPipe implements MPIMDataSource,MPUIAction,MPInterCourcesDataSource{
+}
+

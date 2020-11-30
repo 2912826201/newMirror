@@ -1,8 +1,9 @@
 
 
-import 'package:flutter/material.dart';
 
-import 'content_generate.dart';
+
+
+import 'message_interfaces.dart';
 //消息页面的基础架构
 abstract class MPBasements{
   MPDataSourceProxy  dataSource;

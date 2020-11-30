@@ -11,7 +11,7 @@ class ConversationDBHelper {
     //先删掉已有数据 再插入数据
     var transactionResult = await db.transaction((txn) async {
       //事务中只能用txn不能用db
-      await txn.delete(TABLE_NAME_CONVERSATION, where: "$COLUMN_NAME_CONVERSATION_ID = ${conversation.id}");
+      await txn.delete(TABLE_NAME_CONVERSATION, where: "$COLUMN_NAME_CONVERSATION_ID = '${conversation.id}'");
       var result = await txn.insert(TABLE_NAME_CONVERSATION, conversation.toMap());
       return result;
     });
@@ -33,5 +33,11 @@ class ConversationDBHelper {
 
     await DBHelper().closeDB(db);
     return list;
+  }
+
+  Future<void> clearConversation(int uid) async {
+    Database db = await DBHelper().openDB();
+    await db.delete(TABLE_NAME_CONVERSATION, where: "$COLUMN_NAME_CONVERSATION_UID = $uid");
+    await DBHelper().closeDB(db);
   }
 }

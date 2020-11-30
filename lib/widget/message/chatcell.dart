@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/data/model/Message/message_ui_related.dart';
+import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/data/model/message/chat_model.dart';
 
 
 
@@ -18,7 +19,7 @@ abstract class ChatCellBehaviors{
 //单个会话显示单元
 class MPChatCell extends StatefulWidget implements ChatCellBehaviors{
 
-  final ChatModel model;
+  final ConversationDto model;
   _MPChatCellState _state = _MPChatCellState();
   MPChatCell({Key key,this.model}):super(key: key);
   @override
@@ -74,7 +75,7 @@ class _MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
   final mainContentHeight = 69.0;
   @override
   Widget build(BuildContext context) {
-    ChatModel model = widget.model;
+   ConversationDto model = widget.model;
    return Row(
      children: [
        Expanded(child:  Container(
@@ -107,7 +108,7 @@ class _MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
                    borderRadius: BorderRadius.all(Radius.circular(0.5*portraitWH)),
                    image: DecorationImage(
                        fit: BoxFit.fill,
-                       image: NetworkImage(model.portraitUrl)
+                       image: NetworkImage(model.avatarUri)
                    )
                ),
              ),
@@ -122,7 +123,7 @@ class _MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
                        Text(model.name,style: nameStyle,),
                        Spacer(),
                        //时间
-                       Text(_transferRawDate(model.time),style: dateStyle,)
+                       Text(_transferRawDate(model.updateTime),style: dateStyle,)
                      ],
                    ),
                    Container(
@@ -147,7 +148,7 @@ class _MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
    );
   }
   //unix时间转化为本地时间
-  String _transferRawDate(DateTime time){
+  String _transferRawDate(int time){
     return "2020.11.22";
   }
   //尾部的消息指示视图
@@ -185,7 +186,7 @@ class _MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
   }
   //读取本地上次缓存的最新的会话记录
   String _cachedLatestChatData(){
-    return widget.model.detailDes;
+    return widget.model.content;
   }
   @override
   void cellDidTap() {
