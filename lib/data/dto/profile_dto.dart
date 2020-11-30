@@ -7,7 +7,6 @@ const String TABLE_NAME_PROFILE = "profile";
 const String COLUMN_NAME_PROFILE_UID = 'uid';
 const String COLUMN_NAME_PROFILE_USERNAME = 'userName';
 const String COLUMN_NAME_PROFILE_AVATARURI = 'avatarUri';
-
 // 这个表是用来存放当前已登录用户信息的表
 
 class ProfileDto {

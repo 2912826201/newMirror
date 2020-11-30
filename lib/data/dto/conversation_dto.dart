@@ -18,14 +18,16 @@ const String COLUMN_NAME_CONVERSATION_ISTOP = 'isTop';
 // 这个表是用来存放当前用户的会话列表信息
 
 class ConversationDto {
+  ConversationDto();
+
   int conversationId;
   int uid;
   int type;
   String avatarUri;
   String name;
   String content;
-  String updateTime;
-  String createTime;
+  int updateTime;
+  int createTime;
   int isTop;
 
   String get id => "${uid}_${conversationId}";
@@ -57,8 +59,10 @@ class ConversationDto {
     createTime = map[COLUMN_NAME_CONVERSATION_CREATETIME];
     isTop = map[COLUMN_NAME_CONVERSATION_ISTOP];
   }
-
-  // TokenModel toTokenModel() {
+  String toStirng(){
+    return "${this.updateTime}";
+  }
+// TokenModel toTokenModel() {
   //   var model = TokenModel(
   //     accessToken: accessToken,
   //     tokenType: tokenType,

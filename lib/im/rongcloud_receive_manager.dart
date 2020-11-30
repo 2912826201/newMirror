@@ -1,6 +1,8 @@
 //融云消息接收类,单例
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:mirror/config/application.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 //监听消息来到的回调
 abstract class MessageObserver{
@@ -27,9 +29,14 @@ abstract class RongCloudReceiveManager {
     }
     return _me;
   }
-  //观察所有消息来临的通知
+  //发送私聊消息
+  Future<Message> sendPrivateMessage(String targetId,MessageContent content);
+  //发送群聊消息
+  Future<Message> sendGroupMessage(String targetId,MessageContent content);
+  //发送
+  //观察所有消息来临的通知(一般情况下是这个函数被使用，关注私聊群聊系统聊等所有类型的信息，否则使用其他下面的函数，可以提高效率)
   void observeAllMsgs<T extends MessageObserver>(T target);
-  //观察特点类型消息来临，参数值域参考RCConversationType
+  //观察特点类型消息来临，参数值域参考RCConversationType(例如：私聊、群聊、系统聊天)
   void observeSpecificTypeMsg<T extends MessageObserver>(int conversationType,T target);
   //取消某种消息类型消息来临的通知
   void ignoreSpecificTypeMsg<T extends MessageObserver>(int conversationType,T target);
@@ -37,12 +44,12 @@ abstract class RongCloudReceiveManager {
   void observeMsgStatus<T extends MessageStatusObserver>(int msgId, T target);
   static RongCloudReceiveManager _me;
   //是否开启离线消息缓冲
-  activeThreshold(bool activate);
+  activeBuffer(bool activate);
 }
 //融云的离线消息具有保质期，一般为7天。所以对于系统消息来说这是不可靠的，我们需要确保系统、官方消息是可靠的，
 // 所以需要针对这类消息以服务端的为准，而不是以融云服务器的为准，但在这里的确是只处理来自融云的消息。
 class _RongCloudReceiveManager extends RongCloudReceiveManager{
-  static bool _activeThreshold = true;
+  static bool _activeBuffer = true;
    _RongCloudReceiveManager(){
      _init();
    }
@@ -51,7 +58,7 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
      _rongCloudMessageResponse();
     _alloc();
    }
-   //融云回调
+  //融云回调
    _rongCloudMessageResponse(){
      //第二个参数表示的是还剩下的未取的消息数量，第三个参数表示是否是按照包的形势拉取的信息，第三个参数表示的是是否是离线消息
      RongIMClient.onMessageReceivedWrapper = (Message msg, int left, bool hasPackage, bool offline) {
@@ -85,7 +92,7 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
    //第三个参数表示是否以包的方式从服务端取数据，
    // SDK 拉取服务器的消息以包( package )的形式批量拉取，有 package 存在就意味着远端服务器还有消息尚未被 SDK 拉取
    void _processOffLineRawMsg(Message msg,int left,bool hasPackage){
-     switch(_RongCloudReceiveManager._activeThreshold){
+     switch(_RongCloudReceiveManager._activeBuffer){
        case true:
          //使用缓冲的情况
        _cacheOrDrain((left==0&&hasPackage==false),msg,left);
@@ -114,27 +121,32 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
      //大于一个通知的情况
      switch (drain){
        case true:
-         _drainCache();
+         _drainCache(msg: msg);
          break;
        default:
          _cache(msg);
      }
    }
    //清空消息缓存池
-    _drainCache(){
-     _distributeForType(_tempCache);
+    _drainCache({Message msg}){
+     if (msg != null) {
+       _tempCache.add(msg);
+     }
+     _classifyMessagesAndDispatch(_tempCache);
      _tempCache.clear();
     }
     //缓存消息
     _cache(Message msg){
       _tempCache.add(msg);
     }
-   //离线消息暂存缓存
-   Set<Message> _tempCache = Set();
-   //消息监听者
-   Map<int,Set<MessageObserver>> _observers = Map();
-   // ignore: slash_for_doc_comments
-   /**class Message extends Object {
+    //离线消息缓冲池
+    Set<Message> _tempCache = Set<Message>();
+    //无人监听的消息缓冲池子
+    Set<Message> _nonAdaptableMsg = Set<Message>();
+    //消息监听者信息保存
+    Map<int,Set<MessageObserver>> _observers = Map();
+    // ignore: slash_for_doc_comments
+    /**class Message extends Object {
        int conversationType; //会话类型 参见 RCConversationType
        String targetId; //会话 id
        int messageId; //messageId ，本地数据库的自增 id
@@ -153,9 +165,9 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
        MessageConfig messageConfig; // 消息配置
        //如果 content 为 null ，说明消息内容本身未被 flutter 层正确解析，则消息内容会保存到该 map 中
        Map originContentMap;*/
-   //处理当前消息，第二个参数为服务端的剩余消息
+    //处理当前消息，第二个参数为服务端的剩余消息
    _processCurrentRawMsg(Message msg,int left){
-   _messageDispatchWithType(msg,false);
+    _messageDispatchWithType(msg,false);
    }
    @override
    void ignoreSpecificTypeMsg<T extends MessageObserver>(int conversationType, T target) {
@@ -164,12 +176,18 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
    }
    @override
    void observeSpecificTypeMsg<T extends MessageObserver>(int conversationType, T target) {
-      assert(conversationType>=RCConversationType.Private&&conversationType<=RCConversationType.System);
-    _observers[conversationType].add(target);
+     assert(conversationType>=RCConversationType.Private&&conversationType<=RCConversationType.System);
+     _observers[conversationType].add(target);
+     //如果在注册时，已经有消息提前到达，则对其下发清空
+     if(_nonAdaptableMsg.isNotEmpty){
+       Set<Message> _t = Set<Message>();
+       _classifyMessagesAndDispatch(_nonAdaptableMsg);
+        _nonAdaptableMsg.removeAll(_t);
+     }
    }
-
-   @override
-   activeThreshold(bool activate) {
+    //开启或关闭缓冲
+    @override
+    activeBuffer(bool activate) {
     switch(activate){
       case false:
         if(_tempCache.isEmpty==false){
@@ -178,10 +196,10 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
         break;
       default:
     }
-    _activeThreshold = activate;
+    _activeBuffer = activate;
   }
-  //将不同种类的消息打包发送
-  _distributeForType(Set<Message> msgs){
+  //将不同种类的消息打包发送(于函数_drainCache()清空缓存池时发生)
+   _classifyMessagesAndDispatch(Set<Message> msgs){
     Map<int,Set<Message>> typeStreams = Map();
     msgs.forEach((element) {
       if(!typeStreams.keys.contains(element.conversationType)){
@@ -189,14 +207,18 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
         typeStreams[element.conversationType] = bag;
       }
       typeStreams[element.conversationType].add(element);
-    });
-    typeStreams.forEach((key, value) {
+     });
+     typeStreams.forEach((key, value) {
       _messageStreamDispatchWithType(value, key);
     });
   }
-  //同一种类型的消息流的发送
+  //同一种类型的消息流的发送（肯定是离线消息，只有离线消息才会打包下发）
    _messageStreamDispatchWithType(Set<Message> msgs,int type){
      Set _toNotify = _observers[type];
+     if (_toNotify.isEmpty){
+       _tempStorage(msgs);
+       return;
+     }
      _toNotify.forEach((element) async {
        MessageObserver tt = element;
        if(tt == null) {
@@ -207,12 +229,19 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
        }
      });
    }
-  //单个消息出口下发
+  //单个消息出口下发（只会发生在在线消息以及单个的离线消息的情况）
    _messageDispatchWithType( Message msg, bool offline)  {
    int msgType = msg.conversationType;
-   Set _toNotify = _observers[msgType];
+   Set<MessageObserver> _toNotify = _observers[msgType];
    Set<Message> _set = Set<Message>();
    _set.add(msg);
+   //暂时无需要通知的对象时需要将消息暂存
+   if(_toNotify.isEmpty){
+     Set<Message> _set = Set<Message>();
+     _set.add(msg);
+     _tempStorage(_set);
+     return;
+   }
    _toNotify.forEach((element) async {
       MessageObserver tt = element;
       if(tt == null) {
@@ -223,18 +252,35 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
       }
    });
   }
-   //待观察状态的消息集合
+   //当此种消息还没有观察者时触发这里
+   _tempStorage(Set<Message> msgs){
+      _nonAdaptableMsg.addAll(msgs);
+   }
+   //需要观察消息状态改变的观察者的集合，按照它们关心的消息类别进行了分类扎堆
    Map<int,Set<MessageStatusObserver>> _msgs = Map();
+   //消息状态的观察
    @override
    void observeMsgStatus<T extends MessageStatusObserver>(int msgId, T target) {
     _msgs[msgId].add(target);
    }
-
-  @override
-  void observeAllMsgs<T extends MessageObserver>(T target) {
+   //
+   @override
+   void observeAllMsgs<T extends MessageObserver>(T target) {
     this.observeSpecificTypeMsg(RCConversationType.Private, target);
     this.observeSpecificTypeMsg(RCConversationType.Group, target);
     this.observeSpecificTypeMsg(RCConversationType.System, target);
-    this.observeSpecificTypeMsg(RCConversationType.ChatRoom, target);
+    // this.observeSpecificTypeMsg(RCConversationType.ChatRoom, target);
+  }
+
+  @override
+  Future<Message> sendGroupMessage(String targetId,MessageContent content) {
+    // TODO: implement sendGroupMessage
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Message> sendPrivateMessage(String targetId,MessageContent content)  async{
+     Message msh = await  RongIMClient.sendMessage(RCConversationType.Private, targetId, content);
+   return msh;
   }
 }
