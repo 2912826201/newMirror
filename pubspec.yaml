@@ -67,6 +67,8 @@ dependencies:
   path_provider: ^1.6.24
   # 视频播放器 暂时先用着系统自带的这个
   video_player: ^1.0.1
+  # 声网直播引擎
+  agora_rtc_engine: ^3.1.3
 
 
 

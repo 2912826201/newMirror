@@ -6,6 +6,7 @@ import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/user_notifier.dart';
+import 'package:mirror/page/agora_input_page.dart';
 import 'package:mirror/page/media_test_page.dart';
 import 'package:mirror/page/qiniu_test_page.dart';
 import 'package:mirror/route/router.dart';
@@ -153,6 +154,14 @@ class _TestState extends State<TestPage> {
                   AppRouter.navigateToLoginPage(context);
                 },
                 child: Text("去登录"),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return AgoraInputPage();
+                  }));
+                },
+                child: Text("声网测试"),
               ),
             ],
           ),
