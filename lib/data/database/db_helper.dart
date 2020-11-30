@@ -48,7 +48,7 @@ Future<void> _createDB(Database db, int version) async {
   //conversation
   await db.execute("create table conversation (" +
       "id varchar(64) primary key," +
-      "conversationId bigint(20)," +
+      "conversationId varchar(32)," +
       "uid bigint(20)," +
       "type tinyint(1)," +
       "avatarUri varchar(512)," +

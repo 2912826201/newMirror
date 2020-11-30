@@ -20,7 +20,7 @@ const String COLUMN_NAME_CONVERSATION_ISTOP = 'isTop';
 class ConversationDto {
   ConversationDto();
 
-  int conversationId;
+  String conversationId;
   int uid;
   int type;
   String avatarUri;
