@@ -76,7 +76,7 @@ class _MPIntercourseWidgetState extends State<MPIntercourseWidget>{
                     ),
                     //和内部文字的间距设置
                     padding: EdgeInsets.only(left: 5,right: 5,top: 2,bottom: 2),
-                    child: Text("${widget.badges}+",
+                    child: Text("${_expectCount()}",
                       style: TextStyle(color: AppColor.white,
                           fontFamily: "PingFangSC-Regular",
                           fontSize: 12,
@@ -93,5 +93,12 @@ class _MPIntercourseWidgetState extends State<MPIntercourseWidget>{
       ),
     );
   }
-
+  //数量生成
+  String _expectCount(){
+    if (widget.badges >= 99)
+    {
+      return "99+";
+    }
+    return "${widget.badges}";
+  }
 }

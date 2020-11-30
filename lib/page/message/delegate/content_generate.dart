@@ -32,9 +32,14 @@ abstract class MPUiProxy implements MPNetworkEvents {
   //及时通讯ui相关，第三个参数的意思是当仅仅是某一种消息类型进行跟新时此参数需要传入true,
   //第二个参数用来指定需要跟新的cell，可以使index索引，也可以是一个会话标识,当标识和索引同时存在的时候
   //优先选择会话标识
-  void imFreshData(ChatModel model, {bool incomplete, int identifier, int index});
+  void imFreshData({bool incomplete, int identifier, int index});
 }
-
+abstract class MPIMDataSourceAction{
+  //数据源本身的一些事件（工作）的回调
+  void signals({Map<String,dynamic> payload});
+  //
+}
 //数据源的Proxy
 abstract class MPDataSourceProxy implements MPInterCourcesDataSource,MPIMDataSource{
+  MPIMDataSourceAction delegate;
 }

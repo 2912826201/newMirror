@@ -1,7 +1,10 @@
+import 'dart:collection';
+import 'dart:ffi';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/Message/message_ui_related.dart';
 import 'package:mirror/im/rongcloud_receive_manager.dart';
@@ -30,7 +33,7 @@ class MessagePage extends StatefulWidget {
 }
 
 class _MessagePageState extends State<MessagePage>
-    implements MPBasements, MPBusiness, MPHookFunc, MPNetworkEvents, MPUIActionAndDataPipe, MessageObserver {
+    implements MPBasements, MPBusiness, MPHookFunc, MPNetworkEvents, MPUIActionAndDataPipe,MPIMDataSourceAction, MessageObserver {
   List imData = List();
 
 
@@ -51,9 +54,11 @@ class _MessagePageState extends State<MessagePage>
    }
 
     @override
-   void initState() {
+    void initState() {
     _registrations();
      _allocations();
+     //根据安排需要放在initState方法中
+     this.viewWillAppear();
      super.initState();
    }
 
@@ -68,7 +73,6 @@ class _MessagePageState extends State<MessagePage>
    //ui_proxy
    @override
    MPUiProxy uiProvider;
-
     //需要进行振动等向controller反馈的事件
     @override
     void feedBackForSys() {
@@ -83,6 +87,7 @@ class _MessagePageState extends State<MessagePage>
     uiProvider = _MessagePageUiProvider();
     //用于交互事件的反馈以及ui显示需要数据的提供
     uiProvider.dataActionPipe = this;
+    dataSource.delegate = this;
     }
   
    //当有及时消息来临时调用
@@ -101,17 +106,22 @@ class _MessagePageState extends State<MessagePage>
     void regularEventsCall(MPIntercourses type) {
     // TODO: implement regularEventsCall
     }
-    //视图第一次出现时
-   @override
-    void viewDidAppear() {
-    // TODO: implement viewDidAppear
-   }
-   //当转去其他视图界面时
-   @override
-    void willDisappear() {
-     // TODO: implement willFade
-   }
+    //视图第一次出现时，在flutter中对应是在build中
+    @override
+    void viewWillAppear() {
+   
+    }
 
+   //当转去其他视图界面时(目前暂时放在dispose方法中)
+    @override
+    void willDisappear() {
+
+    }
+    @override
+    void dispose() {
+    this.willDisappear();
+    super.dispose();
+   }
    // 下方均为向ui发送消息来处理对应事件，虽然本质上还是
    // ui将消息代理出来本controller处理，但是可以给ui本身一次处理事件的机会，让controller内部
    // 事件处理相对清晰一些
@@ -162,10 +172,10 @@ class _MessagePageState extends State<MessagePage>
    //融云消息的注册的新消息来临的回调，可以选择性去调用imArrived()去执行ui上的变化
    @override
    Future<void> msgDidCome(Set<Message> msg, bool offLine) {
-      
+      print("msgDidCome+${msg}");
+      print(msg.hashCode);
       //调取一下页面的消息来临的函数，让页面本身做一些处理
       this.imArrived();
-      
       //只有一条消息的情况，一般即为及时的消息
       if (msg.length == 1){
        _manipulateRegularMsg(msg.first);
@@ -178,11 +188,14 @@ class _MessagePageState extends State<MessagePage>
 
    //单个在线信息来到的处理
    void _manipulateRegularMsg(Message msg){
-
+      Set<Message> _t = Set<Message>();
+      _t.add(msg);
+      dataSource.newMsgsArrive(_t);
+      uiProvider.imFreshData();
    }
    //列表性离线信息的来临
    void _manipulateOffLineMessage(Set<Message> msgs){
-
+    dataSource.newMsgsArrive(msgs);
    }
    //UI源发送来的交互事件
    @override
@@ -246,6 +259,12 @@ class _MessagePageState extends State<MessagePage>
   void newMsgsArrive(Set<Message> msgs) {
     // TODO: implement newMsgsArrive
   }
+
+  @override
+  void signals({Map<String,dynamic> payload}) {
+    // TODO: implement dataFlow
+  }
+
    //-------------------------------------------------------------------//
 }
  //即时消息数据源
@@ -630,7 +649,7 @@ class _MessagePageState extends State<MessagePage>
   }
    //某会话数据来临走这里
   @override
-  void imFreshData(ChatModel model, {bool incomplete, int identifier, int index}) {
+  void imFreshData( {bool incomplete, int identifier, int index}) {
     // TODO: implement imFreshData
   }
   //
@@ -671,35 +690,31 @@ class _MessagePageState extends State<MessagePage>
 
  //消息页面的会话数据源代理类
  class _MessagePageDataSource implements MPDataSourceProxy {
-  //保存接收到的会话数据
-  List<ChatModel> _chatData = List();
-  //保存社交事件未读数
-  Map _unreads = Map<MPIntercourses,int>();
-
-  
-  //为显示的不同index的cell提供高度
-  @override
-  double cellHeightAtIndex(int index) {
+   static const String REFRESH_A_CHAT = "REFRESH_A_CHAT";
+   static const String REFRESH_ALL_LIST = "REFRESH_ALL_LIST";
+   //保存接收到的会话数据
+   LinkedHashMap<String,ChatModel> _chatData = LinkedHashMap<String,ChatModel>();
+   //最新接受到的消息放在这里
+   List<Message> _msgs = List<Message>();
+   //保存社交事件未读数
+   Map _unreads = Map<MPIntercourses,int>();
+   //为显示的不同index的cell提供高度
+   @override
+   double cellHeightAtIndex(int index) {
     return 69.0;
-  }
-  //为会话cell提供数据
-  @override
-  List<ChatModel> imCellData() {
-    // TODO: implement imCellData
-    List datas = List<ChatModel>();
-    for(int i=0;i<2;i++){
-      var model = ChatModel();
-      model.portraitUrl = "http://tiebapic.baidu.com/forum/w%3D580%3B/sign=0a77c837c609b3deebbfe460fc846d81/c2cec3fdfc0392458ab18e509094a4c27d1e256c.jpg";
-      datas.add(model);
-      model.name = "你好${i+1}";
-      model.detailDes = "helloWorld,mobilePhone";
-      model.time = DateTime(1606304956);
+   }
+   //为会话cell提供数据
+    @override
+    List<ChatModel> imCellData() {
+    List<ChatModel> _chats = List<ChatModel>();
+    for(String id in _chatData.keys){
+      _chats.add(_chatData[id]);
     }
-    return datas;
+    return _chats;
   }
-  //提供交互事件的未读数量信息
-  @override
-  Map<MPIntercourses, int> unreadOfIntercources() {
+   //提供交互事件的未读数量信息
+    @override
+     Map<MPIntercourses, int> unreadOfIntercources() {
     if(_unreads.isEmpty){
       _unreads[MPIntercourses.Thumb] = 1;
       _unreads[MPIntercourses.At] = 2;
@@ -707,12 +722,51 @@ class _MessagePageState extends State<MessagePage>
     }
      return _unreads;
   }
-  //新消息来临后走这个函数加入到消息集合当中
-  @override
-  void newMsgsArrive(Set<Message> msgs) {
-   
-      
-    
-  }
+    //新消息来临后走这个函数加入到消息集合当中
+    @override
+    void newMsgsArrive(Set<Message> msgs) {
+     _msgs.addAll(msgs);
+     for(Message msg in msgs){
+      //是否已存在消息对应的会话
+      switch(_isExistRelevantChat(msg)){
+        case true:
+          if(delegate==null){return;}
+          delegate.signals(payload:{REFRESH_A_CHAT:_indexOf_A_ChatByMessage(msg)});
+          break;
+          default:
+          if(delegate==null){return;}
+          delegate.signals(payload: {REFRESH_ALL_LIST:null});
+          break;
+      }
+    }
+    //每回来新的数据的时候，都需要进行排序
+    _sortChats();
+   }
+   //根据消息找对对应的会话
+    int _indexOf_A_ChatByMessage(Message msg){
+      String targetId = msg.senderUserId;
+      int index = -1;
+      for(String id in _chatData.keys){
+        ++index;
+        if(id == targetId){
+        return index;
+        }
+      }
+    }
+    //对会话的数据进行按照时间的顺序来进行排序，新到的顺序较高
+    _sortChats(){
 
+    }
+    //是否存在"已有会话"
+    bool _isExistRelevantChat(Message msg){
+      String targetId = msg.senderUserId;
+      for(String id in _chatData.keys){
+        if(id == targetId){
+        return true;
+        }
+      }
+      return false;
+    }
+    @override
+    MPIMDataSourceAction delegate;
 }

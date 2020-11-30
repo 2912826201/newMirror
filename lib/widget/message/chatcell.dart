@@ -4,7 +4,9 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/Message/message_ui_related.dart';
 
 
+
 abstract class ChatCellBehaviors{
+  void refresh(ChatModel model);
   //消息到来
   void msgsWithCount(int newMsgs);
   //cell被点击
@@ -37,6 +39,11 @@ class MPChatCell extends StatefulWidget implements ChatCellBehaviors{
   @override
   void atEvent({payload = Map}) {
     _state.atEvent(payload: payload);
+  }
+
+  @override
+  void refresh(ChatModel model) {
+    _state.refresh(model);
   }
 
 
@@ -199,6 +206,12 @@ class _MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
   @override
   void atEvent({payload = Map}) {
     _atEvent = true;
+  }
+
+  @override
+  void refresh(ChatModel model) {
+    setState(() {
+    });
   }
 }
 class _IndicateConditons{
