@@ -45,6 +45,18 @@ Future<void> _createDB(Database db, int version) async {
       "isPhone tinyint(1)," +
       "jti varchar(128)," +
       "createTime bigint(20))");
+  //conversation
+  await db.execute("create table conversation (" +
+      "id varchar(64) primary key," +
+      "conversationId bigint(20)," +
+      "uid bigint(20)," +
+      "type tinyint(1)," +
+      "avatarUri varchar(512)," +
+      "name varchar(128)," +
+      "content varchar(256)," +
+      "updateTime bigint(20)," +
+      "createTime bigint(20)," +
+      "isTop tinyint(1))");
 }
 
 Future<void> _updateDB(Database db, int oldVersion, int newVersion) async {}
