@@ -2,10 +2,11 @@ import 'dart:math';
 
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/user_model.dart';
-import 'package:mirror/data/notifier/user_notifier.dart';
+import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/agora_input_page.dart';
 import 'package:mirror/page/media_test_page.dart';
 import 'package:mirror/page/qiniu_test_page.dart';
@@ -56,79 +57,61 @@ class _TestState extends State<TestPage> {
                 ],
               ),
               //watch会监听全部数据
-              Text("用户ID：${context.watch<UserNotifier>().user.uid}"),
-              Text("用户名：${context.watch<UserNotifier>().user.userName}"),
-              Text("用户头像地址：${context.watch<UserNotifier>().user.avatarUri}"),
+              Text("用户ID：${context.watch<ProfileNotifier>().profile.uid}"),
+              Text("用户名：${context.watch<ProfileNotifier>().profile.nickName}"),
+              Text("用户头像地址：${context.watch<ProfileNotifier>().profile.avatarUri}"),
               //select只监听想要的数据 当其他数据发生变化时不会触发更新
-              Text("用户ID：${context.select((UserNotifier value) => value.user.uid)}"),
-              Text("用户名：${context.select((UserNotifier value) => value.user.userName)}"),
-              Text("用户头像地址：${context.select((UserNotifier value) => value.user.avatarUri)}"),
+              Text("用户ID：${context.select((ProfileNotifier value) => value.profile.uid)}"),
+              Text("用户名：${context.select((ProfileNotifier value) => value.profile.nickName)}"),
+              Text("用户头像地址：${context.select((ProfileNotifier value) => value.profile.avatarUri)}"),
               //用consumer的方式监听数据
-              Consumer<UserNotifier>(
+              Consumer<ProfileNotifier>(
                 builder: (context, notifier, child) {
                   return Column(
                     children: [
-                      Text("用户ID：${notifier.user.uid}"),
-                      Text("用户名：${notifier.user.userName}"),
-                      Text("用户头像地址：${notifier.user.avatarUri}"),
+                      Text("用户ID：${notifier.profile.uid}"),
+                      Text("用户名：${notifier.profile.nickName}"),
+                      Text("用户头像地址：${notifier.profile.avatarUri}"),
                     ],
                   );
                 },
               ),
               //用Selector的方式监听数据
-              Selector<UserNotifier, int>(builder: (context, uid, child) {
+              Selector<ProfileNotifier, int>(builder: (context, uid, child) {
                 return Text("用户ID：$uid");
               }, selector: (context, notifier) {
-                return notifier.user.uid;
+                return notifier.profile.uid;
               }),
-              Selector<UserNotifier, String>(builder: (context, userName, child) {
-                return Text("用户名：$userName");
+              Selector<ProfileNotifier, String>(builder: (context, nickName, child) {
+                return Text("用户名：$nickName");
               }, selector: (context, notifier) {
-                return notifier.user.userName;
+                return notifier.profile.nickName;
               }),
-              Selector<UserNotifier, String>(builder: (context, avatarUri, child) {
+              Selector<ProfileNotifier, String>(builder: (context, avatarUri, child) {
                 return Text("用户头像地址：$avatarUri");
               }, selector: (context, notifier) {
-                return notifier.user.avatarUri;
+                return notifier.profile.avatarUri;
               }),
               Builder(
                 builder: (context) {
                   return RaisedButton(
                     onPressed: () => _changeUser(context),
-                    child: Text("换个用户"),
+                    child: Text("换个用户(不会上报或入库)"),
                   );
                 },
               ),
               Builder(
                 builder: (context) {
                   return RaisedButton(
-                    onPressed: () => _changeUserName(context),
-                    child: Text("换个用户名"),
+                    onPressed: () => _changeNickName(context),
+                    child: Text("换个用户名(不会上报或入库)"),
                   );
                 },
               ),
               RaisedButton(
                 onPressed: () {
-                  ProfileDBHelper().insertProfile(ProfileDto.fromUserModel(context.read<UserNotifier>().user));
-                },
-                child: Text("写入数据库"),
-              ),
-              RaisedButton(
-                onPressed: () async {
-                  ProfileDto dto = await ProfileDBHelper().queryProfile();
-                  if (dto == null) {
-                    print("数据库中没有用户");
-                  } else {
-                    UserModel model = dto.toUserModel();
-                    print(model.uid.toString() + "," + model.userName + "," + model.avatarUri);
-                    Size c = getTextSize("写入数据库", TextStyle(fontSize: 16));
-                    print("++++++++++++++++$c+++++++++++++++++++++++");
-                  }
-                },
-                child: Text("查询数据库"),
-              ),
-              RaisedButton(
-                onPressed: () {
+                  Size c = getTextSize("查询数据库", TextStyle(fontSize: 16));
+                  print("++++++++++++++++$c+++++++++++++++++++++++");
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return MediaTestPage();
                   }));
@@ -145,15 +128,9 @@ class _TestState extends State<TestPage> {
               ),
               RaisedButton(
                 onPressed: () {
-                  AppRouter.navigateToRCTestPage(context, context.read<UserNotifier>().user);
+                  AppRouter.navigateToRCTestPage(context, context.read<ProfileNotifier>().profile);
                 },
                 child: Text("Fluro跳转传参测试"),
-              ),
-              RaisedButton(
-                onPressed: () {
-                  AppRouter.navigateToLoginPage(context);
-                },
-                child: Text("去登录"),
               ),
               RaisedButton(
                 onPressed: () {
@@ -174,15 +151,15 @@ class _TestState extends State<TestPage> {
 void _changeUser(BuildContext context) {
   int randomNum = Random().nextInt(10000);
   WordPair pair = WordPair.random();
-  String userName = pair.first;
+  String nickName = pair.first;
   String avatarUri = "http://www.abc.com/${pair.second}.png";
-  UserModel user = context.read<UserNotifier>().user;
-  user.uid = randomNum;
-  user.userName = userName;
-  user.avatarUri = avatarUri;
-  context.read<UserNotifier>().setUser(user);
+  ProfileDto profile = context.read<ProfileNotifier>().profile;
+  profile.uid = randomNum;
+  profile.nickName = nickName;
+  profile.avatarUri = avatarUri;
+  context.read<ProfileNotifier>().setProfile(profile);
 }
 
-void _changeUserName(BuildContext context) {
-  context.read<UserNotifier>().setUserName(WordPair.random().first);
+void _changeNickName(BuildContext context) {
+  context.read<ProfileNotifier>().setNickName(WordPair.random().first);
 }

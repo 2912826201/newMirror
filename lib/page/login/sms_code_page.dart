@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/api/basic_api.dart';
@@ -227,6 +229,7 @@ class _SmsCodePageState extends LoginBasePageState {
       minWidth: 293,
       height: 44,
       shape: btnStyle,
+      //FIXME 没有做输入长度校验
       onPressed: _loginWithPhoneCode,
       child: Text(
         _titleOfSendTextBtn,
@@ -291,13 +294,10 @@ class _SmsCodePageState extends LoginBasePageState {
     await TokenDBHelper().insertToken(tokenDto);
     context.read<TokenNotifier>().setToken(tokenDto);
     //然后要去取一次个人用户信息
-    Map<String, dynamic> user = await getUserInfo();
-    //TODO 这里要保存并更新用户信息 等接口规范好用户信息内容
-    UserModel userModel = UserModel();
-    userModel.uid = user["uid"];
-    userModel.userName = user["userName"];
-    userModel.avatarUri = user["avatarUri"];
-    Application.profile = ProfileDto.fromUserModel(userModel);
+    UserModel user = await getUserInfo();
+    ProfileDto profile = ProfileDto.fromUserModel(user);
+    await ProfileDBHelper().insertProfile(profile);
+    context.read<ProfileNotifier>().setProfile(profile);
     //TODO 页面跳转需要处理
     Navigator.of(context).pushNamedAndRemoveUntil(
       '/', (route) => false,

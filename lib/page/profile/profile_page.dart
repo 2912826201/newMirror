@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:mirror/config/application.dart';
+import 'package:mirror/api/basic_api.dart';
+import 'package:mirror/data/database/profile_db_helper.dart';
+import 'package:mirror/data/database/token_db_helper.dart';
+import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
+import 'package:mirror/data/model/token_model.dart';
+import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:provider/provider.dart';
 
@@ -13,40 +19,29 @@ class ProfilePage extends StatelessWidget {
     return Center(
       child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
         FlatButton(
-          child: Text("我的页"),
+          child: Text("去登录"),
           onPressed: () {
             AppRouter.navigateToLoginPage(context);
           },
         ),
         Text(context.select((TokenNotifier notifier) => notifier.isLoggedIn ? "已登录" : "未登录")),
+        Text(context.watch<ProfileNotifier>().profile.toMap().toString()),
         FlatButton(
-          child: Text("token变匿名/真实用户"),
-          onPressed: () {
-            TokenDto token = Application.token;
-            token.anonymous = (token.anonymous + 1) % 2;
-            context.read<TokenNotifier>().setToken(token);
-          },
-        ),
-        FlatButton(
-          child: Text("token绑定手机/解绑手机"),
-          onPressed: () {
-            TokenDto token = Application.token;
-            if (token.isPhone == null) {
-              token.isPhone = 0;
+          child: Text("登出"),
+          onPressed: () async {
+            //先取个匿名token
+            TokenModel tokenModel = await login("anonymous", null, null, null);
+            if (tokenModel != null) {
+              TokenDto tokenDto = TokenDto.fromTokenModel(tokenModel);
+              bool result = await logout();
+              //TODO 这里先不处理登出接口的结果
+              await TokenDBHelper().insertToken(tokenDto);
+              context.read<TokenNotifier>().setToken(tokenDto);
+              await ProfileDBHelper().clearProfile();
+              context.read<ProfileNotifier>().setProfile(ProfileDto.fromUserModel(UserModel()));
+            } else {
+              //失败的情况下 登出将无token可用 所以不能继续登出
             }
-            token.isPhone = (token.isPhone + 1) % 2;
-            context.read<TokenNotifier>().setToken(token);
-          },
-        ),
-        FlatButton(
-          child: Text("token完善资料/清空资料"),
-          onPressed: () {
-            TokenDto token = Application.token;
-            if (token.isPerfect == null) {
-              token.isPerfect = 0;
-            }
-            token.isPerfect = (token.isPerfect + 1) % 2;
-            context.read<TokenNotifier>().setToken(token);
           },
         ),
       ]),

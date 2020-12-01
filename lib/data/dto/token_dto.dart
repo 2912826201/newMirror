@@ -22,7 +22,7 @@ class TokenDto {
   String accessToken;
   String tokenType;
   String refreshToken;
-  int expiresIn;
+  int expiresIn; //单位是秒
   String scope;
   int isPerfect;
   int uid;
