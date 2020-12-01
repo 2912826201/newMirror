@@ -51,7 +51,7 @@ class AppRouter {
 
   static void navigateToRCTestPage(BuildContext context, ProfileDto profile) {
     Map<String, dynamic> map = Map();
-    map["profile"] = profile;
+    map["profile"] = profile.toMap();
     _navigateToPage(context, pathRCTest, map);
   }
 
