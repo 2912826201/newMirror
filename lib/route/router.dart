@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
-import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/route/route_handler.dart';
 
 /// router
@@ -49,9 +49,9 @@ class AppRouter {
     }
   }
 
-  static void navigateToRCTestPage(BuildContext context, UserModel user) {
+  static void navigateToRCTestPage(BuildContext context, ProfileDto profile) {
     Map<String, dynamic> map = Map();
-    map["user"] = user;
+    map["profile"] = profile;
     _navigateToPage(context, pathRCTest, map);
   }
 

@@ -1,3 +1,4 @@
+import 'package:mirror/config/application.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/token_model.dart';
 
@@ -7,6 +8,7 @@ import 'api.dart';
 /// Created by yangjiayi on 2020/11/16.
 
 const String LOGIN = "/uaa/oauth/login";
+const String LOGOUT = "/uaa/oauth/logout";
 const String SENDSMS = "/uaa/oauth/authentication/sms/send";
 
 //登录以及刷新token
@@ -38,6 +40,20 @@ Future<TokenModel> login(String grant_type, String username, String code, String
 Future<bool> sendSms(String phoneNumber, int type) async {
   BaseResponseModel responseModel =
       await requestApi(SENDSMS, {"phoneNumber": phoneNumber, "type": type}, authType: AUTH_TYPE_NONE);
+  if (responseModel.isSuccess) {
+    //TODO 这里实际需要将请求结果处理为具体的业务数据
+    return responseModel.code == CODE_SUCCESS;
+  } else {
+    //TODO 这里实际需要处理失败
+    return false;
+  }
+}
+
+//登出
+//token直接取accessToken不用拼接
+Future<bool> logout() async {
+  BaseResponseModel responseModel =
+      await requestApi(LOGOUT, {"token": Application.token.accessToken}, authType: AUTH_TYPE_NONE);
   if (responseModel.isSuccess) {
     //TODO 这里实际需要将请求结果处理为具体的业务数据
     return responseModel.code == CODE_SUCCESS;

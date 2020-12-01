@@ -1,15 +1,19 @@
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/basic_api.dart';
+import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
+import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:provider/provider.dart';
 
+import 'api/user_api.dart';
 import 'config/application.dart';
+import 'data/dto/profile_dto.dart';
 import 'data/dto/token_dto.dart';
 import 'data/model/token_model.dart';
 import 'data/notifier/token_notifier.dart';
-import 'data/notifier/user_notifier.dart';
+import 'data/notifier/profile_notifier.dart';
 import 'route/router.dart';
 
 void main() {
@@ -17,7 +21,7 @@ void main() {
         MultiProvider(
           providers: [
             ChangeNotifierProvider(create: (_) => TokenNotifier(Application.token)),
-            ChangeNotifierProvider(create: (_) => UserNotifier()),
+            ChangeNotifierProvider(create: (_) => ProfileNotifier(Application.profile)),
           ],
           child: MyApp(),
         ),
@@ -31,8 +35,10 @@ Future _initApp() async {
 
   //从数据库获取已登录的用户token或匿名用户token
   TokenDto token = await TokenDBHelper().queryToken();
-  if (token == null) {
-    //如果token是空的 那么需要先去取一个匿名token
+  if (token == null ||
+      (token.anonymous == 0 && (token.isPerfect == 0 || token.isPhone == 0)) ||
+      DateTime.now().second + token.expiresIn > (token.createTime / 1000)) {
+    //如果token是空的 或者token非匿名但未完善资料 或者已过期 那么需要先去取一个匿名token
     TokenModel tokenModel = await login("anonymous", null, null, null);
     if (tokenModel != null) {
       token = TokenDto.fromTokenModel(tokenModel);
@@ -44,7 +50,20 @@ Future _initApp() async {
   print("token:${token.accessToken}");
   Application.token = token;
 
-  //TODO 如果token不是匿名用户则需要从库里取出保存的用户信息 库里没有的话从接口中取
+  //如果token不是匿名用户则需要从库里取出保存的用户信息 库里没有的话从接口中取
+  ProfileDto profile;
+  if (token.anonymous == 0) {
+    profile = await ProfileDBHelper().queryProfile(token.uid);
+    if (profile == null) {
+      UserModel user = await getUserInfo();
+      profile = ProfileDto.fromUserModel(user);
+      await ProfileDBHelper().insertProfile(profile);
+    }
+  } else {
+    //匿名用户时 给个uid为0的其他信息为空的用户
+    profile = ProfileDto.fromUserModel(UserModel());
+  }
+  Application.profile = profile;
 
   //初始化融云IM
   RongCloud().init();
