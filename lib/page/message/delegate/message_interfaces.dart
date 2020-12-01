@@ -36,10 +36,8 @@ abstract class MPUiProxy implements MPNetworkEvents {
   void displayBadNetBanner(bool switchOn);
   //开启系统提示横幅
   void displaySysNotiBanner(bool switchOn);
-  //及时通讯ui相关，第三个参数的意思是当仅仅是某一种消息类型进行跟新时此参数需要传入true,
-  //第二个参数用来指定需要跟新的cell，可以使index索引，也可以是一个会话标识,当标识和索引同时存在的时候
-  //优先选择会话标识
-  void imFreshData({bool incomplete, int identifier, int index});
+  //融云消息列表的ui刷新，三个参数均不传则刷新整个消息列表，否则刷新摸个指定的cell
+  void imFreshData({ int index,ConversationDto dto});
 }
 abstract class MPIMDataSourceAction{
   //数据源本身的一些事件（工作）的回调
@@ -50,7 +48,7 @@ abstract class MPIMDataSourceAction{
 abstract class MPDataSourceProxy implements MPInterCourcesDataSource,MPIMDataSource{
   MPIMDataSourceAction delegate;
 }
-
+//即时通讯的ui的展示需要的数据集
 abstract class MPIMDataSource{
   void newMsgsArrive(Set<Message> msgs);
   //返回即时聊天的数据集

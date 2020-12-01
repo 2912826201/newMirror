@@ -19,6 +19,7 @@ import 'delegate/message_page_datasource.dart';
 //UI的数据是通过也通过dataActionPipe属性从本页面处的controller获取(实际是间接地从数据proxy出来，经过controller处置过后)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 class MessagePage extends StatefulWidget {
+
   @override
   State<StatefulWidget> createState() {
     return _MessagePageState();
@@ -28,10 +29,9 @@ class MessagePage extends StatefulWidget {
 class _MessagePageState extends State<MessagePage>
     implements MPBasements, MPBusiness, MPHookFunc, MPNetworkEvents, MPUIActionAndDataPipe,MPIMDataSourceAction, MessageObserver {
   List imData = List();
-
-
   @override
   Widget build(BuildContext context) {
+    print("messagePage build");
     return Scaffold(
       body: Container(
         child: Column(
@@ -47,6 +47,7 @@ class _MessagePageState extends State<MessagePage>
    }
     @override
     void initState() {
+    print("${this.hashCode} initState");
     _registrations();
      _allocations();
      //根据安排需要放在initState方法中
@@ -81,12 +82,7 @@ class _MessagePageState extends State<MessagePage>
     uiProvider.dataActionPipe = this;
     dataSource.delegate = this;
     }
-  
-   //当有及时消息来临时调用
-    @override
-    void aChatArrived(MPChatVarieties type) {
-      // TODO: implement aChatArrived
-    }
+
    //当删除一个会话cell时调用
     @override
     // ignore: non_constant_identifier_names
@@ -96,22 +92,29 @@ class _MessagePageState extends State<MessagePage>
    //发生点赞、评论、@事件时
     @override
     void regularEventsCall(MPIntercourses type) {
-    // TODO: implement regularEventsCall
+      print("regularEventsCall");
     }
     //视图第一次出现时，在flutter中对应是在build中
     @override
     void viewWillAppear() {
-   
+    print("viewWillAppear");
     }
 
    //当转去其他视图界面时(目前暂时放在dispose方法中)
     @override
-    void willDisappear() {
-
+    void viewDidDisappear() {
+    print("viewDidDisappear");
     }
     @override
     void dispose() {
-    this.willDisappear();
+      print("dispose");
+      this.uiProvider = null;
+      this.dataSource = null;
+      print(this.runtimeType);
+      print(this.hashCode);
+      print("\n");
+    RongCloudReceiveManager.shareInstance().removeObserver(this);
+    this.viewDidDisappear();
     super.dispose();
    }
    // 下方均为向ui发送消息来处理对应事件，虽然本质上还是
@@ -149,14 +152,13 @@ class _MessagePageState extends State<MessagePage>
     //社交事件到来时调用（通常是调取服务器接口发现未读数不为0）
     @override
     void eventsDidCome() {
-
+    print("event comes");
     }
-
-   @override
-   void imArrived() {
-
-   }
-
+    //及时通讯消息的到来
+    @override
+    void imArrived() {
+    print("页面消息来到整页性回调");
+    }
    //////////////////////////////////////
    /////////////////////////////////////
 
@@ -164,8 +166,7 @@ class _MessagePageState extends State<MessagePage>
    //融云消息的注册的新消息来临的回调，可以选择性去调用imArrived()去执行ui上的变化
    @override
    Future<void> msgDidCome(Set<Message> msg, bool offLine) {
-      print("msgDidCome+${msg}");
-      print(msg.hashCode);
+      print("msgDidCome");
       //调取一下页面的消息来临的函数，让页面本身做一些处理
       this.imArrived();
       //只有一条消息的情况，一般即为及时的消息
@@ -180,20 +181,22 @@ class _MessagePageState extends State<MessagePage>
 
    //单个在线信息来到的处理
    void _manipulateRegularMsg(Message msg){
+      print("_manipulateRegularMsg");
       Set<Message> _t = Set<Message>();
       _t.add(msg);
-      dataSource.newMsgsArrive(_t);
-      uiProvider.imFreshData();
+      this.newMsgsArrive(_t);
    }
    //列表性离线信息的来临
    void _manipulateOffLineMessage(Set<Message> msgs){
-    dataSource.newMsgsArrive(msgs);
+     print("_manipulateOffLineMessage");
+    this.newMsgsArrive(msgs);
    }
    //UI源发送来的交互事件
    @override
    void action(String identifier, {payload = Map}) {
     //setState(){}方法调用事件
     if (identifier == MessagePageUiProvider.FuncOf_setState_) {
+      print("before setState");
       setState(() {});
     }
     //点赞和评论等事件
@@ -202,13 +205,13 @@ class _MessagePageState extends State<MessagePage>
         MPIntercourses t = payload[MessagePageUiProvider.IntercoursesKey];
         switch (t) {
           case MPIntercourses.Thumb:
-            // TODO: implement MPIntercourses.Thumb
+            this.regularEventsCall(MPIntercourses.Thumb);
             break;
           case MPIntercourses.At:
-            // TODO: implement MPIntercourses.At
+            this.regularEventsCall(MPIntercourses.At);
             break;
           case MPIntercourses.Comment:
-            // TODO: implement MPIntercourses.Comment
+            this.regularEventsCall(MPIntercourses.Comment);
             break;
         }
       }
@@ -230,8 +233,26 @@ class _MessagePageState extends State<MessagePage>
       // TODO: implement _MessagePageUiProvider.FuncOfHandleNotify
     }
   }
-
-
+   //数据源的事件
+   @override
+   void signals({Map<String,dynamic> payload}) {
+      print("datasource signals");
+    //事件区分
+    String thekey = payload.keys.first;
+    //刷新一个cell
+    if(thekey == MessagePageDataSource.REFRESH_A_CHAT){
+      print("single refresh");
+      print("the key  $thekey");
+      int index  = payload[thekey];
+      print("the index $index");
+      uiProvider.imFreshData(index: index);
+    }
+    //刷新整个列表
+    else if (thekey == MessagePageDataSource.REFRESH_ALL_LIST){
+      print("whole refresh");
+      uiProvider.imFreshData();
+    }
+  }
    //及时会话的高度的ui代理
    @override
    double cellHeightAtIndex(int index) {
@@ -242,17 +263,8 @@ class _MessagePageState extends State<MessagePage>
    Map<MPIntercourses, int> unreadOfIntercources() {
    return dataSource.unreadOfIntercources();
    }
-   //im消息相关的消息
-   @override
-   void newMsgsArrive(Set<Message> msgs) {
-    // TODO: implement newMsgsArrive
-   }
 
-  //数据源的除开im直接相关的事件
-  @override
-  void signals({Map<String,dynamic> payload}) {
-    // TODO: implement dataFlow
-  }
+
 
   //数据源属性
   @override
@@ -261,11 +273,17 @@ class _MessagePageState extends State<MessagePage>
   //即时消息ui 数据代理
   @override
   List<ConversationDto> imCellData() {
+    // print("messagePage imCellData");
    return dataSource.imCellData();
   }
-
-
-
+  //有及时消息的来临
+  @override
+  void newMsgsArrive(Set<Message> msgs) {
+    print("dataSource.newMsgsArrive(msgs)");
+    if(dataSource != null) {
+      dataSource.newMsgsArrive(msgs);
+    }
+  }
    //-------------------------------------------------------------------//
 }
 

@@ -38,6 +38,8 @@ abstract class RongCloudReceiveManager {
   void observeAllMsgs<T extends MessageObserver>(T target);
   //观察特点类型消息来临，参数值域参考RCConversationType(例如：私聊、群聊、系统聊天)
   void observeSpecificTypeMsg<T extends MessageObserver>(int conversationType,T target);
+  //取消在消息中心的监听(在disposo中调用)
+  void removeObserver<T extends MessageObserver>(T target);
   //取消某种消息类型消息来临的通知
   void ignoreSpecificTypeMsg<T extends MessageObserver>(int conversationType,T target);
   //观察某条消息的状态
@@ -167,22 +169,36 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
        Map originContentMap;*/
     //处理当前消息，第二个参数为服务端的剩余消息
    _processCurrentRawMsg(Message msg,int left){
+      print("${this.runtimeType}_processCurrentRawMsg");
+
     _messageDispatchWithType(msg,false);
    }
    @override
    void ignoreSpecificTypeMsg<T extends MessageObserver>(int conversationType, T target) {
+     print("${this.runtimeType}ignoreSpecificTypeMsg");
       assert(conversationType>=RCConversationType.Private&&conversationType<=RCConversationType.System);
+      if(_observers[conversationType].contains(target)){
       _observers[conversationType].remove(target);
+      }
    }
+
    @override
    void observeSpecificTypeMsg<T extends MessageObserver>(int conversationType, T target) {
+     print("${this.runtimeType}observeSpecificTypeMsg");
      assert(conversationType>=RCConversationType.Private&&conversationType<=RCConversationType.System);
      _observers[conversationType].add(target);
      //如果在注册时，已经有消息提前到达，则对其下发清空
      if(_nonAdaptableMsg.isNotEmpty){
-       Set<Message> _t = Set<Message>();
-       _classifyMessagesAndDispatch(_nonAdaptableMsg);
-        _nonAdaptableMsg.removeAll(_t);
+       Set<Message> set = Set();
+       _nonAdaptableMsg.forEach((element) {
+         if(element.conversationType == conversationType){
+           set.add(element);
+         }
+       });
+       _classifyMessagesAndDispatch(set);
+        set.forEach((element) {
+          _nonAdaptableMsg.remove(element);
+        });
      }
    }
     //开启或关闭缓冲
@@ -200,6 +216,7 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
   }
   //将不同种类的消息打包发送(于函数_drainCache()清空缓存池时发生)
    _classifyMessagesAndDispatch(Set<Message> msgs){
+     print("${this.runtimeType}_classifyMessagesAndDispatch");
     Map<int,Set<Message>> typeStreams = Map();
     msgs.forEach((element) {
       if(!typeStreams.keys.contains(element.conversationType)){
@@ -214,6 +231,7 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
   }
   //同一种类型的消息流的发送（肯定是离线消息，只有离线消息才会打包下发）
    _messageStreamDispatchWithType(Set<Message> msgs,int type){
+     print("${this.runtimeType}_messageStreamDispatchWithType");
      Set _toNotify = _observers[type];
      if (_toNotify.isEmpty){
        _tempStorage(msgs);
@@ -282,5 +300,15 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
   Future<Message> sendPrivateMessage(String targetId,MessageContent content)  async{
      Message msh = await  RongIMClient.sendMessage(RCConversationType.Private, targetId, content);
    return msh;
+  }
+
+  @override
+  void removeObserver<T extends MessageObserver>(T target) {
+    _observers.forEach((key, value) {
+      Set<MessageObserver> obs = _observers[key];
+      if(obs.contains(target)){
+        obs.remove(target);
+      }
+    });
   }
 }

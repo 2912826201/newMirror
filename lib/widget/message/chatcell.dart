@@ -18,12 +18,12 @@ abstract class ChatCellBehaviors{
 
 //单个会话显示单元
 class MPChatCell extends StatefulWidget implements ChatCellBehaviors{
-
+  MPChatCell({Key key,@required this.model}):super(key: key);
+  MPChatCellState _state;
   final ConversationDto model;
-  _MPChatCellState _state = _MPChatCellState();
-  MPChatCell({Key key,this.model}):super(key: key);
   @override
   State<StatefulWidget> createState() {
+    _state = MPChatCellState();
     return _state;
   }
 
@@ -44,12 +44,13 @@ class MPChatCell extends StatefulWidget implements ChatCellBehaviors{
 
   @override
   void refresh(ConversationDto model) {
-    _state.refresh(model);
+     _state.setState(() {
+     });
   }
 
 
 }
-class _MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
+class MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
   //未读消息数
   int _unreadMsgCount = 0;
   //决定展示何种类型的未读提示样式
@@ -108,7 +109,7 @@ class _MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
                    borderRadius: BorderRadius.all(Radius.circular(0.5*portraitWH)),
                    image: DecorationImage(
                        fit: BoxFit.fill,
-                       image: NetworkImage(model.avatarUri)
+                       image: AssetImage(model.avatarUri),
                    )
                ),
              ),

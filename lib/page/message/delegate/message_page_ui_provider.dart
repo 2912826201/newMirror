@@ -2,6 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/page/message/delegate/regular_events.dart';
 import 'package:mirror/widget/message/chatcell.dart';
 import 'package:mirror/widget/message/intercourse_widget.dart';
@@ -9,6 +10,8 @@ import 'business.dart';
 import 'message_interfaces.dart';
 //消息页面的ui代理类
 class MessagePageUiProvider implements MPUiProxy {
+  //用于局部刷新List视图的key数组
+  List<GlobalKey<MPChatCellState>> listKeys = List<GlobalKey<MPChatCellState>>();
   //交互事件及数据代理
   MPUIActionAndDataPipe dataActionPipe;
   //在_actionsDispatch（）中的相关函数关联字符
@@ -46,11 +49,16 @@ class MessagePageUiProvider implements MPUiProxy {
 
   //交互事件外发
   _actionsDispatch(String identifier, {payload: Map}) {
+    print(" _actionsDispatch"+identifier);
     if (dataActionPipe != null) {
+      print(dataActionPipe);
+      print("starting action!");
       dataActionPipe.action(identifier, payload: payload);
     }
   }
-
+  void dispose(){
+    this.dataActionPipe = null;
+  }
   //顶部栏
   @override
   Widget navigationBar() {
@@ -69,7 +77,7 @@ class MessagePageUiProvider implements MPUiProxy {
                 height: 28,
                 width: 28,
                 child: FlatButton(
-                  onPressed: _actionsDispatch(FuncOfNaviBtn),
+                  onPressed: ()=>_actionsDispatch(FuncOfNaviBtn),
                   child: Container(
                     child: Image.asset("images/resource/Nav_search_icon .png", fit: BoxFit.fill),
                   ),
@@ -108,6 +116,10 @@ class MessagePageUiProvider implements MPUiProxy {
   //页面主要内容
   @override
   Widget mainContent() {
+    print("ui-provider  mainContent");
+    listKeys.clear();
+    //整体setState(）之后，清空之前的每个子元素的globalKey数组
+    //  this.listKeys.clear();
     //外层是一个column所以需要使用Expanded
     return Expanded(child: Column(
       children: [
@@ -116,8 +128,7 @@ class MessagePageUiProvider implements MPUiProxy {
         //除去网络横幅以外的区域
         Expanded(child: ListView.builder(
           //大致分为3个区域
-          //尾部减一是因为thisConsitsOfMp和dataActionPipe.imCellData().length有一个单位的重合
-          itemCount: this.consistsOfMP + (dataActionPipe.imCellData().length-1),
+          itemCount: _expectCount(),
           itemBuilder: (BuildContext context, int index) {
             //点赞交互区域
             if(index == 0){
@@ -125,6 +136,8 @@ class MessagePageUiProvider implements MPUiProxy {
             }
             //需要进行消息提醒的横幅的显示
             else if (index ==1){
+              print("sections:\n");
+              print(this.consistsOfMP + (dataActionPipe.imCellData().length));
               return notificationBanner();
             }
             //即时通讯会话显示区域
@@ -140,9 +153,16 @@ class MessagePageUiProvider implements MPUiProxy {
       ],
     ));
   }
-
+   int _expectCount(){
+    int dataSourceCount  = dataActionPipe.imCellData().length ;
+    if(dataSourceCount==0){
+      return this.consistsOfMP;
+    }
+     return this.consistsOfMP + dataSourceCount - 1;
+   }
   //点赞交互区域
   Widget _interactiveAreas() {
+    print("_interactiveAreas");
     return Row(
       //横向排列交互区域
       children: [
@@ -161,7 +181,7 @@ class MessagePageUiProvider implements MPUiProxy {
                           fontWeight: FontWeight.w400,
                           decoration: TextDecoration.none),
                     ),
-                    onTap: _actionsDispatch(FuncOfinterCourses, payload: {IntercoursesKey: MPIntercourses.Comment}),
+                    onTap:()=> _actionsDispatch(FuncOfinterCourses, payload: {IntercoursesKey: MPIntercourses.Comment}),
                     badges: _badgesNum(MPIntercourses.Comment),
                   ),
                 ),
@@ -183,7 +203,7 @@ class MessagePageUiProvider implements MPUiProxy {
                           fontWeight: FontWeight.w400,
                           decoration: TextDecoration.none),
                     ),
-                    onTap: _actionsDispatch(FuncOfinterCourses, payload: {IntercoursesKey: MPIntercourses.At}),
+                    onTap: ()=>_actionsDispatch(FuncOfinterCourses, payload: {IntercoursesKey: MPIntercourses.At}),
                     badges: _badgesNum(MPIntercourses.At),
                   ),
                 )),
@@ -205,7 +225,7 @@ class MessagePageUiProvider implements MPUiProxy {
                           fontWeight: FontWeight.w400,
                           decoration: TextDecoration.none),
                     ),
-                    onTap: _actionsDispatch(FuncOfinterCourses, payload: {IntercoursesKey: MPIntercourses.Thumb}),
+                    onTap:()=> _actionsDispatch(FuncOfinterCourses, payload: {IntercoursesKey: MPIntercourses.Thumb}),
                     badges: _badgesNum(MPIntercourses.Thumb),
                   )),
             ),
@@ -223,21 +243,31 @@ class MessagePageUiProvider implements MPUiProxy {
 
   //即时通讯会话相关的区域,因为本身为一个ListView的item，所以需要高度
   Widget _imArea(int index) {
+    print("----------------------------_imArea----------------------------");
     //数据源没有数据的时候显示展位图
     if(dataActionPipe.imCellData().length == 0){
+      print("placehoulder");
       return placeholderWhenNoData();
     }
+    print("theindex $index");
     //三个板块中需要减去代表会话cell总体作为一部分的"1"
-    int expectedIndex = index - (this.consistsOfMP-1) ;
+    int expectedIndex = index - 2 ;
+    print("the expected index $expectedIndex");
+    //唯一标识key
+    GlobalKey<MPChatCellState> key = GlobalKey();
+    //获取对应的cell
+    MPChatCell cell = MPChatCell(key: key,model:dataActionPipe.imCellData()[expectedIndex]);
+    print("the key:");
+    print(listKeys);
+    listKeys.add(key);
     //构建单个cell的过程
     return Row(children:
     [
       Expanded(child:
-      GestureDetector(
+       GestureDetector(
         //绑定点击事件，传参需要一个索引位置
-        onTap: _actionsDispatch(FuncOfCellTap,payload: {CellTapKey:expectedIndex}),
-        child: Container(child:
-         MPChatCell(model:dataActionPipe.imCellData()[expectedIndex],),
+        onTap: ()=>_actionsDispatch(FuncOfCellTap,payload: {CellTapKey:expectedIndex}),
+        child: Container(child: cell,
           color: Color.fromRGBO(expectedIndex*15, expectedIndex*10, expectedIndex*11, 0.5),
           height: dataActionPipe.cellHeightAtIndex(expectedIndex),),
       )
@@ -295,17 +325,18 @@ class MessagePageUiProvider implements MPUiProxy {
             ),
           ],
         ),
-        onTap: _actionsDispatch(FuncOfHandleNet),
+        onTap: ()=>_actionsDispatch(FuncOfHandleNet),
       ),);
   }
 
   //通知开启提醒的横幅生成
   @override
   Widget notificationBanner() {
+    print(" notificationBanner()");
     return Offstage(
       offstage: _sysNotificationBannerShow,
       child: GestureDetector(
-        onTap: _actionsDispatch(FuncOfHandleNotify),
+        onTap: ()=>_actionsDispatch(FuncOfHandleNotify),
         child: Container(
           height: 56,
           color: Colors.grey,
@@ -367,12 +398,22 @@ class MessagePageUiProvider implements MPUiProxy {
   //有社交事件的来临走这里
   @override
   void interCourseAction(MPBusiness eventType, {payload}) {
-    // TODO: implement interCourseAction
+    dataActionPipe.action(MessagePageUiProvider.FuncOfinterCourses,payload: payload);
   }
-  //某会话数据来临走这里
+  //某会话数据到来而走这里
   @override
-  void imFreshData( {bool incomplete, int identifier, int index}) {
-    // TODO: implement imFreshData
+  void imFreshData( { int index,ConversationDto dto}) {
+    print("imFreshData $index");
+    //单独刷新
+    if(index != null){
+      MPChatCell theCell = MPChatCell(key:listKeys[index]);
+      if(theCell != null) {
+        print("cell begin refresh");
+        theCell.refresh(dto);
+      }
+    }else{
+     _actionsDispatch(FuncOf_setState_);
+    }
   }
   //
 

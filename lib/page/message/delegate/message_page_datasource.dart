@@ -9,8 +9,9 @@ import 'message_interfaces.dart';
 
 
 class MessagePageDataSource implements MPDataSourceProxy {
-  //常量
+  //事件key常量
   static const String REFRESH_A_CHAT = "REFRESH_A_CHAT";
+  static const String REFRESH_A_CHAT_1 = "REFRESH_A_CHAT_1";
   static const String REFRESH_ALL_LIST = "REFRESH_ALL_LIST";
   //消息的种类常量
   static const String RCText = "RC:TxtMsg";
@@ -25,7 +26,7 @@ class MessagePageDataSource implements MPDataSourceProxy {
   static const String RCPSMsg = "RC:PSImgTxtMsg";
   static const String RCMUTIPS = "RC:PSMultiImgTxtMsg";
   //固定的头像
-  static const String _fixedPortrait = "images/test/test.png";
+  static const String _fixedPortrait = "images/test/yxlm4.jpg";
   MessagePageDataSource() {
     _initialization();
   }
@@ -36,11 +37,15 @@ class MessagePageDataSource implements MPDataSourceProxy {
     List<ConversationDto> pinned = await ConversationDBHelper().queryConversation(Application.profile.uid, 1);
     _pinnedConversation.addAll(pinned);
     _notpinnedConversation.addAll(notPinnied);
+    _conversations.forEach((element) {
+      ConversationDto dto = element;
+      _chatData[dto.conversationId] = dto;
+    });
   }
   //接收消息的暂存
   List<Message> _msgs = List<Message>();
   //保存会话数据
-  LinkedHashMap<int,ConversationDto> _chatData = LinkedHashMap<int,ConversationDto>();
+  LinkedHashMap<String,ConversationDto> _chatData = LinkedHashMap<String,ConversationDto>();
   //置顶的会话
   List<ConversationDto> _pinnedConversation = List<ConversationDto>();
   //非置顶会话
@@ -59,9 +64,12 @@ class MessagePageDataSource implements MPDataSourceProxy {
   @override
   List<ConversationDto> imCellData() {
    List<ConversationDto> imData = List<ConversationDto>();
-   for(int key in _chatData.keys){
-     imData.add(imData[key]);
+   int k = -1;
+   for(String key in _chatData.keys){
+     ++k;
+     imData.add(_chatData[key]);
    }
+   // print("datasource imCellData  ${imData.length}");
    return imData;
   }
   //提供交互事件的未读数量信息
@@ -77,12 +85,16 @@ class MessagePageDataSource implements MPDataSourceProxy {
   //新消息来临后走这个函数加入到消息集合当中
   @override
   void newMsgsArrive(Set<Message> msgs) {
-
+    print(" just in datasource newMsgsArrive");
+    print("msg count:  ${msgs.length}");
+    //暂存消息
     _msgs.addAll(msgs);
     for(Message msg in msgs){
       int potentialIndex = -1;
+      //在_isExistRelevantChat()就已经对消息到达的不同情况所需要的数据跟新等准备工作做好
       potentialIndex = _isExistRelevantChat(msg);
       //是否已存在消息对应的会话
+      print("potentialindex $potentialIndex");
       switch(potentialIndex != -1){
         case true:
           if(delegate==null){return;}
@@ -94,32 +106,51 @@ class MessagePageDataSource implements MPDataSourceProxy {
           break;
       }
     }
-    //每回来新的数据的时候，都需要进行排序
+    //每回来新的数据的时候，可能需要进行排序
     _sortChats();
   }
-  //对会话的数据进行按照时间的顺序来进行排序，新到的顺序较高
+  void dispose(){
+   this.delegate = null;
+  }
+  //
   _sortChats(){
    
   }
-  //是否存在"已有会话",若已存在则跟新对应的会话的最新的消息内容，否则建立一个新的会话
+  //是否存在"已有会话",若已存在则跟新对应的会话的最新的消息内容，否则建立一个新的会话,返回-1表示全新的会话
   int _isExistRelevantChat(Message msg){
-    int index =-1;
-    _conversations.forEach((element) {
-      ++index;
-      ConversationDto t = element;
-      //会话存在则直接跟新model内的最新的一条的消息内容
-      if("${t.uid}" == msg.senderUserId){
-       _updateExistConversation("content", msg, t);
-       return index;
-      }
-      else{
-        _newConversation(msg);
-      }
-    });
-    return -1;
+    print("_isExistRelevantChat");
+    int k = -1;
+    if(_chatData.keys.contains(msg.targetId)){
+      _chatData.keys.forEach((element) {
+        ++k;
+        if(element == msg.targetId){
+          _updateExistConversation("content", msg, _chatData[element]);
+          return k;
+        }
+      });
+      // int index =-1;
+      // _conversations.forEach((element) {
+      //   ++index;
+      //   ConversationDto t = element;
+      //   //会话存在则直接跟新model内的最新的一条的消息内容
+      //   if("${t.uid}" == msg.senderUserId){
+      //     _updateExistConversation("content", msg, t);
+      //     return index;
+      //   }
+      //   else{
+      //     _newConversation(msg);
+      //     return -1;
+      //   }
+      // });
+    }else{
+      _newConversation(msg);
+      return -1;
+    }
+    return k;
   }
   //跟新已有的会话的信息
   void _updateExistConversation(String fieldName,Message msg,ConversationDto dto){
+    print("_updateExistConversation");
     if(fieldName == "content"){
       dto.content = _getPlainText(msg);
     }
@@ -127,6 +158,7 @@ class MessagePageDataSource implements MPDataSourceProxy {
   }
   //建立一个新的会话
   void _newConversation(Message msg){
+    print("_newConversation");
     ConversationDto  newConv = ConversationDto();
     newConv.avatarUri = _fixedPortrait;
     newConv.content = _getPlainText(msg);
@@ -134,7 +166,15 @@ class MessagePageDataSource implements MPDataSourceProxy {
     newConv.updateTime = newConv.createTime;
     //新会话默认不置顶
     newConv.isTop = 0;
+    newConv.conversationId = msg.targetId;
+    newConv.type = _getMsgType(msg);
+    newConv.name = msg.senderUserId;
     this._conversations.add(newConv);
+    _chatData[newConv.conversationId] = newConv;
+  }
+  //获取消息的类型
+  int _getMsgType(Message msg){
+    return msg.conversationType;
   }
   //获取到各种类型信息中的普通文字信息的字符串
   String _getPlainText(Message msg){
