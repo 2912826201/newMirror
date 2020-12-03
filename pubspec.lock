@@ -457,6 +457,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.2.19-nullsafety.2"
+  text_span_field:
+    dependency: "direct main"
+    description:
+      name: text_span_field
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.0"
   transformer_page_view:
     dependency: transitive
     description:

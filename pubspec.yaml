@@ -67,6 +67,8 @@ dependencies:
   cached_network_image: ^2.3.3
   # tarBar嵌套Tarbar联动
   union_tabs: ^1.0.0+7
+  # 输入框内富文本显示
+  text_span_field: ^1.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
