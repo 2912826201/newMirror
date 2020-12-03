@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/page/feed/like.dart';
 import 'package:mirror/page/feed/release_page.dart';
 import 'package:mirror/page/if_page.dart';
@@ -26,7 +26,7 @@ var handlerMain = Handler(handlerFunc: (BuildContext context, Map<String, List<S
 
 var handlerRCTest = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  UserModel user = UserModel.fromJson(data["user"]);
+  ProfileDto profile = ProfileDto.fromMap(data["profile"]);
   return RCTestPage();
 });
 

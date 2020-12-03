@@ -12,7 +12,7 @@ abstract class MPHookFunc {
   //点赞等类型事件发生
   void regularEventsCall(MPIntercourses type);
   //视图每次显示时
-  void viewDidAppear();
+  void viewWillAppear();
   //离开页面时
   void willDisappear();
 }

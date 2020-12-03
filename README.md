@@ -48,4 +48,21 @@ samples, guidance on mobile development, and a full API reference.
 不同的code做具体处理。
 
 三、token的管理与用户登录状态监听
-待完善
+1.取值
+  Application.token存放当前token。
+  Application.profile存放当前用户信息。
+  需要取值时，直接调用获取即可。
+2.订阅监听
+  TokenNotifier为token的状态通知者，ProfileNotifier为用户信息的状态通知者。已配置为全APP通知。
+  需要订阅监听token、是否登录或用户信息时可使用（可根据场景自行选用watch或select方法）：
+  context.watch<TokenNotifier>().token
+  context.watch<TokenNotifier>().isLoggedIn
+  context.watch<ProfileNotifier>().profile
+3.更新数据
+  需要先将token或用户信息写入数据库：
+  TokenDBHelper().insertToken(token);
+  ProfileDBHelper().insertProfile(profile);
+  然后再更新相应的notifier：
+  context.read<TokenNotifier>().setToken(token);
+  context.read<ProfileNotifier>().setProfile(profile);
+  在notifier的方法中已经将值赋值到Application了，所以无需再次为Application中的token或profile赋值。

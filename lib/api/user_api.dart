@@ -1,4 +1,5 @@
 import 'package:mirror/data/model/base_response_model.dart';
+import 'package:mirror/data/model/user_model.dart';
 
 import 'api.dart';
 
@@ -22,7 +23,7 @@ Future<bool> perfectUserInfo(String nickName, String avatarUri) async {
 }
 
 //获取用户信息 当获取自己的信息时uid可以不传
-Future<Map> getUserInfo({int uid}) async {
+Future<UserModel> getUserInfo({int uid}) async {
   Map<String, dynamic> params = {};
   if (uid != null) {
     params["uid"] = uid;
@@ -30,7 +31,7 @@ Future<Map> getUserInfo({int uid}) async {
   BaseResponseModel responseModel = await requestApi(GET_USERINFO, params);
   if (responseModel.isSuccess) {
     //TODO 这里实际需要将请求结果处理为具体的业务数据
-    return responseModel.data;
+    return UserModel.fromJson(responseModel.data);
   } else {
     //TODO 这里实际需要处理失败
     return null;

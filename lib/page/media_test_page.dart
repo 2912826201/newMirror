@@ -53,6 +53,10 @@ class MediaTestState extends State<MediaTestPage> {
               RaisedButton(
                 onPressed: () {
                   AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, false, (result) async {
+                    if (result == null) {
+                      print("没有选择媒体文件");
+                      return;
+                    }
                     SelectedMediaFiles files = result as SelectedMediaFiles;
                     print(files.type + ":" + files.list.toString());
                     type = files.type;
@@ -75,6 +79,10 @@ class MediaTestState extends State<MediaTestPage> {
               RaisedButton(
                 onPressed: () {
                   AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, true, (result) async {
+                    if (result == null) {
+                      print("没有选择媒体文件");
+                      return;
+                    }
                     SelectedMediaFiles files = result as SelectedMediaFiles;
                     print(files.type + ":" + files.list.toString());
                     type = files.type;

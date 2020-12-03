@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 //点赞、评论点击控件
 class MPIntercourseWidget extends StatefulWidget{
+  final _state = _MPIntercourseWidgetState();
   //背景图片
   final String backImage;
   //下方标题
   final Text title;
   //待读数量
-  final String badges;
+  final int badges;
   //背景图片的颜色
   final Color imageBackColor;
   //点击事件的绑定
@@ -26,13 +27,20 @@ class MPIntercourseWidget extends StatefulWidget{
   }):super(key: key);
   @override
   State<StatefulWidget> createState() {
-   return _MPIntercourseWidgetState();
+   return  _state;
   }
 
 }
 class _MPIntercourseWidgetState extends State<MPIntercourseWidget>{
+
   @override
   Widget build(BuildContext context) {
+    bool hideBadget = true;
+    if (widget.badges == 0){
+      hideBadget = true;
+    }else{
+      hideBadget = false;
+    }
     return GestureDetector(
       onTap: widget.onTap,
       child: Container(
@@ -49,28 +57,31 @@ class _MPIntercourseWidgetState extends State<MPIntercourseWidget>{
               alignment: Alignment.topLeft,
               padding: EdgeInsets.only(left: 30,),
               //使用overFlow来制作未读消息数量,需要注意alinment的设置
-              child: OverflowBox(
-                maxWidth: 300,
-                minHeight: 18,
-                alignment: Alignment.topLeft,
-                child: Container(
-                  height: 18,
-                  //描边的设置
-                  decoration: BoxDecoration(
-                    color: AppColor.mainRed,
-                    borderRadius: BorderRadius.circular(9),
-                    border: Border.all(
-                      color: AppColor.bgWhite,
-                      width: 0.5
-                    )
+              child: Offstage(
+                offstage: hideBadget,
+                child: OverflowBox(
+                  maxWidth: 300,
+                  minHeight: 18,
+                  alignment: Alignment.topLeft,
+                  child: Container(
+                    height: 18,
+                    //描边的设置
+                    decoration: BoxDecoration(
+                        color: AppColor.mainRed,
+                        borderRadius: BorderRadius.circular(9),
+                        border: Border.all(
+                            color: AppColor.bgWhite,
+                            width: 0.5
+                        )
+                    ),
+                    //和内部文字的间距设置
+                    padding: EdgeInsets.only(left: 5,right: 5,top: 2,bottom: 2),
+                    child: Text("${_expectCount()}",
+                      style: TextStyle(color: AppColor.white,
+                          fontFamily: "PingFangSC-Regular",
+                          fontSize: 12,
+                          decoration: TextDecoration.none),),
                   ),
-                  //和内部文字的间距设置
-                  padding: EdgeInsets.only(left: 5,right: 5,top: 2,bottom: 2),
-                  child: Text(widget.badges,
-                    style: TextStyle(color: AppColor.white,
-                        fontFamily: "PingFangSC-Regular",
-                        fontSize: 12,
-                        decoration: TextDecoration.none),),
                 ),
               )
             ),
@@ -82,5 +93,12 @@ class _MPIntercourseWidgetState extends State<MPIntercourseWidget>{
       ),
     );
   }
-
+  //数量生成
+  String _expectCount(){
+    if (widget.badges >= 99)
+    {
+      return "99+";
+    }
+    return "${widget.badges}";
+  }
 }

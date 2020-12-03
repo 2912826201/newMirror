@@ -1,5 +1,5 @@
 
-//消息页的系统服务事件
+//消息页的消息及网络系统服务事件
 
 abstract class MPNetworkEvents{
     //断网时
@@ -9,5 +9,7 @@ abstract class MPNetworkEvents{
     //进行连接
     void connecting();
     //通知开启消息提示
-    void activateNotification();
+    void activateNotificationBanner();
+    //关闭系统提醒开启横幅
+    void dismissNotificationBanner();
 }
