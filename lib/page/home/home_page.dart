@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/course_model.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/page/home/sub_page/attention_page.dart';
 import 'package:mirror/page/home/sub_page/home_top_tab.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
@@ -40,6 +42,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
 
   @override
   initState() {
+    // 请求接口
+    // getAttentionFeed();
     super.initState();
     controller = TabController(length: 2, vsync: this, initialIndex: 1);
     for (var i in coverUrls) {
@@ -47,6 +51,12 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
       courses.add(a);
     }
   }
+  // 关注页model
+ getAttentionFeed() async {
+   Map<String, dynamic> a = await getPullList(type: 0, size: 20);
+
+   print("关注页数据$a");
+ }
 
   @override
   Widget build(BuildContext context) {
@@ -70,14 +80,6 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         border: Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
-                        // boxShadow: [
-                        //   BoxShadow(
-                        //       color: Colors.black12,
-                        //       offset: Offset(0.0, 1.0), //阴影xy轴偏移量
-                        //       blurRadius: 8.0, //阴影模糊程度
-                        //       spreadRadius: 0.5 //阴影扩散程度
-                        //   )
-                        // ]
                       ),
                     )),
                 Container(

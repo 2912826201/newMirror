@@ -5,12 +5,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 // 轮播图
 class SlideBanner extends StatefulWidget {
-  SlideBanner({Key key, this.list, this.height}) : super(key: key);
+  SlideBanner({Key key, this.list, this.height,this.model}) : super(key: key);
   List<String> list;
+  HomeFeedModel model;
   double height;
 
   @override
@@ -42,7 +44,7 @@ class _SlideBannerState extends State<SlideBanner> {
 
   // 返回指示器的总宽度
   double getWidth() {
-    var num = widget.list.length;
+    var num = widget.model.picUrls.length;
     if (num <= 5) {
       return 3 * 8.0 + 6 + 10;
     } else {
@@ -58,8 +60,8 @@ class _SlideBannerState extends State<SlideBanner> {
   // 通过代码滑动指示器位置。
   slidingPosition(int index) async {
     print("索引$index");
-    if (widget.list.length > 5) {
-      if (index >= 3 && index+2 < widget.list.length ) {
+    if (widget.model.picUrls.length > 5) {
+      if (index >= 3 && index+2 < widget.model.picUrls.length ) {
         await controller.scrollToIndex(index - 2, preferPosition: AutoScrollPosition.begin);
         controller.highlight(index - 2);
       }
@@ -71,7 +73,7 @@ class _SlideBannerState extends State<SlideBanner> {
   }
   // 返回指示器内部元素size。
   double elementSize(int index) {
-    if (widget.list.length <= 5) {
+    if (widget.model.picUrls.length <= 5) {
       if (index == zindex) {
         return 7;
       } else {
@@ -87,7 +89,7 @@ class _SlideBannerState extends State<SlideBanner> {
           return 5;
         }
       }
-      if (zindex >= 3 && zindex+3 < widget.list.length ) {
+      if (zindex >= 3 && zindex+3 < widget.model.picUrls.length ) {
         if (index == zindex) {
           return 7;
         } else if (zindex - index == 2 ||  index -zindex == 2) {
@@ -96,14 +98,14 @@ class _SlideBannerState extends State<SlideBanner> {
           return 5;
         }
       }
-      if (zindex == widget.list.length -1 || zindex == widget.list.length - 2 || zindex == widget.list.length - 3) {
+      if (zindex ==widget.model.picUrls.length -1 || zindex == widget.model.picUrls.length - 2 || zindex == widget.model.picUrls.length - 3) {
         if (index == zindex) {
           return 7;
-        } else if (index+2 == zindex && zindex == widget.list.length - 3) {
+        } else if (index+2 == zindex && zindex == widget.model.picUrls.length - 3) {
           return 3;
-        } else if (index+3 == zindex && zindex == widget.list.length - 2) {
+        } else if (index+3 == zindex && zindex ==widget.model.picUrls.length - 2) {
           return 3;
-        } else if (index+4 == zindex && zindex == widget.list.length - 1) {
+        } else if (index+4 == zindex && zindex == widget.model.picUrls.length - 1) {
           return 3;
         }else {
           return 5;
@@ -127,7 +129,7 @@ class _SlideBannerState extends State<SlideBanner> {
       ///将要打开的页面
       openBuilder:
           (BuildContext context, void Function({Object returnValue}) action) {
-        return Item2Page(PhotoUrl: widget.list ,index: index,);
+        return Item2Page(photoUrl: widget.model.picUrls[index].url,);
       },
       ///现在显示的页面
       closedBuilder: (BuildContext context, void Function() action) {
@@ -139,11 +141,15 @@ class _SlideBannerState extends State<SlideBanner> {
   // 轮播图图片设置
   Container buildShowItemContainer(int index) {
     return Container(
-      child: Image.asset(
-        widget.list [index],
+      child: Image.network(
+        widget.model.picUrls[index].url,
         fit: BoxFit.cover,
       ),
     );
+  }
+  // 宽高比
+  double setAspectRatio(double height) {
+    return (ScreenUtil.instance.screenWidthDp / widget.model.picUrls[0].width) * height;
   }
   @override
   Widget build(BuildContext context) {
@@ -154,9 +160,9 @@ class _SlideBannerState extends State<SlideBanner> {
           children: [
             Container(
               width: width,
-              height: widget.height,
+              height:setAspectRatio(widget.height),
               child: Swiper(
-                itemCount: widget.list.length,
+                itemCount: widget.model.picUrls.length,
                 itemBuilder: (BuildContext context, int index) {
                   return buildOpenContainerItem(index);
                 },
@@ -173,13 +179,13 @@ class _SlideBannerState extends State<SlideBanner> {
               top: 13,
               right: 16,
               child: Offstage(
-                offstage: widget.list.length == 1,
+                offstage: widget.model.picUrls.length == 1,
                 child: Container(
                   padding: EdgeInsets.only(left: 6, top: 3, right: 6, bottom: 3),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(12)), color: AppColor.textPrimary1_50),
                   child: Text(
-                    "${zindex + 1}/${widget.list.length}",
+                    "${zindex + 1}/${widget.model.picUrls.length}",
                     style: TextStyle(color: AppColor.white, fontSize: 12),
                   ),
                 ),
@@ -189,7 +195,7 @@ class _SlideBannerState extends State<SlideBanner> {
           ],
         ),
         Offstage(
-          offstage: widget.list.length == 1,
+          offstage:widget.model.picUrls.length == 1,
           child:Container(
             width: getWidth(),
             height: 10,
@@ -198,7 +204,7 @@ class _SlideBannerState extends State<SlideBanner> {
             child: ListView.builder(
                 scrollDirection: scrollDirection,
                 controller: controller,
-                itemCount: widget.list.length,
+                itemCount: widget.model.picUrls.length,
                 // 禁止手动滑动
                 physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
@@ -222,9 +228,9 @@ class _SlideBannerState extends State<SlideBanner> {
 }
 
 class Item2Page extends StatefulWidget {
-  List<String> PhotoUrl;
-  int index;
-  Item2Page({Key key,this.PhotoUrl,this.index}) :super (key: key);
+  String photoUrl;
+
+  Item2Page({Key key,this.photoUrl}) :super (key: key);
   @override
   State<StatefulWidget> createState() {
     return _Item2PageState();
@@ -242,8 +248,8 @@ class _Item2PageState extends State<Item2Page> {
             onTap: () {
               Navigator.of(context).pop(true);
             },
-            child: Image.asset(
-              widget.PhotoUrl[widget.index],
+            child: Image.network(
+              widget.photoUrl,
               fit: BoxFit.cover,
             ),
           ),

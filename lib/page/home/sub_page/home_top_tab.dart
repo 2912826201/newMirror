@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/page/feed/release_page.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:mirror/route/router.dart';
 class HomeTopTab extends StatefulWidget {
@@ -26,6 +27,10 @@ class _TopTabState extends State<HomeTopTab> {
               onTap: () {
                 print("点击了客服");
                 AppRouter.navigateToReleasePage(context);
+                // Navigator.push(context, MaterialPageRoute(builder: (_) {
+                //   return ReleasePage();
+                // }));
+                // Navigator.of(context).pushReplacementNamed("/release");
               },
             ),
           ),

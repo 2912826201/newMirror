@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 import 'dart:ui';
 import 'dart:io';
 
@@ -7,10 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/text_field_hint_text.dart';
 import 'package:mirror/data/model/course_model.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/sub_comments.dart';
 import 'package:mirror/page/feed/like.dart';
 import 'package:mirror/route/router.dart';
@@ -31,14 +34,31 @@ class RecommendPage extends StatefulWidget {
   RecommendPage({Key key, this.coverUrls, this.pc}) : super(key: key);
   PanelController pc = new PanelController();
   List<CourseModel> coverUrls = [];
-
   RecommendPageState createState() => RecommendPageState();
 }
 
 class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true; //必须重写
-
+  // 数据源
+  List<HomeFeedModel> recommendModel = [];
+  @override
+  void initState() {
+    getRecommendFeed();
+    super.initState();
+  }
+  // 推荐页model
+  getRecommendFeed() async {
+    print("++++++++++++++++++++++++++");
+    Map<String, dynamic> model =  await getPullList(type: 1, size: 20);
+    setState(() {
+      if (model["list"] != null) {
+        model["list"].forEach((v) {
+          recommendModel.add(HomeFeedModel.fromJson(v));
+        });
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
     double screen_top = ScreenUtil.instance.statusBarHeight;
@@ -79,10 +99,11 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                         return recommendListLayout(
                             index: index,
                             pc: widget.pc,
+                            model: recommendModel[index],
                             // 可选参数 子Item的个数
                             key: GlobalObjectKey("recommend$index"),
                             isShowRecommendUser: false);
-                      }, childCount: 19),
+                      }, childCount: recommendModel.length),
                     )
                   ],
                 ))),
@@ -157,8 +178,8 @@ class recommendListLayout extends StatelessWidget {
   final index;
   PanelController pc;
   bool isShowRecommendUser;
-
-  recommendListLayout({Key key, this.index, this.pc, this.isShowRecommendUser}) : super(key: key);
+  HomeFeedModel model;
+  recommendListLayout({Key key, this.index, this.pc, this.isShowRecommendUser,this.model}) : super(key: key);
 
   String longText =
       "1、信息展示：- 发布人相关：（1）用户：头像、昵称/备注（2）话题：话题头像、话题名- 动态相关：发布时间、图片/视频、文字、话题名- 社交相关：点赞数、评论数、分享数- 更多…： 点击…按键出现选框：- 图片：1:1、4:5、1.9:1为常规尺寸，对于纵图或者横图，未达到比例阈值前正常展示，超过比例阈值后只展示阈值中的部分。纵图阈值4:5、横图阈值1.9:1，具体展示情况看UI图，最多展示9张照片2、点击用户区域，除【…】外跳转至个人主页3、点击【更多】，出现弹窗我的动态：删除他人动态：取消关注、举报、图片区域- 图片最多展示9张，左右滑动切换- 当只有一张图片时，没有翻页符和张数提示";
@@ -191,9 +212,9 @@ class recommendListLayout extends StatelessWidget {
     return Column(
       children: [
         // 头部头像时间
-        getHead(screen_width, context),
+        getHead(screen_width, context,model),
         // 图片区域
-        SlideBanner(height: 200, list: PhotoUrl),
+        SlideBanner(height: model.picUrls[0].height.toDouble(), list: PhotoUrl,model: model,),
         // 点赞，转发，评论三连区域
         getTripleArea(num: 3, pc: pc),
         // 课程信息和地址
@@ -230,7 +251,7 @@ class recommendListLayout extends StatelessWidget {
   }
 
   // 头部
-  Widget getHead(double width, BuildContext context) {
+  Widget getHead(double width, BuildContext context,HomeFeedModel model) {
     return Container(
         height: 62,
         child: Row(
@@ -239,8 +260,8 @@ class recommendListLayout extends StatelessWidget {
             Container(
               margin: EdgeInsets.only(left: 16, right: 11),
               child: CircleAvatar(
-                backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
-                // backgroundImage: NetworkImage("https://pic2.zhimg.com/v2-639b49f2f6578eabddc458b84eb3c6a1.jpg"),
+                // backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
+                backgroundImage: NetworkImage(model.avatarUrl),
                 maxRadius: 19,
               ),
             ),
@@ -251,14 +272,14 @@ class recommendListLayout extends StatelessWidget {
               children: [
                 GestureDetector(
                   child: Text(
-                    "哈哈哈",
+                    model.name,
                     style: TextStyle(fontSize: 15),
                   ),
                   onTap: () {},
                 ),
                 Container(
                   padding: EdgeInsets.only(top: 2),
-                  child: Text("3小时前",
+                  child: Text("${model.createTime}",
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey,
