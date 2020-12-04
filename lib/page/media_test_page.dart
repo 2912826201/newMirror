@@ -47,12 +47,40 @@ class MediaTestState extends State<MediaTestPage> {
               ),
             ],
           ),
+          RaisedButton(
+            onPressed: () {
+              AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, false, startPageGallery,
+                  (result) async {
+                if (result == null) {
+                  print("没有选择媒体文件");
+                  return;
+                }
+                SelectedMediaFiles files = result as SelectedMediaFiles;
+                print(files.type + ":" + files.list.toString());
+                type = files.type;
+                list = files.list;
+                for (MediaFileModel model in list) {
+                  if (model.croppedImage != null) {
+                    print("${model.file.path}开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                    ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
+                    print("${model.file.path}已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                    Uint8List picBytes = byteData.buffer.asUint8List();
+                    print("${model.file.path}已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
+                    model.croppedImageData = picBytes;
+                  }
+                }
+                setState(() {});
+              });
+            },
+            child: Text("图片视频（不裁）"),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               RaisedButton(
                 onPressed: () {
-                  AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, false, (result) async {
+                  AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, true, startPageGallery,
+                      (result) async {
                     if (result == null) {
                       print("没有选择媒体文件");
                       return;
@@ -74,11 +102,12 @@ class MediaTestState extends State<MediaTestPage> {
                     setState(() {});
                   });
                 },
-                child: Text("图片视频（不裁剪）"),
+                child: Text("图片视频（裁剪）0"),
               ),
               RaisedButton(
                 onPressed: () {
-                  AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, true, (result) async {
+                  AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, true, startPagePhoto,
+                      (result) async {
                     if (result == null) {
                       print("没有选择媒体文件");
                       return;
@@ -100,7 +129,7 @@ class MediaTestState extends State<MediaTestPage> {
                     setState(() {});
                   });
                 },
-                child: Text("图片视频（裁剪）"),
+                child: Text("图片视频（裁剪）1"),
               ),
             ],
           ),

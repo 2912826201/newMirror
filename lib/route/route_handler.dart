@@ -36,6 +36,7 @@ var handlerMediaPicker = Handler(handlerFunc: (BuildContext context, Map<String,
     data["maxImageAmount"],
     data["mediaType"],
     data["needCrop"],
+    data["startPage"],
     cropOnlySquare: data["cropOnlySquare"],
   );
 });

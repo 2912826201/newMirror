@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:fluro/fluro.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
@@ -21,4 +22,7 @@ class Application {
 
   //TODO 评论输入框等提示语 需要考量是否有更合适的方式管理
   static String hintText = "";
+
+  //相机列表
+  static List<CameraDescription> cameras;
 }

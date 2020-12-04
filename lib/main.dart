@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/basic_api.dart';
@@ -67,6 +68,14 @@ Future _initApp() async {
 
   //初始化融云IM
   RongCloud().init();
+
+  //获取相机信息
+  try {
+    Application.cameras = await availableCameras();
+  } on CameraException catch (e) {
+    print(e);
+    Application.cameras = [];
+  }
 }
 
 class MyApp extends StatefulWidget {

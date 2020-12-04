@@ -46,6 +46,7 @@ class GalleryPage extends StatefulWidget {
   _GalleryPageState createState() => _GalleryPageState();
 }
 
+// AutomaticKeepAliveClientMixin支持重新切回页面后保持之前页面状态
 class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClientMixin {
   var _cropperKey = GlobalKey();
 
@@ -153,31 +154,34 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                     behavior: NoBlueEffectBehavior(),
                     child: _buildScrollBody(),
                   ),
-                  // 裁剪区域
-                  Positioned(
-                      top: context.watch<_PreviewHeightNotifier>().previewHeight - _previewMaxHeight,
-                      child: Container(
-                        color: AppColor.bgBlack,
-                        width: _previewMaxHeight,
-                        height: _previewMaxHeight,
-                        child: Builder(
-                          builder: (context) {
-                            AssetEntity entity =
-                                context.select((SelectedMapNotifier notifier) => notifier.currentEntity);
-                            return entity == null
-                                ? Container()
-                                : entity.type == AssetType.video
-                                    ? VideoPreviewArea(_fileMap[entity.id], _screenWidth)
-                                    : entity.type == AssetType.image
-                                        ? CropperImage(
-                                            FileImage(_fileMap[entity.id]),
-                                            round: 0,
-                                            key: _cropperKey,
-                                          )
-                                        : Container();
-                          },
-                        ),
-                      )),
+                  widget.needCrop
+                      ?
+                      // 裁剪区域
+                      Positioned(
+                          top: context.watch<_PreviewHeightNotifier>().previewHeight - _previewMaxHeight,
+                          child: Container(
+                            color: AppColor.bgBlack,
+                            width: _previewMaxHeight,
+                            height: _previewMaxHeight,
+                            child: Builder(
+                              builder: (context) {
+                                AssetEntity entity =
+                                    context.select((SelectedMapNotifier notifier) => notifier.currentEntity);
+                                return entity == null
+                                    ? Container()
+                                    : entity.type == AssetType.video
+                                        ? VideoPreviewArea(_fileMap[entity.id], _screenWidth)
+                                        : entity.type == AssetType.image
+                                            ? CropperImage(
+                                                FileImage(_fileMap[entity.id]),
+                                                round: 0,
+                                                key: _cropperKey,
+                                              )
+                                            : Container();
+                              },
+                            ),
+                          ))
+                      : Container(),
                 ],
               );
             }));
