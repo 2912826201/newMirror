@@ -297,12 +297,12 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                   child: context.watch<SelectedMapNotifier>().selectedMap.containsKey(entity.id)
                       ? Text(
                           context.watch<SelectedMapNotifier>().selectedMap[entity.id].order.toString(),
-                          style: TextStyle(color: Colors.white, fontSize: 18),
+                          style: TextStyle(color: AppColor.white, fontSize: 18),
                         )
                       : Icon(
                           Icons.add_circle_outline,
                           size: 20,
-                          color: Colors.white,
+                          color: AppColor.white,
                         ),
                 )),
           ),
@@ -315,7 +315,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                   : entity.type == AssetType.video
                       ? "V"
                       : "",
-              style: TextStyle(color: Colors.white, fontSize: 18),
+              style: TextStyle(color: AppColor.white, fontSize: 18),
             ),
           )
         ]));
