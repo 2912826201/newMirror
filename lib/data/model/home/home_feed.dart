@@ -1,24 +1,26 @@
+// 动态model
 class HomeFeedModel {
-  int id;
-  int type;
-  String content;
-  String cityCode;
-  double longitude;
-  double latitude;
-  int createTime;
-  int pushId;
-  String name;
-  String avatarUrl;
-  int commentCount;
-  int laudCount;
-  int shareCount;
-  int readCount;
-  List<PicUrlsModel> picUrls = [];
-  VideosModel videos;
-  List<AtUsersModel> atUsers = [];
-  TopicDtoModel topicDto;
-  CourseDtoModel courseDto;
-
+  int id; //动态id
+  int type; //动态类型 0-图文动态
+  String content; //内容
+  String cityCode; //城市码
+  double longitude; //经度
+  double latitude; //纬度
+  int createTime; // 发布时间
+  int pushId; //发布人id
+  String name; //发布者name
+  String avatarUrl; //用户头像地址
+  int commentCount; //评论数
+  int laudCount; // 点赞数
+  int shareCount; // 分享数
+  int readCount; // 动态阅读数
+  List<PicUrlsModel> picUrls = []; //图片json
+  List<VideosModel> videos = []; //视频json
+  List<AtUsersModel> atUsers = []; //@用户列表
+  TopicDtoModel topicDto; //话题信息
+  CourseDtoModel courseDto; //课程信息
+  int isLaud; // 是否点赞
+  List<commentDtoModel> commentDto;
   HomeFeedModel({
     this.id,
     this.type,
@@ -39,6 +41,7 @@ class HomeFeedModel {
     this.atUsers,
     this.topicDto,
     this.courseDto,
+    this.isLaud,
   });
 
   HomeFeedModel.fromJson(Map<String, dynamic> json) {
@@ -56,31 +59,34 @@ class HomeFeedModel {
     laudCount = json["laudCount"];
     shareCount = json["shareCount"];
     readCount = json["readCount"];
-    // picUrls = json["picUrls"];
     if (json["picUrls"] != null) {
-      // List<PicUrlsModel> picUrls = [];
-      print("解析————————————+——————————————++————————————");
-      print("${json["picUrls"]}");
       json["picUrls"].forEach((v) {
-        print(v);
-        print("wwwwwwwwwwwwww");
-        print(picUrls);
-        var urls = PicUrlsModel();
-        urls.url = v["url"];
-        urls.width = v["width"];
-        urls.height = v["height"];
-        // urls.size = v["size"];
-        this.picUrls.add(urls);
+        picUrls.add(PicUrlsModel.fromJson(v));
       });
     }
-    videos = json["videos"];
+    if(json["videos"] != null) {
+      json["videos"].forEach((v) {
+        videos.add(VideosModel.fromJson(v));
+      });
+    }
+    // if (json["commentDto"] != null) {
+    //   json["commentDto"].forEach((v) {
+    //     commentDto.add(commentDtoModel.fromJson(v));
+    //   });
+    // }
+    commentDto = json["commentDto"];
     if (json["atUsers"] != null) {
       json["atUsers"].forEach((v) {
         atUsers.add(AtUsersModel.fromJson(v));
       });
     }
-    topicDto = json["topicDto"];
-    courseDto = json["courseDto"];
+    if (json["topicDto"] != null) {
+      topicDto = TopicDtoModel.fromJson(json["topicDto"]);
+    }
+    if(json["courseDto"] != null) {
+      courseDto = CourseDtoModel.fromJson(json["courseDto"]);
+    }
+    isLaud = json["isLaud"];
   }
 
   Map<String, dynamic> toJson() {
@@ -104,10 +110,12 @@ class HomeFeedModel {
     map["atUsers"] = atUsers;
     map["topicDto"] = topicDto;
     map["courseDto"] = courseDto;
+    map["isLaud"] = isLaud;
     return map;
   }
 }
 
+// 图片model
 class PicUrlsModel {
   String url;
   int width;
@@ -118,38 +126,186 @@ class PicUrlsModel {
    url = json["url"];
    width = json["width"];
    height = json["height"];
-   size = json["size"];
+   // size = json["size"];
   }
   Map<String, dynamic> toJson() {
    var map = <String, dynamic>{};
    map["url"] = url;
    map["width"] = width;
    map["height"] = height;
-   map["size"] = size;
+   // map["size"] = size;
    return  map;
   }
 }
 
-class VideosModel {}
+// 视频model
+class VideosModel {
+   String url;            //视频地址
+   String hlsUrl;         //hls转码目录地址
+   int duration;      //视频时长
+   String coverUrl;          //视频封面
+   int width;
+   int height;
+   VideosModel({this.url,this.hlsUrl,this.duration,this.coverUrl,this.height,this.width});
+   VideosModel.fromJson(Map<String, dynamic> json) {
+     url = json["url"];
+     width = json["width"];
+     height = json["height"];
+     hlsUrl = json["hlsUrl"];
+     duration = json["duration"];
+     coverUrl = json["coverUrl"];
+   }
+   Map<String, dynamic> toJson() {
+     var map = <String, dynamic>{};
+     map["url"] = url;
+     map["width"] = width;
+     map["height"] = height;
+     map["hlsUrl"] = hlsUrl;
+     map["duration"] = duration;
+     map["coverUrl"] = coverUrl;
+     return  map;
+   }
+}
 
+// Atmodel
 class AtUsersModel {
   int uid;
   int index;
   int len;
+  int type;
+  AtUsersModel({this.uid,this.index,this.len,this.type});
   AtUsersModel.fromJson(Map<String, dynamic> json) {
    uid = json["uid"];
    index = json["index"];
    len = json["len"];
+   type = json["type"];
   }
   Map<String, dynamic> toJson() {
    var map = <String, dynamic>{};
    map["uid"] = uid;
    map["index"] = index;
    map["len"] = len;
+   map["type"] = type;
    return map;
   }
 }
 
-class TopicDtoModel {}
+// 话题model
+class TopicDtoModel {
+   int id;
+   String name;
+   int creatorId;
+   int isNew;
+   int feedCount;
+   int memberCount;
+   int backgroundColorId; //话题背景颜色id
+   int patternId; //话题背景形状id
+   String backgroundColor;
+   int dataState;
+   int createTime;
+   int updateTime;
+   int isFollow;
+   TopicDtoModel({this.id,this.name,this.creatorId,this.isNew,this.feedCount,this.memberCount,this.backgroundColorId,this.patternId,this.backgroundColor,this.dataState,this.createTime,this.updateTime,this.isFollow});
+   TopicDtoModel.fromJson(Map<String, dynamic> json) {
+     id = json["id"];
+     name = json["name"];
+     creatorId = json["creatorId"];
+     isNew = json["isNew"];
+     feedCount = json["feedCount"];
+     memberCount = json["memberCount"];
+     backgroundColorId = json["backgroundColorId"];
+     patternId = json["patternId"];
+     backgroundColor = json["backgroundColor"];
+     dataState = json["dataState"];
+     createTime = json["createTime"];
+     updateTime = json["updateTime"];
+     isFollow = json["isFollow"];
+   }
+   Map<String, dynamic> toJson() {
+     var map = <String, dynamic>{};
+     map["id"] = id;
+     map["name"] = name;
+     map["creatorId"] = creatorId;
+     map["isNew"] = isNew;
+     map["feedCount"] = feedCount;
+     map["memberCount"] = memberCount;
+     map["backgroundColorId"] = backgroundColorId;
+     map["patternId"] = patternId;
+     map["backgroundColor"] = backgroundColor;
+     map["dataState"] = dataState;
+     map["createTime"] = createTime;
+     map["updateTime"] = updateTime;
+     map["isFollow"] = isFollow;
+     return map;
+   }
+}
 
-class CourseDtoModel {}
+// 课程model
+class CourseDtoModel {
+   int id;
+   int courseId;
+   String name;            // 课程名
+   int creatorId;       // 创建人Id
+   int coachId;
+   // UserBaseInfoDto coachDto;           // 教练dto
+   int coursewareId;
+   // CoursewareDto coursewareDto;      // 课件dto
+   String videoUrl;
+   String startTime;       // 开始时间
+   String endTime;         // 结束时间
+   int videoSeconds;      // 视频时长（秒）
+   int isBooked;       // 是否预约  Constant.YesNo.FALSE.ordinal()
+   int totalTrainingTime;
+   int totalTrainingAmount;
+   int totalCalories;
+   int finishAmount;
+   int dataState;
+   int createTime;
+   int updateTime;
+   CourseDtoModel({this.id,this.courseId,this.name,this.creatorId,this.coachId,this.coursewareId,this.videoUrl,this.startTime,this.endTime,this.videoSeconds,this.isBooked,this.totalTrainingTime,
+   this.totalTrainingAmount,this.totalCalories,this.finishAmount,this.dataState,this.createTime,this.updateTime
+   });
+   CourseDtoModel.fromJson(Map<String, dynamic> json) {
+     id = json["id"];
+     courseId = json['courseId'];
+     name = json["name"];
+     creatorId = json["creatorId"];
+     coachId = json["coachId"];
+     coursewareId = json["coursewareId"];
+     videoUrl = json["videoUrl"];
+     startTime = json["startTime"];
+     endTime = json["endTime"];
+     videoSeconds = json["videoSeconds"];
+     isBooked = json["isBooked"];
+     totalTrainingTime = json["totalTrainingTime"];
+     totalTrainingAmount = json["totalTrainingAmount"];
+     totalCalories = json["totalCalories"];
+     finishAmount = json["finishAmount"];
+     dataState = json["dataState"];
+     createTime = json["createTime"];
+     updateTime = json["updateTime"];
+   }
+   Map<String, dynamic> toJson() {
+     var map = <String, dynamic>{};
+     map["id"] = id;
+     map["courseId"] = courseId;
+     map["name"] = name;
+     map["creatorId"] = creatorId;
+     map["coachId"] = coachId;
+     map["coursewareId"] = coursewareId;
+     map["videoUrl"] = videoUrl;
+     map["startTime"] = startTime;
+     map["endTime"] = endTime;
+     map["videoSeconds"] = videoSeconds;
+     map["isBooked"] = isBooked;
+     map["totalTrainingTime"] = totalTrainingTime;
+     map["totalTrainingAmount"] = totalTrainingAmount;
+     map["totalCalories"] = totalCalories;
+     map["dataState"] = dataState;
+     map["createTime"] = createTime;
+     map["updateTime"] = updateTime;
+     map["finishAmount"] = finishAmount;
+     return map;
+   }
+}
+class commentDtoModel{}
