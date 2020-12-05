@@ -9,6 +9,7 @@ import 'package:mirror/page/if_page.dart';
 import 'package:mirror/page/login/login_page.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
+import 'package:mirror/page/media_picker/preview_photo_page.dart';
 import 'package:mirror/page/rc_test_page.dart';
 import 'package:mirror/route/router.dart';
 
@@ -17,7 +18,7 @@ import 'package:mirror/route/router.dart';
 
 // 在router中已将所有参数装进了map中，并以AppRouter.paramData字段入参，所以处理入参时先解析该map
 // 例：Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-var handlerIfPage = Handler(handlerFunc: (BuildContext context, Map<String,List<String>> params) {
+var handlerIfPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return IfPage();
 });
 var handlerMain = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
@@ -41,13 +42,21 @@ var handlerMediaPicker = Handler(handlerFunc: (BuildContext context, Map<String,
   );
 });
 
-var handlerLogin = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params){
+var handlerLogin = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return LoginPage();
 });
 
-var handlerLike = Handler(handlerFunc: (BuildContext context, Map<String,List<String>> params) {
+var handlerLike = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return Like();
 });
-var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context , Map<String,List<String>> params){
+
+var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return ReleasePage();
+});
+
+var handlerPreviewPhoto = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return PreviewPhotoPage(
+    filePath: data["filePath"],
+  );
 });

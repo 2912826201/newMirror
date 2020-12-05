@@ -1,8 +1,9 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/page/media_picker/preview_photo_page.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -105,11 +106,13 @@ class CameraPhotoState extends State<CameraPhotoPage> with WidgetsBindingObserve
                   alignment: Alignment.center,
                   color: AppColor.bgBlack,
                   child: GestureDetector(
-                    onTap: () {
+                    onTap: () async {
                       print("拍照！");
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return PreviewPhotoPage();
-                      }));
+                      String filePath = await takePhoto();
+                      print("保存照片：$filePath");
+                      if (filePath != null) {
+                        AppRouter.navigateToPreviewPhotoPage(context, filePath);
+                      }
                     },
                     child: Container(
                       width: 64,
@@ -174,5 +177,25 @@ class CameraPhotoState extends State<CameraPhotoPage> with WidgetsBindingObserve
     if (mounted) {
       setState(() {});
     }
+  }
+
+  Future<String> takePhoto() async {
+    if (!_controller.value.isInitialized) {
+      //没有完成相机初始化
+      print("Error: camera is not initialized.");
+      return null;
+    }
+    if (_controller.value.isTakingPicture) {
+      //正在拍照中
+      return null;
+    }
+    final String filePath = "${AppConfig.getAppPicDir()}/${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
+    try {
+      await _controller.takePicture(filePath);
+    } on CameraException catch (e) {
+      print(e);
+      return null;
+    }
+    return filePath;
   }
 }

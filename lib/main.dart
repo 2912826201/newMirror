@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 
 import 'api/user_api.dart';
 import 'config/application.dart';
+import 'config/config.dart';
 import 'data/dto/profile_dto.dart';
 import 'data/dto/token_dto.dart';
 import 'data/model/token_model.dart';
@@ -68,6 +69,9 @@ Future _initApp() async {
 
   //初始化融云IM
   RongCloud().init();
+
+  //创建各文件路径
+  AppConfig.createAppDir();
 
   //获取相机信息
   try {

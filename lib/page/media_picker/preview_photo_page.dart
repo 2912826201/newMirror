@@ -1,16 +1,25 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/image_cropper.dart';
 
 /// preview_photo_page
 /// Created by yangjiayi on 2020/12/4.
 
 class PreviewPhotoPage extends StatefulWidget {
+  const PreviewPhotoPage({Key key, this.filePath}) : super(key: key);
+
+  final filePath;
+
   @override
-  PreviewPhotoState createState() => PreviewPhotoState();
+  _PreviewPhotoState createState() => _PreviewPhotoState();
 }
 
-class PreviewPhotoState extends State<PreviewPhotoPage> {
+class _PreviewPhotoState extends State<PreviewPhotoPage> {
+  var _cropperKey = GlobalKey<_PreviewPhotoState>();
+
   double _previewSize = 0;
 
   @override
@@ -49,6 +58,11 @@ class PreviewPhotoState extends State<PreviewPhotoPage> {
               color: AppColor.mainBlue,
               width: _previewSize,
               height: _previewSize,
+              child: CropperImage(//需要处理成不能操作
+                FileImage(File(widget.filePath)),
+                round: 0,
+                key: _cropperKey,
+              ),
             ),
             Expanded(
                 child: Container(

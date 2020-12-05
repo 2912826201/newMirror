@@ -48,7 +48,7 @@ class GalleryPage extends StatefulWidget {
 
 // AutomaticKeepAliveClientMixin支持重新切回页面后保持之前页面状态
 class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClientMixin {
-  var _cropperKey = GlobalKey();
+  var _cropperKey = GlobalKey<_GalleryPageState>();
 
   double _screenWidth = 0;
   double _itemSize = 0;
