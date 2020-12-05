@@ -111,7 +111,11 @@ class CameraPhotoState extends State<CameraPhotoPage> with WidgetsBindingObserve
                       String filePath = await takePhoto();
                       print("保存照片：$filePath");
                       if (filePath != null) {
-                        AppRouter.navigateToPreviewPhotoPage(context, filePath);
+                        AppRouter.navigateToPreviewPhotoPage(context, filePath, (result) {
+                          if (result != null) {
+                            Navigator.pop(context, result);
+                          }
+                        });
                       }
                     },
                     child: Container(

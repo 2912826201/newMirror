@@ -83,9 +83,9 @@ class AppRouter {
     _navigateToPage(context, pathRelease, map);
   }
 
-  static void navigateToPreviewPhotoPage(BuildContext context, String filePath) {
+  static void navigateToPreviewPhotoPage(BuildContext context, String filePath, Function(dynamic result) callback) {
     Map<String, dynamic> map = Map();
     map["filePath"] = filePath;
-    _navigateToPage(context, pathPreviewPhoto, map);
+    _navigateToPage(context, pathPreviewPhoto, map, callback: callback);
   }
 }

@@ -40,7 +40,9 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
             children: [
               Spacer(),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  Navigator.pop(context, "从照片预览页回来");
+                },
                 child: Container(
                   alignment: Alignment.center,
                   height: 28,
