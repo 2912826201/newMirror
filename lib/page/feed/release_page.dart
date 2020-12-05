@@ -576,76 +576,7 @@ class ReleaseFeedMainView extends StatelessWidget {
   List<String> addresss = ["成都市", "花样年福年广场", "牛水煮·麻辣水煮牛肉", "园林火锅", "嘉年CEO酒店公寓-(成都会展中心福年广场店)", "查看更多"];
   PanelController pc = new PanelController();
 
-  // 选择图片
-  seletedPhoto() {
-    return Container(
-      height: 95,
-      margin: EdgeInsets.only(top: 14),
-      child: ListView.builder(
-          shrinkWrap: true,
-          scrollDirection: Axis.horizontal,
-          itemCount: PhotoUrl.length + 1,
-          itemBuilder: (context, index) {
-            if (index == PhotoUrl.length) {
-              return GestureDetector(
-                onTap: () {
-                  print("点击进入相片选择页");
-                },
-                child: Container(
-                  margin: EdgeInsets.only(left: 10, top: 9, right: 16),
-                  width: 86,
-                  height: 86,
-                  decoration: BoxDecoration(
-                    color: AppColor.bgWhite,
-                    borderRadius: BorderRadius.all(Radius.circular(3.0)),
-                  ),
-                  child: Center(
-                    child: Icon(Icons.add, color: AppColor.textHint),
-                  ),
-                ),
-              );
-            }
-            return Container(
-              width: 92,
-              height: 92,
-              margin: EdgeInsets.only(left: index == 0 ? 16 : 10),
-              child: Stack(
-                // overflow: Overflow.visible,
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(top: 9),
-                    width: 86,
-                    height: 86,
-                    decoration: BoxDecoration(
-                        image: DecorationImage(image: AssetImage(PhotoUrl[index]), fit: BoxFit.cover),
-                        borderRadius: BorderRadius.all(Radius.circular(3.0))),
-                  ),
-                  Positioned(
-                      right: 0,
-                      // top: ,
-                      child: GestureDetector(
-                        onTap: () {
-                          print("关闭");
-                        },
-                        child: Container(
-                          width: 16,
-                          height: 16,
-                          decoration: BoxDecoration(
-                              color: AppColor.bgBlack, borderRadius: BorderRadius.all(Radius.circular(8))),
-                          child: Center(
-                              child: Icon(
-                            Icons.close,
-                            color: AppColor.white,
-                            size: 12,
-                          )),
-                        ),
-                      ))
-                ],
-              ),
-            );
-          }),
-    );
-  }
+
 
   // 选择地址
   seletedAddress() {
@@ -715,12 +646,93 @@ class ReleaseFeedMainView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [seletedPhoto(), seletedAddress(), recommendAddress()],
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [SeletedPhoto(photoUrl: PhotoUrl,), seletedAddress(), recommendAddress()],
     );
   }
 }
 
-//
+// 图片
+class SeletedPhoto extends StatefulWidget {
+  SeletedPhoto({Key key,this.photoUrl}):super(key: key);
+  List<String> photoUrl;
+      SeletedPhotoState createState() => SeletedPhotoState();
+}
+class SeletedPhotoState extends State<SeletedPhoto> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 95,
+      margin: EdgeInsets.only(top: 14),
+      child: ListView.builder(
+          shrinkWrap: true,
+          scrollDirection: Axis.horizontal,
+          itemCount: widget.photoUrl.length + 1,
+          itemBuilder: (context, index) {
+            if (index ==  widget.photoUrl.length) {
+              return GestureDetector(
+                onTap: () {
+                  print("点击进入相片选择页");
+                },
+                child: Container(
+                  margin: EdgeInsets.only(left: 10, top: 9, right: 16),
+                  width: 86,
+                  height: 86,
+                  decoration: BoxDecoration(
+                    color: AppColor.bgWhite,
+                    borderRadius: BorderRadius.all(Radius.circular(3.0)),
+                  ),
+                  child: Center(
+                    child: Icon(Icons.add, color: AppColor.textHint),
+                  ),
+                ),
+              );
+            }
+            return Container(
+              width: 92,
+              height: 92,
+              margin: EdgeInsets.only(left: index == 0 ? 16 : 10),
+              child: Stack(
+                // overflow: Overflow.visible,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(top: 9),
+                    width: 86,
+                    height: 86,
+                    decoration: BoxDecoration(
+                        image: DecorationImage(image: AssetImage( widget.photoUrl[index]), fit: BoxFit.cover),
+                        borderRadius: BorderRadius.all(Radius.circular(3.0))),
+                  ),
+                  Positioned(
+                      right: 0,
+                      // top: ,
+                      child: GestureDetector(
+                        onTap: () {
+                          print("关闭");
+                          setState(() {
+                            widget.photoUrl.removeAt(index);
+                          });
+                        },
+                        child: Container(
+                          width: 16,
+                          height: 16,
+                          decoration: BoxDecoration(
+                              color: AppColor.bgBlack, borderRadius: BorderRadius.all(Radius.circular(8))),
+                          child: Center(
+                              child: Icon(
+                                Icons.close,
+                                color: AppColor.white,
+                                size: 12,
+                              )),
+                        ),
+                      ))
+                ],
+              ),
+            );
+          }),
+    );
+  }
+}
 
 // 发布动态文本监听
 class ReleaseFeedInputNotifier extends ChangeNotifier {
