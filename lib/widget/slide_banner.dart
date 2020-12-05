@@ -8,10 +8,10 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
+
 // 轮播图
 class SlideBanner extends StatefulWidget {
-  SlideBanner({Key key, this.list, this.height,this.model}) : super(key: key);
-  List<String> list;
+  SlideBanner({Key key, this.height, this.model}) : super(key: key);
   HomeFeedModel model;
   double height;
 
@@ -22,10 +22,13 @@ class SlideBanner extends StatefulWidget {
 class _SlideBannerState extends State<SlideBanner> {
   int zindex = 0; //要移入的下标
   Timer timer;
+
   // scroll_to_index定位
   AutoScrollController controller;
+
   // 指示器横向布局
   final scrollDirection = Axis.horizontal;
+
   @override
   void initState() {
     super.initState();
@@ -33,7 +36,8 @@ class _SlideBannerState extends State<SlideBanner> {
         viewportBoundaryGetter: () => Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
         axis: scrollDirection);
   }
- // 滑动回调
+
+  // 滑动回调
   autoPlay(int index) {
     slidingPosition(index);
     print("轮播图回调");
@@ -48,29 +52,31 @@ class _SlideBannerState extends State<SlideBanner> {
     if (num <= 5) {
       return 3 * 8.0 + 6 + 10;
     } else {
-      if (zindex == 0 || zindex == 1 || zindex == 2 || zindex == num -1 || zindex == num - 2 || zindex == num - 3) {
+      if (zindex == 0 || zindex == 1 || zindex == 2 || zindex == num - 1 || zindex == num - 2 || zindex == num - 3) {
         return 3 * 8.0 + 6 + 10;
       }
-      if (zindex >= 3 && zindex+3 < num ) {
+      if (zindex >= 3 && zindex + 3 < num) {
         return 2 * 8.0 + 2 * 5.0 + 10 + 2;
       }
     }
     return 5 * 8.0;
   }
+
   // 通过代码滑动指示器位置。
   slidingPosition(int index) async {
     print("索引$index");
     if (widget.model.picUrls.length > 5) {
-      if (index >= 3 && index+2 < widget.model.picUrls.length ) {
+      if (index >= 3 && index + 2 < widget.model.picUrls.length) {
         await controller.scrollToIndex(index - 2, preferPosition: AutoScrollPosition.begin);
         controller.highlight(index - 2);
       }
       if (index == 2) {
-        await controller.scrollToIndex(index , preferPosition: AutoScrollPosition.end);
+        await controller.scrollToIndex(index, preferPosition: AutoScrollPosition.end);
         controller.highlight(index);
       }
     }
   }
+
   // 返回指示器内部元素size。
   double elementSize(int index) {
     if (widget.model.picUrls.length <= 5) {
@@ -89,55 +95,58 @@ class _SlideBannerState extends State<SlideBanner> {
           return 5;
         }
       }
-      if (zindex >= 3 && zindex+3 < widget.model.picUrls.length ) {
+      if (zindex >= 3 && zindex + 3 < widget.model.picUrls.length) {
         if (index == zindex) {
           return 7;
-        } else if (zindex - index == 2 ||  index -zindex == 2) {
+        } else if (zindex - index == 2 || index - zindex == 2) {
           return 3;
-        }else {
+        } else {
           return 5;
         }
       }
-      if (zindex ==widget.model.picUrls.length -1 || zindex == widget.model.picUrls.length - 2 || zindex == widget.model.picUrls.length - 3) {
+      if (zindex == widget.model.picUrls.length - 1 ||
+          zindex == widget.model.picUrls.length - 2 ||
+          zindex == widget.model.picUrls.length - 3) {
         if (index == zindex) {
           return 7;
-        } else if (index+2 == zindex && zindex == widget.model.picUrls.length - 3) {
+        } else if (index + 2 == zindex && zindex == widget.model.picUrls.length - 3) {
           return 3;
-        } else if (index+3 == zindex && zindex ==widget.model.picUrls.length - 2) {
+        } else if (index + 3 == zindex && zindex == widget.model.picUrls.length - 2) {
           return 3;
-        } else if (index+4 == zindex && zindex == widget.model.picUrls.length - 1) {
+        } else if (index + 4 == zindex && zindex == widget.model.picUrls.length - 1) {
           return 3;
-        }else {
+        } else {
           return 5;
         }
       }
     }
   }
+
   /// 列表中的每个条目的Widget
   /// [index] 列表条目对应的索引
-  buildOpenContainerItem(int index) {
-    return OpenContainer(
-      // 动画时长
-      transitionDuration: const Duration(milliseconds: 700),
-      transitionType: ContainerTransitionType.fade,
-      //阴影
-      closedElevation: 0.0,
-      //圆角
-      closedShape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(0.0)),
-      ),
-      ///将要打开的页面
-      openBuilder:
-          (BuildContext context, void Function({Object returnValue}) action) {
-        return Item2Page(photoUrl: widget.model.picUrls[index].url,);
-      },
-      ///现在显示的页面
-      closedBuilder: (BuildContext context, void Function() action) {
-        ///条目显示的一张图片
-        return buildShowItemContainer(index);
-      },
-    );
-  }
+  // buildOpenContainerItem(int index) {
+  //   return OpenContainer(
+  //     // 动画时长
+  //     transitionDuration: const Duration(milliseconds: 700),
+  //     transitionType: ContainerTransitionType.fade,
+  //     //阴影
+  //     closedElevation: 0.0,
+  //     //圆角
+  //     closedShape: const RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.all(Radius.circular(0.0)),
+  //     ),
+  //     ///将要打开的页面
+  //     openBuilder:
+  //         (BuildContext context, void Function({Object returnValue}) action) {
+  //       return Item2Page(photoUrl: widget.model.picUrls[index].url,);
+  //     },
+  //     ///现在显示的页面
+  //     closedBuilder: (BuildContext context, void Function() action) {
+  //       ///条目显示的一张图片
+  //       return buildShowItemContainer(index);
+  //     },
+  //   );
+  // }
   // 轮播图图片设置
   Container buildShowItemContainer(int index) {
     return Container(
@@ -147,10 +156,12 @@ class _SlideBannerState extends State<SlideBanner> {
       ),
     );
   }
+
   // 宽高比
   double setAspectRatio(double height) {
     return (ScreenUtil.instance.screenWidthDp / widget.model.picUrls[0].width) * height;
   }
+
   @override
   Widget build(BuildContext context) {
     final width = ScreenUtil.instance.screenWidthDp;
@@ -158,21 +169,25 @@ class _SlideBannerState extends State<SlideBanner> {
       children: [
         Stack(
           children: [
-            Container(
-              width: width,
-              height:setAspectRatio(widget.height),
-              child: Swiper(
-                itemCount: widget.model.picUrls.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return buildOpenContainerItem(index);
-                },
+            GestureDetector(
+              onDoubleTap: () => print("双击"),
+              child: Container(
+                width: width,
+                height: setAspectRatio(widget.height),
+                child: Swiper(
+                  itemCount: widget.model.picUrls.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return buildShowItemContainer(index);
+                    // buildOpenContainerItem(index);
+                  },
                   loop: false,
-                onIndexChanged: (index) {
-                  autoPlay(index);
-                },
-                // onTap: (index) {
-                //   print("点击了第$index个图片");
-                // },
+                  onIndexChanged: (index) {
+                    autoPlay(index);
+                  },
+                  // onTap: (index) {
+                  //   print("点击了第$index个图片");
+                  // },
+                ),
               ),
             ),
             Positioned(
@@ -195,8 +210,8 @@ class _SlideBannerState extends State<SlideBanner> {
           ],
         ),
         Offstage(
-          offstage:widget.model.picUrls.length == 1,
-          child:Container(
+          offstage: widget.model.picUrls.length == 1,
+          child: Container(
             width: getWidth(),
             height: 10,
             margin: EdgeInsets.only(top: 5),
@@ -213,7 +228,7 @@ class _SlideBannerState extends State<SlideBanner> {
                       controller: controller,
                       index: index,
                       child: Container(
-                          width: elementSize(index) ,
+                          width: elementSize(index),
                           height: elementSize(index),
                           margin: EdgeInsets.only(right: 3),
                           decoration: BoxDecoration(
@@ -221,16 +236,20 @@ class _SlideBannerState extends State<SlideBanner> {
                 }),
           ),
         )
-
       ],
     );
   }
 }
 
+
+
+
+
 class Item2Page extends StatefulWidget {
   String photoUrl;
 
-  Item2Page({Key key,this.photoUrl}) :super (key: key);
+  Item2Page({Key key, this.photoUrl}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     return _Item2PageState();
@@ -240,7 +259,6 @@ class Item2Page extends StatefulWidget {
 class _Item2PageState extends State<Item2Page> {
   @override
   Widget build(BuildContext context) {
-
     return Column(
       children: [
         Container(
@@ -260,6 +278,7 @@ class _Item2PageState extends State<Item2Page> {
         )
       ],
     );
+
     ///页面二中的Hero
   }
 }
