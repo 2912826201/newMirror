@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
+import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_bottom_sheet.dart';
+import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_ipunt_bar.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/search/search.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -116,7 +118,7 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin {
                         width: ScreenUtil.instance.screenWidthDp,
                         color: AppColor.white,
                         padding: EdgeInsets.only(top: 8, bottom: 8),
-                        child: commentInputBar(),
+                        child: CommentInputBar(),
                       ),
                     ))
               ]
