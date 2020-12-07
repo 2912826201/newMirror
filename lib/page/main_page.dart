@@ -17,7 +17,6 @@ class MainPage extends StatefulWidget {
 
 class MainPageState extends State<MainPage> {
   int currentIndex;
-  bool isInit = false;
 
   final pages = [HomePage(), TestPage(), MessagePage(), ProfilePage()];
   List titles = ["首页", "训练", "消息", "我的"];
@@ -70,7 +69,11 @@ class MainPageState extends State<MainPage> {
         ]),
       ),
       // SlidingUpPanel
-      body: currentIndex == 0 ? HomePage(pc: widget.pc) : pages[currentIndex],
+      body: currentIndex == 0 ? HomePage(pc: widget.pc) : IndexedStack(
+        index: this.currentIndex,
+        children: this.pages,
+      )
+      // pages[currentIndex],
     );
   }
 

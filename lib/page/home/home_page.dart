@@ -20,7 +20,7 @@ class HomePage extends StatefulWidget {
   HomePageState createState() => HomePageState();
 }
 
-class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+class HomePageState extends State<HomePage> with  AutomaticKeepAliveClientMixin , SingleTickerProviderStateMixin{
   // taBar和TabBarView必要的
   TabController controller;
 

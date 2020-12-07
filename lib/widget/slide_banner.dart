@@ -4,10 +4,16 @@ import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:provider/provider.dart';
 
 // 轮播图
 class SlideBanner extends StatefulWidget {
@@ -162,6 +168,26 @@ class _SlideBannerState extends State<SlideBanner> {
     return (ScreenUtil.instance.screenWidthDp / widget.model.picUrls[0].width) * height;
   }
 
+  // 点赞
+  setUpLuad() async {
+    bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
+    if (isLoggedIn) {
+      Map<String, dynamic> model = await laud(id: widget.model.id, laud: widget.model.isLaud == 0 ? 1 : 0);
+      // 点赞/取消赞成功
+      print("state:${model["state"]}");
+      if (model["state"]) {
+        // ProfileNotifier
+        context.read<DynamicModelNotifier>().setLaud(widget.model.isLaud,context.read<ProfileNotifier>().profile.avatarUri);
+      } else {
+        // 失败
+        print("shib ");
+      }
+    } else {
+      // 去登录
+      AppRouter.navigateToLoginPage(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = ScreenUtil.instance.screenWidthDp;
@@ -170,7 +196,14 @@ class _SlideBannerState extends State<SlideBanner> {
         Stack(
           children: [
             GestureDetector(
-              onDoubleTap: () => print("双击"),
+              onDoubleTap: () {
+                // 获取是否点赞
+                int isLaud = context.read<DynamicModelNotifier>().dynamicModel.isLaud;
+                if (isLaud != 1) {
+                  setUpLuad();
+                }
+                // 动画
+              },
               child: Container(
                 width: width,
                 height: setAspectRatio(widget.height),
@@ -240,10 +273,6 @@ class _SlideBannerState extends State<SlideBanner> {
     );
   }
 }
-
-
-
-
 
 class Item2Page extends StatefulWidget {
   String photoUrl;

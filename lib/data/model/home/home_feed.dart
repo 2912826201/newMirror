@@ -11,7 +11,7 @@ class HomeFeedModel {
   String name; //发布者name
   String avatarUrl; //用户头像地址
   int commentCount; //评论数
-  int laudCount; // 点赞数
+  int laudCount = 0; // 点赞数
   int shareCount; // 分享数
   int readCount; // 动态阅读数
   List<PicUrlsModel> picUrls = []; //图片json
@@ -19,8 +19,9 @@ class HomeFeedModel {
   List<AtUsersModel> atUsers = []; //@用户列表
   TopicDtoModel topicDto; //话题信息
   CourseDtoModel courseDto; //课程信息
-  int isLaud; // 是否点赞
-  List<commentDtoModel> commentDto;
+  int isLaud = 0  ; // 是否点赞
+  List<String>laudUserInfo = []; // 点赞头像
+  List<CommentDtoModel> comments = [];
   HomeFeedModel({
     this.id,
     this.type,
@@ -42,6 +43,8 @@ class HomeFeedModel {
     this.topicDto,
     this.courseDto,
     this.isLaud,
+    this.laudUserInfo,
+    this.comments,
   });
 
   HomeFeedModel.fromJson(Map<String, dynamic> json) {
@@ -62,6 +65,7 @@ class HomeFeedModel {
     if (json["picUrls"] != null) {
       json["picUrls"].forEach((v) {
         picUrls.add(PicUrlsModel.fromJson(v));
+        print(picUrls[0].url);
       });
     }
     if(json["videos"] != null) {
@@ -69,12 +73,14 @@ class HomeFeedModel {
         videos.add(VideosModel.fromJson(v));
       });
     }
-    // if (json["commentDto"] != null) {
-    //   json["commentDto"].forEach((v) {
-    //     commentDto.add(commentDtoModel.fromJson(v));
-    //   });
-    // }
-    commentDto = json["commentDto"];
+    if (json["comments"] != null) {
+      json["comments"].forEach((v) {
+        comments.add(CommentDtoModel.fromJson(v));
+        print("评论赋值了");
+        print(comments[0].name);
+        print(v["name"]);
+      });
+    }
     if (json["atUsers"] != null) {
       json["atUsers"].forEach((v) {
         atUsers.add(AtUsersModel.fromJson(v));
@@ -85,6 +91,11 @@ class HomeFeedModel {
     }
     if(json["courseDto"] != null) {
       courseDto = CourseDtoModel.fromJson(json["courseDto"]);
+    }
+    if (json["laudUserInfo"] != null) {
+      json["laudUserInfo"].forEach((v) {
+        laudUserInfo.add(v);
+      });
     }
     isLaud = json["isLaud"];
   }
@@ -111,6 +122,8 @@ class HomeFeedModel {
     map["topicDto"] = topicDto;
     map["courseDto"] = courseDto;
     map["isLaud"] = isLaud;
+    map["laudUserInfo"] = laudUserInfo;
+    map["comments"] = comments;
     return map;
   }
 }
@@ -308,4 +321,62 @@ class CourseDtoModel {
      return map;
    }
 }
-class commentDtoModel{}
+class CommentDtoModel{
+  int id;
+  int targetId;
+  int type;
+  String content;
+  // picUrls
+int createTime;
+  // atUsers
+int uid;
+String name;
+String avatarUrl;
+  // replys
+int replyCount;
+int laudCount;
+int isLaud;
+int top;
+int replyId;
+String replyName;
+int delete;
+
+  CommentDtoModel({this.id,this.targetId,this.type,this.content,this.createTime,this.uid,this.name,this.avatarUrl,this.replyCount,this.laudCount,this.isLaud,this.top,
+  this.replyId,this.replyName,this.delete});
+  CommentDtoModel.fromJson(Map<String, dynamic> json) {
+    id = json["id"];
+    targetId = json["targetId"];
+    type = json["type"] ;
+    content = json["content"] ;
+    createTime = json["createTime"] ;
+    uid = json["uid"];
+    name = json["name"];
+    avatarUrl = json["avatarUrl"];
+    replyCount = json["replyCount"];
+    laudCount = json["laudCount"];
+    isLaud = json["isLaud"];
+    top = json["top"];
+    replyId = json["replyId"];
+    replyName = json["replyName"];
+    delete = json["delete"];
+  }
+  Map<String, dynamic> toJson() {
+    var map = <String, dynamic>{};
+    map["id"] = id;
+    map["targetId"] = targetId;
+    map["type"] = type;
+    map["content"] = content;
+    map["createTime"] = createTime;
+    map["uid"] = uid;
+    map["name"] = name;
+    map["avatarUrl"] = avatarUrl;
+    map["replyCount"] = replyCount;
+    map["laudCount"] = laudCount;
+    map["isLaud"] = isLaud;
+    map["top"] = top;
+    map["replyId"] = replyId;
+    map["replyName"] = replyName;
+    map["delete"] = delete;
+    return map;
+  }
+}

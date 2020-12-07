@@ -2,13 +2,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/util/screen_util.dart';
 
 class CommentInputBox extends StatefulWidget {
-  CommentInputBox({Key key, this.isUnderline = false}) : super(key: key);
+  CommentInputBox({Key key, this.isUnderline = false,this.feedModel}) : super(key: key);
   bool isUnderline;
-
+  // 动态model
+  HomeFeedModel feedModel;
+  // 子评论model
+  // commentDtoModel
   CommentInputBoxState createState() => CommentInputBoxState();
 }
 
@@ -66,8 +70,10 @@ class CommentInputBoxState extends State<CommentInputBox> {
                 onTap: () {
                   if(widget.isUnderline) {
                     Application.hintText = "说点什么吧~";
+
                   } else {
                     Application.hintText = "喜欢就评论吧~";
+                    Application.model = widget.feedModel;
                   }
                   // 唤醒键盘获取焦点 commentFocus
                   FocusScope.of(context).requestFocus(commentFocus);

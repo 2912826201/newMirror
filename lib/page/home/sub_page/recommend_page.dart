@@ -9,7 +9,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-
+import 'package:provider/provider.dart';
 FocusNode commentFocus = FocusNode();
 enum LoadingStatus {
   //正在加载中
@@ -42,6 +42,8 @@ class LoadingView extends StatelessWidget {
         child: SizedBox(
           child: CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation(AppColor.mainRed),
+            // loading 大小
+            strokeWidth:2,
           ),
           width: 12.0,
           height: 12.0,
@@ -112,7 +114,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
           });
           print("数据长度${recommendModel.length}");
         }
-      } else if (dataPage > 1 && model["lastTime"] != null) {
+      } else if (dataPage > 1) {
         print("5data");
         if (model["list"] != null) {
           model["list"].forEach((v) {
@@ -124,7 +126,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
         loadText = "加载中...";
       }  else {
         // 加载完毕
-        loadText = "加载完毕";
+        loadText = "已加载全部动态";
         loadStatus = LoadingStatus.STATUS_COMPLETED;
       }
     });

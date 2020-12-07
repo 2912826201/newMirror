@@ -14,7 +14,6 @@ class ExpandableText extends StatefulWidget {
   State<StatefulWidget> createState() {
     return _ExpandableTextState(text, maxLines, style, expand,model);
   }
-
 }
 
 class _ExpandableTextState extends State<ExpandableText> {
@@ -29,46 +28,44 @@ class _ExpandableTextState extends State<ExpandableText> {
       expand = false;
     }
   }
+
+  setBaseRichText(String topicStr) {
+    List<BaseRichText> richTexts = [];
+    for ( AtUsersModel atModel in model.atUsers) {
+      richTexts.add(BaseRichText(
+        topicStr != "" ? (topicStr+text).substring(topicStr.length  + atModel.index,topicStr.length  + atModel.len) : text.substring(atModel.index,atModel.len),
+        style: TextStyle(color: Color(0xFF9C7BFF), fontSize: 14),
+        onTap: () {
+          print("点击用户${atModel.uid}");
+        },
+      ));
+    }
+    richTexts.add(BaseRichText(
+      (topicStr+text).substring(0,topicStr.length),
+      style: TextStyle(color: Color(0xFF9C7BFF), fontSize: 14),
+      onTap: () {
+        print("点击用户${model.topicDto.id}");
+      },
+    ));
+    return richTexts;
+  }
+
   RichText() {
+    var topicStr =  model.topicDto != null ? "#"+model.topicDto.name : "";
+   print("话题:topicStr:$topicStr");
+   print( "全文本：${topicStr+text}");
     if (model.atUsers.length > 0 ) {
-      for ( AtUsersModel atModel in model.atUsers) {
         return MyRichTextWidget(
           Text(
-            text,
+            topicStr+text,
             style: style,
           ),
           maxLines: expand ? null : maxLines ,
           textOverflow: expand ?  TextOverflow.clip : TextOverflow.ellipsis ,
-          richTexts: [
-            BaseRichText(
-              text.substring(atModel.index,atModel.len),
-              style: TextStyle(color: Color(0xFF9C7BFF), fontSize: 14),
-              onTap: () {
-                print("点击用户${atModel.uid}");
-              },
-            )
-          ],
+          richTexts:
+            setBaseRichText(topicStr),
         );
-      }
-    }  else if (model.topicDto != null) {
-      return MyRichTextWidget(
-        Text(
-          text,
-          style: style,
-        ),
-        maxLines: expand ? null : maxLines ,
-        textOverflow: expand ?  TextOverflow.clip : TextOverflow.ellipsis ,
-        richTexts: [
-          BaseRichText("话题",
-            // text.substring(model.topicDto.name),
-            style: TextStyle(color: Color(0xFF9C7BFF), fontSize: 14),
-            onTap: () {
-              print("点击用户${model.topicDto.id}");
-            },
-          )
-        ],
-      );
-    }else {
+    }  else {
       return Text(text ?? '', style: style);
     }
   }
@@ -84,11 +81,6 @@ class _ExpandableTextState extends State<ExpandableText> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            // expand ?
-            // Text(text ?? '', style: style) :
-            // Text(text ?? '', maxLines: maxLines,
-            //     overflow: TextOverflow.ellipsis,
-            //     style: style),
             RichText(),
             GestureDetector(
               behavior: HitTestBehavior.translucent,

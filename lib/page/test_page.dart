@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
+import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/agora_input_page.dart';
 import 'package:mirror/page/media_test_page.dart';
 import 'package:mirror/page/qiniu_test_page.dart';
@@ -22,7 +24,11 @@ class TestPage extends StatefulWidget {
   _TestState createState() => _TestState();
 }
 
-class _TestState extends State<TestPage> {
+class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
+
+  @override
+  bool get wantKeepAlive => true; //必须重写
+
   @override
   Widget build(BuildContext context) {
     print("测试页");
@@ -139,6 +145,20 @@ class _TestState extends State<TestPage> {
                   }));
                 },
                 child: Text("声网测试"),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  TokenDto token = Application.token;
+                  if(token.anonymous == 0){
+                    token.anonymous = 1;
+                  }else{
+                    token.anonymous = 0;
+                    token.isPerfect = 1;
+                    token.isPhone = 1;
+                  }
+                  context.read<TokenNotifier>().setToken(token);
+                },
+                child: Text("更改登录状态(不会上报或入库)慎用"),
               ),
             ],
           ),

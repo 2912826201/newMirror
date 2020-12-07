@@ -9,4 +9,7 @@ static const textRegular12 = TextStyle(fontSize: 12,fontWeight: FontWeight.w400,
 // Regular 辅助字体灰色
 static const textSecondaryRegular12 = TextStyle(fontSize: 12,fontWeight: FontWeight.w400,color: AppColor.textSecondary);
 static const textHintRegular12 = TextStyle(fontSize: 12,fontWeight: FontWeight.w400,color: AppColor.textHint);
+static const textHintRegular13 = TextStyle(fontSize: 13,fontWeight: FontWeight.w400,color: AppColor.textHint);
+// Medium主体文字黑色
+static const textMedium14 = TextStyle(fontSize: 14,fontWeight: FontWeight.w500,color: AppColor.textPrimary1);
 }

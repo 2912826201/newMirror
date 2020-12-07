@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/ball_pulse_footer.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
+import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/course_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
@@ -16,6 +19,7 @@ import 'package:provider/provider.dart';
 
 enum Status {
   notLoggedIn, //未登录
+  loggedIn, // 登录
   noConcern, //无关注
   concern // 关注
 }
@@ -53,15 +57,22 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   // 列表监听
   ScrollController _controller = new ScrollController();
 
+  // 是否登录
+  bool isLoggedIn = false;
+
+  // 是否请求接口
+  bool isRequestInterface = false;
+
   @override
   void initState() {
-    bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
+    isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     print("是否登录$isLoggedIn");
     if (!isLoggedIn) {
       status = Status.notLoggedIn;
     } else {
-      getRecommendFeed();
+      status = Status.loggedIn;
     }
+    // 上拉加载
     _controller.addListener(() {
       if (_controller.position.pixels == _controller.position.maxScrollExtent) {
         dataPage += 1;
@@ -89,7 +100,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           });
           attentionModel.insert(0, HomeFeedModel());
           status = Status.concern;
-          print("数据长度${attentionModel.length}");
         } else {
           status = Status.noConcern;
         }
@@ -105,22 +115,35 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         loadText = "加载中...";
       } else {
         // 加载完毕
-        loadText = "加载完毕";
+        loadText = "已加载全部动态";
         loadStatus = LoadingStatus.STATUS_COMPLETED;
       }
     });
     lastTime = model["lastTime"];
+    isRequestInterface = true;
   }
 
-  Widget pageDisplay(
-    double bottomPadding,
-  ) {
+  Widget pageDisplay() {
     switch (status) {
       case Status.notLoggedIn:
         return Container(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              // RaisedButton(
+              //   onPressed: () {
+              //     TokenDto token = Application.token;
+              //     if (token.anonymous == 0) {
+              //       token.anonymous = 1;
+              //     } else {
+              //       token.anonymous = 0;
+              //       token.isPerfect = 1;
+              //       token.isPhone = 1;
+              //     }
+              //     context.read<TokenNotifier>().setToken(token);
+              //   },
+              //   child: Text("更改登录状态(不会上报或入库)慎用"),
+              // ),
               Container(
                 width: 224,
                 height: 224,
@@ -131,15 +154,20 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                 "登录账号后查看你关注的精彩内容",
                 style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
               ),
-              Container(
-                width: 293,
-                height: 44,
-                color: Colors.black,
-                margin: EdgeInsets.only(top: 32),
-                child: Center(
-                  child: Text(
-                    "Login",
-                    style: TextStyle(color: Colors.white),
+              GestureDetector(
+                onTap: () {
+                  AppRouter.navigateToLoginPage(context);
+                },
+                child: Container(
+                  width: 293,
+                  height: 44,
+                  color: Colors.black,
+                  margin: EdgeInsets.only(top: 32),
+                  child: Center(
+                    child: Text(
+                      "Login",
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               )
@@ -152,6 +180,20 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              // RaisedButton(
+              //   onPressed: () {
+              //     TokenDto token = Application.token;
+              //     if (token.anonymous == 0) {
+              //       token.anonymous = 1;
+              //     } else {
+              //       token.anonymous = 0;
+              //       token.isPerfect = 1;
+              //       token.isPhone = 1;
+              //     }
+              //     context.read<TokenNotifier>().setToken(token);
+              //   },
+              //   child: Text("更改登录状态(不会上报或入库)慎用"),
+              // ),
               Container(
                 width: 224,
                 height: 224,
@@ -165,6 +207,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             ],
           ),
         );
+        break;
+      case Status.loggedIn:
+        return Container();
         break;
       case Status.concern:
         return Container(
@@ -186,63 +231,72 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             }
           },
           child: RefreshIndicator(
-            onRefresh: () async {
-              dataPage = 1;
-              attentionModel.clear();
-              loadStatus = LoadingStatus.STATUS_LOADING;
-              loadText = "加载中...";
-              Map<String, dynamic> model = await getPullList(type: 0, size: 20, lastTime: lastTime);
-              setState(() {
-                if (model["list"] != null) {
-                  model["list"].forEach((v) {
-                    attentionModel.add(HomeFeedModel.fromJson(v));
-                  });
-                  attentionModel.insert(0, HomeFeedModel());
-                  print("数据长度${attentionModel.length}");
-                }
-              });
-            },
-            child: MediaQuery.removePadding(
-              removeTop: true,
-              context: context,
-              child: ListView.builder(
-                  itemCount: attentionModel.length,
-                  controller: _controller,
-                  itemBuilder: (context, index) {
-                    if(index == attentionModel.length  && lastTime != null) {
-                      return LoadingView(loadText: loadText,loadStatus:loadStatus ,);
-                    } else {
+              onRefresh: () async {
+                dataPage = 1;
+                attentionModel.clear();
+                loadStatus = LoadingStatus.STATUS_LOADING;
+                lastTime = null;
+                loadText = "加载中...";
+                Map<String, dynamic> model = await getPullList(type: 0, size: 20, lastTime: lastTime);
+                setState(() {
+                  if (model["list"] != null) {
+                    model["list"].forEach((v) {
+                      print(v["comments"]);
+                      if (v["comments"].length != 0) {
+                        print("评论名${v["comments"][0]["name"]}");
+                      }
+                      attentionModel.add(HomeFeedModel.fromJson(v));
+                    });
+                    attentionModel.insert(0, HomeFeedModel());
+                    print("数据长度${attentionModel.length}");
+                    // print(attentionModel.)
+                  }
+                });
+              },
+              child: MediaQuery.removePadding(
+                removeTop: true,
+                context: context,
+                child: ListView.builder(
+                    itemCount: attentionModel.length,
+                    controller: _controller,
+                    itemBuilder: (context, index) {
+                   //  context.read<DynamicModelNotifier>().setDynamicModel(attentionModel[index]);
+                   // HomeFeedModel model =  context.read<DynamicModelNotifier>().dynamicModel;
+                      if (index == attentionModel.length && lastTime != null) {
+                        return LoadingView(
+                          loadText: loadText,
+                          loadStatus: loadStatus,
+                        );
+                      } else {
                         return index == 0
-                        ? Container(
-                            height: 14,
-                          )
-                        : DynamicListLayout(
-                            index: index,
-                            pc: widget.pc,
-                            isShowRecommendUser: true,
-                            model:attentionModel[index] ,
-                            // 可选参数 子Item的个数
-                            key: GlobalObjectKey("attention$index"));}
-                  }),
-            )
-            // child: SliverList(
-            //
-            //   delegate: SliverChildBuilderDelegate(
-            //     (context, index) {
-            //       return DynamicListLayout(
-            //           index: index,
-            //           pc: widget.pc,
-            //           isShowRecommendUser: true,
-            //           model: attentionModel[index],
-            //           // 可选参数 子Item的个数
-            //           key: GlobalObjectKey("attention$index"));
-            //     },
-            //     childCount: attentionModel.length,
-            //   ),
-            // ),
-          ),
-
-
+                            ?
+                            // RaisedButton(
+                            //         onPressed: () {
+                            //           TokenDto token = Application.token;
+                            //           if (token.anonymous == 0) {
+                            //             token.anonymous = 1;
+                            //           } else {
+                            //             token.anonymous = 0;
+                            //             token.isPerfect = 1;
+                            //             token.isPhone = 1;
+                            //           }
+                            //           context.read<TokenNotifier>().setToken(token);
+                            //         },
+                            //         child: Text("更改登录状态(不会上报或入库)慎用"),
+                            //       )
+                            Container(
+                                height: 14,
+                              )
+                            : DynamicListLayout(
+                                index: index,
+                                pc: widget.pc,
+                                isShowRecommendUser: true,
+                                model: attentionModel[index],
+                                // 可选参数 子Item的个数
+                                key: GlobalObjectKey("attention$index"));
+                      }
+                    }),
+              )),
         ));
         break;
     }
@@ -250,7 +304,19 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
 
   @override
   Widget build(BuildContext context) {
-    final double bottomPadding = ScreenUtil.instance.bottomBarHeight;
-    return pageDisplay(bottomPadding);
+    var isLogged = context.watch<TokenNotifier>().isLoggedIn;
+    if (!isLogged) {
+      isRequestInterface = false;
+      status = Status.notLoggedIn;
+      this.dataPage = 1;
+      this.attentionModel = [];
+      this.lastTime = null;
+    }
+    print("isLogged:$isLogged");
+    print("isRequestInterface:$isRequestInterface");
+    if (isLogged && !isRequestInterface) {
+      getRecommendFeed();
+    }
+    return pageDisplay();
   }
 }
