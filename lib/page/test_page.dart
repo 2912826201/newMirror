@@ -7,6 +7,7 @@ import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/page/activation_test_page.dart';
 import 'package:mirror/page/agora_input_page.dart';
 import 'package:mirror/page/media_test_page.dart';
 import 'package:mirror/page/qiniu_test_page.dart';
@@ -108,37 +109,56 @@ class _TestState extends State<TestPage> {
                   );
                 },
               ),
-              RaisedButton(
-                onPressed: () {
-                  Size c = getTextSize("查询数据库", TextStyle(fontSize: 16));
-                  print("++++++++++++++++$c+++++++++++++++++++++++");
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return MediaTestPage();
-                  }));
-                },
-                child: Text("图片视频测试"),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  RaisedButton(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return QiniuTest();
+                      }));
+                    },
+                    child: Text("七牛上传测试"),
+                  ),
+                  RaisedButton(
+                    onPressed: () {
+                      Size c = getTextSize("查询数据库", TextStyle(fontSize: 16));
+                      print("++++++++++++++++$c+++++++++++++++++++++++");
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return MediaTestPage();
+                      }));
+                    },
+                    child: Text("图片视频测试"),
+                  ),
+                ],
               ),
-              RaisedButton(
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return QiniuTest();
-                  }));
-                },
-                child: Text("七牛上传测试"),
-              ),
+
               RaisedButton(
                 onPressed: () {
                   AppRouter.navigateToRCTestPage(context, context.read<ProfileNotifier>().profile);
                 },
                 child: Text("Fluro跳转传参测试"),
               ),
-              RaisedButton(
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return AgoraInputPage();
-                  }));
-                },
-                child: Text("声网测试"),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  RaisedButton(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return AgoraInputPage();
+                      }));
+                    },
+                    child: Text("声网测试"),
+                  ),
+                  RaisedButton(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return ActivationTestPage();
+                      }));
+                    },
+                    child: Text("激活登录测试"),
+                  ),
+                ],
               ),
             ],
           ),
