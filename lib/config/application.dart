@@ -2,7 +2,7 @@ import 'package:fluro/fluro.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/token_model.dart';
-import 'package:mirror/data/model/home/home_feed.dart';
+
 /// application
 /// Created by yangjiayi on 2020/11/14.
 
@@ -21,5 +21,8 @@ class Application {
 
   //TODO 评论输入框等提示语 需要考量是否有更合适的方式管理
   static String hintText = "";
+
+  //相机列表
+  static List<CameraDescription> cameras;
   static HomeFeedModel model;
 }

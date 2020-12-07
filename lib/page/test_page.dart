@@ -8,6 +8,7 @@ import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/page/activation_test_page.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/agora_input_page.dart';
 import 'package:mirror/page/media_test_page.dart';
@@ -145,20 +146,6 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                   }));
                 },
                 child: Text("声网测试"),
-              ),
-              RaisedButton(
-                onPressed: () {
-                  TokenDto token = Application.token;
-                  if(token.anonymous == 0){
-                    token.anonymous = 1;
-                  }else{
-                    token.anonymous = 0;
-                    token.isPerfect = 1;
-                    token.isPhone = 1;
-                  }
-                  context.read<TokenNotifier>().setToken(token);
-                },
-                child: Text("更改登录状态(不会上报或入库)慎用"),
               ),
             ],
           ),

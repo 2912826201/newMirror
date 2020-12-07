@@ -46,8 +46,9 @@ class GalleryPage extends StatefulWidget {
   _GalleryPageState createState() => _GalleryPageState();
 }
 
+// AutomaticKeepAliveClientMixin支持重新切回页面后保持之前页面状态
 class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClientMixin {
-  var _cropperKey = GlobalKey();
+  var _cropperKey = GlobalKey<_GalleryPageState>();
 
   double _screenWidth = 0;
   double _itemSize = 0;
@@ -153,31 +154,34 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                     behavior: NoBlueEffectBehavior(),
                     child: _buildScrollBody(),
                   ),
-                  // 裁剪区域
-                  Positioned(
-                      top: context.watch<_PreviewHeightNotifier>().previewHeight - _previewMaxHeight,
-                      child: Container(
-                        color: AppColor.bgBlack,
-                        width: _previewMaxHeight,
-                        height: _previewMaxHeight,
-                        child: Builder(
-                          builder: (context) {
-                            AssetEntity entity =
-                                context.select((SelectedMapNotifier notifier) => notifier.currentEntity);
-                            return entity == null
-                                ? Container()
-                                : entity.type == AssetType.video
-                                    ? VideoPreviewArea(_fileMap[entity.id], _screenWidth)
-                                    : entity.type == AssetType.image
-                                        ? CropperImage(
-                                            FileImage(_fileMap[entity.id]),
-                                            round: 0,
-                                            key: _cropperKey,
-                                          )
-                                        : Container();
-                          },
-                        ),
-                      )),
+                  widget.needCrop
+                      ?
+                      // 裁剪区域
+                      Positioned(
+                          top: context.watch<_PreviewHeightNotifier>().previewHeight - _previewMaxHeight,
+                          child: Container(
+                            color: AppColor.bgBlack,
+                            width: _previewMaxHeight,
+                            height: _previewMaxHeight,
+                            child: Builder(
+                              builder: (context) {
+                                AssetEntity entity =
+                                    context.select((SelectedMapNotifier notifier) => notifier.currentEntity);
+                                return entity == null
+                                    ? Container()
+                                    : entity.type == AssetType.video
+                                        ? VideoPreviewArea(_fileMap[entity.id], _screenWidth)
+                                        : entity.type == AssetType.image
+                                            ? CropperImage(
+                                                FileImage(_fileMap[entity.id]),
+                                                round: 0,
+                                                key: _cropperKey,
+                                              )
+                                            : Container();
+                              },
+                            ),
+                          ))
+                      : Container(),
                 ],
               );
             }));
@@ -293,12 +297,12 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                   child: context.watch<SelectedMapNotifier>().selectedMap.containsKey(entity.id)
                       ? Text(
                           context.watch<SelectedMapNotifier>().selectedMap[entity.id].order.toString(),
-                          style: TextStyle(color: Colors.white, fontSize: 18),
+                          style: TextStyle(color: AppColor.white, fontSize: 18),
                         )
                       : Icon(
                           Icons.add_circle_outline,
                           size: 20,
-                          color: Colors.white,
+                          color: AppColor.white,
                         ),
                 )),
           ),
@@ -311,7 +315,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                   : entity.type == AssetType.video
                       ? "V"
                       : "",
-              style: TextStyle(color: Colors.white, fontSize: 18),
+              style: TextStyle(color: AppColor.white, fontSize: 18),
             ),
           )
         ]));
@@ -424,10 +428,11 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
               // 遍历所选Map将结果赋值
               for (_OrderedAssetEntity orderedEntity in selectedMap.values) {
                 // order要减1才是index
-                mediaFileList[orderedEntity.order - 1].file = _fileMap[orderedEntity.entity.id];
-                mediaFileList[orderedEntity.order - 1].thumb = _thumbMap[orderedEntity.entity.id];
                 if (widget.needCrop) {
                   mediaFileList[orderedEntity.order - 1].croppedImage = notifier._imageMap[orderedEntity.entity.id];
+                }else{
+                  mediaFileList[orderedEntity.order - 1].file = _fileMap[orderedEntity.entity.id];
+                  mediaFileList[orderedEntity.order - 1].thumb = _thumbMap[orderedEntity.entity.id];
                 }
               }
               // 赋值并退出页面
