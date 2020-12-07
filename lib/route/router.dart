@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/route/route_handler.dart';
 
@@ -11,7 +12,6 @@ import 'package:mirror/route/route_handler.dart';
 
 class AppRouter {
   static String paramData = "data";
-
   static String pathMain = "/main";
   static String pathLogin = "/login";
   static String pathTest = "/test";
@@ -20,7 +20,7 @@ class AppRouter {
   static String pathLike = "/like";
   static String pathIfPage = "/";
   static String pathRelease = "/release";
-
+  static String pathChatPage = "/ChatPage";
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
       print("ROUTE WAS NOT FOUND !!!");
@@ -33,6 +33,7 @@ class AppRouter {
     router.define(pathLogin, handler: handlerLogin);
     router.define(pathLike, handler: handlerLike);
     router.define(pathRelease, handler: handlerReleaseFeed);
+    router.define(pathChatPage, handler: handlerChatPage);
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
   }
@@ -78,5 +79,7 @@ class AppRouter {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathRelease, map);
   }
-
+  static void navigateToChatPage(BuildContext context,ConversationDto dto){
+    _navigateToPage(context, pathChatPage,dto.toMap());
+  }
 }

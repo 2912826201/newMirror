@@ -2,14 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
-
+import 'package:intl/intl.dart';
 
 
 
 abstract class ChatCellBehaviors{
-  void refresh(ConversationDto model);
+  //对cell的内容进行刷新
+  void refresh({@required ConversationDto model,int newBadges});
   //消息到来
-  void msgsWithCount(int newMsgs);
+  void msgsUnread(int newMsgs);
   //cell被点击
   void cellDidTap();
   //发生了@事件
@@ -17,43 +18,21 @@ abstract class ChatCellBehaviors{
 }
 
 //单个会话显示单元
-class MPChatCell extends StatefulWidget implements ChatCellBehaviors{
-  MPChatCell({Key key,@required this.model}):super(key: key);
-  MPChatCellState _state;
+// ignore: must_be_immutable
+class MPChatCell extends StatefulWidget {
+  MPChatCell({Key key,@required this.model,this.unreadMsgCount}):super(key: key);
+  int unreadMsgCount = 0;
   final ConversationDto model;
   @override
   State<StatefulWidget> createState() {
-    _state = MPChatCellState();
-    return _state;
+    return  MPChatCellState();
   }
-
-  @override
-  void cellDidTap() {
-    _state.cellDidTap();
-  }
-
-  @override
-  void msgsWithCount(int newMsgs) {
-    _state.msgsWithCount(newMsgs);
-  }
-
-  @override
-  void atEvent({payload = Map}) {
-    _state.atEvent(payload: payload);
-  }
-
-  @override
-  void refresh(ConversationDto model) {
-     _state.setState(() {
-     });
-  }
-
 
 }
 class MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
   //未读消息数
   int _unreadMsgCount = 0;
-  //决定展示何种类型的未读提示样式
+  //决定展示何种类型的未读提示样式（有具体的显示数字的样式，也有那种一个小红点的情况）
   int _unreadStyle = _IndicateConditons._rawBinary;
   //是否有@事件来临
   bool _atEvent = false;
@@ -74,6 +53,24 @@ class MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
   decoration: TextDecoration.none);
   //主要内容展示区域高度
   final mainContentHeight = 69.0;
+  //最近一条消息的内容
+  String _latestMsg = "";
+  //会话名
+  String _chatName = "";
+  //会话头像路径
+  String  _portrait = "";
+  int _updateTime = 0;
+  // //默认的会话头像地址
+  // String _fixedPortrait = "images/test/yxlm4.jpg";
+  @override
+  void initState() {
+  _latestMsg = widget.model.content;
+  _chatName = widget.model.name;
+  _unreadMsgCount = widget.unreadMsgCount ??= 0 ;
+  _portrait = widget.model.avatarUri;
+  _updateTime = widget.model.updateTime;
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
    ConversationDto model = widget.model;
@@ -109,7 +106,7 @@ class MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
                    borderRadius: BorderRadius.all(Radius.circular(0.5*portraitWH)),
                    image: DecorationImage(
                        fit: BoxFit.fill,
-                       image: AssetImage(model.avatarUri),
+                       image: AssetImage(_portrait),
                    )
                ),
              ),
@@ -121,10 +118,10 @@ class MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
                    Row(
                      children: [
                        //主名字
-                       Text(model.name,style: nameStyle,),
+                       Text(_chatName,style: nameStyle,),
                        Spacer(),
                        //时间
-                       Text(_transferRawDate(model.updateTime),style: dateStyle,)
+                       Text(_transferRawDate(_updateTime),style: dateStyle,)
                      ],
                    ),
                    Container(
@@ -150,31 +147,49 @@ class MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
   }
   //unix时间转化为本地时间
   String _transferRawDate(int time){
-    return "2020.11.22";
+    var format = new DateFormat('HH:mm:ss');
+    String strTime = format.format(DateTime.fromMicrosecondsSinceEpoch(time));
+    return strTime;
   }
   //尾部的消息指示视图
   Widget _tailWidget(){
-    //不显示
-    if(_unreadStyle==_IndicateConditons._rawBinary){
-     return  Container();
-    }
-    //显示小红点
-    else if(_unreadStyle == _IndicateConditons.tinyDot){
-     return Container(color: AppColor.mainRed,
-       width: 16,
-       height: 16,
-       decoration:BoxDecoration(
-         borderRadius: BorderRadius.all(Radius.circular(8))
-       ) ,);
-    }
-    //展示数字未读
-    else{
-     return Container(
-       alignment: Alignment.center,
-       child: Text("${_unreadMsgCount}+",style: TextStyle(color: AppColor.white,fontFamily: "PingFangSC-Regular",
-       fontSize: 12,fontWeight: FontWeight.w400,decoration: TextDecoration.none),),
-     );
-    }
+       //根据当前未读数设置未读数的显示样式
+       msgsUnread(_unreadMsgCount);
+      //不显示
+      if (_unreadStyle == _IndicateConditons._rawBinary ) {
+        return Container();
+      }
+      //显示小红点
+      else if (_unreadStyle == _IndicateConditons.tinyDot ) {
+        return Container(
+          width: 16,
+          height: 16,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(8))
+            ,color: AppColor.mainRed,
+          ),
+         );
+      }
+      //展示数字未读
+      else {
+        return Container(
+          decoration: BoxDecoration(
+            color: AppColor.mainRed,
+            borderRadius: BorderRadius.all(Radius.circular(9))
+          ),
+          width: 18,
+          height: 18,
+          alignment: Alignment.center,
+          child: Text("${_unreadMsgCount}",
+            style: TextStyle(color: AppColor.white,
+                fontFamily: "PingFangSC-Regular",
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                decoration: TextDecoration.none),
+                textAlign: TextAlign.center,),
+        );
+      }
+
   }
   //说明文本
   Text _detailDes(TextStyle textStyle){
@@ -187,7 +202,7 @@ class MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
   }
   //读取本地上次缓存的最新的会话记录
   String _cachedLatestChatData(){
-    return widget.model.content;
+    return _latestMsg;
   }
   @override
   void cellDidTap() {
@@ -195,12 +210,21 @@ class MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
   }
   //这个方法为_tailWidget()做铺垫
   @override
-  void msgsWithCount(int newMsgs) {
+  void msgsUnread(int newMsgs) {
+    print("~~~~~~~~~msgsWithCount~~~~~~~~~~~~");
     if(newMsgs>99){
+      print("msgsWithCount >99 ${newMsgs}");
       _unreadMsgCount = 99;
       _unreadStyle = _IndicateConditons.tinyDot;
-    }else{
+    }
+    else if(newMsgs == 0){
+      print("msgsWithCount ==0 ${newMsgs}");
+      _unreadStyle = _IndicateConditons._rawBinary;
+    }
+    else{
+      print("msgsWithCount >0 <99  ${newMsgs}");
       _unreadStyle = _IndicateConditons.numDot;
+      print("_unreadStyle $_unreadStyle");
       _unreadMsgCount = newMsgs;
     }
   }
@@ -211,16 +235,48 @@ class MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
   }
 
   @override
-  void refresh(ConversationDto model) {
+  void refresh({ConversationDto model, int newBadges}) {
+    print("chatCell State refresh");
+    if(newBadges != null){
+      if(newBadges == 0){
+        print("newbadget 0");
+        _unreadStyle = _IndicateConditons._rawBinary;
+        _unreadMsgCount = 0;
+      }else {
+        print("newBadgets ${newBadges}");
+        _unreadStyle = _IndicateConditons.numDot;
+        _unreadMsgCount += newBadges;
+      }
+     }
+     if(model == null){
+     }else{
+      if(model.updateTime !=null){
+      _updateTime = model.updateTime;
+     }
+      if (model.avatarUri != null) {
+      _portrait = model.avatarUri;
+     }
+      if(model.name != null){
+      _chatName = model.name;
+     }
+      if(model.content != null){
+      _latestMsg = model.content;
+     }
+      if(model.unread != null){
+        _unreadMsgCount = model.unread;
+      }
+    }
     setState(() {
     });
   }
+
+
 }
 
 class _IndicateConditons{
-  static const int _rawBinary = 0x0;
+  static const int _rawBinary = 1;
   //展示小红点
-  static const tinyDot = _rawBinary<<1;
+  static const int tinyDot = 2;
   //展示数字提示
-  static const numDot = _rawBinary<<2;
+  static const int numDot = 3;
 }

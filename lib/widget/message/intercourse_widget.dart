@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 //点赞、评论点击控件
 class MPIntercourseWidget extends StatefulWidget{
-  final _state = _MPIntercourseWidgetState();
+  final _state = MPIntercourseWidgetState();
   //背景图片
   final String backImage;
   //下方标题
@@ -31,7 +31,7 @@ class MPIntercourseWidget extends StatefulWidget{
   }
 
 }
-class _MPIntercourseWidgetState extends State<MPIntercourseWidget>{
+class MPIntercourseWidgetState extends State<MPIntercourseWidget>{
 
   @override
   Widget build(BuildContext context) {

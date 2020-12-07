@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 
 typedef MPVoidCallback = Function ();
 //带一个参数的回调
-typedef MPCallbackWithValue = Function (dynamic);
+typedef MPCallbackWithValue = dynamic Function (dynamic) ;
 //函数绑定派发中心
 abstract class MPActionBindCenter{
   //单例

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/page/feed/like.dart';
 import 'package:mirror/page/feed/release_page.dart';
@@ -9,6 +10,7 @@ import 'package:mirror/page/if_page.dart';
 import 'package:mirror/page/login/login_page.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
+import 'package:mirror/page/message/Chat/chat_page.dart';
 import 'package:mirror/page/rc_test_page.dart';
 import 'package:mirror/route/router.dart';
 
@@ -49,4 +51,10 @@ var handlerLike = Handler(handlerFunc: (BuildContext context, Map<String,List<St
 });
 var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context , Map<String,List<String>> params){
   return ReleasePage();
+});
+//聊天页面
+var handlerChatPage = Handler(handlerFunc: (BuildContext context , Map<String,List<String>> params){
+   List<dynamic> list = params["data"];
+   ConversationDto dto = ConversationDto.fromMap(json.decode(list.first));
+   return ChatPage(conversation: dto,);
 });

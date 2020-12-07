@@ -35,7 +35,7 @@ abstract class RongCloudReceiveManager {
   Future<Message> sendGroupMessage(String targetId,MessageContent content);
   //发送
   //观察所有消息来临的通知(一般情况下是这个函数被使用，关注私聊群聊系统聊等所有类型的信息，否则使用其他下面的函数，可以提高效率)
-  void observeAllMsgs<T extends MessageObserver>(T target);
+  void observeAllKindsMsgs<T extends MessageObserver>(T target);
   //观察特点类型消息来临，参数值域参考RCConversationType(例如：私聊、群聊、系统聊天)
   void observeSpecificTypeMsg<T extends MessageObserver>(int conversationType,T target);
   //取消在消息中心的监听(在disposo中调用)
@@ -58,7 +58,12 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
    //初始化工作
    _init(){
      _rongCloudMessageResponse();
+    _registerCustomMessageType();
     _alloc();
+   }
+   //自定义消息类型的注册
+   _registerCustomMessageType(){
+
    }
   //融云回调
    _rongCloudMessageResponse(){
@@ -270,7 +275,7 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
       }
    });
   }
-   //当此种消息还没有观察者时触发这里
+   //当此种消息还没有观察者时触发这里暂存
    _tempStorage(Set<Message> msgs){
       _nonAdaptableMsg.addAll(msgs);
    }
@@ -283,7 +288,7 @@ class _RongCloudReceiveManager extends RongCloudReceiveManager{
    }
    //
    @override
-   void observeAllMsgs<T extends MessageObserver>(T target) {
+   void observeAllKindsMsgs<T extends MessageObserver>(T target) {
     this.observeSpecificTypeMsg(RCConversationType.Private, target);
     this.observeSpecificTypeMsg(RCConversationType.Group, target);
     this.observeSpecificTypeMsg(RCConversationType.System, target);

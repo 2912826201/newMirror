@@ -3,6 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/data/model/message/intercourse_model.dart';
+import 'package:mirror/page/message/delegate/callbacks.dart';
+import 'package:mirror/page/message/delegate/message_page_datasource.dart';
 import 'package:mirror/page/message/delegate/regular_events.dart';
 import 'package:mirror/widget/message/chatcell.dart';
 import 'package:mirror/widget/message/intercourse_widget.dart';
@@ -12,8 +15,10 @@ import 'message_interfaces.dart';
 class MessagePageUiProvider implements MPUiProxy {
   //用于局部刷新List视图的key数组
   List<GlobalKey<MPChatCellState>> listKeys = List<GlobalKey<MPChatCellState>>();
+  //保存局部刷新"点赞、评论、点赞"区域的key数组
+  Map<MPIntercourses,GlobalKey<MPIntercourseWidgetState>> icWidgetsKeys = Map<MPIntercourses,GlobalKey<MPIntercourseWidgetState>>();
   //交互事件及数据代理
-  MPUIActionAndDataPipe dataActionPipe;
+  MPUIActionWithDataSource dataActionPipe;
   //在_actionsDispatch（）中的相关函数关联字符
   //navibar上的点击
   static const String FuncOfNaviBtn = "funcOfNaviBtn";
@@ -46,13 +51,10 @@ class MessagePageUiProvider implements MPUiProxy {
 
   //是否展示系统通知提醒的横幅
   bool _sysNotificationBannerShow = false;
-
+  Map<MPIntercourses,int> _unreadBadges = {MPIntercourses.Comment:0,MPIntercourses.Laud:0,MPIntercourses.At:0};
   //交互事件外发
   _actionsDispatch(String identifier, {payload: Map}) {
-    print(" _actionsDispatch"+identifier);
     if (dataActionPipe != null) {
-      print(dataActionPipe);
-      print("starting action!");
       dataActionPipe.action(identifier, payload: payload);
     }
   }
@@ -113,11 +115,31 @@ class MessagePageUiProvider implements MPUiProxy {
         ));
   }
 
+  //对旧的数据做清除的工作
+  _cleanDirties(){
+    listKeys.clear();
+  }
   //页面主要内容
   @override
   Widget mainContent() {
+    //清除旧配置
+    _cleanDirties();
+    //读取未读信息,设置回调
+    _getBadges((t){
+      UnreadInterCourses ur = t();
+     List<MPIntercourses> events = List<MPIntercourses>();
+      if(ur.at != _unreadBadges[MPIntercourses.At]){
+       events.add(MPIntercourses.At);
+      }
+      if(ur.comment != _unreadBadges[MPIntercourses.Comment]){
+        events.add(MPIntercourses.Comment);
+      }
+      if(ur.laud != _unreadBadges[MPIntercourses.Laud]){
+        events.add(MPIntercourses.Laud);
+      }
+      _refreshISpecificInterCource(events);
+    });
     print("ui-provider  mainContent");
-    listKeys.clear();
     //整体setState(）之后，清空之前的每个子元素的globalKey数组
     //  this.listKeys.clear();
     //外层是一个column所以需要使用Expanded
@@ -128,7 +150,7 @@ class MessagePageUiProvider implements MPUiProxy {
         //除去网络横幅以外的区域
         Expanded(child: ListView.builder(
           //大致分为3个区域
-          itemCount: _expectCount(),
+          itemCount: _expectedCount(),
           itemBuilder: (BuildContext context, int index) {
             //点赞交互区域
             if(index == 0){
@@ -136,7 +158,6 @@ class MessagePageUiProvider implements MPUiProxy {
             }
             //需要进行消息提醒的横幅的显示
             else if (index ==1){
-              print("sections:\n");
               print(this.consistsOfMP + (dataActionPipe.imCellData().length));
               return notificationBanner();
             }
@@ -153,7 +174,13 @@ class MessagePageUiProvider implements MPUiProxy {
       ],
     ));
   }
-   int _expectCount(){
+  //分配key
+  Key _distributeKeys(MPIntercourses event){
+    GlobalKey<MPIntercourseWidgetState> theKey = GlobalKey<MPIntercourseWidgetState>();
+    icWidgetsKeys[event] = theKey;
+  }
+  //ListView的元素数量
+   int _expectedCount(){
     int dataSourceCount  = dataActionPipe.imCellData().length ;
     if(dataSourceCount==0){
       return this.consistsOfMP;
@@ -172,6 +199,7 @@ class MessagePageUiProvider implements MPUiProxy {
               child: Container(
                 child: Center(
                   child: MPIntercourseWidget(
+                    key: _distributeKeys(MPIntercourses.Comment),
                     title: Text(
                       "评论",
                       style: TextStyle(
@@ -182,7 +210,7 @@ class MessagePageUiProvider implements MPUiProxy {
                           decoration: TextDecoration.none),
                     ),
                     onTap:()=> _actionsDispatch(FuncOfinterCourses, payload: {IntercoursesKey: MPIntercourses.Comment}),
-                    badges: _badgesNum(MPIntercourses.Comment),
+                    badges: _badgesNum[MPIntercourses.Comment],
                   ),
                 ),
               )),
@@ -194,6 +222,7 @@ class MessagePageUiProvider implements MPUiProxy {
             child: Container(
                 child: Center(
                   child: MPIntercourseWidget(
+                    key: _distributeKeys(MPIntercourses.At),
                     title: Text(
                       "@我",
                       style: TextStyle(
@@ -204,7 +233,7 @@ class MessagePageUiProvider implements MPUiProxy {
                           decoration: TextDecoration.none),
                     ),
                     onTap: ()=>_actionsDispatch(FuncOfinterCourses, payload: {IntercoursesKey: MPIntercourses.At}),
-                    badges: _badgesNum(MPIntercourses.At),
+                    badges: _badgesNum[MPIntercourses.At],
                   ),
                 )),
           ),
@@ -216,6 +245,7 @@ class MessagePageUiProvider implements MPUiProxy {
             child: Container(
               child: Center(
                   child: MPIntercourseWidget(
+                    key: _distributeKeys(MPIntercourses.Laud),
                     title: Text(
                       "点赞",
                       style: TextStyle(
@@ -225,8 +255,8 @@ class MessagePageUiProvider implements MPUiProxy {
                           fontWeight: FontWeight.w400,
                           decoration: TextDecoration.none),
                     ),
-                    onTap:()=> _actionsDispatch(FuncOfinterCourses, payload: {IntercoursesKey: MPIntercourses.Thumb}),
-                    badges: _badgesNum(MPIntercourses.Thumb),
+                    onTap:()=> _actionsDispatch(FuncOfinterCourses, payload: {IntercoursesKey: MPIntercourses.Laud}),
+                    badges: _badgesNum[MPIntercourses.Laud],
                   )),
             ),
           ),
@@ -237,10 +267,71 @@ class MessagePageUiProvider implements MPUiProxy {
   }
 
   //提供点赞事件的未读数
-  int _badgesNum(MPIntercourses type) {
-    return dataActionPipe.unreadOfIntercources()[type];
+  Map<MPIntercourses,int> get _badgesNum {
+    return _unreadBadges;
   }
 
+  //异步读取未读数
+   _getBadges(MPCallbackWithValue callback) async{
+     print("_getBadges");
+     //跟新未读数
+     await dataActionPipe.unreadOfIntercources(callback);
+     print("after async _getBadges");
+     callback;
+  }
+  //刷新"评论、点赞、at的其中之一"
+  _refreshISpecificInterCource(List<MPIntercourses> events) {
+     events.forEach((event) {
+       icWidgetsKeys[event].currentState.setState(() {
+       });
+     });
+     _refreshSysChatsLatestMsg();
+  }
+  //刷新系统会话的最新的一条消息
+   _refreshSysChatsLatestMsg(){
+    print("_refreshSysChatsLatestMsg");
+    dataActionPipe.imCellData().forEach((element) {
+      if(element.type == OFFICIAL){
+        int k = -1 ;
+       listKeys.forEach((element) {
+         ++k;
+         MPChatCellState cellState = listKeys[k].currentState;
+         if(cellState.widget.model.type == OFFICIAL){
+           ConversationDto dto =ConversationDto();
+           dto.content = dataActionPipe.latestAuthorizedMsgs()[Authorizeds.SysMsg].last.content;
+           print("SysMsg   ${dataActionPipe.latestAuthorizedMsgs()[Authorizeds.SysMsg]}");
+           cellState.refresh(model: dto);
+         }
+       });
+      }
+      if(element.type == LIVE_OFFICIAL){
+        int k = -1 ;
+        listKeys.forEach((element) {
+          ++k;
+          MPChatCellState cellState = listKeys[k].currentState;
+          if(cellState.widget.model.type == LIVE_OFFICIAL){
+            ConversationDto dto =ConversationDto();
+            dto.content = dataActionPipe.latestAuthorizedMsgs()[Authorizeds.LiveMsg].last.content;
+            print("LiveMsg   ${dataActionPipe.latestAuthorizedMsgs()[Authorizeds.LiveMsg]}");
+            cellState.refresh(model: dto);
+          }
+        });
+      }
+      if(element.type == EXERCISE_OFFICIAL){
+        int k = -1 ;
+        listKeys.forEach((element) {
+          ++k;
+          MPChatCellState cellState = listKeys[k].currentState;
+          if(cellState.widget.model.type == EXERCISE_OFFICIAL){
+            ConversationDto dto =ConversationDto();
+            dto.content = dataActionPipe.latestAuthorizedMsgs()[Authorizeds.ExerciseMsg].last.content;
+            print("Exercise   ${dataActionPipe.latestAuthorizedMsgs()[Authorizeds.ExerciseMsg]}");
+            cellState.refresh(model: dto);
+          }
+        });
+      }
+    });
+   }
   //即时通讯会话相关的区域,因为本身为一个ListView的item，所以需要高度
   Widget _imArea(int index) {
     print("----------------------------_imArea----------------------------");
@@ -255,11 +346,11 @@ class MessagePageUiProvider implements MPUiProxy {
     print("the expected index $expectedIndex");
     //唯一标识key
     GlobalKey<MPChatCellState> key = GlobalKey();
-    //获取对应的cell
-    MPChatCell cell = MPChatCell(key: key,model:dataActionPipe.imCellData()[expectedIndex]);
     print("the key:");
     print(listKeys);
     listKeys.add(key);
+    //获取对应的cell
+    MPChatCell cell = MPChatCell(key: key,model:dataActionPipe.imCellData()[expectedIndex],unreadMsgCount: dataActionPipe.imCellData()[expectedIndex].unread,);
     //构建单个cell的过程
     return Row(children:
     [
@@ -402,15 +493,23 @@ class MessagePageUiProvider implements MPUiProxy {
   }
   //某会话数据到来而走这里
   @override
-  void imFreshData( { int index,ConversationDto dto}) {
+  void imFreshData( { int index,ConversationDto dto,int newBadgets}) {
     print("imFreshData $index");
     //单独刷新
     if(index != null){
-      MPChatCell theCell = MPChatCell(key:listKeys[index]);
-      if(theCell != null) {
-        print("cell begin refresh");
-        theCell.refresh(dto);
+     MPChatCellState state = listKeys[index].currentState;
+      if(state != null) {
+        if(dto != null) {
+          print("cell begin refresh ${dto.toStirng()}");
+          }
+          state.refresh(model: dto);
+        //若未读数有值，则进行刷新的操作
+        if(newBadgets != null){
+          print("refresh badges ${newBadgets}");
+          state.refresh(newBadges: newBadgets);
+        }
       }
+
     }else{
      _actionsDispatch(FuncOf_setState_);
     }

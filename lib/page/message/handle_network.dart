@@ -2,28 +2,28 @@ import 'package:flutter/cupertino.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-enum IFPlatForm{
+enum IFitnessPlatform{
    IOS,
    ANDROID
 }
 abstract class PlateFormCheck{
-  IFPlatForm platForm();
+  IFitnessPlatform platForm();
 }
 //网络情况报告页面
  class NetPage extends StatelessWidget implements PlateFormCheck{
    @mustCallSuper
-   IFPlatForm platForm(){
+   IFitnessPlatform platForm(){
     if(Platform.isIOS){
-      return IFPlatForm.IOS;
+      return IFitnessPlatform.IOS;
     }
     else {
-      return IFPlatForm.ANDROID;
+      return IFitnessPlatform.ANDROID;
     }
   }
   
   @override
   Widget build(BuildContext context) {
-    if (platForm() == IFPlatForm.IOS){
+    if (platForm() == IFitnessPlatform.IOS){
       return IOSNetPage().build(context);
     }
     else{
@@ -31,10 +31,11 @@ abstract class PlateFormCheck{
     }
   }
 }
+//安卓的网络情况页面
 class AndroidNetPage extends NetPage implements PlateFormCheck{
 
  @override
-  IFPlatForm platForm() {
+ IFitnessPlatform platForm() {
     return super.platForm();
   }
   @override
@@ -67,10 +68,11 @@ class AndroidNetPage extends NetPage implements PlateFormCheck{
   }
 
 }
+//ios
 class IOSNetPage extends  NetPage implements PlateFormCheck{
 
   @override
-  IFPlatForm platForm() {
+  IFitnessPlatform platForm() {
     return super.platForm();
   }
 

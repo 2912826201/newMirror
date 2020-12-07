@@ -14,12 +14,10 @@ const String COLUMN_NAME_CONVERSATION_CONTENT = 'content';
 const String COLUMN_NAME_CONVERSATION_UPDATETIME = 'updateTime';
 const String COLUMN_NAME_CONVERSATION_CREATETIME = 'createTime';
 const String COLUMN_NAME_CONVERSATION_ISTOP = 'isTop';
-
+const String COLUMN_NAME_CONVERSATION_UNREAD = 'unread';
 // 这个表是用来存放当前用户的会话列表信息
-
 class ConversationDto {
   ConversationDto();
-
   String conversationId;
   int uid;
   int type;
@@ -29,7 +27,7 @@ class ConversationDto {
   int updateTime;
   int createTime;
   int isTop;
-
+  int unread;
   String get id => "${uid}_${conversationId}";
 
   Map<String, dynamic> toMap() {
@@ -44,6 +42,7 @@ class ConversationDto {
       COLUMN_NAME_CONVERSATION_UPDATETIME: updateTime,
       COLUMN_NAME_CONVERSATION_CREATETIME: createTime,
       COLUMN_NAME_CONVERSATION_ISTOP: isTop,
+      COLUMN_NAME_CONVERSATION_UNREAD:unread,
     };
     return map;
   }
@@ -58,9 +57,11 @@ class ConversationDto {
     updateTime = map[COLUMN_NAME_CONVERSATION_UPDATETIME];
     createTime = map[COLUMN_NAME_CONVERSATION_CREATETIME];
     isTop = map[COLUMN_NAME_CONVERSATION_ISTOP];
+    unread = map[COLUMN_NAME_CONVERSATION_UNREAD];
   }
   String toStirng(){
-    return "${this.updateTime}";
+   print("cobversationDto toString()");
+    return " unread:${this.unread}-${this.conversationId}-${this.uid}-${this.type}-${this.avatarUri}-${this.name}-${this.content}-${this.updateTime}-${this.createTime}-${this.isTop}";
   }
 // TokenModel toTokenModel() {
   //   var model = TokenModel(

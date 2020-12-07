@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/im/rongcloud_receive_manager.dart';
+import 'package:mirror/page/message/delegate/callbacks.dart';
 import 'package:mirror/page/message/delegate/system_service_events.dart';
+import 'package:mirror/route/router.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'delegate/hooks.dart';
 import 'delegate/message_interfaces.dart';
@@ -27,10 +29,11 @@ class MessagePage extends StatefulWidget {
 }
 
 class _MessagePageState extends State<MessagePage>
-    implements MPBasements, MPBusiness, MPHookFunc, MPNetworkEvents, MPUIActionAndDataPipe,MPIMDataSourceAction, MessageObserver {
+    implements MPBasements, MPBusiness, MPHookFunc, MPNetworkEvents, MPUIActionWithDataSource,MPIMDataSourceAction, MessageObserver {
   List imData = List();
   @override
   Widget build(BuildContext context) {
+    this.viewWillAppear();
     print("messagePage build");
     return Scaffold(
       body: Container(
@@ -58,7 +61,7 @@ class _MessagePageState extends State<MessagePage>
    //一些注册绑定类型的事情
    _registrations() {
     //考虑到此页面可能会涉及到消息到来时情景的处理,所以需要进行注册一下
-    RongCloudReceiveManager.shareInstance().observeAllMsgs(this);
+    RongCloudReceiveManager.shareInstance().observeAllKindsMsgs(this);
    }
    // //数据proxy
    // @override
@@ -109,6 +112,9 @@ class _MessagePageState extends State<MessagePage>
     void dispose() {
       print("dispose");
       this.uiProvider = null;
+      //存储会话的数据
+      print("this.dataSource.saveChats()");
+      this.dataSource.saveChats();
       this.dataSource = null;
       print(this.runtimeType);
       print(this.hashCode);
@@ -117,6 +123,8 @@ class _MessagePageState extends State<MessagePage>
     this.viewDidDisappear();
     super.dispose();
    }
+
+
    // 下方均为向ui发送消息来处理对应事件，虽然本质上还是
    // ui将消息代理出来本controller处理，但是可以给ui本身一次处理事件的机会，让controller内部
    // 事件处理相对清晰一些
@@ -147,7 +155,7 @@ class _MessagePageState extends State<MessagePage>
     uiProvider.dismissNotificationBanner();
    }
    ////////////////////////////////////
-   //MPBusiness内协议（接口）
+   //MPBusiness内的协议（接口）
    ////////////////////////////////////
     //社交事件到来时调用（通常是调取服务器接口发现未读数不为0）
     @override
@@ -204,8 +212,8 @@ class _MessagePageState extends State<MessagePage>
       if (payload != null && payload[MessagePageUiProvider.IntercoursesKey] != null) {
         MPIntercourses t = payload[MessagePageUiProvider.IntercoursesKey];
         switch (t) {
-          case MPIntercourses.Thumb:
-            this.regularEventsCall(MPIntercourses.Thumb);
+          case MPIntercourses.Laud:
+            this.regularEventsCall(MPIntercourses.Laud);
             break;
           case MPIntercourses.At:
             this.regularEventsCall(MPIntercourses.At);
@@ -216,9 +224,17 @@ class _MessagePageState extends State<MessagePage>
         }
       }
     }
-    //聊天cell的点击
+    //聊天cell的点击(使用 CellTapKey 从 payload 中取值)
     else if (identifier == MessagePageUiProvider.FuncOfCellTap) {
-      // TODO: implement _MessagePageUiProvider.FuncOfCellTap
+      int index = payload[MessagePageUiProvider.CellTapKey];
+      print("      Cell tap here !    ");
+      print("清除未读数");
+      uiProvider.imFreshData(index: index,newBadgets: 0);
+      //model对应的数据也要更改
+      dataSource.imCellData()[index].unread = 0;
+      //进行跳转
+      AppRouter.navigateToChatPage(context,dataSource.imCellData()[index],);
+
     }
     //导航栏按钮点击
     else if (identifier == MessagePageUiProvider.FuncOfNaviBtn) {
@@ -228,7 +244,7 @@ class _MessagePageState extends State<MessagePage>
     else if (identifier == MessagePageUiProvider.FuncOfHandleNet) {
       // TODO: implement _MessagePageUiProvider.FuncOfHandleNet
     }
-    //跳转去处理通知
+    //跳转去处理通知的开启
     else if (identifier == MessagePageUiProvider.FuncOfHandleNotify) {
       // TODO: implement _MessagePageUiProvider.FuncOfHandleNotify
     }
@@ -242,10 +258,8 @@ class _MessagePageState extends State<MessagePage>
     //刷新一个cell
     if(thekey == MessagePageDataSource.REFRESH_A_CHAT){
       print("single refresh");
-      print("the key  $thekey");
       int index  = payload[thekey];
-      print("the index $index");
-      uiProvider.imFreshData(index: index);
+      uiProvider.imFreshData(index: index,dto: dataSource.imCellData()[index]);
     }
     //刷新整个列表
     else if (thekey == MessagePageDataSource.REFRESH_ALL_LIST){
@@ -260,15 +274,14 @@ class _MessagePageState extends State<MessagePage>
    }
    //社交事件未读数
    @override
-   Map<MPIntercourses, int> unreadOfIntercources() {
-   return dataSource.unreadOfIntercources();
+   Future< Map<MPIntercourses, int>> unreadOfIntercources(MPCallbackWithValue callback) async{
+      print("controller unread ");
+      return  await dataSource.unreadOfIntercources(callback);
    }
-
-
 
   //数据源属性
   @override
-  MPDataSourceProxy dataSource;
+  MPDataProxy dataSource;
 
   //即时消息ui 数据代理
   @override
@@ -276,13 +289,23 @@ class _MessagePageState extends State<MessagePage>
     // print("messagePage imCellData");
    return dataSource.imCellData();
   }
-  //有及时消息的来临
+  //有及时消息的来临,数据交给dataSource
   @override
   void newMsgsArrive(Set<Message> msgs) {
     print("dataSource.newMsgsArrive(msgs)");
     if(dataSource != null) {
       dataSource.newMsgsArrive(msgs);
     }
+  }
+  //最新的官方会话的最新消息
+  @override
+  Map<Authorizeds, List<ConversationDto>> latestAuthorizedMsgs() {
+    return dataSource.latestAuthorizedMsgs();
+  }
+
+  @override
+  saveChats() {
+   dataSource.saveChats();
   }
    //-------------------------------------------------------------------//
 }
