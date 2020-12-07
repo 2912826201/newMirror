@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:path_provider/path_provider.dart';
+
 /// config
 /// Created by yangjiayi on 2020/10/26.
 
@@ -46,6 +50,24 @@ class AppConfig {
       default:
         return "";
     }
+  }
+
+  //app的文件根目录
+  static String _appDir = "";
+
+  //创建app用到的路径
+  static void createAppDir() async {
+    Directory extDir = await getApplicationDocumentsDirectory();
+    _appDir = "${extDir.path}/if";
+    print(_appDir);
+
+    await Directory(_appDir).create(recursive: true);
+    await Directory(getAppPicDir()).create(recursive: true);
+  }
+
+  //获取图片文件的路径
+  static String getAppPicDir() {
+    return "$_appDir/pic";
   }
 }
 

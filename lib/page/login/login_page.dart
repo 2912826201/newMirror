@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/page/login/phone_login_page.dart';
 import 'package:mirror/page/login/login_base_page.dart';
+import 'package:mirror/util/screen_util.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -35,31 +36,34 @@ class _LoginPageState extends LoginBasePageState {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-       _backImage(),
-       _interactiveItems(),
-     ],
+        body: Stack(
+      children: [
+        _backImage(),
+        _interactiveItems(),
+      ],
     ));
   }
+
   //背景图片
   Widget _backImage() {
     return Container(
-      child: Image.asset("images/test/bg.png",
+        child: Image.asset(
+      "images/test/bg.png",
       fit: BoxFit.fill,
       width: double.infinity,
-      height: double.infinity,)
-    );
+      height: double.infinity,
+    ));
   }
+
   //可选登录选项
   Widget _interactiveItems() {
     return Container(
       color: Colors.transparent,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [_sloganArea(), _loginOptions(), _agreementArea()],
+        children: [Spacer(), _sloganArea(), _loginOptions(), _agreementArea()],
       ),
-      padding: EdgeInsets.only(top: (484.0 + 100.0), left: 41),
+      padding: EdgeInsets.only(bottom: 93 + ScreenUtil.instance.bottomBarHeight, left: 41),
     );
   }
 
