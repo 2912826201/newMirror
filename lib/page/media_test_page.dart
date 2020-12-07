@@ -61,11 +61,11 @@ class MediaTestState extends State<MediaTestPage> {
                 list = files.list;
                 for (MediaFileModel model in list) {
                   if (model.croppedImage != null) {
-                    print("${model.file.path}开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                    print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
                     ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
-                    print("${model.file.path}已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                    print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
                     Uint8List picBytes = byteData.buffer.asUint8List();
-                    print("${model.file.path}已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
+                    print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
                     model.croppedImageData = picBytes;
                   }
                 }
@@ -91,11 +91,11 @@ class MediaTestState extends State<MediaTestPage> {
                     list = files.list;
                     for (MediaFileModel model in list) {
                       if (model.croppedImage != null) {
-                        print("${model.file.path}开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                        print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
                         ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
-                        print("${model.file.path}已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                        print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
                         Uint8List picBytes = byteData.buffer.asUint8List();
-                        print("${model.file.path}已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
+                        print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
                         model.croppedImageData = picBytes;
                       }
                     }
@@ -118,11 +118,11 @@ class MediaTestState extends State<MediaTestPage> {
                     list = files.list;
                     for (MediaFileModel model in list) {
                       if (model.croppedImage != null) {
-                        print("${model.file.path}开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                        print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
                         ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
-                        print("${model.file.path}已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                        print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
                         Uint8List picBytes = byteData.buffer.asUint8List();
-                        print("${model.file.path}已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
+                        print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
                         model.croppedImageData = picBytes;
                       }
                     }

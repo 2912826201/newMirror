@@ -428,10 +428,11 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
               // 遍历所选Map将结果赋值
               for (_OrderedAssetEntity orderedEntity in selectedMap.values) {
                 // order要减1才是index
-                mediaFileList[orderedEntity.order - 1].file = _fileMap[orderedEntity.entity.id];
-                mediaFileList[orderedEntity.order - 1].thumb = _thumbMap[orderedEntity.entity.id];
                 if (widget.needCrop) {
                   mediaFileList[orderedEntity.order - 1].croppedImage = notifier._imageMap[orderedEntity.entity.id];
+                }else{
+                  mediaFileList[orderedEntity.order - 1].file = _fileMap[orderedEntity.entity.id];
+                  mediaFileList[orderedEntity.order - 1].thumb = _thumbMap[orderedEntity.entity.id];
                 }
               }
               // 赋值并退出页面
