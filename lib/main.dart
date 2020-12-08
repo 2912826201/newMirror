@@ -46,7 +46,7 @@ Future _initApp() async {
       token = TokenDto.fromTokenModel(tokenModel);
       bool result = await TokenDBHelper().insertToken(token);
     } else {
-      //TODO 如果失败的情况下 需要重试 也可以让流程先走下去 在下次网络请求时重试1
+      //TODO 如果失败的情况下 需要重试 也可以让流程先走下去 在下次网络请求时重试
     }
   }
   print("token:${token.accessToken}");
