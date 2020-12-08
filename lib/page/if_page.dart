@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
@@ -106,9 +107,13 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin {
                         // 键盘蒙层
                         Positioned(
                             child: Offstage(
-                                offstage: inputHeight == 0,
+                                offstage:  Application.isArouse == false,
                                 child: GestureDetector(
-                                    onTap: () => commentFocus.unfocus(), // 失去焦点,
+                                    onTap: () {
+                                      commentFocus.unfocus();
+                                      Application.isArouse = false;
+                                    },// 失去焦点,
+
                                     // onDoubleTap: () => print("双击"),
                                     // onLongPress: () => print("长按"),
                                     // onTapCancel: () => print("取消"),
@@ -138,7 +143,7 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin {
                             bottom: inputHeight,
                             left: 0,
                             child: Offstage(
-                              offstage: inputHeight == 0,
+                              offstage: Application.isArouse == false,
                               child: Container(
                                 width: ScreenUtil.instance.screenWidthDp,
                                 color: AppColor.white,

@@ -12,7 +12,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
 // 监听键盘高度打开的输入框
 class CommentInputBar extends StatelessWidget {
-  TextEditingController controller;
+  TextEditingController controller = TextEditingController();
   postComments(String text) async{
     Map<String, dynamic> model = await publish(targetId:Application.model.id,targetType:0,content: text);
     // CommentDtoModel
@@ -22,9 +22,11 @@ class CommentInputBar extends StatelessWidget {
       Application.model.commentCount += 1;
     }
     print("发布接口返回$model");
-    // controller.text = "";
+    Application.model.comments.insert(0, comModel);
+    controller.clear();
     commentFocus.unfocus(); // 失去焦点,
-    Application.model.comments.add(comModel);
+    Application.isArouse = false;
+
   }
 
 
@@ -113,10 +115,7 @@ class CommentInputBar extends StatelessWidget {
                     offstage: Platform.isIOS,
                     child: GestureDetector(
                         onTap: () {
-                          // 读取输入框最新的值
-                          print(context.read<CommentEnterNotifier>().textFieldStr);
-                          print("点击生效");
-
+                          // 发布
                           postComments(context.read<CommentEnterNotifier>().textFieldStr);
                         },
                         child: IgnorePointer(

@@ -77,6 +77,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
                   }
                   // 唤醒键盘获取焦点 commentFocus
                   FocusScope.of(context).requestFocus(commentFocus);
+                  Application.isArouse = true;
                 },
               ),
             ],
