@@ -191,15 +191,20 @@ class _MediaTestState extends State<MediaTestPage> {
   Widget _buildGridItem(BuildContext context, int index) {
     MediaFileModel model = list[index];
     return Builder(builder: (context) {
-      return model.croppedImageData == null
-          ? Image.file(
-              model.file,
+      return type == mediaTypeKeyVideo
+          ? Image.memory(
+              model.thumb,
               fit: BoxFit.cover,
             )
-          : Image.memory(
-              model.croppedImageData,
-              fit: BoxFit.cover,
-            );
+          : model.croppedImageData == null
+              ? Image.file(
+                  model.file,
+                  fit: BoxFit.cover,
+                )
+              : Image.memory(
+                  model.croppedImageData,
+                  fit: BoxFit.cover,
+                );
     });
   }
 }
