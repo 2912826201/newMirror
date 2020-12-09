@@ -81,7 +81,11 @@ class LiveBroadcastSchedulePageState extends State<LiveBroadcastSchedulePage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("直播课",textAlign: TextAlign.center,style: TextStyle(fontSize: 20),),
+                    Text(
+                      "直播课1",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 20),
+                    ),
                   ],
                 ),
               )
@@ -122,22 +126,28 @@ class LiveBroadcastSchedulePageState extends State<LiveBroadcastSchedulePage> {
 
 
   Widget _getUi(){
-    var widgetArray=<Widget>[];
-    //头部日历
-    widgetArray.add(_getTopCalendar());
+    var widgetArray = <Widget>[];
     //不能回放的直播课程
-    if(liveBroadcastNewData!=null&&liveBroadcastNewData.length>0){
+    if (liveBroadcastNewData != null && liveBroadcastNewData.length > 0) {
       widgetArray.add(_getLiveBroadcastUI(liveBroadcastNewData));
     }
     //回放的直播课程
-    if(liveBroadcastOldData!=null&&liveBroadcastOldData.length>0){
+    if (liveBroadcastOldData != null && liveBroadcastOldData.length > 0) {
       widgetArray.add(_getOldDataTitle());
       widgetArray.add(_getLiveBroadcastUI(liveBroadcastOldData));
     }
-    return SingleChildScrollView(
-      child: Column(
-        children: widgetArray,
-      ),
+    return Column(
+      children: [
+        _getTopCalendar(),
+        SizedBox(height: 10,),
+        Expanded(child: SizedBox(
+          child: SingleChildScrollView(
+            child: Column(
+              children: widgetArray,
+            ),
+          ),
+        ))
+      ],
     );
   }
 
@@ -173,29 +183,29 @@ class LiveBroadcastSchedulePageState extends State<LiveBroadcastSchedulePage> {
       var marginFirst=const EdgeInsets.only(left: 20,right: 10);
       var marginEnd=const EdgeInsets.only(left: 10,right: 20);
       calendarWidgetArray.add(
-        GestureDetector(
-          child: Container(
-            margin: i==0?marginFirst:(i==6?marginEnd:margin),
-            width: 50,
-            decoration: BoxDecoration(
-              color: selectPosition==i?Colors.grey:null,
-              border: Border.all(width: 0.5,color: Colors.black),
-              borderRadius: BorderRadius.all(Radius.circular(8)),
+          GestureDetector(
+            child: Container(
+              margin: i == 0 ? marginFirst : (i == 6 ? marginEnd : margin),
+              width: 50,
+              decoration: BoxDecoration(
+                color: selectPosition == i ? Colors.grey : null,
+                border: Border.all(width: 0.5, color: Colors.black),
+                borderRadius: BorderRadius.all(Radius.circular(8)),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text(DateUtil.getDateDayStringJin(fiftyDaysFromNow)),
+                  Text(DateUtil.getStringWeekDayStartZero(
+                      fiftyDaysFromNow.weekday - 1)),
+                ],
+              ),
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text(DateUtil.getDateDayStringJin(fiftyDaysFromNow)),
-                Text(DateUtil.getStringWeekDayStartZero(fiftyDaysFromNow.weekday-1)),
-              ],
-            ),
-          ),
-          onTap: (){
-            selectPosition=i;
-            setState(() {
-            });
-          },
-        )
+            onTap: () {
+              selectPosition = i;
+              setState(() {});
+            },
+          )
       );
     }
 
@@ -404,10 +414,11 @@ class LiveBroadcastSchedulePageState extends State<LiveBroadcastSchedulePage> {
         int judge=0;
         for(int j=0;j<liveBroadcastOldData.length;j++){
           judge=0;
-          if(liveBroadcastOldData[j].title==calendarEvents[i].title&&
-            liveBroadcastOldData[j].coachName==calendarEvents[i].description){
-            judge=1;
-            liveBroadcastOldData[j].playType=3;
+          if (liveBroadcastOldData[j].title == calendarEvents[i].title &&
+              liveBroadcastOldData[j].coachName ==
+                  calendarEvents[i].description) {
+            judge = 1;
+            liveBroadcastOldData[j].playType = 3;
             break;
           }
         }
