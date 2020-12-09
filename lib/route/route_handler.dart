@@ -7,7 +7,7 @@ import 'package:mirror/page/feed/like.dart';
 import 'package:mirror/page/feed/release_page.dart';
 import 'package:mirror/page/if_page.dart';
 import 'package:mirror/page/live_broadcast/live_broadcast_page.dart';
-import 'file:///E:/git/mirror/lib/page/live_broadcast/live_broadcast_schedule_page.dart';
+import 'package:mirror/page/live_broadcast/live_detail_page.dart';
 import 'package:mirror/page/login/login_page.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
@@ -52,7 +52,8 @@ var handlerLike = Handler(handlerFunc: (BuildContext context, Map<String, List<S
   return Like();
 });
 
-var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+var handlerReleaseFeed = Handler(
+    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return ReleasePage();
 });
 
@@ -61,7 +62,13 @@ var handlerLiveBroadcast = Handler(
   return LiveBroadcastPage();
 });
 
-var handlerPreviewPhoto = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+var handlerLiveDetail = Handler(
+    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return LiveDetailPage();
+});
+
+var handlerPreviewPhoto = Handler(
+    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return PreviewPhotoPage(
     filePath: data["filePath"],

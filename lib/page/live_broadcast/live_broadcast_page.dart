@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/data/model/live_broadcast_model.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/ToastShow.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -480,8 +481,10 @@ class LiveBroadcastPageState extends State<LiveBroadcastPage> {
   void onClickItem(LiveBroadcastModel value) {
     if (value.playType == 1) {
       onClickMakeAnAppointment(value);
-    } else {
+    } else if (value.playType == 0) {
       ToastShow.show("应该跳转界面", context);
+    } else {
+      AppRouter.navigateToLiveDetail(context);
     }
   }
 
