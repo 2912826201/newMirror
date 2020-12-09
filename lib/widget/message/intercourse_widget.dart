@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/page/message/delegate/callbacks.dart';
 //点赞、评论点击控件
 class MPIntercourseWidget extends StatefulWidget{
   final _state = MPIntercourseWidgetState();
@@ -9,7 +10,7 @@ class MPIntercourseWidget extends StatefulWidget{
   //下方标题
   final Text title;
   //待读数量
-  final int badges;
+  final MPCallbackWithValueNoPara badges;
   //背景图片的颜色
   final Color imageBackColor;
   //点击事件的绑定
@@ -35,6 +36,7 @@ class MPIntercourseWidgetState extends State<MPIntercourseWidget>{
 
   @override
   Widget build(BuildContext context) {
+    print("intercources widget building ");
     bool hideBadget = true;
     if (widget.badges == 0){
       hideBadget = true;
@@ -95,10 +97,11 @@ class MPIntercourseWidgetState extends State<MPIntercourseWidget>{
   }
   //数量生成
   String _expectCount(){
-    if (widget.badges >= 99)
+    print("expected counting ${widget.badges}");
+    if (widget.badges() >= 99)
     {
       return "99+";
     }
-    return "${widget.badges}";
+    return "${widget.badges()}";
   }
 }

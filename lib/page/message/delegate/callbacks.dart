@@ -3,7 +3,7 @@
 
 //不带的参数的回调
 import 'package:flutter/cupertino.dart';
-
+typedef MPCallbackWithValueNoPara = dynamic Function();
 typedef MPVoidCallback = Function ();
 //带一个参数的回调
 typedef MPCallbackWithValue = dynamic Function (dynamic) ;

@@ -45,6 +45,7 @@ class MainPageState extends State<MainPage> {
     double itemWidth = MediaQuery.of(context).size.width / 5;
     print("初始创建底部页");
     print(ScreenUtil.instance.bottomBarHeight);
+    Widget msgPage = tabbar(2, context);
     return Scaffold(
       // 此属性是重新计算布局空间大小
       // 内部元素要监听键盘高度必需要设置为false,
@@ -60,7 +61,7 @@ class MainPageState extends State<MainPage> {
             flex: 1,
           ),
           Expanded(
-            child: SizedBox(height: 51, width: itemWidth, child: tabbar(2, context)),
+            child:SizedBox(height: 51,width: itemWidth,child: msgPage,),
             flex: 1,
           ),
           Expanded(

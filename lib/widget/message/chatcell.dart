@@ -64,11 +64,11 @@ class MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
   // String _fixedPortrait = "images/test/yxlm4.jpg";
   @override
   void initState() {
-  _latestMsg = widget.model.content;
-  _chatName = widget.model.name;
+  _latestMsg = widget.model.content ??= "暂无最新消息";
+  _chatName = widget.model.name ??= "未知";
   _unreadMsgCount = widget.unreadMsgCount ??= 0 ;
-  _portrait = widget.model.avatarUri;
-  _updateTime = widget.model.updateTime;
+  _portrait = widget.model.avatarUri ??="images/resources/yxlm4.jpg";
+  _updateTime = widget.model.updateTime ??= DateTime.now().millisecondsSinceEpoch;
     super.initState();
   }
   @override
@@ -79,7 +79,6 @@ class MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
        Expanded(child:  Container(
          margin: EdgeInsets.only(left: 16,right: 16),
          height: mainContentHeight,
-         color: Colors.yellow,
          child: Row(
            children: [
              //头像区域

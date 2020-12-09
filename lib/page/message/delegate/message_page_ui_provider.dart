@@ -122,21 +122,35 @@ class MessagePageUiProvider implements MPUiProxy {
   //页面主要内容
   @override
   Widget mainContent() {
-    //清除旧配置
-    _cleanDirties();
-    //读取未读信息,设置回调
-    _getBadges((t){
+     //清除旧配置
+     _cleanDirties();
+     //读取未读信息,设置回调
+     _getBadges((t){
       UnreadInterCourses ur = t();
+      ur.laud = 5;
+      ur.comment = 12;
+      ur.at = 90;
      List<MPIntercourses> events = List<MPIntercourses>();
       if(ur.at != _unreadBadges[MPIntercourses.At]){
+        print("at !");
+        _unreadBadges[MPIntercourses.At] = ur.at;
        events.add(MPIntercourses.At);
+       print(_unreadBadges[MPIntercourses.At]);
       }
       if(ur.comment != _unreadBadges[MPIntercourses.Comment]){
+        print("comment !");
+        _unreadBadges[MPIntercourses.Comment] = ur.comment;
         events.add(MPIntercourses.Comment);
+        print(_unreadBadges[MPIntercourses.Comment]);
       }
       if(ur.laud != _unreadBadges[MPIntercourses.Laud]){
+        print("laund !");
         events.add(MPIntercourses.Laud);
+        _unreadBadges[MPIntercourses.Laud] = ur.laud;
+        print(_unreadBadges[MPIntercourses.Laud]);
       }
+      print("before _refreshISpecificInterCource");
+      print(events.length);
       _refreshISpecificInterCource(events);
     });
     print("ui-provider  mainContent");
@@ -178,6 +192,7 @@ class MessagePageUiProvider implements MPUiProxy {
   Key _distributeKeys(MPIntercourses event){
     GlobalKey<MPIntercourseWidgetState> theKey = GlobalKey<MPIntercourseWidgetState>();
     icWidgetsKeys[event] = theKey;
+    return theKey;
   }
   //ListView的元素数量
    int _expectedCount(){
@@ -210,7 +225,7 @@ class MessagePageUiProvider implements MPUiProxy {
                           decoration: TextDecoration.none),
                     ),
                     onTap:()=> _actionsDispatch(FuncOfinterCourses, payload: {IntercoursesKey: MPIntercourses.Comment}),
-                    badges: _badgesNum[MPIntercourses.Comment],
+                    badges: ()=>_unreadBadges[MPIntercourses.Comment],
                   ),
                 ),
               )),
@@ -233,7 +248,7 @@ class MessagePageUiProvider implements MPUiProxy {
                           decoration: TextDecoration.none),
                     ),
                     onTap: ()=>_actionsDispatch(FuncOfinterCourses, payload: {IntercoursesKey: MPIntercourses.At}),
-                    badges: _badgesNum[MPIntercourses.At],
+                    badges: ()=>_unreadBadges[MPIntercourses.At],
                   ),
                 )),
           ),
@@ -256,7 +271,7 @@ class MessagePageUiProvider implements MPUiProxy {
                           decoration: TextDecoration.none),
                     ),
                     onTap:()=> _actionsDispatch(FuncOfinterCourses, payload: {IntercoursesKey: MPIntercourses.Laud}),
-                    badges: _badgesNum[MPIntercourses.Laud],
+                    badges: ()=>_badgesNum[MPIntercourses.Laud],
                   )),
             ),
           ),
@@ -266,10 +281,17 @@ class MessagePageUiProvider implements MPUiProxy {
     );
   }
 
-  //提供点赞事件的未读数
-  Map<MPIntercourses,int> get _badgesNum {
+   //提供点赞事件的未读数
+   Map<MPIntercourses,int> get _badgesNum {
+    print(">>>>>>>>>>>>>reload unreads ");
+    print("~~~~~~~~${_unreadBadges[MPIntercourses.At]}~~~~${_unreadBadges[MPIntercourses.Comment]}~~~~~~~~~~~${_unreadBadges[MPIntercourses.Laud]}~~~");
+    // _unreadBadges.keys.forEach((element) {
+    //   if(_unreadBadges[element]==null || _unreadBadges[element] == 0){
+    //     _unreadBadges[element] = 99;
+    //   }
+    // });
     return _unreadBadges;
-  }
+   }
 
   //异步读取未读数
    _getBadges(MPCallbackWithValue callback) async{
@@ -281,10 +303,15 @@ class MessagePageUiProvider implements MPUiProxy {
   }
   //刷新"评论、点赞、at的其中之一"
   _refreshISpecificInterCource(List<MPIntercourses> events) {
+    print(">>>>>>>_refreshISpecificInterCourse<<<<<<<<<<<<<<");
+    print(events.length);
      events.forEach((event) {
+       print("for circling");
+       print(event);
        icWidgetsKeys[event].currentState.setState(() {
        });
      });
+     //刷新系统会话的最新消息
      _refreshSysChatsLatestMsg();
   }
   //刷新系统会话的最新的一条消息
@@ -359,7 +386,6 @@ class MessagePageUiProvider implements MPUiProxy {
         //绑定点击事件，传参需要一个索引位置
         onTap: ()=>_actionsDispatch(FuncOfCellTap,payload: {CellTapKey:expectedIndex}),
         child: Container(child: cell,
-          color: Color.fromRGBO(expectedIndex*15, expectedIndex*10, expectedIndex*11, 0.5),
           height: dataActionPipe.cellHeightAtIndex(expectedIndex),),
       )
       )

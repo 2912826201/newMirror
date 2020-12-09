@@ -19,6 +19,7 @@ class IfPage extends StatefulWidget {
 class IfPageState extends State<IfPage> with TickerProviderStateMixin {
   TabController _controller;
   PanelController _pc = new PanelController();
+  PanelController _ms = new PanelController();
   bool isInit = false;
 
   @override

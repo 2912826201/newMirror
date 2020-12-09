@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/im/rongcloud_receive_manager.dart';
 import 'package:mirror/page/message/delegate/callbacks.dart';
 import 'package:mirror/page/message/delegate/system_service_events.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'delegate/hooks.dart';
 import 'delegate/message_interfaces.dart';
 import 'delegate/message_page_ui_provider.dart';
@@ -14,6 +17,15 @@ import 'delegate/regular_events.dart';
 import 'delegate/business.dart';
 import 'delegate/frame.dart';
 import 'delegate/message_page_datasource.dart';
+import 'package:mirror/util/screen_util.dart';
+
+
+
+abstract class MessagepageLocate{
+  //双击识别的函数调用
+  void doubleClick();
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 //这个消息页面的构成如下：
 //本页面State对象作controller,内置两个proxy，分别提供数据和ui，页面选择性地变化ui时，向ui的这一个proxy发送消息（见UIProxy接口）
@@ -29,28 +41,45 @@ class MessagePage extends StatefulWidget {
 }
 
 class _MessagePageState extends State<MessagePage>
-    implements MPBasements, MPBusiness, MPHookFunc, MPNetworkEvents, MPUIActionWithDataSource,MPIMDataSourceAction, MessageObserver {
+    implements MPBasements, MPBusiness, MPHookFunc, MPNetworkEvents, MPUIActionWithDataSource,MPIMDataSourceAction, MessageObserver ,MessagepageLocate{
   List imData = List();
+  bool _commentHide = true;
+  //评论弹出区域
+  PanelController _controller = PanelController();
   @override
   Widget build(BuildContext context) {
     this.viewWillAppear();
-    print("messagePage build");
     return Scaffold(
-      body: Container(
-        child: Column(
-          children: [
-            //需要为状态栏留出空隙
-            SizedBox(width: MediaQuery.of(context).size.width, height: 44),
-            uiProvider.navigationBar(),
-            uiProvider.mainContent(),
-          ],
+      body:SlidingUpPanel(
+        controller: _controller,
+        maxHeight: ScreenUtil.instance.height*527/812 ,
+        minHeight: 0,
+        backdropEnabled: true,
+        onPanelClosed: ()=>{ _commentHide = true},
+        onPanelOpened: ()=>{ _commentHide = false},
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(3),
+            topRight: Radius.circular(3)
         ),
-      ),
+        body: Container(
+          child: Column(
+            children: [
+              //需要为状态栏留出空隙
+              SizedBox(width: MediaQuery.of(context).size.width, height: 44),
+              //导航栏
+              uiProvider.navigationBar(),
+              //主内容
+              uiProvider.mainContent(),
+              //评论弹出区域
+            ],
+          ),
+        ),
+        panel: Container(child: _CreateGroupChatWidget()),
+      )
     );
    }
     @override
     void initState() {
-    print("${this.hashCode} initState");
     _registrations();
      _allocations();
      //根据安排需要放在initState方法中
@@ -116,9 +145,6 @@ class _MessagePageState extends State<MessagePage>
       print("this.dataSource.saveChats()");
       this.dataSource.saveChats();
       this.dataSource = null;
-      print(this.runtimeType);
-      print(this.hashCode);
-      print("\n");
     RongCloudReceiveManager.shareInstance().removeObserver(this);
     this.viewDidDisappear();
     super.dispose();
@@ -189,14 +215,12 @@ class _MessagePageState extends State<MessagePage>
 
    //单个在线信息来到的处理
    void _manipulateRegularMsg(Message msg){
-      print("_manipulateRegularMsg");
       Set<Message> _t = Set<Message>();
       _t.add(msg);
       this.newMsgsArrive(_t);
    }
    //列表性离线信息的来临
    void _manipulateOffLineMessage(Set<Message> msgs){
-     print("_manipulateOffLineMessage");
     this.newMsgsArrive(msgs);
    }
    //UI源发送来的交互事件
@@ -204,7 +228,6 @@ class _MessagePageState extends State<MessagePage>
    void action(String identifier, {payload = Map}) {
     //setState(){}方法调用事件
     if (identifier == MessagePageUiProvider.FuncOf_setState_) {
-      print("before setState");
       setState(() {});
     }
     //点赞和评论等事件
@@ -227,8 +250,6 @@ class _MessagePageState extends State<MessagePage>
     //聊天cell的点击(使用 CellTapKey 从 payload 中取值)
     else if (identifier == MessagePageUiProvider.FuncOfCellTap) {
       int index = payload[MessagePageUiProvider.CellTapKey];
-      print("      Cell tap here !    ");
-      print("清除未读数");
       uiProvider.imFreshData(index: index,newBadgets: 0);
       //model对应的数据也要更改
       dataSource.imCellData()[index].unread = 0;
@@ -238,7 +259,12 @@ class _MessagePageState extends State<MessagePage>
     }
     //导航栏按钮点击
     else if (identifier == MessagePageUiProvider.FuncOfNaviBtn) {
-      // TODO: implement _MessagePageUiProvider.FuncOfNaviBtn
+      _commentHide = !_commentHide;
+      if(_commentHide == false){
+        _controller.open();
+      }else{
+        _controller.close();
+      }
     }
     //跳转去处理网络
     else if (identifier == MessagePageUiProvider.FuncOfHandleNet) {
@@ -252,7 +278,6 @@ class _MessagePageState extends State<MessagePage>
    //数据源的事件
    @override
    void signals({Map<String,dynamic> payload}) {
-      print("datasource signals");
     //事件区分
     String thekey = payload.keys.first;
     //刷新一个cell
@@ -275,7 +300,6 @@ class _MessagePageState extends State<MessagePage>
    //社交事件未读数
    @override
    Future< Map<MPIntercourses, int>> unreadOfIntercources(MPCallbackWithValue callback) async{
-      print("controller unread ");
       return  await dataSource.unreadOfIntercources(callback);
    }
 
@@ -286,13 +310,11 @@ class _MessagePageState extends State<MessagePage>
   //即时消息ui 数据代理
   @override
   List<ConversationDto> imCellData() {
-    // print("messagePage imCellData");
    return dataSource.imCellData();
   }
   //有及时消息的来临,数据交给dataSource
   @override
   void newMsgsArrive(Set<Message> msgs) {
-    print("dataSource.newMsgsArrive(msgs)");
     if(dataSource != null) {
       dataSource.newMsgsArrive(msgs);
     }
@@ -307,9 +329,46 @@ class _MessagePageState extends State<MessagePage>
   saveChats() {
    dataSource.saveChats();
   }
+  //识别双击之后进行定位
+  @override
+  void doubleClick() {
+    // TODO: implement doubleClick
+  }
    //-------------------------------------------------------------------//
 }
+abstract class ControlComments{
+  //开启键盘
+  void open();
+  //关闭键盘
+  void close();
+}
 
+class _CreateGroupChatWidget extends StatefulWidget {
+  _CreateGroupChatWidget({Key key}):super(key: key);
+  _CreatGroupChatWidgetState ptr;
+  @override
+  State<StatefulWidget> createState() {
+    ptr = _CreatGroupChatWidgetState();
+    return ptr;
+  }
+}
+class _CreatGroupChatWidgetState extends State<_CreateGroupChatWidget> {
+  @override
+  Widget build(BuildContext context) {
+
+   return Expanded(child:
+      Container(
+        child:ListView.builder(itemCount: 3,itemBuilder:(BuildContext context,int index){
+          return Text("你好 ${index}");
+        })
+      )
+     );
+
+
+  }
+
+
+}
 
 
 
