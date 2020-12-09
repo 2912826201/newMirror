@@ -6,6 +6,7 @@ import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/page/feed/like.dart';
 import 'package:mirror/page/feed/release_page.dart';
 import 'package:mirror/page/if_page.dart';
+import 'package:mirror/page/live_broadcast/live_broadcast_page.dart';
 import 'file:///E:/git/mirror/lib/page/live_broadcast/live_broadcast_schedule_page.dart';
 import 'package:mirror/page/login/login_page.dart';
 import 'package:mirror/page/main_page.dart';
@@ -55,8 +56,9 @@ var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String,
   return ReleasePage();
 });
 
-var handlerLiveBroadcastSchedule = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return LiveBroadcastSchedulePage();
+var handlerLiveBroadcast = Handler(
+    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return LiveBroadcastPage();
 });
 
 var handlerPreviewPhoto = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {

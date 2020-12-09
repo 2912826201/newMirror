@@ -21,10 +21,11 @@ class AppRouter {
   static String pathLike = "/like";
   static String pathRelease = "/release";
   static String pathPreviewPhoto = "/previewPhoto";
-  static String pathLiveBroadcastSchedule = "/liveBroadcastSchedule";
+  static String pathLiveBroadcast = "/liveBroadcastSchedule";
 
   static void configureRouter(FluroRouter router) {
-    router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
+    router.notFoundHandler = Handler(
+        handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
       print("ROUTE WAS NOT FOUND !!!");
     });
 
@@ -36,7 +37,7 @@ class AppRouter {
     router.define(pathLike, handler: handlerLike);
     router.define(pathRelease, handler: handlerReleaseFeed);
     router.define(pathPreviewPhoto, handler: handlerPreviewPhoto);
-    router.define(pathLiveBroadcastSchedule, handler: handlerLiveBroadcastSchedule);
+    router.define(pathLiveBroadcast, handler: handlerLiveBroadcast);
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
   }
@@ -75,8 +76,8 @@ class AppRouter {
     _navigateToPage(context, pathLogin, {});
   }
 
-  static void navigateToLiveBroadcastSchedule(BuildContext context) {
-    _navigateToPage(context, pathLiveBroadcastSchedule, {});
+  static void navigateToLiveBroadcast(BuildContext context) {
+    _navigateToPage(context, pathLiveBroadcast, {});
   }
 
   static void navigateToLikePage(BuildContext context) {
