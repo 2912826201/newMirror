@@ -68,19 +68,30 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin {
         // ChangeNotifierProvider
         // DynamicModelNotifier
 
-        body: ChangeNotifierProvider(
-            create: (_) => DynamicModelNotifier(HomeFeedModel()),
+        body:
+        ChangeNotifierProvider(
+            create: (_) => FeedIdcommentlNotifier(feedId: 0,totalCount: -1),
             builder: (context, _) {
+              var id =  context.watch<FeedIdcommentlNotifier>().feedId;
+              print("动态ID+++++++++++++$id");
               return Container(
-                  child: Stack(
+                  child:
+                  Stack(
                       children: [
                         SlidingUpPanel(
                             panel: Container(
                               margin: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
-                              child: CommentBottomSheet(
+                              child:
+                              context.watch<FeedIdcommentlNotifier>().feedId != 0 ? CommentBottomSheet(
                                 pc: _pc,
-                              ),
+                                feedId: context.select((FeedIdcommentlNotifier value) => value.feedId),
+                              ) : Container(),
                             ),
+                            onPanelClosed: () {
+                              context.read<FeedIdcommentlNotifier>().getCommentIdCallback(0);
+                              context.read<FeedIdcommentlNotifier>().getTotalCount(-1);
+                              context.read<FeedIdcommentlNotifier>().getCommentIdCallback(0);
+                            },
                             maxHeight: ScreenUtil.instance.height * 0.7,
                             backdropEnabled: true,
                             borderRadius: BorderRadius.only(
@@ -172,5 +183,24 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin {
     _controller.dispose();
     // _childController.dispose();
     super.dispose();
+  }
+}
+// 唤醒动态底部抽屉评论调用接口
+class FeedIdcommentlNotifier extends ChangeNotifier {
+  FeedIdcommentlNotifier({this.feedId,this.commentDtoModel,this.totalCount});
+  int feedId;
+  List<CommentDtoModel> commentDtoModel;
+  int totalCount;
+  getCommentIdCallback(int id) {
+    this.feedId = id;
+    notifyListeners();
+  }
+  getCommentDtoModel(List<CommentDtoModel> model) {
+    this.commentDtoModel = model;
+    notifyListeners();
+  }
+  getTotalCount(int count) {
+    this.totalCount = count;
+    notifyListeners();
   }
 }

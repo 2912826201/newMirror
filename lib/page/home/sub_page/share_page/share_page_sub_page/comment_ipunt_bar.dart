@@ -14,15 +14,35 @@ import 'package:provider/provider.dart';
 class CommentInputBar extends StatelessWidget {
   TextEditingController controller = TextEditingController();
   postComments(String text) async{
-    Map<String, dynamic> model = await publish(targetId:Application.model.id,targetType:0,content: text);
-    // CommentDtoModel
+    print("评论类型￥${Application.commentTypes}");
     CommentDtoModel comModel;
-    if (model != null) {
-      comModel = (CommentDtoModel.fromJson(model));
-      Application.model.commentCount += 1;
+    if (Application.commentTypes == CommentTypes.commentMainCom ) {
+      print("主评论${Application.commentDtoModel.id}");
+      Map<String, dynamic> model = await publish(targetId: Application.commentDtoModel.id, targetType: 2, content: text);
+      if (model != null) {
+        comModel = (CommentDtoModel.fromJson(model));
+        Application.commentDtoModel.initCount += 1;
+      }
+      print("评论评论返回$model");
+      Application.commentDtoModel.replys.insert(0, comModel);
+    } else if (Application.commentTypes == CommentTypes.commentFeed){
+      Map<String, dynamic> model = await publish(targetId:Application.feedModel.id , targetType: 0, content: text);
+      // CommentDtoModel
+      if (model != null) {
+        comModel = (CommentDtoModel.fromJson(model));
+        Application.feedModel.commentCount += 1;
+      }
+      print("发布接口返回$model");
+      Application.feedModel.comments.insert(0, comModel);
+    } else {
+      Map<String, dynamic> model = await publish(targetId: Application.commentDtoModel.id,targetType: 2, content: text,replyId: Application.replysModel.uid,replyCommentId: Application.replysModel.id);
+      if (model != null) {
+        comModel = (CommentDtoModel.fromJson(model));
+        Application.commentDtoModel.initCount += 1;
+      }
+      print("子评论返回$model");
+      Application.commentDtoModel.replys.insert(0, comModel);
     }
-    print("发布接口返回$model");
-    Application.model.comments.insert(0, comModel);
     controller.clear();
     commentFocus.unfocus(); // 失去焦点,
     Application.isArouse = false;

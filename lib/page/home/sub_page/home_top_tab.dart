@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/page/feed/release_page.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:mirror/route/router.dart';

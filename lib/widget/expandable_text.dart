@@ -52,8 +52,8 @@ class _ExpandableTextState extends State<ExpandableText> {
 
   RichText() {
     var topicStr =  model.topicDto != null ? "#"+model.topicDto.name : "";
-   print("话题:topicStr:$topicStr");
-   print( "全文本：${topicStr+text}");
+   // print("话题:topicStr:$topicStr");
+   // print( "全文本：${topicStr+text}");
     if (model.atUsers.length > 0 ) {
         return MyRichTextWidget(
           Text(

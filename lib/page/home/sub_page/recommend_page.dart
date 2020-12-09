@@ -112,15 +112,12 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
           model["list"].forEach((v) {
             recommendModel.add(HomeFeedModel.fromJson(v));
           });
-          print("数据长度${recommendModel.length}");
         }
       } else if (dataPage > 1) {
-        print("5data");
         if (model["list"] != null) {
           model["list"].forEach((v) {
             recommendModel.add(HomeFeedModel.fromJson(v));
           });
-          print("数据长度${recommendModel.length}");
         }
         loadStatus = LoadingStatus.STATUS_IDEL;
         loadText = "加载中...";
@@ -171,7 +168,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                         model["list"].forEach((v) {
                           recommendModel.add(HomeFeedModel.fromJson(v));
                         });
-                        print("数据长度${recommendModel.length}");
                       }
                     });
                   },
@@ -193,9 +189,9 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                       SliverList(
                         // controller: _controller,
                         delegate: SliverChildBuilderDelegate((content, index) {
-                          print("listSdadada");
-                          print(index);
-                          print(recommendModel.length);
+                          // print("listSdadada");
+                          // print(index);
+                          // print(recommendModel.length);
                           if(index == recommendModel.length -1) {
                             return LoadingView(loadText: loadText,loadStatus:loadStatus ,);
                           } else {
