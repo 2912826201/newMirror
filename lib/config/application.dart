@@ -4,6 +4,7 @@ import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/token_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+
 /// application
 /// Created by yangjiayi on 2020/11/14.
 
@@ -22,10 +23,21 @@ class Application {
 
   //TODO 评论输入框等提示语 需要考量是否有更合适的方式管理
   static String hintText = "";
+
   //相机列表
   static List<CameraDescription> cameras;
+
   // 动态model
-  static HomeFeedModel model;
+  static HomeFeedModel feedModel;
+
   // 是否唤起键盘上方输入框
   static bool isArouse = false;
+
+  // 评论类型
+  static  CommentTypes commentTypes = CommentTypes.commentFeed;
+
+// 动态主评论
+  static CommentDtoModel commentDtoModel;
+  // 动态子评论
+  static CommentDtoModel replysModel;
 }

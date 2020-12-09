@@ -165,6 +165,12 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                   ),
                 ],
               ),
+              RaisedButton(
+                onPressed: () {
+                  AppRouter.navigateToLiveBroadcast(context);
+                },
+                child: Text("直播日程页"),
+              ),
             ],
           ),
         ),

@@ -14,7 +14,6 @@ class CommentLayout extends StatelessWidget {
   setBaseRichText(CommentDtoModel model) {
     List<BaseRichText> richTexts = [];
     String contextText;
-    print ("CommentDtoModel：$model");
     if (model.replyId != null) {
       contextText = model.name + ": 回复 " + model.replyName + model.content;
       richTexts.add(BaseRichText(
@@ -47,7 +46,6 @@ class CommentLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("长度");
     print(context.select((DynamicModelNotifier value) => value.dynamicModel.comments).length);
     return Container(
       width: 400,

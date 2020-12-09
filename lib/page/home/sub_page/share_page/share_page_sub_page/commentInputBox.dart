@@ -3,9 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/util/screen_util.dart';
-
+import 'package:provider/provider.dart';
 class CommentInputBox extends StatefulWidget {
   CommentInputBox({Key key, this.isUnderline = false,this.feedModel}) : super(key: key);
   bool isUnderline;
@@ -49,7 +51,8 @@ class CommentInputBoxState extends State<CommentInputBox> {
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     image: DecorationImage(
-                        image: AssetImage("images/test/yxlm1.jpeg"),
+                        // ProfileNotifier value.profile.avatarUri
+                        image: context.watch<TokenNotifier>().isLoggedIn ? NetworkImage(context.select((ProfileNotifier value) => value.profile.avatarUri)) : AssetImage("images/test/yxlm1.jpeg"),
                         // image: NetworkImage('https://pic2.zhimg.com/v2-639b49f2f6578eabddc458b84eb3c6a1.jpg'),
                         fit: BoxFit.cover)),
               ),
@@ -70,10 +73,12 @@ class CommentInputBoxState extends State<CommentInputBox> {
                 onTap: () {
                   if(widget.isUnderline) {
                     Application.hintText = "说点什么吧~";
-
+                    Application.commentTypes = CommentTypes.commentFeed;
+                    Application.feedModel = widget.feedModel;
                   } else {
                     Application.hintText = "喜欢就评论吧~";
-                    Application.model = widget.feedModel;
+                    Application.commentTypes = CommentTypes.commentFeed;
+                    Application.feedModel = widget.feedModel;
                   }
                   // 唤醒键盘获取焦点 commentFocus
                   FocusScope.of(context).requestFocus(commentFocus);

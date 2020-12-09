@@ -2,11 +2,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/feed/like.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
+import 'package:mirror/page/if_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
@@ -196,6 +198,8 @@ class GetTripleAreaState extends State<GetTripleArea> {
                 ),
                 onTap: () {
                   widget.pc.open();
+                  context.read<FeedIdcommentlNotifier>().getCommentIdCallback(widget.model.id);
+                  Application.feedModel = widget.model;
                 }))
       ],
     );
