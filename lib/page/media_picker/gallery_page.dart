@@ -77,7 +77,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
     _fetchGalleryData(true);
   }
 
-  //获取相册数据
+  //TODO 获取相册数据 需要排除掉不符合规则的文件
   _fetchGalleryData(bool isNew) async {
     if (_isFetchingData) {
       // 正在获取过程中则不做操作
@@ -407,7 +407,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
               }
 
               // 在裁剪模式下 当前预览的图像如果是选中的图 则需要获取下裁剪后的图像
-              if (widget.needCrop) {
+              if (widget.needCrop && notifier.selectedType == AssetType.image) {
                 if (notifier.currentEntity != null && notifier.selectedMap.containsKey(notifier.currentEntity.id)) {
                   await _getImage(context, notifier.currentEntity.id);
                 }
@@ -433,17 +433,21 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                 if (widget.needCrop) {
                   switch (notifier.selectedType) {
                     case AssetType.image:
-                      mediaFileModel.croppedImage = notifier._imageMap[orderedEntity.entity.id];
+                      mediaFileModel.croppedImage = notifier.imageMap[orderedEntity.entity.id];
                       mediaFileModel.sizeInfo.height = mediaFileModel.croppedImage.height;
                       mediaFileModel.sizeInfo.width = mediaFileModel.croppedImage.width;
                       break;
                     case AssetType.video:
-                      //FIXME 处理裁剪视频 需要在原文件基础上加上偏移信息
                       mediaFileModel.file = _fileMap[orderedEntity.entity.id];
                       mediaFileModel.thumb = _thumbMap[orderedEntity.entity.id];
                       mediaFileModel.sizeInfo.height = orderedEntity.entity.height;
                       mediaFileModel.sizeInfo.width = orderedEntity.entity.width;
                       mediaFileModel.sizeInfo.duration = orderedEntity.entity.duration;
+                      SizeInfo sizeInfo = notifier.offsetMap[mediaFileModel.file.path];
+                      if(sizeInfo != null){
+                        mediaFileModel.sizeInfo.offsetRatioX = sizeInfo.offsetRatioX;
+                        mediaFileModel.sizeInfo.offsetRatioY = sizeInfo.offsetRatioY;
+                      }
                       break;
                     default:
                       break;
@@ -525,12 +529,19 @@ class SelectedMapNotifier with ChangeNotifier {
 
   AssetType get selectedType => _selectedType;
 
-  Map<String, _OrderedAssetEntity> _selectedMap = Map<String, _OrderedAssetEntity>();
+  Map<String, _OrderedAssetEntity> _selectedMap = {};
 
   Map<String, _OrderedAssetEntity> get selectedMap => _selectedMap;
 
+  // 记录视频的偏移值
+  Map<String, SizeInfo> _offsetMap = {};
+
+  Map<String, SizeInfo> get offsetMap => _offsetMap;
+
   // 用来存放已经裁剪好的图像数据
-  Map<String, ui.Image> _imageMap = Map<String, ui.Image>();
+  Map<String, ui.Image> _imageMap = {};
+
+  Map<String, ui.Image> get imageMap => _imageMap;
 
   _removeFromSelectedMap(AssetEntity entity) {
     //删掉目标entity还要将排序重新整理
@@ -606,6 +617,13 @@ class SelectedMapNotifier with ChangeNotifier {
 
   removeImage(String id) {
     _imageMap.remove(id);
+  }
+
+  setOffset(String key, double offsetRatioX, double offsetRatioY) {
+    SizeInfo sizeInfo = SizeInfo();
+    sizeInfo.offsetRatioX = offsetRatioX;
+    sizeInfo.offsetRatioY = offsetRatioY;
+    _offsetMap[key] = sizeInfo;
   }
 }
 
@@ -695,12 +713,15 @@ class VideoPreviewArea extends StatefulWidget {
 }
 
 class VideoPreviewState extends State<VideoPreviewArea> {
+  File _file;
   VideoPlayerController _controller;
   Future<void> _initVideoPlayerFuture;
 
   @override
   void initState() {
-    _controller = VideoPlayerController.file(widget.file);
+    _file = widget.file;
+    context.read<SelectedMapNotifier>().setOffset(_file.path, 0.0, 0.0);
+    _controller = VideoPlayerController.file(_file);
     _initVideoPlayerFuture = _controller.initialize();
     _controller.setLooping(true);
     super.initState();
@@ -715,9 +736,11 @@ class VideoPreviewState extends State<VideoPreviewArea> {
 
   @override
   void didUpdateWidget(covariant VideoPreviewArea oldWidget) {
-    if (_controller != null) {
+    if (_controller != null && _file != widget.file) {
       _controller.dispose();
-      _controller = VideoPlayerController.file(widget.file);
+      _file = widget.file;
+      context.read<SelectedMapNotifier>().setOffset(_file.path, 0.0, 0.0);
+      _controller = VideoPlayerController.file(_file);
       _initVideoPlayerFuture = _controller.initialize();
       _controller.setLooping(true);
     }
@@ -732,18 +755,50 @@ class VideoPreviewState extends State<VideoPreviewArea> {
           if (snapshot.connectionState == ConnectionState.done) {
             print("aspectRatio:${_controller.value.aspectRatio}");
             if (!_controller.value.isPlaying) {
-              _controller.play();
+              // _controller.play();
             }
-            return SingleChildScrollView(
-              //根据比例设置方向
-              scrollDirection: _controller.value.aspectRatio > 1 ? Axis.horizontal : Axis.vertical,
-              child: Container(
-                alignment: Alignment.center,
-                width: _getVideoPreviewSize(_controller.value.aspectRatio, widget.previewWidth).width,
-                height: _getVideoPreviewSize(_controller.value.aspectRatio, widget.previewWidth).height,
-                child: AspectRatio(
-                  aspectRatio: _controller.value.aspectRatio,
-                  child: VideoPlayer(_controller),
+            Size _previewSize = _getVideoPreviewSize(_controller.value.aspectRatio, widget.previewWidth);
+            //初始位置就是(0，0)所以暂不做初始偏移值的处理
+            return ScrollConfiguration(
+              behavior: NoBlueEffectBehavior(),
+              child: NotificationListener<ScrollNotification>(
+                onNotification: (ScrollNotification notification) {
+                  ScrollMetrics metrics = notification.metrics;
+                  // 注册通知回调
+                  if (notification is ScrollStartNotification) {
+                    // 滚动开始
+                  } else if (notification is ScrollUpdateNotification) {
+                    // 滚动位置更新
+                    // 当前位置
+                    // print("metrics.pixels当前值是：${metrics.pixels}");
+                    if(_controller.value.aspectRatio > 1){
+                      //横向
+                      double offsetRatioX = - metrics.pixels / _previewSize.height / _controller.value.aspectRatio;
+                      context.read<SelectedMapNotifier>().setOffset(_file.path, offsetRatioX, 0.0);
+                    }else{
+                      //纵向
+                      double offsetRatioY = - metrics.pixels / _previewSize.width * _controller.value.aspectRatio;
+                      context.read<SelectedMapNotifier>().setOffset(_file.path, 0.0, offsetRatioY);
+                    }
+                  } else if (notification is ScrollEndNotification) {
+                    // 滚动结束
+                  }
+                  return false;
+                },
+                child: SingleChildScrollView(
+                  //禁止回弹效果
+                  physics: ClampingScrollPhysics(),
+                  //根据比例设置方向
+                  scrollDirection: _controller.value.aspectRatio > 1 ? Axis.horizontal : Axis.vertical,
+                  child: Container(
+                    alignment: Alignment.center,
+                    width: _previewSize.width,
+                    height: _previewSize.height,
+                    child: AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: VideoPlayer(_controller),
+                    ),
+                  ),
                 ),
               ),
             );
