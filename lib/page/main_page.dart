@@ -42,8 +42,8 @@ class MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     double itemWidth = MediaQuery.of(context).size.width / 5;
-    print("初始创建底部页");
-    print(ScreenUtil.instance.bottomBarHeight);
+    // print("初始创建底部页");
+    // print(ScreenUtil.instance.bottomBarHeight);
     return Scaffold(
       // 此属性是重新计算布局空间大小
       // 内部元素要监听键盘高度必需要设置为false,

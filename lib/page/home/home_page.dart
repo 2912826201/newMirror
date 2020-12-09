@@ -60,7 +60,7 @@ class HomePageState extends State<HomePage> with  AutomaticKeepAliveClientMixin 
 
   @override
   Widget build(BuildContext context) {
-    print("首页");
+    // print("首页");
     return Container(
       child: Stack(
         children: [

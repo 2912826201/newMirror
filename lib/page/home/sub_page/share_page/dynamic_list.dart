@@ -24,16 +24,11 @@ class DynamicListLayout extends StatelessWidget {
   HomeFeedModel model;
   DynamicListLayout({Key key, this.index, this.pc, this.isShowRecommendUser,this.model}) : super(key: key);
 
-  List<String> tags = [
-    "这是课程呜呜呜呜呜呜外",
-    "成都~福年广场wWWWWW12121332",
-  ];
+
 
   @override
   Widget build(BuildContext context) {
     double screen_width = ScreenUtil.instance.screenWidthDp;
-    print("打印一下评论${model.comments.length}");
-    print("model${model.hashCode}" );
     return ChangeNotifierProvider(
         create: (_) => DynamicModelNotifier(model),
         builder: (context, _) {
@@ -46,12 +41,16 @@ class DynamicListLayout extends StatelessWidget {
               // 点赞，转发，评论三连区域 getTripleArea
               GetTripleArea(num: 3, pc: pc,model:model ,),
               // 课程信息和地址
-              Container(
-                margin: EdgeInsets.only(left: 16, right: 16),
-                // color: Colors.orange,
-                width: screen_width,
-                child: getCourseInfo(tags),
+              Offstage(
+                offstage: (model.address == null && model.courseDto == null),
+                child: Container(
+                  margin: EdgeInsets.only(left: 16, right: 16),
+                  // color: Colors.orange,
+                  width: screen_width,
+                  child: getCourseInfo(model),
+                ),
               ),
+
               // 文本文案
               Offstage(
                 offstage: model.content.length == 0 && model.topicDto == null,
@@ -153,7 +152,17 @@ class DynamicListLayout extends StatelessWidget {
   Widget getVideo() {}
 
   // 课程信息和地址
-  Widget getCourseInfo(var tags) {
+  Widget getCourseInfo(HomeFeedModel model) {
+    List<String> tags = [];
+    if (model.courseDto != null) {
+      tags.add(model.courseDto.name);
+    }
+    else {
+      tags.add("瑜伽课");
+    }
+    if(model.address != null) {
+      tags.add(model.address);
+    }
     return Row(
       children: [for (String item in tags) CourseAddressLabel(item, tags)],
     );

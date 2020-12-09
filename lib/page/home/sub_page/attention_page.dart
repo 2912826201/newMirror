@@ -93,6 +93,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     }
     Map<String, dynamic> model = await getPullList(type: 0, size: 20, lastTime: lastTime);
     setState(() {
+      print("dataPage:  ￥￥$dataPage");
       if (dataPage == 1) {
         if (model["list"] != null) {
           model["list"].forEach((v) {
@@ -120,6 +121,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       }
     });
     lastTime = model["lastTime"];
+    print("lastTime:    $lastTime");
     isRequestInterface = true;
   }
 
@@ -260,9 +262,12 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                     itemCount: attentionModel.length,
                     controller: _controller,
                     itemBuilder: (context, index) {
+                      print("关注");
+                      print(index);
+                      print(attentionModel.length);
                    //  context.read<DynamicModelNotifier>().setDynamicModel(attentionModel[index]);
                    // HomeFeedModel model =  context.read<DynamicModelNotifier>().dynamicModel;
-                      if (index == attentionModel.length && lastTime != null) {
+                      if (index == attentionModel.length ) {
                         return LoadingView(
                           loadText: loadText,
                           loadStatus: loadStatus,

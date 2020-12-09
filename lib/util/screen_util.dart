@@ -50,10 +50,7 @@ class ScreenUtil {
 
   // 状态栏高度 dp 刘海屏会更高
   double get _statusBarHeight => EdgeInsets.fromWindowPadding(window.padding, window.devicePixelRatio).top;
-
-  // 底部安全区距离 dp
-  double get _bottomBarHeight => EdgeInsets.fromWindowPadding(window.padding, window.devicePixelRatio).bottom;
-
+  
   // 字体缩放比例
   double get _textScaleFactor => window.textScaleFactor;
 
