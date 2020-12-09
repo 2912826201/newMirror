@@ -7,6 +7,7 @@ import 'package:mirror/data/model/live_broadcast_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/ToastShow.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// 直播日程页
@@ -139,6 +140,9 @@ class LiveBroadcastPageState extends State<LiveBroadcastPage> {
       widgetArray.add(_getOldDataTitle());
       widgetArray.add(_getLiveBroadcastUI(liveBroadcastOldData));
     }
+    widgetArray.add(SizedBox(
+      height: 60,
+    ));
     return Column(
       children: [
         _getTopCalendar(),
@@ -147,9 +151,12 @@ class LiveBroadcastPageState extends State<LiveBroadcastPage> {
         ),
         Expanded(
             child: SizedBox(
-          child: SingleChildScrollView(
-            child: Column(
-              children: widgetArray,
+          child: ScrollConfiguration(
+            behavior: NoBlueEffectBehavior(),
+            child: SingleChildScrollView(
+              child: Column(
+                children: widgetArray,
+              ),
             ),
           ),
         ))
@@ -417,7 +424,7 @@ class LiveBroadcastPageState extends State<LiveBroadcastPage> {
           "https://img9.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2623955494.webp";
       liveBroadcastList.add(liveBroadcast);
     }
-    return Future.delayed(Duration(seconds: 2), () => liveBroadcastList);
+    return Future.delayed(Duration(seconds: 1), () => liveBroadcastList);
   }
 
 //设置数据
@@ -482,7 +489,7 @@ class LiveBroadcastPageState extends State<LiveBroadcastPage> {
     if (value.playType == 1) {
       onClickMakeAnAppointment(value);
     } else if (value.playType == 0) {
-      ToastShow.show("应该跳转界面", context);
+      ToastShow.show("请点击非“去上课”", context);
     } else {
       AppRouter.navigateToLiveDetail(context);
     }
