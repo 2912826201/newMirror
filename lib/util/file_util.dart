@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:mirror/api/qiniu_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/data/model/upload/qiniu_token_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:sy_flutter_qiniu_storage/sy_flutter_qiniu_storage.dart';
@@ -78,5 +80,10 @@ class FileUtil {
 
   cancelUpload(){
     SyFlutterQiniuStorage.cancelUpload();
+  }
+
+  Future<File> writeImageDataToFile(Uint8List imageData) async {
+    String filePath = AppConfig.getAppPicDir() + "/" + DateTime.now().millisecondsSinceEpoch.toString() + ".jpg";
+    return File(filePath).writeAsBytes(imageData);
   }
 }

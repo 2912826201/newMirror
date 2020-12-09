@@ -428,11 +428,32 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
               // 遍历所选Map将结果赋值
               for (_OrderedAssetEntity orderedEntity in selectedMap.values) {
                 // order要减1才是index
+                MediaFileModel mediaFileModel = mediaFileList[orderedEntity.order - 1];
+                // 根据类型处理文件信息及尺寸信息
                 if (widget.needCrop) {
-                  mediaFileList[orderedEntity.order - 1].croppedImage = notifier._imageMap[orderedEntity.entity.id];
-                }else{
-                  mediaFileList[orderedEntity.order - 1].file = _fileMap[orderedEntity.entity.id];
-                  mediaFileList[orderedEntity.order - 1].thumb = _thumbMap[orderedEntity.entity.id];
+                  switch (notifier.selectedType) {
+                    case AssetType.image:
+                      mediaFileModel.croppedImage = notifier._imageMap[orderedEntity.entity.id];
+                      mediaFileModel.sizeInfo.height = mediaFileModel.croppedImage.height;
+                      mediaFileModel.sizeInfo.width = mediaFileModel.croppedImage.width;
+                      break;
+                    case AssetType.video:
+                      //FIXME 处理裁剪视频 需要在原文件基础上加上偏移信息
+                      mediaFileModel.file = _fileMap[orderedEntity.entity.id];
+                      mediaFileModel.thumb = _thumbMap[orderedEntity.entity.id];
+                      mediaFileModel.sizeInfo.height = orderedEntity.entity.height;
+                      mediaFileModel.sizeInfo.width = orderedEntity.entity.width;
+                      mediaFileModel.sizeInfo.duration = orderedEntity.entity.duration;
+                      break;
+                    default:
+                      break;
+                  }
+                } else {
+                  mediaFileModel.file = _fileMap[orderedEntity.entity.id];
+                  mediaFileModel.thumb = _thumbMap[orderedEntity.entity.id];
+                  mediaFileModel.sizeInfo.height = orderedEntity.entity.height;
+                  mediaFileModel.sizeInfo.width = orderedEntity.entity.width;
+                  mediaFileModel.sizeInfo.duration = orderedEntity.entity.duration;
                 }
               }
               // 赋值并退出页面
@@ -690,6 +711,17 @@ class VideoPreviewState extends State<VideoPreviewArea> {
     print("VideoPreview dispose");
     _controller.dispose();
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant VideoPreviewArea oldWidget) {
+    if (_controller != null) {
+      _controller.dispose();
+      _controller = VideoPlayerController.file(widget.file);
+      _initVideoPlayerFuture = _controller.initialize();
+      _controller.setLooping(true);
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   @override

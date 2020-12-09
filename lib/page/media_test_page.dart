@@ -1,9 +1,12 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 
 import 'media_picker/media_picker_page.dart';
@@ -13,10 +16,11 @@ import 'media_picker/media_picker_page.dart';
 
 class MediaTestPage extends StatefulWidget {
   @override
-  MediaTestState createState() => MediaTestState();
+  _MediaTestState createState() => _MediaTestState();
 }
 
-class MediaTestState extends State<MediaTestPage> {
+class _MediaTestState extends State<MediaTestPage> {
+  double _process = 0.0;
   double _screenWidth;
   String type;
   List<MediaFileModel> list = [];
@@ -133,12 +137,55 @@ class MediaTestState extends State<MediaTestPage> {
               ),
             ],
           ),
+          LinearProgressIndicator(
+            value: _process,
+          ),
+          RaisedButton(child: Text("上传"), onPressed: list.length > 0 ? _onUpload : null),
           Expanded(
               child: GridView.builder(
                   itemCount: list.length, gridDelegate: _galleryGridDelegate(), itemBuilder: _buildGridItem)),
         ],
       ),
     );
+  }
+
+  _onUpload() async {
+    List<File> fileList = [];
+    UploadResults results;
+    if (type == mediaTypeKeyImage) {
+      list.forEach((element) async {
+        if (element.croppedImageData == null) {
+          fileList.add(element.file);
+        } else {
+          fileList.add(await FileUtil().writeImageDataToFile(element.croppedImageData));
+        }
+      });
+      results = await FileUtil().uploadPics(fileList, (path, percent) {
+        setState(() {
+          _process = percent;
+        });
+        print(path + ":$percent");
+      });
+    } else if (type == mediaTypeKeyVideo) {
+      list.forEach((element) {
+        fileList.add(element.file);
+      });
+      results = await FileUtil().uploadMedias(fileList, (path, percent) {
+        setState(() {
+          _process = percent;
+        });
+        print(path + ":$percent");
+      });
+    }
+    print(results.isSuccess);
+    for (int i = 0; i < results.resultMap.length; i++) {
+      UploadResultModel model = results.resultMap.values.elementAt(i);
+      print("第${i + 1}个上传文件");
+      print(model.isSuccess);
+      print(model.error);
+      print(model.filePath);
+      print(model.url);
+    }
   }
 
   Widget _buildGridItem(BuildContext context, int index) {
