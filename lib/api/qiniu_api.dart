@@ -1,5 +1,5 @@
 import 'package:mirror/data/model/base_response_model.dart';
-import 'package:mirror/data/model/qiniu_token_model.dart';
+import 'package:mirror/data/model/upload/qiniu_token_model.dart';
 
 import 'api.dart';
 

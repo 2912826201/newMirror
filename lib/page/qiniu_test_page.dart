@@ -6,7 +6,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mirror/api/qiniu_api.dart';
-import 'package:mirror/data/model/qiniu_token_model.dart';
+import 'package:mirror/data/model/upload/qiniu_token_model.dart';
+import 'package:mirror/data/model/upload/upload_result_model.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:sy_flutter_qiniu_storage/sy_flutter_qiniu_storage.dart';
 
 class QiniuTest extends StatefulWidget {
@@ -50,6 +52,24 @@ class _QiniuTestState extends State<QiniuTest> {
     print(result);
   }
 
+  _onUploadNew() async {
+    File file = await ImagePicker.pickImage(source: ImageSource.gallery);
+    if (file == null) {
+      return;
+    }
+    List<File> list = [];
+    list.add(file);
+
+    UploadResults results = await FileUtil().uploadPics(list, (path, percent) {
+      setState(() {
+        _process = percent;
+      });
+      print(path + ":$percent");
+    });
+    print(results.isSuccess);
+    print(results.resultMap);
+  }
+
   String _key(File file) {
     return "ifapp/" + DateTime.now().millisecondsSinceEpoch.toString() + '.' + file.path.split('.').last;
   }
@@ -84,6 +104,10 @@ class _QiniuTestState extends State<QiniuTest> {
             RaisedButton(
               child: Text('取消上传'),
               onPressed: _onCancel,
+            ),
+            RaisedButton(
+              child: Text('新版上传'),
+              onPressed: _onUploadNew,
             ),
           ],
         ),
