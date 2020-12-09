@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/main.dart';
 import 'package:mirror/page/home/home_page.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
@@ -7,6 +8,8 @@ import 'package:mirror/page/test_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+
+import 'home/mine/mine.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({Key key, this.pc}) : super(key: key);
@@ -19,7 +22,7 @@ class MainPageState extends State<MainPage> {
   int currentIndex;
   bool isInit = false;
 
-  final pages = [HomePage(), TestPage(), MessagePage(), ProfilePage()];
+  final pages = [HomePage(), TestPage(), MessagePage(), WoPage()];
   List titles = ["首页", "训练", "消息", "我的"];
   List normalImgUrls = [
     "images/test/home-filling1.png",

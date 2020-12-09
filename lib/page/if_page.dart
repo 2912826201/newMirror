@@ -70,7 +70,7 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin {
                         builder: (context, _) {
                           return UnionOuterTabBarView(
                             physics: context.watch<SelectedbottomNavigationBarNotifier>().selectedIndex == 0
-                                ? ClampingScrollPhysics()
+                                ? BouncingScrollPhysics()
                                 : NeverScrollableScrollPhysics(),
                             controller: _controller,
                             children: _createTabContent(),
