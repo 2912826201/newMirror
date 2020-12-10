@@ -2,12 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'live_broadcast_page.dart';
+
 class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
   final double collapsedHeight;
   final double expandedHeight;
   final double paddingTop;
   final String coverImgUrl;
   final String title;
+  final String heroTag;
   String statusBarMode = 'dark';
   final List<String> valueArray;
   final List<String> titleArray;
@@ -22,6 +25,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
     this.title,
     this.valueArray,
     this.titleArray,
+    this.heroTag,
   });
 
   @override
@@ -55,11 +59,11 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
     final int alpha = (shrinkOffset / (this.maxExtent - this.minExtent) * 255)
         .clamp(0, 255)
         .toInt();
-    if (alpha > 210) {
+    if (alpha > 220) {
       titleSize = 20;
       isGoneTitle = false;
     } else {
-      titleSize = 30 - alpha / 21;
+      titleSize = 30 - alpha / 22;
       isGoneTitle = true;
     }
     return Color.fromARGB(alpha, 255, 255, 255);
@@ -109,7 +113,13 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
       child: Stack(
         fit: StackFit.expand,
         children: <Widget>[
-          Container(child: Image.asset(this.coverImgUrl, fit: BoxFit.cover)),
+          //背景图
+          Container(
+              child: Hero(
+            child: Image.asset(this.coverImgUrl, fit: BoxFit.cover),
+            tag: heroTag,
+          )),
+          //文字背景色
           Positioned(
             left: 0,
             top: this.maxExtent / 5,
@@ -128,6 +138,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
               ),
             ),
           ),
+          //数据显示
           Positioned(
             child: Container(
               width: MediaQuery.of(context).size.width,
@@ -139,6 +150,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
             bottom: 0,
             left: 0,
           ),
+          //头部信息
           Positioned(
             left: 0,
             right: 0,
@@ -186,6 +198,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
               ),
             ),
           ),
+          //中间文字
           Container(
             height: this.maxExtent,
             width: MediaQuery.of(context).size.width,
@@ -197,7 +210,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
                     child: Text(
                       this.title,
                       style: TextStyle(
-                          fontSize: titleSize, fontWeight: FontWeight.bold),
+                          fontSize: titleSize),
                     ))
               ],
             ),

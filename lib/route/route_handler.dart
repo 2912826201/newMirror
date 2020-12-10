@@ -64,7 +64,10 @@ var handlerLiveBroadcast = Handler(handlerFunc: (BuildContext context, Map<Strin
 });
 
 var handlerLiveDetail = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return LiveDetailPage();
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return LiveDetailPage(
+    heroTag: data["heroTag"],
+  );
 });
 
 var handlerPreviewPhoto = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
