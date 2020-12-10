@@ -1,4 +1,6 @@
 // import 'package:flutter/cupertino.dart';
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +8,8 @@ import 'package:flutter/services.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/page/media_picker/media_picker_page.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/app_style.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_button.dart';
@@ -14,6 +18,7 @@ import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:text_span_field/range_style.dart';
 import 'package:text_span_field/text_span_field.dart';
+import 'dart:ui' as ui;
 
 class ReleasePage extends StatefulWidget {
   @override
@@ -31,6 +36,7 @@ class ReleasePageState extends State<ReleasePage> {
   @override
   void initState() {
     //TODO 取出来判断是否为空 非空则将图片视频作为初始值 取出后需将Application中的值清空
+    print("查明￥${Application.selectedMediaFiles}");
     _selectedMediaFiles = Application.selectedMediaFiles;
     Application.selectedMediaFiles = null;
     super.initState();
@@ -39,12 +45,6 @@ class ReleasePageState extends State<ReleasePage> {
   @override
   Widget build(BuildContext context) {
     double inputHeight = MediaQuery.of(context).viewInsets.bottom;
-    // // 头部布局
-    // headerWidget() {
-    //   return
-    // }
-
-    // return
     return Scaffold(
         resizeToAvoidBottomInset: false,
         body: ChangeNotifierProvider(
@@ -81,7 +81,7 @@ class ReleasePageState extends State<ReleasePage> {
                                         ? AtList(index: index, controller: _controller)
                                         : str == "#"
                                             ? TopicList(index: index, controller: _controller)
-                                            : ReleaseFeedMainView();
+                                            : ReleaseFeedMainView(selectedMediaFiles: _selectedMediaFiles);
                                   },
                                       childCount: str == "@"
                                           ? 10
@@ -100,6 +100,7 @@ class ReleasePageState extends State<ReleasePage> {
 
 // 头部布局
 class FeedHeader extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -119,6 +120,7 @@ class FeedHeader extends StatelessWidget {
               iconSting: "images/resource/2.0x/shut_down@2x.png",
               onPressed: () {
                 Navigator.of(context).pop(true);
+                Application.selectedMediaFiles = null;
               },
             ),
           ),
@@ -383,12 +385,12 @@ class TopicList extends StatelessWidget {
           String topicMiddleStr = topics[index].topic.substring(1, topics[index].topic.length);
           // 拼接修改输入框的值
           controller.text = topicBeforeStr + topicMiddleStr + topicRearStr;
-          print("controller.text ${controller.text }");
+          print("controller.text ${controller.text}");
           // 这是替换输入的文本修改后面输入的#的规则
           if (searchStr != "" || searchStr.isNotEmpty) {
             print("话题替换");
             int oldLength = searchStr.length;
-            int newLength = topics[index].topic.length -1;
+            int newLength = topics[index].topic.length - 1;
             int oldStartIndex = topicIndex;
             int diffLength = newLength - oldLength;
             for (int i = 0; i < rules.length; i++) {
@@ -525,16 +527,16 @@ class AtList extends StatelessWidget {
           }
         }
         // 此时为了解决后输入的@切换光标到之前输入的@或者#前方，更新之前输入@和#的索引。
-          for (int i = 0; i < rules.length; i++) {
-            // 当最新输入框内的文本对应不上之前的值时。
-            if (rules[i].params != controller.text.substring(rules[i].startIndex, rules[i].endIndex)) {
-              print("进入");
-              print(rules[i]);
-              rules[i] = Rule(rules[i].startIndex + AtLength, rules[i].endIndex + AtLength, rules[i].params,
-                  rules[i].clickIndex, rules[i].isAt);
-              print(rules[i]);
-            }
+        for (int i = 0; i < rules.length; i++) {
+          // 当最新输入框内的文本对应不上之前的值时。
+          if (rules[i].params != controller.text.substring(rules[i].startIndex, rules[i].endIndex)) {
+            print("进入");
+            print(rules[i]);
+            rules[i] = Rule(rules[i].startIndex + AtLength, rules[i].endIndex + AtLength, rules[i].params,
+                rules[i].clickIndex, rules[i].isAt);
+            print(rules[i]);
           }
+        }
         // 存储规则
         context
             .read<ReleaseFeedInputNotifier>()
@@ -575,8 +577,9 @@ class AtList extends StatelessWidget {
 
 // 发布动态输入框下的所有部件
 class ReleaseFeedMainView extends StatelessWidget {
-  ReleaseFeedMainView({this.pc});
+  ReleaseFeedMainView({this.pc, this.selectedMediaFiles});
 
+  SelectedMediaFiles selectedMediaFiles;
   List<String> PhotoUrl = [
     "images/test/yxlm2.jpeg",
     "images/test/yxlm3.jpeg",
@@ -586,8 +589,6 @@ class ReleaseFeedMainView extends StatelessWidget {
   ];
   List<String> addresss = ["成都市", "花样年福年广场", "牛水煮·麻辣水煮牛肉", "园林火锅", "嘉年CEO酒店公寓-(成都会展中心福年广场店)", "查看更多"];
   PanelController pc = new PanelController();
-
-
 
   // 选择地址
   seletedAddress() {
@@ -658,18 +659,100 @@ class ReleaseFeedMainView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [SeletedPhoto(photoUrl: PhotoUrl,), seletedAddress(), recommendAddress()],
+      children: [
+        selectedMediaFiles.list != null
+            ? SeletedPhoto(
+                photoUrl: PhotoUrl,
+                selectedMediaFiles: selectedMediaFiles,
+              )
+            : Container(),
+        seletedAddress(),
+        recommendAddress()
+      ],
     );
   }
 }
 
 // 图片
 class SeletedPhoto extends StatefulWidget {
-  SeletedPhoto({Key key,this.photoUrl}):super(key: key);
+  SeletedPhoto({Key key, this.photoUrl, this.selectedMediaFiles}) : super(key: key);
+  SelectedMediaFiles selectedMediaFiles;
   List<String> photoUrl;
-      SeletedPhotoState createState() => SeletedPhotoState();
+
+  SeletedPhotoState createState() => SeletedPhotoState();
 }
+
 class SeletedPhotoState extends State<SeletedPhoto> {
+  // 解析数据
+  resolveData() async {
+    for (MediaFileModel model in widget.selectedMediaFiles.list) {
+      if (model.croppedImage != null) {
+        ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
+        Uint8List picBytes = byteData.buffer.asUint8List();
+        model.croppedImageData = picBytes;
+      }
+      setState(() {});
+    }
+  }
+
+  @override
+  void initState() {
+    resolveData();
+  }
+  // 进入相册的添加视图
+  addView() {
+    if ((widget.selectedMediaFiles.type == mediaTypeKeyImage  && widget.selectedMediaFiles.list.length < 9)
+    || (widget.selectedMediaFiles.type == null))
+   {
+    return GestureDetector(
+       onTap: () {
+         int type = typeImage;
+         if (widget.selectedMediaFiles.type == null ) {
+           type = typeImageAndVideo;
+         } else if (widget.selectedMediaFiles.type == mediaTypeKeyImage){
+           type = typeImage;
+         }
+         AppRouter.navigateToMediaPickerPage(context, 9 - widget.selectedMediaFiles.list.length,
+             type, true, startPageGallery, false, false, (result) async {
+               SelectedMediaFiles files = Application.selectedMediaFiles;
+               if (true != result || files == null) {
+                 print("没有选择媒体文件");
+                 return;
+               }
+               if (widget.selectedMediaFiles.type == null) {
+                 widget.selectedMediaFiles.type = files.type;
+               }
+               Application.selectedMediaFiles = null;
+               print(files.type + ":" + files.list.toString());
+               for (MediaFileModel model in files.list) {
+                 if (model.croppedImage != null) {
+                   print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                   ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
+                   print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                   Uint8List picBytes = byteData.buffer.asUint8List();
+                   print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
+                   model.croppedImageData = picBytes;
+                 }
+               }
+               widget.selectedMediaFiles.list.addAll(files.list);
+               setState(() {});
+             });
+       },
+       child: Container(
+         margin: EdgeInsets.only(left: 10, top: 9, right: 16),
+         width: 86,
+         height: 86,
+         decoration: BoxDecoration(
+           color: AppColor.bgWhite,
+           borderRadius: BorderRadius.all(Radius.circular(3.0)),
+         ),
+         child: Center(
+           child: Icon(Icons.add, color: AppColor.textHint),
+         ),
+       ),
+     );
+   }
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -678,26 +761,11 @@ class SeletedPhotoState extends State<SeletedPhoto> {
       child: ListView.builder(
           shrinkWrap: true,
           scrollDirection: Axis.horizontal,
-          itemCount: widget.photoUrl.length + 1,
+          itemCount:
+              widget.selectedMediaFiles.type == mediaTypeKeyVideo ? 1 : widget.selectedMediaFiles.list.length + 1,
           itemBuilder: (context, index) {
-            if (index ==  widget.photoUrl.length) {
-              return GestureDetector(
-                onTap: () {
-                  print("点击进入相片选择页");
-                },
-                child: Container(
-                  margin: EdgeInsets.only(left: 10, top: 9, right: 16),
-                  width: 86,
-                  height: 86,
-                  decoration: BoxDecoration(
-                    color: AppColor.bgWhite,
-                    borderRadius: BorderRadius.all(Radius.circular(3.0)),
-                  ),
-                  child: Center(
-                    child: Icon(Icons.add, color: AppColor.textHint),
-                  ),
-                ),
-              );
+            if (index == widget.selectedMediaFiles.list.length) {
+              return addView();
             }
             return Container(
               width: 92,
@@ -710,33 +778,60 @@ class SeletedPhotoState extends State<SeletedPhoto> {
                     margin: EdgeInsets.only(top: 9),
                     width: 86,
                     height: 86,
-                    decoration: BoxDecoration(
-                        image: DecorationImage(image: AssetImage( widget.photoUrl[index]), fit: BoxFit.cover),
-                        borderRadius: BorderRadius.all(Radius.circular(3.0))),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(3.0))),
                   ),
                   Positioned(
-                      right: 0,
-                      // top: ,
-                      child: GestureDetector(
-                        onTap: () {
-                          print("关闭");
-                          setState(() {
-                            widget.photoUrl.removeAt(index);
-                          });
-                        },
-                        child: Container(
-                          width: 16,
-                          height: 16,
-                          decoration: BoxDecoration(
-                              color: AppColor.bgBlack, borderRadius: BorderRadius.all(Radius.circular(8))),
-                          child: Center(
-                              child: Icon(
+                    top: 9,
+                    left: 0,
+                    child: widget.selectedMediaFiles.type == mediaTypeKeyVideo
+                        ? Image.memory(
+                            widget.selectedMediaFiles.list[index].thumb,
+                            fit: BoxFit.cover,
+                            width: 86,
+                            height: 86,
+                          )
+                        : widget.selectedMediaFiles.list[index].croppedImageData != null
+                            ? Image.memory(
+                                widget.selectedMediaFiles.list[index].croppedImageData,
+                                fit: BoxFit.cover,
+                                width: 86,
+                                height: 86,
+                              )
+                            : widget.selectedMediaFiles.list[index].file != null
+                                ? Image.file(
+                                    widget.selectedMediaFiles.list[index].file,
+                                    fit: BoxFit.cover,
+                                    width: 86,
+                                    height: 86,
+                                  )
+                                : Container(),
+                  ),
+                  Positioned(
+                          right: 0,
+                          // top: ,
+                          child: GestureDetector(
+                            onTap: () {
+                              print("关闭");
+                              setState(() {
+                                widget.selectedMediaFiles.list.removeAt(index);
+                                if( widget.selectedMediaFiles.list.length == 0) {
+                                  widget.selectedMediaFiles.type = null;
+                                }
+                              });
+                            },
+                            child: Container(
+                              width: 16,
+                              height: 16,
+                              decoration: BoxDecoration(
+                                  color: AppColor.bgBlack, borderRadius: BorderRadius.all(Radius.circular(8))),
+                              child: Center(
+                                  child: Icon(
                                 Icons.close,
                                 color: AppColor.white,
                                 size: 12,
                               )),
-                        ),
-                      ))
+                            ),
+                          ))
                 ],
               ),
             );
