@@ -13,16 +13,25 @@ import 'package:mirror/util/ToastShow.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 
-import 'SliverCustomHeaderDelegate.dart';
+import 'sliver_custom_header_delegate.dart';
 
 /// 直播详情页
 class LiveDetailPage extends StatefulWidget {
+  const LiveDetailPage({Key key, this.heroTag}) : super(key: key);
+
+  final String heroTag;
+
   @override
-  createState() => new LiveDetailPageState();
+  createState() => new LiveDetailPageState(heroTag: heroTag);
 }
 
 class LiveDetailPageState extends State<LiveDetailPage>
     with TickerProviderStateMixin {
+
+  String heroTag;
+
+  LiveDetailPageState({Key key, this.heroTag});
+
   var actionModelList = <ActionModel>[];
   var titleTextStyle = TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
   bool isExpandedTrue = false;
@@ -37,9 +46,9 @@ class LiveDetailPageState extends State<LiveDetailPage>
 
   var animationTime = 300; //毫秒
 
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     setDataAction();
     setDataComment();
     setAnimationData();
@@ -51,6 +60,7 @@ class LiveDetailPageState extends State<LiveDetailPage>
   }
 
   Widget _buildSuggestions() {
+    print(heroTag);
     return Stack(
       children: [
         ScrollConfiguration(
@@ -60,13 +70,18 @@ class LiveDetailPageState extends State<LiveDetailPage>
               SliverPersistentHeader(
                 pinned: true,
                 delegate: SliverCustomHeaderDelegate(
-                    title: '哪吒之魔童降世',
-                    collapsedHeight: 40,
-                    expandedHeight: 300,
-                    paddingTop: MediaQuery.of(context).padding.top,
-                    valueArray: ["45", "108", "初级"],
-                    titleArray: ["分钟", "千卡", "难度"],
-                    coverImgUrl: 'images/test/bg.png'),
+                  title: '哪吒之魔童降世',
+                  collapsedHeight: 40,
+                  expandedHeight: 300,
+                  paddingTop: MediaQuery
+                      .of(context)
+                      .padding
+                      .top,
+                  valueArray: ["45", "108", "初级"],
+                  titleArray: ["分钟", "千卡", "难度"],
+                  coverImgUrl: 'images/test/bg.png',
+                  heroTag: heroTag,
+                ),
               ),
               _getCoachItem(),
               _getLineView(),
@@ -99,7 +114,7 @@ class LiveDetailPageState extends State<LiveDetailPage>
     return SliverToBoxAdapter(
       child: Container(
         padding:
-            const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+        const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
         color: Colors.white,
         width: double.infinity,
         child: Row(
@@ -136,7 +151,7 @@ class LiveDetailPageState extends State<LiveDetailPage>
             Expanded(child: SizedBox()),
             Container(
               padding:
-                  const EdgeInsets.only(left: 15, right: 15, top: 3, bottom: 3),
+              const EdgeInsets.only(left: 15, right: 15, top: 3, bottom: 3),
               decoration: BoxDecoration(
                 color: Colors.blue,
                 borderRadius: BorderRadius.circular(3),
@@ -372,8 +387,8 @@ class LiveDetailPageState extends State<LiveDetailPage>
     return Container(
       width: double.infinity,
       height: double.parse((commentListSubSettingList[index].isFold
-              ? animationArrayOpen[index].value
-              : animationArrayClose[index].value)
+          ? animationArrayOpen[index].value
+          : animationArrayClose[index].value)
           .toString()),
       alignment: Alignment.center,
       padding: const EdgeInsets.only(left: 55),
@@ -417,31 +432,31 @@ class LiveDetailPageState extends State<LiveDetailPage>
           //中间信息
           Expanded(
               child: SizedBox(
-            child: Column(
-              children: [
-                Container(
-                  width: double.infinity,
-                  child: Text(
-                    value.userName + "   " + value.content,
-                    style: TextStyle(fontSize: 13, color: Colors.black),
-                  ),
+                child: Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      child: Text(
+                        value.userName + "   " + value.content,
+                        style: TextStyle(fontSize: 13, color: Colors.black),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 4,
+                    ),
+                    Container(
+                      width: double.infinity,
+                      child: Text(
+                        value.createTime +
+                            "  " +
+                            (value.praiseCount.toString()) +
+                            "次赞   回复",
+                        style: TextStyle(fontSize: 11, color: Colors.grey),
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(
-                  height: 4,
-                ),
-                Container(
-                  width: double.infinity,
-                  child: Text(
-                    value.createTime +
-                        "  " +
-                        (value.praiseCount.toString()) +
-                        "次赞   回复",
-                    style: TextStyle(fontSize: 11, color: Colors.grey),
-                  ),
-                ),
-              ],
-            ),
-          )),
+              )),
           //点赞
           Container(
             height: double.infinity,
@@ -557,21 +572,21 @@ class LiveDetailPageState extends State<LiveDetailPage>
           setState(() {});
         });
       _animationOpen =
-          Tween(begin: 0, end: value.subCommentAllHeight.toDouble())
-              .animate(_controllerOpen)
-                ..addStatusListener((status) {
-                  if (status == AnimationStatus.completed) {
-                    _controllerOpen.reverse();
-                  }
-                });
+      Tween(begin: 0, end: value.subCommentAllHeight.toDouble())
+          .animate(_controllerOpen)
+        ..addStatusListener((status) {
+          if (status == AnimationStatus.completed) {
+            _controllerOpen.reverse();
+          }
+        });
       _animationClose =
-          Tween(begin: value.subCommentAllHeight.toDouble(), end: 0)
-              .animate(_controllerClose)
-                ..addStatusListener((status) {
-                  if (status == AnimationStatus.completed) {
-                    _controllerClose.reverse();
-                  }
-                });
+      Tween(begin: value.subCommentAllHeight.toDouble(), end: 0)
+          .animate(_controllerClose)
+        ..addStatusListener((status) {
+          if (status == AnimationStatus.completed) {
+            _controllerClose.reverse();
+          }
+        });
       controllerArrayOpen.add(_controllerOpen);
       controllerArrayClose.add(_controllerClose);
       animationArrayOpen.add(_animationOpen);
@@ -583,7 +598,7 @@ class LiveDetailPageState extends State<LiveDetailPage>
   void delaySetting(int i) async {
     Future.delayed(Duration(milliseconds: animationTime), () {
       commentListSubSettingList[i].isFold =
-          !commentListSubSettingList[i].isFold;
+      !commentListSubSettingList[i].isFold;
     });
   }
 }
