@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -51,7 +52,10 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
                   SelectedMediaFiles files = SelectedMediaFiles();
                   files.type = mediaTypeKeyImage;
                   files.list = [model];
-                  Navigator.pop(context, files);
+
+                  Application.selectedMediaFiles = files;
+
+                  Navigator.pop(context, true);
                 },
                 child: Container(
                   alignment: Alignment.center,
@@ -70,7 +74,8 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
               color: AppColor.mainBlue,
               width: _previewSize,
               height: _previewSize,
-              child: CropperImage(//需要处理成不能操作
+              child: CropperImage(
+                //需要处理成不能操作
                 FileImage(_file),
                 round: 0,
                 key: _cropperKey,

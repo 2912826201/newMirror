@@ -4,6 +4,7 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
+import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/route/route_handler.dart';
 
 /// router
@@ -64,13 +65,14 @@ class AppRouter {
 
   static void navigateToMediaPickerPage(
       BuildContext context, int maxImageAmount, int mediaType, bool needCrop, int startPage,
-      Function(dynamic result) callback, {bool cropOnlySquare}) {
+      bool cropOnlySquare, bool isGoToPublish, Function(dynamic result) callback) {
     Map<String, dynamic> map = Map();
     map["maxImageAmount"] = maxImageAmount;
     map["mediaType"] = mediaType;
     map["needCrop"] = needCrop;
-    map["cropOnlySquare"] = cropOnlySquare;
     map["startPage"] = startPage;
+    map["cropOnlySquare"] = cropOnlySquare;
+    map["isGoToPublish"] = isGoToPublish;
     _navigateToPage(context, pathMediaPicker, map, callback: callback);
   }
 

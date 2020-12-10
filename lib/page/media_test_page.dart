@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/route/router.dart';
@@ -53,13 +54,14 @@ class _MediaTestState extends State<MediaTestPage> {
           ),
           RaisedButton(
             onPressed: () {
-              AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, false, startPageGallery,
+              AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, false, startPageGallery, false, false,
                   (result) async {
-                if (result == null) {
+                SelectedMediaFiles files = Application.selectedMediaFiles;
+                if (true != result || files == null) {
                   print("没有选择媒体文件");
                   return;
                 }
-                SelectedMediaFiles files = result as SelectedMediaFiles;
+                Application.selectedMediaFiles = null;
                 print(files.type + ":" + files.list.toString());
                 type = files.type;
                 list = files.list;
@@ -83,13 +85,14 @@ class _MediaTestState extends State<MediaTestPage> {
             children: [
               RaisedButton(
                 onPressed: () {
-                  AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, true, startPageGallery,
-                      (result) async {
-                    if (result == null) {
+                  AppRouter.navigateToMediaPickerPage(
+                      context, 9, typeImageAndVideo, true, startPageGallery, false, false, (result) async {
+                    SelectedMediaFiles files = Application.selectedMediaFiles;
+                    if (true != result || files == null) {
                       print("没有选择媒体文件");
                       return;
                     }
-                    SelectedMediaFiles files = result as SelectedMediaFiles;
+                    Application.selectedMediaFiles = null;
                     print(files.type + ":" + files.list.toString());
                     type = files.type;
                     list = files.list;
@@ -110,13 +113,14 @@ class _MediaTestState extends State<MediaTestPage> {
               ),
               RaisedButton(
                 onPressed: () {
-                  AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, true, startPagePhoto,
+                  AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, true, startPagePhoto, false, false,
                       (result) async {
-                    if (result == null) {
+                    SelectedMediaFiles files = Application.selectedMediaFiles;
+                    if (true != result || files == null) {
                       print("没有选择媒体文件");
                       return;
                     }
-                    SelectedMediaFiles files = result as SelectedMediaFiles;
+                    Application.selectedMediaFiles = null;
                     print(files.type + ":" + files.list.toString());
                     type = files.type;
                     list = files.list;
@@ -134,6 +138,25 @@ class _MediaTestState extends State<MediaTestPage> {
                   });
                 },
                 child: Text("图片视频（裁剪）1"),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              RaisedButton(
+                onPressed: () {
+                  AppRouter.navigateToMediaPickerPage(
+                      context, 9, typeImageAndVideo, true, startPageGallery, false, true, (result) {});
+                },
+                child: Text("裁剪后去发布0"),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  AppRouter.navigateToMediaPickerPage(
+                      context, 9, typeImageAndVideo, true, startPagePhoto, false, true, (result) {});
+                },
+                child: Text("裁剪后去发布1"),
               ),
             ],
           ),

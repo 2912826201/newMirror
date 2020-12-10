@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
+import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/page/feed/like.dart';
 import 'package:mirror/page/feed/release_page.dart';
 import 'package:mirror/page/if_page.dart';
@@ -40,7 +41,8 @@ var handlerMediaPicker = Handler(handlerFunc: (BuildContext context, Map<String,
     data["mediaType"],
     data["needCrop"],
     data["startPage"],
-    cropOnlySquare: data["cropOnlySquare"],
+    data["cropOnlySquare"],
+    data["isGoToPublish"],
   );
 });
 
@@ -52,23 +54,20 @@ var handlerLike = Handler(handlerFunc: (BuildContext context, Map<String, List<S
   return Like();
 });
 
-var handlerReleaseFeed = Handler(
-    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return ReleasePage();
 });
 
-var handlerLiveBroadcast = Handler(
-    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+var handlerLiveBroadcast = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return LiveBroadcastPage();
 });
 
-var handlerLiveDetail = Handler(
-    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+var handlerLiveDetail = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return LiveDetailPage();
 });
 
-var handlerPreviewPhoto = Handler(
-    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+var handlerPreviewPhoto = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return PreviewPhotoPage(
     filePath: data["filePath"],
