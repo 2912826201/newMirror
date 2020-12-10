@@ -43,13 +43,14 @@ class ScanCodeState extends State<ScanCode>{
         final result  = _controller.result;
           if(result!=null){
             if(_isFirst){
-              Fluttertoast.showToast(
+                Navigator.pop(context,result.message);
+             /* Fluttertoast.showToast(
                 msg: "${result.message.toString()}",
                 toastLength: Toast.LENGTH_SHORT,
                 fontSize: 16,
                 gravity: ToastGravity.CENTER,
                 backgroundColor: AppColor.textHint,
-                textColor: AppColor.white);
+                textColor: AppColor.white);*/
               _isFirst = false;
             }
           }
@@ -144,14 +145,6 @@ class ScanCodeState extends State<ScanCode>{
       _imgPath = pickedFile.path;
      });
     var result= await RScan.scanImagePath(_imgPath);
-      if(result.message.isNotEmpty){
-        Fluttertoast.showToast(
-          msg: "${result.message.toString()}",
-          toastLength: Toast.LENGTH_SHORT,
-          fontSize: 16,
-          gravity: ToastGravity.CENTER,
-          backgroundColor: AppColor.textHint,
-          textColor: AppColor.white);
-      }
+       Navigator.pop(context,result);
   }
 }

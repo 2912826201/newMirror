@@ -24,7 +24,7 @@ class _mineDetailState extends State<MineDetails>
   final Color _titleColors = Colors.white;
   final String _imgShared = "images/test/分享.png";
   TabController _tabController;
-  final PageController _pageController = PageController();
+  PageController _pageController = PageController();
   List<String> _tabLsit = ["动态", "喜欢"];
   final _Panelcontroller = PanelController();
   bool _isTabChanges;
@@ -44,14 +44,12 @@ class _mineDetailState extends State<MineDetails>
     super.initState();
     _textTest();
     _tabController = TabController(length: _tabLsit.length, vsync: this);
-    _tabController.addListener(
-      () {
-        if (_tabController.indexIsChanging) {
-          print('tabBar改变状态');
-          onPageChanges(_tabController.index, p: _pageController);
-        }
-      },
-    );
+    _tabController.addListener(() {
+      if(_tabController.indexIsChanging){
+        onPageChanges(_tabController.index);
+      }
+    });
+    _pageController = PageController();
   }
 
   _textTest() {
@@ -240,8 +238,8 @@ class _mineDetailState extends State<MineDetails>
       child: TabBar(
         isScrollable: true,
         controller: _tabController,
-        labelColor: AppColor.black,
-        unselectedLabelColor: AppColor.mainRed,
+        labelColor: AppColor.mainRed,
+        unselectedLabelColor:AppColor.black ,
         labelStyle: AppStyle.textRegular16,
         indicatorColor: AppColor.black,
         indicatorWeight: 1,
@@ -263,7 +261,7 @@ class _mineDetailState extends State<MineDetails>
         },
         controller: _pageController,
         onPageChanged: (index) {
-          onPageChanges(index, t: _tabController);
+         onTabChanges(index);
         },
       ),
     );
@@ -294,18 +292,12 @@ class _mineDetailState extends State<MineDetails>
     return _ListData;
   }
 
-  ///关联tab
-  onPageChanges(int index, {PageController p, TabController t}) async {
-    if (p != null) {
-      _isPageChanges = false;
-      await _pageController.animateToPage(index,
-          duration: Duration(milliseconds: 0), curve: Curves.ease);
-      _isPageChanges = true;
-    } else {
-      _tabController.animateTo(index);
-    }
+  onPageChanges(int index){
+      _pageController.animateToPage(index, duration: Duration(milliseconds: 300), curve: Curves.ease);
   }
-
+  onTabChanges(int index){
+      _tabController.animateTo(index, duration: Duration(milliseconds: 300));
+  }
   ///关注，编辑资料，私聊按钮
   Widget _mineButton() {
     return Container(
