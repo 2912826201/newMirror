@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
@@ -19,6 +20,8 @@ import 'data/notifier/profile_notifier.dart';
 import 'route/router.dart';
 
 void main() {
+  SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor:Colors.transparent);
+  SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   _initApp().then((value) => runApp(
         MultiProvider(
           providers: [
