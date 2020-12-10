@@ -12,6 +12,10 @@ import 'package:permission_handler/permission_handler.dart';
 
 //相机拍照页
 class CameraPhotoPage extends StatefulWidget {
+  CameraPhotoPage({Key key, this.isGoToPublish = false}) : super(key: key);
+
+  final bool isGoToPublish;
+
   @override
   CameraPhotoState createState() => CameraPhotoState();
 }
@@ -114,6 +118,9 @@ class CameraPhotoState extends State<CameraPhotoPage> with WidgetsBindingObserve
                         AppRouter.navigateToPreviewPhotoPage(context, filePath, (result) {
                           if (result != null) {
                             Navigator.pop(context, result);
+                            if (widget.isGoToPublish) {
+                              AppRouter.navigateToReleasePage(context);
+                            }
                           }
                         });
                       }

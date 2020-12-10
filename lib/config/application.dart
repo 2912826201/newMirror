@@ -2,6 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:fluro/fluro.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
+import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/token_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 
@@ -40,4 +41,7 @@ class Application {
   static CommentDtoModel commentDtoModel;
   // 动态子评论
   static CommentDtoModel replysModel;
+
+  // 用于传递所选图片视频内容，用完后需要删除
+  static SelectedMediaFiles selectedMediaFiles;
 }

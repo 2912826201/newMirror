@@ -3,8 +3,10 @@ import 'dart:ui' as ui;
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/image_cropper.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
@@ -31,13 +33,15 @@ class GalleryPage extends StatefulWidget {
       this.maxImageAmount = 1,
       this.requestType = RequestType.common,
       this.needCrop = false,
-      this.cropOnlySquare = false})
+      this.cropOnlySquare = false,
+      this.isGoToPublish = false})
       : super(key: key);
 
   final int maxImageAmount;
   final int maxVideoAmount = 1;
   final bool needCrop;
   final bool cropOnlySquare;
+  final bool isGoToPublish;
 
   // image是图片 common是图片和视频 目前需求只会用到这两种
   final RequestType requestType;
@@ -444,7 +448,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                       mediaFileModel.sizeInfo.width = orderedEntity.entity.width;
                       mediaFileModel.sizeInfo.duration = orderedEntity.entity.duration;
                       SizeInfo sizeInfo = notifier.offsetMap[mediaFileModel.file.path];
-                      if(sizeInfo != null){
+                      if (sizeInfo != null) {
                         mediaFileModel.sizeInfo.offsetRatioX = sizeInfo.offsetRatioX;
                         mediaFileModel.sizeInfo.offsetRatioY = sizeInfo.offsetRatioY;
                       }
@@ -464,7 +468,14 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
               SelectedMediaFiles files = SelectedMediaFiles();
               files.type = type;
               files.list = mediaFileList;
-              Navigator.pop(context, files);
+
+              Application.selectedMediaFiles = files;
+
+              Navigator.pop(context, true);
+
+              if (widget.isGoToPublish) {
+                AppRouter.navigateToReleasePage(context);
+              }
             },
             child: Container(
               alignment: Alignment.center,
@@ -771,13 +782,13 @@ class VideoPreviewState extends State<VideoPreviewArea> {
                     // 滚动位置更新
                     // 当前位置
                     // print("metrics.pixels当前值是：${metrics.pixels}");
-                    if(_controller.value.aspectRatio > 1){
+                    if (_controller.value.aspectRatio > 1) {
                       //横向
-                      double offsetRatioX = - metrics.pixels / _previewSize.height / _controller.value.aspectRatio;
+                      double offsetRatioX = -metrics.pixels / _previewSize.height / _controller.value.aspectRatio;
                       context.read<SelectedMapNotifier>().setOffset(_file.path, offsetRatioX, 0.0);
-                    }else{
+                    } else {
                       //纵向
-                      double offsetRatioY = - metrics.pixels / _previewSize.width * _controller.value.aspectRatio;
+                      double offsetRatioY = -metrics.pixels / _previewSize.width * _controller.value.aspectRatio;
                       context.read<SelectedMapNotifier>().setOffset(_file.path, 0.0, offsetRatioY);
                     }
                   } else if (notification is ScrollEndNotification) {

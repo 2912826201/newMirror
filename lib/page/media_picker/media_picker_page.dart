@@ -24,15 +24,17 @@ int startPageGallery = _galleryIndex;
 int startPagePhoto = _photoIndex;
 
 class MediaPickerPage extends StatefulWidget {
-  MediaPickerPage(this.maxImageAmount, this.mediaType, this.needCrop, this.startPage,
-      {Key key, this.cropOnlySquare = false})
+  MediaPickerPage(
+      this.maxImageAmount, this.mediaType, this.needCrop, this.startPage, this.cropOnlySquare, this.isGoToPublish,
+      {Key key})
       : super(key: key);
 
   final int maxImageAmount;
   final int mediaType;
   final bool needCrop;
-  final bool cropOnlySquare;
   final int startPage;
+  final bool cropOnlySquare;
+  final bool isGoToPublish;
 
   @override
   _MediaPickerState createState() => _MediaPickerState();
@@ -58,8 +60,11 @@ class _MediaPickerState extends State<MediaPickerPage> {
               requestType: widget.mediaType == typeImageAndVideo ? RequestType.common : RequestType.image,
               needCrop: widget.needCrop,
               cropOnlySquare: widget.cropOnlySquare,
+              isGoToPublish: widget.isGoToPublish,
             )));
-    _pageList.add(CameraPhotoPage());
+    _pageList.add(CameraPhotoPage(
+      isGoToPublish: widget.isGoToPublish,
+    ));
     _pageList.add(Container(
       color: Colors.greenAccent,
     ));

@@ -3,7 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/util/app_style.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_button.dart';
@@ -19,11 +21,20 @@ class ReleasePage extends StatefulWidget {
 }
 
 class ReleasePageState extends State<ReleasePage> {
+  SelectedMediaFiles _selectedMediaFiles;
   TextEditingController _controller = TextEditingController();
   FocusNode feedFocus = FocusNode();
 
   // at的索引数组
   List<Rule> rules = [];
+
+  @override
+  void initState() {
+    //TODO 取出来判断是否为空 非空则将图片视频作为初始值 取出后需将Application中的值清空
+    _selectedMediaFiles = Application.selectedMediaFiles;
+    Application.selectedMediaFiles = null;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
