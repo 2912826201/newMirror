@@ -84,8 +84,10 @@ class AppRouter {
     _navigateToPage(context, pathLiveBroadcast, {});
   }
 
-  static void navigateToLiveDetail(BuildContext context) {
-    _navigateToPage(context, pathLiveDetail, {});
+  static void navigateToLiveDetail(BuildContext context, String heroTag) {
+    Map<String, dynamic> map = Map();
+    map["heroTag"] = heroTag;
+    _navigateToPage(context, pathLiveDetail, map);
   }
 
   static void navigateToLikePage(BuildContext context) {
