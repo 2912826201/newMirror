@@ -34,7 +34,7 @@ class LiveBroadcastTitlePageState extends State<LiveBroadcastTitlePage> {
   }
 
   /*
-  * 1,手动滑动body页面，触发这个函数1
+  * 1,手动滑动body页面，触发这个函数
   * 2，当点击title Item时，会调用itemClick，itemClick中会滚动body内容到指定页面，然后触发这个函数
   * */
   void bodyPageChange(int pos) {
