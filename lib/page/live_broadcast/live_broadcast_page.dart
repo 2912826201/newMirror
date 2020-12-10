@@ -167,13 +167,15 @@ class BodyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _getPageViewItemList();
-    return PageView.builder(
-        controller: controller,
-        itemCount: dates.length,
-        onPageChanged: pageChangeCall,
-        itemBuilder: (context, pos) {
-          return _buildItemPage(pos);
-        }
+    return ScrollConfiguration(
+      behavior: NoBlueEffectBehavior(),
+      child: PageView.builder(
+          controller: controller,
+          itemCount: dates.length,
+          onPageChanged: pageChangeCall,
+          itemBuilder: (context, pos) {
+            return _buildItemPage(pos);
+          }),
     );
   }
 

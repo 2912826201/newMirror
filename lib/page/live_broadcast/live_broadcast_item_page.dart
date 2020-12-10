@@ -357,6 +357,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
                               ),
                               bottom: 0,
                               left: 0,
+                              right: 8,
                             )
                           ],
                         ),
