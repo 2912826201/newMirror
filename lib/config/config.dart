@@ -15,9 +15,12 @@ class AppConfig {
   static const String VER = "0.0.1";
 
   //各环境api请求基础路径
-  static const String _DEV_HOST = "http://ifdev.i-fitness.cn";
-  static const String _MIRROR_HOST = "http://ifdev.i-fitness.cn";
-  static const String _PROD_HOST = "http://ifdev.i-fitness.cn";
+  // static const String _DEV_HOST = "http://ifdev.i-fitness.cn";
+  // static const String _MIRROR_HOST = "http://ifdev.i-fitness.cn";
+  // static const String _PROD_HOST = "http://ifdev.i-fitness.cn";
+  static const String _DEV_HOST = "http://ifdev.aimymusic.com";
+  static const String _MIRROR_HOST = "http://ifdev.aimymusic.com";
+  static const String _PROD_HOST = "http://ifdev.aimymusic.com";
   //各环境业务二维码基础路径
   static const String _DEV_QRCODE_HOST = "http://codedev.i-fitness.cn";
   static const String _MIRROR_QRCODE_HOST = "http://codedev.i-fitness.cn";
