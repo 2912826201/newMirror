@@ -15,7 +15,7 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
-import 'package:mirror/util/app_style.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:r_scan/r_scan.dart';

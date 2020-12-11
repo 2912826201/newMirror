@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/media_file_model.dart';
-import 'package:mirror/util/app_style.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';

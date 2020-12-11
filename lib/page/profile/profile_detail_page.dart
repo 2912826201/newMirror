@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/util/app_style.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 void main() {
