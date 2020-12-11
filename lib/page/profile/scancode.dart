@@ -44,13 +44,6 @@ class ScanCodeState extends State<ScanCode>{
           if(result!=null){
             if(_isFirst){
                 Navigator.pop(context,result.message);
-             /* Fluttertoast.showToast(
-                msg: "${result.message.toString()}",
-                toastLength: Toast.LENGTH_SHORT,
-                fontSize: 16,
-                gravity: ToastGravity.CENTER,
-                backgroundColor: AppColor.textHint,
-                textColor: AppColor.white);*/
               _isFirst = false;
             }
           }
@@ -105,7 +98,7 @@ class ScanCodeState extends State<ScanCode>{
         top: 100
       ),
       child:AspectRatio(
-        //拿到相机的aspectRatio
+        ///拿到相机的aspectRatio
         aspectRatio: _controller.value.aspectRatio,
         child: RScanCamera(_controller),
       ),

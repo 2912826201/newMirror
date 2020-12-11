@@ -9,7 +9,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
-import 'home/mine/mine.dart';
+import 'profile/mine.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({Key key, this.pc}) : super(key: key);
