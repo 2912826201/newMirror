@@ -1,24 +1,30 @@
 // import 'package:flutter/cupertino.dart';
+import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
-
+import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/app_style.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:text_span_field/range_style.dart';
 import 'package:text_span_field/text_span_field.dart';
-import 'dart:ui' as ui;
+import 'package:toast/toast.dart';
 
 class ReleasePage extends StatefulWidget {
   @override
@@ -39,6 +45,7 @@ class ReleasePageState extends State<ReleasePage> {
     print("查明￥${Application.selectedMediaFiles}");
     _selectedMediaFiles = Application.selectedMediaFiles;
     Application.selectedMediaFiles = null;
+    // context.read<ReleaseFeedInputNotifier>().setSelectedMediaFiles(_selectedMediaFiles);
     super.initState();
   }
 
@@ -64,7 +71,7 @@ class ReleasePageState extends State<ReleasePage> {
                 child: Column(
                   children: [
                     // 头部布局
-                    FeedHeader(),
+                    FeedHeader(selectedMediaFiles: _selectedMediaFiles),
                     // 中间主视图
                     Expanded(
                         child: Container(
@@ -100,6 +107,58 @@ class ReleasePageState extends State<ReleasePage> {
 
 // 头部布局
 class FeedHeader extends StatelessWidget {
+  FeedHeader({this.selectedMediaFiles});
+
+  SelectedMediaFiles selectedMediaFiles;
+
+  // 发布动态
+  pulishFeed(String inputText, List<Rule> rule, BuildContext context) async {
+    print("输入框文字￥$inputText");
+    print("打印一下规则$rule");
+    print(selectedMediaFiles.list.length);
+    List<File> fileList = [];
+    UploadResults results;
+    List<PicUrlsModel> picUrls = [];
+    List<VideosModel> videos = [];
+    // 检测文本
+    Map<String, dynamic> textModel = await feedTextScan(text: inputText);
+    if (textModel["state"]) {
+      // 上传图片
+      if (selectedMediaFiles.type == mediaTypeKeyImage) {
+        selectedMediaFiles.list.forEach((element) async {
+          if (element.croppedImageData == null) {
+            fileList.add(element.file);
+          } else {
+            fileList.add(await FileUtil().writeImageDataToFile(element.croppedImageData));
+          }
+          picUrls.add(PicUrlsModel(width: element.sizeInfo.width, height: element.sizeInfo.height));
+        });
+        results = await FileUtil().uploadPics(fileList, (path, percent) {});
+        print(results.isSuccess);
+        for (int i = 0; i < results.resultMap.length; i++) {
+          print("打印一下索引值￥$i");
+          UploadResultModel model = results.resultMap.values.elementAt(i);
+          picUrls[i].url = model.url;
+        }
+      } else if (selectedMediaFiles.type == mediaTypeKeyVideo) {
+        selectedMediaFiles.list.forEach((element) {
+          fileList.add(element.file);
+          videos.add(VideosModel(
+              width: element.sizeInfo.width, height: element.sizeInfo.height, duration: element.sizeInfo.duration));
+        });
+        results = await FileUtil().uploadMedias(fileList, (path, percent) {});
+        for (int i = 0; i < results.resultMap.length; i++) {
+          print("打印一下视频索引值￥$i");
+          UploadResultModel model = results.resultMap.values.elementAt(i);
+          videos[i].url = model.url;
+          videos[i].coverUrl = model.url + "?vframe/jpg/offset/1";
+        }
+      }
+      // await publishFeed(type: 0, content: inputText, picUrls: jsonEncode(picUrls), videos: jsonEncode(videos));
+    } else {
+      ToastShow.show(msg:"你发布的动态可能存在敏感内容",context: context,gravity: Toast.CENTER);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +179,6 @@ class FeedHeader extends StatelessWidget {
               iconSting: "images/resource/2.0x/shut_down@2x.png",
               onPressed: () {
                 Navigator.of(context).pop(true);
-                Application.selectedMediaFiles = null;
               },
             ),
           ),
@@ -128,8 +186,11 @@ class FeedHeader extends StatelessWidget {
           GestureDetector(
               onTap: () {
                 // 读取输入框最新的值
-                // print(context.read<CommentEnterNotifier>().textFieldStr);
+                var inputText = context.read<ReleaseFeedInputNotifier>().inputText;
+                // 获取输入框内的规则
+                var rules = context.read<ReleaseFeedInputNotifier>().rules;
                 print("点击生效");
+                pulishFeed(inputText, rules,context);
               },
               child: IgnorePointer(
                 // 监听输入框的值==""使外层点击不生效。非""手势生效。
@@ -699,60 +760,63 @@ class SeletedPhotoState extends State<SeletedPhoto> {
   void initState() {
     resolveData();
   }
+
   // 进入相册的添加视图
   addView() {
-    if ((widget.selectedMediaFiles.type == mediaTypeKeyImage  && widget.selectedMediaFiles.list.length < 9)
-    || (widget.selectedMediaFiles.type == null))
-   {
-    return GestureDetector(
-       onTap: () {
-         int type = typeImage;
-         if (widget.selectedMediaFiles.type == null ) {
-           type = typeImageAndVideo;
-         } else if (widget.selectedMediaFiles.type == mediaTypeKeyImage){
-           type = typeImage;
-         }
-         AppRouter.navigateToMediaPickerPage(context, 9 - widget.selectedMediaFiles.list.length,
-             type, true, startPageGallery, false, false, (result) async {
-               SelectedMediaFiles files = Application.selectedMediaFiles;
-               if (true != result || files == null) {
-                 print("没有选择媒体文件");
-                 return;
-               }
-               if (widget.selectedMediaFiles.type == null) {
-                 widget.selectedMediaFiles.type = files.type;
-               }
-               Application.selectedMediaFiles = null;
-               print(files.type + ":" + files.list.toString());
-               for (MediaFileModel model in files.list) {
-                 if (model.croppedImage != null) {
-                   print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-                   ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
-                   print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-                   Uint8List picBytes = byteData.buffer.asUint8List();
-                   print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
-                   model.croppedImageData = picBytes;
-                 }
-               }
-               widget.selectedMediaFiles.list.addAll(files.list);
-               setState(() {});
-             });
-       },
-       child: Container(
-         margin: EdgeInsets.only(left: 10, top: 9, right: 16),
-         width: 86,
-         height: 86,
-         decoration: BoxDecoration(
-           color: AppColor.bgWhite,
-           borderRadius: BorderRadius.all(Radius.circular(3.0)),
-         ),
-         child: Center(
-           child: Icon(Icons.add, color: AppColor.textHint),
-         ),
-       ),
-     );
-   }
+    if ((widget.selectedMediaFiles.type == mediaTypeKeyImage && widget.selectedMediaFiles.list.length < 9) ||
+        (widget.selectedMediaFiles.type == null)) {
+      return GestureDetector(
+        onTap: () {
+          int type = typeImage;
+          if (widget.selectedMediaFiles.type == null) {
+            type = typeImageAndVideo;
+          } else if (widget.selectedMediaFiles.type == mediaTypeKeyImage) {
+            type = typeImage;
+          }
+          AppRouter.navigateToMediaPickerPage(
+              context, 9 - widget.selectedMediaFiles.list.length, type, true, startPageGallery, false, false,
+              (result) async {
+            SelectedMediaFiles files = Application.selectedMediaFiles;
+            if (true != result || files == null) {
+              print("没有选择媒体文件");
+              return;
+            }
+            if (widget.selectedMediaFiles.type == null) {
+              widget.selectedMediaFiles.type = files.type;
+            }
+            Application.selectedMediaFiles = null;
+            print(files.type + ":" + files.list.toString());
+            for (MediaFileModel model in files.list) {
+              if (model.croppedImage != null) {
+                print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
+                print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                Uint8List picBytes = byteData.buffer.asUint8List();
+                print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
+                model.croppedImageData = picBytes;
+              }
+            }
+            widget.selectedMediaFiles.list.addAll(files.list);
+            context.read<ReleaseFeedInputNotifier>().setSelectedMediaFiles(widget.selectedMediaFiles);
+            setState(() {});
+          });
+        },
+        child: Container(
+          margin: EdgeInsets.only(left: 10, top: 9, right: 16),
+          width: 86,
+          height: 86,
+          decoration: BoxDecoration(
+            color: AppColor.bgWhite,
+            borderRadius: BorderRadius.all(Radius.circular(3.0)),
+          ),
+          child: Center(
+            child: Icon(Icons.add, color: AppColor.textHint),
+          ),
+        ),
+      );
+    }
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -807,31 +871,31 @@ class SeletedPhotoState extends State<SeletedPhoto> {
                                 : Container(),
                   ),
                   Positioned(
-                          right: 0,
-                          // top: ,
-                          child: GestureDetector(
-                            onTap: () {
-                              print("关闭");
-                              setState(() {
-                                widget.selectedMediaFiles.list.removeAt(index);
-                                if( widget.selectedMediaFiles.list.length == 0) {
-                                  widget.selectedMediaFiles.type = null;
-                                }
-                              });
-                            },
-                            child: Container(
-                              width: 16,
-                              height: 16,
-                              decoration: BoxDecoration(
-                                  color: AppColor.bgBlack, borderRadius: BorderRadius.all(Radius.circular(8))),
-                              child: Center(
-                                  child: Icon(
-                                Icons.close,
-                                color: AppColor.white,
-                                size: 12,
-                              )),
-                            ),
-                          ))
+                      right: 0,
+                      // top: ,
+                      child: GestureDetector(
+                        onTap: () {
+                          print("关闭");
+                          setState(() {
+                            widget.selectedMediaFiles.list.removeAt(index);
+                            if (widget.selectedMediaFiles.list.length == 0) {
+                              widget.selectedMediaFiles.type = null;
+                            }
+                          });
+                        },
+                        child: Container(
+                          width: 16,
+                          height: 16,
+                          decoration: BoxDecoration(
+                              color: AppColor.bgBlack, borderRadius: BorderRadius.all(Radius.circular(8))),
+                          child: Center(
+                              child: Icon(
+                            Icons.close,
+                            color: AppColor.white,
+                            size: 12,
+                          )),
+                        ),
+                      ))
                 ],
               ),
             );
@@ -843,7 +907,13 @@ class SeletedPhotoState extends State<SeletedPhoto> {
 // 发布动态文本监听
 class ReleaseFeedInputNotifier extends ChangeNotifier {
   ReleaseFeedInputNotifier(
-      {this.keyWord, this.inputText, this.rules, this.atCursorIndex, this.atSearchStr, this.topicSearchStr});
+      {this.keyWord,
+      this.inputText,
+      this.rules,
+      this.atCursorIndex,
+      this.atSearchStr,
+      this.topicSearchStr,
+      this.selectedMediaFiles});
 
   // 监听输入框输入的值是否为@#切换视图的
   String keyWord = "";
@@ -865,6 +935,9 @@ class ReleaseFeedInputNotifier extends ChangeNotifier {
 
   // #后的实时搜索文本
   String topicSearchStr;
+
+  // 发布动态选择的图片视频
+  SelectedMediaFiles selectedMediaFiles;
 
   getAtCursorIndex(int atIndex) {
     this.atCursorIndex = atIndex;
@@ -898,6 +971,11 @@ class ReleaseFeedInputNotifier extends ChangeNotifier {
 
   setTopicSearchStr(String str) {
     this.topicSearchStr = str;
+    notifyListeners();
+  }
+
+  setSelectedMediaFiles(SelectedMediaFiles _selectedMediaFiles) {
+    this.selectedMediaFiles = _selectedMediaFiles;
     notifyListeners();
   }
 }
