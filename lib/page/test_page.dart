@@ -17,6 +17,8 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:provider/provider.dart';
 
+import 'profile/profile_page.dart';
+
 /// test_page
 /// Created by yangjiayi on 2020/10/27.
 
@@ -113,6 +115,14 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                     child: Text("换个用户名(不会上报或入库)"),
                   );
                 },
+              ),
+              RaisedButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                    return ProfilePage();
+                  }));
+                },
+                child: Text("登录入口"),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

@@ -1,11 +1,8 @@
 import 'dart:ui';
 
-import 'package:animations/animations.dart';
-import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -18,12 +15,13 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
-import 'file:///F:/HD/AndroidCode4/mirror/lib/page/profile/mine_home.dart';
-import 'file:///F:/HD/AndroidCode4/mirror/lib/page/profile/scancode.dart';
 import 'package:mirror/util/app_style.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:r_scan/r_scan.dart';
+
+import 'mine_home.dart';
+import 'scancode.dart';
 enum ActionItems{
   DENGCHU,DENGLU
 }

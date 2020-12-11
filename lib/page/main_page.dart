@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'profile/mine.dart';
+import 'training/training_page.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({Key key, this.pc}) : super(key: key);
@@ -21,7 +22,7 @@ class MainPage extends StatefulWidget {
 class MainPageState extends State<MainPage> {
   int currentIndex;
 
-  final pages = [HomePage(), TestPage(), MessagePage(), WoPage()];
+  final pages = [HomePage(), TrainingPage(), MessagePage(), WoPage()];
   List titles = ["首页", "训练", "消息", "我的"];
   List normalImgUrls = [
     "images/test/home-filling1.png",
