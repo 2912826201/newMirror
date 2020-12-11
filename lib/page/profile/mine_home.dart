@@ -244,8 +244,8 @@ class _mineDetailState extends State<MineDetails>
         indicatorColor: AppColor.black,
         indicatorWeight: 1,
         tabs: [
-          Text("               动态          "),
-          Text("          喜欢               ")
+          Text("                       动态          "),
+          Text("          喜欢                       ")
         ],
       ),
     );
