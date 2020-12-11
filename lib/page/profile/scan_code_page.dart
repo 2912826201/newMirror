@@ -1,7 +1,3 @@
-
-
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -11,26 +7,20 @@ import 'package:mirror/util/app_style.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:r_scan/r_scan.dart';
 
-
-
-void main()async{
-
-}
-class ScanCode extends StatefulWidget{
+class ScanCodePage extends StatefulWidget{
   List<RScanCameraDescription> rScanCameras;
-  ScanCode({this.rScanCameras});
+  ScanCodePage({this.rScanCameras});
 
   @override
-  State<StatefulWidget> createState() {
-        return ScanCodeState();
+  ScanCodeState createState() {
+     return ScanCodeState();
   }
-
 
 }
 
-class ScanCodeState extends State<ScanCode>{
+class ScanCodeState extends State<ScanCodePage>{
   var bgColor=Color(0xffcccccc);
-  String _imgAseet = "images/test/back.png";
+  String _imgAsset = "images/test/back.png";
   RScanCameraController _controller;
   bool _isFirst = true;
   String _imgPath = "";
@@ -117,7 +107,7 @@ class ScanCodeState extends State<ScanCode>{
               onTap: () {
                 Navigator.pop(context);
               },
-              child: Image.asset(_imgAseet),
+              child: Image.asset(_imgAsset),
             )),
           Expanded(child: Container(child: Center(child: Text("扫一扫",style: AppStyle.textRegular16,),),)),
           Center(
