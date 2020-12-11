@@ -11,7 +11,7 @@ import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/commentInputBox.dart';
 import 'package:mirror/page/if_page.dart';
-import 'package:mirror/util/app_style.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/rich_text_widget.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';

@@ -2,23 +2,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/util/app_style.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 void main() {
-  runApp(MineDetails());
+  runApp(ProfileDetailPage());
 }
 
-class MineDetails extends StatefulWidget {
+class ProfileDetailPage extends StatefulWidget {
   int type;
-  MineDetails({this.type});
+  ProfileDetailPage({this.type});
   @override
-  State<StatefulWidget> createState() {
-    return _mineDetailState();
+  _ProfileDetailState createState() {
+    return _ProfileDetailState();
   }
 }
 
-class _mineDetailState extends State<MineDetails>
+class _ProfileDetailState extends State<ProfileDetailPage>
     with SingleTickerProviderStateMixin {
   final String _imgAseet = "images/test/back.png";
   final Color _titleColors = Colors.white;

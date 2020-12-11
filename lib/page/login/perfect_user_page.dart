@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/page/login/login_base_page_state.dart';
-import 'package:mirror/util/app_style.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 ///这是完善资料页
