@@ -24,6 +24,8 @@ class AppRouter {
   static String pathPreviewPhoto = "/previewPhoto";
   static String pathLiveBroadcast = "/liveBroadcast";
   static String pathLiveDetail = "/liveDetail";
+  static String pathScanCode = "/ScanCode";
+  static String pathMineDetails = "mineDetails";
 
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(
@@ -41,6 +43,8 @@ class AppRouter {
     router.define(pathPreviewPhoto, handler: handlerPreviewPhoto);
     router.define(pathLiveBroadcast, handler: handlerLiveBroadcast);
     router.define(pathLiveDetail, handler: handlerLiveDetail);
+    router.define(pathScanCode, handler:handlerScan );
+    router.define(pathMineDetails, handler:handlermineDetails );
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
   }
@@ -90,9 +94,16 @@ class AppRouter {
     _navigateToPage(context, pathLiveDetail, map);
   }
 
+  static void navigationToScanCodePage(BuildContext context){
+    _navigateToPage(context, pathScanCode,{});
+  }
   static void navigateToLikePage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathLike, map);
+  }
+  static void navigateToMineDetail(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathMineDetails, map);
   }
 
   static void navigateToReleasePage(BuildContext context) {

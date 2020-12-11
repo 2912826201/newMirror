@@ -11,6 +11,8 @@ import 'package:mirror/page/login/login_page.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/media_picker/preview_photo_page.dart';
+import 'package:mirror/page/profile/mine_home.dart';
+import 'package:mirror/page/profile/scancode.dart';
 import 'package:mirror/page/rc_test_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_broadcast_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_detail_page.dart';
@@ -54,7 +56,12 @@ var handlerLogin = Handler(handlerFunc: (BuildContext context, Map<String, List<
 var handlerLike = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return Like();
 });
-
+var handlerScan = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+  return ScanCode();
+});
+var handlermineDetails = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+  return MineDetails();
+});
 var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return ReleasePage();

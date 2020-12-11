@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/user_api.dart';
@@ -12,6 +13,8 @@ import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/page/login/perfect_user_page.dart';
+import 'package:mirror/route/router.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/data/model/token_model.dart';
@@ -258,6 +261,8 @@ class _SmsCodePageState extends LoginBasePageState {
       } else if (token.isPerfect == 0) {
         print("没有完善资料");
         Application.tempToken = token;
+        ///完善资料页，
+        /*AppRouter.navigateToPerfectPage(context);*/
         //FIXME 这里要去完善资料页 先写个请求完善资料接口的示例
         _perfectUserInfo();
       } else {
