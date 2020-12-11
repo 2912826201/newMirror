@@ -12,8 +12,7 @@ class ToastShow {
         msg, //必填
         context, //必填
         duration: Toast.LENGTH_SHORT,
-        gravity:  Toast.CENTER,
-        backgroundRadius:4
-    );
+        gravity: Toast.BOTTOM,
+        backgroundRadius: 4);
   }
 }

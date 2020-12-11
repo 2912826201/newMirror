@@ -1,21 +1,30 @@
 import 'dart:ui';
 
-import 'package:animations/animations.dart';
-import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/database/profile_db_helper.dart';
+import 'package:mirror/data/database/token_db_helper.dart';
+import 'package:mirror/data/dto/profile_dto.dart';
+import 'package:mirror/data/dto/token_dto.dart';
+import 'package:mirror/data/model/token_model.dart';
+import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/page/home/mine/mine_home.dart';
-import 'package:mirror/page/home/mine/scancode.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/app_style.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:r_scan/r_scan.dart';
 
+import 'mine_home.dart';
+import 'scancode.dart';
+enum ActionItems{
+  DENGCHU,DENGLU
+}
 class WoPage extends StatefulWidget {
   @override
   createState() => new WoPageState();
@@ -24,7 +33,7 @@ class WoPage extends StatefulWidget {
 class WoPageState extends State<WoPage> with AutomaticKeepAliveClientMixin {
   var bgColor = Color(0xffcccccc);
   bool _isScroll = false;
-
+  final String mIconFontFamily = "appIconFonts";
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
@@ -77,7 +86,7 @@ class WoPageState extends State<WoPage> with AutomaticKeepAliveClientMixin {
                   padding: EdgeInsets.only(left: 20,right: 20,bottom: 20),
                   child: Row(
                     children: [
-                      _secondData(Icons.access_alarms_sharp,244,"训练记录"),
+                      _secondData(Icons.access_alarms_sharp,0,"训练记录"),
                       Expanded(child: Container()),
                       _secondData(Icons.access_alarms_sharp,244,"体重记录"),
                       Expanded(child: Container()),
@@ -138,7 +147,7 @@ class WoPageState extends State<WoPage> with AutomaticKeepAliveClientMixin {
       margin: EdgeInsets.only(top: 44),
       height: 44,
       width: width,
-      padding: EdgeInsets.only(left: 20, right: 20),
+      padding: EdgeInsets.only(left: 20, ),
       child: Row(
         children: [
           Center(
@@ -175,15 +184,63 @@ class WoPageState extends State<WoPage> with AutomaticKeepAliveClientMixin {
             ),
           ),),
           Expanded(child: SizedBox()),
-          Center(child: InkWell(
-              onTap: () {},
-              child: Container(
-                height: 20,
-                width: 20,
-                child: Icon(Icons.add_sharp),
-              )),)
+          Center(
+            child: FlatButton(
+            child: PopupMenuButton(
+              onSelected: (ActionItems selects) async {
+                if(selects == ActionItems.DENGCHU){
+                  TokenModel tokenModel = await login("anonymous", null, null, null);
+                  if (tokenModel != null) {
+                    TokenDto tokenDto = TokenDto.fromTokenModel(tokenModel);
+                    bool result = await logout();
+                    //TODO 这里先不处理登出接口的结果
+                    await TokenDBHelper().insertToken(tokenDto);
+                    context.read<TokenNotifier>().setToken(tokenDto);
+                    await ProfileDBHelper().clearProfile();
+                    context.read<ProfileNotifier>().setProfile(ProfileDto.fromUserModel(UserModel()));
+                  } else {
+                    //失败的情况下 登出将无token可用 所以不能继续登出
+                  }
+                }else{
+                  AppRouter.navigateToLoginPage(context);
+                }
+              },
+              itemBuilder: (BuildContext context){
+                return<PopupMenuItem<ActionItems>>[
+                    PopupMenuItem(
+                      child: _buildPopupMenuItem(0xe606,"登出"),
+                      value: ActionItems.DENGCHU,
+                    ),
+                  PopupMenuItem(
+                    child: _buildPopupMenuItem(0xe606, "登录"),value: ActionItems.DENGLU,),
+
+                ];
+              },
+            ),
+          ),)
         ],
       ),
+    );
+  }
+  _buildPopupMenuItem(int iconName,String title){
+    return Row(
+      children: <Widget>[
+        Icon(
+          IconData(
+            iconName,
+            fontFamily: mIconFontFamily
+          ),
+          size: 22.0,
+          color:Colors.black.withOpacity(0.5),
+        ),
+        Container(),
+        Text(
+          title,
+          style: TextStyle(
+            color: Colors.black.withOpacity(0.5)
+          ),
+        )
+      ],
     );
   }
   ///这里是底部订单成就，为了代码复用写成一个布局，通过传值来改变
@@ -215,15 +272,20 @@ class WoPageState extends State<WoPage> with AutomaticKeepAliveClientMixin {
         Container(
             ///把文字挤下去
             padding: EdgeInsets.only(top: 44),
-          child: Row(
-          children: [
-            _TextAndNumber("关注", 122222),
-            _TextAndNumber("粉丝", 3160000),
-            _TextAndNumber("动态", 222222)
-          ],
-        ),)
+          child:
+            Consumer<ProfileNotifier>(
+              builder: (context, notifier, child) {
+                return Row(
+                children: [
+                    _TextAndNumber("关注", notifier.profile.followingCount),
+                    _TextAndNumber("粉丝", notifier.profile.followerCount),
+                    _TextAndNumber("动态", notifier.profile.feedCount)
+                ]
+                );
+              },
+            ),
 
-
+          )
       ],
     ));
   }
@@ -273,6 +335,7 @@ class WoPageState extends State<WoPage> with AutomaticKeepAliveClientMixin {
 }
   ///这里是关注粉丝动态
   Widget _TextAndNumber(String text, int number) {
+    print('__________________________$number');
     return Container(
           height: 73,
           width: 73,
@@ -294,9 +357,12 @@ class WoPageState extends State<WoPage> with AutomaticKeepAliveClientMixin {
 
   ///数值大小判断,过万用字符串拼接
   String _getNumber(int number) {
+    if(number==null){
+      number = 0;
+    }
     if (number < 10000) {
       return number.toString();
-    } else {
+    } else  {
       String db = (number / 10000).toString();
       String doubleText = db.substring(0, db.indexOf(".") );
       return doubleText + "W";
@@ -368,7 +434,7 @@ class WoPageState extends State<WoPage> with AutomaticKeepAliveClientMixin {
                 height: 10,
               ),
               Text(
-                "$number",
+                number!=0?"$number":"— —",
                 style: AppStyle.textRegular14,
               )
             ],
