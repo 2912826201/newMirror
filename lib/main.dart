@@ -78,8 +78,10 @@ Future _initApp() async {
   //创建各文件路径
   AppConfig.createAppDir();
 
-  Map<String, dynamic> videoCourseTagMap = await getAllTags();
-  Application.videoTagModel = VideoTagModel.fromJson(videoCourseTagMap);
+  try {
+    Map<String, dynamic> videoCourseTagMap = await getAllTags();
+    Application.videoTagModel = VideoTagModel.fromJson(videoCourseTagMap);
+  } catch (e) {}
 
   //获取相机信息
   try {

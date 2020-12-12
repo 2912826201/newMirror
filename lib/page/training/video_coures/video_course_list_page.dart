@@ -89,7 +89,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
             child: IconButton(
               icon: Icon(Icons.search),
               onPressed: () {
-                ToastShow.show("搜索界面", context);
+                ToastShow.show(msg: "搜索界面", context: context);
               },
             ),
           )
@@ -557,34 +557,38 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
     }
 
     if (videoTagModel == null) {
-      Map<String, dynamic> videoCourseTagMap = await getAllTags();
-      Application.videoTagModel = VideoTagModel.fromJson(videoCourseTagMap);
-      videoTagModel = Application.videoTagModel;
+      try {
+        Map<String, dynamic> videoCourseTagMap = await getAllTags();
+        Application.videoTagModel = VideoTagModel.fromJson(videoCourseTagMap);
+        videoTagModel = Application.videoTagModel;
+      } catch (e) {}
     }
 
     //todo 这里应该是获取对应的日期 但是现在其他日期没有数据
     // Map<String, dynamic> model = await getLiveCourses(date: DateUtil.formatDateString(dataDate));
-    Map<String, dynamic> model = await getLiveCourses(date: "2020-11-16");
-    if (model != null && model["list"] != null) {
-      model["list"].forEach((v) {
-        liveModelArray.add(LiveModel.fromJson(v));
-        liveModelArray.add(LiveModel.fromJson(v));
-        liveModelArray.add(LiveModel.fromJson(v));
-        liveModelArray.add(LiveModel.fromJson(v));
-        liveModelArray.add(LiveModel.fromJson(v));
-        liveModelArray.add(LiveModel.fromJson(v));
-        liveModelArray.add(LiveModel.fromJson(v));
-        liveModelArray.add(LiveModel.fromJson(v));
-        liveModelArray.add(LiveModel.fromJson(v));
-        liveModelArray.add(LiveModel.fromJson(v));
-        liveModelArray.add(LiveModel.fromJson(v));
-        liveModelArray.add(LiveModel.fromJson(v));
-        liveModelArray.add(LiveModel.fromJson(v));
-        liveModelArray.add(LiveModel.fromJson(v));
-        liveModelArray.add(LiveModel.fromJson(v));
-        liveModelArray.add(LiveModel.fromJson(v));
-      });
-    }
+    try {
+      Map<String, dynamic> model = await getLiveCourses(date: "2020-11-16");
+      if (model != null && model["list"] != null) {
+        model["list"].forEach((v) {
+          liveModelArray.add(LiveModel.fromJson(v));
+          liveModelArray.add(LiveModel.fromJson(v));
+          liveModelArray.add(LiveModel.fromJson(v));
+          liveModelArray.add(LiveModel.fromJson(v));
+          liveModelArray.add(LiveModel.fromJson(v));
+          liveModelArray.add(LiveModel.fromJson(v));
+          liveModelArray.add(LiveModel.fromJson(v));
+          liveModelArray.add(LiveModel.fromJson(v));
+          liveModelArray.add(LiveModel.fromJson(v));
+          liveModelArray.add(LiveModel.fromJson(v));
+          liveModelArray.add(LiveModel.fromJson(v));
+          liveModelArray.add(LiveModel.fromJson(v));
+          liveModelArray.add(LiveModel.fromJson(v));
+          liveModelArray.add(LiveModel.fromJson(v));
+          liveModelArray.add(LiveModel.fromJson(v));
+          liveModelArray.add(LiveModel.fromJson(v));
+        });
+      }
+    } catch (e) {}
 
     print("直播当日的的数量：${liveModelArray.length}");
     if (liveModelArray.length > 0) {

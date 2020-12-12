@@ -5,7 +5,6 @@ import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
-import 'package:mirror/page/training/live_broadcast/live_broadcast_page.dart';
 import 'package:mirror/page/training/live_broadcast/sliver_custom_header_delegate.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -411,7 +410,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                   style: TextStyle(fontSize: 14, color: AppColor.textHint)),
             ),
             onTap: () {
-              ToastShow.show("点击了添加评论", context);
+              ToastShow.show(msg: "点击了添加评论", context: context);
             },
           ),
         ],

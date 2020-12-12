@@ -31,6 +31,9 @@ class LiveModel {
   int playType; //播放类型-0没有设置 1去上课  2预约  3回放 4已预约
 
   String getGetPlayType() {
+    if (this.isBooked == 1) {
+      this.playType = 4;
+    }
     if (this.playType == 2) {
       return "预约";
     } else if (this.playType == 3) {

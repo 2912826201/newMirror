@@ -48,7 +48,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   var liveModelOldArray = <LiveModel>[];
 
   //日历内有多少个提醒计划
-  var calendarEvents = <Event>[];
+  // var calendarEvents = <Event>[];
 
   //hero动画的标签
   var heroTagArray = <String>[];
@@ -65,8 +65,9 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     //获取本地日历已经预约的课程
     print("====initState-${dataDate}");
     loadingStatus = LoadingStatus.STATUS_LOADING;
+    liveModelArray.clear();
     getLiveModelData();
-    _retrieveCalendarEvents();
+    // _retrieveCalendarEvents();
   }
 
   @override
@@ -78,7 +79,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   //判断是否获取网络数据
   Widget _buildSuggestions() {
     if (liveModelArray != null && liveModelArray.length > 0) {
-      setDataCalendar();
+      // setDataCalendar();
       return _getUi();
     } else {
       if (loadingStatus == LoadingStatus.STATUS_LOADING) {
@@ -95,6 +96,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
               onTap: () {
                 loadingStatus = LoadingStatus.STATUS_LOADING;
                 setState(() {});
+                liveModelArray.clear();
                 getLiveModelData();
 
                 // AppRouter.navigateToLiveDetail(context, "0",1);
@@ -452,24 +454,24 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
 
   //设置数据
   //应该要判断一下时间，以免 id相同 时间不同导致错误的预约
-  void setDataCalendar() {
-    if (calendarEvents == null || calendarEvents.length < 1) {
-      return;
-    } else {
-      for (int i = 0; i < calendarEvents.length; i++) {
-        for (int j = 0; j < liveModelArray.length; j++) {
-          if (liveModelArray[j].name == calendarEvents[i].title &&
-              liveModelArray[j].coursewareDto?.name ==
-                  calendarEvents[i].description &&
-              liveModelArray[j].startTime ==
-                  DateUtil.formatDateTimeString(calendarEvents[i].start)) {
-            liveModelArray[j].playType = 4;
-            break;
-          }
-        }
-      }
-    }
-  }
+  // void setDataCalendar() {
+  //   if (calendarEvents == null || calendarEvents.length < 1) {
+  //     return;
+  //   } else {
+  //     for (int i = 0; i < calendarEvents.length; i++) {
+  //       for (int j = 0; j < liveModelArray.length; j++) {
+  //         if (liveModelArray[j].name == calendarEvents[i].title &&
+  //             liveModelArray[j].coursewareDto?.name ==
+  //                 calendarEvents[i].description &&
+  //             liveModelArray[j].startTime ==
+  //                 DateUtil.formatDateTimeString(calendarEvents[i].start)) {
+  //           liveModelArray[j].playType = 4;
+  //           break;
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   //点击item按钮判断怎么响应
   void onClickItem(LiveModel value, int index) {
@@ -499,13 +501,13 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
             );
           });
     } else if (value.playType == 1) {
-      ToastShow.show("点击-去上课-应该直接去直播间", context);
+      ToastShow.show(msg: "点击-去上课-应该直接去直播间", context: context);
       //todo 先这样实现---以后再改为路由
       LiveBroadcastPage.liveModel = value;
       AppRouter.navigateToLiveDetail(
           context, heroTagArray[index], value.id, value.courseId);
     } else {
-      ToastShow.show("去直播详情页", context);
+      ToastShow.show(msg: "去直播详情页", context: context);
       //todo 先这样实现---以后再改为路由
       LiveBroadcastPage.liveModel = value;
       AppRouter.navigateToLiveDetail(
@@ -547,26 +549,28 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
       } else {
         if (isBook) {
           ToastShow.show(
-            "预约成功，但是添加日历提醒失败",
-            context,
+            msg: "预约成功，但是添加日历提醒失败",
+            context: context,
           );
         } else {
           ToastShow.show(
-            "删除预约成功，但是删除日历提醒失败",
-            context,
+            msg: "删除预约成功，但是删除日历提醒失败",
+            context: context,
           );
         }
+        liveModelArray.clear();
+        getLiveModelData();
       }
     } else {
       if (isBook) {
-        ToastShow.show(
-          "预约失败",
-          context,
+        ToastShow.show(msg:
+        "预约失败",
+          context: context,
         );
       } else {
-        ToastShow.show(
-          "删除预约失败",
-          context,
+        ToastShow.show(msg:
+        "删除预约失败",
+          context: context,
         );
       }
     }
@@ -589,7 +593,8 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
       if (result.isSuccess) {
         createEvent(result.data, _deviceCalendarPlugin, value, alert, isBook);
       } else {
-        ToastShow.show("${alert}，但是${isBook ? "添加" : "删除"}日历提醒失败", context);
+        ToastShow.show(
+            msg: "${alert}，但是${isBook ? "添加" : "删除"}日历提醒失败", context: context);
       }
     } else {
       createEvent(
@@ -613,29 +618,31 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     var createEventResult =
     await _deviceCalendarPlugin.createOrUpdateEvent(_event);
     if (createEventResult.isSuccess) {
-      ToastShow.show("${alert}，${isBook ? "添加" : "删除"}日历成功", context);
-      _retrieveCalendarEvents();
+      ToastShow.show(
+          msg: "${alert}，${isBook ? "添加" : "删除"}日历成功", context: context);
+      // _retrieveCalendarEvents();
     } else {
-      ToastShow.show("${alert}，${isBook ? "添加" : "删除"}日历失败", context);
+      ToastShow.show(
+          msg: "${alert}，${isBook ? "添加" : "删除"}日历失败", context: context);
     }
   }
 
   //获取所有的记录
-  Future _retrieveCalendarEvents() async {
-    DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
-    final startDate = DateTime.now().add(Duration(days: -30));
-    final endDate = DateTime.now().add(Duration(days: 30));
-    List<Calendar> _calendars;
-    final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
-    _calendars = calendarsResult?.data;
-    if (_calendars != null && _calendars.length > 0) {
-      var calendarEventsResult = await _deviceCalendarPlugin.retrieveEvents(
-          _calendars[0].id,
-          RetrieveEventsParams(startDate: startDate, endDate: endDate));
-      calendarEvents = calendarEventsResult?.data;
-      setState(() {});
-    }
-  }
+  // Future _retrieveCalendarEvents() async {
+  //   DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
+  //   final startDate = DateTime.now().add(Duration(days: -30));
+  //   final endDate = DateTime.now().add(Duration(days: 30));
+  //   List<Calendar> _calendars;
+  //   final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
+  //   _calendars = calendarsResult?.data;
+  //   if (_calendars != null && _calendars.length > 0) {
+  //     var calendarEventsResult = await _deviceCalendarPlugin.retrieveEvents(
+  //         _calendars[0].id,
+  //         RetrieveEventsParams(startDate: startDate, endDate: endDate));
+  //     calendarEvents = calendarEventsResult?.data;
+  //     setState(() {});
+  //   }
+  // }
 
 // 获取指定日期的直播日程
   getLiveModelData() async {
