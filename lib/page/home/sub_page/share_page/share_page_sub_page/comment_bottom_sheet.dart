@@ -62,8 +62,8 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
         loadStatus = LoadingStatus.STATUS_LOADING;
       });
     }
-    Map<String, dynamic> model =
-        await queryListByHot(targetId: widget.feedId, targetType: 0, page: this.dataPage, size: 20);
+    Map<String, dynamic> model = await queryListByHot(
+        targetId: widget.feedId, targetType: 0, page: this.dataPage, size: 20);
     setState(() {
       if (this.dataPage == 1) {
         if (model["list"] != null) {

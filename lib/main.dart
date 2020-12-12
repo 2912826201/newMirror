@@ -6,9 +6,11 @@ import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:provider/provider.dart';
 
+import 'api/live_broadcast/live_api.dart';
 import 'api/user_api.dart';
 import 'config/application.dart';
 import 'config/config.dart';
@@ -75,6 +77,9 @@ Future _initApp() async {
 
   //创建各文件路径
   AppConfig.createAppDir();
+
+  Map<String, dynamic> videoCourseTagMap = await getAllTags();
+  Application.videoTagModel = VideoTagModel.fromJson(videoCourseTagMap);
 
   //获取相机信息
   try {

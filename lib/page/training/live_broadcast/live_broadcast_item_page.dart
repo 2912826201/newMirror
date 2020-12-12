@@ -6,20 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/live_broadcast/live_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/live_model.dart';
+import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:mirror/api/live_broadcast/live_api.dart';
 
-enum LoadingStatus {
-  //正在加载中
-  STATUS_LOADING,
-  //数据加载完成
-  STATUS_COMPLETED,
-  //空闲状态
-  STATUS_IDEL,
-}
+import 'live_broadcast_page.dart';
 
 /// 直播日程页
 class LiveBroadcastItemPage extends StatefulWidget {
@@ -101,6 +96,8 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
                 loadingStatus = LoadingStatus.STATUS_LOADING;
                 setState(() {});
                 getLiveModelData();
+
+                // AppRouter.navigateToLiveDetail(context, "0",1);
               },
             ),
           ),
@@ -390,7 +387,6 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     if (isOld) {
       value.playType = 3;
     }
-    print("${value.playType}----${value.getGetPlayType()}---${isOld}");
     return GestureDetector(
       child: Container(
         width: 72,
@@ -462,8 +458,6 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     } else {
       for (int i = 0; i < calendarEvents.length; i++) {
         for (int j = 0; j < liveModelArray.length; j++) {
-          print(
-              "---${liveModelArray[j].startTime}----${DateUtil.formatDateTimeString(calendarEvents[i].start)}");
           if (liveModelArray[j].name == calendarEvents[i].title &&
               liveModelArray[j].coursewareDto?.name ==
                   calendarEvents[i].description &&
@@ -478,21 +472,110 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   }
 
   //点击item按钮判断怎么响应
-  void onClickItem(LiveModel value, index) {
+  void onClickItem(LiveModel value, int index) {
     if (value.playType == 2) {
-      //todo android 添加日历提醒 测试没有问题-虽然没有全机型测试------ios还未测试
-      onClickMakeAnAppointment(value);
+      showCupertinoDialog(
+          context: context,
+          builder: (context) {
+            return CupertinoAlertDialog(
+              title: Text('访问日历'),
+              content: Text('’IFITNESS‘想访问您的日历，才能添加提醒事项，以便开播前提醒'),
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  child: Text('不允许'),
+                  onPressed: () {
+                    _bookLiveCourse(value, index, false);
+                    Navigator.pop(context);
+                  },
+                ),
+                CupertinoDialogAction(
+                  child: Text('好'),
+                  onPressed: () {
+                    _bookLiveCourse(value, index, true);
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            );
+          });
     } else if (value.playType == 1) {
       ToastShow.show("点击-去上课-应该直接去直播间", context);
-      AppRouter.navigateToLiveDetail(context, heroTagArray[index]);
+      //todo 先这样实现---以后再改为路由
+      LiveBroadcastPage.liveModel = value;
+      AppRouter.navigateToLiveDetail(
+          context, heroTagArray[index], value.id, value.courseId);
     } else {
       ToastShow.show("去直播详情页", context);
-      AppRouter.navigateToLiveDetail(context, heroTagArray[index]);
+      //todo 先这样实现---以后再改为路由
+      LiveBroadcastPage.liveModel = value;
+      AppRouter.navigateToLiveDetail(
+          context, heroTagArray[index], value.id, value.courseId);
+    }
+  }
+
+  void _bookLiveCourse(LiveModel value, int index, bool isCalendar) async {
+    String alert = "";
+    bool isBook;
+    bool settingTF;
+    if (value.playType == 2) {
+      alert = "预约失败";
+      isBook = true;
+      settingTF = false;
+    } else {
+      alert = "取消预约失败";
+      isBook = false;
+      settingTF = false;
+    }
+    Map<String, dynamic> mapBook = await bookLiveCourse(
+        courseId: value.courseId, isBook: value.playType == 2);
+    if (mapBook != null) {
+      if (mapBook["state"]) {
+        if (value.playType == 2) {
+          alert = "预约成功";
+          isBook = true;
+          settingTF = true;
+        } else {
+          alert = "取消预约成功";
+          isBook = false;
+          settingTF = true;
+        }
+      }
+    }
+    if (settingTF) {
+      if (!isCalendar) {
+        onClickMakeAnAppointment(value, alert, isBook);
+      } else {
+        if (isBook) {
+          ToastShow.show(
+            "预约成功，但是添加日历提醒失败",
+            context,
+          );
+        } else {
+          ToastShow.show(
+            "删除预约成功，但是删除日历提醒失败",
+            context,
+          );
+        }
+      }
+    } else {
+      if (isBook) {
+        ToastShow.show(
+          "预约失败",
+          context,
+        );
+      } else {
+        ToastShow.show(
+          "删除预约失败",
+          context,
+        );
+      }
     }
   }
 
   //点击预约后-查询是否有创建提醒的空间id
-  void onClickMakeAnAppointment(LiveModel value) async {
+  void onClickMakeAnAppointment(
+      LiveModel value, String alert, bool isBook) async {
+    //todo android 添加日历提醒 测试没有问题-虽然没有全机型测试------ios还未测试
     await [Permission.calendar].request();
     DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
     List<Calendar> _calendars;
@@ -504,18 +587,19 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
         localAccountName: "mirror——1",
       );
       if (result.isSuccess) {
-        createEvent(result.data, _deviceCalendarPlugin, value);
+        createEvent(result.data, _deviceCalendarPlugin, value, alert, isBook);
       } else {
-        ToastShow.show("添加日历预约错误", context);
+        ToastShow.show("${alert}，但是${isBook ? "添加" : "删除"}日历提醒失败", context);
       }
     } else {
-      createEvent(_calendars[0].id, _deviceCalendarPlugin, value);
+      createEvent(
+          _calendars[0].id, _deviceCalendarPlugin, value, alert, isBook);
     }
   }
 
   //创建提醒
   void createEvent(String id, DeviceCalendarPlugin _deviceCalendarPlugin,
-      LiveModel value) async {
+      LiveModel value, String alert, bool isBook) async {
     Event _event = new Event(id);
     DateTime startTime = DateUtil.stringToDateTime(value.startTime);
     _event.start = startTime;
@@ -529,10 +613,10 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     var createEventResult =
         await _deviceCalendarPlugin.createOrUpdateEvent(_event);
     if (createEventResult.isSuccess) {
-      ToastShow.show("添加提醒成功", context);
+      ToastShow.show("${alert}，${isBook ? "添加" : "删除"}日历成功", context);
       _retrieveCalendarEvents();
     } else {
-      ToastShow.show("添加提醒失败", context);
+      ToastShow.show("${alert}，${isBook ? "添加" : "删除"}日历失败", context);
     }
   }
 
