@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/ball_pulse_footer.dart';
@@ -9,9 +12,13 @@ import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/course_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/model/post_feed/post_feed.dart';
+import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
@@ -38,6 +45,12 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   bool get wantKeepAlive => true; //必须重写
 
   var status = Status.notLoggedIn;
+
+  // 发布动态需要的数据
+  PostFeedModel postFeedModel;
+
+  // 发布进度
+  double _process = 0.0;
 
   // 加载中默认文字
   String loadText = "加载中...";
@@ -67,6 +80,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   void initState() {
     isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     print("是否登录$isLoggedIn");
+    postFeedModel = Application.postFeedModel;
+    Application.postFeedModel = null;
     if (!isLoggedIn) {
       status = Status.notLoggedIn;
     } else {
@@ -82,6 +97,111 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     super.initState();
   }
 
+  // 发布动态
+  pulishFeed() async {
+    List<File> fileList = [];
+    UploadResults results;
+    List<PicUrlsModel> picUrls = [];
+    List<VideosModel> videos = [];
+    if (postFeedModel != null) {
+      print("掉发布数据");
+      // 上传图片
+      if (postFeedModel.selectedMediaFiles.type == mediaTypeKeyImage) {
+        // 获取当前时间
+        String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
+        int i = 0;
+        postFeedModel.selectedMediaFiles.list.forEach((element) async {
+          if (element.croppedImageData == null) {
+            fileList.add(element.file);
+          } else {
+            i++;
+            print("%%%%%%%%%%i=$i%%%%%%%%%%%");
+            File imageFile = await FileUtil().writeImageDataToFile(element.croppedImageData, timeStr + i.toString());
+            fileList.add(imageFile);
+          }
+          picUrls.add(PicUrlsModel(width: element.sizeInfo.width, height: element.sizeInfo.height));
+        });
+        results = await FileUtil().uploadPics(fileList, (path, percent) {});
+        print(results.isSuccess);
+        for (int i = 0; i < results.resultMap.length; i++) {
+          print("打印一下索引值￥$i");
+          UploadResultModel model = results.resultMap.values.elementAt(i);
+          picUrls[i].url = model.url;
+        }
+      } else if (postFeedModel.selectedMediaFiles.type == mediaTypeKeyVideo) {
+        postFeedModel.selectedMediaFiles.list.forEach((element) {
+          fileList.add(element.file);
+          videos.add(VideosModel(
+              width: element.sizeInfo.width, height: element.sizeInfo.height, duration: element.sizeInfo.duration));
+        });
+        results = await FileUtil().uploadMedias(fileList, (path, percent) {
+          setState(() {
+            _process = percent;
+          });
+        });
+        for (int i = 0; i < results.resultMap.length; i++) {
+          print("打印一下视频索引值￥$i");
+          UploadResultModel model = results.resultMap.values.elementAt(i);
+          videos[i].url = model.url;
+          videos[i].coverUrl = model.url + "?vframe/jpg/offset/1";
+        }
+
+        // if (feedModel["list"] != null) {
+        //   postFeedModel = null;
+        // }
+      }
+      Map<String, dynamic> feedModel = await publishFeed(
+          type: 0,
+          content: postFeedModel.content,
+          picUrls: jsonEncode(picUrls),
+          videos: jsonEncode(videos),
+          // atUsers: jsonEncode(postFeedModel.atUsersModel),
+          address: postFeedModel.address,
+          latitude: postFeedModel.latitude,
+          longitude: postFeedModel.longitude,
+          cityCode: postFeedModel.cityCode,
+          topicId: postFeedModel.topicId);
+      print("发不接受发布结束：feedModel$feedModel");
+      // setState(() {
+      //   // attentionModel.insert(0, HomeFeedModel.fromJson(feedModel));
+      //   attentionModel.add(HomeFeedModel.fromJson(feedModel));
+      //   postFeedModel = null;
+      // });
+
+    }
+  }
+
+  // 创建发布进度视图
+  createdPostPromptView() {
+    return Container(
+      height: 60,
+      width: ScreenUtil.instance.screenWidthDp - 32,
+      margin: EdgeInsets.only(left: 16, right: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+              child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                color: AppColor.mainRed,
+                margin: EdgeInsets.only(right: 16),
+              ),
+              Text("正在发布")
+            ],
+          )),
+          LinearProgressIndicator(
+            value: _process,
+          ),
+        ],
+      ),
+    );
+  }
+
   // // 推荐页model
 // 推荐页model
   getRecommendFeed() async {
@@ -91,38 +211,46 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         loadStatus = LoadingStatus.STATUS_LOADING;
       });
     }
-    Map<String, dynamic> model = await getPullList(type: 0, size: 20, lastTime: lastTime);
-    setState(() {
-      print("dataPage:  ￥￥$dataPage");
-      if (dataPage == 1) {
-        if (model["list"] != null) {
-          model["list"].forEach((v) {
-            attentionModel.add(HomeFeedModel.fromJson(v));
-          });
-          attentionModel.insert(0, HomeFeedModel());
-          status = Status.concern;
+    print("postFeedModel%%%%%%%$postFeedModel");
+    if (postFeedModel != null) {
+      print("postFeedModel优质");
+      pulishFeed();
+    }
+    // else {
+      print("开始请求动态数据");
+      Map<String, dynamic> model = await getPullList(type: 0, size: 20, lastTime: lastTime);
+      setState(() {
+        print("dataPage:  ￥￥$dataPage");
+        if (dataPage == 1) {
+          if (model["list"] != null) {
+            model["list"].forEach((v) {
+              attentionModel.add(HomeFeedModel.fromJson(v));
+            });
+            attentionModel.insert(0, HomeFeedModel());
+            status = Status.concern;
+          } else {
+            status = Status.noConcern;
+          }
+        } else if (dataPage > 1 && model["lastTime"] != null) {
+          print("5data");
+          if (model["list"] != null) {
+            model["list"].forEach((v) {
+              attentionModel.add(HomeFeedModel.fromJson(v));
+            });
+            print("数据长度${attentionModel.length}");
+          }
+          loadStatus = LoadingStatus.STATUS_IDEL;
+          loadText = "加载中...";
         } else {
-          status = Status.noConcern;
+          // 加载完毕
+          loadText = "已加载全部动态";
+          loadStatus = LoadingStatus.STATUS_COMPLETED;
         }
-      } else if (dataPage > 1 && model["lastTime"] != null) {
-        print("5data");
-        if (model["list"] != null) {
-          model["list"].forEach((v) {
-            attentionModel.add(HomeFeedModel.fromJson(v));
-          });
-          print("数据长度${attentionModel.length}");
-        }
-        loadStatus = LoadingStatus.STATUS_IDEL;
-        loadText = "加载中...";
-      } else {
-        // 加载完毕
-        loadText = "已加载全部动态";
-        loadStatus = LoadingStatus.STATUS_COMPLETED;
-      }
-    });
-    lastTime = model["lastTime"];
-    print("lastTime:    $lastTime");
-    isRequestInterface = true;
+      });
+      lastTime = model["lastTime"];
+      print("lastTime:    $lastTime");
+      isRequestInterface = true;
+    // }
   }
 
   Widget pageDisplay() {
@@ -132,20 +260,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // RaisedButton(
-              //   onPressed: () {
-              //     TokenDto token = Application.token;
-              //     if (token.anonymous == 0) {
-              //       token.anonymous = 1;
-              //     } else {
-              //       token.anonymous = 0;
-              //       token.isPerfect = 1;
-              //       token.isPhone = 1;
-              //     }
-              //     context.read<TokenNotifier>().setToken(token);
-              //   },
-              //   child: Text("更改登录状态(不会上报或入库)慎用"),
-              // ),
               Container(
                 width: 224,
                 height: 224,
@@ -182,20 +296,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // RaisedButton(
-              //   onPressed: () {
-              //     TokenDto token = Application.token;
-              //     if (token.anonymous == 0) {
-              //       token.anonymous = 1;
-              //     } else {
-              //       token.anonymous = 0;
-              //       token.isPerfect = 1;
-              //       token.isPhone = 1;
-              //     }
-              //     context.read<TokenNotifier>().setToken(token);
-              //   },
-              //   child: Text("更改登录状态(不会上报或入库)慎用"),
-              // ),
               Container(
                 width: 224,
                 height: 224,
@@ -265,45 +365,39 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                       print("关注");
                       print(index);
                       print(attentionModel.length);
-                   //  context.read<DynamicModelNotifier>().setDynamicModel(attentionModel[index]);
-                   // HomeFeedModel model =  context.read<DynamicModelNotifier>().dynamicModel;
-                      if (index == attentionModel.length ) {
+                      if (index == attentionModel.length) {
                         return LoadingView(
                           loadText: loadText,
                           loadStatus: loadStatus,
                         );
                       } else {
-                        return index == 0
-                            ?
-                            // RaisedButton(
-                            //         onPressed: () {
-                            //           TokenDto token = Application.token;
-                            //           if (token.anonymous == 0) {
-                            //             token.anonymous = 1;
-                            //           } else {
-                            //             token.anonymous = 0;
-                            //             token.isPerfect = 1;
-                            //             token.isPhone = 1;
-                            //           }
-                            //           context.read<TokenNotifier>().setToken(token);
-                            //         },
-                            //         child: Text("更改登录状态(不会上报或入库)慎用"),
-                            //       )
-                            Container(
-                                height: 14,
-                              )
-                            : DynamicListLayout(
-                                index: index,
-                                pc: widget.pc,
-                                isShowRecommendUser: true,
-                                model: attentionModel[index],
-                                // 可选参数 子Item的个数
-                                key: GlobalObjectKey("attention$index"));
+                        return postFeedStatus(index, postFeedModel);
                       }
                     }),
               )),
         ));
         break;
+    }
+  }
+
+  //发布动态状态
+  postFeedStatus(int index, PostFeedModel postFeedModel) {
+    if (index == 0) {
+      if (postFeedModel != null) {
+        return createdPostPromptView();
+      } else {
+        return Container(
+          height: 14,
+        );
+      }
+    } else {
+      return DynamicListLayout(
+          index: index,
+          pc: widget.pc,
+          isShowRecommendUser: true,
+          model: attentionModel[index],
+          // 可选参数 子Item的个数
+          key: GlobalObjectKey("attention$index"));
     }
   }
 
@@ -321,6 +415,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     print("isRequestInterface:$isRequestInterface");
     if (isLogged && !isRequestInterface) {
       getRecommendFeed();
+    } else {
+      print("进入啦啦啦啦啦杜拉拉多啦");
+      pulishFeed();
     }
     return pageDisplay();
   }

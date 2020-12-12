@@ -159,6 +159,11 @@ class PicUrlsModel {
     // map["size"] = size;
     return map;
   }
+
+  @override
+  String toString() {
+   return toJson().toString();
+  }
 }
 
 // 视频model
@@ -190,6 +195,10 @@ class VideosModel {
     map["duration"] = duration;
     map["coverUrl"] = coverUrl;
     return map;
+  }
+  @override
+  String toString() {
+    return toJson().toString();
   }
 }
 

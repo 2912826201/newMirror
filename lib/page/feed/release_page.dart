@@ -11,7 +11,10 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/model/post_feed/post_feed.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
+import 'package:mirror/page/home/home_page.dart';
+import 'package:mirror/page/home/sub_page/attention_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
@@ -26,7 +29,7 @@ import 'package:text_span_field/range_style.dart';
 import 'package:text_span_field/text_span_field.dart';
 import 'package:toast/toast.dart';
 
-class ReleasePage extends StatefulWidget {
+class ReleasePage extends StatefulWidget  {
   @override
   ReleasePageState createState() => ReleasePageState();
 }
@@ -35,7 +38,6 @@ class ReleasePageState extends State<ReleasePage> {
   SelectedMediaFiles _selectedMediaFiles;
   TextEditingController _controller = TextEditingController();
   FocusNode feedFocus = FocusNode();
-
   // at的索引数组
   List<Rule> rules = [];
 
@@ -45,7 +47,6 @@ class ReleasePageState extends State<ReleasePage> {
     print("查明￥${Application.selectedMediaFiles}");
     _selectedMediaFiles = Application.selectedMediaFiles;
     Application.selectedMediaFiles = null;
-    // context.read<ReleaseFeedInputNotifier>().setSelectedMediaFiles(_selectedMediaFiles);
     super.initState();
   }
 
@@ -108,53 +109,34 @@ class ReleasePageState extends State<ReleasePage> {
 // 头部布局
 class FeedHeader extends StatelessWidget {
   FeedHeader({this.selectedMediaFiles});
-
   SelectedMediaFiles selectedMediaFiles;
 
   // 发布动态
   pulishFeed(String inputText, List<Rule> rule, BuildContext context) async {
     print("输入框文字￥$inputText");
     print("打印一下规则$rule");
-    print(selectedMediaFiles.list.length);
-    List<File> fileList = [];
-    UploadResults results;
-    List<PicUrlsModel> picUrls = [];
-    List<VideosModel> videos = [];
+    PostFeedModel feedModel = PostFeedModel();
+    AtUsersModel atUsersModel = AtUsersModel();
+    String address;
+    String cityCode;
+    String latitude;
+    String longitude;
+    String topicId;
     // 检测文本
     Map<String, dynamic> textModel = await feedTextScan(text: inputText);
     if (textModel["state"]) {
-      // 上传图片
-      if (selectedMediaFiles.type == mediaTypeKeyImage) {
-        selectedMediaFiles.list.forEach((element) async {
-          if (element.croppedImageData == null) {
-            fileList.add(element.file);
-          } else {
-            fileList.add(await FileUtil().writeImageDataToFile(element.croppedImageData));
-          }
-          picUrls.add(PicUrlsModel(width: element.sizeInfo.width, height: element.sizeInfo.height));
-        });
-        results = await FileUtil().uploadPics(fileList, (path, percent) {});
-        print(results.isSuccess);
-        for (int i = 0; i < results.resultMap.length; i++) {
-          print("打印一下索引值￥$i");
-          UploadResultModel model = results.resultMap.values.elementAt(i);
-          picUrls[i].url = model.url;
-        }
-      } else if (selectedMediaFiles.type == mediaTypeKeyVideo) {
-        selectedMediaFiles.list.forEach((element) {
-          fileList.add(element.file);
-          videos.add(VideosModel(
-              width: element.sizeInfo.width, height: element.sizeInfo.height, duration: element.sizeInfo.duration));
-        });
-        results = await FileUtil().uploadMedias(fileList, (path, percent) {});
-        for (int i = 0; i < results.resultMap.length; i++) {
-          print("打印一下视频索引值￥$i");
-          UploadResultModel model = results.resultMap.values.elementAt(i);
-          videos[i].url = model.url;
-          videos[i].coverUrl = model.url + "?vframe/jpg/offset/1";
-        }
-      }
-      // await publishFeed(type: 0, content: inputText, picUrls: jsonEncode(picUrls), videos: jsonEncode(videos));
+      feedModel.content = inputText;
+      feedModel.selectedMediaFiles = selectedMediaFiles;
+      feedModel.atUsersModel = atUsersModel;
+      feedModel.address = address;
+      feedModel.cityCode = cityCode;
+      feedModel.latitude = latitude;
+      feedModel.longitude = longitude;
+      feedModel.topicId = topicId;
+      Application.postFeedModel = feedModel;
+      print("打印一下￥￥${(feedModel.selectedMediaFiles.list.length)}");
+      Navigator.pop(context, true);
+      print("打印结束");
     } else {
       ToastShow.show(msg:"你发布的动态可能存在敏感内容",context: context,gravity: Toast.CENTER);
     }
@@ -877,10 +859,12 @@ class SeletedPhotoState extends State<SeletedPhoto> {
                         onTap: () {
                           print("关闭");
                           setState(() {
-                            widget.selectedMediaFiles.list.removeAt(index);
-                            if (widget.selectedMediaFiles.list.length == 0) {
-                              widget.selectedMediaFiles.type = null;
+                            if (widget.selectedMediaFiles.list.length == 1) {
+                              ToastShow.show(msg: "最后一个了", context: context,gravity: Toast.CENTER);
+                              return;
+                              // widget.selectedMediaFiles.type = null;
                             }
+                            widget.selectedMediaFiles.list.removeAt(index);
                           });
                         },
                         child: Container(

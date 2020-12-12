@@ -295,7 +295,7 @@ class LiveDetailPageState extends State<LiveDetailPage>
                               fontSize: 14, color: AppColor.textHint)),
                     ),
                     onTap: () {
-                      ToastShow.show("点击了添加评论", context);
+                      ToastShow.show(msg:"点击了添加评论",context: context);
                     },
                   ),
                 ],

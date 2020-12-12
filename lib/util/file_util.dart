@@ -39,6 +39,7 @@ class FileUtil {
       String key = _genKey(file);
       // 上传文件
       UploadResult result = await syStorage.upload(file.path, token.upToken, key);
+      print("&@@@@@@@@@@@@@@${file.path}");
       print(result);
       UploadResultModel resultModel = UploadResultModel();
       resultModel.isSuccess = result.success;

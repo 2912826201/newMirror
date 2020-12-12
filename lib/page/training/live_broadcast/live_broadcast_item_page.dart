@@ -483,10 +483,10 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
       //todo android 添加日历提醒 测试没有问题-虽然没有全机型测试------ios还未测试
       onClickMakeAnAppointment(value);
     } else if (value.playType == 1) {
-      ToastShow.show("点击-去上课-应该直接去直播间", context);
+      ToastShow.show(msg:"点击-去上课-应该直接去直播间", context:context);
       AppRouter.navigateToLiveDetail(context, heroTagArray[index]);
     } else {
-      ToastShow.show("去直播详情页", context);
+      ToastShow.show(msg:"去直播详情页",context: context);
       AppRouter.navigateToLiveDetail(context, heroTagArray[index]);
     }
   }
@@ -506,7 +506,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
       if (result.isSuccess) {
         createEvent(result.data, _deviceCalendarPlugin, value);
       } else {
-        ToastShow.show("添加日历预约错误", context);
+        ToastShow.show(msg:"添加日历预约错误", context:context);
       }
     } else {
       createEvent(_calendars[0].id, _deviceCalendarPlugin, value);
@@ -529,10 +529,10 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     var createEventResult =
         await _deviceCalendarPlugin.createOrUpdateEvent(_event);
     if (createEventResult.isSuccess) {
-      ToastShow.show("添加提醒成功", context);
+      ToastShow.show(msg:"添加提醒成功",context: context);
       _retrieveCalendarEvents();
     } else {
-      ToastShow.show("添加提醒失败", context);
+      ToastShow.show(msg:"添加提醒失败",context: context);
     }
   }
 

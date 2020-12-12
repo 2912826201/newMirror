@@ -3,6 +3,7 @@ import 'package:fluro/fluro.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/model/post_feed/post_feed.dart';
 import 'package:mirror/data/model/token_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 
@@ -44,4 +45,7 @@ class Application {
 
   // 用于传递所选图片视频内容，用完后需要删除
   static SelectedMediaFiles selectedMediaFiles;
+
+  // 发布动态需要上传的model数据
+  static PostFeedModel postFeedModel;
 }

@@ -30,13 +30,8 @@ class _TopTabState extends State<HomeTopTab> {
             ),
             onTap: () {
               print("点击了客服");
-              // AppRouter.navigateToReleasePage(context);
               AppRouter.navigateToMediaPickerPage(
                   context, 9, typeImageAndVideo, true, startPageGallery, false, true, (result) {});
-              // Navigator.push(context, MaterialPageRoute(builder: (_) {
-              //   return ReleasePage();
-              // }));
-              // Navigator.of(context).pushReplacementNamed("/release");
             },
           ),
         ),

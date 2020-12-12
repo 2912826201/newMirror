@@ -23,8 +23,8 @@ class CropperImage extends RenderObjectWidget {
     this.maskColor = _defualtMaskColor,
     this.lineColor = Colors.white,
     this.lineWidth = 3,
-    this.outWidth = 256.0,
-    this.outHeight = 256.0,
+    this.outWidth = 1024.0,
+    this.outHeight = 1024.0,
     this.maskPadding = 20.0,
     this.round = 8.0,
   }) : super(key: key);

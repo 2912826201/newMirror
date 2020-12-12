@@ -272,6 +272,22 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
     return GestureDetector(
         onTap: () => _onGridItemTap(context, entity),
         child: Stack(overflow: Overflow.clip, children: [
+          // Builder(builder: (context){
+          //   if(_thumbMap[entity.id] == null){
+          //     return Image.memory(
+          //       _thumbMap[entity.id],
+          //       fit: BoxFit.cover,
+          //       height: _itemSize,
+          //       width: _itemSize,
+          //     );
+          //   }else{
+          //     print("缩略图是空的！！！");
+          //     print("${entity.relativePath}");
+          //     return Container();
+          //   }
+          //
+          //
+          // }),
           Image.memory(
             _thumbMap[entity.id],
             fit: BoxFit.cover,
