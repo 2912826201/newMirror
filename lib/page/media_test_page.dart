@@ -182,9 +182,10 @@ class _MediaTestState extends State<MediaTestPage> {
         if (element.croppedImageData == null) {
           fileList.add(element.file);
         } else {
-          fileList.add(await FileUtil().writeImageDataToFile(element.croppedImageData, timeStr + i.toString()));
+          i++;
+          File imageFile = await FileUtil().writeImageDataToFile(element.croppedImageData, timeStr + i.toString());
+          fileList.add(imageFile);
         }
-        i++;
       });
       results = await FileUtil().uploadPics(fileList, (path, percent) {
         setState(() {
