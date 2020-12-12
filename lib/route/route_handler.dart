@@ -16,6 +16,8 @@ import 'package:mirror/page/profile/scan_code_page.dart';
 import 'package:mirror/page/rc_test_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_broadcast_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_detail_page.dart';
+import 'package:mirror/page/training/video_coures/video_course_list_page.dart';
+import 'package:mirror/page/training/video_coures/video_detail_page.dart';
 import 'package:mirror/route/router.dart';
 
 /// route_handler
@@ -62,25 +64,50 @@ var handlerScan = Handler(handlerFunc: (BuildContext context,Map<String,List<Str
 var handlermineDetails = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
   return ProfileDetailPage();
 });
-var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return ReleasePage();
-});
+var handlerReleaseFeed = Handler(
+    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+      Map<String, dynamic> data = json.decode(
+          params[AppRouter.paramData].first);
+      return ReleasePage();
+    });
 
-var handlerLiveBroadcast = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return LiveBroadcastPage();
-});
+var handlerLiveBroadcast = Handler(
+    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+      return LiveBroadcastPage();
+    });
 
-var handlerLiveDetail = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return LiveDetailPage(
-    heroTag: data["heroTag"],
-  );
-});
+var handlerVideoCourseList = Handler(
+    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+      return VideoCourseListPage();
+    });
 
-var handlerPreviewPhoto = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return PreviewPhotoPage(
-    filePath: data["filePath"],
-  );
-});
+var handlerLiveDetail = Handler(
+    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+      Map<String, dynamic> data = json.decode(
+          params[AppRouter.paramData].first);
+      return LiveDetailPage(
+        heroTag: data["heroTag"],
+        liveCourseId: data["liveCourseId"],
+        courseId: data["courseId"],
+      );
+    });
+
+var handlerVideoDetail = Handler(
+    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+      Map<String, dynamic> data = json.decode(
+          params[AppRouter.paramData].first);
+      return VideoDetailPage(
+        heroTag: data["heroTag"],
+        liveCourseId: data["liveCourseId"],
+        courseId: data["courseId"],
+      );
+    });
+
+var handlerPreviewPhoto = Handler(
+    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+      Map<String, dynamic> data = json.decode(
+          params[AppRouter.paramData].first);
+      return PreviewPhotoPage(
+        filePath: data["filePath"],
+      );
+    });

@@ -1,5 +1,7 @@
 import 'package:mirror/util/date_util.dart';
 
+import 'user_model.dart';
+
 /// id : 2
 /// courseId : 1
 /// name : "减脂塑形"
@@ -60,7 +62,7 @@ class LiveModel {
   String _name;
   int _creatorId;
   int _coachId;
-  CoachDto _coachDto;
+  UserModel _coachDto;
   int _coursewareId;
   CoursewareDto _coursewareDto;
   dynamic _videoUrl;
@@ -90,7 +92,7 @@ class LiveModel {
 
   int get coachId => _coachId;
 
-  CoachDto get coachDto => _coachDto;
+  UserModel get coachDto => _coachDto;
 
   int get coursewareId => _coursewareId;
 
@@ -134,7 +136,7 @@ class LiveModel {
       String name,
       int creatorId,
       int coachId,
-      CoachDto coachDto,
+      UserModel coachDto,
       int coursewareId,
       CoursewareDto coursewareDto,
       dynamic videoUrl,
@@ -187,7 +189,7 @@ class LiveModel {
     _creatorId = json["creatorId"];
     _coachId = json["coachId"];
     _coachDto =
-        json["coachDto"] != null ? CoachDto.fromJson(json["coachDto"]) : null;
+    json["coachDto"] != null ? UserModel.fromJson(json["coachDto"]) : null;
     _coursewareId = json["coursewareId"];
     _coursewareDto = json["coursewareDto"] != null
         ? CoursewareDto.fromJson(json["coursewareDto"])
@@ -493,205 +495,6 @@ class LevelDto {
     map["id"] = _id;
     map["name"] = _name;
     map["updateTime"] = _updateTime;
-    return map;
-  }
-}
-
-/// uid : 1008611
-/// phone : "13111856853"
-/// type : 2
-/// subType : 1
-/// nickName : "爸爸"
-/// avatarUri : "http://devpic.aimymusic.com/app/default_avatar01.png"
-/// description : null
-/// birthday : null
-/// sex : null
-/// constellation : null
-/// cityCode : null
-/// longitude : null
-/// latitude : null
-/// password : "MTMxMTE4NTY4NTM="
-/// address : null
-/// source : null
-/// createTime : 1605182811646
-/// updateTime : null
-/// deletedTime : null
-/// status : 2
-/// age : null
-/// isPerfect : 1
-/// isPhone : 1
-
-class CoachDto {
-  int _uid;
-  String _phone;
-  int _type;
-  int _subType;
-  String _nickName;
-  String _avatarUri;
-  dynamic _description;
-  dynamic _birthday;
-  dynamic _sex;
-  dynamic _constellation;
-  dynamic _cityCode;
-  dynamic _longitude;
-  dynamic _latitude;
-  String _password;
-  dynamic _address;
-  dynamic _source;
-  int _createTime;
-  dynamic _updateTime;
-  dynamic _deletedTime;
-  int _status;
-  dynamic _age;
-  int _isPerfect;
-  int _isPhone;
-
-  int get uid => _uid;
-
-  String get phone => _phone;
-
-  int get type => _type;
-
-  int get subType => _subType;
-
-  String get nickName => _nickName;
-
-  String get avatarUri => _avatarUri;
-
-  dynamic get description => _description;
-
-  dynamic get birthday => _birthday;
-
-  dynamic get sex => _sex;
-
-  dynamic get constellation => _constellation;
-
-  dynamic get cityCode => _cityCode;
-
-  dynamic get longitude => _longitude;
-
-  dynamic get latitude => _latitude;
-
-  String get password => _password;
-
-  dynamic get address => _address;
-
-  dynamic get source => _source;
-
-  int get createTime => _createTime;
-
-  dynamic get updateTime => _updateTime;
-
-  dynamic get deletedTime => _deletedTime;
-
-  int get status => _status;
-
-  dynamic get age => _age;
-
-  int get isPerfect => _isPerfect;
-
-  int get isPhone => _isPhone;
-
-  CoachDto(
-      {int uid,
-      String phone,
-      int type,
-      int subType,
-      String nickName,
-      String avatarUri,
-      dynamic description,
-      dynamic birthday,
-      dynamic sex,
-      dynamic constellation,
-      dynamic cityCode,
-      dynamic longitude,
-      dynamic latitude,
-      String password,
-      dynamic address,
-      dynamic source,
-      int createTime,
-      dynamic updateTime,
-      dynamic deletedTime,
-      int status,
-      dynamic age,
-      int isPerfect,
-      int isPhone}) {
-    _uid = uid;
-    _phone = phone;
-    _type = type;
-    _subType = subType;
-    _nickName = nickName;
-    _avatarUri = avatarUri;
-    _description = description;
-    _birthday = birthday;
-    _sex = sex;
-    _constellation = constellation;
-    _cityCode = cityCode;
-    _longitude = longitude;
-    _latitude = latitude;
-    _password = password;
-    _address = address;
-    _source = source;
-    _createTime = createTime;
-    _updateTime = updateTime;
-    _deletedTime = deletedTime;
-    _status = status;
-    _age = age;
-    _isPerfect = isPerfect;
-    _isPhone = isPhone;
-  }
-
-  CoachDto.fromJson(dynamic json) {
-    _uid = json["uid"];
-    _phone = json["phone"];
-    _type = json["type"];
-    _subType = json["subType"];
-    _nickName = json["nickName"];
-    _avatarUri = json["avatarUri"];
-    _description = json["description"];
-    _birthday = json["birthday"];
-    _sex = json["sex"];
-    _constellation = json["constellation"];
-    _cityCode = json["cityCode"];
-    _longitude = json["longitude"];
-    _latitude = json["latitude"];
-    _password = json["password"];
-    _address = json["address"];
-    _source = json["source"];
-    _createTime = json["createTime"];
-    _updateTime = json["updateTime"];
-    _deletedTime = json["deletedTime"];
-    _status = json["status"];
-    _age = json["age"];
-    _isPerfect = json["isPerfect"];
-    _isPhone = json["isPhone"];
-  }
-
-  Map<String, dynamic> toJson() {
-    var map = <String, dynamic>{};
-    map["uid"] = _uid;
-    map["phone"] = _phone;
-    map["type"] = _type;
-    map["subType"] = _subType;
-    map["nickName"] = _nickName;
-    map["avatarUri"] = _avatarUri;
-    map["description"] = _description;
-    map["birthday"] = _birthday;
-    map["sex"] = _sex;
-    map["constellation"] = _constellation;
-    map["cityCode"] = _cityCode;
-    map["longitude"] = _longitude;
-    map["latitude"] = _latitude;
-    map["password"] = _password;
-    map["address"] = _address;
-    map["source"] = _source;
-    map["createTime"] = _createTime;
-    map["updateTime"] = _updateTime;
-    map["deletedTime"] = _deletedTime;
-    map["status"] = _status;
-    map["age"] = _age;
-    map["isPerfect"] = _isPerfect;
-    map["isPhone"] = _isPhone;
     return map;
   }
 }

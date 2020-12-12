@@ -5,18 +5,19 @@ import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/page/training/live_broadcast/live_broadcast_page.dart';
+import 'package:mirror/page/training/live_broadcast/sliver_custom_header_delegate.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/live_broadcast/live_api.dart';
 
-import 'live_broadcast_page.dart';
-import 'sliver_custom_header_delegate.dart';
+import 'video_course_list_page.dart';
 
 /// 直播详情页
-class LiveDetailPage extends StatefulWidget {
-  const LiveDetailPage(
+class VideoDetailPage extends StatefulWidget {
+  const VideoDetailPage(
       {Key key, this.heroTag, this.liveCourseId, this.courseId})
       : super(key: key);
 
@@ -26,13 +27,13 @@ class LiveDetailPage extends StatefulWidget {
 
   @override
   createState() {
-    return LiveDetailPageState(
+    return VideoDetailPageState(
         heroTag: heroTag, liveCourseId: liveCourseId, courseId: courseId);
   }
 }
 
-class LiveDetailPageState extends State<LiveDetailPage> {
-  LiveDetailPageState(
+class VideoDetailPageState extends State<VideoDetailPage> {
+  VideoDetailPageState(
       {Key key, this.heroTag, this.liveCourseId, this.courseId});
 
   //头部hero的标签
@@ -73,12 +74,11 @@ class LiveDetailPageState extends State<LiveDetailPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     //todo 先这样实现---以后再改为路由
-    liveModel = LiveBroadcastPage.liveModel;
-    LiveBroadcastPage.liveModel = null;
+    liveModel = VideoCourseListPage.videoModel;
+    VideoCourseListPage.videoModel = null;
     courseCommentHot = null;
     courseCommentTime = null;
     if (liveModel == null) {
@@ -112,24 +112,24 @@ class LiveDetailPageState extends State<LiveDetailPage> {
       if (loadingStatus == LoadingStatus.STATUS_LOADING) {
         widgetArray.add(Expanded(
             child: SizedBox(
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            )));
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        )));
       } else {
         widgetArray.add(Expanded(
             child: SizedBox(
-              child: Center(
-                child: GestureDetector(
-                  child: Text("加载失败"),
-                  onTap: () {
-                    loadingStatus = LoadingStatus.STATUS_LOADING;
-                    setState(() {});
-                    getDataAction();
-                  },
-                ),
-              ),
-            )));
+          child: Center(
+            child: GestureDetector(
+              child: Text("加载失败"),
+              onTap: () {
+                loadingStatus = LoadingStatus.STATUS_LOADING;
+                setState(() {});
+                getDataAction();
+              },
+            ),
+          ),
+        )));
       }
       return Container(
         child: Column(children: widgetArray),
@@ -186,10 +186,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
                   title: liveModel.name,
                   collapsedHeight: 40,
                   expandedHeight: 300,
-                  paddingTop: MediaQuery
-                      .of(context)
-                      .padding
-                      .top,
+                  paddingTop: MediaQuery.of(context).padding.top,
                   valueArray: [
                     liveModel.totalTrainingTime.toString(),
                     liveModel.totalCalories.toString(),
@@ -231,7 +228,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     return SliverToBoxAdapter(
       child: Container(
         padding:
-        const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+            const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
         color: Colors.white,
         width: double.infinity,
         child: Row(
@@ -268,7 +265,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
             Expanded(child: SizedBox()),
             Container(
               padding:
-              const EdgeInsets.only(left: 15, right: 15, top: 3, bottom: 3),
+                  const EdgeInsets.only(left: 15, right: 15, top: 3, bottom: 3),
               decoration: BoxDecoration(
                 color: Colors.blue,
                 borderRadius: BorderRadius.circular(3),
@@ -305,13 +302,12 @@ class LiveDetailPageState extends State<LiveDetailPage> {
       ),
     ));
 
-
-    widgetArray.add(Container(
-      width: double.infinity,
-      height: 0.3,
-      margin: const EdgeInsets.only(left: 20, right: 20),
-      color: Colors.grey,
-    ));
+    // widgetArray.add(Container(
+    //   width: double.infinity,
+    //   height: 0.3,
+    //   margin: const EdgeInsets.only(left: 20, right: 20),
+    //   color: Colors.grey,
+    // ));
     widgetArray.add(
       Container(
         width: double.infinity,
@@ -332,34 +328,6 @@ class LiveDetailPageState extends State<LiveDetailPage> {
         ),
       ),
     );
-    // for (var value in liveModel.coursewareDto.levelDto) {
-    //   widgetArray.add(Container(
-    //     width: double.infinity,
-    //     height: 0.3,
-    //     margin: const EdgeInsets.only(left: 20, right: 20),
-    //     color: Colors.grey,
-    //   ));
-    //   widgetArray.add(
-    //     Container(
-    //       width: double.infinity,
-    //       margin: const EdgeInsets.only(left: 30, right: 20),
-    //       padding: const EdgeInsets.only(top: 13, bottom: 13),
-    //       child: Row(
-    //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //         children: [
-    //           Text(
-    //             value.title,
-    //             style: titleStyle,
-    //           ),
-    //           Text(
-    //             value.longTime,
-    //             style: titleStyle,
-    //           ),
-    //         ],
-    //       ),
-    //     ),
-    //   );
-    // }
 
     return SliverToBoxAdapter(
       child: Container(
@@ -385,31 +353,34 @@ class LiveDetailPageState extends State<LiveDetailPage> {
       ),
     ));
     //评论数量等等
-    widgetArray.add(Container(
-      width: double.infinity,
-      padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            "${isHotOrTime ? (courseCommentHot?.totalCount) : (courseCommentTime
-                ?.totalCount)}评论",
-            style: TextStyle(fontSize: 20),
-          ),
-          GestureDetector(
-            child: Text(
-              "按热度/按时间",
+    widgetArray.add(
+      Container(
+        width: double.infinity,
+        padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "${isHotOrTime ? (courseCommentHot?.totalCount) : (courseCommentTime?.totalCount)}评论",
               style: TextStyle(fontSize: 20),
             ),
-            onTap: () {
-              isHotOrTime = !isHotOrTime;
-              getDataAction();
-            },
-          ),
-        ],
+            GestureDetector(
+              child: Text(
+                "按热度/按时间",
+                style: TextStyle(fontSize: 20),
+              ),
+              onTap: () {
+                isHotOrTime = !isHotOrTime;
+                getDataAction();
+              },
+            ),
+          ],
+        ),
       ),
-    ),);
-    widgetArray.add(SizedBox(height: 16,));
+    );
+    widgetArray.add(SizedBox(
+      height: 16,
+    ));
     //点击写评论
     widgetArray.add(Center(
       child: Row(
@@ -437,8 +408,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
                 color: AppColor.bgWhite_65,
               ),
               child: Text("说点什么吧~",
-                  style: TextStyle(
-                      fontSize: 14, color: AppColor.textHint)),
+                  style: TextStyle(fontSize: 14, color: AppColor.textHint)),
             ),
             onTap: () {
               ToastShow.show("点击了添加评论", context);
@@ -464,17 +434,23 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   Widget _getCommentItemUi() {
     var widgetArray = <Widget>[];
 
-    widgetArray.add(SizedBox(height: 10,));
+    widgetArray.add(SizedBox(
+      height: 10,
+    ));
 
     if ((isHotOrTime ? (courseCommentHot) : (courseCommentTime)) == null) {
-      widgetArray.add(Container(child: Text("暂无评论"),));
+      widgetArray.add(Container(
+        child: Text("暂无评论"),
+      ));
     } else {
-      for (int i = 0; i <
-          (isHotOrTime ? (courseCommentHot) : (courseCommentTime))?.list
-              ?.length; i++) {
-        CommentDtoModel value = (isHotOrTime
-            ? (courseCommentHot)
-            : (courseCommentTime)).list[i];
+      for (int i = 0;
+          i <
+              (isHotOrTime ? (courseCommentHot) : (courseCommentTime))
+                  ?.list
+                  ?.length;
+          i++) {
+        CommentDtoModel value =
+            (isHotOrTime ? (courseCommentHot) : (courseCommentTime)).list[i];
 
         widgetArray.add(Container(
           width: double.infinity,
@@ -503,7 +479,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
                         ),
                         onTap: () {
                           commentListSubSettingList[i].isFold =
-                          !commentListSubSettingList[i].isFold;
+                              !commentListSubSettingList[i].isFold;
                           setState(() {});
                         },
                       ),
@@ -517,7 +493,6 @@ class LiveDetailPageState extends State<LiveDetailPage> {
         ));
       }
     }
-
 
     return Container(
       width: double.infinity,
@@ -537,8 +512,9 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     }
     return AnimatedContainer(
       height: double.parse((commentListSubSettingList[index].isFold
-          ? 0.0
-          : commentListSubSettingList[index].subCommentAllHeight).toString()),
+              ? 0.0
+              : commentListSubSettingList[index].subCommentAllHeight)
+          .toString()),
       duration: Duration(milliseconds: animationTime),
       child: Container(
         width: double.infinity,
@@ -584,31 +560,31 @@ class LiveDetailPageState extends State<LiveDetailPage> {
           //中间信息
           Expanded(
               child: SizedBox(
-                child: Column(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      child: Text(
-                        value.name + "   " + value.content,
-                        style: TextStyle(fontSize: 13, color: Colors.black),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 4,
-                    ),
-                    Container(
-                      width: double.infinity,
-                      child: Text(
-                        value.createTime.toString() +
-                            "  " +
-                            (value.laudCount.toString()) +
-                            "次赞   回复",
-                        style: TextStyle(fontSize: 11, color: Colors.grey),
-                      ),
-                    ),
-                  ],
+            child: Column(
+              children: [
+                Container(
+                  width: double.infinity,
+                  child: Text(
+                    value.name + "   " + value.content,
+                    style: TextStyle(fontSize: 13, color: Colors.black),
+                  ),
                 ),
-              )),
+                SizedBox(
+                  height: 4,
+                ),
+                Container(
+                  width: double.infinity,
+                  child: Text(
+                    value.createTime.toString() +
+                        "  " +
+                        (value.laudCount.toString()) +
+                        "次赞   回复",
+                    style: TextStyle(fontSize: 11, color: Colors.grey),
+                  ),
+                ),
+              ],
+            ),
+          )),
           //点赞
           Container(
             height: double.infinity,
@@ -678,8 +654,8 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     }
     if (liveModel == null) {
       //加载数据
-      Map<String, dynamic> model = await liveCourseDetail(
-          courseId: liveCourseId);
+      Map<String, dynamic> model =
+          await liveCourseDetail(courseId: liveCourseId);
       if (model == null) {
         loadingStatus = LoadingStatus.STATUS_IDEL;
         Future.delayed(Duration(seconds: 1), () {
@@ -707,8 +683,8 @@ class LiveDetailPageState extends State<LiveDetailPage> {
       commentListSubSetting.commentId = commentModel.list[i].id;
       commentListSubSetting.isFold = true;
       commentListSubSetting.subCommentAllHeight =
-      // ignore: null_aware_before_operator
-      commentModel.list[i]?.replys?.length * commentItemHeight;
+          // ignore: null_aware_before_operator
+          commentModel.list[i]?.replys?.length * commentItemHeight;
       commentListSubSettingList.add(commentListSubSetting);
     }
   }
