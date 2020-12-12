@@ -561,7 +561,15 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
         Map<String, dynamic> videoCourseTagMap = await getAllTags();
         Application.videoTagModel = VideoTagModel.fromJson(videoCourseTagMap);
         videoTagModel = Application.videoTagModel;
-      } catch (e) {}
+        if (videoTagModel == null) {
+          showBackTopBoxHeight = 20;
+        } else {
+          showBackTopBoxHeight = topTitleItemHeight * 4;
+        }
+      } catch (e) {
+        videoTagModel = null;
+        showBackTopBoxHeight = 20;
+      }
     }
 
     //todo 这里应该是获取对应的日期 但是现在其他日期没有数据
