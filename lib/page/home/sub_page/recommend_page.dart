@@ -6,19 +6,13 @@ import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/course_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
 FocusNode commentFocus = FocusNode();
-enum LoadingStatus {
-  //正在加载中
-  STATUS_LOADING,
-  //数据加载完成
-  STATUS_COMPLETED,
-  //空闲状态
-  STATUS_IDEL,
-}
+
 // 加载中的布局
 class LoadingView extends StatelessWidget {
   String loadText;

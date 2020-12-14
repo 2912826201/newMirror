@@ -5,12 +5,14 @@ import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
-import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/live_broadcast/live_api.dart';
+import 'package:mirror/api/home/home_feed_api.dart';
 
+import '../../../widget/comment_input_bottom_bar.dart';
 import 'live_broadcast_page.dart';
 import 'sliver_custom_header_delegate.dart';
 
@@ -58,6 +60,12 @@ class LiveDetailPageState extends State<LiveDetailPage> {
 
   //评论
   CommentModel courseCommentTime;
+
+  //回复别人的评论时-别人的id
+  int replyId = -1;
+
+  //回复别人时 别人评论的id
+  int replyCommentId = -1;
 
   //判断是热度还是评论
   bool isHotOrTime = true;
@@ -441,7 +449,16 @@ class LiveDetailPageState extends State<LiveDetailPage> {
                       fontSize: 14, color: AppColor.textHint)),
             ),
             onTap: () {
-              ToastShow.show(msg: "点击了添加评论", context: context);
+              replyId = -1;
+              replyCommentId = -1;
+
+              openInputBottomSheet(
+                context: this.context,
+                voidCallback: (String context) {
+                  publishComment(context);
+                  print("发表评论----" + context);
+                },
+              );
             },
           ),
         ],
@@ -586,26 +603,39 @@ class LiveDetailPageState extends State<LiveDetailPage> {
               child: SizedBox(
                 child: Column(
                   children: [
-                    Container(
-                      width: double.infinity,
-                      child: Text(
-                        value.name + "   " + value.content,
-                        style: TextStyle(fontSize: 13, color: Colors.black),
-                      ),
+                Container(
+                  width: double.infinity,
+                  child: Text(
+                    value.name + "   " + value.content,
+                    style: TextStyle(fontSize: 13, color: Colors.black),
+                  ),
+                ),
+                SizedBox(
+                  height: 4,
+                ),
+                GestureDetector(
+                  child: Container(
+                    width: double.infinity,
+                    child: Text(
+                      value.createTime.toString() +
+                          "  " +
+                          (value.laudCount.toString()) +
+                          "次赞   回复",
+                      style: TextStyle(fontSize: 11, color: Colors.grey),
                     ),
-                    SizedBox(
-                      height: 4,
-                    ),
-                    Container(
-                      width: double.infinity,
-                      child: Text(
-                        value.createTime.toString() +
-                            "  " +
-                            (value.laudCount.toString()) +
-                            "次赞   回复",
-                        style: TextStyle(fontSize: 11, color: Colors.grey),
-                      ),
-                    ),
+                  ),
+                  onTap: () {
+                    replyId = value.uid;
+                    replyCommentId = value.id;
+                    openInputBottomSheet(
+                      context: this.context,
+                      voidCallback: (String context) {
+                        publishComment(context);
+                        print("回复评论----" + context);
+                      },
+                    );
+                  },
+                ),
                   ],
                 ),
               )),
@@ -651,9 +681,8 @@ class LiveDetailPageState extends State<LiveDetailPage> {
 
   //加载网络数据
   void getDataAction() async {
-    print("getDataAction");
+    //获取评论
     if (isHotOrTime) {
-      print("courseCommentHot");
       //todo 加载评论-*--没有分页加载只有第一页的
       if (courseCommentHot == null) {
         Map<String, dynamic> commentModel = await queryListByHot(
@@ -662,10 +691,8 @@ class LiveDetailPageState extends State<LiveDetailPage> {
           courseCommentHot = CommentModel.fromJson(commentModel);
         }
       }
-      print("courseCommentHot--${courseCommentHot?.totalCount}");
       setCommentListSubSetting(courseCommentHot);
     } else {
-      print("courseCommentTime");
       if (courseCommentTime == null) {
         Map<String, dynamic> commentModel = await queryListByTime(
             targetId: courseId, targetType: 1, page: 1, size: 10);
@@ -673,9 +700,10 @@ class LiveDetailPageState extends State<LiveDetailPage> {
           courseCommentTime = CommentModel.fromJson(commentModel);
         }
       }
-      print("courseCommentTime--${courseCommentTime?.totalCount}");
       setCommentListSubSetting(courseCommentTime);
     }
+
+    //获取直播详情数据
     if (liveModel == null) {
       //加载数据
       Map<String, dynamic> model = await liveCourseDetail(
@@ -711,6 +739,29 @@ class LiveDetailPageState extends State<LiveDetailPage> {
       commentModel.list[i]?.replys?.length * commentItemHeight;
       commentListSubSettingList.add(commentListSubSetting);
     }
+  }
+
+
+  publishComment(String content) async {
+    Map<String, dynamic> model = await publish(targetId: liveModel.courseId,
+        targetType: replyId > 0 ? 2 : 1,
+        content: content,
+        replyId: replyId > 0 ? replyId : null,
+        replyCommentId: replyCommentId > 0 ? replyCommentId : null);
+    print("replyId:${replyId}-----replyCommentId:${replyCommentId}");
+
+
+    replyId = -1;
+    replyCommentId = -1;
+    if (model != null) {
+      courseCommentHot = null;
+      courseCommentTime = null;
+      getDataAction();
+      ToastShow.show(msg: "发布成功", context: context);
+    } else {
+      ToastShow.show(msg: "发布失败", context: context);
+    }
+    // print("评论评论返回$model");
   }
 }
 

@@ -68,19 +68,19 @@ class LiveModel {
   UserModel _coachDto;
   int _coursewareId;
   CoursewareDto _coursewareDto;
-  dynamic _videoUrl;
+  String _videoUrl;
   String _startTime;
   String _endTime;
-  dynamic _videoSeconds;
-  dynamic _movementDtos;
+  int _videoSeconds;
+  MovementDto _movementDtos;
   int _isBooked;
   int _totalTrainingTime;
   int _totalTrainingAmount;
   int _totalCalories;
-  dynamic _joinAmount;
-  dynamic _commentCount;
-  dynamic _laudCount;
-  dynamic _finishAmount;
+  int _joinAmount;
+  int _commentCount;
+  int _laudCount;
+  int _finishAmount;
   int _dataState;
   int _createTime;
   int _updateTime;
@@ -101,15 +101,15 @@ class LiveModel {
 
   CoursewareDto get coursewareDto => _coursewareDto;
 
-  dynamic get videoUrl => _videoUrl;
+  String get videoUrl => _videoUrl;
 
   String get startTime => _startTime;
 
   String get endTime => _endTime;
 
-  dynamic get videoSeconds => _videoSeconds;
+  int get videoSeconds => _videoSeconds;
 
-  dynamic get movementDtos => _movementDtos;
+  MovementDto get movementDtos => _movementDtos;
 
   int get isBooked => _isBooked;
 
@@ -119,13 +119,13 @@ class LiveModel {
 
   int get totalCalories => _totalCalories;
 
-  dynamic get joinAmount => _joinAmount;
+  int get joinAmount => _joinAmount;
 
-  dynamic get commentCount => _commentCount;
+  int get commentCount => _commentCount;
 
-  dynamic get laudCount => _laudCount;
+  int get laudCount => _laudCount;
 
-  dynamic get finishAmount => _finishAmount;
+  int get finishAmount => _finishAmount;
 
   int get dataState => _dataState;
 
@@ -142,19 +142,19 @@ class LiveModel {
       UserModel coachDto,
       int coursewareId,
       CoursewareDto coursewareDto,
-      dynamic videoUrl,
+      String videoUrl,
       String startTime,
       String endTime,
-      dynamic videoSeconds,
-      dynamic movementDtos,
+      int videoSeconds,
+      MovementDto movementDtos,
       int isBooked,
       int totalTrainingTime,
       int totalTrainingAmount,
       int totalCalories,
-      dynamic joinAmount,
-      dynamic commentCount,
-      dynamic laudCount,
-      dynamic finishAmount,
+      int joinAmount,
+      int commentCount,
+      int laudCount,
+      int finishAmount,
       int dataState,
       int createTime,
       int updateTime}) {
@@ -501,3 +501,227 @@ class LevelDto {
     return map;
   }
 }
+
+
+/// id : 2
+/// name : "初级"
+/// updateTime : 1607568828227
+
+class MovementDto {
+  int _id;
+  String _name;
+  int _point;
+  String _picUrl;
+  int _levelId;
+  dynamic _partDto;
+  int _calories;
+  int _expectHeartRate;
+  String _steps;
+  String _breathingRhythm;
+  String _movementFeeling;
+  int _positionId;
+  int _muscleId;
+  List<GeneralUrlDto> _detail;
+  List<GeneralUrlDto> _AIcheckSteps;
+  int _state;
+  int _creatorId;
+  int _dataState;
+  int _createTime;
+  int _updateTime;
+  GeneralUrlDto _positionDto;
+  GeneralUrlDto _muscleDto;
+  int _amount;
+  int _seconds;
+  String _unit;
+
+
+  int get id => _id;
+
+  String get name => _name;
+
+  int get point => _point;
+
+  String get picUrl => _picUrl;
+
+  int get levelId => _levelId;
+
+  dynamic get partDto => _partDto;
+
+  int get calories => _calories;
+
+  int get expectHeartRate => _expectHeartRate;
+
+  String get steps => _steps;
+
+  String get breathingRhythm => _breathingRhythm;
+
+  String get movementFeeling => _movementFeeling;
+
+  int get positionId => _positionId;
+
+  int get muscleId => _muscleId;
+
+  List<GeneralUrlDto> get detail => _detail;
+
+  List<GeneralUrlDto> get AIcheckSteps => _AIcheckSteps;
+
+  int get state => _state;
+
+  int get creatorId => _creatorId;
+
+  int get dataState => _dataState;
+
+  int get createTime => _createTime;
+
+  int get updateTime => _updateTime;
+
+  GeneralUrlDto get positionDto => _positionDto;
+
+  GeneralUrlDto get muscleDto => _muscleDto;
+
+  int get amount => _amount;
+
+  int get seconds => _seconds;
+
+  String get unit => _unit;
+
+  MovementDto({
+    int id,
+    String name,
+    int point,
+    String picUrl,
+    int levelId,
+    dynamic partDto,
+    int calories,
+    int expectHeartRate,
+    String steps,
+    String breathingRhythm,
+    String movementFeeling,
+    int positionId,
+    int muscleId,
+    List<GeneralUrlDto> detail,
+    List<GeneralUrlDto> AIcheckSteps,
+    int state,
+    int creatorId,
+    int dataState,
+    int createTime,
+    int updateTime,
+    GeneralUrlDto positionDto,
+    GeneralUrlDto muscleDto,
+    int amount,
+    int seconds,
+    String unit,
+  }) {
+    _id = id;
+    _name = name;
+    _point = point;
+    _picUrl = picUrl;
+    _levelId = levelId;
+    _partDto = partDto;
+    _calories = calories;
+    _expectHeartRate = expectHeartRate;
+    _steps = steps;
+    _breathingRhythm = breathingRhythm;
+    _movementFeeling = movementFeeling;
+    _positionId = positionId;
+    _muscleId = muscleId;
+    _detail = detail;
+    _AIcheckSteps = AIcheckSteps;
+    _state = state;
+    _creatorId = creatorId;
+    _dataState = dataState;
+    _createTime = createTime;
+    _updateTime = updateTime;
+    _positionDto = positionDto;
+    _muscleDto = muscleDto;
+    _amount = amount;
+    _seconds = seconds;
+    _unit = unit;
+  }
+
+  MovementDto.fromJson(dynamic json) {
+    _id = json["id"];
+    _name = json["name"];
+    _point = json["point"];
+    _picUrl = json["picUrl"];
+    _levelId = json["levelId"];
+    _partDto = json["partDto"];
+    _calories = json["calories"];
+    _expectHeartRate = json["expectHeartRate"];
+    _steps = json["steps"];
+    _breathingRhythm = json["breathingRhythm"];
+    _movementFeeling = json["movementFeeling"];
+    _positionId = json["positionId"];
+    _muscleId = json["muscleId"];
+    _detail = json["detail"];
+    _AIcheckSteps = json["AIcheckSteps"];
+    _state = json["state"];
+    _creatorId = json["creatorId"];
+    _dataState = json["dataState"];
+    _createTime = json["createTime"];
+    _updateTime = json["updateTime"];
+    _positionDto = json["positionDto"];
+    _muscleDto = json["muscleDto"];
+    _amount = json["amount"];
+    _seconds = json["seconds"];
+    _unit = json["unit"];
+  }
+
+  Map<String, dynamic> toJson() {
+    var map = <String, dynamic>{};
+    map["id"] = _id;
+    map["name"] = _name;
+    map["point"] = _point;
+    map["picUrl"] = _picUrl;
+    map["levelId"] = _levelId;
+    map["partDto"] = _partDto;
+    map["calories"] = _calories;
+    map["expectHeartRate"] = _expectHeartRate;
+    map["steps"] = _steps;
+    map["breathingRhythm"] = _breathingRhythm;
+    map["movementFeeling"] = _movementFeeling;
+    map["positionId"] = _positionId;
+    map["muscleId"] = _muscleId;
+    map["detail"] = _detail;
+    map["AIcheckSteps"] = _AIcheckSteps;
+    map["state"] = _state;
+    map["creatorId"] = _creatorId;
+    map["dataState"] = _dataState;
+    map["createTime"] = _createTime;
+    map["updateTime"] = _updateTime;
+    map["positionDto"] = _positionDto;
+    map["muscleDto"] = _muscleDto;
+    map["amount"] = _amount;
+    map["seconds"] = _seconds;
+    map["unit"] = _unit;
+    return map;
+  }
+}
+
+
+class GeneralUrlDto {
+  String _url;
+  String _content;
+
+  String get url => _url;
+
+  String get content => _content;
+
+  GeneralUrlDto({String url, String content}) {
+    _url = url;
+    _content = content;
+  }
+
+  GeneralUrlDto.fromJson(dynamic json) {
+    _url = json["url"];
+    _content = json["content"];
+  }
+
+  Map<String, dynamic> toJson() {
+    var map = <String, dynamic>{};
+    map["url"] = _url;
+    map["content"] = _content;
+    return map;
+  }
+}
+

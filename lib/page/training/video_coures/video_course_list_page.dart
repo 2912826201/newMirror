@@ -21,13 +21,15 @@ class VideoCourseListPage extends StatefulWidget {
 }
 
 class VideoCourseListPageState extends State<VideoCourseListPage> {
-  List<String> _titleItemList = ["课程筛选"];
+  //选择的所有标签
+  List<VideoSubTagModel> _titleItemList = <VideoSubTagModel>[];
+  String _titleItemString = "课程筛选";
   String _targetTitleItemString = "目标";
   String _partTitleItemString = "部位";
   String _levelTitleItemString = "难度";
 
   //当前显示的直播课程的list
-  var liveModelArray = <LiveModel>[];
+  var videoModelArray = <LiveModel>[];
 
   //头部标签
   VideoTagModel videoTagModel;
@@ -38,18 +40,35 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
   //hero动画的标签
   var heroTagArray = <String>[];
 
+  //滚动的监听事件
   ScrollController scrollController = new ScrollController();
 
+  //头部 每一个筛选item的高度
   double topTitleItemHeight = 40.0;
+
+  //返回顶部bar的透明度
   double topItemOpacity = 0.0;
-  double topItemHeight = 50.0;
+
+  //返回顶部bar每次都使用的高度
+  double topItemHeight = 0.0;
+
+  //返回顶部bar的高度 给topItemHeight 设置高度的值
   double topItemHeight1 = 50.0;
 
+  //当滑动到什么距离需要显示返回顶部的bar
   double showBackTopBoxHeight = 0.0;
 
-  var marginStart = const EdgeInsets.only(left: 10, right: 10);
+  //是否还有下一页的数据
+  bool isHaveNextPageData = true;
+
+  //是否在加载下一页的数据中
+  bool isLoadAddNextPageData = false;
+
+  //每一页获取的数量
+  int pageSize = 5;
+
+  //一些通用的属性
   var marginCommonly = const EdgeInsets.only(left: 3, right: 3);
-  var marginEnd = const EdgeInsets.only(left: 3, right: 16);
   var topTitleItem =
       const EdgeInsets.only(left: 10, right: 10, top: 2, bottom: 2);
   var topTitleItemSelect = BoxDecoration(
@@ -161,7 +180,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
       );
     }
     sliverToBoxAdapterArray.add(SliverToBoxAdapter(
-      child: _getLiveBroadcastUI(liveModelArray),
+      child: _getLiveBroadcastUI(videoModelArray),
     ));
 
     return NotificationListener<ScrollNotification>(
@@ -176,40 +195,45 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
       ),
       onNotification: (ScrollNotification notification) {
         ScrollMetrics metrics = notification.metrics;
-        // 注册通知回调
-        if (notification is ScrollStartNotification) {
-          // 滚动开始
-          // print('滚动开始');
-        } else if (notification is ScrollUpdateNotification) {
-          // 滚动位置更新
-          // print('滚动位置更新');
-          // 当前位置
-          // print("当前位置${metrics.pixels}");
-          if (metrics.pixels > showBackTopBoxHeight) {
-            if (metrics.pixels - showBackTopBoxHeight > topItemHeight) {
-              topItemOpacity = 1.0;
-            } else {
-              topItemOpacity =
-                  (metrics.pixels - showBackTopBoxHeight) / topTitleItemHeight;
-              if (topItemOpacity > 1) {
+
+        if (metrics.axisDirection == AxisDirection.up ||
+            metrics.axisDirection == AxisDirection.down) {
+          // 注册通知回调
+          if (notification is ScrollStartNotification) {
+            // 滚动开始
+            // print('滚动开始');
+          } else if (notification is ScrollUpdateNotification) {
+            // 滚动位置更新
+            // print('滚动位置更新');
+            // 当前位置
+            print("当前位置${metrics.pixels}");
+            if (metrics.pixels > showBackTopBoxHeight) {
+              if (metrics.pixels - showBackTopBoxHeight > topItemHeight) {
                 topItemOpacity = 1.0;
+              } else {
+                topItemOpacity =
+                    (metrics.pixels - showBackTopBoxHeight) /
+                        topTitleItemHeight;
+                if (topItemOpacity > 1) {
+                  topItemOpacity = 1.0;
+                }
               }
-            }
-          } else {
-            topItemOpacity = 0.0;
-          }
-          setState(() {
-            if (topItemOpacity == 0) {
-              topItemHeight = 0;
-            } else if (metrics.pixels > showBackTopBoxHeight &&
-                topItemHeight == 0) {
-              topItemHeight = topItemHeight1;
+            } else {
               topItemOpacity = 0.0;
             }
-          });
-        } else if (notification is ScrollEndNotification) {
-          // 滚动结束
-          // print('滚动结束');
+            setState(() {
+              if (topItemOpacity == 0) {
+                topItemHeight = 0;
+              } else if (metrics.pixels > showBackTopBoxHeight &&
+                  topItemHeight == 0) {
+                topItemHeight = topItemHeight1;
+                topItemOpacity = 0.0;
+              }
+            });
+          } else if (notification is ScrollEndNotification) {
+            // 滚动结束
+            // print('滚动结束');
+          }
         }
         return false;
       },
@@ -218,6 +242,8 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
 
   //顶部返回列表顶部按的box
   Widget _getTopBackItemBoxUi() {
+    print(
+        "topItemOpacity---${topItemOpacity}:*****topItemHeight:${topItemHeight}");
     return Opacity(
       opacity: topItemOpacity,
       child: GestureDetector(
@@ -238,7 +264,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
   Widget _getScreenTitleUi() {
     return Column(
       children: [
-        _firstTopTimeItemView(_titleItemList),
+        _firstTopTimeItemView(),
         _getTopTitleItem(_targetTitleItemString, videoTagModel.target),
         _getTopTitleItem(_partTitleItemString, videoTagModel.part),
         _getTopTitleItem(_levelTitleItemString, videoTagModel.level),
@@ -289,7 +315,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
         child: Center(
           child: Container(
             padding: topTitleItem,
-            decoration: _titleItemList.contains(value.name)
+            decoration: _titleItemList.contains(value)
                 ? topTitleItemSelect
                 : topTitleItemNoSelect,
             child: Text(
@@ -300,25 +326,24 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
         ),
       ),
       onTap: () {
-        if (_titleItemList.contains(value.name)) {
-          _titleItemList.remove(value.name);
+        print(value.name);
+        if (_titleItemList.contains(value)) {
+          _titleItemList.remove(value);
         } else {
-          _titleItemList.add(value.name);
+          _titleItemList.add(value);
         }
-        setState(() {});
+        resetScreenData();
       },
     );
   }
 
   //已经选择的筛选列表
-  Widget _firstTopTimeItemView(List<String> dataArray) {
+  Widget _firstTopTimeItemView() {
     var rowItemArray = <Widget>[];
-    if (dataArray.length > 1) {
-      for (int i = 0; i < dataArray.length - 1; i++) {
-        rowItemArray.add(Center(
-          child: _firstTopTitleItem(dataArray[i + 1], i, dataArray.length),
-        ));
-      }
+    for (int i = 0; i < _titleItemList.length; i++) {
+      rowItemArray.add(Center(
+        child: _firstTopTitleItem(_titleItemList[i], i, _titleItemList.length),
+      ));
     }
     return Container(
       width: double.infinity,
@@ -328,7 +353,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
         child: Row(
           children: [
             Text(
-              dataArray[0],
+              _titleItemString,
               style: TextStyle(fontSize: 18),
             ),
             Expanded(
@@ -351,8 +376,10 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
                 ],
               ),
               onTap: () {
-                _titleItemList = ["课程筛选"];
-                setState(() {});
+                print("点击事件");
+                print("_titleItemList:${_titleItemList.length}");
+                _titleItemList.clear();
+                resetScreenData();
               },
             )
           ],
@@ -362,14 +389,14 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
   }
 
   //已经选择的筛选列表的item
-  Widget _firstTopTitleItem(String value, int index, int count) {
+  Widget _firstTopTitleItem(VideoSubTagModel value, int index, int count) {
     return GestureDetector(
       child: Container(
         margin: marginCommonly,
         padding: topTitleItem,
         decoration: topTitleItemSelect,
         child: Text(
-          value,
+          value.name,
           style: TextStyle(fontSize: 18),
         ),
       ),
@@ -552,10 +579,10 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
 
 // 获取指定日期的直播日程
   getLiveModelData() async {
-    if (liveModelArray != null && liveModelArray.length > 0) {
+    if (videoModelArray != null && videoModelArray.length > 0) {
       return;
     }
-
+    //title
     if (videoTagModel == null) {
       try {
         Map<String, dynamic> videoCourseTagMap = await getAllTags();
@@ -572,34 +599,29 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
       }
     }
 
-    //todo 这里应该是获取对应的日期 但是现在其他日期没有数据
-    // Map<String, dynamic> model = await getLiveCourses(date: DateUtil.formatDateString(dataDate));
     try {
-      Map<String, dynamic> model = await getLiveCourses(date: "2020-11-16");
+      List<int> _level = <int>[];
+      List<int> _part = <int>[];
+      List<int> _target = <int>[];
+      for (int i = 0; i < _titleItemList.length; i++) {
+        if (_titleItemList[i].type == 0) {
+          _level.add(_titleItemList[i].id);
+        } else if (_titleItemList[i].type == 1) {
+          _part.add(_titleItemList[i].id);
+        } else if (_titleItemList[i].type == 2) {
+          _target.add(_titleItemList[i].id);
+        }
+      }
+      Map<String, dynamic> model = await getVideoCourseList(
+          size: pageSize, target: _target, part: _part, level: _level);
       if (model != null && model["list"] != null) {
         model["list"].forEach((v) {
-          liveModelArray.add(LiveModel.fromJson(v));
-          liveModelArray.add(LiveModel.fromJson(v));
-          liveModelArray.add(LiveModel.fromJson(v));
-          liveModelArray.add(LiveModel.fromJson(v));
-          liveModelArray.add(LiveModel.fromJson(v));
-          liveModelArray.add(LiveModel.fromJson(v));
-          liveModelArray.add(LiveModel.fromJson(v));
-          liveModelArray.add(LiveModel.fromJson(v));
-          liveModelArray.add(LiveModel.fromJson(v));
-          liveModelArray.add(LiveModel.fromJson(v));
-          liveModelArray.add(LiveModel.fromJson(v));
-          liveModelArray.add(LiveModel.fromJson(v));
-          liveModelArray.add(LiveModel.fromJson(v));
-          liveModelArray.add(LiveModel.fromJson(v));
-          liveModelArray.add(LiveModel.fromJson(v));
-          liveModelArray.add(LiveModel.fromJson(v));
+          videoModelArray.add(LiveModel.fromJson(v));
         });
       }
     } catch (e) {}
 
-    print("直播当日的的数量：${liveModelArray.length}");
-    if (liveModelArray.length > 0) {
+    if (videoModelArray.length > 0) {
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
       setState(() {});
     } else {
@@ -613,8 +635,48 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
   //给hero的tag设置唯一的值
   Object getHeroTag(LiveModel liveModel, index) {
     String string =
-        "heroTag_${DateUtil.getNowDateMs()}_${Random().nextInt(100000)}_${liveModel.id}_${index}";
+        "heroTag_${DateUtil.getNowDateMs()}_${Random().nextInt(
+        100000)}_${liveModel.id}_${index}";
     heroTagArray.add(string);
     return string;
+  }
+
+
+  resetScreenData() async {
+    loadingStatus = LoadingStatus.STATUS_LOADING;
+    setState(() {
+
+    });
+    videoModelArray.clear();
+    try {
+      List<int> _level = <int>[];
+      List<int> _part = <int>[];
+      List<int> _target = <int>[];
+      for (int i = 0; i < _titleItemList.length; i++) {
+        if (_titleItemList[i].type == 0) {
+          _level.add(_titleItemList[i].id);
+        } else if (_titleItemList[i].type == 1) {
+          _part.add(_titleItemList[i].id);
+        } else if (_titleItemList[i].type == 2) {
+          _target.add(_titleItemList[i].id);
+        }
+      }
+      Map<String, dynamic> model = await getVideoCourseList(
+          size: pageSize, target: _target, part: _part, level: _level);
+      if (model != null && model["list"] != null) {
+        model["list"].forEach((v) {
+          videoModelArray.add(LiveModel.fromJson(v));
+        });
+      }
+    } catch (e) {}
+    if (videoModelArray.length > 0) {
+      loadingStatus = LoadingStatus.STATUS_COMPLETED;
+      setState(() {});
+    } else {
+      loadingStatus = LoadingStatus.STATUS_IDEL;
+      Future.delayed(Duration(seconds: 1), () {
+        setState(() {});
+      });
+    }
   }
 }
