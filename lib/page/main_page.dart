@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/page/home/home_page.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
+import 'package:mirror/page/if_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/page/message/message_page.dart';
 import 'package:mirror/page/test_page.dart';
@@ -11,15 +12,15 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 class MainPage extends StatefulWidget {
   MainPage({Key key, this.pc}) : super(key: key);
   PanelController pc = new PanelController();
-
+  //此key用于向messagePage传输数据
+  GlobalKey messagePageKey = GlobalKey();
   MainPageState createState() => MainPageState();
 }
 
 class MainPageState extends State<MainPage> {
   int currentIndex;
   bool isInit = false;
-
-  final pages = [HomePage(), TestPage(), MessagePage(), ProfilePage()];
+  var pages ;
   List titles = ["首页", "训练", "消息", "我的"];
   List normalImgUrls = [
     "images/test/home-filling1.png",
@@ -38,6 +39,8 @@ class MainPageState extends State<MainPage> {
   void initState() {
     super.initState();
     currentIndex = 0;
+    SingletonForWholePages.singleton().messagePageKey = widget.messagePageKey;
+    pages =  [HomePage(), TestPage(), MessagePage(key:this.widget.messagePageKey), ProfilePage()];
   }
 
   @override
@@ -45,13 +48,12 @@ class MainPageState extends State<MainPage> {
     double itemWidth = MediaQuery.of(context).size.width / 5;
     print("初始创建底部页");
     print(ScreenUtil.instance.bottomBarHeight);
-    Widget msgPage = tabbar(2, context);
     return Scaffold(
       // 此属性是重新计算布局空间大小
       // 内部元素要监听键盘高度必需要设置为false,
       resizeToAvoidBottomInset: false,
       bottomNavigationBar: BottomAppBar(
-        child: Row(children: <Widget>[
+        child: Row(children: [
           Expanded(
             child: SizedBox(height: 51, width: itemWidth, child: tabbar(0, context)),
             flex: 1,
@@ -61,7 +63,7 @@ class MainPageState extends State<MainPage> {
             flex: 1,
           ),
           Expanded(
-            child:SizedBox(height: 51,width: itemWidth,child: msgPage,),
+            child:SizedBox(height: 51,width: itemWidth,child: tabbar(2, context),),
             flex: 1,
           ),
           Expanded(
@@ -104,7 +106,7 @@ class MainPageState extends State<MainPage> {
                     children: [
                       Image.asset(imgUrl, width: 28, height: 28),
                       Container(
-                          margin: EdgeInsets.only(left: 6),
+                          margin:const EdgeInsets.only(left: 6),
                           child: Offstage(
                             offstage: currentIndex != index,
                             child: Text(
@@ -141,7 +143,12 @@ class SelectedbottomNavigationBarNotifier extends ChangeNotifier {
   int selectedIndex;
 
   changeIndex(int index) {
+    print("changeIndex $index");
     this.selectedIndex = index;
+    SingletonForWholePages.singleton().index = index;
+    SingletonForWholePages.singleton().IfPagekey.currentState.setState(() {
+    });
+    //控制panel的控制器对象
     notifyListeners();
   }
 }

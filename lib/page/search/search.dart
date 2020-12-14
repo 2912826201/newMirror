@@ -6,7 +6,7 @@ class Search extends StatelessWidget {
   Widget build(BuildContext context) {
      print("搜索页");
     return Container(
-      margin: EdgeInsets.only(top: 24),
+      margin: const EdgeInsets.only(top: 24),
       child:Container(
         child:TextField(
           keyboardType: TextInputType.multiline,

@@ -71,46 +71,125 @@ class MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
   _updateTime = widget.model.updateTime ??= DateTime.now().millisecondsSinceEpoch;
     super.initState();
   }
+
+  Widget _portraitArea(int type){
+    if(type == PRIVATE_CHAT_TYPE){
+    return Container(
+      alignment: Alignment.center,
+      margin:const EdgeInsets.only(top: 12,bottom: 12,right: 12),
+      width: portraitWH,
+      child:
+      OverflowBox(
+        maxHeight: portraitWH,
+        maxWidth: portraitWH,
+        alignment: Alignment.bottomRight,
+        child: Container(
+          width: officialSignWH,
+          height: officialSignWH,
+          child: Image.asset(officialSign),
+          decoration: BoxDecoration(
+              color: Colors.red,
+              borderRadius: BorderRadius.all(Radius.circular(officialSignWH/2))
+          ),
+        ),
+      ),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(0.5*portraitWH)),
+          image: DecorationImage(
+            fit: BoxFit.fill,
+            image: NetworkImage(_portrait),
+          )
+      ),
+    );
+    }
+    else if(type == GROUP_CHAT_TYPE){
+      return Container(
+        alignment: Alignment.topCenter,
+        margin:const EdgeInsets.only(top: 12,bottom: 12,right: 12),
+        width: portraitWH,
+        child:Stack(
+          children: [
+            Container(child: Row(
+              children: [
+                Spacer(),
+                Container(
+                  alignment: Alignment.topRight,
+                  width: 27.86,
+                  height: 27.86,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(0.5*27.86)),
+                      color: AppColor.mainRed,
+                      image: DecorationImage(
+                        fit: BoxFit.fill,
+                        image: NetworkImage(_parseImageUrl(0)),
+                      )
+                  ),
+                )
+              ],
+            ),
+            margin: const EdgeInsets.only(left: 15.5),),
+           Container(
+             margin: const EdgeInsets.only(top: 13),
+             child: Row(children: [
+               Stack(
+                 alignment: Alignment.center,
+                 children: [
+                   Container(
+                     width: 33.86,
+                     height: 33.86,
+                     decoration: BoxDecoration(
+                         borderRadius: BorderRadius.all(Radius.circular(0.5*33.86)),
+                         color: AppColor.white
+                     ),
+                   )
+                   ,Container(
+                     alignment: Alignment.bottomLeft,
+                     width: 27.86,
+                     height: 27.86,
+                     decoration: BoxDecoration(
+                         color: Colors.yellow,
+                         borderRadius: BorderRadius.all(Radius.circular(0.5*27.86)),
+                         image: DecorationImage(
+                           fit: BoxFit.fill,
+                           image: NetworkImage(_parseImageUrl(1)),
+                         )
+                     ),
+                   )
+                 ],
+               ),
+               Spacer()
+             ],),
+           )
+          ],
+        )
+      );
+    }
+  }
+  String _parseImageUrl(int index){
+    assert(index==0||index == 1);
+    String mixedString = widget.model.avatarUri;
+    int indexOfComma = mixedString.indexOf(",");
+    if(index == 0){
+      return mixedString.substring(0,indexOfComma);
+    }else{
+      return mixedString.substring(indexOfComma+1,mixedString.length);
+    }
+  }
   @override
   Widget build(BuildContext context) {
    ConversationDto model = widget.model;
    return Row(
      children: [
        Expanded(child:  Container(
-         margin: EdgeInsets.only(left: 16,right: 16),
+         margin:const EdgeInsets.only(left: 16,right: 16),
          height: mainContentHeight,
          child: Row(
            children: [
              //头像区域
-             Container(
-               alignment: Alignment.center,
-               margin: EdgeInsets.only(top: 12,bottom: 12,right: 12),
-               width: portraitWH,
-               child:
-               OverflowBox(
-                 maxHeight: portraitWH,
-                 maxWidth: portraitWH,
-                 alignment: Alignment.bottomRight,
-                 child: Container(
-                   width: officialSignWH,
-                   height: officialSignWH,
-                   child: Image.asset(officialSign),
-                   decoration: BoxDecoration(
-                       color: Colors.red,
-                       borderRadius: BorderRadius.all(Radius.circular(officialSignWH/2))
-                   ),
-                 ),
-               ),
-               decoration: BoxDecoration(
-                   borderRadius: BorderRadius.all(Radius.circular(0.5*portraitWH)),
-                   image: DecorationImage(
-                       fit: BoxFit.fill,
-                       image: AssetImage(_portrait),
-                   )
-               ),
-             ),
+             _portraitArea(model.type),
              //文本显示区域
              Expanded(child: Container(
+               color: AppColor.transparent,
                padding: EdgeInsets.only(top: 12,bottom: 13),
                child: Column(
                  children: [
@@ -124,7 +203,7 @@ class MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
                      ],
                    ),
                    Container(
-                       margin: EdgeInsets.only(top: 3),
+                       margin: const EdgeInsets.only(top: 3),
                        child: Row(
                          children: [
                            //附加说明
@@ -146,9 +225,11 @@ class MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
   }
   //unix时间转化为本地时间
   String _transferRawDate(int time){
-    var format = new DateFormat('HH:mm:ss');
-    String strTime = format.format(DateTime.fromMicrosecondsSinceEpoch(time));
-    return strTime;
+    var formatOfHM = new DateFormat('HH:mm');
+    var formatOfMD = new DateFormat('MM-dd');
+    String strTimePrefix = formatOfMD.format(DateTime.fromMicrosecondsSinceEpoch(time*1000));
+    String strTimeSuffix = formatOfHM.format(DateTime.fromMicrosecondsSinceEpoch(time*1000));
+    return strTimePrefix+" "+strTimeSuffix;
   }
   //尾部的消息指示视图
   Widget _tailWidget(){

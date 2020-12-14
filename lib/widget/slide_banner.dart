@@ -193,7 +193,7 @@ class _SlideBannerState extends State<SlideBanner> {
           child:Container(
             width: getWidth(),
             height: 10,
-            margin: EdgeInsets.only(top: 5),
+            margin: const EdgeInsets.only(top: 5),
             // color: Colors.orange,
             child: ListView.builder(
                 scrollDirection: scrollDirection,
@@ -209,7 +209,7 @@ class _SlideBannerState extends State<SlideBanner> {
                       child: Container(
                           width: elementSize(index) ,
                           height: elementSize(index),
-                          margin: EdgeInsets.only(right: 3),
+                          margin: const EdgeInsets.only(right: 3),
                           decoration: BoxDecoration(
                               color: index == zindex ? Colors.black : Colors.grey, shape: BoxShape.circle)));
                 }),

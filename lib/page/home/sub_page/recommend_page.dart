@@ -707,12 +707,12 @@ class commentLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 400,
-      margin: EdgeInsets.only(left: 16, right: 16),
+      margin:const EdgeInsets.only(left: 16, right: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-              margin: EdgeInsets.only(bottom: 6),
+              margin:const EdgeInsets.only(bottom: 6),
               child: Text(
                 "共${commenNum}条评论",
                 style: TextStyle(fontSize: 12, color: Color.fromRGBO(153, 153, 153, 1)),
@@ -735,7 +735,7 @@ class commentLayout extends StatelessWidget {
             ],
           ),
           Container(
-            margin: EdgeInsets.only(top: 4, bottom: 4),
+            margin:const EdgeInsets.only(top: 4, bottom: 4),
             child: MyRichTextWidget(
               Text(
                 "${userName[1]}: 回复 ${userName[2]} 回复的其他人的评论内容超过这是评论的内容，如果很长最多只显示一行。",
@@ -795,7 +795,7 @@ class attentionUserState extends State<attentionUser> {
         child: Column(
           children: [
             Container(
-              margin: EdgeInsets.only(left: 16, right: 16),
+              margin:const EdgeInsets.only(left: 16, right: 16),
               height: 25,
               width: ScreenUtil.instance.screenWidthDp,
               child: Row(
@@ -810,7 +810,7 @@ class attentionUserState extends State<attentionUser> {
                       width: getTextSize("查看全部", TextStyle(fontSize: 14)).width + 20,
                       child: Row(children: [
                         Container(
-                          margin: EdgeInsets.only(right: 4),
+                          margin:const EdgeInsets.only(right: 4),
                           child: Text(
                             "查看全部",
                             style: TextStyle(fontSize: 14, color: AppColor.textPrimary3),
@@ -836,7 +836,7 @@ class attentionUserState extends State<attentionUser> {
   // 横向listView
   attentionList() {
     return Container(
-      margin: EdgeInsets.only(top: 18),
+      margin:const EdgeInsets.only(top: 18),
       height: 190,
       child: attentionUserAnimateList(
         itemCount: list.length,
@@ -856,11 +856,11 @@ class attentionUserState extends State<attentionUser> {
   slide() {
     Container(
       height: 190,
-      margin: EdgeInsets.only(top: 18),
+      margin:const EdgeInsets.only(top: 18),
       child: Swiper(
         itemBuilder: (BuildContext context, int index) {
           return Container(
-            margin: EdgeInsets.only(right: 10),
+            margin:const EdgeInsets.only(right: 10),
             color: Colors.red,
             // width: 151,
             height: 190,
@@ -1052,7 +1052,7 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
           child: Stack(
             children: [
               Container(
-                margin: EdgeInsets.only(top: 6, left: 127),
+                margin:const EdgeInsets.only(top: 6, left: 127),
                 child: MyIconBtn(
                   width: 18,
                   height: 18,
@@ -1075,7 +1075,7 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 18),
+                margin:const EdgeInsets.only(top: 18),
                 width: 151,
                 height: 172,
                 // child: Expanded(
@@ -1088,14 +1088,14 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
                       maxRadius: 23.5,
                     ),
                     Container(
-                      margin: EdgeInsets.only(top: 8),
+                      margin:const EdgeInsets.only(top: 8),
                       child: Text(
                         "金卡卡西${widget.str}",
                         style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.textPrimary1),
                       ),
                     ),
                     Container(
-                      margin: EdgeInsets.only(top: 2, bottom: 12),
+                      margin:const EdgeInsets.only(top: 2, bottom: 12),
                       width: 100,
                       child: Text(
                         "夕柚和其他2位用户关注了",
@@ -1204,7 +1204,7 @@ class commentInputBar extends StatelessWidget {
                 width: Platform.isIOS
                     ? ScreenUtil.instance.screenWidthDp - 32
                     : ScreenUtil.instance.screenWidthDp - 32 - 52 - 12,
-                margin: EdgeInsets.only(left: 16, right: 16),
+                margin:const EdgeInsets.only(left: 16, right: 16),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(16)),
                   color: AppColor.bgWhite_65,
@@ -1403,7 +1403,7 @@ class CommentBottomListView extends StatelessWidget {
 
     // 评论
     Widget info = Container(
-        margin: EdgeInsets.only(left: 15, right: 12),
+        margin:const EdgeInsets.only(left: 15, right: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -1457,7 +1457,7 @@ class CommentBottomListView extends StatelessWidget {
     );
 
     return Container(
-      margin: EdgeInsets.only(left: 16, right: 16, top: 12),
+      margin:const EdgeInsets.only(left: 16, right: 16, top: 12),
       child: Column(
         children: [
           Row(

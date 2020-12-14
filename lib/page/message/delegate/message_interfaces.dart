@@ -58,6 +58,8 @@ abstract class MPIMDataSource {
   double cellHeightAtIndex(int index);
   //存储历史会话数据
   saveChats();
+  //增加一个会话
+  createNewConversation(ConversationDto dto);
 }
 //社交事件未读数数据源
 abstract class MPInterCourcesDataSource{

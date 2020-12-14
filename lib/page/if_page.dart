@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/main_page.dart';
+import 'package:mirror/page/message/message_page.dart';
 import 'package:mirror/page/search/search.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:union_tabs/union_tabs.dart';
@@ -18,8 +19,6 @@ class IfPage extends StatefulWidget {
 // 嵌套二层TabBar
 class IfPageState extends State<IfPage> with TickerProviderStateMixin {
   TabController _controller;
-  PanelController _pc = new PanelController();
-  PanelController _ms = new PanelController();
   bool isInit = false;
 
   @override
@@ -42,19 +41,17 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin {
       isInit = true;
     };
     return Scaffold(
-        // 此属性是重新计算布局空间大小
-        // 内部元素要监听键盘高度必需要设置为false,
-        resizeToAvoidBottomInset: false,
-        // UnionOuterTabBarView ChangeNotifierProvider
-        body: Container(
+      // 此属性是重新计算布局空间大小
+      // 内部元素要监听键盘高度必需要设置为false,
+      resizeToAvoidBottomInset: false,
+      // UnionOuterTabBarView ChangeNotifierProvider
+      body: Container(
           child: Stack(
               children: [
                 SlidingUpPanel(
                     panel: Container(
                       margin: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
-                      child: CommentBottomSheet(
-                        pc: _pc,
-                      ),
+                      child:SingletonForWholePages.singleton().panelWidget(),
                     ),
                     maxHeight: ScreenUtil.instance.height*0.7,
                     backdropEnabled: true,
@@ -62,7 +59,7 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin {
                       topLeft: Radius.circular(10.0),
                       topRight: Radius.circular(10.0),
                     ),
-                    controller: _pc,
+                    controller: SingletonForWholePages.singleton().panelController(),
                     minHeight: 0,
                     body: ChangeNotifierProvider(
                         create: (_) => SelectedbottomNavigationBarNotifier(0),
@@ -122,17 +119,18 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin {
                     ))
               ]
           )
-        ),
+      ),
     );
   }
 
-  List<Widget> _createTabContent() {
-    List<Widget> tabContent = List();
-    tabContent.add(Search());
-    tabContent.add(MainPage(
-      pc: _pc,
-    ));
-    return tabContent;
+   _createTabContent() {
+     List<Widget> tabContent = List();
+     tabContent.add(Search());
+     //四个常规业务tabBar
+     tabContent.add(MainPage(
+       pc: SingletonForWholePages.singleton().panelController(),
+     ));
+     return tabContent;
   }
 
   @override
@@ -140,5 +138,43 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin {
     _controller.dispose();
     // _childController.dispose();
     super.dispose();
+  }
+}
+class SingletonForWholePages{
+  //ifPage的key
+  GlobalKey IfPagekey;
+  PanelController ifPagePc = PanelController();
+  PanelController messagePagePc = PanelController();
+  //MessagePage的key
+  GlobalKey messagePageKey;
+  //记录tabbar的索引
+  int index = 0;
+  static SingletonForWholePages _me;
+  //单例方法
+  static  SingletonForWholePages singleton(){
+    if(_me == null){
+      _me = SingletonForWholePages();
+    }
+    return _me;
+  }
+  Widget panelWidget(){
+    print("panelWidget  $index");
+    switch(index){
+      case 0:
+      return  CommentBottomSheet(
+          pc: ifPagePc,
+        );
+        break;
+      case 1:
+        break;
+      case 2:
+        return Container(child: CreateGroupChatWidget());
+        break;
+      case 3:
+        break;
+    }
+  }
+  PanelController panelController(){
+    return ifPagePc;
   }
 }

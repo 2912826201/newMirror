@@ -52,8 +52,9 @@ class MessagePageUiProvider implements MPUiProxy {
   //是否展示系统通知提醒的横幅
   bool _sysNotificationBannerShow = false;
   Map<MPIntercourses,int> _unreadBadges = {MPIntercourses.Comment:0,MPIntercourses.Laud:0,MPIntercourses.At:0};
-  //交互事件外发
+  //交互事件外发给controller
   _actionsDispatch(String identifier, {payload: Map}) {
+    print("_actionsDispatch");
     if (dataActionPipe != null) {
       dataActionPipe.action(identifier, payload: payload);
     }
@@ -88,7 +89,7 @@ class MessagePageUiProvider implements MPUiProxy {
                   padding: EdgeInsets.all(0),
                 ),
                 padding: EdgeInsets.all(0),
-                margin: EdgeInsets.only(top: 6.5, bottom: 9.5, right: 16),
+                margin:const EdgeInsets.only(top: 6.5, bottom: 9.5, right: 16),
               )
             ]),
             Container(
@@ -105,7 +106,7 @@ class MessagePageUiProvider implements MPUiProxy {
                           decoration: TextDecoration.none,
                           fontWeight: FontWeight.w500),
                     ),
-                    margin: EdgeInsets.only(left: 44, right: 44),
+                    margin:const EdgeInsets.only(left: 44, right: 44),
                   )
                 ],
               ),
@@ -116,14 +117,14 @@ class MessagePageUiProvider implements MPUiProxy {
   }
 
   //对旧的数据做清除的工作
-  _cleanDirties(){
+  _cleanDirtyConfigurations(){
     listKeys.clear();
   }
   //页面主要内容
   @override
   Widget mainContent() {
      //清除旧配置
-     _cleanDirties();
+     _cleanDirtyConfigurations();
      //读取未读信息,设置回调
      _getBadges((t){
       UnreadInterCourses ur = t();
@@ -177,11 +178,12 @@ class MessagePageUiProvider implements MPUiProxy {
             }
             //即时通讯会话显示区域
             else {
+              print("imArea");
               return  _imArea(index);
             }
           },
           //ListView的内边距需要设置为0
-          padding: EdgeInsets.all(0),
+          padding:const EdgeInsets.all(0),
           //不要回弹效果
           physics: ClampingScrollPhysics(),
         )),
@@ -271,7 +273,7 @@ class MessagePageUiProvider implements MPUiProxy {
                           decoration: TextDecoration.none),
                     ),
                     onTap:()=> _actionsDispatch(FuncOfinterCourses, payload: {IntercoursesKey: MPIntercourses.Laud}),
-                    badges: ()=>_badgesNum[MPIntercourses.Laud],
+                    badges: ()=>_unreadBadges[MPIntercourses.Laud],
                   )),
             ),
           ),
@@ -283,13 +285,7 @@ class MessagePageUiProvider implements MPUiProxy {
 
    //提供点赞事件的未读数
    Map<MPIntercourses,int> get _badgesNum {
-    print(">>>>>>>>>>>>>reload unreads ");
     print("~~~~~~~~${_unreadBadges[MPIntercourses.At]}~~~~${_unreadBadges[MPIntercourses.Comment]}~~~~~~~~~~~${_unreadBadges[MPIntercourses.Laud]}~~~");
-    // _unreadBadges.keys.forEach((element) {
-    //   if(_unreadBadges[element]==null || _unreadBadges[element] == 0){
-    //     _unreadBadges[element] = 99;
-    //   }
-    // });
     return _unreadBadges;
    }
 
@@ -384,7 +380,7 @@ class MessagePageUiProvider implements MPUiProxy {
       Expanded(child:
        GestureDetector(
         //绑定点击事件，传参需要一个索引位置
-        onTap: ()=>_actionsDispatch(FuncOfCellTap,payload: {CellTapKey:expectedIndex}),
+        onTap:()=>_actionsDispatch(FuncOfCellTap,payload: {CellTapKey:expectedIndex}) ,
         child: Container(child: cell,
           height: dataActionPipe.cellHeightAtIndex(expectedIndex),),
       )
@@ -392,7 +388,6 @@ class MessagePageUiProvider implements MPUiProxy {
     ],
     );
   }
-
   //断网时横幅生成
   @override
   Widget loseConnectionBanner() {
@@ -428,7 +423,7 @@ class MessagePageUiProvider implements MPUiProxy {
                         "网络连接已断开，请检查网络设置",
                       ),
                       alignment: Alignment.centerLeft,
-                      margin: EdgeInsets.only(left: 6),
+                      margin:const EdgeInsets.only(left: 6),
                     ),
                     Spacer(),
                     Image.asset(
@@ -457,7 +452,7 @@ class MessagePageUiProvider implements MPUiProxy {
         child: Container(
           height: 56,
           color: Colors.grey,
-          margin: EdgeInsets.only(left: 15, right: 15,bottom: 12),
+          margin:const EdgeInsets.only(left: 15, right: 15,bottom: 12),
         ),
       ),
     );
@@ -483,7 +478,7 @@ class MessagePageUiProvider implements MPUiProxy {
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 16),
+                margin:const EdgeInsets.only(top: 16),
                 child: Text("这里空空如也，去推荐看看吧",
                   style: TextStyle(color: AppColor.textSecondary,
                       decoration: TextDecoration.none,

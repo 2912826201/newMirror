@@ -42,9 +42,11 @@ Future<bool> sendSms(String phoneNumber, int type) async {
       await requestApi(SENDSMS, {"phoneNumber": phoneNumber, "type": type}, authType: AUTH_TYPE_NONE);
   if (responseModel.isSuccess) {
     //TODO 这里实际需要将请求结果处理为具体的业务数据
+
     return responseModel.code == CODE_SUCCESS;
   } else {
     //TODO 这里实际需要处理失败
+
     return false;
   }
 }

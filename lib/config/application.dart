@@ -21,4 +21,9 @@ class Application {
 
   //TODO 评论输入框等提示语 需要考量是否有更合适的方式管理
   static String hintText = "";
+  //DateTime.now().millisecondsSinceEpoch的值，为unix时间戳
+  //发送验证码的全局计时
+  static int smsCodeSendTime ;
+  //全局的记录发送验证码的手机号
+  static String sendSmsPhoneNum;
 }

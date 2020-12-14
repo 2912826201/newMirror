@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mirror/api/basic_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/page/login/sms_code_page.dart';
 import 'package:mirror/util/string_util.dart';
 
@@ -13,15 +16,17 @@ class PhoneLoginPage extends StatefulWidget {
 }
 
 class _PhoneLoginPageState extends LoginBasePageState {
-  //
-  bool _sendSmsValid = false;
 
   //本页面的一些常量及文本
-  final _titleOfSendTextBtn = "发送验证码";
+  String _titleOfSendTextBtn ;
   final _conspicousGreeting = "Hello";
   final _stringOfSubtitle = "此刻开始分享你的健身生活和经验吧~";
   final _placeholderOfInputField = "请输入你的手机号";
-
+  final _sendingTitle = "发送中";
+  final _loggingTitle = "登录中";
+  final _sendSmsInitialtitle = "发送验证码";
+  final _sendFaildTitle = "发送失败";
+  final _resendTitle = "重新发送";
   //
   //"高亮"时的按钮颜色
   final _sendSmsHighLightedColor = Color.fromRGBO(17, 17, 17, 1);
@@ -48,6 +53,7 @@ class _PhoneLoginPageState extends LoginBasePageState {
   @override
   void initState() {
     super.initState();
+    _titleOfSendTextBtn = _sendSmsInitialtitle;
     _smsBtnTitleColor = _sendSmsOriginTitleColor;
     _smsBtnColor = _sendSmsOriginColor;
     //对输入框的文本进行监听
@@ -62,7 +68,6 @@ class _PhoneLoginPageState extends LoginBasePageState {
 
   //UI复位
   _recoverUi() {
-    _sendSmsValid = false;
     setState(() {
       _smsBtnColor = _sendSmsOriginColor;
       _smsBtnTitleColor = _sendSmsOriginTitleColor;
@@ -79,7 +84,6 @@ class _PhoneLoginPageState extends LoginBasePageState {
 
   //条件满足时的需要做的事情
   _everythingReady() {
-    _sendSmsValid = true;
     setState(() {
       _smsBtnColor = _sendSmsHighLightedColor;
       _smsBtnTitleColor = _sendSmsHighLightedTitleColor;
@@ -93,7 +97,7 @@ class _PhoneLoginPageState extends LoginBasePageState {
       onTap: () {
         FocusScope.of(context).unfocus();
       },
-      child: Container(
+         child: Container(
           padding: EdgeInsets.only(top: 40),
           color: Colors.white,
           child: Column(
@@ -101,14 +105,14 @@ class _PhoneLoginPageState extends LoginBasePageState {
               navigationBar(),
               //去除导航栏以外的地方
               Container(
-                margin: EdgeInsets.only(top: 42.5),
+                margin:const EdgeInsets.only(top: 42.5),
                 //整体居中
                 child: Center(
                     child: Padding(
                   padding: EdgeInsets.only(left: 41, right: 41),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                       _sloganArea(),
                       //文本和下方的输入框等小胡控件需要分开布局，因为文本的显示效果比较灵活
                       Column(
@@ -131,28 +135,71 @@ class _PhoneLoginPageState extends LoginBasePageState {
 
   //返回函数
   @override
-  reverseAction() {
-    super.reverseAction();
+  popAction() {
+    super.popAction();
   }
-
+  //判断是否重新进入发送验证码的界面
+  bool _reEnterSendSmsPage(){
+    int currentTime = DateTime.now().millisecondsSinceEpoch;
+    int lastTime = Application.smsCodeSendTime;
+    lastTime ??= currentTime - 60*1000;
+    //是否是重入发送验证码的情况
+    if((currentTime - lastTime)<=60*1000){
+      print("reEnter SmsPage true");
+      return true;
+    }
+    print("reEnter SmsPage false");
+    return false;
+  }
   //发送验证码的函数
   _sendMessage() async {
-    if (_sendSmsValid == false) {
-      return;
-    } else {
-      bool result = await sendSms(inputController.text, 0);
-
+    //如果是发送验证码可以重入的情况，则重新进入，此时不会触发相应的接口
+     if(_reEnterSendSmsPage() == true){
+       String applicationPhone = Application.sendSmsPhoneNum;
+       applicationPhone ??= this.inputController.text;
+       //手机号前后对不上
+       if(applicationPhone != this.inputController.text){
+         print("手机号前后对不上，无法发送验证码！");
+         return;
+       }
+       print("发送验证码重入");
+       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+         return SmsCodePage(
+           phoneNumber: inputController.text,
+         );
+       }));
+       return;
+     }
+     //下方是非重入验证码页面的情况，需要触发相应的接口
+      setState(() {
+        _titleOfSendTextBtn = _sendingTitle;
+      });
+      //FIXME:
+      bool result = false;
+      await sendSms(inputController.text, 0);
+      setState(() {
+        _titleOfSendTextBtn = _loggingTitle;
+      });
+      result = true;
       if (result) {
-        print("发送成功");
+        print("发送验证码成功");
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
           return SmsCodePage(
             phoneNumber: inputController.text,
           );
         }));
       } else {
-        print("发送失败");
+        setState(() {
+          _titleOfSendTextBtn = _sendFaildTitle;
+        });
+        Timer.periodic(Duration(seconds: 1), (timer) {
+         setState(() {
+           _titleOfSendTextBtn = _resendTitle;
+         });
+       });
+        print("发送验证码失败");
       }
-    }
+
   }
 
   // Widget _navigationBar(){
@@ -177,7 +224,7 @@ class _PhoneLoginPageState extends LoginBasePageState {
     );
     var area1 = Container(
       child: hellotext,
-      margin: EdgeInsets.only(bottom: 9),
+      margin: const EdgeInsets.only(bottom: 9),
     );
     var area2 = Container(
       child: subtext,
@@ -242,7 +289,7 @@ class _PhoneLoginPageState extends LoginBasePageState {
     }
     var encapsulateBoxArea = Container(
       child: _textField,
-      margin: EdgeInsets.only(top: 38, bottom: 32),
+      margin:const EdgeInsets.only(top: 38, bottom: 32),
       width: 292.75,
       height: 44,
     );

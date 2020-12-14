@@ -89,7 +89,7 @@ class MPIntercourseWidgetState extends State<MPIntercourseWidget>{
             ),
             //标题显示
             Container(child: widget.title,
-            margin: EdgeInsets.only(top: 5),)
+            margin: const EdgeInsets.only(top: 5),)
           ],
         ),
       ),
@@ -97,7 +97,6 @@ class MPIntercourseWidgetState extends State<MPIntercourseWidget>{
   }
   //数量生成
   String _expectCount(){
-    print("expected counting ${widget.badges}");
     if (widget.badges() >= 99)
     {
       return "99+";

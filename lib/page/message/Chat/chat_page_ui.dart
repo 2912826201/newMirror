@@ -72,14 +72,14 @@ class ChatPageUi implements ChatUI{
               GestureDetector(
                 onTap: ()=>_dispatchAction(identifier: popAction),
                 child: Container(child: SizedBox(child: Image.asset("images/resource/return.png"),width: 28,height: 28,),
-                margin: EdgeInsets.only(left: 16,top: 8,bottom: 8),),
+                margin:const EdgeInsets.only(left: 16,top: 8,bottom: 8),),
               ),
               Spacer(),
               GestureDetector(
                 onTap: ()=>_dispatchAction(identifier: moreAction),
                 child: Container(
                   child: SizedBox(child: Image.asset("images/test/ic_big_dynamic_more.png"),),
-                  margin: EdgeInsets.only(right: 16,top: 8,bottom: 8),
+                  margin: const EdgeInsets.only(right: 16,top: 8,bottom: 8),
                 ),
               )
             ],

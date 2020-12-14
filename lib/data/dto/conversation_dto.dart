@@ -1,8 +1,13 @@
+import 'package:mirror/config/application.dart';
+import 'package:mirror/data/dto/group_chat_dto.dart';
 import 'package:mirror/data/model/token_model.dart';
 
 /// conversation_dto
 /// Created by yangjiayi on 2020/11/30.
-
+//群聊会话的type类型
+const int GROUP_CHAT_TYPE = 101;
+//私聊会话的type类型
+const int PRIVATE_CHAT_TYPE = 100;
 const String TABLE_NAME_CONVERSATION = "conversation";
 const String COLUMN_NAME_CONVERSATION_ID = 'id';
 const String COLUMN_NAME_CONVERSATION_CONVERSATIONID = 'conversationId';
@@ -18,6 +23,20 @@ const String COLUMN_NAME_CONVERSATION_UNREAD = 'unread';
 // 这个表是用来存放当前用户的会话列表信息
 class ConversationDto {
   ConversationDto();
+  //创建群聊的网络model转换为本地的会话model
+  ConversationDto.fromGroupChat(GroupChatDto gdto){
+    ConversationDto();
+    this.conversationId = "${gdto.id}";
+    this.uid = Application.profile.uid;
+    this.type = GROUP_CHAT_TYPE;
+    this.avatarUri = gdto.coverUrl;
+    this.name = gdto.name;
+    this.content = "";
+    this.updateTime = gdto.updateTime;
+    this.createTime = gdto.createTime;
+    this.isTop = 0;
+    this.unread = 0;
+  }
   String conversationId;
   int uid;
   int type;

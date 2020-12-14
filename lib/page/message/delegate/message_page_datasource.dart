@@ -1,5 +1,6 @@
 //消息页面的会话数据源代理类
 import 'dart:collection';
+import 'dart:ffi';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -376,7 +377,7 @@ class MessagePageDataSource implements MPDataProxy {
     return _latestUnreadAuthorizeds;
   }
 
-  //向controller通知数据的到达等
+  //向controller通知数据的到达等或者进行刷新界面
   @override
   MPIMDataSourceAction delegate;
 
@@ -389,5 +390,13 @@ class MessagePageDataSource implements MPDataProxy {
     });
    bool rs = await ConversationDBHelper().insertConversations(list);
     print("saving chats  ${rs}");
+  }
+  //增加一个新的会话
+  @override
+  createNewConversation(ConversationDto dto) {
+    print("数据源开始添加新会话 ${dto.toStirng()}");
+   _chatData[dto.conversationId] = dto;
+   print("after create NewChat: $_chatData");
+   delegate.signals(payload: {MessagePageDataSource.REFRESH_ALL_LIST:null});
   }
 }
