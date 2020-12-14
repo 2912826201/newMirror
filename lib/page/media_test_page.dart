@@ -176,11 +176,15 @@ class _MediaTestState extends State<MediaTestPage> {
     List<File> fileList = [];
     UploadResults results;
     if (type == mediaTypeKeyImage) {
+      String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
+      int i = 0;
       list.forEach((element) async {
         if (element.croppedImageData == null) {
           fileList.add(element.file);
         } else {
-          fileList.add(await FileUtil().writeImageDataToFile(element.croppedImageData));
+          i++;
+          File imageFile = await FileUtil().writeImageDataToFile(element.croppedImageData, timeStr + i.toString());
+          fileList.add(imageFile);
         }
       });
       results = await FileUtil().uploadPics(fileList, (path, percent) {

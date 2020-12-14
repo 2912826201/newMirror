@@ -32,8 +32,13 @@ const String COLUMN_NAME_PROFILE_FOLLOWERCOUNT = 'followerCount';
 const String COLUMN_NAME_PROFILE_FEEDCOUNT = 'feedCount';
 const String COLUMN_NAME_PROFILE_RELATION = 'relation';
 const String COLUMN_NAME_PROFILE_MUTUALFRIENDCOUNT = 'mutualFriendCount';
-// 这个表是用来存放当前已登录用户信息的表
+const String COLUMN_NAME_PROFILE_TRAININGSECONDS = 'trainingSeconds';
+const String COLUMN_NAME_PROFILE_WEIGHT = 'weight';
+const String COLUMN_NAME_PROFILE_ALBUMNUM = 'albumNum';
 
+
+
+// 这个表是用来存放当前已登录用户信息的表
 class ProfileDto {
   int uid; //账户Id
   String phone; //手机号
@@ -64,6 +69,9 @@ class ProfileDto {
   int feedCount; //动态数
   int relation; //与用户关系 0-没关系 1-关注 2-粉丝 3-好友
   int mutualFriendCount; //共同好友数
+  int trainingSeconds; //训练总时长
+  int weight; //最近体重
+  int albumNum; //相片数量
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
@@ -94,7 +102,10 @@ class ProfileDto {
     COLUMN_NAME_PROFILE_FOLLOWERCOUNT : followerCount,
     COLUMN_NAME_PROFILE_FEEDCOUNT : feedCount,
     COLUMN_NAME_PROFILE_RELATION : relation,
-    COLUMN_NAME_PROFILE_MUTUALFRIENDCOUNT : mutualFriendCount
+    COLUMN_NAME_PROFILE_MUTUALFRIENDCOUNT : mutualFriendCount,
+    COLUMN_NAME_PROFILE_TRAININGSECONDS : trainingSeconds,
+    COLUMN_NAME_PROFILE_WEIGHT : weight,
+    COLUMN_NAME_PROFILE_ALBUMNUM : albumNum
     };
     return map;
   }
@@ -128,6 +139,9 @@ class ProfileDto {
     feedCount = map[COLUMN_NAME_PROFILE_FEEDCOUNT];
     relation = map[COLUMN_NAME_PROFILE_RELATION];
     mutualFriendCount = map[COLUMN_NAME_PROFILE_MUTUALFRIENDCOUNT];
+    trainingSeconds = map[COLUMN_NAME_PROFILE_TRAININGSECONDS];
+    weight = map[COLUMN_NAME_PROFILE_WEIGHT];
+    albumNum = map[COLUMN_NAME_PROFILE_ALBUMNUM];
   }
 
   UserModel toUserModel() {
@@ -160,6 +174,9 @@ class ProfileDto {
       feedCount: feedCount,
       relation: relation,
       mutualFriendCount: mutualFriendCount,
+      trainingSeconds: trainingSeconds,
+      weight: weight,
+      albumNum: albumNum,
     );
     return model;
   }
@@ -193,5 +210,8 @@ class ProfileDto {
     feedCount = model.feedCount;
     relation = model.relation;
     mutualFriendCount = model.mutualFriendCount;
+    trainingSeconds = model.trainingSeconds;
+    weight = model.weight;
+    albumNum = model.albumNum;
   }
 }

@@ -39,7 +39,8 @@ class FileUtil {
       String key = _genKey(file);
       // 上传文件
       UploadResult result = await syStorage.upload(file.path, token.upToken, key);
-      print(result);
+      // print("&@@@@@@@@@@@@@@${file.path}");
+      // print(result);
       UploadResultModel resultModel = UploadResultModel();
       resultModel.isSuccess = result.success;
       resultModel.error = result.error;
@@ -78,12 +79,13 @@ class FileUtil {
     return "ifapp/${Application.token.uid}/" + DateTime.now().millisecondsSinceEpoch.toString() + ext;
   }
 
-  cancelUpload(){
+  cancelUpload() {
     SyFlutterQiniuStorage.cancelUpload();
   }
 
-  Future<File> writeImageDataToFile(Uint8List imageData) async {
-    String filePath = AppConfig.getAppPicDir() + "/" + DateTime.now().millisecondsSinceEpoch.toString() + ".jpg";
+  Future<File> writeImageDataToFile(Uint8List imageData, String fileName) async {
+    // 由入参来控制文件名 避免同一时间生成的文件名相同
+    String filePath = AppConfig.getAppPicDir() + "/" + fileName + ".jpg";
     return File(filePath).writeAsBytes(imageData);
   }
 }

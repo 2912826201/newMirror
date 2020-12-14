@@ -7,8 +7,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/page/home/sub_page/attention_page.dart';
-import 'package:mirror/util/app_style.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:r_scan/r_scan.dart';
 
