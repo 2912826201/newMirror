@@ -1,21 +1,35 @@
 // import 'package:flutter/cupertino.dart';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/model/post_feed/post_feed.dart';
+import 'package:mirror/data/model/upload/upload_result_model.dart';
+import 'package:mirror/page/home/home_page.dart';
+import 'package:mirror/page/home/sub_page/attention_page.dart';
+import 'package:mirror/page/media_picker/media_picker_page.dart';
+import 'package:mirror/route/router.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:text_span_field/range_style.dart';
 import 'package:text_span_field/text_span_field.dart';
+import 'package:toast/toast.dart';
 
-class ReleasePage extends StatefulWidget {
+class ReleasePage extends StatefulWidget  {
   @override
   ReleasePageState createState() => ReleasePageState();
 }
@@ -24,13 +38,13 @@ class ReleasePageState extends State<ReleasePage> {
   SelectedMediaFiles _selectedMediaFiles;
   TextEditingController _controller = TextEditingController();
   FocusNode feedFocus = FocusNode();
-
   // at的索引数组
   List<Rule> rules = [];
 
   @override
   void initState() {
     //TODO 取出来判断是否为空 非空则将图片视频作为初始值 取出后需将Application中的值清空
+    print("查明￥${Application.selectedMediaFiles}");
     _selectedMediaFiles = Application.selectedMediaFiles;
     Application.selectedMediaFiles = null;
     super.initState();
@@ -39,12 +53,6 @@ class ReleasePageState extends State<ReleasePage> {
   @override
   Widget build(BuildContext context) {
     double inputHeight = MediaQuery.of(context).viewInsets.bottom;
-    // // 头部布局
-    // headerWidget() {
-    //   return
-    // }
-
-    // return
     return Scaffold(
         resizeToAvoidBottomInset: false,
         body: ChangeNotifierProvider(
@@ -64,7 +72,7 @@ class ReleasePageState extends State<ReleasePage> {
                 child: Column(
                   children: [
                     // 头部布局
-                    FeedHeader(),
+                    FeedHeader(selectedMediaFiles: _selectedMediaFiles),
                     // 中间主视图
                     Expanded(
                         child: Container(
@@ -81,7 +89,7 @@ class ReleasePageState extends State<ReleasePage> {
                                         ? AtList(index: index, controller: _controller)
                                         : str == "#"
                                             ? TopicList(index: index, controller: _controller)
-                                            : ReleaseFeedMainView();
+                                            : ReleaseFeedMainView(selectedMediaFiles: _selectedMediaFiles);
                                   },
                                       childCount: str == "@"
                                           ? 10
@@ -100,6 +108,40 @@ class ReleasePageState extends State<ReleasePage> {
 
 // 头部布局
 class FeedHeader extends StatelessWidget {
+  FeedHeader({this.selectedMediaFiles});
+  SelectedMediaFiles selectedMediaFiles;
+
+  // 发布动态
+  pulishFeed(String inputText, List<Rule> rule, BuildContext context) async {
+    print("输入框文字￥$inputText");
+    print("打印一下规则$rule");
+    PostFeedModel feedModel = PostFeedModel();
+    AtUsersModel atUsersModel = AtUsersModel();
+    String address;
+    String cityCode;
+    String latitude;
+    String longitude;
+    String topicId;
+    // 检测文本
+    Map<String, dynamic> textModel = await feedTextScan(text: inputText);
+    if (textModel["state"]) {
+      feedModel.content = inputText;
+      feedModel.selectedMediaFiles = selectedMediaFiles;
+      feedModel.atUsersModel = atUsersModel;
+      feedModel.address = address;
+      feedModel.cityCode = cityCode;
+      feedModel.latitude = latitude;
+      feedModel.longitude = longitude;
+      feedModel.topicId = topicId;
+      Application.postFeedModel = feedModel;
+      print("打印一下￥￥${(feedModel.selectedMediaFiles.list.length)}");
+      Navigator.pop(context, true);
+      print("打印结束");
+    } else {
+      ToastShow.show(msg:"你发布的动态可能存在敏感内容",context: context,gravity: Toast.CENTER);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -126,8 +168,11 @@ class FeedHeader extends StatelessWidget {
           GestureDetector(
               onTap: () {
                 // 读取输入框最新的值
-                // print(context.read<CommentEnterNotifier>().textFieldStr);
+                var inputText = context.read<ReleaseFeedInputNotifier>().inputText;
+                // 获取输入框内的规则
+                var rules = context.read<ReleaseFeedInputNotifier>().rules;
                 print("点击生效");
+                pulishFeed(inputText, rules,context);
               },
               child: IgnorePointer(
                 // 监听输入框的值==""使外层点击不生效。非""手势生效。
@@ -383,12 +428,12 @@ class TopicList extends StatelessWidget {
           String topicMiddleStr = topics[index].topic.substring(1, topics[index].topic.length);
           // 拼接修改输入框的值
           controller.text = topicBeforeStr + topicMiddleStr + topicRearStr;
-          print("controller.text ${controller.text }");
+          print("controller.text ${controller.text}");
           // 这是替换输入的文本修改后面输入的#的规则
           if (searchStr != "" || searchStr.isNotEmpty) {
             print("话题替换");
             int oldLength = searchStr.length;
-            int newLength = topics[index].topic.length -1;
+            int newLength = topics[index].topic.length - 1;
             int oldStartIndex = topicIndex;
             int diffLength = newLength - oldLength;
             for (int i = 0; i < rules.length; i++) {
@@ -525,16 +570,16 @@ class AtList extends StatelessWidget {
           }
         }
         // 此时为了解决后输入的@切换光标到之前输入的@或者#前方，更新之前输入@和#的索引。
-          for (int i = 0; i < rules.length; i++) {
-            // 当最新输入框内的文本对应不上之前的值时。
-            if (rules[i].params != controller.text.substring(rules[i].startIndex, rules[i].endIndex)) {
-              print("进入");
-              print(rules[i]);
-              rules[i] = Rule(rules[i].startIndex + AtLength, rules[i].endIndex + AtLength, rules[i].params,
-                  rules[i].clickIndex, rules[i].isAt);
-              print(rules[i]);
-            }
+        for (int i = 0; i < rules.length; i++) {
+          // 当最新输入框内的文本对应不上之前的值时。
+          if (rules[i].params != controller.text.substring(rules[i].startIndex, rules[i].endIndex)) {
+            print("进入");
+            print(rules[i]);
+            rules[i] = Rule(rules[i].startIndex + AtLength, rules[i].endIndex + AtLength, rules[i].params,
+                rules[i].clickIndex, rules[i].isAt);
+            print(rules[i]);
           }
+        }
         // 存储规则
         context
             .read<ReleaseFeedInputNotifier>()
@@ -575,8 +620,9 @@ class AtList extends StatelessWidget {
 
 // 发布动态输入框下的所有部件
 class ReleaseFeedMainView extends StatelessWidget {
-  ReleaseFeedMainView({this.pc});
+  ReleaseFeedMainView({this.pc, this.selectedMediaFiles});
 
+  SelectedMediaFiles selectedMediaFiles;
   List<String> PhotoUrl = [
     "images/test/yxlm2.jpeg",
     "images/test/yxlm3.jpeg",
@@ -586,8 +632,6 @@ class ReleaseFeedMainView extends StatelessWidget {
   ];
   List<String> addresss = ["成都市", "花样年福年广场", "牛水煮·麻辣水煮牛肉", "园林火锅", "嘉年CEO酒店公寓-(成都会展中心福年广场店)", "查看更多"];
   PanelController pc = new PanelController();
-
-
 
   // 选择地址
   seletedAddress() {
@@ -658,18 +702,103 @@ class ReleaseFeedMainView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [SeletedPhoto(photoUrl: PhotoUrl,), seletedAddress(), recommendAddress()],
+      children: [
+        selectedMediaFiles.list != null
+            ? SeletedPhoto(
+                photoUrl: PhotoUrl,
+                selectedMediaFiles: selectedMediaFiles,
+              )
+            : Container(),
+        seletedAddress(),
+        recommendAddress()
+      ],
     );
   }
 }
 
 // 图片
 class SeletedPhoto extends StatefulWidget {
-  SeletedPhoto({Key key,this.photoUrl}):super(key: key);
+  SeletedPhoto({Key key, this.photoUrl, this.selectedMediaFiles}) : super(key: key);
+  SelectedMediaFiles selectedMediaFiles;
   List<String> photoUrl;
-      SeletedPhotoState createState() => SeletedPhotoState();
+
+  SeletedPhotoState createState() => SeletedPhotoState();
 }
+
 class SeletedPhotoState extends State<SeletedPhoto> {
+  // 解析数据
+  resolveData() async {
+    for (MediaFileModel model in widget.selectedMediaFiles.list) {
+      if (model.croppedImage != null) {
+        ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
+        Uint8List picBytes = byteData.buffer.asUint8List();
+        model.croppedImageData = picBytes;
+      }
+      setState(() {});
+    }
+  }
+
+  @override
+  void initState() {
+    resolveData();
+  }
+
+  // 进入相册的添加视图
+  addView() {
+    if ((widget.selectedMediaFiles.type == mediaTypeKeyImage && widget.selectedMediaFiles.list.length < 9) ||
+        (widget.selectedMediaFiles.type == null)) {
+      return GestureDetector(
+        onTap: () {
+          int type = typeImage;
+          if (widget.selectedMediaFiles.type == null) {
+            type = typeImageAndVideo;
+          } else if (widget.selectedMediaFiles.type == mediaTypeKeyImage) {
+            type = typeImage;
+          }
+          AppRouter.navigateToMediaPickerPage(
+              context, 9 - widget.selectedMediaFiles.list.length, type, true, startPageGallery, false, false,
+              (result) async {
+            SelectedMediaFiles files = Application.selectedMediaFiles;
+            if (true != result || files == null) {
+              print("没有选择媒体文件");
+              return;
+            }
+            if (widget.selectedMediaFiles.type == null) {
+              widget.selectedMediaFiles.type = files.type;
+            }
+            Application.selectedMediaFiles = null;
+            print(files.type + ":" + files.list.toString());
+            for (MediaFileModel model in files.list) {
+              if (model.croppedImage != null) {
+                print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
+                print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                Uint8List picBytes = byteData.buffer.asUint8List();
+                print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
+                model.croppedImageData = picBytes;
+              }
+            }
+            widget.selectedMediaFiles.list.addAll(files.list);
+            context.read<ReleaseFeedInputNotifier>().setSelectedMediaFiles(widget.selectedMediaFiles);
+            setState(() {});
+          });
+        },
+        child: Container(
+          margin: EdgeInsets.only(left: 10, top: 9, right: 16),
+          width: 86,
+          height: 86,
+          decoration: BoxDecoration(
+            color: AppColor.bgWhite,
+            borderRadius: BorderRadius.all(Radius.circular(3.0)),
+          ),
+          child: Center(
+            child: Icon(Icons.add, color: AppColor.textHint),
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -678,26 +807,11 @@ class SeletedPhotoState extends State<SeletedPhoto> {
       child: ListView.builder(
           shrinkWrap: true,
           scrollDirection: Axis.horizontal,
-          itemCount: widget.photoUrl.length + 1,
+          itemCount:
+              widget.selectedMediaFiles.type == mediaTypeKeyVideo ? 1 : widget.selectedMediaFiles.list.length + 1,
           itemBuilder: (context, index) {
-            if (index ==  widget.photoUrl.length) {
-              return GestureDetector(
-                onTap: () {
-                  print("点击进入相片选择页");
-                },
-                child: Container(
-                  margin: EdgeInsets.only(left: 10, top: 9, right: 16),
-                  width: 86,
-                  height: 86,
-                  decoration: BoxDecoration(
-                    color: AppColor.bgWhite,
-                    borderRadius: BorderRadius.all(Radius.circular(3.0)),
-                  ),
-                  child: Center(
-                    child: Icon(Icons.add, color: AppColor.textHint),
-                  ),
-                ),
-              );
+            if (index == widget.selectedMediaFiles.list.length) {
+              return addView();
             }
             return Container(
               width: 92,
@@ -710,9 +824,33 @@ class SeletedPhotoState extends State<SeletedPhoto> {
                     margin: EdgeInsets.only(top: 9),
                     width: 86,
                     height: 86,
-                    decoration: BoxDecoration(
-                        image: DecorationImage(image: AssetImage( widget.photoUrl[index]), fit: BoxFit.cover),
-                        borderRadius: BorderRadius.all(Radius.circular(3.0))),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(3.0))),
+                  ),
+                  Positioned(
+                    top: 9,
+                    left: 0,
+                    child: widget.selectedMediaFiles.type == mediaTypeKeyVideo
+                        ? Image.memory(
+                            widget.selectedMediaFiles.list[index].thumb,
+                            fit: BoxFit.cover,
+                            width: 86,
+                            height: 86,
+                          )
+                        : widget.selectedMediaFiles.list[index].croppedImageData != null
+                            ? Image.memory(
+                                widget.selectedMediaFiles.list[index].croppedImageData,
+                                fit: BoxFit.cover,
+                                width: 86,
+                                height: 86,
+                              )
+                            : widget.selectedMediaFiles.list[index].file != null
+                                ? Image.file(
+                                    widget.selectedMediaFiles.list[index].file,
+                                    fit: BoxFit.cover,
+                                    width: 86,
+                                    height: 86,
+                                  )
+                                : Container(),
                   ),
                   Positioned(
                       right: 0,
@@ -721,7 +859,12 @@ class SeletedPhotoState extends State<SeletedPhoto> {
                         onTap: () {
                           print("关闭");
                           setState(() {
-                            widget.photoUrl.removeAt(index);
+                            if (widget.selectedMediaFiles.list.length == 1) {
+                              ToastShow.show(msg: "最后一个了", context: context,gravity: Toast.CENTER);
+                              return;
+                              // widget.selectedMediaFiles.type = null;
+                            }
+                            widget.selectedMediaFiles.list.removeAt(index);
                           });
                         },
                         child: Container(
@@ -731,10 +874,10 @@ class SeletedPhotoState extends State<SeletedPhoto> {
                               color: AppColor.bgBlack, borderRadius: BorderRadius.all(Radius.circular(8))),
                           child: Center(
                               child: Icon(
-                                Icons.close,
-                                color: AppColor.white,
-                                size: 12,
-                              )),
+                            Icons.close,
+                            color: AppColor.white,
+                            size: 12,
+                          )),
                         ),
                       ))
                 ],
@@ -748,7 +891,13 @@ class SeletedPhotoState extends State<SeletedPhoto> {
 // 发布动态文本监听
 class ReleaseFeedInputNotifier extends ChangeNotifier {
   ReleaseFeedInputNotifier(
-      {this.keyWord, this.inputText, this.rules, this.atCursorIndex, this.atSearchStr, this.topicSearchStr});
+      {this.keyWord,
+      this.inputText,
+      this.rules,
+      this.atCursorIndex,
+      this.atSearchStr,
+      this.topicSearchStr,
+      this.selectedMediaFiles});
 
   // 监听输入框输入的值是否为@#切换视图的
   String keyWord = "";
@@ -770,6 +919,9 @@ class ReleaseFeedInputNotifier extends ChangeNotifier {
 
   // #后的实时搜索文本
   String topicSearchStr;
+
+  // 发布动态选择的图片视频
+  SelectedMediaFiles selectedMediaFiles;
 
   getAtCursorIndex(int atIndex) {
     this.atCursorIndex = atIndex;
@@ -803,6 +955,11 @@ class ReleaseFeedInputNotifier extends ChangeNotifier {
 
   setTopicSearchStr(String str) {
     this.topicSearchStr = str;
+    notifyListeners();
+  }
+
+  setSelectedMediaFiles(SelectedMediaFiles _selectedMediaFiles) {
+    this.selectedMediaFiles = _selectedMediaFiles;
     notifyListeners();
   }
 }

@@ -184,6 +184,12 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
               ),
               RaisedButton(
                 onPressed: () {
+                  AppRouter.navigateToVideoCourseList(context);
+                },
+                child: Text("视频课程页"),
+              ),
+              RaisedButton(
+                onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return LiveRoomPage();
                   }));

@@ -6,20 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/live_broadcast/live_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/live_model.dart';
+import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:mirror/api/live_broadcast/live_api.dart';
 
-enum LoadingStatus {
-  //正在加载中
-  STATUS_LOADING,
-  //数据加载完成
-  STATUS_COMPLETED,
-  //空闲状态
-  STATUS_IDEL,
-}
+import 'live_broadcast_page.dart';
 
 /// 直播日程页
 class LiveBroadcastItemPage extends StatefulWidget {
@@ -53,7 +48,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   var liveModelOldArray = <LiveModel>[];
 
   //日历内有多少个提醒计划
-  var calendarEvents = <Event>[];
+  // var calendarEvents = <Event>[];
 
   //hero动画的标签
   var heroTagArray = <String>[];
@@ -70,8 +65,9 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     //获取本地日历已经预约的课程
     print("====initState-${dataDate}");
     loadingStatus = LoadingStatus.STATUS_LOADING;
+    liveModelArray.clear();
     getLiveModelData();
-    _retrieveCalendarEvents();
+    // _retrieveCalendarEvents();
   }
 
   @override
@@ -83,7 +79,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   //判断是否获取网络数据
   Widget _buildSuggestions() {
     if (liveModelArray != null && liveModelArray.length > 0) {
-      setDataCalendar();
+      // setDataCalendar();
       return _getUi();
     } else {
       if (loadingStatus == LoadingStatus.STATUS_LOADING) {
@@ -100,7 +96,10 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
               onTap: () {
                 loadingStatus = LoadingStatus.STATUS_LOADING;
                 setState(() {});
+                liveModelArray.clear();
                 getLiveModelData();
+
+                // AppRouter.navigateToLiveDetail(context, "0",1);
               },
             ),
           ),
@@ -139,15 +138,15 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
         ),
         Expanded(
             child: SizedBox(
-          child: ScrollConfiguration(
-            behavior: NoBlueEffectBehavior(),
-            child: SingleChildScrollView(
-              child: Column(
-                children: widgetArray,
+              child: ScrollConfiguration(
+                behavior: NoBlueEffectBehavior(),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: widgetArray,
+                  ),
+                ),
               ),
-            ),
-          ),
-        ))
+            ))
       ],
     );
   }
@@ -248,8 +247,8 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
               padding: const EdgeInsets.only(top: 3, bottom: 3),
               child: Text(
                 "${DateUtil.formatTimeString(DateUtil.stringToDateTime(value.startTime))}"
-                "-"
-                "${DateUtil.formatTimeString(DateUtil.stringToDateTime(value.endTime))}",
+                    "-"
+                    "${DateUtil.formatTimeString(DateUtil.stringToDateTime(value.endTime))}",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColor.white,
@@ -270,117 +269,117 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
       LiveModel value, int imageWidth, int imageHeight, bool isOld, int index) {
     return Expanded(
         child: SizedBox(
-      child: Container(
-        margin: const EdgeInsets.only(left: 12),
-        height: imageHeight.toDouble(),
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              child: Text(
-                value.name,
-                style: TextStyle(
-                  fontSize: 15,
-                  color: AppColor.textPrimary1,
-                  fontWeight: FontWeight.bold,
+          child: Container(
+            margin: const EdgeInsets.only(left: 12),
+            height: imageHeight.toDouble(),
+            child: Column(
+              children: [
+                Container(
+                  width: double.infinity,
+                  child: Text(
+                    value.name,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: AppColor.textPrimary1,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            Expanded(
-                child: SizedBox(
-              child: Container(
-                width: double.infinity,
-                child: Row(
-                  children: [
-                    //数据
-                    Expanded(
-                        child: SizedBox(
+                Expanded(
+                    child: SizedBox(
                       child: Container(
-                        padding: const EdgeInsets.only(top: 6),
                         width: double.infinity,
-                        height: double.infinity,
-                        child: Stack(
+                        child: Row(
                           children: [
-                            Positioned(
-                              child: Row(
+                            //数据
+                            Expanded(
+                                child: SizedBox(
+                                  child: Container(
+                                    padding: const EdgeInsets.only(top: 6),
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                    child: Stack(
+                                      children: [
+                                        Positioned(
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                //类型
+                                                child: Text(
+                                                  value.coursewareDto?.targetDto?.name,
+                                                  style: TextStyle(
+                                                    fontSize: 10,
+                                                    color: AppColor.textPrimary1,
+                                                  ),
+                                                ),
+                                                padding: const EdgeInsets.only(
+                                                    top: 1, bottom: 1, left: 5, right: 5),
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(1),
+                                                  color:
+                                                  AppColor.textHint.withOpacity(0.34),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Container(
+                                                child: Text(
+                                                  "${value.coursewareDto?.calories}千卡",
+                                                  style: TextStyle(
+                                                    fontSize: 10,
+                                                    color: AppColor.textPrimary1,
+                                                  ),
+                                                ),
+                                                padding: const EdgeInsets.only(
+                                                    top: 1, bottom: 1, left: 5, right: 5),
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(1),
+                                                  color:
+                                                  AppColor.textHint.withOpacity(0.34),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          top: 0,
+                                          left: 0,
+                                        ),
+                                        Positioned(
+                                          child: Text(
+                                            value.coachDto?.nickName,
+                                            style: TextStyle(
+                                                fontSize: 12, color: AppColor.textPrimary2),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          bottom: 0,
+                                          left: 0,
+                                          right: 8,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                )),
+                            //按钮
+                            Container(
+                              height: double.infinity,
+                              child: Stack(
+                                alignment: AlignmentDirectional.bottomStart,
                                 children: [
-                                  Container(
-                                    //类型
-                                    child: Text(
-                                      value.coursewareDto?.targetDto?.name,
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: AppColor.textPrimary1,
-                                      ),
-                                    ),
-                                    padding: const EdgeInsets.only(
-                                        top: 1, bottom: 1, left: 5, right: 5),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(1),
-                                      color:
-                                          AppColor.textHint.withOpacity(0.34),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Container(
-                                    child: Text(
-                                      "${value.coursewareDto?.calories}千卡",
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: AppColor.textPrimary1,
-                                      ),
-                                    ),
-                                    padding: const EdgeInsets.only(
-                                        top: 1, bottom: 1, left: 5, right: 5),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(1),
-                                      color:
-                                          AppColor.textHint.withOpacity(0.34),
-                                    ),
-                                  ),
+                                  _getButton(value, isOld, index),
                                 ],
                               ),
-                              top: 0,
-                              left: 0,
                             ),
-                            Positioned(
-                              child: Text(
-                                value.coachDto?.nickName,
-                                style: TextStyle(
-                                    fontSize: 12, color: AppColor.textPrimary2),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              bottom: 0,
-                              left: 0,
-                              right: 8,
-                            )
                           ],
                         ),
                       ),
                     )),
-                    //按钮
-                    Container(
-                      height: double.infinity,
-                      child: Stack(
-                        alignment: AlignmentDirectional.bottomStart,
-                        children: [
-                          _getButton(value, isOld, index),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )),
-          ],
-        ),
-      ),
-    ));
+              ],
+            ),
+          ),
+        ));
   }
 
   //按钮 去上课 预约 已预约 回放
@@ -390,7 +389,6 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     if (isOld) {
       value.playType = 3;
     }
-    print("${value.playType}----${value.getGetPlayType()}---${isOld}");
     return GestureDetector(
       child: Container(
         width: 72,
@@ -405,7 +403,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
         ),
         decoration: BoxDecoration(
           color:
-              value.playType == 4 ? alreadyOrderBgColor : noAlreadyOrderBgColor,
+          value.playType == 4 ? alreadyOrderBgColor : noAlreadyOrderBgColor,
           borderRadius: BorderRadius.circular(30),
           border: Border.all(width: 0.5, color: noAlreadyOrderBgColor),
         ),
@@ -456,43 +454,132 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
 
   //设置数据
   //应该要判断一下时间，以免 id相同 时间不同导致错误的预约
-  void setDataCalendar() {
-    if (calendarEvents == null || calendarEvents.length < 1) {
-      return;
+  // void setDataCalendar() {
+  //   if (calendarEvents == null || calendarEvents.length < 1) {
+  //     return;
+  //   } else {
+  //     for (int i = 0; i < calendarEvents.length; i++) {
+  //       for (int j = 0; j < liveModelArray.length; j++) {
+  //         if (liveModelArray[j].name == calendarEvents[i].title &&
+  //             liveModelArray[j].coursewareDto?.name ==
+  //                 calendarEvents[i].description &&
+  //             liveModelArray[j].startTime ==
+  //                 DateUtil.formatDateTimeString(calendarEvents[i].start)) {
+  //           liveModelArray[j].playType = 4;
+  //           break;
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+
+  //点击item按钮判断怎么响应
+  void onClickItem(LiveModel value, int index) {
+    if (value.playType == 2) {
+      showCupertinoDialog(
+          context: context,
+          builder: (context) {
+            return CupertinoAlertDialog(
+              title: Text('访问日历'),
+              content: Text('’IFITNESS‘想访问您的日历，才能添加提醒事项，以便开播前提醒'),
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  child: Text('不允许'),
+                  onPressed: () {
+                    _bookLiveCourse(value, index, false);
+                    Navigator.pop(context);
+                  },
+                ),
+                CupertinoDialogAction(
+                  child: Text('好'),
+                  onPressed: () {
+                    _bookLiveCourse(value, index, true);
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            );
+          });
+    } else if (value.playType == 1) {
+      ToastShow.show(msg: "点击-去上课-应该直接去直播间", context: context);
+      //todo 先这样实现---以后再改为路由
+      LiveBroadcastPage.liveModel = value;
+      AppRouter.navigateToLiveDetail(
+          context, heroTagArray[index], value.id, value.courseId);
     } else {
-      for (int i = 0; i < calendarEvents.length; i++) {
-        for (int j = 0; j < liveModelArray.length; j++) {
-          print(
-              "---${liveModelArray[j].startTime}----${DateUtil.formatDateTimeString(calendarEvents[i].start)}");
-          if (liveModelArray[j].name == calendarEvents[i].title &&
-              liveModelArray[j].coursewareDto?.name ==
-                  calendarEvents[i].description &&
-              liveModelArray[j].startTime ==
-                  DateUtil.formatDateTimeString(calendarEvents[i].start)) {
-            liveModelArray[j].playType = 4;
-            break;
-          }
+      ToastShow.show(msg: "去直播详情页", context: context);
+      //todo 先这样实现---以后再改为路由
+      LiveBroadcastPage.liveModel = value;
+      AppRouter.navigateToLiveDetail(
+          context, heroTagArray[index], value.id, value.courseId);
+    }
+  }
+
+  void _bookLiveCourse(LiveModel value, int index, bool isCalendar) async {
+    String alert = "";
+    bool isBook;
+    bool settingTF;
+    if (value.playType == 2) {
+      alert = "预约失败";
+      isBook = true;
+      settingTF = false;
+    } else {
+      alert = "取消预约失败";
+      isBook = false;
+      settingTF = false;
+    }
+    Map<String, dynamic> mapBook = await bookLiveCourse(
+        courseId: value.courseId, isBook: value.playType == 2);
+    if (mapBook != null) {
+      if (mapBook["state"]) {
+        if (value.playType == 2) {
+          alert = "预约成功";
+          isBook = true;
+          settingTF = true;
+        } else {
+          alert = "取消预约成功";
+          isBook = false;
+          settingTF = true;
         }
+      }
+    }
+    if (settingTF) {
+      if (!isCalendar) {
+        onClickMakeAnAppointment(value, alert, isBook);
+      } else {
+        if (isBook) {
+          ToastShow.show(
+            msg: "预约成功，但是添加日历提醒失败",
+            context: context,
+          );
+        } else {
+          ToastShow.show(
+            msg: "删除预约成功，但是删除日历提醒失败",
+            context: context,
+          );
+        }
+        liveModelArray.clear();
+        getLiveModelData();
+      }
+    } else {
+      if (isBook) {
+        ToastShow.show(msg:
+        "预约失败",
+          context: context,
+        );
+      } else {
+        ToastShow.show(msg:
+        "删除预约失败",
+          context: context,
+        );
       }
     }
   }
 
-  //点击item按钮判断怎么响应
-  void onClickItem(LiveModel value, index) {
-    if (value.playType == 2) {
-      //todo android 添加日历提醒 测试没有问题-虽然没有全机型测试------ios还未测试
-      onClickMakeAnAppointment(value);
-    } else if (value.playType == 1) {
-      ToastShow.show("点击-去上课-应该直接去直播间", context);
-      AppRouter.navigateToLiveDetail(context, heroTagArray[index]);
-    } else {
-      ToastShow.show("去直播详情页", context);
-      AppRouter.navigateToLiveDetail(context, heroTagArray[index]);
-    }
-  }
-
   //点击预约后-查询是否有创建提醒的空间id
-  void onClickMakeAnAppointment(LiveModel value) async {
+  void onClickMakeAnAppointment(
+      LiveModel value, String alert, bool isBook) async {
+    //todo android 添加日历提醒 测试没有问题-虽然没有全机型测试------ios还未测试
     await [Permission.calendar].request();
     DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
     List<Calendar> _calendars;
@@ -504,18 +591,20 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
         localAccountName: "mirror——1",
       );
       if (result.isSuccess) {
-        createEvent(result.data, _deviceCalendarPlugin, value);
+        createEvent(result.data, _deviceCalendarPlugin, value, alert, isBook);
       } else {
-        ToastShow.show("添加日历预约错误", context);
+        ToastShow.show(
+            msg: "${alert}，但是${isBook ? "添加" : "删除"}日历提醒失败", context: context);
       }
     } else {
-      createEvent(_calendars[0].id, _deviceCalendarPlugin, value);
+      createEvent(
+          _calendars[0].id, _deviceCalendarPlugin, value, alert, isBook);
     }
   }
 
   //创建提醒
   void createEvent(String id, DeviceCalendarPlugin _deviceCalendarPlugin,
-      LiveModel value) async {
+      LiveModel value, String alert, bool isBook) async {
     Event _event = new Event(id);
     DateTime startTime = DateUtil.stringToDateTime(value.startTime);
     _event.start = startTime;
@@ -527,31 +616,33 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     _event.description = value.coursewareDto?.name;
     _event.reminders = _reminders;
     var createEventResult =
-        await _deviceCalendarPlugin.createOrUpdateEvent(_event);
+    await _deviceCalendarPlugin.createOrUpdateEvent(_event);
     if (createEventResult.isSuccess) {
-      ToastShow.show("添加提醒成功", context);
-      _retrieveCalendarEvents();
+      ToastShow.show(
+          msg: "${alert}，${isBook ? "添加" : "删除"}日历成功", context: context);
+      // _retrieveCalendarEvents();
     } else {
-      ToastShow.show("添加提醒失败", context);
+      ToastShow.show(
+          msg: "${alert}，${isBook ? "添加" : "删除"}日历失败", context: context);
     }
   }
 
   //获取所有的记录
-  Future _retrieveCalendarEvents() async {
-    DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
-    final startDate = DateTime.now().add(Duration(days: -30));
-    final endDate = DateTime.now().add(Duration(days: 30));
-    List<Calendar> _calendars;
-    final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
-    _calendars = calendarsResult?.data;
-    if (_calendars != null && _calendars.length > 0) {
-      var calendarEventsResult = await _deviceCalendarPlugin.retrieveEvents(
-          _calendars[0].id,
-          RetrieveEventsParams(startDate: startDate, endDate: endDate));
-      calendarEvents = calendarEventsResult?.data;
-      setState(() {});
-    }
-  }
+  // Future _retrieveCalendarEvents() async {
+  //   DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
+  //   final startDate = DateTime.now().add(Duration(days: -30));
+  //   final endDate = DateTime.now().add(Duration(days: 30));
+  //   List<Calendar> _calendars;
+  //   final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
+  //   _calendars = calendarsResult?.data;
+  //   if (_calendars != null && _calendars.length > 0) {
+  //     var calendarEventsResult = await _deviceCalendarPlugin.retrieveEvents(
+  //         _calendars[0].id,
+  //         RetrieveEventsParams(startDate: startDate, endDate: endDate));
+  //     calendarEvents = calendarEventsResult?.data;
+  //     setState(() {});
+  //   }
+  // }
 
 // 获取指定日期的直播日程
   getLiveModelData() async {

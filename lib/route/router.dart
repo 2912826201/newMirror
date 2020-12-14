@@ -24,6 +24,8 @@ class AppRouter {
   static String pathPreviewPhoto = "/previewPhoto";
   static String pathLiveBroadcast = "/liveBroadcast";
   static String pathLiveDetail = "/liveDetail";
+  static String pathVideoDetail = "/videoDetail";
+  static String pathVideoCourseList = "/videoCourseList";
   static String pathScanCode = "/ScanCode";
   static String pathMineDetails = "mineDetails";
 
@@ -43,8 +45,10 @@ class AppRouter {
     router.define(pathPreviewPhoto, handler: handlerPreviewPhoto);
     router.define(pathLiveBroadcast, handler: handlerLiveBroadcast);
     router.define(pathLiveDetail, handler: handlerLiveDetail);
-    router.define(pathScanCode, handler:handlerScan );
-    router.define(pathMineDetails, handler:handlermineDetails );
+    router.define(pathVideoDetail, handler: handlerVideoDetail);
+    router.define(pathScanCode, handler: handlerScan);
+    router.define(pathMineDetails, handler: handlermineDetails);
+    router.define(pathVideoCourseList, handler: handlerVideoCourseList);
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
   }
@@ -88,19 +92,37 @@ class AppRouter {
     _navigateToPage(context, pathLiveBroadcast, {});
   }
 
-  static void navigateToLiveDetail(BuildContext context, String heroTag) {
+  static void navigateToVideoCourseList(BuildContext context) {
+    _navigateToPage(context, pathVideoCourseList, {});
+  }
+
+  static void navigateToLiveDetail(BuildContext context, String heroTag,
+      int liveCourseId, int courseId) {
     Map<String, dynamic> map = Map();
     map["heroTag"] = heroTag;
+    map["liveCourseId"] = liveCourseId;
+    map["courseId"] = courseId;
     _navigateToPage(context, pathLiveDetail, map);
   }
 
-  static void navigationToScanCodePage(BuildContext context){
-    _navigateToPage(context, pathScanCode,{});
+  static void navigateToVideoDetail(BuildContext context, String heroTag,
+      int liveCourseId, int courseId) {
+    Map<String, dynamic> map = Map();
+    map["heroTag"] = heroTag;
+    map["liveCourseId"] = liveCourseId;
+    map["courseId"] = courseId;
+    _navigateToPage(context, pathVideoDetail, map);
   }
+
+  static void navigationToScanCodePage(BuildContext context) {
+    _navigateToPage(context, pathScanCode, {});
+  }
+
   static void navigateToLikePage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathLike, map);
   }
+
   static void navigateToMineDetail(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathMineDetails, map);
