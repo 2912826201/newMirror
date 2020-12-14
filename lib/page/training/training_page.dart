@@ -286,22 +286,27 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
             "我的课程",
             style: AppStyle.textMedium16,
           )),
-          Row(
-            children: [
-              Text(
-                "添加课程",
-                style: AppStyle.textPrimary3Regular14,
-              ),
-              SizedBox(
-                width: 4,
-              ),
-              //TODO 之后替换图标
-              Icon(
-                Icons.add_circle_outline,
-                size: 16,
-                color: AppColor.textPrimary1,
-              ),
-            ],
+          GestureDetector(
+            onTap: () {
+              AppRouter.navigateToVideoCourseList(context);
+            },
+            child: Row(
+              children: [
+                Text(
+                  "添加课程",
+                  style: AppStyle.textPrimary3Regular14,
+                ),
+                SizedBox(
+                  width: 4,
+                ),
+                //TODO 之后替换图标
+                Icon(
+                  Icons.add_circle_outline,
+                  size: 16,
+                  color: AppColor.textPrimary1,
+                ),
+              ],
+            ),
           )
         ],
       ),
