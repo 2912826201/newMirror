@@ -6,6 +6,7 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/post_feed/post_feed.dart';
 import 'package:mirror/data/model/token_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/video_tag_madel.dart';
 
 /// application
 /// Created by yangjiayi on 2020/11/14.
@@ -22,6 +23,9 @@ class Application {
 
   //当前用户的信息
   static ProfileDto profile;
+
+  //视频课程的tag
+  static VideoTagModel videoTagModel;
 
   //TODO 评论输入框等提示语 需要考量是否有更合适的方式管理
   static String hintText = "";

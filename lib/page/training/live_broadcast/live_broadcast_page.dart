@@ -16,6 +16,9 @@ import 'live_broadcast_title_page.dart';
 
 /// 直播日程页
 class LiveBroadcastPage extends StatefulWidget {
+  //todo 先这样实现---以后再改为路由
+  static LiveModel liveModel;
+
   @override
   createState() => new LiveBroadcastPageState();
 }

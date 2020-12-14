@@ -453,17 +453,26 @@ class CommentDtoModel {
     replyName = json["replyName"];
     delete = json["delete"];
     if (json["picUrls"] != null) {
-      json["picUrls"].forEach((v) {
+      json["picUrls"]?.forEach((v) {
+        if (picUrls == null) {
+          picUrls = <PicUrlsModel>[];
+        }
         picUrls.add(PicUrlsModel.fromJson(v));
       });
     }
     if (json["atUsers"] != null) {
-      json["atUsers"].forEach((v) {
+      json["atUsers"]?.forEach((v) {
+        if (atUsers == null) {
+          atUsers = <AtUsersModel>[];
+        }
         atUsers.add(AtUsersModel.fromJson(v));
       });
     }
     if (json["replys"] != null) {
-      json["replys"].forEach((v) {
+      json["replys"]?.forEach((v) {
+        if (replys == null) {
+          replys = <CommentDtoModel>[];
+        }
         replys.add(CommentDtoModel.fromJson(v));
       });
     }
