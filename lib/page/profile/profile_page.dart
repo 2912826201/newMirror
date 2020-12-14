@@ -59,7 +59,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   ///界面
   Widget _buildSuggestions(double width) {
     return Container(
-      color: Colors.white10,
+      color: AppColor.white,
       child: Column(
         children: [
           Expanded(
@@ -231,13 +231,13 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             fontFamily: mIconFontFamily
           ),
           size: 22.0,
-          color:Colors.black.withOpacity(0.5),
+          color:AppColor.black.withOpacity(0.5),
         ),
         Container(),
         Text(
           title,
           style: TextStyle(
-            color: Colors.black.withOpacity(0.5)
+            color: AppColor.black.withOpacity(0.5)
           ),
         )
       ],
@@ -297,9 +297,11 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       height: 87,
       child: InkWell(
     onTap: () {
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) {
+        ///这里传type来告知详情页该怎么展示
         return ProfileDetailPage(
-          type: 1,
+          type: 2,
         );
       }));
     },
@@ -324,7 +326,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
            width: 20,
           height: 20,
           decoration: BoxDecoration(
-            color: Colors.black,
+            color: AppColor.black,
             borderRadius: BorderRadius.all(Radius.circular(59)),),
             child: Center(
             child: Text("+",style: TextStyle(fontSize: 20,color: Colors.white),),)
@@ -343,7 +345,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       children: [
         Center(child: Text(
           "${_getNumber(number)}",
-          style: TextStyle(fontSize: 18,color: Colors.black),
+          style: TextStyle(fontSize: 18,color: AppColor.black),
         ),),
         Center(
           child:
@@ -377,7 +379,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(8), topRight: Radius.circular(8)),
-          color: Colors.grey,
         ),
         child: Row(
           children: [
@@ -418,7 +419,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         padding: EdgeInsets.only(bottom: 10, top: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(8)),
-          border: Border.all(width: 0.5, color: Colors.black),
+          border: Border.all(width: 0.5, color: AppColor.black),
         ),
         child: Stack(
           children: [
