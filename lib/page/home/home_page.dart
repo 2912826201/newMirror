@@ -68,6 +68,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     Widget build(BuildContext context) {
       print("首页");
       // postFeedModel = Application.postFeedModel;
+      print("Application.postFeedModel￥${Application.postFeedModel}");
       if ( Application.postFeedModel != null) {
         controller.index = 0;
       }

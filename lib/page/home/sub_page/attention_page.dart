@@ -31,6 +31,12 @@ enum Status {
   concern // 关注
 }
 
+enum PostStatus {
+  publishing, //正在发布
+  complete, // 发布完成
+  fail, //发布失败
+}
+
 // 关注
 class AttentionPage extends StatefulWidget {
   AttentionPage({Key key, this.coverUrls, this.pc}) : super(key: key);
@@ -80,12 +86,12 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   void initState() {
     isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     print("是否登录$isLoggedIn");
-    postFeedModel = Application.postFeedModel;
-    Application.postFeedModel = null;
     if (!isLoggedIn) {
       status = Status.notLoggedIn;
     } else {
       status = Status.loggedIn;
+      postFeedModel = Application.postFeedModel;
+      Application.postFeedModel = null;
     }
     // 上拉加载
     _controller.addListener(() {
@@ -104,12 +110,15 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     List<PicUrlsModel> picUrls = [];
     List<VideosModel> videos = [];
     if (postFeedModel != null) {
+      // 正在发布
+      context.read<PublishMonitorNotifier>().getPostStatus(PostStatus.publishing);
       print("掉发布数据");
       // 上传图片
       if (postFeedModel.selectedMediaFiles.type == mediaTypeKeyImage) {
         // 获取当前时间
         String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
         int i = 0;
+        //
         postFeedModel.selectedMediaFiles.list.forEach((element) async {
           if (element.croppedImageData == null) {
             fileList.add(element.file);
@@ -121,7 +130,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           }
           picUrls.add(PicUrlsModel(width: element.sizeInfo.width, height: element.sizeInfo.height));
         });
-        results = await FileUtil().uploadPics(fileList, (path, percent) {});
+        results = await FileUtil().uploadPics(fileList, (path, percent) {
+
+        });
         print(results.isSuccess);
         for (int i = 0; i < results.resultMap.length; i++) {
           print("打印一下索引值￥$i");
@@ -145,11 +156,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           videos[i].url = model.url;
           videos[i].coverUrl = model.url + "?vframe/jpg/offset/1";
         }
-
-        // if (feedModel["list"] != null) {
-        //   postFeedModel = null;
-        // }
       }
+      print("数据请求发不打印${postFeedModel.content}");
       Map<String, dynamic> feedModel = await publishFeed(
           type: 0,
           content: postFeedModel.content,
@@ -162,17 +170,22 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           cityCode: postFeedModel.cityCode,
           topicId: postFeedModel.topicId);
       print("发不接受发布结束：feedModel$feedModel");
-      // setState(() {
-      //   // attentionModel.insert(0, HomeFeedModel.fromJson(feedModel));
-      //   attentionModel.add(HomeFeedModel.fromJson(feedModel));
-      //   postFeedModel = null;
-      // });
-
+      if (feedModel != null) {
+        // 插入数据
+        context.read<PublishMonitorNotifier>().attentionModel.insert(0, HomeFeedModel.fromJson(feedModel));
+        // 发布完成
+        context.read<PublishMonitorNotifier>().getPostStatus(PostStatus.complete);
+      } else {
+        // 发布失败
+        context.read<PublishMonitorNotifier>().getPostStatus(PostStatus.fail);
+      }
     }
+    postFeedModel = null;
   }
 
   // 创建发布进度视图
   createdPostPromptView() {
+    // 展示文字
     return Container(
       height: 60,
       width: ScreenUtil.instance.screenWidthDp - 32,
@@ -196,6 +209,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           )),
           LinearProgressIndicator(
             value: _process,
+            valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
+            backgroundColor: AppColor.white,
           ),
         ],
       ),
@@ -217,39 +232,48 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       pulishFeed();
     }
     // else {
-      print("开始请求动态数据");
-      Map<String, dynamic> model = await getPullList(type: 0, size: 20, lastTime: lastTime);
-      setState(() {
-        print("dataPage:  ￥￥$dataPage");
-        if (dataPage == 1) {
-          if (model["list"] != null) {
-            model["list"].forEach((v) {
-              attentionModel.add(HomeFeedModel.fromJson(v));
-            });
-            attentionModel.insert(0, HomeFeedModel());
-            status = Status.concern;
-          } else {
-            status = Status.noConcern;
-          }
-        } else if (dataPage > 1 && model["lastTime"] != null) {
-          print("5data");
-          if (model["list"] != null) {
-            model["list"].forEach((v) {
-              attentionModel.add(HomeFeedModel.fromJson(v));
-            });
-            print("数据长度${attentionModel.length}");
-          }
-          loadStatus = LoadingStatus.STATUS_IDEL;
-          loadText = "加载中...";
+    print("开始请求动态数据");
+    if (dataPage > 1 && lastTime == null) {
+      loadText = "已加载全部动态";
+      loadStatus = LoadingStatus.STATUS_COMPLETED;
+      print("返回不请求数据");
+      return;
+    }
+    Map<String, dynamic> model = await getPullList(type: 0, size: 20, lastTime: lastTime);
+    setState(() {
+      print("dataPage:  ￥￥$dataPage");
+      // print(model["list"].runtimeType);
+      if (dataPage == 1) {
+        if (model["list"] is List && (model["list"] as List).isNotEmpty) {
+          model["list"].forEach((v) {
+            attentionModel.add(HomeFeedModel.fromJson(v));
+          });
+          attentionModel.insert(0, HomeFeedModel());
+          status = Status.concern;
         } else {
-          // 加载完毕
-          loadText = "已加载全部动态";
-          loadStatus = LoadingStatus.STATUS_COMPLETED;
+          status = Status.noConcern;
         }
-      });
-      lastTime = model["lastTime"];
-      print("lastTime:    $lastTime");
-      isRequestInterface = true;
+      } else if (dataPage > 1 && lastTime != null) {
+        print("lastTime&￥$lastTime");
+        print("5data");
+        if (model["list"] != null) {
+          model["list"].forEach((v) {
+            attentionModel.add(HomeFeedModel.fromJson(v));
+          });
+          print("数据长度${attentionModel.length}");
+        }
+        loadStatus = LoadingStatus.STATUS_IDEL;
+        loadText = "加载中...";
+      } else {
+        // 加载完毕
+        loadText = "已加载全部动态";
+        loadStatus = LoadingStatus.STATUS_COMPLETED;
+      }
+    });
+    lastTime = model["lastTime"];
+    print("lastTime:    $lastTime");
+    print(status);
+    isRequestInterface = true;
     // }
   }
 
@@ -314,74 +338,80 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         return Container();
         break;
       case Status.concern:
-        return Container(
-            child: NotificationListener<ScrollNotification>(
-          onNotification: (ScrollNotification notification) {
-            ScrollMetrics metrics = notification.metrics;
-            // 注册通知回调
-            if (notification is ScrollStartNotification) {
-              // 滚动开始
-              // print('滚动开始');
-            } else if (notification is ScrollUpdateNotification) {
-              // 滚动位置更新
-              // print('滚动位置更新');
-              // 当前位置
-              // print("当前位置${metrics.pixels}");
-            } else if (notification is ScrollEndNotification) {
-              // 滚动结束
-              // print('滚动结束');
-            }
-          },
-          child: RefreshIndicator(
-              onRefresh: () async {
-                dataPage = 1;
-                attentionModel.clear();
-                loadStatus = LoadingStatus.STATUS_LOADING;
-                lastTime = null;
-                loadText = "加载中...";
-                Map<String, dynamic> model = await getPullList(type: 0, size: 20, lastTime: lastTime);
-                setState(() {
-                  if (model["list"] != null) {
-                    model["list"].forEach((v) {
-                      print(v["comments"]);
-                      if (v["comments"].length != 0) {
-                        print("评论名${v["comments"][0]["name"]}");
-                      }
-                      attentionModel.add(HomeFeedModel.fromJson(v));
-                    });
-                    attentionModel.insert(0, HomeFeedModel());
-                    print("数据长度${attentionModel.length}");
-                    // print(attentionModel.)
-                  }
-                });
+        return ChangeNotifierProvider(
+          create: (_) => PublishMonitorNotifier(plannedSpeed: 0.0),
+          builder: (context, _) {
+            return Container(
+                child: NotificationListener<ScrollNotification>(
+              onNotification: (ScrollNotification notification) {
+                ScrollMetrics metrics = notification.metrics;
+                // 注册通知回调
+                if (notification is ScrollStartNotification) {
+                  // 滚动开始
+                  // print('滚动开始');
+                } else if (notification is ScrollUpdateNotification) {
+                  // 滚动位置更新
+                  // print('滚动位置更新');
+                  // 当前位置
+                  // print("当前位置${metrics.pixels}");
+                } else if (notification is ScrollEndNotification) {
+                  // 滚动结束
+                  // print('滚动结束');
+                }
               },
-              child: MediaQuery.removePadding(
-                removeTop: true,
-                context: context,
-                child: ListView.builder(
-                    itemCount: attentionModel.length,
-                    controller: _controller,
-                    itemBuilder: (context, index) {
-                      print("关注");
-                      print(index);
-                      print(attentionModel.length);
-                      if (index == attentionModel.length) {
-                        return LoadingView(
-                          loadText: loadText,
-                          loadStatus: loadStatus,
-                        );
-                      } else {
-                        return postFeedStatus(index, postFeedModel);
+              child: RefreshIndicator(
+                  onRefresh: () async {
+                    dataPage = 1;
+                    attentionModel.clear();
+                    loadStatus = LoadingStatus.STATUS_LOADING;
+                    lastTime = null;
+                    loadText = "加载中...";
+                    Map<String, dynamic> model = await getPullList(type: 0, size: 20, lastTime: lastTime);
+                    setState(() {
+                      if (model["list"] != null) {
+                        model["list"].forEach((v) {
+                          print(v["comments"]);
+                          if (v["comments"].length != 0) {
+                            print("评论名${v["comments"][0]["name"]}");
+                          }
+                          attentionModel.add(HomeFeedModel.fromJson(v));
+                        });
+                        attentionModel.insert(0, HomeFeedModel());
+                        print("数据长度${attentionModel.length}");
+                        // print(attentionModel.)
                       }
-                    }),
-              )),
-        ));
+                      lastTime = model["lastTime"];
+                    });
+                  },
+                  child: MediaQuery.removePadding(
+                    removeTop: true,
+                    context: context,
+                    child: ListView.builder(
+                        itemCount: attentionModel.length + 1,
+                        controller: _controller,
+                        itemBuilder: (context, index) {
+                          print("关注");
+                          print(index);
+                          print(attentionModel.length);
+                          if (index == attentionModel.length ) {
+                            return LoadingView(
+                              loadText: loadText,
+                              loadStatus: loadStatus,
+                            );
+                          } else {
+                            return backToView(index, postFeedModel);
+                          }
+                        }),
+                  )),
+            ));
+          },
+        );
         break;
     }
   }
 
-  //发布动态状态
-  postFeedStatus(int index, PostFeedModel postFeedModel) {
+  //返回视图
+  backToView(int index, PostFeedModel postFeedModel) {
     if (index == 0) {
       if (postFeedModel != null) {
         return createdPostPromptView();
@@ -416,9 +446,43 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     if (isLogged && !isRequestInterface) {
       getRecommendFeed();
     } else {
-      print("进入啦啦啦啦啦杜拉拉多啦");
+      // postFeedModel = Application.postFeedModel;
+      // print("Application.postFeedModel+++++_____________${Application.postFeedModel}");
+      // Application.postFeedModel = null;
+      // print("postFeedModel*******$postFeedModel");
+      // print("centent${postFeedModel.content}");
+      // if(postFeedModel != null ) {
       pulishFeed();
+      // }
     }
     return pageDisplay();
+  }
+}
+
+// 发布监听通知
+class PublishMonitorNotifier extends ChangeNotifier {
+  PublishMonitorNotifier({this.postStatus,this.attentionModel,this.plannedSpeed});
+  // 发布状态
+  PostStatus postStatus;
+
+  // 发布进度
+  double plannedSpeed = 0.0;
+
+  // 数据源调用model
+  List<HomeFeedModel> attentionModel;
+
+  getPostStatus(PostStatus post) {
+    this.postStatus = post;
+    notifyListeners();
+  }
+
+  getPostPlannedSpeed(double plannedSpeed) {
+    this.plannedSpeed = plannedSpeed;
+    notifyListeners();
+  }
+
+  getAttentionModel(List<HomeFeedModel> model) {
+    this.attentionModel = model;
+    notifyListeners();
   }
 }
