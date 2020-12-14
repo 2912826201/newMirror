@@ -192,7 +192,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                           // print("listSdadada");
                           // print(index);
                           // print(recommendModel.length);
-                          if(index == recommendModel.length -1) {
+                          if(index == recommendModel.length) {
                             return LoadingView(loadText: loadText,loadStatus:loadStatus ,);
                           } else {
                           return DynamicListLayout(
@@ -202,7 +202,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                               // 可选参数 子Item的个数
                               key: GlobalObjectKey("recommend$index"),
                               isShowRecommendUser: false);}
-                        }, childCount: recommendModel.length),
+                        }, childCount: recommendModel.length + 1),
                       )
                     ],
                   )

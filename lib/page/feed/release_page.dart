@@ -113,7 +113,6 @@ class FeedHeader extends StatelessWidget {
 
   // 发布动态
   pulishFeed(String inputText, List<Rule> rule, BuildContext context) async {
-    print("输入框文字￥$inputText");
     print("打印一下规则$rule");
     PostFeedModel feedModel = PostFeedModel();
     AtUsersModel atUsersModel = AtUsersModel();
@@ -122,10 +121,13 @@ class FeedHeader extends StatelessWidget {
     String latitude;
     String longitude;
     String topicId;
+    print("输入框文字￥$inputText");
+    feedModel.content = inputText;
     // 检测文本
     Map<String, dynamic> textModel = await feedTextScan(text: inputText);
     if (textModel["state"]) {
-      feedModel.content = inputText;
+      print("feedModel.content${feedModel.content}");
+
       feedModel.selectedMediaFiles = selectedMediaFiles;
       feedModel.atUsersModel = atUsersModel;
       feedModel.address = address;
@@ -169,6 +171,7 @@ class FeedHeader extends StatelessWidget {
               onTap: () {
                 // 读取输入框最新的值
                 var inputText = context.read<ReleaseFeedInputNotifier>().inputText;
+
                 // 获取输入框内的规则
                 var rules = context.read<ReleaseFeedInputNotifier>().rules;
                 print("点击生效");
