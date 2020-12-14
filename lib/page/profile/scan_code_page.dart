@@ -327,7 +327,7 @@ class ScanCodeState extends State<ScanCodePage>
     if(result!=null){
       Navigator.pop(context, result);
     }else{
-      ToastShow.show("$result",context);
+      ToastShow.show(msg: "$result",context: context);
     }
 
   }
