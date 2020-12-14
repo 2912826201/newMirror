@@ -13,6 +13,7 @@ import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/agora_input_page.dart';
 import 'package:mirror/page/media_test_page.dart';
 import 'package:mirror/page/qiniu_test_page.dart';
+import 'package:mirror/page/training/live_broadcast/live_room_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:provider/provider.dart';
@@ -180,6 +181,14 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                   AppRouter.navigateToLiveBroadcast(context);
                 },
                 child: Text("直播日程页"),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return LiveRoomPage();
+                  }));
+                },
+                child: Text("直播间测试"),
               ),
             ],
           ),
