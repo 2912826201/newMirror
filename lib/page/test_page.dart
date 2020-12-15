@@ -15,11 +15,13 @@ import 'package:mirror/page/agora_input_page.dart';
 import 'package:mirror/page/media_test_page.dart';
 import 'package:mirror/page/qiniu_test_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_page.dart';
+import 'package:mirror/page/training/video_course/video_test_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:provider/provider.dart';
 
 import 'profile/login_test_page.dart';
+import 'training/video_course/video_course_play_page.dart';
 
 /// test_page
 /// Created by yangjiayi on 2020/10/27.
@@ -188,14 +190,24 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                 },
                 child: Text("视频课程页"),
               ),
-              RaisedButton(
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return LiveRoomPage();
-                  }));
-                },
-                child: Text("直播间测试"),
-              ),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                RaisedButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return LiveRoomPage();
+                    }));
+                  },
+                  child: Text("直播间测试"),
+                ),
+                RaisedButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return VideoCoursePlayPage();
+                    }));
+                  },
+                  child: Text("视频课测试"),
+                ),
+              ]),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -203,7 +215,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                     onPressed: () {
                       bool isFirst = AppPrefs.isFirstLaunch();
                       print(isFirst);
-                      },
+                    },
                     child: Text("从SP中取值"),
                   ),
                   RaisedButton(

@@ -1,0 +1,107 @@
+import 'package:fijkplayer/fijkplayer.dart';
+import 'package:flutter/material.dart';
+import 'package:mirror/constant/color.dart';
+import 'package:mirror/util/screen_util.dart';
+
+/// video_course_play_page
+/// Created by yangjiayi on 2020/12/15.
+
+class VideoCoursePlayPage extends StatefulWidget {
+  @override
+  _VideoCoursePlayState createState() => _VideoCoursePlayState();
+}
+
+class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
+  final List<String> urls = [
+    "http://devmedia.aimymusic.com/0313a2d9f77857d073102320b1a4893c.mp4",
+    "http://devmedia.aimymusic.com/25e85ec9a9399023629d3fc15bcb8877.mp4",
+    "http://devmedia.aimymusic.com/01e889ed5d0314abba48382d669b739b",
+    "http://devmedia.aimymusic.com/alita/51be47a088ff3858c29653fd16536a37.mp4"
+  ];
+
+  final FijkPlayer player = FijkPlayer();
+
+  int _currentPlayingIndex = -1;
+
+  @override
+  void initState() {
+    super.initState();
+    player.addListener(_playerListener);
+    _playNext();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    player.removeListener(_playerListener);
+    player.release();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          FijkView(
+            player: player,
+            color: AppColor.bgBlack,
+            fit: FijkFit.cover,
+            fsFit: FijkFit.cover,
+          ),
+          //拦截一下播放器的默认手势操作
+          GestureDetector(
+            onTap: () {},
+            child: Container(
+              color: AppColor.transparent,
+            ),
+          ),
+          Positioned(
+              right: 16,
+              top: 8 + ScreenUtil.instance.statusBarHeight,
+              child: RaisedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text("X"),
+              )),
+          Positioned(
+            left: 16,
+            top: 8 + ScreenUtil.instance.statusBarHeight,
+            child: Text(
+              "$_currentPlayingIndex",
+              style: TextStyle(color: AppColor.white, backgroundColor: AppColor.bgBlack),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  _playerListener() {
+    FijkValue value = player.value;
+
+    print("player value: $value");
+
+    if (value.prepared) {
+      print("width: ${value.size.width}, height: ${value.size.height}");
+    }
+
+    switch(value.state){
+      case FijkState.completed:
+        if (_currentPlayingIndex < urls.length - 1) {
+          _playNext();
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
+  _playNext() async {
+    setState(() {
+      _currentPlayingIndex++;
+    });
+    await player.reset();
+    await player.setDataSource(urls[_currentPlayingIndex], autoPlay: true);
+  }
+}
