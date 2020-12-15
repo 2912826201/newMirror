@@ -165,7 +165,7 @@ class _PhoneLoginPageState extends LoginBasePageState {
        print("发送验证码重入");
        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
          return SmsCodePage(
-           phoneNumber: inputController.text,
+           phoneNumber: inputController.text,sended: true,
          );
        }));
        return;
@@ -174,18 +174,17 @@ class _PhoneLoginPageState extends LoginBasePageState {
       setState(() {
         _titleOfSendTextBtn = _sendingTitle;
       });
-      //FIXME:
       bool result = false;
       await sendSms(inputController.text, 0);
       setState(() {
         _titleOfSendTextBtn = _loggingTitle;
       });
-      result = true;
       if (result) {
         print("发送验证码成功");
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
           return SmsCodePage(
             phoneNumber: inputController.text,
+            sended: true,
           );
         }));
       } else {

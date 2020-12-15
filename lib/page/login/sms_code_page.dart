@@ -14,6 +14,7 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/message/delegate/callbacks.dart';
+import 'package:mirror/route/router.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/data/model/token_model.dart';
@@ -27,19 +28,15 @@ final _maxCodeLength = 4;
 class SmsCodePage extends StatefulWidget {
 
   final String phoneNumber;
-  SmsCodePage({@required this.phoneNumber, Key key}) :super(key: key);
-
+  SmsCodePage({@required this.phoneNumber, Key key,sended:bool}) :this.sended = sended,super(key: key);
+  bool sended ;
   @override
   State<StatefulWidget> createState() {
-    return _SmsCodePageState(this.phoneNumber);
+    return _SmsCodePageState(phoneNumber: phoneNumber,sended: this.sended);
   }
 }
 
 class _SmsCodePageState extends LoginBasePageState {
-  //倒计时的key
-  GlobalKey countingWidgetKey = GlobalKey();
-  //验证按钮的key
-  GlobalKey certificateBtnKey = GlobalKey();
   final inputController = TextEditingController();
   final _titleOfSendTextBtn = "验证";
   final String phoneNumber;
@@ -55,7 +52,7 @@ class _SmsCodePageState extends LoginBasePageState {
   var _smsBtnTitleColor;
   var _smsBtnColor;
   //是否一定调取后端发送了短信
-  bool sended = false;
+   bool sended;
   //默认的按钮的颜色
   final _sendSmsOriginColor = AppColor.textPrimary1.withOpacity(0.06) ;
   //默认的标题颜色
@@ -83,7 +80,7 @@ class _SmsCodePageState extends LoginBasePageState {
 
   //ui状态的恢复
   _recoverUi() {
-    certificateBtnKey.currentState.setState(() {
+    setState(() {
       _smsBtnColor = _sendSmsOriginColor;
       _smsBtnTitleColor = _sendSmsOriginTitleColor;
     });
@@ -101,7 +98,6 @@ class _SmsCodePageState extends LoginBasePageState {
 
   //输入合法性的判断
   bool _validationJudge() {
-    print("_validationJudge $sended");
     if ((inputController.text.length == _maxCodeLength) && (sended == true)) {
       return true;
     }
@@ -153,7 +149,7 @@ class _SmsCodePageState extends LoginBasePageState {
     );
   }
 
-  _SmsCodePageState(this.phoneNumber);
+  _SmsCodePageState({@required this.phoneNumber,@required this.sended});
 
   ///说明区域
   Widget _statementArea() {
@@ -199,7 +195,7 @@ class _SmsCodePageState extends LoginBasePageState {
           //不显示字数计数文字
           hintText: _textFieldPlaceholder,
           hintStyle: TextStyle(color: Color.fromRGBO(204, 204, 204, 1), fontFamily: 'PingFangSC', fontSize: 16),
-          suffixIcon: SmsCounterWidget(seconds: 60,requestTask:_smsSendApi, sended: sended,key: countingWidgetKey,),
+          suffixIcon: SmsCounterWidget(seconds: 60,requestTask:_smsSendApi, sended: sended,),
           suffixIconConstraints: BoxConstraints(minWidth: 70, maxHeight: 24.5),
           isDense: true,
           focusedBorder: UnderlineInputBorder(
@@ -232,7 +228,6 @@ class _SmsCodePageState extends LoginBasePageState {
   Widget _submitArea() {
     var btnStyle = RoundedRectangleBorder(borderRadius: BorderRadius.circular(3));
     var smsBtn = FlatButton(
-      key: certificateBtnKey,
       //FIXME 293这个数字哪来的
       minWidth: certificateBtnWidth,
       height: certificateBtnHeight,
@@ -483,7 +478,6 @@ class _SmsCounterWidgetState extends State<SmsCounterWidget> {
         int timeGap = _getTimeGap();
         if (timeGap < 60*1000&&timeGap>0) {
          setState(() {
-           print("counting $timeGap");
          });
         } else {
           print("stop counting");

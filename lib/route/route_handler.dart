@@ -8,6 +8,8 @@ import 'package:mirror/page/feed/like.dart';
 import 'package:mirror/page/feed/release_page.dart';
 import 'package:mirror/page/if_page.dart';
 import 'package:mirror/page/login/login_page.dart';
+import 'package:mirror/page/login/perfect_user_page.dart';
+import 'package:mirror/page/login/pre_welcome_page.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/message/Chat/chat_page.dart';
@@ -59,4 +61,12 @@ var handlerChatPage = Handler(handlerFunc: (BuildContext context , Map<String,Li
    List<dynamic> list = params["data"];
    ConversationDto dto = ConversationDto.fromMap(json.decode(list.first));
    return ChatPage(conversation: dto,);
+});
+//完善信息界面
+var handlerPerfectUserPage = Handler(handlerFunc: (BuildContext context , Map<String,List<String>> params){
+return PerfectUserPage();
+});
+var handlerPreWelcomePage =  Handler(handlerFunc: (BuildContext context , Map<String,List<String>> params){
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return PreWelComePage(avatarUrl: data["avatarUrl"], nickName: data["nickName"]);
 });

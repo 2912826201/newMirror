@@ -125,7 +125,7 @@ class MessagePageState extends State<MessagePage>
     //需要进行振动等向controller反馈的事件
     @override
     void feedBackForSys() {
-
+     print("有消息");
     }
    //初始化和分配资源的事情
     _allocations() {

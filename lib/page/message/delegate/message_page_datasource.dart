@@ -11,6 +11,7 @@ import 'package:mirror/data/database/conversation_db_helper.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/message/intercourse_model.dart';
 import 'package:mirror/page/message/delegate/callbacks.dart';
+import 'package:mirror/page/message/delegate/frame.dart';
 import 'package:mirror/page/message/delegate/message_page_ui_provider.dart';
 import 'package:mirror/page/message/delegate/regular_events.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -260,6 +261,7 @@ class MessagePageDataSource implements MPDataProxy {
   //新消息来临后走这个函数加入到消息集合当中
   @override
   void newMsgsArrive(Set<Message> msgs) {
+    this.delegate.feedBackForSys();
     //暂存消息
     _msgs.addAll(msgs);
     for (Message msg in msgs) {

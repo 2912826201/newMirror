@@ -38,9 +38,11 @@ abstract class MPUiProxy implements MPNetworkEvents {
   //融云消息列表的ui刷新，三个参数均不传则刷新整个消息列表，否则刷新摸个指定的cell
   void imFreshData({ int index,ConversationDto dto,int newBadgets});
 }
-abstract class MPIMDataSourceAction{
+abstract class MPIMDataSourceAction {
   //数据源本身的一些事件（工作）的回调
   void signals({Map<String,dynamic> payload});
+  //用于反馈的作用，振动等
+  void  feedBackForSys();
 //
 }
 //数据源的Proxy
