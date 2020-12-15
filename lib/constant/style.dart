@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 
 class AppStyle {
+  // 注：fontWeight的默认值为 w400-Regular
+
   // Regular主体文字黑色
   static const textRegular18 = TextStyle(fontSize: 18,fontWeight: FontWeight.w400,color: AppColor.textPrimary1);
   static const textRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.textPrimary1);
