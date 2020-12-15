@@ -87,6 +87,8 @@ dependencies:
   fijkplayer: ^0.8.7
   # 下拉刷新上拉加载
   flutter_easyrefresh: ^2.1.6
+  # shared preferences
+  shared_preferences: ^0.5.12+4
 
 
 

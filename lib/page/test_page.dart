@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
@@ -148,7 +149,6 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                   ),
                 ],
               ),
-
               RaisedButton(
                 onPressed: () {
                   AppRouter.navigateToRCTestPage(context, context.read<ProfileNotifier>().profile);
@@ -195,6 +195,24 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                   }));
                 },
                 child: Text("直播间测试"),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  RaisedButton(
+                    onPressed: () {
+                      bool isFirst = AppPrefs.isFirstLaunch();
+                      print(isFirst);
+                      },
+                    child: Text("从SP中取值"),
+                  ),
+                  RaisedButton(
+                    onPressed: () {
+                      AppPrefs.setIsFirstLaunch(false);
+                    },
+                    child: Text("将isFirstLaunch设置为false"),
+                  ),
+                ],
               ),
             ],
           ),

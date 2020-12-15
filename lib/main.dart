@@ -14,6 +14,7 @@ import 'api/live_broadcast/live_api.dart';
 import 'api/user_api.dart';
 import 'config/application.dart';
 import 'config/config.dart';
+import 'config/shared_preferences.dart';
 import 'data/dto/profile_dto.dart';
 import 'data/dto/token_dto.dart';
 import 'data/model/token_model.dart';
@@ -45,6 +46,9 @@ void main() {
 Future _initApp() async {
   //要先执行该方法 不然插件无法加载调用
   WidgetsFlutterBinding.ensureInitialized();
+
+  //初始化SharedPreferences
+  AppPrefs.init();
 
   //从数据库获取已登录的用户token或匿名用户token
   TokenDto token = await TokenDBHelper().queryToken();
@@ -84,11 +88,6 @@ Future _initApp() async {
   //创建各文件路径
   AppConfig.createAppDir();
 
-  try {
-    Map<String, dynamic> videoCourseTagMap = await getAllTags();
-    Application.videoTagModel = VideoTagModel.fromJson(videoCourseTagMap);
-  } catch (e) {}
-
   //获取相机信息
   try {
     Application.cameras = await availableCameras();
@@ -96,6 +95,12 @@ Future _initApp() async {
     print(e);
     Application.cameras = [];
   }
+
+  //获取视频课标签列表
+  try {
+    Map<String, dynamic> videoCourseTagMap = await getAllTags();
+    Application.videoTagModel = VideoTagModel.fromJson(videoCourseTagMap);
+  } catch (e) {}
 }
 
 class MyApp extends StatefulWidget {
