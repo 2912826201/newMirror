@@ -7,13 +7,17 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
 
-typedef VoidCallback = void Function(String content);
+typedef VoidCallback = void Function(String content, BuildContext context);
 
 Future openInputBottomSheet(
-    {@required BuildContext context,
-    @required VoidCallback voidCallback}) async {
+    {
+  @required BuildContext context,
+  @required VoidCallback voidCallback,
+  String hintText,
+}) async {
   await showModalBottomSheet(
       isScrollControlled: true,
+
       context: context,
       builder: (BuildContext context) {
         return SingleChildScrollView(
@@ -21,11 +25,12 @@ Future openInputBottomSheet(
           padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom), // !important
           child: Container(
-            height: 70,
+            padding: EdgeInsets.only(top: 8, bottom: 8),
             child: UnconstrainedBox(
               child: Container(
                 width: MediaQuery.of(context).size.width,
                 child: CommentInputBottomBar(
+                  hintText:hintText,
                   voidCallback: voidCallback,
                 ),
               ),
@@ -36,9 +41,9 @@ Future openInputBottomSheet(
 }
 
 class CommentInputBottomBar extends StatelessWidget {
-  CommentInputBottomBar({Key key, this.voidCallback}) : super(key: key);
+  CommentInputBottomBar({Key key, this.voidCallback,this.hintText}) : super(key: key);
   final VoidCallback voidCallback;
-
+  String hintText;
   final TextEditingController _textEditingController = TextEditingController();
 
   final FocusNode _commentFocus = FocusNode();
@@ -99,7 +104,7 @@ class CommentInputBottomBar extends StatelessWidget {
                           // 去除下滑线
                           border: InputBorder.none,
                           // 提示文本
-                          hintText: Application.hintText,
+                          hintText: hintText,
                           // 提示文本样式
                           hintStyle:
                               TextStyle(fontSize: 14, color: AppColor.textHint),
@@ -139,7 +144,7 @@ class CommentInputBottomBar extends StatelessWidget {
                     child: GestureDetector(
                         onTap: () {
                           Navigator.of(context).pop(1);
-                          voidCallback(_textEditingController.text);
+                          voidCallback(_textEditingController.text, context);
                         },
                         child: IgnorePointer(
                           // 监听输入框的值==""使外层点击不生效。非""手势生效。

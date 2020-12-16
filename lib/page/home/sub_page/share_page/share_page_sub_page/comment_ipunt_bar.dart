@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -10,23 +9,26 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
+
 // 监听键盘高度打开的输入框
 class CommentInputBar extends StatelessWidget {
   TextEditingController controller = TextEditingController();
-  postComments(String text) async{
+
+  postComments(String text) async {
     print("评论类型￥${Application.commentTypes}");
     CommentDtoModel comModel;
-    if (Application.commentTypes == CommentTypes.commentMainCom ) {
+    if (Application.commentTypes == CommentTypes.commentMainCom) {
       print("主评论${Application.commentDtoModel.id}");
-      Map<String, dynamic> model = await publish(targetId: Application.commentDtoModel.id, targetType: 2, content: text);
+      Map<String, dynamic> model =
+          await publish(targetId: Application.commentDtoModel.id, targetType: 2, content: text);
       if (model != null) {
         comModel = (CommentDtoModel.fromJson(model));
         Application.commentDtoModel.initCount += 1;
       }
       print("评论评论返回$model");
       Application.commentDtoModel.replys.insert(0, comModel);
-    } else if (Application.commentTypes == CommentTypes.commentFeed){
-      Map<String, dynamic> model = await publish(targetId:Application.feedModel.id , targetType: 0, content: text);
+    } else if (Application.commentTypes == CommentTypes.commentFeed) {
+      Map<String, dynamic> model = await publish(targetId: Application.feedModel.id, targetType: 0, content: text);
       // CommentDtoModel
       if (model != null) {
         comModel = (CommentDtoModel.fromJson(model));
@@ -35,7 +37,12 @@ class CommentInputBar extends StatelessWidget {
       print("发布接口返回$model");
       Application.feedModel.comments.insert(0, comModel);
     } else {
-      Map<String, dynamic> model = await publish(targetId: Application.commentDtoModel.id,targetType: 2, content: text,replyId: Application.replysModel.uid,replyCommentId: Application.replysModel.id);
+      Map<String, dynamic> model = await publish(
+          targetId: Application.commentDtoModel.id,
+          targetType: 2,
+          content: text,
+          replyId: Application.replysModel.uid,
+          replyCommentId: Application.replysModel.id);
       if (model != null) {
         comModel = (CommentDtoModel.fromJson(model));
         Application.commentDtoModel.initCount += 1;
@@ -46,9 +53,7 @@ class CommentInputBar extends StatelessWidget {
     controller.clear();
     commentFocus.unfocus(); // 失去焦点,
     Application.isArouse = false;
-
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -142,7 +147,7 @@ class CommentInputBar extends StatelessWidget {
                           // 监听输入框的值==""使外层点击不生效。非""手势生效。
                           ignoring: context.watch<CommentEnterNotifier>().textFieldStr == "",
                           child: Container(
-                            // padding: EdgeInsets.only(top: 6,left: 12,bottom: 6,right: 12),
+                              // padding: EdgeInsets.only(top: 6,left: 12,bottom: 6,right: 12),
                               height: 32,
                               width: 52,
                               decoration: BoxDecoration(
@@ -165,10 +170,13 @@ class CommentInputBar extends StatelessWidget {
         });
   }
 }
+
 // 输入框输入文字的监听
 class CommentEnterNotifier extends ChangeNotifier {
   CommentEnterNotifier({this.textFieldStr = ""});
+
   String textFieldStr = "";
+
   changeCallback(String str) {
     this.textFieldStr = str;
     notifyListeners();

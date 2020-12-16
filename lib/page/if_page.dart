@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_bottom_sheet.dart';
@@ -59,22 +60,12 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin {
           bottomHeight: screen_bottom);
       isInit = true;
     };
-    // HomeFeedModel model =  context.watch<DynamicModelNotifier>().dynamicModel;
     return Scaffold(
       // 此属性是重新计算布局空间大小
       // 内部元素要监听键盘高度必需要设置为false,
         resizeToAvoidBottomInset: false,
-        // UnionOuterTabBarView ChangeNotifierProvider
-        // ChangeNotifierProvider
-        // DynamicModelNotifier
-
         body:
-        ChangeNotifierProvider(
-            create: (_) => FeedIdcommentlNotifier(feedId: 0,totalCount: -1),
-            builder: (context, _) {
-              var id =  context.watch<FeedIdcommentlNotifier>().feedId;
-              print("动态ID+++++++++++++$id");
-              return Container(
+           Container(
                   child:
                   Stack(
                       children: [
@@ -82,17 +73,19 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin {
                             panel: Container(
                               margin: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
                               child:
-                              context.watch<FeedIdcommentlNotifier>().feedId != 0 ? CommentBottomSheet(
+                              context.watch<FeedMapNotifier>().feedId != null
+                              ? CommentBottomSheet(
                                 pc: _pc,
-                                feedId: context.select((FeedIdcommentlNotifier value) => value.feedId),
-                              ) : Container(),
+                                feedId: context.select((FeedMapNotifier value) => value.feedId),
+                              ) :
+                              Container(),
                             ),
                             onPanelClosed: () {
-                              context.read<FeedIdcommentlNotifier>().getCommentIdCallback(0);
-                              context.read<FeedIdcommentlNotifier>().getTotalCount(-1);
-                              context.read<FeedIdcommentlNotifier>().getCommentIdCallback(0);
+                              context.read<FeedMapNotifier>().clearTotalCount();
+                              // 关闭视图后清空动态Id
+                              context.read<FeedMapNotifier>().changeFeeId(null);
                             },
-                            maxHeight: ScreenUtil.instance.height * 0.7,
+                            maxHeight: ScreenUtil.instance.height * 0.75,
                             backdropEnabled: true,
                             borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(10.0),
@@ -115,57 +108,9 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin {
                                 }
                             )
                         ),
-                        // 键盘蒙层
-                        Positioned(
-                            child: Offstage(
-                                offstage:  Application.isArouse == false,
-                                child: GestureDetector(
-                                    onTap: () {
-                                      commentFocus.unfocus();
-                                      Application.isArouse = false;
-                                    },// 失去焦点,
-
-                                    // onDoubleTap: () => print("双击"),
-                                    // onLongPress: () => print("长按"),
-                                    // onTapCancel: () => print("取消"),
-                                    // onTapUp: (e) => print("松开"),
-                                    // onTapDown: (e) => print("按下"),
-                                    // onPanDown: (DragDownDetails e) {
-                                    // commentFocus.unfocus(); // 失去焦点
-                                    //   //打印手指按下的位置
-                                    //   print("手指按下：${e.globalPosition}");
-                                    // },
-                                    // //手指滑动
-                                    // onPanUpdate: (DragUpdateDetails e) {
-                                    //   print(e.delta.dx);
-                                    //   print(e.delta.dy);
-                                    // },
-                                    // onPanEnd: (DragEndDetails e) {
-                                    //   //打印滑动结束时在x、y轴上的速度
-                                    //   print(e.velocity);
-                                    // },
-                                    child: Container(
-                                      width: ScreenUtil.instance.screenWidthDp,
-                                      height: ScreenUtil.instance.screenHeightDp,
-                                      color: AppColor.black.withOpacity(0.24),
-                                    )))),
-                        // 唤起键盘
-                        Positioned(
-                            bottom: inputHeight,
-                            left: 0,
-                            child: Offstage(
-                              offstage: Application.isArouse == false,
-                              child: Container(
-                                width: ScreenUtil.instance.screenWidthDp,
-                                color: AppColor.white,
-                                padding: EdgeInsets.only(top: 8, bottom: 8),
-                                child: CommentInputBar(),
-                              ),
-                            ))
                       ]
                   )
-              );
-            })
+           )
     );
   }
 
@@ -183,24 +128,5 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin {
     _controller.dispose();
     // _childController.dispose();
     super.dispose();
-  }
-}
-// 唤醒动态底部抽屉评论调用接口
-class FeedIdcommentlNotifier extends ChangeNotifier {
-  FeedIdcommentlNotifier({this.feedId,this.commentDtoModel,this.totalCount});
-  int feedId;
-  List<CommentDtoModel> commentDtoModel;
-  int totalCount;
-  getCommentIdCallback(int id) {
-    this.feedId = id;
-    notifyListeners();
-  }
-  getCommentDtoModel(List<CommentDtoModel> model) {
-    this.commentDtoModel = model;
-    notifyListeners();
-  }
-  getTotalCount(int count) {
-    this.totalCount = count;
-    notifyListeners();
   }
 }

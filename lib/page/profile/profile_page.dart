@@ -5,11 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mirror/api/basic_api.dart';
+import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
+import 'package:mirror/data/model/getExtrainfo_model.dart';
+import 'package:mirror/data/model/profile_model.dart';
 import 'package:mirror/data/model/token_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
@@ -34,6 +37,13 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   var bgColor = Color(0xffcccccc);
   bool _isScroll = false;
   final String mIconFontFamily = "appIconFonts";
+  int uid;
+  int followingCount;
+  int followerCount;
+  int feedCount;
+  int trainingSeconds;
+  int weight;
+  int albumNum;
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
@@ -41,6 +51,29 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   @override
   void initState() {
     super.initState();
+    getProfileModel();
+  }
+
+
+  getProfileModel()async{
+  ProfileModel attentionModel =  await ProfileFollowCount();
+  GetExtraInfoModel extraInfoModel = await ProfileGetExtraInfo();
+  print('resultModel============================${attentionModel==null}');
+    if(attentionModel!=null||extraInfoModel!=null){
+        print('uid========================${attentionModel.uid}'
+        'followingCount============================${attentionModel.followingCount}'
+        'feedCount==========${attentionModel.feedCount}'
+        'followerCount=======${attentionModel.followerCount}');
+      setState(() {
+        uid = attentionModel.uid;
+        followingCount = attentionModel.followingCount;
+        followerCount = attentionModel.followerCount;
+        feedCount = attentionModel.feedCount;
+        trainingSeconds = extraInfoModel.trainingSeconds;
+        weight = extraInfoModel.weight;
+        albumNum = extraInfoModel.albumNum;
+      });
+      }
   }
 
   @override
@@ -84,15 +117,18 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 SizedBox(height: 41,),
                 Container(
                   padding: EdgeInsets.only(left: 20,right: 20,bottom: 20),
-                  child: Row(
-                    children: [
-                      _secondData(Icons.access_alarms_sharp,0,"训练记录"),
-                      Expanded(child: Container()),
-                      _secondData(Icons.access_alarms_sharp,244,"体重记录"),
-                      Expanded(child: Container()),
-                      _secondData(Icons.access_alarms_sharp,244,"健身相册")
-                    ],
-                  ),
+                  child: Consumer<ProfileNotifier>(
+                    builder: (context, notifier, child){
+                    return Row(
+                      children: [
+                        _secondData(Icons.access_alarms_sharp,trainingSeconds,"训练记录"),
+                        Expanded(child: Container()),
+                        _secondData(Icons.access_alarms_sharp,weight,"体重记录"),
+                        Expanded(child: Container()),
+                        _secondData(Icons.access_alarms_sharp,albumNum,"健身相册")
+                      ],
+                    );
+                  },)
                 ),
                 _bottomSetting("我的课程"),
                 _bottomSetting("我的订单"),
@@ -184,40 +220,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             ),
           ),),
           Expanded(child: SizedBox()),
-          Center(
-            child: FlatButton(
-            child: PopupMenuButton(
-              onSelected: (ActionItems selects) async {
-                if(selects == ActionItems.DENGCHU){
-                  TokenModel tokenModel = await login("anonymous", null, null, null);
-                  if (tokenModel != null) {
-                    TokenDto tokenDto = TokenDto.fromTokenModel(tokenModel);
-                    bool result = await logout();
-                    //TODO 这里先不处理登出接口的结果
-                    await TokenDBHelper().insertToken(tokenDto);
-                    context.read<TokenNotifier>().setToken(tokenDto);
-                    await ProfileDBHelper().clearProfile();
-                    context.read<ProfileNotifier>().setProfile(ProfileDto.fromUserModel(UserModel()));
-                  } else {
-                    //失败的情况下 登出将无token可用 所以不能继续登出
-                  }
-                }else{
-                  AppRouter.navigateToLoginPage(context);
-                }
-              },
-              itemBuilder: (BuildContext context){
-                return<PopupMenuItem<ActionItems>>[
-                    PopupMenuItem(
-                      child: _buildPopupMenuItem(0xe606,"登出"),
-                      value: ActionItems.DENGCHU,
-                    ),
-                  PopupMenuItem(
-                    child: _buildPopupMenuItem(0xe606, "登录"),value: ActionItems.DENGLU,),
-
-                ];
-              },
-            ),
-          ),)
         ],
       ),
     );
@@ -277,9 +279,9 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
               builder: (context, notifier, child) {
                 return Row(
                 children: [
-                    _TextAndNumber("关注", notifier.profile.followingCount),
-                    _TextAndNumber("粉丝", notifier.profile.followerCount),
-                    _TextAndNumber("动态", notifier.profile.feedCount)
+                    _TextAndNumber("关注", followingCount),
+                    _TextAndNumber("粉丝", followerCount),
+                    _TextAndNumber("动态", feedCount)
                 ]
                 );
               },
@@ -359,15 +361,22 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
   ///数值大小判断,过万用字符串拼接
   String _getNumber(int number) {
-    if(number==null){
-      number = 0;
+    if(number==0||number==null){
+      return 0.toString();
     }
     if (number < 10000) {
       return number.toString();
-    } else  {
-      String db = (number / 10000).toString();
-      String doubleText = db.substring(0, db.indexOf(".") );
-      return doubleText + "W";
+    } else {
+      String db = "${(number / 10000).toString()}";
+      if(int.parse(db.substring(db.indexOf(".")+1,db.indexOf(".")+2))!=0){
+        String doubleText = db.substring(0, db.indexOf(".")+2);
+        return doubleText + "W";
+      }else{
+        String intText = db.substring(0, db.indexOf("."));
+        return intText +"W";
+      }
+
+
     }
   }
 
@@ -435,7 +444,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 height: 10,
               ),
               Text(
-                number!=0?"$number":"— —",
+                number!=0&&number!=null?"$number":"— —",
                 style: AppStyle.textRegular14,
               )
             ],
