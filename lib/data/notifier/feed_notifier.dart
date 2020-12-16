@@ -9,7 +9,8 @@ class FeedMapNotifier extends ChangeNotifier {
 
   // 点击评论图标记录此动态的Id用于请求评论列表
   int feedId;
-
+  // 是否是点击按钮更新的视图
+  bool isClickButtonUpdate = false;
 // 更新全局动态map
   void updateFeedMap(List<HomeFeedModel> _feedList) {
     _feedList.forEach((element) {
@@ -45,7 +46,7 @@ class FeedMapNotifier extends ChangeNotifier {
   }
 
   // 修改动态Id
-  changeFeeId(int id) {
+  changeFeeId(int id,) {
     this.feedId = id;
     notifyListeners();
   }
@@ -60,9 +61,15 @@ class FeedMapNotifier extends ChangeNotifier {
   // 评论动态的评论
   void commentFeedCom(int id, int index, CommentDtoModel model) {
     feedMap[id].comments[index].replys.insert(0, model);
-    feedMap[id].comments[index].replyCount += 1;
+
     feedMap[id].commentCount += 1;
     feedMap[id].totalCount += 1;
+    if(feedMap[id].comments[index].replyCount == 0) {
+      this.isClickButtonUpdate = false;
+    } else {
+      this.isClickButtonUpdate = true;
+    }
+    feedMap[id].comments[index].replyCount += 1;
     notifyListeners();
   }
 
@@ -71,4 +78,9 @@ class FeedMapNotifier extends ChangeNotifier {
     feedMap[feedId].totalCount = -1;
     notifyListeners();
   }
+  // 是否是点击按钮更新视图
+ void updateClickButtonStatus(bool isClick) {
+    this.isClickButtonUpdate = isClick;
+    notifyListeners();
+ }
 }

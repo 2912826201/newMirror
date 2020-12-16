@@ -205,6 +205,31 @@ Future<Map> queryListByHot(
     return null;
   }
 }
+// 更新获取评论列表热度接口返回数据方式
+Future<List> queryListByHot1(
+    {@required int targetId, @required int targetType, @required int page, @required int size}) async {
+  Map<String, dynamic> params = {};
+  params["targetId"] = targetId;
+  params["targetType"] = targetType;
+  params["page"] = page;
+  params["size"] = size;
+  BaseResponseModel responseModel = await requestApi(QUERYLISTBYHOT, params);
+  if (responseModel.isSuccess) {
+    Map<String, dynamic> model = responseModel.data;
+    List<CommentDtoModel> commentModelList = [];
+    print(model["list"]);
+    if (model["list"] is List && (model["list"] as List).isNotEmpty) {
+      model["list"].forEach((v) {
+        commentModelList.add(CommentDtoModel.fromJson(v));
+      });
+    }
+      commentModelList.insert(0, CommentDtoModel());
+      commentModelList[0].totalCount = model["totalCount"];
+    return commentModelList;
+  } else {
+    return null;
+  }
+}
 
 // 获取评论列表时间
 Future<Map> queryListByTime(

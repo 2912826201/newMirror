@@ -68,33 +68,42 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
         loadStatus = LoadingStatus.STATUS_LOADING;
       });
     }
-    Map<String, dynamic> model = await queryListByHot(
+    List<CommentDtoModel> modelList = await queryListByHot1(
         targetId: widget.feedId, targetType: 0, page: this.dataPage, size: 20);
+
+    print("打印返回值￥%${modelList.isNotEmpty}");
     setState(() {
+      totalCount = modelList[0].totalCount;
+      modelList.removeAt(0);
       if (this.dataPage == 1) {
-        if (model["list"] != null) {
-          model["list"].forEach((v) {
-            commentModel.add(CommentDtoModel.fromJson(v));
-          });
+        if (modelList.isNotEmpty) {
+          for (CommentDtoModel model in modelList) {
+             if(model.replyCount > 0) {
+               model.isShowInteractiveButton = true;
+             } else {
+               model.isShowInteractiveButton = false;
+             }
+          }
+              commentModel.addAll(modelList);
           print("数据长度${commentModel.length}");
         }
       } else if (this.dataPage > 1 && this.hasNext != 0) {
         print("5data");
-        if (model["list"] != null) {
-          model["list"].forEach((v) {
-            commentModel.add(CommentDtoModel.fromJson(v));
-          });
+        for (CommentDtoModel model in modelList) {
+          if(model.replyCount > 0) {
+            model.isShowInteractiveButton = true;
+          } else {
+            model.isShowInteractiveButton = false;
+          }
         }
+        commentModel.addAll(modelList);
+        print("数据长度${commentModel.length}");
         loadStatus = LoadingStatus.STATUS_IDEL;
         loadText = "加载中...";
       } else {
         // 加载完毕
         loadText = "已加载全部动态";
         loadStatus = LoadingStatus.STATUS_COMPLETED;
-      }
-      print("totalCount::::::::::::${model["totalCount"]}");
-      if(model["totalCount"] != null ) {
-        totalCount = model["totalCount"];
       }
       context.read<FeedMapNotifier>().commensAssignment(widget.feedId, commentModel,totalCount);
     });
@@ -308,9 +317,10 @@ class CommentBottomListView extends StatelessWidget {
                   // 评论父评论
                   postComments(targetId: model.id, targetType: 2, content: text, commentModelCallback:(CommentDtoModel commentModel) {
                     context.read<FeedMapNotifier>().commentFeedCom(feedId,index,commentModel);
+                    // 关闭评论输入框
+                    Navigator.of(context).pop(1);
                   });
-                  // 关闭评论输入框
-                  Navigator.of(context).pop(1);
+
                 },
               );
             },
@@ -370,9 +380,9 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
     print("初始化数据了+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     if(widget.commentDtoModel.initCount == null) {
       widget.commentDtoModel.initCount = widget.commentDtoModel.replyCount;
-      print("数据源总长度${ widget.commentDtoModel.initCount}initCount");
+      print("数据源总长度${ widget.commentDtoModel.initCount}::::::initCount");
       widget.commentDtoModel.isShowHiddenButtons = false;
-      widget.commentDtoModel.isShowAllComment = true;
+      // widget.commentDtoModel.isShowAllComment = true;
       widget.commentDtoModel.isClickHideButton = false;
     }
   }
@@ -380,26 +390,29 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
   // 隐藏数据
   hideData() {
     // 点击了隐藏按钮，
-    widget.commentDtoModel.isClickHideButton = true;
+    // widget.commentDtoModel.isClickHideButton = true;
+    widget.commentDtoModel.replys.clear();
     // 隐藏所有评论
-    widget.commentDtoModel.isShowAllComment = false;
+    // widget.commentDtoModel.isShowAllComment = false;
     // 切换按钮
     widget.commentDtoModel.isShowHiddenButtons = false;
     // 恢复总条数
     widget.commentDtoModel.initCount =  widget.commentDtoModel.replyCount;
+    // 请求页数还原
+    pageCount = 0;
     setState(() {});
   }
 
   // 加载数据
   loadData() async{
-    widget.commentDtoModel.isShowAllComment = true;
+    // widget.commentDtoModel.isShowAllComment = true;
 
-    // 是否点击过隐藏按钮，点击过表示数据已经取完
-    if ( widget.commentDtoModel.isClickHideButton) {
-      widget.commentDtoModel.isShowHiddenButtons = true;
-      setState(() {});
-      return;
-    }
+    // // 是否点击过隐藏按钮，点击过表示数据已经取完
+    // if ( widget.commentDtoModel.isClickHideButton) {
+    //   widget.commentDtoModel.isShowHiddenButtons = true;
+    //   setState(() {});
+    //   return;
+    // }
     pageCount += 1;
     // 总条数大于三每次点击取三条
     if (widget.commentDtoModel.initCount  > 3)  {
@@ -540,7 +553,7 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
         },
       );
     } else {
-      print("按钮initCount      ------${widget.commentDtoModel.initCount}");
+      print("按钮initCount    ------${widget.commentDtoModel.initCount}");
         return GestureDetector(
           child: Text("─── 查看${widget.commentDtoModel.initCount }条回复",
               style: TextStyle(fontSize: 12, color: AppColor.textSecondary)),
@@ -554,27 +567,22 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
   // 子评论列表
   subCommentsList(List<CommentDtoModel> model) {
     // 没有子评论就没必要显示
-    return Offstage(
-      offstage: widget.commentDtoModel.replyCount == 0,
-      child: Container(
+    return
+      // Offstage(
+      // offstage: widget.commentDtoModel.initCount == null,
+      // child:
+      Container(
           margin: EdgeInsets.only(top: 12, left: 57),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 查看按钮和隐藏按钮的切换
-             Offstage(
-               offstage: (widget.commentDtoModel.initCount) == null,
-               child: toggleButton(),
-             ),
-              // 间距
-              Container(
-                height: 12,
-              ),
               // 子评论
-              Offstage(
-                offstage: !widget.commentDtoModel.isShowAllComment,
+              // Offstage(
+              //   offstage:widget.commentDtoModel.replys.isEmpty,
+                // !widget.commentDtoModel.isShowAllComment,
                 // child: AnimationLimiter(
-                  child: MediaQuery.removePadding(
+              // ListView头部有一段空白区域，是因为当ListView没有和AppBar一起使用时，头部会有一个padding，为了去掉padding，可以使用MediaQuery.removePadding
+                  MediaQuery.removePadding(
                       removeTop: true,
                       context: context,
                       child: ListView.builder(
@@ -585,11 +593,22 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
                             return  subComments(model[index]);
                           })),
                 // ),
-              )
+              // ),
+              // 间距
+              // Container(
+              //   height: 12,
+              // ),
+              // 查看按钮和隐藏按钮的切换
+              Offstage(
+                offstage: widget.commentDtoModel.isShowInteractiveButton == false,
+                child:
+                toggleButton(),
+              ),
+              SizedBox(height: 12,)
             ],
           )
-          // ListView头部有一段空白区域，是因为当ListView没有和AppBar一起使用时，头部会有一个padding，为了去掉padding，可以使用MediaQuery.removePadding
-          ),
+
+
     );
   }
 
