@@ -53,8 +53,8 @@ class CommentModel {
     _lastTime = json["lastTime"];
     _lastId = json["lastId"];
     _lastScore = json["lastScore"];
+    _list = [];
     if (json["list"] != null) {
-      _list = [];
       json["list"].forEach((v) {
         _list.add(CommentDtoModel.fromJson(v));
       });
