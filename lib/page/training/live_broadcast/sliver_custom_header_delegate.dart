@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mirror/constant/color.dart';
+import 'package:mirror/util/date_util.dart';
 
 import 'live_broadcast_page.dart';
 
@@ -16,6 +18,8 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
   final List<String> titleArray;
   bool isGoneTitle = true;
   double titleSize = 30;
+  String startTime;
+  String endTime;
 
   SliverCustomHeaderDelegate({
     this.collapsedHeight,
@@ -26,6 +30,8 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
     this.valueArray,
     this.titleArray,
     this.heroTag,
+    this.startTime,
+    this.endTime,
   });
 
   @override
@@ -80,27 +86,45 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
     }
   }
 
-  List<Widget> _getTitleWidgetArray() {
-    var widgetArray = <Widget>[];
-    if (titleArray != null && valueArray != null) {
-      var valueTextStyle = TextStyle(fontSize: 26, fontWeight: FontWeight.bold);
-      var titleTextStyle = TextStyle(fontSize: 20);
-      for (int i = 0; i < titleArray.length; i++) {
-        widgetArray.add(Column(
-          children: [
-            Text(
-              valueArray[i],
-              style: valueTextStyle,
-            ),
-            Text(
-              titleArray[i],
-              style: titleTextStyle,
-            ),
-          ],
-        ));
-      }
+  Color makeStickyHeaderTextColor1(shrinkOffset, isIcon) {
+    if (shrinkOffset <= 160) {
+      return isIcon ? Colors.white : Colors.transparent;
+    } else {
+      final int alpha = (shrinkOffset / (this.maxExtent - this.minExtent) * 255)
+          .clamp(0, 255)
+          .toInt();
+      return Color.fromARGB(alpha, 0, 0, 0);
     }
-    return widgetArray;
+  }
+
+  Widget _getTitleWidgetArray() {
+    return Container(
+      padding: const EdgeInsets.only(left: 17.5, bottom: 16),
+      child: Row(
+        children: [
+          Icon(
+            Icons.access_time,
+            color: AppColor.white,
+            size: 18,
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Text(
+            DateUtil.formatDateNoYearString(
+                    DateUtil.stringToDateTime(startTime)) +
+                "${DateUtil.isToday(DateUtil.stringToDateTime(startTime)) ? " (今天) " : "  "}" +
+                "${DateUtil.formatTimeString(DateUtil.stringToDateTime(startTime))}"
+                    "-"
+                    "${DateUtil.formatTimeString(DateUtil.stringToDateTime(endTime))}",
+            style: TextStyle(
+              color: AppColor.white,
+              fontSize: 15,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -132,7 +156,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
                   end: Alignment.bottomCenter,
                   colors: [
                     Color(0x00000000),
-                    Color(0x60ffffff),
+                    Color(0x20000000),
                   ],
                 ),
               ),
@@ -141,11 +165,11 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
           //数据显示
           Positioned(
             child: Container(
-              width: MediaQuery.of(context).size.width,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: _getTitleWidgetArray(),
-              ),
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
+              child: _getTitleWidgetArray(),
             ),
             bottom: 0,
             left: 0,
@@ -157,6 +181,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
             top: 0,
             child: Container(
               color: this.makeStickyHeaderBgColor(shrinkOffset),
+              padding: const EdgeInsets.only(left: 10, right: 10, top: 2),
               child: SafeArea(
                 bottom: false,
                 child: Container(
@@ -167,8 +192,9 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
                       IconButton(
                         icon: Icon(
                           Icons.arrow_back_ios,
-                          // color: this.makeStickyHeaderTextColor(shrinkOffset, true),
-                          color: Colors.black,
+                          color: this.makeStickyHeaderTextColor(shrinkOffset,
+                              true),
+                          // color: Colors.black,
                         ),
                         onPressed: () => Navigator.pop(context),
                       ),
@@ -187,8 +213,9 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
                       IconButton(
                         icon: Icon(
                           Icons.share,
-                          // color: this.makeStickyHeaderTextColor(shrinkOffset, true),
-                          color: Colors.black,
+                          color: this.makeStickyHeaderTextColor(shrinkOffset,
+                              true),
+                          // color: Colors.black,
                         ),
                         onPressed: () {},
                       ),
@@ -199,21 +226,29 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
             ),
           ),
           //中间文字
-          Container(
-            height: this.maxExtent,
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Offstage(
-                    offstage: !isGoneTitle,
-                    child: Text(
-                      this.title,
-                      style: TextStyle(
-                          fontSize: titleSize),
-                    ))
-              ],
+          Positioned(
+            child: Container(
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
+              padding: const EdgeInsets.only(left: 16, right: 16),
+              child: Offstage(
+                  offstage: !isGoneTitle,
+                  child: Text(
+                    this.title,
+                    style: TextStyle(
+                      fontSize: 21,
+                      // color: this.makeStickyHeaderTextColor1(shrinkOffset, true),
+                      color: AppColor.white,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  )
+              ),
             ),
+            bottom: 53,
+            left: 0,
           ),
         ],
       ),

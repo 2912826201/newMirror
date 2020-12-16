@@ -5,7 +5,7 @@ import 'package:mirror/util/date_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 
 class LiveBroadcastTitlePage extends StatefulWidget {
-  List<DateTime> dates;
+  final List<DateTime> dates;
   void Function(void Function(int)) setCall;
   void Function(int) itemClick;
 

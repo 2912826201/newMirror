@@ -191,7 +191,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
           ),
         ),
         onTap: () {
-          onClickItem(liveList[i], i);
+          gotoNavigateToLiveDetail(liveList[i], i);
         },
       ));
     }
@@ -674,17 +674,17 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
           });
     } else if (value.playType == 1) {
       ToastShow.show(msg: "点击-去上课-应该直接去直播间", context: context);
-      //todo 先这样实现---以后再改为路由
-      LiveBroadcastPage.liveModel = value;
-      AppRouter.navigateToLiveDetail(
-          context, heroTagArray[index], value.id, value.courseId);
+      gotoNavigateToLiveDetail(value, index);
     } else {
       ToastShow.show(msg: "去直播详情页", context: context);
-      //todo 先这样实现---以后再改为路由
-      LiveBroadcastPage.liveModel = value;
-      AppRouter.navigateToLiveDetail(
-          context, heroTagArray[index], value.id, value.courseId);
+      gotoNavigateToLiveDetail(value, index);
     }
   }
 
+  void gotoNavigateToLiveDetail(LiveModel value, int index) {
+    //todo 先这样实现---以后再改为路由
+    LiveBroadcastPage.liveModel = value;
+    AppRouter.navigateToLiveDetail(
+        context, heroTagArray[index], value.id, value.courseId);
+  }
 }
