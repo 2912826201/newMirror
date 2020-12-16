@@ -493,7 +493,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     List<Widget> widgetArray = <Widget>[];
     //评论头部title
     widgetArray.add(Container(
-      padding: const EdgeInsets.only(left: 16, top: 16, bottom: 10),
+      padding: const EdgeInsets.only(left: 20, top: 10, bottom: 10),
       width: double.infinity,
       child: Text(
         "课程评论",
@@ -598,9 +598,10 @@ class LiveDetailPageState extends State<LiveDetailPage> {
 
               openInputBottomSheet(
                 context: this.context,
-                voidCallback: (String context) {
-                  _publishComment(context,-1);
-                  print("发表评论----" + context);
+                voidCallback:(String text,BuildContext context) {
+                  // _publishComment(context,-1);
+                  // publishComment(text);
+                  print("发表评论----" + text);
                 },
               );
             },
@@ -877,9 +878,11 @@ class LiveDetailPageState extends State<LiveDetailPage> {
                                 }
                                 openInputBottomSheet(
                                   context: this.context,
-                                  voidCallback: (String context) {
-                                    _publishComment(context,_targetId);
-                                    print("回复评论----" + context);
+
+                                  voidCallback: (String text,BuildContext context) {
+                                    // publishComment(text);
+                                    // _publishComment(context,_targetId);
+                                    print("回复评论----" + text);
                                   },
                                 );
                               },
@@ -1127,7 +1130,6 @@ class LiveDetailPageState extends State<LiveDetailPage> {
             targetId: courseId, targetType: 1, page: courseCommentPageHot, size: courseCommentPageSize);
         if (commentModel != null) {
           courseCommentHot = CommentModel.fromJson(commentModel);
-          courseCommentPageHot++;
         }
       }
       setCommentListSubSetting(courseCommentHot);

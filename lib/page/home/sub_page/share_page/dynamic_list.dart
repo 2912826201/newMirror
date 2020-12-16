@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/attention_user.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/commentInputBox.dart';
@@ -29,17 +31,19 @@ class DynamicListLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double screen_width = ScreenUtil.instance.screenWidthDp;
-    return ChangeNotifierProvider(
-        create: (_) => DynamicModelNotifier(model),
-        builder: (context, _) {
+    print("推荐页数据￥${ model.picUrls.isEmpty}");
+    // return ChangeNotifierProvider(
+    //     create: (_) => DynamicModelNotifier(model),
+    //     builder: (context, _) {
           return Column(
             children: [
               // 头部头像时间
               getHead(screen_width, context,model),
               // 图片区域
-              SlideBanner(height: model.picUrls[0].height.toDouble(),model: model,),
+
+              model.picUrls.isNotEmpty ? SlideBanner(height: model.picUrls[0].height.toDouble(),model: model,) : Container(),
               // 点赞，转发，评论三连区域 getTripleArea
-              GetTripleArea(num: 3, pc: pc,model:model ,),
+              GetTripleArea(pc: pc,model:model ,index:index),
               // 课程信息和地址
               Offstage(
                 offstage: (model.address == null && model.courseDto == null),
@@ -53,11 +57,12 @@ class DynamicListLayout extends StatelessWidget {
 
               // 文本文案
               Offstage(
-                offstage: model.content.length == 0 && model.topicDto == null,
+                offstage: model.content.length == 0,
                 child: Container(
                   margin: EdgeInsets.only(left: 16, right: 16, top: 12),
                   width: ScreenUtil.instance.screenWidthDp,
-                  child: ExpandableText(
+                  child:
+                  ExpandableText(
                     text: model.content,
                     model: model,
                     maxLines: 2,
@@ -67,7 +72,7 @@ class DynamicListLayout extends StatelessWidget {
               ),
 
               // 评论文本
-             context.watch<DynamicModelNotifier>().dynamicModel.comments.length != 0 ? CommentLayout(model: model,) : Container(),
+               context.watch<FeedMapNotifier>().feedMap[model.id].comments.length != 0 ? CommentLayout(model: model,) : Container(),
               // 输入框
               CommentInputBox(feedModel: model),
               // 推荐用户
@@ -79,8 +84,8 @@ class DynamicListLayout extends StatelessWidget {
               )
             ],
           );
-        }
-    );
+    //     }
+    // );
   }
 
   // 头部
@@ -130,7 +135,16 @@ class DynamicListLayout extends StatelessWidget {
                       barrierDismissible: true, //是否点击空白区域关闭对话框,默认为true，可以关闭
                       builder: (BuildContext context) {
                         var list = List();
-                        list.add("删除");
+                        if(model.pushId == context.watch<ProfileNotifier>().profile.uid) {
+                          list.add("删除");
+                        } else {
+                          if(model.isFollow == 0) {
+                            list.add("关注");
+                          } else{
+                            list.add("取消关注");
+                          }
+                          list.add("举报");
+                        }
                         return BottomPopup(
                           list: list,
                           onItemClickListener: (index) async {
@@ -181,27 +195,33 @@ class DynamicListLayout extends StatelessWidget {
 }
 
 class DynamicModelNotifier extends ChangeNotifier {
-  DynamicModelNotifier(this._dynamicModel);
-  HomeFeedModel _dynamicModel;
-  HomeFeedModel get dynamicModel => _dynamicModel;
-
-  void setDynamicModel(HomeFeedModel dynamicModel) {
-    _dynamicModel = dynamicModel;
+  DynamicModelNotifier({this.recommendModel});
+  // 推荐model
+  List<HomeFeedModel> recommendModel;
+  // // 关注model
+  // List<HomeFeedModel> attentionModel;
+  void setRecommendModel(List<HomeFeedModel> _dynamicModel) {
+    recommendModel = _dynamicModel;
     //要将全局的profile赋值
     notifyListeners();
   }
+  // void setAttentionModel(List<HomeFeedModel> _dynamicModel) {
+  //   attentionModel = _dynamicModel;
+  //   //要将全局的profile赋值
+  //   notifyListeners();
+  // }
  //点赞
-  void setLaud(int laud ,String avatarUrl) {
+  void setLaud(int laud ,String avatarUrl,int index) {
     if(laud == 0) {
-      _dynamicModel.laudCount += 1;
-      _dynamicModel.laudUserInfo.insert(0,avatarUrl);
+      recommendModel[index].laudCount += 1;
+      recommendModel[index].laudUserInfo.insert(0,avatarUrl);
       laud = 1;
     } else {
-      _dynamicModel.laudCount -= 1;
-      _dynamicModel.laudUserInfo.removeAt(0);
+      recommendModel[index].laudCount -= 1;
+      recommendModel[index].laudUserInfo.removeAt(0);
       laud = 0;
     }
-    _dynamicModel.isLaud = laud;
+    recommendModel[index].isLaud = laud;
     notifyListeners();
   }
 

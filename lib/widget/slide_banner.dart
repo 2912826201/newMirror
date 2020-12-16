@@ -7,6 +7,7 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
@@ -176,8 +177,7 @@ class _SlideBannerState extends State<SlideBanner> {
       // 点赞/取消赞成功
       print("state:${model["state"]}");
       if (model["state"]) {
-        // ProfileNotifier
-        context.read<DynamicModelNotifier>().setLaud(widget.model.isLaud,context.read<ProfileNotifier>().profile.avatarUri);
+        context.read<FeedMapNotifier>().setLaud(widget.model.isLaud,context.read<ProfileNotifier>().profile.avatarUri,widget.model.id);
       } else {
         // 失败
         print("shib ");
@@ -198,7 +198,7 @@ class _SlideBannerState extends State<SlideBanner> {
             GestureDetector(
               onDoubleTap: () {
                 // 获取是否点赞
-                int isLaud = context.read<DynamicModelNotifier>().dynamicModel.isLaud;
+                int isLaud = widget.model.isLaud;
                 if (isLaud != 1) {
                   setUpLuad();
                 }
