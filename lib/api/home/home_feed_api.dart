@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/data/model/base_response_model.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
 
 // 获取动态列表
 const String PULLLISTFEED = "/appuser/web/feed/pullList";
+// 获取推荐动态列表
+const String PULLHOTLIST = "/appuser/web/feed/pullHotList";
 //  发布动态
 const String PUBLISHFEED = "/appuser/web/feed/publish";
 // 动态点赞or取消赞
@@ -37,6 +40,24 @@ Future<Map> getPullList({@required int type, @required int size, int targetId, i
   BaseResponseModel responseModel = await requestApi(PULLLISTFEED, params);
   if (responseModel.isSuccess) {
     return responseModel.data;
+  } else {
+    return null;
+  }
+}
+// 获取推荐动态列表
+Future<List> getHotList({@required size}) async {
+  Map<String, dynamic> params = {};
+  params["size"] = size;
+  BaseResponseModel responseModel = await requestApi(PULLHOTLIST, params);
+  if (responseModel.isSuccess) {
+    Map<String, dynamic> model = responseModel.data;
+    List<HomeFeedModel> feedModelList = [];
+    if (model["list"] != null) {
+        model["list"].forEach((v) {
+          feedModelList.add(HomeFeedModel.fromJson(v));
+        });
+    }
+    return feedModelList;
   } else {
     return null;
   }
@@ -137,13 +158,14 @@ Future<Map> laud({@required int id, @required int laud}) async {
 
 // 发布/回调评论
 Future<Map> publish(
-    {@required int targetId,
-    @required int targetType,
-    @required String content,
-    String picUrl,
-    String atUsers,
-    int replyId,
-    int replyCommentId}) async {
+    {@required int targetId, // 目标id（动态ID、课程ID、评论ID）
+    @required int targetType, // 0=动态、1=课程 2=评论
+    @required String content, // 文字内容
+    String picUrl, // 评论附加图片json string
+    String atUsers, // at用户列表
+    int replyId, // 被回复人的id
+    int replyCommentId // 被回复评论id
+    }) async {
   Map<String, dynamic> params = {};
   params["targetId"] = targetId;
   params["targetType"] = targetType;
@@ -169,8 +191,11 @@ Future<Map> publish(
 }
 
 // 获取评论列表热度
-Future<Map> queryListByHot(
-    {@required int targetId, @required int targetType, @required int page, @required int size}) async {
+Future<Map> queryListByHot2(
+    {@required int targetId,
+    @required int targetType,
+    @required int page,
+    @required int size}) async {
   Map<String, dynamic> params = {};
   params["targetId"] = targetId;
   params["targetType"] = targetType;
@@ -179,6 +204,31 @@ Future<Map> queryListByHot(
   BaseResponseModel responseModel = await requestApi(QUERYLISTBYHOT, params);
   if (responseModel.isSuccess) {
     return responseModel.data;
+  } else {
+    return null;
+  }
+}
+// 更新获取评论列表热度接口返回数据方式
+Future<List> queryListByHot(
+    {@required int targetId, @required int targetType, @required int page, @required int size}) async {
+  Map<String, dynamic> params = {};
+  params["targetId"] = targetId;
+  params["targetType"] = targetType;
+  params["page"] = page;
+  params["size"] = size;
+  BaseResponseModel responseModel = await requestApi(QUERYLISTBYHOT, params);
+  if (responseModel.isSuccess) {
+    Map<String, dynamic> model = responseModel.data;
+    List<CommentDtoModel> commentModelList = [];
+    print(model["list"]);
+    if (model["list"] is List && (model["list"] as List).isNotEmpty) {
+      model["list"].forEach((v) {
+        commentModelList.add(CommentDtoModel.fromJson(v));
+      });
+    }
+      commentModelList.insert(0, CommentDtoModel());
+      commentModelList[0].totalCount = model["totalCount"];
+    return commentModelList;
   } else {
     return null;
   }

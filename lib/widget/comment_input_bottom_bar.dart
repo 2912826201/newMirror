@@ -2,61 +2,55 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
 
-// 监听键盘高度打开的输入框
-class CommentInputBar extends StatelessWidget {
-  TextEditingController controller = TextEditingController();
+typedef VoidCallback = void Function(String content, BuildContext context);
 
-  postComments(String text) async {
-    print("评论类型￥${Application.commentTypes}");
-    CommentDtoModel comModel;
-    if (Application.commentTypes == CommentTypes.commentMainCom) {
-      print("主评论${Application.commentDtoModel.id}");
-      Map<String, dynamic> model =
-          await publish(targetId: Application.commentDtoModel.id, targetType: 2, content: text);
-      if (model != null) {
-        comModel = (CommentDtoModel.fromJson(model));
-        Application.commentDtoModel.initCount += 1;
-      }
-      print("评论评论返回$model");
-      Application.commentDtoModel.replys.insert(0, comModel);
-    } else if (Application.commentTypes == CommentTypes.commentFeed) {
-      Map<String, dynamic> model = await publish(targetId: Application.feedModel.id, targetType: 0, content: text);
-      // CommentDtoModel
-      if (model != null) {
-        comModel = (CommentDtoModel.fromJson(model));
-        Application.feedModel.commentCount += 1;
-      }
-      print("发布接口返回$model");
-      Application.feedModel.comments.insert(0, comModel);
-    } else {
-      Map<String, dynamic> model = await publish(
-          targetId: Application.commentDtoModel.id,
-          targetType: 2,
-          content: text,
-          replyId: Application.replysModel.uid,
-          replyCommentId: Application.replysModel.id);
-      if (model != null) {
-        comModel = (CommentDtoModel.fromJson(model));
-        Application.commentDtoModel.initCount += 1;
-      }
-      print("子评论返回$model");
-      Application.commentDtoModel.replys.insert(0, comModel);
-    }
-    controller.clear();
-    commentFocus.unfocus(); // 失去焦点,
-    Application.isArouse = false;
-  }
+Future openInputBottomSheet(
+    {
+  @required BuildContext context,
+  @required VoidCallback voidCallback,
+  String hintText,
+}) async {
+  await showModalBottomSheet(
+      isScrollControlled: true,
+
+      context: context,
+      builder: (BuildContext context) {
+        return SingleChildScrollView(
+            child: Container(
+          padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom), // !important
+          child: Container(
+            padding: EdgeInsets.only(top: 8, bottom: 8),
+            child: UnconstrainedBox(
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                child: CommentInputBottomBar(
+                  hintText:hintText,
+                  voidCallback: voidCallback,
+                ),
+              ),
+            ),
+          ),
+        ));
+      });
+}
+
+class CommentInputBottomBar extends StatelessWidget {
+  CommentInputBottomBar({Key key, this.voidCallback,this.hintText}) : super(key: key);
+  final VoidCallback voidCallback;
+  String hintText;
+  final TextEditingController _textEditingController = TextEditingController();
+
+  final FocusNode _commentFocus = FocusNode();
 
   @override
   Widget build(BuildContext context) {
+    FocusScope.of(context).requestFocus(_commentFocus);
     // ChangeNotifierProvider
     return ChangeNotifierProvider(
         create: (_) => CommentEnterNotifier(),
@@ -80,11 +74,15 @@ class CommentInputBar extends StatelessWidget {
                           minHeight: 16.0,
                           maxWidth: Platform.isIOS
                               ? ScreenUtil.instance.screenWidthDp - 32 - 32 - 64
-                              : ScreenUtil.instance.screenWidthDp - 32 - 32 - 64 - 52 - 12),
+                              : ScreenUtil.instance.screenWidthDp -
+                                  32 -
+                                  32 -
+                                  64 -
+                                  52 -
+                                  12),
                       child: TextField(
-                        controller: controller,
-                        // 管理焦点
-                        focusNode: commentFocus,
+                        controller: _textEditingController,
+                        focusNode: _commentFocus,
                         // 多行展示
                         keyboardType: TextInputType.multiline,
                         maxLines: null,
@@ -92,23 +90,28 @@ class CommentInputBar extends StatelessWidget {
                         // 光标颜色
                         cursorColor: Color.fromRGBO(253, 137, 140, 1),
                         scrollPadding: EdgeInsets.all(0),
-                        style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
+                        style: TextStyle(
+                            fontSize: 16, color: AppColor.textPrimary1),
                         //内容改变的回调
                         onChanged: (text) {
                           // 存入最新的值
-                          context.read<CommentEnterNotifier>().changeCallback(text);
+                          context
+                              .read<CommentEnterNotifier>()
+                              .changeCallback(text);
                         },
                         // 装饰器修改外观
                         decoration: InputDecoration(
                           // 去除下滑线
                           border: InputBorder.none,
                           // 提示文本
-                          hintText: Application.hintText,
+                          hintText: hintText,
                           // 提示文本样式
-                          hintStyle: TextStyle(fontSize: 14, color: AppColor.textHint),
+                          hintStyle:
+                              TextStyle(fontSize: 14, color: AppColor.textHint),
                           // 设置为true,contentPadding才会生效，TextField会有默认高度。
                           isCollapsed: true,
-                          contentPadding: EdgeInsets.only(top: 8, bottom: 8, left: 16),
+                          contentPadding:
+                              EdgeInsets.only(top: 8, bottom: 8, left: 16),
                         ),
                       ),
                     ),
@@ -128,7 +131,7 @@ class CommentInputBar extends StatelessWidget {
                           width: 24,
                           height: 24,
                           color: Colors.redAccent,
-                        ))
+                        )),
                     // MyIconBtn()
                   ],
                 ),
@@ -140,27 +143,35 @@ class CommentInputBar extends StatelessWidget {
                     offstage: Platform.isIOS,
                     child: GestureDetector(
                         onTap: () {
-                          // 发布
-                          postComments(context.read<CommentEnterNotifier>().textFieldStr);
+                          Navigator.of(context).pop(1);
+                          voidCallback(_textEditingController.text, context);
                         },
                         child: IgnorePointer(
                           // 监听输入框的值==""使外层点击不生效。非""手势生效。
-                          ignoring: context.watch<CommentEnterNotifier>().textFieldStr == "",
+                          ignoring: context
+                                  .watch<CommentEnterNotifier>()
+                                  .textFieldStr ==
+                              "",
                           child: Container(
                               // padding: EdgeInsets.only(top: 6,left: 12,bottom: 6,right: 12),
                               height: 32,
                               width: 52,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(16)),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(16)),
                                 // 监听输入框的值动态改变样式
-                                color: context.watch<CommentEnterNotifier>().textFieldStr != ""
+                                color: context
+                                            .watch<CommentEnterNotifier>()
+                                            .textFieldStr !=
+                                        ""
                                     ? AppColor.textPrimary1
                                     : AppColor.textSecondary,
                               ),
                               child: Center(
                                 child: Text(
                                   "发送",
-                                  style: TextStyle(color: AppColor.white, fontSize: 14),
+                                  style: TextStyle(
+                                      color: AppColor.white, fontSize: 14),
                                 ),
                               )),
                         )),

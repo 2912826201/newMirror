@@ -1,33 +1,34 @@
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/course_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
+
 FocusNode commentFocus = FocusNode();
-enum LoadingStatus {
-  //正在加载中
-  STATUS_LOADING,
-  //数据加载完成
-  STATUS_COMPLETED,
-  //空闲状态
-  STATUS_IDEL,
-}
+
 // 加载中的布局
 class LoadingView extends StatelessWidget {
   String loadText;
   LoadingStatus loadStatus;
-  LoadingView({this.loadText,this.loadStatus});
-  Widget _pad(Widget widget, {l,t,r,b}) {
-    return Padding(padding: EdgeInsets.fromLTRB(l ??= 0.0, t ??= 0.0, r ??= 0.0, b ??= 0.0),child: widget,);
+
+  LoadingView({this.loadText, this.loadStatus});
+
+  Widget _pad(Widget widget, {l, t, r, b}) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(l ??= 0.0, t ??= 0.0, r ??= 0.0, b ??= 0.0),
+      child: widget,
+    );
   }
-  var loadingTs =TextStyle(color: AppColor.textHint,fontSize: 12);
+
+  var loadingTs = TextStyle(color: AppColor.textHint, fontSize: 12);
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +44,7 @@ class LoadingView extends StatelessWidget {
           child: CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation(AppColor.mainRed),
             // loading 大小
-            strokeWidth:2,
+            strokeWidth: 2,
           ),
           width: 12.0,
           height: 12.0,
@@ -74,23 +75,30 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   @override
   bool get wantKeepAlive => true; //必须重写
   // 数据源
-  List<HomeFeedModel> recommendModel = [];
+  List<int> recommendIdList = [];
+  List<HomeFeedModel> recommendModelList = [];
+
   // 列表监听
   ScrollController _controller = new ScrollController();
+
   // 请求下一页
   int lastTime;
+
   // 加载中默认文字
-  String loadText ="加载中...";
+  String loadText = "加载中...";
+
   // 加载状态
   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
+
   // 数据加载页数
-  int dataPage =  1;
+  int dataPage = 1;
+
   @override
   void initState() {
     getRecommendFeed();
     _controller.addListener(() {
       if (_controller.position.pixels == _controller.position.maxScrollExtent) {
-        dataPage +=1;
+        dataPage += 1;
         getRecommendFeed();
       }
     });
@@ -105,29 +113,34 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
         loadStatus = LoadingStatus.STATUS_LOADING;
       });
     }
-    Map<String, dynamic> model = await getPullList(type: 1, size: 20, lastTime: lastTime);
+    // 请求推荐接口
+    List<HomeFeedModel> modelList = await getHotList(size: 20);
+
     setState(() {
       if (dataPage == 1) {
-        if (model["list"] != null) {
-          model["list"].forEach((v) {
-            recommendModel.add(HomeFeedModel.fromJson(v));
-          });
+        if (modelList.isNotEmpty) {
+          for (HomeFeedModel model in modelList) {
+            recommendIdList.add(model.id);
+          }
+          recommendModelList.addAll(modelList);
         }
       } else if (dataPage > 1) {
-        if (model["list"] != null) {
-          model["list"].forEach((v) {
-            recommendModel.add(HomeFeedModel.fromJson(v));
-          });
+        if (modelList.isNotEmpty) {
+          for (HomeFeedModel model in modelList) {
+            recommendIdList.add(model.id);
+          }
+          recommendModelList.addAll(modelList);
         }
         loadStatus = LoadingStatus.STATUS_IDEL;
         loadText = "加载中...";
-      }  else {
+      } else {
         // 加载完毕
         loadText = "已加载全部动态";
         loadStatus = LoadingStatus.STATUS_COMPLETED;
       }
     });
-    lastTime = model["lastTime"];
+    // 更新全局监听
+    context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
   }
 
   @override
@@ -139,45 +152,48 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       children: [
         Container(
             child: NotificationListener<ScrollNotification>(
-                onNotification: (ScrollNotification notification) {
-                  ScrollMetrics metrics = notification.metrics;
-                  // 注册通知回调
-                  if (notification is ScrollStartNotification) {
-                    // 滚动开始
-                    // print('滚动开始');
-                  } else if (notification is ScrollUpdateNotification) {
-                    // 滚动位置更新
-                    // print('滚动位置更新');
-                    // 当前位置
-                    // print("当前位置${metrics.pixels}");
-                  } else if (notification is ScrollEndNotification) {
-                    // 滚动结束
-                    // print('滚动结束');
-                  }
-                },
-                child: RefreshIndicator(
-
+              onNotification: (ScrollNotification notification) {
+                ScrollMetrics metrics = notification.metrics;
+                // 注册通知回调
+                if (notification is ScrollStartNotification) {
+                  // 滚动开始
+                  // print('滚动开始');
+                } else if (notification is ScrollUpdateNotification) {
+                  // 滚动位置更新
+                  // print('滚动位置更新');
+                  // 当前位置
+                  // print("当前位置${metrics.pixels}");
+                } else if (notification is ScrollEndNotification) {
+                  // 滚动结束
+                  // print('滚动结束');
+                }
+              },
+              child: RefreshIndicator(
                   onRefresh: () async {
                     dataPage = 1;
-                    recommendModel.clear();
+                    recommendIdList.clear();
+                    recommendModelList.clear();
                     loadStatus = LoadingStatus.STATUS_LOADING;
                     loadText = "加载中...";
                     Map<String, dynamic> model = await getPullList(type: 1, size: 20, lastTime: lastTime);
                     setState(() {
                       if (model["list"] != null) {
                         model["list"].forEach((v) {
-                          recommendModel.add(HomeFeedModel.fromJson(v));
+                          recommendIdList.add(HomeFeedModel.fromJson(v).id);
+                          recommendModelList.add(HomeFeedModel.fromJson(v));
                         });
                       }
                     });
+                    // 更新全局监听
+                    context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
                   },
                   child: CustomScrollView(
                     controller: _controller,
                     // BouncingScrollPhysics
-                   physics:
-                   // ClampingScrollPhysics(),
-                   AlwaysScrollableScrollPhysics() ,
-                   // BouncingScrollPhysics(),
+                    physics:
+                    // ClampingScrollPhysics(),
+                    AlwaysScrollableScrollPhysics(),
+                    // BouncingScrollPhysics(),
                     slivers: [
                       // 因为SliverList并不支持设置滑动方向由CustomScrollView统一管理，所有这里使用自定义滚动
                       // CustomScrollView要求内部元素为Sliver组件， SliverToBoxAdapter可包裹普通的组件。
@@ -189,25 +205,34 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                       SliverList(
                         // controller: _controller,
                         delegate: SliverChildBuilderDelegate((content, index) {
-                          // print("listSdadada");
-                          // print(index);
-                          // print(recommendModel.length);
-                          if(index == recommendModel.length) {
-                            return LoadingView(loadText: loadText,loadStatus:loadStatus ,);
+                          // 获取动态id
+                          int id = recommendIdList[index];
+                          print("动态Id$id");
+                          // 获取动态id指定model
+                          HomeFeedModel model = context.read<FeedMapNotifier>().feedMap[id];
+                          if (model != null) {
+                            if (index == recommendIdList.length-1) {
+                              return LoadingView(
+                                loadText: loadText,
+                                loadStatus: loadStatus,
+                              );
+                            } else {
+                              return DynamicListLayout(
+                                  index: index,
+                                  pc: widget.pc,
+                                  model: model,
+                                  // 可选参数 子Item的个数
+                                  key: GlobalObjectKey("recommend$index"),
+                                  isShowRecommendUser: false);
+                            }
                           } else {
-                          return DynamicListLayout(
-                              index: index,
-                              pc: widget.pc,
-                              model: recommendModel[index],
-                              // 可选参数 子Item的个数
-                              key: GlobalObjectKey("recommend$index"),
-                              isShowRecommendUser: false);}
-                        }, childCount: recommendModel.length + 1),
+                            // 缺省图
+                            return Container();
+                          }
+                        }, childCount: recommendIdList.length),
                       )
                     ],
-                  )
-                ),
-
+                  )),
             )),
       ],
       // )

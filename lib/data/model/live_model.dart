@@ -1,20 +1,23 @@
+import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/util/date_util.dart';
 
-import 'user_model.dart';
+/// data : {"id":1,"courseId":1,"name":"减脂塑形","creatorId":1008611,"coachId":1008611,"coachDto":{"uid":1008611,"phone":"13111856853","type":2,"subType":1,"nickName":"爸爸","avatarUri":"http://devpic.aimymusic.com/app/default_avatar01.png","description":null,"birthday":null,"sex":null,"constellation":null,"cityCode":null,"longitude":null,"latitude":null,"password":"MTMxMTE4NTY4NTM=","address":null,"source":null,"createTime":1605182811646,"updateTime":null,"deletedTime":null,"status":2,"age":null,"isPerfect":1,"isPhone":1},"coursewareId":1,"coursewareDto":{"id":1,"name":"测试一","picUrl":"www.baidu.com","seconds":300000,"calories":167,"levelId":2,"levelDto":{"id":2,"type":null,"name":"初级","updateTime":1608014618089,"ename":"L1"},"targetId":1,"targetDto":{"id":1,"type":null,"name":"减脂","updateTime":1607673809453,"ename":null},"partId":1,"partDto":{"id":1,"type":null,"name":"全身","updateTime":1607673781969,"ename":null},"description":"测试测试","dataState":2,"createTime":1605254544449,"updateTime":1605254544449},"playBackUrl":null,"videoUrl":null,"startTime":"2020-11-16 09:00","endTime":"2020-11-16 10:00","videoSeconds":null,"movementDtos":[{"id":1,"name":"动作名","point":100,"picUrl":"http://devpic.aimymusic.com/ifcms/12萌妹子.jpg","levelId":1,"levelDto":{"id":1,"type":null,"name":"零基础","updateTime":1608014617889,"ename":"L0"},"partId":1,"partDto":{"id":1,"type":null,"name":"减脂","updateTime":1607673809453,"ename":null},"calories":1000,"expectHeartRate":100,"steps":"步骤、自己猜","breathingRhythm":"呼吸节奏","movementFeeling":"动作感觉","positionId":1,"muscleId":1,"detail":null,"state":1,"creatorId":1008611,"dataState":2,"createTime":1607570185761,"updateTime":1607570185761,"positionDto":{"url":"http://devpic.aimymusic.com/ifcms/shoubi.jpg","content":"手臂"},"muscleDto":{"url":"http://devpic.aimymusic.com/ifcms/gongertouji.jpg","content":"肱二头肌"},"amount":10,"seconds":null,"unit":"次","aicheckSteps":[{"url":"www.baidu.com","content":"这是内容"}]}],"isBooked":0,"totalTrainingTime":0,"totalTrainingAmount":0,"totalCalories":0,"joinAmount":null,"commentCount":null,"laudCount":null,"finishAmount":null,"dataState":2,"createTime":1605254544449,"updateTime":1605254544449}
+/// code : 200
 
-/// id : 2
+/// id : 1
 /// courseId : 1
 /// name : "减脂塑形"
 /// creatorId : 1008611
 /// coachId : 1008611
 /// coachDto : {"uid":1008611,"phone":"13111856853","type":2,"subType":1,"nickName":"爸爸","avatarUri":"http://devpic.aimymusic.com/app/default_avatar01.png","description":null,"birthday":null,"sex":null,"constellation":null,"cityCode":null,"longitude":null,"latitude":null,"password":"MTMxMTE4NTY4NTM=","address":null,"source":null,"createTime":1605182811646,"updateTime":null,"deletedTime":null,"status":2,"age":null,"isPerfect":1,"isPhone":1}
 /// coursewareId : 1
-/// coursewareDto : {"id":1,"name":"测试一","picUrl":"www.baidu.com","seconds":300000,"calories":167,"levelId":2,"levelDto":{"id":2,"name":"初级","updateTime":1607568828227},"targetId":1,"targetDto":{"id":1,"name":"减脂","updateTime":1607422868082},"partId":1,"partDto":{"id":1,"name":"全身","updateTime":1607422919497},"description":"测试测试","dataState":2,"createTime":1605254544449,"updateTime":1605254544449}
+/// coursewareDto : {"id":1,"name":"测试一","picUrl":"www.baidu.com","seconds":300000,"calories":167,"levelId":2,"levelDto":{"id":2,"type":null,"name":"初级","updateTime":1608014618089,"ename":"L1"},"targetId":1,"targetDto":{"id":1,"type":null,"name":"减脂","updateTime":1607673809453,"ename":null},"partId":1,"partDto":{"id":1,"type":null,"name":"全身","updateTime":1607673781969,"ename":null},"description":"测试测试","dataState":2,"createTime":1605254544449,"updateTime":1605254544449}
+/// playBackUrl : null
 /// videoUrl : null
-/// startTime : "2020-11-16 11:00"
-/// endTime : "2020-11-16 11:10"
+/// startTime : "2020-11-16 09:00"
+/// endTime : "2020-11-16 10:00"
 /// videoSeconds : null
-/// movementDtos : null
+/// movementDtos : [{"id":1,"name":"动作名","point":100,"picUrl":"http://devpic.aimymusic.com/ifcms/12萌妹子.jpg","levelId":1,"levelDto":{"id":1,"type":null,"name":"零基础","updateTime":1608014617889,"ename":"L0"},"partId":1,"partDto":{"id":1,"type":null,"name":"减脂","updateTime":1607673809453,"ename":null},"calories":1000,"expectHeartRate":100,"steps":"步骤、自己猜","breathingRhythm":"呼吸节奏","movementFeeling":"动作感觉","positionId":1,"muscleId":1,"detail":null,"state":1,"creatorId":1008611,"dataState":2,"createTime":1607570185761,"updateTime":1607570185761,"positionDto":{"url":"http://devpic.aimymusic.com/ifcms/shoubi.jpg","content":"手臂"},"muscleDto":{"url":"http://devpic.aimymusic.com/ifcms/gongertouji.jpg","content":"肱二头肌"},"amount":10,"seconds":null,"unit":"次","aicheckSteps":[{"url":"www.baidu.com","content":"这是内容"}]}]
 /// isBooked : 0
 /// totalTrainingTime : 0
 /// totalTrainingAmount : 0
@@ -45,13 +48,17 @@ class LiveModel {
     } else {
       if (startTime.isNotEmpty) {
         DateTime dateTime = DateUtil.stringToDateTime(this.startTime);
+        DateTime endTime = DateUtil.stringToDateTime(this.endTime);
         var startTime = dateTime.add(new Duration(minutes: -15));
         if (DateUtil.compareNowDate(startTime)) {
           this.playType = 2;
           return "预约";
-        } else {
+        } else if (DateUtil.compareNowDate(endTime)) {
           this.playType = 1;
           return "去上课";
+        } else {
+          this.playType = 3;
+          return "回放";
         }
       } else {
         this.playType = 2;
@@ -68,11 +75,12 @@ class LiveModel {
   UserModel _coachDto;
   int _coursewareId;
   CoursewareDto _coursewareDto;
+  dynamic _playBackUrl;
   dynamic _videoUrl;
   String _startTime;
   String _endTime;
   dynamic _videoSeconds;
-  dynamic _movementDtos;
+  List<MovementDtos> _movementDtos;
   int _isBooked;
   int _totalTrainingTime;
   int _totalTrainingAmount;
@@ -101,6 +109,8 @@ class LiveModel {
 
   CoursewareDto get coursewareDto => _coursewareDto;
 
+  dynamic get playBackUrl => _playBackUrl;
+
   dynamic get videoUrl => _videoUrl;
 
   String get startTime => _startTime;
@@ -109,7 +119,7 @@ class LiveModel {
 
   dynamic get videoSeconds => _videoSeconds;
 
-  dynamic get movementDtos => _movementDtos;
+  List<MovementDtos> get movementDtos => _movementDtos;
 
   int get isBooked => _isBooked;
 
@@ -133,31 +143,32 @@ class LiveModel {
 
   int get updateTime => _updateTime;
 
-  LiveModel(
-      {int id,
-      int courseId,
-      String name,
-      int creatorId,
-      int coachId,
-      UserModel coachDto,
-      int coursewareId,
-      CoursewareDto coursewareDto,
-      dynamic videoUrl,
-      String startTime,
-      String endTime,
-      dynamic videoSeconds,
-      dynamic movementDtos,
-      int isBooked,
-      int totalTrainingTime,
-      int totalTrainingAmount,
-      int totalCalories,
-      dynamic joinAmount,
-      dynamic commentCount,
-      dynamic laudCount,
-      dynamic finishAmount,
-      int dataState,
-      int createTime,
-      int updateTime}) {
+  LiveModel({
+    int id,
+    int courseId,
+    String name,
+    int creatorId,
+    int coachId,
+    UserModel coachDto,
+    int coursewareId,
+    CoursewareDto coursewareDto,
+    dynamic playBackUrl,
+    dynamic videoUrl,
+    String startTime,
+    String endTime,
+    dynamic videoSeconds,
+    List<MovementDtos> movementDtos,
+    int isBooked,
+    int totalTrainingTime,
+    int totalTrainingAmount,
+    int totalCalories,
+    dynamic joinAmount,
+    dynamic commentCount,
+    dynamic laudCount,
+    dynamic finishAmount,
+    int dataState,
+    int createTime,
+    int updateTime}) {
     _id = id;
     _courseId = courseId;
     _name = name;
@@ -166,6 +177,7 @@ class LiveModel {
     _coachDto = coachDto;
     _coursewareId = coursewareId;
     _coursewareDto = coursewareDto;
+    _playBackUrl = playBackUrl;
     _videoUrl = videoUrl;
     _startTime = startTime;
     _endTime = endTime;
@@ -194,14 +206,19 @@ class LiveModel {
     _coachDto =
     json["coachDto"] != null ? UserModel.fromJson(json["coachDto"]) : null;
     _coursewareId = json["coursewareId"];
-    _coursewareDto = json["coursewareDto"] != null
-        ? CoursewareDto.fromJson(json["coursewareDto"])
-        : null;
+    _coursewareDto = json["coursewareDto"] != null ? CoursewareDto.fromJson(
+        json["coursewareDto"]) : null;
+    _playBackUrl = json["playBackUrl"];
     _videoUrl = json["videoUrl"];
     _startTime = json["startTime"];
     _endTime = json["endTime"];
     _videoSeconds = json["videoSeconds"];
-    _movementDtos = json["movementDtos"];
+    if (json["movementDtos"] != null) {
+      _movementDtos = [];
+      json["movementDtos"].forEach((v) {
+        _movementDtos.add(MovementDtos.fromJson(v));
+      });
+    }
     _isBooked = json["isBooked"];
     _totalTrainingTime = json["totalTrainingTime"];
     _totalTrainingAmount = json["totalTrainingAmount"];
@@ -229,11 +246,14 @@ class LiveModel {
     if (_coursewareDto != null) {
       map["coursewareDto"] = _coursewareDto.toJson();
     }
+    map["playBackUrl"] = _playBackUrl;
     map["videoUrl"] = _videoUrl;
     map["startTime"] = _startTime;
     map["endTime"] = _endTime;
     map["videoSeconds"] = _videoSeconds;
-    map["movementDtos"] = _movementDtos;
+    if (_movementDtos != null) {
+      map["movementDtos"] = _movementDtos.map((v) => v.toJson()).toList();
+    }
     map["isBooked"] = _isBooked;
     map["totalTrainingTime"] = _totalTrainingTime;
     map["totalTrainingAmount"] = _totalTrainingAmount;
@@ -247,7 +267,293 @@ class LiveModel {
     map["updateTime"] = _updateTime;
     return map;
   }
+
 }
+
+/// id : 1
+/// name : "动作名"
+/// point : 100
+/// picUrl : "http://devpic.aimymusic.com/ifcms/12萌妹子.jpg"
+/// levelId : 1
+/// levelDto : {"id":1,"type":null,"name":"零基础","updateTime":1608014617889,"ename":"L0"}
+/// partId : 1
+/// partDto : {"id":1,"type":null,"name":"减脂","updateTime":1607673809453,"ename":null}
+/// calories : 1000
+/// expectHeartRate : 100
+/// steps : "步骤、自己猜"
+/// breathingRhythm : "呼吸节奏"
+/// movementFeeling : "动作感觉"
+/// positionId : 1
+/// muscleId : 1
+/// detail : null
+/// state : 1
+/// creatorId : 1008611
+/// dataState : 2
+/// createTime : 1607570185761
+/// updateTime : 1607570185761
+/// positionDto : {"url":"http://devpic.aimymusic.com/ifcms/shoubi.jpg","content":"手臂"}
+/// muscleDto : {"url":"http://devpic.aimymusic.com/ifcms/gongertouji.jpg","content":"肱二头肌"}
+/// amount : 10
+/// seconds : null
+/// unit : "次"
+/// aicheckSteps : [{"url":"www.baidu.com","content":"这是内容"}]
+
+class MovementDtos {
+  int _id;
+  String _name;
+  int _point;
+  String _picUrl;
+  int _levelId;
+  TargetDto _levelDto;
+  int _partId;
+  TargetDto _partDto;
+  int _calories;
+  int _expectHeartRate;
+  String _steps;
+  String _breathingRhythm;
+  String _movementFeeling;
+  int _positionId;
+  int _muscleId;
+  dynamic _detail;
+  int _state;
+  int _creatorId;
+  int _dataState;
+  int _createTime;
+  int _updateTime;
+  MuscleDto _positionDto;
+  MuscleDto _muscleDto;
+  int _amount;
+  dynamic _seconds;
+  String _unit;
+  List<MuscleDto> _aicheckSteps;
+
+  int get id => _id;
+
+  String get name => _name;
+
+  int get point => _point;
+
+  String get picUrl => _picUrl;
+
+  int get levelId => _levelId;
+
+  TargetDto get levelDto => _levelDto;
+
+  int get partId => _partId;
+
+  TargetDto get partDto => _partDto;
+
+  int get calories => _calories;
+
+  int get expectHeartRate => _expectHeartRate;
+
+  String get steps => _steps;
+
+  String get breathingRhythm => _breathingRhythm;
+
+  String get movementFeeling => _movementFeeling;
+
+  int get positionId => _positionId;
+
+  int get muscleId => _muscleId;
+
+  dynamic get detail => _detail;
+
+  int get state => _state;
+
+  int get creatorId => _creatorId;
+
+  int get dataState => _dataState;
+
+  int get createTime => _createTime;
+
+  int get updateTime => _updateTime;
+
+  MuscleDto get positionDto => _positionDto;
+
+  MuscleDto get muscleDto => _muscleDto;
+
+  int get amount => _amount;
+
+  dynamic get seconds => _seconds;
+
+  String get unit => _unit;
+
+  List<MuscleDto> get aicheckSteps => _aicheckSteps;
+
+  MovementDtos({
+    int id,
+    String name,
+    int point,
+    String picUrl,
+    int levelId,
+    TargetDto levelDto,
+    int partId,
+    TargetDto partDto,
+    int calories,
+    int expectHeartRate,
+    String steps,
+    String breathingRhythm,
+    String movementFeeling,
+    int positionId,
+    int muscleId,
+    dynamic detail,
+    int state,
+    int creatorId,
+    int dataState,
+    int createTime,
+    int updateTime,
+    MuscleDto positionDto,
+    MuscleDto muscleDto,
+    int amount,
+    dynamic seconds,
+    String unit,
+    List<MuscleDto> aicheckSteps}) {
+    _id = id;
+    _name = name;
+    _point = point;
+    _picUrl = picUrl;
+    _levelId = levelId;
+    _levelDto = levelDto;
+    _partId = partId;
+    _partDto = partDto;
+    _calories = calories;
+    _expectHeartRate = expectHeartRate;
+    _steps = steps;
+    _breathingRhythm = breathingRhythm;
+    _movementFeeling = movementFeeling;
+    _positionId = positionId;
+    _muscleId = muscleId;
+    _detail = detail;
+    _state = state;
+    _creatorId = creatorId;
+    _dataState = dataState;
+    _createTime = createTime;
+    _updateTime = updateTime;
+    _positionDto = positionDto;
+    _muscleDto = muscleDto;
+    _amount = amount;
+    _seconds = seconds;
+    _unit = unit;
+    _aicheckSteps = aicheckSteps;
+  }
+
+  MovementDtos.fromJson(dynamic json) {
+    _id = json["id"];
+    _name = json["name"];
+    _point = json["point"];
+    _picUrl = json["picUrl"];
+    _levelId = json["levelId"];
+    _levelDto =
+    json["levelDto"] != null ? TargetDto.fromJson(json["levelDto"]) : null;
+    _partId = json["partId"];
+    _partDto =
+    json["partDto"] != null ? TargetDto.fromJson(json["partDto"]) : null;
+    _calories = json["calories"];
+    _expectHeartRate = json["expectHeartRate"];
+    _steps = json["steps"];
+    _breathingRhythm = json["breathingRhythm"];
+    _movementFeeling = json["movementFeeling"];
+    _positionId = json["positionId"];
+    _muscleId = json["muscleId"];
+    _detail = json["detail"];
+    _state = json["state"];
+    _creatorId = json["creatorId"];
+    _dataState = json["dataState"];
+    _createTime = json["createTime"];
+    _updateTime = json["updateTime"];
+    _positionDto = json["positionDto"] != null
+        ? MuscleDto.fromJson(json["positionDto"])
+        : null;
+    _muscleDto =
+    json["muscleDto"] != null ? MuscleDto.fromJson(json["muscleDto"]) : null;
+    _amount = json["amount"];
+    _seconds = json["seconds"];
+    _unit = json["unit"];
+    if (json["aicheckSteps"] != null) {
+      _aicheckSteps = [];
+      json["aicheckSteps"].forEach((v) {
+        _aicheckSteps.add(MuscleDto.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    var map = <String, dynamic>{};
+    map["id"] = _id;
+    map["name"] = _name;
+    map["point"] = _point;
+    map["picUrl"] = _picUrl;
+    map["levelId"] = _levelId;
+    if (_levelDto != null) {
+      map["levelDto"] = _levelDto.toJson();
+    }
+    map["partId"] = _partId;
+    if (_partDto != null) {
+      map["partDto"] = _partDto.toJson();
+    }
+    map["calories"] = _calories;
+    map["expectHeartRate"] = _expectHeartRate;
+    map["steps"] = _steps;
+    map["breathingRhythm"] = _breathingRhythm;
+    map["movementFeeling"] = _movementFeeling;
+    map["positionId"] = _positionId;
+    map["muscleId"] = _muscleId;
+    map["detail"] = _detail;
+    map["state"] = _state;
+    map["creatorId"] = _creatorId;
+    map["dataState"] = _dataState;
+    map["createTime"] = _createTime;
+    map["updateTime"] = _updateTime;
+    if (_positionDto != null) {
+      map["positionDto"] = _positionDto.toJson();
+    }
+    if (_muscleDto != null) {
+      map["muscleDto"] = _muscleDto.toJson();
+    }
+    map["amount"] = _amount;
+    map["seconds"] = _seconds;
+    map["unit"] = _unit;
+    if (_aicheckSteps != null) {
+      map["aicheckSteps"] = _aicheckSteps.map((v) => v.toJson()).toList();
+    }
+    return map;
+  }
+
+}
+
+/// url : "http://devpic.aimymusic.com/ifcms/gongertouji.jpg"
+/// content : "肱二头肌"
+
+class MuscleDto {
+  String _url;
+  String _content;
+
+  String get url => _url;
+
+  String get content => _content;
+
+  MuscleDto({
+    String url,
+    String content}) {
+    _url = url;
+    _content = content;
+  }
+
+  MuscleDto.fromJson(dynamic json) {
+    _url = json["url"];
+    _content = json["content"];
+  }
+
+  Map<String, dynamic> toJson() {
+    var map = <String, dynamic>{};
+    map["url"] = _url;
+    map["content"] = _content;
+    return map;
+  }
+
+}
+
 
 /// id : 1
 /// name : "测试一"
@@ -255,11 +561,11 @@ class LiveModel {
 /// seconds : 300000
 /// calories : 167
 /// levelId : 2
-/// levelDto : {"id":2,"name":"初级","updateTime":1607568828227}
+/// levelDto : {"id":2,"type":null,"name":"初级","updateTime":1608014618089,"ename":"L1"}
 /// targetId : 1
-/// targetDto : {"id":1,"name":"减脂","updateTime":1607422868082}
+/// targetDto : {"id":1,"type":null,"name":"减脂","updateTime":1607673809453,"ename":null}
 /// partId : 1
-/// partDto : {"id":1,"name":"全身","updateTime":1607422919497}
+/// partDto : {"id":1,"type":null,"name":"全身","updateTime":1607673781969,"ename":null}
 /// description : "测试测试"
 /// dataState : 2
 /// createTime : 1605254544449
@@ -272,11 +578,11 @@ class CoursewareDto {
   int _seconds;
   int _calories;
   int _levelId;
-  LevelDto _levelDto;
+  TargetDto _levelDto;
   int _targetId;
   TargetDto _targetDto;
   int _partId;
-  PartDto _partDto;
+  TargetDto _partDto;
   String _description;
   int _dataState;
   int _createTime;
@@ -294,7 +600,7 @@ class CoursewareDto {
 
   int get levelId => _levelId;
 
-  LevelDto get levelDto => _levelDto;
+  TargetDto get levelDto => _levelDto;
 
   int get targetId => _targetId;
 
@@ -302,7 +608,7 @@ class CoursewareDto {
 
   int get partId => _partId;
 
-  PartDto get partDto => _partDto;
+  TargetDto get partDto => _partDto;
 
   String get description => _description;
 
@@ -312,22 +618,22 @@ class CoursewareDto {
 
   int get updateTime => _updateTime;
 
-  CoursewareDto(
-      {int id,
-      String name,
-      String picUrl,
-      int seconds,
-      int calories,
-      int levelId,
-      LevelDto levelDto,
-      int targetId,
-      TargetDto targetDto,
-      int partId,
-      PartDto partDto,
-      String description,
-      int dataState,
-      int createTime,
-      int updateTime}) {
+  CoursewareDto({
+    int id,
+    String name,
+    String picUrl,
+    int seconds,
+    int calories,
+    int levelId,
+    TargetDto levelDto,
+    int targetId,
+    TargetDto targetDto,
+    int partId,
+    TargetDto partDto,
+    String description,
+    int dataState,
+    int createTime,
+    int updateTime}) {
     _id = id;
     _name = name;
     _picUrl = picUrl;
@@ -353,14 +659,13 @@ class CoursewareDto {
     _calories = json["calories"];
     _levelId = json["levelId"];
     _levelDto =
-        json["levelDto"] != null ? LevelDto.fromJson(json["levelDto"]) : null;
+    json["levelDto"] != null ? TargetDto.fromJson(json["levelDto"]) : null;
     _targetId = json["targetId"];
-    _targetDto = json["targetDto"] != null
-        ? TargetDto.fromJson(json["targetDto"])
-        : null;
+    _targetDto =
+    json["targetDto"] != null ? TargetDto.fromJson(json["targetDto"]) : null;
     _partId = json["partId"];
     _partDto =
-        json["partDto"] != null ? PartDto.fromJson(json["partDto"]) : null;
+    json["partDto"] != null ? TargetDto.fromJson(json["partDto"]) : null;
     _description = json["description"];
     _dataState = json["dataState"];
     _createTime = json["createTime"];
@@ -392,112 +697,62 @@ class CoursewareDto {
     map["updateTime"] = _updateTime;
     return map;
   }
+
 }
 
-/// id : 1
-/// name : "全身"
-/// updateTime : 1607422919497
-
-class PartDto {
-  int _id;
-  String _name;
-  int _updateTime;
-
-  int get id => _id;
-
-  String get name => _name;
-
-  int get updateTime => _updateTime;
-
-  PartDto({int id, String name, int updateTime}) {
-    _id = id;
-    _name = name;
-    _updateTime = updateTime;
-  }
-
-  PartDto.fromJson(dynamic json) {
-    _id = json["id"];
-    _name = json["name"];
-    _updateTime = json["updateTime"];
-  }
-
-  Map<String, dynamic> toJson() {
-    var map = <String, dynamic>{};
-    map["id"] = _id;
-    map["name"] = _name;
-    map["updateTime"] = _updateTime;
-    return map;
-  }
-}
 
 /// id : 1
+/// type : null
 /// name : "减脂"
-/// updateTime : 1607422868082
+/// updateTime : 1607673809453
+/// ename : null
 
 class TargetDto {
   int _id;
+  dynamic _type;
   String _name;
   int _updateTime;
+  dynamic _ename;
 
   int get id => _id;
+
+  dynamic get type => _type;
 
   String get name => _name;
 
   int get updateTime => _updateTime;
 
-  TargetDto({int id, String name, int updateTime}) {
+  dynamic get ename => _ename;
+
+  TargetDto({
+    int id,
+    dynamic type,
+    String name,
+    int updateTime,
+    dynamic ename}) {
     _id = id;
+    _type = type;
     _name = name;
     _updateTime = updateTime;
+    _ename = ename;
   }
 
   TargetDto.fromJson(dynamic json) {
     _id = json["id"];
+    _type = json["type"];
     _name = json["name"];
     _updateTime = json["updateTime"];
+    _ename = json["ename"];
   }
 
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
     map["id"] = _id;
+    map["type"] = _type;
     map["name"] = _name;
     map["updateTime"] = _updateTime;
+    map["ename"] = _ename;
     return map;
   }
-}
 
-/// id : 2
-/// name : "初级"
-/// updateTime : 1607568828227
-
-class LevelDto {
-  int _id;
-  String _name;
-  int _updateTime;
-
-  int get id => _id;
-
-  String get name => _name;
-
-  int get updateTime => _updateTime;
-
-  LevelDto({int id, String name, int updateTime}) {
-    _id = id;
-    _name = name;
-    _updateTime = updateTime;
-  }
-
-  LevelDto.fromJson(dynamic json) {
-    _id = json["id"];
-    _name = json["name"];
-    _updateTime = json["updateTime"];
-  }
-
-  Map<String, dynamic> toJson() {
-    var map = <String, dynamic>{};
-    map["id"] = _id;
-    map["name"] = _name;
-    map["updateTime"] = _updateTime;
-    return map;
-  }
 }

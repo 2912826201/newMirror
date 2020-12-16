@@ -1,15 +1,8 @@
-import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
-import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/api/live_broadcast/live_api.dart';
 import 'package:mirror/data/model/live_model.dart';
-import 'package:mirror/route/router.dart';
-import 'package:mirror/util/toast_util.dart';
-import 'package:mirror/util/date_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import 'live_broadcast_item_page.dart';
 import 'live_broadcast_title_page.dart';
@@ -152,16 +145,15 @@ class LiveBroadcastPageState extends State<LiveBroadcastPage> {
 }
 
 
+// ignore: must_be_immutable
 class BodyPage extends StatelessWidget {
-
-  List<DateTime> dates;
-  PageController controller;
+  final List<DateTime> dates;
+  final PageController controller;
   void Function(int) pageChangeCall;
 
   BodyPage({this.dates, this.controller, this.pageChangeCall});
 
   var pageViewItemList = <Widget>[];
-
 
   Widget _buildItemPage(int pos) {
     return pageViewItemList[pos];

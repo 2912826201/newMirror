@@ -631,7 +631,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       print("courseCommentHot");
       //todo 加载评论-*--没有分页加载只有第一页的
       if (courseCommentHot == null) {
-        Map<String, dynamic> commentModel = await queryListByHot(
+        Map<String, dynamic> commentModel = await queryListByHot2(
             targetId: courseId, targetType: 1, page: 1, size: 10);
         if (commentModel != null) {
           courseCommentHot = CommentModel.fromJson(commentModel);

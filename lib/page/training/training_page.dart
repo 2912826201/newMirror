@@ -3,6 +3,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/no_blue_effect_behavior.dart';
 
 import '../test_page.dart';
 
@@ -12,6 +13,7 @@ class TrainingPage extends StatefulWidget {
 }
 
 class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMixin {
+  List<int> _courseList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   double _screenWidth = 0.0;
 
   @override
@@ -39,7 +41,17 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
                 ),
               ],
             )),
-        body: _buildTopView());
+        body: ScrollConfiguration(
+            behavior: NoBlueEffectBehavior(),
+            child: ListView.builder(
+                itemCount: _courseList.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == 0) {
+                    return _buildTopView();
+                  } else {
+                    return _buildCourseItem(index);
+                  }
+                })));
   }
 
   //我的课程列表上方的所有部分
@@ -277,7 +289,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
 
   Widget _buildCourseTitle() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 24, 16, 4),
+      padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -309,6 +321,16 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
             ),
           )
         ],
+      ),
+    );
+  }
+
+  Widget _buildCourseItem(int index) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      child: Container(
+        height: 90,
+        color: Colors.tealAccent,
       ),
     );
   }

@@ -25,11 +25,13 @@ class HomeFeedModel {
   List<AtUsersModel> atUsers = []; //@用户列表
   TopicDtoModel topicDto; //话题信息
   CourseDtoModel courseDto; //课程信息
+  int isFollow = 0; // 是否关注
   int isLaud = 0; // 是否点赞
   List<String> laudUserInfo = []; // 点赞头像
   List<CommentDtoModel> comments = [];
   String address;
-
+ // 添加字段
+  int totalCount = -1;
   HomeFeedModel({
     this.id,
     this.type,
@@ -50,6 +52,7 @@ class HomeFeedModel {
     this.atUsers,
     this.topicDto,
     this.courseDto,
+    this.isFollow,
     this.isLaud,
     this.laudUserInfo,
     this.comments,
@@ -103,6 +106,7 @@ class HomeFeedModel {
       });
     }
     isLaud = json["isLaud"];
+    isFollow = json["isFollow"];
     address = json["address"];
   }
 
@@ -128,10 +132,15 @@ class HomeFeedModel {
     map["topicDto"] = topicDto;
     map["courseDto"] = courseDto;
     map["isLaud"] = isLaud;
+    map["isFollow"] = isFollow;
     map["laudUserInfo"] = laudUserInfo;
     map["comments"] = comments;
     map["address"] = address;
     return map;
+  }
+  @override
+  String toString() {
+    return toJson().toString();
   }
 }
 
@@ -226,6 +235,10 @@ class AtUsersModel {
     map["type"] = type;
     return map;
   }
+  @override
+  String toString() {
+    return toJson().toString();
+  }
 }
 
 // 话题model
@@ -291,6 +304,10 @@ class TopicDtoModel {
     map["updateTime"] = updateTime;
     map["isFollow"] = isFollow;
     return map;
+  }
+  @override
+  String toString() {
+    return toJson().toString();
   }
 }
 
@@ -382,6 +399,10 @@ class CourseDtoModel {
     map["finishAmount"] = finishAmount;
     return map;
   }
+  @override
+  String toString() {
+    return toJson().toString();
+  }
 }
 
 class CommentDtoModel {
@@ -403,19 +424,23 @@ class CommentDtoModel {
   int replyId;
   String replyName;
   int delete;
-  // 评论接口返回在外层
-  int totalCount = 0;
+  int pullNumber = 0;
+
 // 是否显示隐藏按钮
-  bool isShowHiddenButtons;
+  bool isShowHiddenButtons = false;
 
   // 保存的总条数
   int initCount;
 
-  // 是否显示所有子评论
-  bool isShowAllComment;
-
+  // // 是否显示所有子评论
+  // bool isShowAllComment = false;
+  // 是否显示交互按钮
+  bool isShowInteractiveButton = false;
   // 是否点击过隐藏按钮
-  bool isClickHideButton;
+  bool isClickHideButton = false;
+  // 添加字段
+  int totalCount = -1;
+  int initQue = 0;
   CommentDtoModel(
       {this.id,
       this.targetId,
@@ -499,5 +524,9 @@ class CommentDtoModel {
     map["atUsers"] = atUsers;
     map["replys"] = replys;
     return map;
+  }
+  @override
+  String toString() {
+    return toJson().toString();
   }
 }

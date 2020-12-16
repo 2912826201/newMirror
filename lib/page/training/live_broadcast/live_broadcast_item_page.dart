@@ -12,13 +12,12 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:mirror/api/live_broadcast/live_api.dart';
 
 import 'live_broadcast_page.dart';
 
 /// 直播日程页
 class LiveBroadcastItemPage extends StatefulWidget {
-  DateTime dataDate;
+  final DateTime dataDate;
 
   LiveBroadcastItemPage({
     Key key,
@@ -63,7 +62,6 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   void initState() {
     super.initState();
     //获取本地日历已经预约的课程
-    print("====initState-${dataDate}");
     loadingStatus = LoadingStatus.STATUS_LOADING;
     liveModelArray.clear();
     getLiveModelData();
@@ -177,21 +175,25 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     var imageWidth = 120;
     var imageHeight = 90;
     var columnArray = <Widget>[];
-    var i = 0;
     heroTagArray.clear();
-    for (var value in liveList) {
-      columnArray.add(Container(
-        height: imageHeight.toDouble(),
-        width: MediaQuery.of(context).size.width,
-        margin: const EdgeInsets.only(left: 16, right: 16, top: 6, bottom: 6),
-        child: Row(
-          children: [
-            _getItemLeftImageUi(value, imageWidth, imageHeight, i),
-            _getRightDataUi(value, imageWidth, imageHeight, isOld, i),
-          ],
+    for (int i = 0; i < liveList.length; i++) {
+      columnArray.add(GestureDetector(
+        child: Container(
+          color: AppColor.transparent,
+          height: imageHeight.toDouble(),
+          width: MediaQuery.of(context).size.width,
+          margin: const EdgeInsets.only(left: 16, right: 16, top: 6, bottom: 6),
+          child: Row(
+            children: [
+              _getItemLeftImageUi(liveList[i], imageWidth, imageHeight, i),
+              _getRightDataUi(liveList[i], imageWidth, imageHeight, isOld, i),
+            ],
+          ),
         ),
+        onTap: () {
+          gotoNavigateToLiveDetail(liveList[i], i);
+        },
       ));
-      i++;
     }
 
     return Container(
@@ -435,8 +437,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
           SizedBox(
             height: 14,
           ),
-          Text(
-            "${string}暂无直播课程，去看看其他的吧~",
+          Text(string + "暂无直播课程，去看看其他的吧~",
             style: TextStyle(
               fontSize: 14,
               color: AppColor.textSecondary,
@@ -472,48 +473,6 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   //     }
   //   }
   // }
-
-  //点击item按钮判断怎么响应
-  void onClickItem(LiveModel value, int index) {
-    if (value.playType == 2) {
-      showCupertinoDialog(
-          context: context,
-          builder: (context) {
-            return CupertinoAlertDialog(
-              title: Text('访问日历'),
-              content: Text('’IFITNESS‘想访问您的日历，才能添加提醒事项，以便开播前提醒'),
-              actions: <Widget>[
-                CupertinoDialogAction(
-                  child: Text('不允许'),
-                  onPressed: () {
-                    _bookLiveCourse(value, index, false);
-                    Navigator.pop(context);
-                  },
-                ),
-                CupertinoDialogAction(
-                  child: Text('好'),
-                  onPressed: () {
-                    _bookLiveCourse(value, index, true);
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            );
-          });
-    } else if (value.playType == 1) {
-      ToastShow.show(msg: "点击-去上课-应该直接去直播间", context: context);
-      //todo 先这样实现---以后再改为路由
-      LiveBroadcastPage.liveModel = value;
-      AppRouter.navigateToLiveDetail(
-          context, heroTagArray[index], value.id, value.courseId);
-    } else {
-      ToastShow.show(msg: "去直播详情页", context: context);
-      //todo 先这样实现---以后再改为路由
-      LiveBroadcastPage.liveModel = value;
-      AppRouter.navigateToLiveDetail(
-          context, heroTagArray[index], value.id, value.courseId);
-    }
-  }
 
   void _bookLiveCourse(LiveModel value, int index, bool isCalendar) async {
     String alert = "";
@@ -594,7 +553,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
         createEvent(result.data, _deviceCalendarPlugin, value, alert, isBook);
       } else {
         ToastShow.show(
-            msg: "${alert}，但是${isBook ? "添加" : "删除"}日历提醒失败", context: context);
+            msg: alert + "，但是${isBook ? "添加" : "删除"}日历提醒失败", context: context);
       }
     } else {
       createEvent(
@@ -619,11 +578,11 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     await _deviceCalendarPlugin.createOrUpdateEvent(_event);
     if (createEventResult.isSuccess) {
       ToastShow.show(
-          msg: "${alert}，${isBook ? "添加" : "删除"}日历成功", context: context);
+          msg: alert + "，${isBook ? "添加" : "删除"}日历成功", context: context);
       // _retrieveCalendarEvents();
     } else {
       ToastShow.show(
-          msg: "${alert}，${isBook ? "添加" : "删除"}日历失败", context: context);
+          msg: alert + "，${isBook ? "添加" : "删除"}日历失败", context: context);
     }
   }
 
@@ -679,8 +638,53 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   //给hero的tag设置唯一的值
   Object getHeroTag(LiveModel liveModel, index) {
     String string =
-        "heroTag_${DateUtil.getNowDateMs()}_${Random().nextInt(100000)}_${liveModel.id}_${index}";
+        "heroTag_${DateUtil.getNowDateMs()}_${Random().nextInt(
+            100000)}_${liveModel.id}_" + index.toString();
     heroTagArray.add(string);
     return string;
+  }
+
+
+  //点击item按钮判断怎么响应
+  void onClickItem(LiveModel value, int index) {
+    if (value.playType == 2) {
+      showCupertinoDialog(
+          context: context,
+          builder: (context) {
+            return CupertinoAlertDialog(
+              title: Text('访问日历'),
+              content: Text('程序想访问您的日历，才能添加提醒事项，以便开播前提醒'),
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  child: Text('不允许'),
+                  onPressed: () {
+                    _bookLiveCourse(value, index, false);
+                    Navigator.pop(context);
+                  },
+                ),
+                CupertinoDialogAction(
+                  child: Text('好'),
+                  onPressed: () {
+                    _bookLiveCourse(value, index, true);
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            );
+          });
+    } else if (value.playType == 1) {
+      ToastShow.show(msg: "点击-去上课-应该直接去直播间", context: context);
+      gotoNavigateToLiveDetail(value, index);
+    } else {
+      ToastShow.show(msg: "去直播详情页", context: context);
+      gotoNavigateToLiveDetail(value, index);
+    }
+  }
+
+  void gotoNavigateToLiveDetail(LiveModel value, int index) {
+    //todo 先这样实现---以后再改为路由
+    LiveBroadcastPage.liveModel = value;
+    AppRouter.navigateToLiveDetail(
+        context, heroTagArray[index], value.id, value.courseId);
   }
 }

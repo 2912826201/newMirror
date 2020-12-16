@@ -61,6 +61,14 @@ class DateUtil{
     return formatted;
   }
 
+  //获取提供日期的日期
+  //列如：12月10日
+  static String formatDateNoYearString(DateTime dateTime) {
+    var formatter = new DateFormat('MM月dd日');
+    String formatted = formatter.format(dateTime);
+    return formatted;
+  }
+
   //比较两个日期谁大
   //第一个大返回 true
   //第二个大返回 false
@@ -84,6 +92,15 @@ class DateUtil{
 
   ///获取当前时间的毫秒级
   static int getNowDateMs() {
-    return DateTime.now().millisecondsSinceEpoch;
+    return DateTime
+        .now()
+        .millisecondsSinceEpoch;
+  }
+
+  /// get DateTime By Milliseconds.
+  static DateTime getDateTimeByMs(int ms, {bool isUtc = false}) {
+    return ms == null
+        ? null
+        : DateTime.fromMillisecondsSinceEpoch(ms, isUtc: isUtc);
   }
 }
