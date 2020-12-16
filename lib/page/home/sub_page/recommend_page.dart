@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/course_model.dart';
