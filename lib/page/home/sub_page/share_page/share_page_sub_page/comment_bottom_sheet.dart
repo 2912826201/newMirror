@@ -68,7 +68,7 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
         loadStatus = LoadingStatus.STATUS_LOADING;
       });
     }
-    List<CommentDtoModel> modelList = await queryListByHot1(
+    List<CommentDtoModel> modelList = await queryListByHot(
         targetId: widget.feedId, targetType: 0, page: this.dataPage, size: 20);
 
     print("打印返回值￥%${modelList.isNotEmpty}");
@@ -416,9 +416,12 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
     pageCount += 1;
     // 总条数大于三每次点击取三条
     if (widget.commentDtoModel.initCount  > 3)  {
-      Map<String, dynamic> model =
-      await queryListByHot(targetId:widget.commentDtoModel.id, targetType: 2, page: this.pageCount, size: 3);
-      if(model["list"] != null) {
+      Map<String, dynamic> model = await queryListByHot2(
+          targetId: widget.commentDtoModel.id,
+          targetType: 2,
+          page: this.pageCount,
+          size: 3);
+      if (model["list"] != null) {
         model["list"].forEach((v) {
           widget.replys.add(CommentDtoModel.fromJson(v));
         });
@@ -428,8 +431,11 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
       // 总条数不足三条把剩下条数取完，切换按钮
       if (widget.commentDtoModel.initCount > 0) {
         Map<String, dynamic> model =
-        await queryListByHot(targetId:widget.commentDtoModel.id, targetType: 2, page: this.pageCount, size: widget.commentDtoModel.initCount);
-        if(model["list"] != null) {
+        await queryListByHot2(targetId: widget.commentDtoModel.id,
+            targetType: 2,
+            page: this.pageCount,
+            size: widget.commentDtoModel.initCount);
+        if (model["list"] != null) {
           model["list"].forEach((v) {
             widget.replys.add(CommentDtoModel.fromJson(v));
           });

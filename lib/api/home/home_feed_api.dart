@@ -191,8 +191,11 @@ Future<Map> publish(
 }
 
 // 获取评论列表热度
-Future<Map> queryListByHot(
-    {@required int targetId, @required int targetType, @required int page, @required int size}) async {
+Future<Map> queryListByHot2(
+    {@required int targetId,
+    @required int targetType,
+    @required int page,
+    @required int size}) async {
   Map<String, dynamic> params = {};
   params["targetId"] = targetId;
   params["targetType"] = targetType;
@@ -206,7 +209,7 @@ Future<Map> queryListByHot(
   }
 }
 // 更新获取评论列表热度接口返回数据方式
-Future<List> queryListByHot1(
+Future<List> queryListByHot(
     {@required int targetId, @required int targetType, @required int page, @required int size}) async {
   Map<String, dynamic> params = {};
   params["targetId"] = targetId;

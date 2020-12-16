@@ -807,7 +807,6 @@ class LiveDetailPageState extends State<LiveDetailPage> {
       offstage: commentListSubSettingList[index].isFold,
       child: widget,
     );
-    //todo 不知道是不是要动画---折叠动画
     // if(commentListSubSettingList[index].subCommentAllHeight==null||commentListSubSettingList[index].subCommentAllHeight<0) {
     //   return Offstage(
     //     offstage: commentListSubSettingList[index].isFold,
@@ -1219,7 +1218,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     if (isHotOrTime) {
       //todo 加载评论-*--没有分页加载只有第一页的
       if (courseCommentHot == null) {
-        Map<String, dynamic> commentModel = await queryListByHot(
+        Map<String, dynamic> commentModel = await queryListByHot2(
             targetId: courseId,
             targetType: 1,
             page: courseCommentPageHot,
@@ -1300,8 +1299,14 @@ class LiveDetailPageState extends State<LiveDetailPage> {
       commentModelCallback: (CommentDtoModel model) {
         if (model != null) {
           if (targetId == liveModel.courseId) {
-            courseCommentHot.list.insert(0, model);
-            courseCommentTime.list.insert(0, model);
+            if (courseCommentHot != null) {
+              courseCommentHot.list.insert(0, model);
+              setCommentListSubSetting(courseCommentHot);
+            }
+            if (courseCommentTime != null) {
+              courseCommentTime.list.insert(0, model);
+              setCommentListSubSetting(courseCommentTime);
+            }
           } else {
             if (courseCommentHot != null) {
               for (int i = 0; i < courseCommentHot.list.length; i++) {
@@ -1398,9 +1403,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     int page = nowSubCommentPage + 1;
 
     try {
-      Map<String, dynamic> commentModel = await (isHotOrTime
-          ? queryListByHot
-          : queryListByTime)(targetId: targetId,
+      Map<String, dynamic> commentModel = await (isHotOrTime ? queryListByHot2 : queryListByTime)(targetId: targetId,
           targetType: 2,
           page: page,
           size: subCommentPageSize);
@@ -1457,9 +1460,14 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   //加载更多的评论
   void _onLoading() async {
     Future.delayed(Duration(milliseconds: 500), () async{
-      Map<String, dynamic> mapModel = await (isHotOrTime?queryListByHot:queryListByTime)(targetId: courseId, targetType: 1, page: (isHotOrTime?courseCommentPageHot:courseCommentPageTime), size: courseCommentPageSize);
+      Map<String, dynamic> mapModel = await (isHotOrTime
+          ? queryListByHot2
+          : queryListByTime)(targetId: courseId,
+          targetType: 1,
+          page: (isHotOrTime ? courseCommentPageHot : courseCommentPageTime),
+          size: courseCommentPageSize);
       if (mapModel != null) {
-        CommentModel commentModel=CommentModel.fromJson(mapModel);
+        CommentModel commentModel = CommentModel.fromJson(mapModel);
         if (commentModel == null || commentModel.list == null ||
             commentModel.list.length < 1) {
           _refreshController.loadNoData();
@@ -1502,6 +1510,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     }
   }
 
+  //点赞
   _laudCommentData(CommentModel commentModel, int commentId, bool isHotOrTime,
       bool isLaud) {
     if (commentModel != null) {
