@@ -9,8 +9,6 @@ class FeedMapNotifier extends ChangeNotifier {
 
   // 点击评论图标记录此动态的Id用于请求评论列表
   int feedId;
-  // 是否是点击按钮更新的视图
-  bool isClickButtonUpdate = false;
 // 更新全局动态map
   void updateFeedMap(List<HomeFeedModel> _feedList) {
     _feedList.forEach((element) {
@@ -33,7 +31,30 @@ class FeedMapNotifier extends ChangeNotifier {
     feedMap[id].isLaud = laud;
     notifyListeners();
   }
-
+// 父评论点赞
+  void mainCommentLaud(int laud, int id,int index) {
+    if (laud == 0) {
+      feedMap[id].comments[index].laudCount += 1;
+      laud = 1;
+    } else {
+      feedMap[id].comments[index].laudCount -= 1;
+      laud = 0;
+    }
+    feedMap[id].comments[index].isLaud = laud;
+    notifyListeners();
+  }
+  // 子评论点赞
+  void subCommentLaud(int laud, int id,int mainIndex ,int subIndex) {
+    if (laud == 0) {
+      feedMap[id].comments[mainIndex].replys[subIndex].laudCount += 1;
+      laud = 1;
+    } else {
+      feedMap[id].comments[mainIndex].replys[subIndex].laudCount -= 1;
+      laud = 0;
+    }
+    feedMap[id].comments[mainIndex].replys[subIndex].isLaud = laud;
+    notifyListeners();
+  }
 //  发布动态评论
   void feedPublishComment(CommentDtoModel comModel, int id) {
     print("评论model赋值");
@@ -61,26 +82,17 @@ class FeedMapNotifier extends ChangeNotifier {
   // 评论动态的评论
   void commentFeedCom(int id, int index, CommentDtoModel model) {
     feedMap[id].comments[index].replys.insert(0, model);
-
     feedMap[id].commentCount += 1;
     feedMap[id].totalCount += 1;
-    if(feedMap[id].comments[index].replyCount == 0) {
-      this.isClickButtonUpdate = false;
-    } else {
-      this.isClickButtonUpdate = true;
-    }
     feedMap[id].comments[index].replyCount += 1;
     notifyListeners();
   }
-
+  // // 评论动态子评论
+  // void commentFeedSubCom()
   // 关闭抽屉还原评论抽屉内的评论总数
   void clearTotalCount() {
     feedMap[feedId].totalCount = -1;
     notifyListeners();
   }
-  // 是否是点击按钮更新视图
- void updateClickButtonStatus(bool isClick) {
-    this.isClickButtonUpdate = isClick;
-    notifyListeners();
- }
+
 }

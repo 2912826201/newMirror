@@ -209,7 +209,6 @@ class GetTripleAreaState extends State<GetTripleArea> {
                 onTap: () {
                   widget.pc.open();
                   context.read<FeedMapNotifier>().changeFeeId(widget.model.id);
-                  context.read<FeedMapNotifier>().updateClickButtonStatus(true);
                 }))
       ],
     );
