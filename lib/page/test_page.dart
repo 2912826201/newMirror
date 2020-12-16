@@ -22,6 +22,7 @@ import 'package:provider/provider.dart';
 
 import 'profile/login_test_page.dart';
 import 'training/video_course/video_course_play_page.dart';
+import 'training/video_course/video_course_play_page2.dart';
 
 /// test_page
 /// Created by yangjiayi on 2020/10/27.
@@ -197,7 +198,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                       return LiveRoomPage();
                     }));
                   },
-                  child: Text("直播间测试"),
+                  child: Text("直播"),
                 ),
                 RaisedButton(
                   onPressed: () {
@@ -205,7 +206,15 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                       return VideoCoursePlayPage();
                     }));
                   },
-                  child: Text("视频课测试"),
+                  child: Text("视频1"),
+                ),
+                RaisedButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return VideoCoursePlayPage2();
+                    }));
+                  },
+                  child: Text("视频2"),
                 ),
               ]),
               Row(
