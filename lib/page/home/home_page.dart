@@ -16,6 +16,7 @@ import 'package:mirror/page/home/sub_page/attention_page.dart';
 import 'package:mirror/page/home/sub_page/home_top_tab.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class HomePage extends StatefulWidget {
@@ -103,10 +104,13 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                           controller: this.controller,
                           children: [
                             // CustomScrollComState(urls: courses,),
-                            AttentionPage(
+                            ChangeNotifierProvider(
+                            create: (_) => PublishMonitorNotifier(attentionModel: [],plannedSpeed: 0.0),
+                           builder: (context, _) {
+                            return AttentionPage(
                               coverUrls: courses,
                               pc: widget.pc,
-                            ),
+                            );}),
                             RecommendPage(
                               coverUrls: courses,
                               pc: widget.pc,

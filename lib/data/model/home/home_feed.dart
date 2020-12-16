@@ -424,6 +424,7 @@ class CommentDtoModel {
   int replyId;
   String replyName;
   int delete;
+  int pullNumber = 0;
 
 // 是否显示隐藏按钮
   bool isShowHiddenButtons = false;

@@ -10,10 +10,11 @@ import 'package:provider/provider.dart';
 typedef VoidCallback = void Function(String content, BuildContext context);
 
 Future openInputBottomSheet(
-    {@required BuildContext context,
-    @required VoidCallback voidCallback,
-      hintText:String
-    }) async {
+    {
+  @required BuildContext context,
+  @required VoidCallback voidCallback,
+  String hintText,
+}) async {
   await showModalBottomSheet(
       isScrollControlled: true,
 
@@ -142,6 +143,7 @@ class CommentInputBottomBar extends StatelessWidget {
                     offstage: Platform.isIOS,
                     child: GestureDetector(
                         onTap: () {
+                          Navigator.of(context).pop(1);
                           voidCallback(_textEditingController.text, context);
                         },
                         child: IgnorePointer(
