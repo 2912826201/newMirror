@@ -24,7 +24,7 @@ class FeedSharePopups extends StatelessWidget {
   FeedSharePopups({this.feedModel});
 
   HomeFeedModel feedModel;
-  List<FeedViewModel> feedViewModel;
+  List<FeedViewModel> feedViewModel = [];
   List<String> name = ["站内好友", "微信好友", "朋友圈", "微博", "QQ好友", "QQ空间"];
   List<String> image = [
     "https://img9.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2623955494.webp",
@@ -74,7 +74,7 @@ class FeedSharePopups extends StatelessWidget {
                                 left: index > 0 ? 32 : 16,
                                 right: index == feedViewModel.length - 1 ? 16 : 0,
                                 top: 8,
-                                bottom: 24),
+                                bottom: 8),
                             height: 48,
                             width: 48,
                             decoration: BoxDecoration(
@@ -95,6 +95,7 @@ class FeedSharePopups extends StatelessWidget {
                             child: Center(
                               child: Text(
                                 feedViewModel[index].name,
+                                style: AppStyle.textRegular12,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
