@@ -84,9 +84,8 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin {
                               context.read<FeedMapNotifier>().clearTotalCount();
                               // 关闭视图后清空动态Id
                               context.read<FeedMapNotifier>().changeFeeId(null);
-                              // context.read<FeedMapNotifier>().
                             },
-                            maxHeight: ScreenUtil.instance.height * 0.7,
+                            maxHeight: ScreenUtil.instance.height * 0.75,
                             backdropEnabled: true,
                             borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(10.0),
@@ -129,24 +128,5 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin {
     _controller.dispose();
     // _childController.dispose();
     super.dispose();
-  }
-}
-// 唤醒动态底部抽屉评论调用接口
-class FeedIdcommentlNotifier extends ChangeNotifier {
-  FeedIdcommentlNotifier({this.feedId,this.commentDtoModel,this.totalCount});
-  int feedId;
-  List<CommentDtoModel> commentDtoModel;
-  int totalCount;
-  getCommentIdCallback(int id) {
-    this.feedId = id;
-    notifyListeners();
-  }
-  getCommentDtoModel(List<CommentDtoModel> model) {
-    this.commentDtoModel = model;
-    notifyListeners();
-  }
-  getTotalCount(int count) {
-    this.totalCount = count;
-    notifyListeners();
   }
 }

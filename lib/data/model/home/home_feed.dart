@@ -430,16 +430,12 @@ class CommentDtoModel {
 
   // 保存的总条数
   int initCount;
-
-  // // 是否显示所有子评论
-  // bool isShowAllComment = false;
   // 是否显示交互按钮
   bool isShowInteractiveButton = false;
   // 是否点击过隐藏按钮
   bool isClickHideButton = false;
   // 添加字段
   int totalCount = -1;
-  int initQue = 0;
   CommentDtoModel(
       {this.id,
       this.targetId,
@@ -471,7 +467,11 @@ class CommentDtoModel {
     avatarUrl = json["avatarUrl"];
     replyCount = json["replyCount"];
     laudCount = json["laudCount"];
-    isLaud = json["isLaud"];
+    if (json["isLaud"] == null) {
+      isLaud = 0;
+    } else {
+      isLaud = json["isLaud"];
+    }
     top = json["top"];
     replyId = json["replyId"];
     replyName = json["replyName"];
