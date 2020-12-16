@@ -4,6 +4,7 @@ import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/data/notifier/rongcloud_connection_notifier.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:provider/provider.dart';
 
@@ -22,6 +23,7 @@ void main() {
           providers: [
             ChangeNotifierProvider(create: (_) => TokenNotifier(Application.token)),
             ChangeNotifierProvider(create: (_) => ProfileNotifier(Application.profile)),
+            ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
           ],
           child: MyApp(),
         ),

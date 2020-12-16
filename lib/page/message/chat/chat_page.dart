@@ -5,7 +5,7 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/im/rongcloud_receive_manager.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:rongcloud_im_plugin/src/info/message.dart';
-import 'chatPageInterfaces/chat_page_interfaces.dart';
+import 'chat_page_interfaces/chat_page_interfaces.dart';
 import 'chat_page_datasource.dart';
 import 'chat_page_ui.dart';
 ////////////////////////////////

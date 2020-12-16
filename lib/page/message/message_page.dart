@@ -5,7 +5,9 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/friends_cell_dto.dart';
 import 'package:mirror/data/dto/group_chat_dto.dart';
+import 'package:mirror/data/notifier/rongcloud_connection_notifier.dart';
 import 'package:mirror/im/rongcloud_receive_manager.dart';
+import 'package:mirror/im/rongcloud_status_manager.dart';
 import 'package:mirror/page/if_page.dart';
 import 'package:mirror/page/message/delegate/callbacks.dart';
 import 'package:mirror/page/message/delegate/system_service_events.dart';
@@ -21,7 +23,7 @@ import 'delegate/regular_events.dart';
 import 'delegate/business.dart';
 import 'delegate/frame.dart';
 import 'delegate/message_page_datasource.dart';
-import 'package:mirror/util/screen_util.dart';
+import 'package:provider/provider.dart';
 
 
 
@@ -52,14 +54,19 @@ class MessagePageState extends State<MessagePage>
         MPUIActionWithDataSource,
         MPIMDataSourceAction,
         MessageObserver ,
-        MessagepageLocate{
-
+        MessagepageLocate,
+        RCStatusObservable
+{
+  static const LOSE_CONNECTION_CODE = 3;
+  static const CONNECTING_CODE = 1;
+  static const CONNECTED_CODE = 0;
   List imData = List();
   //隐藏评论与否
   bool _commentHide = true;
   @override
   Widget build(BuildContext context) {
     this.viewWillAppear();
+    this.uiProvider.context = context;
     return Container(
             child: Column(
               children: [
@@ -73,34 +80,6 @@ class MessagePageState extends State<MessagePage>
               ],
             ),
           );
-    // return Scaffold(
-    //   body:SlidingUpPanel(
-    //     controller: _controller,
-    //     maxHeight: ScreenUtil.instance.height*527/812 ,
-    //     minHeight: 0,
-    //     backdropEnabled: true,
-    //     onPanelClosed: ()=>{ _commentHide = true},
-    //     onPanelOpened: ()=>{ _commentHide = false},
-    //     borderRadius: BorderRadius.only(
-    //         topLeft: Radius.circular(3),
-    //         topRight: Radius.circular(3)
-    //     ),
-    //     body: Container(
-    //       child: Column(
-    //         children: [
-    //           //需要为状态栏留出空隙
-    //           SizedBox(width: MediaQuery.of(context).size.width, height: 44),
-    //           //导航栏
-    //           uiProvider.navigationBar(),
-    //           //主内容
-    //           uiProvider.mainContent(),
-    //           //评论弹出区域
-    //         ],
-    //       ),
-    //     ),
-    //     panel: Container(child: CreateGroupChatWidget()),
-    //   )
-    // );
    }
    @override
    void initState() {
@@ -113,15 +92,34 @@ class MessagePageState extends State<MessagePage>
 
    //一些注册绑定类型的事情
    _registrations() {
-    //考虑到此页面可能会涉及到消息到来时情景的处理,所以需要进行注册一下
+
     RongCloudReceiveManager.shareInstance().observeAllKindsMsgs(this);
+    //class RCConnectionStatus {
+    //   static const int Connected = 0; //连接成功
+    //   static const int Connecting = 1; //连接中
+    //   static const int KickedByOtherClient = 2; //该账号在其他设备登录，导致当前设备掉线
+    //   static const int NetworkUnavailable = 3; //网络不可用
+    //   static const int TokenIncorrect = 4; //token 非法，此时无法连接 im，需重新获取 token
+    //   static const int UserBlocked = 5; //用户被封禁
+    //   static const int DisConnected = 6; //用户主动断开
+    //   static const int Suspend = 13; // 连接暂时挂起（多是由于网络问题导致），SDK 会在合适时机进行自动重连
+    //   static const int Timeout =
+    //       14; // 自动连接超时，SDK 将不会继续连接，用户需要做超时处理，再自行调用 connectWithToken 接口进行连接
+    // }
+    //请参考RCConnectionStatus
+    //关心断开、连接、连接中(回调见 void statusChangeNotification（）)
+    // ConnectionStatus_Connected = 0,连接成功
+    //  RongCloudStatusManager.shareInstance().registerNotificationForStatus(CONNECTED_CODE, this);
+    // //ConnectionStatus_Connecting = 10,连接中
+    //  RongCloudStatusManager.shareInstance().registerNotificationForStatus(CONNECTING_CODE, this);
+    // // ConnectionStatus_Unconnected = 11,未连接
+    //  RongCloudStatusManager.shareInstance().registerNotificationForStatus(LOSE_CONNECTION_CODE, this);
+
+     //需要传入context来使用readme.md中的ValueNotifier来进行通知
+     RongCloudStatusManager.shareInstance().context = context;
    }
-   // //数据proxy
-   // @override
-   // MPDataSourceProxy dataSource;
-   //ui_proxy
-   @override
-   MPUiProxy uiProvider;
+    @override
+    MPUiProxy uiProvider;
     //需要进行振动等向controller反馈的事件
     @override
     void feedBackForSys() {
@@ -168,6 +166,7 @@ class MessagePageState extends State<MessagePage>
       this.dataSource.saveChats();
       this.dataSource = null;
     RongCloudReceiveManager.shareInstance().removeObserver(this);
+    RongCloudStatusManager.shareInstance().cancelNotifications(this);
     this.viewDidDisappear();
     super.dispose();
    }
@@ -180,16 +179,19 @@ class MessagePageState extends State<MessagePage>
     //当网络连接丢失时，向ui源发送对应消息使其变化，
     @override
     void loseConnection() {
-    uiProvider.reconnected();
+      print("this.loseConnection");
+     uiProvider.loseConnection();
     }
     //进行再连接时
     @override
     void reconnected() {
-    uiProvider.reconnected();
+      print("this.reconnected");
+     uiProvider.reconnected();
     }
     //连接中时
     @override
     void connecting() {
+      print("this.connectting");
     uiProvider.connecting();
     }
     //检测到需要开启系统通知后调用
@@ -246,8 +248,9 @@ class MessagePageState extends State<MessagePage>
    }
    //UI源发送来的交互事件
    @override
-   void action(String identifier, {payload = Map}) {
+   void action(String identifier, {payload = Map, BuildContext context}) {
       print("action");
+      print("$context");
     //setState(){}方法调用事件
     if (identifier == MessagePageUiProvider.FuncOf_setState_) {
       setState(() {});
@@ -311,7 +314,6 @@ class MessagePageState extends State<MessagePage>
     }
     //刷新整个列表
     else if (thekey == MessagePageDataSource.REFRESH_ALL_LIST){
-      print("whole refresh");
       uiProvider.imFreshData();
     }
   }
@@ -361,6 +363,22 @@ class MessagePageState extends State<MessagePage>
   @override
   createNewConversation(ConversationDto dto) {
    dataSource.createNewConversation(dto);
+  }
+  //融云的状态改变的回调
+  @override
+  void statusChangeNotification(int status) {
+    print("statusChangeNotification $status");
+    switch(status){
+      case LOSE_CONNECTION_CODE:
+        this.loseConnection();
+        break;
+      case CONNECTING_CODE:
+        this.connecting();
+        break;
+      case CONNECTED_CODE:
+        this.reconnected();
+        break;
+    }
   }
    //-------------------------------------------------------------------//
 }
@@ -495,12 +513,10 @@ class CreatGroupChatWidgetState extends State<CreateGroupChatWidget> {
     });
     /////////////////////////////////////////////////////////////////
     //进行区头的索引位的记录
-    print("!!!!!!!!!找出每个section的数量情况（一个section可能可能存在有sectionHeader，进行填充 ");
     //找出每个section的数量情况（一个section可能存在有sectionHeader，进行+1表示进行记录
     for(int sectionIndex = 0;sectionIndex<dataSource.numOfSections();sectionIndex++){
       //如果存在有sectionheader的话，则将其所在的索引记录起来
       if(dataSource.sectionHeaderAtIndex(sectionIndex) != null){
-        print("生成sectionHeader");
         itemsInSection.add(dataSource.itemsCountInSectionAtIndex(sectionIndex)+1);
         int sectionSpot = 0;
         int accumulated = 0;
@@ -511,9 +527,7 @@ class CreatGroupChatWidgetState extends State<CreateGroupChatWidget> {
         }
         //记录下此时存在的section头部的索引位置（位于这个section区间的第一个）
         sectionHeaderLocates.add(sectionSpot);
-        print("sectionHeaderLocates ${sectionSpot}");
       }else{
-        print("不存在sectionHeader");
         //不存在sectionheader的情况
         itemsInSection.add(dataSource.itemsCountInSectionAtIndex(sectionIndex));
       }
@@ -617,7 +631,6 @@ class CreatGroupChatWidgetState extends State<CreateGroupChatWidget> {
   }
    //返回整个界面的cell布局
    Widget _cellElement(int index){
-    print(">>>>>>>>>>>>_cellElement $index");
     /////////////
     //区头索引命中则返回区头
     if(sectionHeaderLocates.contains(index)){

@@ -7,9 +7,9 @@ import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/page/feed/like.dart';
 import 'package:mirror/page/feed/release_page.dart';
 import 'package:mirror/page/if_page.dart';
+import 'package:mirror/page/login/guid_complete_infor_page.dart';
 import 'package:mirror/page/login/login_page.dart';
 import 'package:mirror/page/login/perfect_user_page.dart';
-import 'package:mirror/page/login/pre_welcome_page.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/message/Chat/chat_page.dart';
@@ -66,7 +66,7 @@ var handlerChatPage = Handler(handlerFunc: (BuildContext context , Map<String,Li
 var handlerPerfectUserPage = Handler(handlerFunc: (BuildContext context , Map<String,List<String>> params){
 return PerfectUserPage();
 });
-var handlerPreWelcomePage =  Handler(handlerFunc: (BuildContext context , Map<String,List<String>> params){
+var handlerGuildCompleteInfor =  Handler(handlerFunc: (BuildContext context , Map<String,List<String>> params){
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return PreWelComePage(avatarUrl: data["avatarUrl"], nickName: data["nickName"]);
+  return GuidCompleteInforPage(avatarUrl: data["avatarUrl"], nickName: data["nickName"]);
 });

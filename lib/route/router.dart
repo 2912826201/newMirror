@@ -22,7 +22,7 @@ class AppRouter {
   static String pathRelease = "/release";
   static String pathChatPage = "/ChatPage";
   static String pathPerfectUserPage = "/PerfectUserPage";
-  static String pathPreWelComePage = "/pathPreWelComePage";
+  static String pathGuildCompleteInforPage = "/pathGuildCompleteInforPage";
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
       print("ROUTE WAS NOT FOUND !!!");
@@ -37,7 +37,7 @@ class AppRouter {
     router.define(pathRelease, handler: handlerReleaseFeed);
     router.define(pathChatPage, handler: handlerChatPage);
     router.define(pathPerfectUserPage, handler: handlerPerfectUserPage);
-    router.define(pathPreWelComePage, handler: handlerPreWelcomePage);
+    router.define(pathGuildCompleteInforPage, handler: handlerGuildCompleteInfor);
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
   }
@@ -88,10 +88,10 @@ class AppRouter {
   static void navigateToChatPage(BuildContext context,ConversationDto dto){
     _navigateToPage(context, pathChatPage,dto.toMap());
   }
-  static void navigateToPreWelCome(BuildContext context,String avatarUrl,String nicName){
+  static void navigateToGuidCompleteInfor(BuildContext context,String avatarUrl,String nicName){
     Map<String,dynamic> map = Map<String,dynamic>();
     map["avatarUrl"] = avatarUrl;
     map["nickName"] = nicName;
-    _navigateToPage(context, pathPreWelComePage,map);
+    _navigateToPage(context, pathGuildCompleteInforPage,map);
   }
 }

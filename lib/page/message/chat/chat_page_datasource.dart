@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
-import 'chatPageInterfaces/chat_page_interfaces.dart';
+import 'chat_page_interfaces/chat_page_interfaces.dart';
 
 class ChatPageDataSource implements ChatDataSource{
   ChatDataSourceDelegate delegate;

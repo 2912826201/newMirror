@@ -15,6 +15,7 @@ import 'business.dart';
 
 //消息界面UI的Proxy
 abstract class MPUiProxy implements MPNetworkEvents {
+  BuildContext context;
   //导航栏
   Widget navigationBar();
   //页面主要内容
@@ -69,7 +70,7 @@ abstract class MPInterCourcesDataSource{
 }
 //消息界面的点击等事件
 abstract class MPUIAction {
-  void action(String identifier, {payload: Map});
+  void action(String identifier, {payload: Map, BuildContext context});
 }
 //ui绑定的函数出口接口
 abstract class MPUIActionWithDataSource implements MPIMDataSource,MPUIAction,MPInterCourcesDataSource{

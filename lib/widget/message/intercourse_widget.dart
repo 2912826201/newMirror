@@ -36,7 +36,6 @@ class MPIntercourseWidgetState extends State<MPIntercourseWidget>{
 
   @override
   Widget build(BuildContext context) {
-    print("intercources widget building ");
     bool hideBadget = true;
     if (widget.badges == 0){
       hideBadget = true;

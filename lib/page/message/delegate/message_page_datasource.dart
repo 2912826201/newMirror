@@ -226,9 +226,6 @@ class MessagePageDataSource implements MPDataProxy {
       _latestUnreadAuthorizeds[Authorizeds.ExerciseMsg] = _defaultLatestMessage(input.exerciseMsgList);
       _latestUnreadAuthorizeds[Authorizeds.SysMsg] = _defaultLatestMessage(input.sysMsgList);
       _latestUnreadAuthorizeds[Authorizeds.LiveMsg] = _defaultLatestMessage(input.liveMsgList);
-      print("_latestUreadAuthorized ${ _latestUnreadAuthorizeds[Authorizeds.ExerciseMsg]}");
-      print("_latestUreadAuthorized ${ _latestUnreadAuthorizeds[Authorizeds.SysMsg]}");
-      print("_latestUreadAuthorized ${ _latestUnreadAuthorizeds[Authorizeds.LiveMsg]}");
     }
      if (input is UnreadInterCourses) {
       return input;

@@ -3,9 +3,8 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/page/message/Chat/chatPageInterfaces/message_cell.dart';
-
-import 'chatPageInterfaces/chat_page_interfaces.dart';
+import 'package:mirror/page/message/chat/chat_page_interfaces/message_cell.dart';
+import 'chat_page_interfaces/chat_page_interfaces.dart';
 
 class ChatPageUi implements ChatUI{
   static const TextStyle navigationBarTitleStyle = TextStyle(

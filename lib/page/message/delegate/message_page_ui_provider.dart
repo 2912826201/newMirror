@@ -1,9 +1,10 @@
 //即时消息数据源
-import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/message/intercourse_model.dart';
+import 'package:mirror/data/notifier/rongcloud_connection_notifier.dart';
 import 'package:mirror/page/message/delegate/callbacks.dart';
 import 'package:mirror/page/message/delegate/message_page_datasource.dart';
 import 'package:mirror/page/message/delegate/regular_events.dart';
@@ -13,6 +14,10 @@ import 'business.dart';
 import 'message_interfaces.dart';
 //消息页面的ui代理类
 class MessagePageUiProvider implements MPUiProxy {
+  //消息页面标题key
+  GlobalKey<_PageTitleWidgetState> pageTitleKey = GlobalKey();
+  //页面标题
+  String  pageTitle = "消息";
   //用于局部刷新List视图的key数组
   List<GlobalKey<MPChatCellState>> listKeys = List<GlobalKey<MPChatCellState>>();
   //保存局部刷新"点赞、评论、点赞"区域的key数组
@@ -53,18 +58,20 @@ class MessagePageUiProvider implements MPUiProxy {
   bool _sysNotificationBannerShow = false;
   Map<MPIntercourses,int> _unreadBadges = {MPIntercourses.Comment:0,MPIntercourses.Laud:0,MPIntercourses.At:0};
   //交互事件外发给controller
-  _actionsDispatch(String identifier, {payload: Map}) {
+  _actionsDispatch(String identifier, {payload: Map,}) {
     print("_actionsDispatch");
     if (dataActionPipe != null) {
-      dataActionPipe.action(identifier, payload: payload);
+      dataActionPipe.action(identifier, payload: payload,context: context);
     }
   }
+  //析构函数
   void dispose(){
     this.dataActionPipe = null;
   }
   //顶部栏
   @override
   Widget navigationBar() {
+    this.context = context;
     return Container(
         child: Stack(
           alignment: Alignment.center,
@@ -98,13 +105,14 @@ class MessagePageUiProvider implements MPUiProxy {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    child: Text(
-                      "消息",
-                      style: TextStyle(
+                    child: PageTitleWidget(
+                      pageTitle: _getPageTitle(),
+                      titleStyle: TextStyle(
                           fontFamily: "PingFangSC",
                           fontSize: 18,
                           decoration: TextDecoration.none,
                           fontWeight: FontWeight.w500),
+                      key: pageTitleKey,
                     ),
                     margin:const EdgeInsets.only(left: 44, right: 44),
                   )
@@ -115,7 +123,29 @@ class MessagePageUiProvider implements MPUiProxy {
           ],
         ));
   }
-
+  String _getPageTitle(){
+    // static const int Connected = 0; //连接成功
+    // static const int Connecting = 1; //连接中
+    // static const int KickedByOtherClient = 2; //该账号在其他设备登录，导致当前设备掉线
+    // static const int NetworkUnavailable = 3; //网络不可用
+    // static const int TokenIncorrect = 4; //token 非法，此时无法连接 im，需重新获取 token
+    // static const int UserBlocked = 5; //用户被封禁
+    // static const int DisConnected = 6; //用户主动断开
+    // static const int Suspend = 13; // 连接暂时挂起（多是由于网络问题导致），SDK 会在合适时机进行自动重连
+    // static const int Timeout =
+    // 14;
+    int status = context.watch<RongCloudStatusNotifier>().status;
+    if(status == 0){
+       pageTitle = "消息";
+     }
+     if(status == 1){
+      pageTitle = "连接中...";
+     }
+     if(status == 3){
+       pageTitle = "未连接";
+     }
+     return pageTitle;
+  }
   //对旧的数据做清除的工作
   _cleanDirtyConfigurations(){
     listKeys.clear();
@@ -133,28 +163,19 @@ class MessagePageUiProvider implements MPUiProxy {
       ur.at = 90;
      List<MPIntercourses> events = List<MPIntercourses>();
       if(ur.at != _unreadBadges[MPIntercourses.At]){
-        print("at !");
         _unreadBadges[MPIntercourses.At] = ur.at;
        events.add(MPIntercourses.At);
-       print(_unreadBadges[MPIntercourses.At]);
       }
       if(ur.comment != _unreadBadges[MPIntercourses.Comment]){
-        print("comment !");
         _unreadBadges[MPIntercourses.Comment] = ur.comment;
         events.add(MPIntercourses.Comment);
-        print(_unreadBadges[MPIntercourses.Comment]);
       }
       if(ur.laud != _unreadBadges[MPIntercourses.Laud]){
-        print("laund !");
         events.add(MPIntercourses.Laud);
         _unreadBadges[MPIntercourses.Laud] = ur.laud;
-        print(_unreadBadges[MPIntercourses.Laud]);
       }
-      print("before _refreshISpecificInterCource");
-      print(events.length);
       _refreshISpecificInterCource(events);
     });
-    print("ui-provider  mainContent");
     //整体setState(）之后，清空之前的每个子元素的globalKey数组
     //  this.listKeys.clear();
     //外层是一个column所以需要使用Expanded
@@ -178,7 +199,6 @@ class MessagePageUiProvider implements MPUiProxy {
             }
             //即时通讯会话显示区域
             else {
-              print("imArea");
               return  _imArea(index);
             }
           },
@@ -206,7 +226,6 @@ class MessagePageUiProvider implements MPUiProxy {
    }
   //点赞交互区域
   Widget _interactiveAreas() {
-    print("_interactiveAreas");
     return Row(
       //横向排列交互区域
       children: [
@@ -272,7 +291,7 @@ class MessagePageUiProvider implements MPUiProxy {
                           fontWeight: FontWeight.w400,
                           decoration: TextDecoration.none),
                     ),
-                    onTap:()=> _actionsDispatch(FuncOfinterCourses, payload: {IntercoursesKey: MPIntercourses.Laud}),
+                     onTap: ()=>_actionsDispatch(FuncOfinterCourses, payload: {IntercoursesKey: MPIntercourses.At}),
                     badges: ()=>_unreadBadges[MPIntercourses.Laud],
                   )),
             ),
@@ -285,25 +304,18 @@ class MessagePageUiProvider implements MPUiProxy {
 
    //提供点赞事件的未读数
    Map<MPIntercourses,int> get _badgesNum {
-    print("~~~~~~~~${_unreadBadges[MPIntercourses.At]}~~~~${_unreadBadges[MPIntercourses.Comment]}~~~~~~~~~~~${_unreadBadges[MPIntercourses.Laud]}~~~");
     return _unreadBadges;
    }
 
   //异步读取未读数
    _getBadges(MPCallbackWithValue callback) async{
-     print("_getBadges");
      //跟新未读数
      await dataActionPipe.unreadOfIntercources(callback);
-     print("after async _getBadges");
      callback;
   }
-  //刷新"评论、点赞、at的其中之一"
-  _refreshISpecificInterCource(List<MPIntercourses> events) {
-    print(">>>>>>>_refreshISpecificInterCourse<<<<<<<<<<<<<<");
-    print(events.length);
+   //刷新"评论、点赞、at的其中之一"
+   _refreshISpecificInterCource(List<MPIntercourses> events) {
      events.forEach((event) {
-       print("for circling");
-       print(event);
        icWidgetsKeys[event].currentState.setState(() {
        });
      });
@@ -312,7 +324,6 @@ class MessagePageUiProvider implements MPUiProxy {
   }
   //刷新系统会话的最新的一条消息
    _refreshSysChatsLatestMsg(){
-    print("_refreshSysChatsLatestMsg");
     dataActionPipe.imCellData().forEach((element) {
       if(element.type == OFFICIAL){
         int k = -1 ;
@@ -322,7 +333,6 @@ class MessagePageUiProvider implements MPUiProxy {
          if(cellState.widget.model.type == OFFICIAL){
            ConversationDto dto =ConversationDto();
            dto.content = dataActionPipe.latestAuthorizedMsgs()[Authorizeds.SysMsg].last.content;
-           print("SysMsg   ${dataActionPipe.latestAuthorizedMsgs()[Authorizeds.SysMsg]}");
            cellState.refresh(model: dto);
          }
        });
@@ -335,7 +345,6 @@ class MessagePageUiProvider implements MPUiProxy {
           if(cellState.widget.model.type == LIVE_OFFICIAL){
             ConversationDto dto =ConversationDto();
             dto.content = dataActionPipe.latestAuthorizedMsgs()[Authorizeds.LiveMsg].last.content;
-            print("LiveMsg   ${dataActionPipe.latestAuthorizedMsgs()[Authorizeds.LiveMsg]}");
             cellState.refresh(model: dto);
           }
         });
@@ -348,7 +357,6 @@ class MessagePageUiProvider implements MPUiProxy {
           if(cellState.widget.model.type == EXERCISE_OFFICIAL){
             ConversationDto dto =ConversationDto();
             dto.content = dataActionPipe.latestAuthorizedMsgs()[Authorizeds.ExerciseMsg].last.content;
-            print("Exercise   ${dataActionPipe.latestAuthorizedMsgs()[Authorizeds.ExerciseMsg]}");
             cellState.refresh(model: dto);
           }
         });
@@ -357,19 +365,14 @@ class MessagePageUiProvider implements MPUiProxy {
    }
   //即时通讯会话相关的区域,因为本身为一个ListView的item，所以需要高度
   Widget _imArea(int index) {
-    print("----------------------------_imArea----------------------------");
     //数据源没有数据的时候显示展位图
     if(dataActionPipe.imCellData().length == 0){
-      print("placehoulder");
       return placeholderWhenNoData();
     }
-    print("theindex $index");
     //三个板块中需要减去代表会话cell总体作为一部分的"1"
     int expectedIndex = index - 2 ;
-    print("the expected index $expectedIndex");
     //唯一标识key
     GlobalKey<MPChatCellState> key = GlobalKey();
-    print("the key:");
     print(listKeys);
     listKeys.add(key);
     //获取对应的cell
@@ -380,7 +383,7 @@ class MessagePageUiProvider implements MPUiProxy {
       Expanded(child:
        GestureDetector(
         //绑定点击事件，传参需要一个索引位置
-        onTap:()=>_actionsDispatch(FuncOfCellTap,payload: {CellTapKey:expectedIndex}) ,
+        onTap:()=>_actionsDispatch(FuncOfCellTap,payload: {CellTapKey:expectedIndex,}) ,
         child: Container(child: cell,
           height: dataActionPipe.cellHeightAtIndex(expectedIndex),),
       )
@@ -444,7 +447,6 @@ class MessagePageUiProvider implements MPUiProxy {
   //通知开启提醒的横幅生成
   @override
   Widget notificationBanner() {
-    print(" notificationBanner()");
     return Offstage(
       offstage: _sysNotificationBannerShow,
       child: GestureDetector(
@@ -515,7 +517,6 @@ class MessagePageUiProvider implements MPUiProxy {
   //某会话数据到来而走这里
   @override
   void imFreshData( { int index,ConversationDto dto,int newBadgets}) {
-    print("imFreshData $index");
     //单独刷新
     if(index != null){
      MPChatCellState state = listKeys[index].currentState;
@@ -542,17 +543,26 @@ class MessagePageUiProvider implements MPUiProxy {
   //正在进行重连时
   @override
   void connecting() {
-    // TODO: implement connecting
+    print("connectting");
+    this.pageTitleKey.currentState.widget.pageTitle = "连接中...";
+    this.pageTitleKey.currentState.setState(() {
+    });
   }
   //断开连接时
   @override
   void loseConnection() {
-    // TODO: implement loseConnection
+    print("lose connecting");
+    this.pageTitleKey.currentState.widget.pageTitle = "消息(未连接)";
+    this.pageTitleKey.currentState.setState(() {
+    });
   }
   //重连时
   @override
   void reconnected() {
-    // TODO: implement reconnected
+    print("reconnected");
+    this.pageTitleKey.currentState.widget.pageTitle = "消息";
+    this.pageTitleKey.currentState.setState(() {
+    });
   }
   //需要提示开启系统提醒
   @override
@@ -565,6 +575,28 @@ class MessagePageUiProvider implements MPUiProxy {
     this.displaySysNotiBanner(false);
   }
 
+  @override
+  BuildContext context;
 
+
+}
+class PageTitleWidget extends StatefulWidget{
+  String pageTitle;
+  final TextStyle titleStyle;
+  PageTitleWidget({Key key,@required this.pageTitle,@required this.titleStyle}):super(key: key);
+  @override
+  State<StatefulWidget> createState() {
+    return _PageTitleWidgetState();
+  }
+
+}
+class _PageTitleWidgetState extends State<PageTitleWidget>{
+  @override
+  Widget build(BuildContext context) {
+   return Text(
+       widget.pageTitle,
+       style: widget.titleStyle,
+   );
+  }
 
 }

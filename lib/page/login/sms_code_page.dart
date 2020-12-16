@@ -262,7 +262,7 @@ class _SmsCodePageState extends LoginBasePageState {
         print("没有完善资料");
         Application.tempToken = token;
         //FIXME 这里要去完善资料页 先写个请求完善资料接口的示例
-        _perfectUserInfo();
+        AppRouter.navigateToPerfectUserPage(context);
       } else {
         //所有都齐全的情况 登录完成
         await _afterLogin(token);
@@ -271,27 +271,6 @@ class _SmsCodePageState extends LoginBasePageState {
       print("登录失败");
     }
   }
-
-  //TODO 这个是临时的方法
-  _perfectUserInfo() async{
-    bool perfectResult = await perfectUserInfo("测试用户" + Random().nextInt(10000).toString(), "https://i1.hdslb"
-        ".com/bfs/archive/eb4d6aed7800003da1c6bdfa1c8476d4b6f567db.jpg");
-    if(perfectResult){
-      print("完善用户资料成功");
-      //成功后重新刷新token
-      TokenModel token = await login("refresh_token", null, null, Application.tempToken.refreshToken);
-      if(token != null){
-        print("刷新用户token成功");
-        await _afterLogin(token);
-      }else{
-        print("刷新用户token失败");
-      }
-    }else{
-      print("完善用户资料失败");
-    }
-  }
-
-  //TODO 完整的用户的处理方法 这个方法在登录页 绑定手机号页 完善资料页都会用到 需要单独提出来
   _afterLogin(TokenModel token) async{
     TokenDto tokenDto = TokenDto.fromTokenModel(token);
     await TokenDBHelper().insertToken(tokenDto);
@@ -308,6 +287,9 @@ class _SmsCodePageState extends LoginBasePageState {
       arguments: {},
     );
   }
+
+
+
 }
 
 class SmsCounterWidget extends StatefulWidget {

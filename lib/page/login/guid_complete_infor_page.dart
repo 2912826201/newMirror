@@ -1,11 +1,12 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
-
-class PreWelComePage extends StatelessWidget{
-  PreWelComePage({@required this.avatarUrl,@required this.nickName,Key key}):super(key: key);
+////////////////////////////
+/////引导完善资料的页面
+///////////////////////////
+///////////////////////////
+class GuidCompleteInforPage extends StatelessWidget{
+  GuidCompleteInforPage({@required this.avatarUrl,@required this.nickName,Key key}):super(key: key);
   //主标题的样式
   final TextStyle largeTitleStyle = TextStyle(decoration: TextDecoration.none,
     color: AppColor.textPrimary1,
@@ -40,7 +41,7 @@ class PreWelComePage extends StatelessWidget{
                             children: [
                               Spacer(),
                               GestureDetector(
-                                onTap: ()=>_skip(),
+                                onTap: ()=>_skip(context),
                                 child: Container(child: Text("跳过",style: TextStyle(decoration: TextDecoration.none,
                                     color: AppColor.textPrimary2,
                                     fontFamily: "PingFangSC",
@@ -117,7 +118,7 @@ class PreWelComePage extends StatelessWidget{
                          borderRadius: BorderRadius.all(Radius.circular(3))
                        ),
                      ),
-                     onTap: ()=>{_completeInformation()},
+                     onTap: (){_completeInformation(context,avatarUrl,nickName);},
                    ),
                     flex: 293,
                   ),
@@ -152,10 +153,16 @@ class PreWelComePage extends StatelessWidget{
   }
 
   //立即开始
-  _completeInformation(){
+  _completeInformation(BuildContext context,String portrait,String name){
     print("立即开始");
   }
-  _skip(){
-   print("跳过");
+
+
+  _skip(BuildContext context){
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      '/', (route) => false,
+      //true 保留当前栈 false 销毁所有 只留下RepeatLogin
+      arguments: {},
+    );
   }
 }
