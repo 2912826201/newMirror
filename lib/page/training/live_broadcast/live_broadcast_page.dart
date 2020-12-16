@@ -145,16 +145,15 @@ class LiveBroadcastPageState extends State<LiveBroadcastPage> {
 }
 
 
+// ignore: must_be_immutable
 class BodyPage extends StatelessWidget {
-
-  List<DateTime> dates;
-  PageController controller;
+  final List<DateTime> dates;
+  final PageController controller;
   void Function(int) pageChangeCall;
 
   BodyPage({this.dates, this.controller, this.pageChangeCall});
 
   var pageViewItemList = <Widget>[];
-
 
   Widget _buildItemPage(int pos) {
     return pageViewItemList[pos];

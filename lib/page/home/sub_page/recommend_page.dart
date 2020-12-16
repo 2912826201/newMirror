@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/course_model.dart';
@@ -123,8 +122,8 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
           for (HomeFeedModel model in modelList) {
             recommendIdList.add(model.id);
           }
-            recommendModelList.addAll(modelList);
-          }
+          recommendModelList.addAll(modelList);
+        }
       } else if (dataPage > 1) {
         if (modelList.isNotEmpty) {
           for (HomeFeedModel model in modelList) {
@@ -153,88 +152,88 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       children: [
         Container(
             child: NotificationListener<ScrollNotification>(
-          onNotification: (ScrollNotification notification) {
-            ScrollMetrics metrics = notification.metrics;
-            // 注册通知回调
-            if (notification is ScrollStartNotification) {
-              // 滚动开始
-              // print('滚动开始');
-            } else if (notification is ScrollUpdateNotification) {
-              // 滚动位置更新
-              // print('滚动位置更新');
-              // 当前位置
-              // print("当前位置${metrics.pixels}");
-            } else if (notification is ScrollEndNotification) {
-              // 滚动结束
-              // print('滚动结束');
-            }
-          },
-          child: RefreshIndicator(
-              onRefresh: () async {
-                dataPage = 1;
-                recommendIdList.clear();
-                recommendModelList.clear();
-                loadStatus = LoadingStatus.STATUS_LOADING;
-                loadText = "加载中...";
-                Map<String, dynamic> model = await getPullList(type: 1, size: 20, lastTime: lastTime);
-                setState(() {
-                  if (model["list"] != null) {
-                    model["list"].forEach((v) {
-                      recommendIdList.add(HomeFeedModel.fromJson(v).id);
-                      recommendModelList.add(HomeFeedModel.fromJson(v));
-                    });
-                  }
-                });
-                // 更新全局监听
-                context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
+              onNotification: (ScrollNotification notification) {
+                ScrollMetrics metrics = notification.metrics;
+                // 注册通知回调
+                if (notification is ScrollStartNotification) {
+                  // 滚动开始
+                  // print('滚动开始');
+                } else if (notification is ScrollUpdateNotification) {
+                  // 滚动位置更新
+                  // print('滚动位置更新');
+                  // 当前位置
+                  // print("当前位置${metrics.pixels}");
+                } else if (notification is ScrollEndNotification) {
+                  // 滚动结束
+                  // print('滚动结束');
+                }
               },
-              child: CustomScrollView(
-                controller: _controller,
-                // BouncingScrollPhysics
-                physics:
+              child: RefreshIndicator(
+                  onRefresh: () async {
+                    dataPage = 1;
+                    recommendIdList.clear();
+                    recommendModelList.clear();
+                    loadStatus = LoadingStatus.STATUS_LOADING;
+                    loadText = "加载中...";
+                    Map<String, dynamic> model = await getPullList(type: 1, size: 20, lastTime: lastTime);
+                    setState(() {
+                      if (model["list"] != null) {
+                        model["list"].forEach((v) {
+                          recommendIdList.add(HomeFeedModel.fromJson(v).id);
+                          recommendModelList.add(HomeFeedModel.fromJson(v));
+                        });
+                      }
+                    });
+                    // 更新全局监听
+                    context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
+                  },
+                  child: CustomScrollView(
+                    controller: _controller,
+                    // BouncingScrollPhysics
+                    physics:
                     // ClampingScrollPhysics(),
                     AlwaysScrollableScrollPhysics(),
-                // BouncingScrollPhysics(),
-                slivers: [
-                  // 因为SliverList并不支持设置滑动方向由CustomScrollView统一管理，所有这里使用自定义滚动
-                  // CustomScrollView要求内部元素为Sliver组件， SliverToBoxAdapter可包裹普通的组件。
-                  // 横向滑动区域
-                  SliverToBoxAdapter(
-                    child: getCourse(),
-                  ),
-                  // 垂直列表
-                  SliverList(
-                    // controller: _controller,
-                    delegate: SliverChildBuilderDelegate((content, index) {
-                      // 获取动态id
-                      int id = recommendIdList[index];
-                      print("动态Id$id");
-                      // 获取动态id指定model
-                      HomeFeedModel model = context.read<FeedMapNotifier>().feedMap[id];
-                      if (model != null) {
-                        if (index == recommendIdList.length-1) {
-                          return LoadingView(
-                            loadText: loadText,
-                            loadStatus: loadStatus,
-                          );
-                        } else {
-                          return DynamicListLayout(
-                              index: index,
-                              pc: widget.pc,
-                              model: model,
-                              // 可选参数 子Item的个数
-                              key: GlobalObjectKey("recommend$index"),
-                              isShowRecommendUser: false);
-                        }
-                      } else {
-                        // 缺省图
-                        return Container();
-                      }
-                    }, childCount: recommendIdList.length),
-                  )
-                ],
-              )),
-        )),
+                    // BouncingScrollPhysics(),
+                    slivers: [
+                      // 因为SliverList并不支持设置滑动方向由CustomScrollView统一管理，所有这里使用自定义滚动
+                      // CustomScrollView要求内部元素为Sliver组件， SliverToBoxAdapter可包裹普通的组件。
+                      // 横向滑动区域
+                      SliverToBoxAdapter(
+                        child: getCourse(),
+                      ),
+                      // 垂直列表
+                      SliverList(
+                        // controller: _controller,
+                        delegate: SliverChildBuilderDelegate((content, index) {
+                          // 获取动态id
+                          int id = recommendIdList[index];
+                          print("动态Id$id");
+                          // 获取动态id指定model
+                          HomeFeedModel model = context.read<FeedMapNotifier>().feedMap[id];
+                          if (model != null) {
+                            if (index == recommendIdList.length-1) {
+                              return LoadingView(
+                                loadText: loadText,
+                                loadStatus: loadStatus,
+                              );
+                            } else {
+                              return DynamicListLayout(
+                                  index: index,
+                                  pc: widget.pc,
+                                  model: model,
+                                  // 可选参数 子Item的个数
+                                  key: GlobalObjectKey("recommend$index"),
+                                  isShowRecommendUser: false);
+                            }
+                          } else {
+                            // 缺省图
+                            return Container();
+                          }
+                        }, childCount: recommendIdList.length),
+                      )
+                    ],
+                  )),
+            )),
       ],
       // )
     );
