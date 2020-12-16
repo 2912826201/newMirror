@@ -16,8 +16,8 @@ import 'package:mirror/page/profile/scan_code_page.dart';
 import 'package:mirror/page/rc_test_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_broadcast_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_detail_page.dart';
-import 'package:mirror/page/training/video_coures/video_course_list_page.dart';
-import 'package:mirror/page/training/video_coures/video_detail_page.dart';
+import 'package:mirror/page/training/video_course/video_course_list_page.dart';
+import 'package:mirror/page/training/video_course/video_detail_page.dart';
 import 'package:mirror/route/router.dart';
 
 /// route_handler
