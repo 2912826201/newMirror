@@ -7,6 +7,7 @@ import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:provider/provider.dart';
 
@@ -35,6 +36,7 @@ void main() {
           providers: [
             ChangeNotifierProvider(create: (_) => TokenNotifier(Application.token)),
             ChangeNotifierProvider(create: (_) => ProfileNotifier(Application.profile)),
+            ChangeNotifierProvider(create: (_) => FeedMapNotifier(feedMap: {}))
           ],
           child: MyApp(),
         ),

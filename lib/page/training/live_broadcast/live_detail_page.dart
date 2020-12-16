@@ -454,9 +454,9 @@ class LiveDetailPageState extends State<LiveDetailPage> {
 
               openInputBottomSheet(
                 context: this.context,
-                voidCallback: (String context) {
-                  publishComment(context);
-                  print("发表评论----" + context);
+                voidCallback: (String text,BuildContext context) {
+                  publishComment(text);
+                  print("发表评论----" + text);
                 },
               );
             },
@@ -629,9 +629,9 @@ class LiveDetailPageState extends State<LiveDetailPage> {
                     replyCommentId = value.id;
                     openInputBottomSheet(
                       context: this.context,
-                      voidCallback: (String context) {
-                        publishComment(context);
-                        print("回复评论----" + context);
+                      voidCallback: (String text,BuildContext context) {
+                        publishComment(text);
+                        print("回复评论----" + text);
                       },
                     );
                   },

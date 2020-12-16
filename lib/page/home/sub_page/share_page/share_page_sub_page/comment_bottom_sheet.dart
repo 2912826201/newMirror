@@ -1,4 +1,6 @@
 // 底部评论抽屉
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
@@ -6,17 +8,22 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/commentInputBox.dart';
 import 'package:mirror/page/if_page.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/widget/comment_input_bottom_bar.dart';
+import 'package:mirror/widget/post_comments.dart';
 import 'package:mirror/widget/rich_text_widget.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
 
 class CommentBottomSheet extends StatefulWidget {
   CommentBottomSheet({Key key, this.pc, this.feedId}) : super(key: key);
+  // 动态id
   int feedId;
+  // 抽屉控制器
   PanelController pc;
 
   CommentBottomSheetState createState() => CommentBottomSheetState();
@@ -32,7 +39,7 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
   // 加载状态
   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
 
-  // 数据源
+//  数据源
   List<CommentDtoModel> commentModel = [];
 
   // 请求下一页
@@ -40,9 +47,9 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
 
   // 列表监听
   ScrollController _controller = new ScrollController();
-
   @override
   void initState() {
+    print("请求接口吗");
     getQueryListByHot();
     _controller.addListener(() {
       if (_controller.position.pixels == _controller.position.maxScrollExtent) {
@@ -51,8 +58,10 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
       }
     });
   }
-
+  // 获取热门评论
   getQueryListByHot() async {
+    // 评论总数
+    int totalCount = -1;
     if (loadStatus == LoadingStatus.STATUS_IDEL) {
       // 先设置状态，防止下拉就直接加载
       setState(() {
@@ -75,7 +84,6 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
           model["list"].forEach((v) {
             commentModel.add(CommentDtoModel.fromJson(v));
           });
-          print("数据长度${commentModel.length}");
         }
         loadStatus = LoadingStatus.STATUS_IDEL;
         loadText = "加载中...";
@@ -84,13 +92,16 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
         loadText = "已加载全部动态";
         loadStatus = LoadingStatus.STATUS_COMPLETED;
       }
+      print("totalCount::::::::::::${model["totalCount"]}");
+      if(model["totalCount"] != null ) {
+        totalCount = model["totalCount"];
+      }
+      context.read<FeedMapNotifier>().commensAssignment(widget.feedId, commentModel,totalCount);
     });
-    context.read<FeedIdcommentlNotifier>().getTotalCount(model["totalCount"]);
-    context.read<FeedIdcommentlNotifier>().getCommentDtoModel(commentModel);
   }
-
+  // 创建中间视图
   createMiddleView() {
-    if (context.select((FeedIdcommentlNotifier value) => value.totalCount) == -1) {
+    if (context.select((FeedMapNotifier value) => value.feedMap[widget.feedId].totalCount) == -1) {
       return Expanded(
           child: Container(
         child: Center(
@@ -101,7 +112,7 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
           ),
         ),
       ));
-    } else if (context.select((FeedIdcommentlNotifier value) => value.totalCount) == 0) {
+    } else if ( context.select((FeedMapNotifier value) => value.feedMap[widget.feedId].totalCount) == 0) {
       return Expanded(
           child: Container(
         color: Colors.redAccent,
@@ -121,7 +132,8 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
             itemBuilder: (context, index) {
               print(index);
               print(commentModel.length);
-              if (index == commentModel.length) {
+              if (index == commentModel.length
+              ) {
                 return LoadingView(
                   loadText: loadText,
                   loadStatus: loadStatus,
@@ -130,6 +142,7 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
                 return CommentBottomListView(
                   model: commentModel[index],
                   index: index,
+                  feedId: widget.feedId,
                 );
               }
             }),
@@ -150,18 +163,18 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
             child: Stack(
               overflow: Overflow.clip,
               children: [
-                context.watch<FeedIdcommentlNotifier>().totalCount != -1
+                context.watch<FeedMapNotifier>().feedMap[widget.feedId].totalCount != -1
                     ? Positioned(
                         left: 16,
                         top: 17,
                         // DynamicModelNotifier
-                        child: Selector<FeedIdcommentlNotifier, int>(builder: (context, totalCount, child) {
+                        child: Selector<FeedMapNotifier, int>(builder: (context, totalCount, child) {
                           return Text(
                             "共$totalCount条评论",
                             style: AppStyle.textRegular12,
                           );
                         }, selector: (context, notifier) {
-                          return notifier.totalCount;
+                          return notifier.feedMap[widget.feedId].totalCount;
                         }),
                         // Text(
                         //    "共${commentModel != [] ?  commentModel[0].totalCount : 0}条评论",
@@ -184,41 +197,41 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
           createMiddleView(),
           CommentInputBox(
             isUnderline: true,
-            feedModel: Application.feedModel,
+            feedModel: context.watch<FeedMapNotifier>().feedMap[widget.feedId],
           )
         ],
       ),
     );
   }
 }
-// 评论抽屉内的评论列表
-// class CommentBottomListView extends StatefulWidget {
-//   CommentBottomListView({Key key}) : super(key: key);
-//
-//   CommentBottomListViewState createState() => CommentBottomListViewState();
-// }
+
+
+
+
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 中间的评论视图 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥
+//￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥
+
+
+
 
 class CommentBottomListView extends StatelessWidget {
   CommentDtoModel model;
   int index;
-
-  CommentBottomListView({this.model, this.index});
+  int feedId;
+  CommentBottomListView({this.model, this.index,this.feedId});
 
   @override
   Widget build(BuildContext context) {
+    print(model.targetId);
     // 头像
     var avatar = Container(
       child: Container(
         height: 42,
         width: 42,
         child: ClipOval(
-          child: Image.network(model.avatarUrl, fit: BoxFit.cover),
-          // child: Image.asset("images/test/yxlm1.jpeg", fit: BoxFit.cover),
-          // (
-          //   "https://pic2.zhimg.com/v2-639b49f2f6578eabddc458b84eb3c6a1.jpg",
-          //   // "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif",
-          //   fit: BoxFit.cover,
-          // ),
+          child:  model.avatarUrl != null ? Image.network(model.avatarUrl, fit: BoxFit.cover) : Image.asset("images/test/yxlm1.jpeg",fit: BoxFit.cover),
         ),
       ),
     );
@@ -272,9 +285,9 @@ class CommentBottomListView extends StatelessWidget {
           height: 4,
         ),
         Offstage(
-          offstage: context.watch<FeedIdcommentlNotifier>().commentDtoModel[index].laudCount == 0,
+          offstage: context.watch<FeedMapNotifier>().feedMap[feedId].comments[index].laudCount == 0,
           child: Text(
-            "${context.select((FeedIdcommentlNotifier value) => value.commentDtoModel[index].laudCount)}",
+            "${context.select((FeedMapNotifier value) => value.feedMap[feedId].comments[index].laudCount)}",
             style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
           ),
         )
@@ -288,14 +301,18 @@ class CommentBottomListView extends StatelessWidget {
           GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () {
-              Application.isArouse = true;
-              Application.commentDtoModel = model;
-                  // context.select((FeedIdcommentlNotifier value) => value.commentDtoModel[index]);
-              print("评论model赋值${ Application.commentDtoModel.id}");
-              // 唤醒键盘获取焦点 commentFocus
-              FocusScope.of(context).requestFocus(commentFocus);
-              Application.hintText = "回复${model.name}";
-              Application.commentTypes = CommentTypes.commentMainCom;
+              openInputBottomSheet(
+                context: context,
+                hintText: "回复 ${model.name}" ,
+                voidCallback: (String text, BuildContext context)  {
+                  // 评论父评论
+                  postComments(targetId: model.id, targetType: 2, content: text, commentModelCallback:(CommentDtoModel commentModel) {
+                    context.read<FeedMapNotifier>().commentFeedCom(feedId,index,commentModel);
+                  });
+                  // 关闭评论输入框
+                  Navigator.of(context).pop(1);
+                },
+              );
             },
             child: Row(
               // 横轴距定对齐
@@ -307,9 +324,16 @@ class CommentBottomListView extends StatelessWidget {
               ],
             ),
           ),
-          context.select((FeedIdcommentlNotifier value) => value.commentDtoModel[index].replys) != null
+          // context.select((FeedMapNotifier value) => value.feedMap[feedId].comments[index].replyCount)  != 0
+        model.replyCount != 0
               ? BottomListViewSubComment(
-            replys: context.select((FeedIdcommentlNotifier value) => value.commentDtoModel[index].replys),commentDtoModel: context.select((FeedIdcommentlNotifier value) => value.commentDtoModel[index]),listIndex: index,)
+            replys:
+            // context.select((FeedMapNotifier value) => value.feedMap[feedId].comments[index].replys),
+          model.replys,
+          commentDtoModel:
+              model,
+          // context.select((FeedMapNotifier value) => value.feedMap[feedId].comments[index]),
+    listIndex: index,feedId: feedId,)
               : Container(),
         ],
       ),
@@ -317,12 +341,19 @@ class CommentBottomListView extends StatelessWidget {
   }
 }
 
-// 评论抽屉内的评论列表的子评论
+
+
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 评论抽屉内的评论列表的子评论 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥
+//￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥
+
 class BottomListViewSubComment extends StatefulWidget {
   int listIndex;
+  int feedId;
   List<CommentDtoModel> replys;
   CommentDtoModel commentDtoModel;
-  BottomListViewSubComment({Key key, this.replys,this.commentDtoModel,this.listIndex}) : super(key: key);
+  BottomListViewSubComment({Key key, this.replys,this.commentDtoModel,this.listIndex,this.feedId}) : super(key: key);
 
   BottomListViewSubCommentState createState() => BottomListViewSubCommentState();
 }
@@ -330,8 +361,9 @@ class BottomListViewSubComment extends StatefulWidget {
 class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
 
   // 请求页数
-  int pageCount = 1;
-
+  int pageCount = 0;
+ // 记录initCount的初始值；
+  int initNum;
   @override
   // 初始化赋值
   void initState() {
@@ -354,7 +386,7 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
     // 切换按钮
     widget.commentDtoModel.isShowHiddenButtons = false;
     // 恢复总条数
-    widget.commentDtoModel.replyCount =  widget.commentDtoModel.initCount + 2;
+    widget.commentDtoModel.initCount =  widget.commentDtoModel.replyCount;
     setState(() {});
   }
 
@@ -370,7 +402,7 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
     }
     pageCount += 1;
     // 总条数大于三每次点击取三条
-    if (widget.commentDtoModel.replyCount -2 > 3)  {
+    if (widget.commentDtoModel.initCount  > 3)  {
       Map<String, dynamic> model =
       await queryListByHot(targetId:widget.commentDtoModel.id, targetType: 2, page: this.pageCount, size: 3);
       if(model["list"] != null) {
@@ -378,12 +410,12 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
           widget.replys.add(CommentDtoModel.fromJson(v));
         });
       }
-      widget.commentDtoModel.replyCount -= 3;
+      widget.commentDtoModel.initCount -= 3;
     } else {
       // 总条数不足三条把剩下条数取完，切换按钮
-      if (widget.commentDtoModel.replyCount > 0) {
+      if (widget.commentDtoModel.initCount > 0) {
         Map<String, dynamic> model =
-        await queryListByHot(targetId:widget.commentDtoModel.id, targetType: 2, page: this.pageCount, size: widget.commentDtoModel.replyCount - 2);
+        await queryListByHot(targetId:widget.commentDtoModel.id, targetType: 2, page: this.pageCount, size: widget.commentDtoModel.initCount);
         if(model["list"] != null) {
           model["list"].forEach((v) {
             widget.replys.add(CommentDtoModel.fromJson(v));
@@ -400,16 +432,17 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
-        Application.isArouse = true;
-        Application.replysModel = model;
-        Application.commentDtoModel = context.read<FeedIdcommentlNotifier>().commentDtoModel[widget.listIndex];
-        // commentDtoModel[widget.listIndex];
-        // context.select((FeedIdcommentlNotifier value) => value.commentDtoModel[index]);
-        print("评论model赋值${ Application.replysModel.id}");
-        // 唤醒键盘获取焦点 commentFocus
-        FocusScope.of(context).requestFocus(commentFocus);
-        Application.hintText = "回复${model.name}";
-        Application.commentTypes = CommentTypes.commentSubCom;
+        
+        // Application.isArouse = true;
+        // Application.replysModel = model;
+        // Application.commentDtoModel = context.read<FeedIdcommentlNotifier>().commentDtoModel[widget.listIndex];
+        // // commentDtoModel[widget.listIndex];
+        // // context.select((FeedIdcommentlNotifier value) => value.commentDtoModel[index]);
+        // print("评论model赋值${ Application.replysModel.id}");
+        // // 唤醒键盘获取焦点 commentFocus
+        // FocusScope.of(context).requestFocus(commentFocus);
+        // Application.hintText = "回复${model.name}";
+        // Application.commentTypes = CommentTypes.commentSubCom;
       },
       child:
     Row(
@@ -507,12 +540,14 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
         },
       );
     } else {
-      return GestureDetector(
-        child: Text("─── 查看${widget.commentDtoModel.replyCount - 2}条回复", style: TextStyle(fontSize: 12, color: AppColor.textSecondary)),
-        onTap: () {
-          loadData();
-        },
-      );
+      print("按钮initCount      ------${widget.commentDtoModel.initCount}");
+        return GestureDetector(
+          child: Text("─── 查看${widget.commentDtoModel.initCount }条回复",
+              style: TextStyle(fontSize: 12, color: AppColor.textSecondary)),
+          onTap: () {
+            loadData();
+          },
+        );
     }
   }
 
@@ -528,7 +563,7 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
             children: [
               // 查看按钮和隐藏按钮的切换
              Offstage(
-               offstage: (widget.commentDtoModel.initCount -2 ) <= 0,
+               offstage: (widget.commentDtoModel.initCount) == null,
                child: toggleButton(),
              ),
               // 间距
@@ -537,7 +572,7 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
               ),
               // 子评论
               Offstage(
-                offstage: ! widget.commentDtoModel.isShowAllComment,
+                offstage: !widget.commentDtoModel.isShowAllComment,
                 // child: AnimationLimiter(
                   child: MediaQuery.removePadding(
                       removeTop: true,
