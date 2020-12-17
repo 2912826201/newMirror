@@ -27,15 +27,8 @@ const String COLUMN_NAME_PROFILE_STATUS = 'status';
 const String COLUMN_NAME_PROFILE_AGE = 'age';
 const String COLUMN_NAME_PROFILE_ISPERFECT = 'isPerfect';
 const String COLUMN_NAME_PROFILE_ISPHONE = 'isPhone';
-const String COLUMN_NAME_PROFILE_FOLLOWINGCOUNT = 'followingCount';
-const String COLUMN_NAME_PROFILE_FOLLOWERCOUNT = 'followerCount';
-const String COLUMN_NAME_PROFILE_FEEDCOUNT = 'feedCount';
 const String COLUMN_NAME_PROFILE_RELATION = 'relation';
 const String COLUMN_NAME_PROFILE_MUTUALFRIENDCOUNT = 'mutualFriendCount';
-const String COLUMN_NAME_PROFILE_TRAININGSECONDS = 'trainingSeconds';
-const String COLUMN_NAME_PROFILE_WEIGHT = 'weight';
-const String COLUMN_NAME_PROFILE_ALBUMNUM = 'albumNum';
-
 
 
 //这个表是用来存放当前已登录用户信息的表
@@ -64,14 +57,9 @@ class ProfileDto {
 
   int isPerfect; //0 未完善 1 完善
   int isPhone; // 是否绑定手机号 0-未绑定 1-已绑定
-  int followingCount; //关注数
-  int followerCount; //粉丝数
-  int feedCount; //动态数
+
   int relation; //与用户关系 0-没关系 1-关注 2-粉丝 3-好友
   int mutualFriendCount; //共同好友数
-  int trainingSeconds; //训练总时长
-  int weight; //最近体重
-  int albumNum; //相片数量
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
@@ -98,14 +86,8 @@ class ProfileDto {
     COLUMN_NAME_PROFILE_AGE : age,
     COLUMN_NAME_PROFILE_ISPERFECT : isPerfect,
     COLUMN_NAME_PROFILE_ISPHONE : isPhone,
-    COLUMN_NAME_PROFILE_FOLLOWINGCOUNT : followingCount,
-    COLUMN_NAME_PROFILE_FOLLOWERCOUNT : followerCount,
-    COLUMN_NAME_PROFILE_FEEDCOUNT : feedCount,
     COLUMN_NAME_PROFILE_RELATION : relation,
     COLUMN_NAME_PROFILE_MUTUALFRIENDCOUNT : mutualFriendCount,
-    COLUMN_NAME_PROFILE_TRAININGSECONDS : trainingSeconds,
-    COLUMN_NAME_PROFILE_WEIGHT : weight,
-    COLUMN_NAME_PROFILE_ALBUMNUM : albumNum
     };
     return map;
   }
@@ -134,14 +116,8 @@ class ProfileDto {
     age = map[COLUMN_NAME_PROFILE_AGE];
     isPerfect = map[COLUMN_NAME_PROFILE_ISPERFECT];
     isPhone = map[COLUMN_NAME_PROFILE_ISPHONE];
-    followingCount = map[COLUMN_NAME_PROFILE_FOLLOWINGCOUNT];
-    followerCount = map[COLUMN_NAME_PROFILE_FOLLOWERCOUNT];
-    feedCount = map[COLUMN_NAME_PROFILE_FEEDCOUNT];
     relation = map[COLUMN_NAME_PROFILE_RELATION];
     mutualFriendCount = map[COLUMN_NAME_PROFILE_MUTUALFRIENDCOUNT];
-    trainingSeconds = map[COLUMN_NAME_PROFILE_TRAININGSECONDS];
-    weight = map[COLUMN_NAME_PROFILE_WEIGHT];
-    albumNum = map[COLUMN_NAME_PROFILE_ALBUMNUM];
   }
 
   UserModel toUserModel() {
@@ -169,14 +145,8 @@ class ProfileDto {
       age: age,
       isPerfect: isPerfect,
       isPhone: isPhone,
-      followingCount: followingCount,
-      followerCount: followerCount,
-      feedCount: feedCount,
       relation: relation,
       mutualFriendCount: mutualFriendCount,
-      trainingSeconds: trainingSeconds,
-      weight: weight,
-      albumNum: albumNum,
     );
     return model;
   }
@@ -205,13 +175,7 @@ class ProfileDto {
     age = model.age;
     isPerfect = model.isPerfect;
     isPhone = model.isPhone;
-    followingCount = model.followingCount;
-    followerCount = model.followerCount;
-    feedCount = model.feedCount;
     relation = model.relation;
     mutualFriendCount = model.mutualFriendCount;
-    trainingSeconds = model.trainingSeconds;
-    weight = model.weight;
-    albumNum = model.albumNum;
   }
 }
