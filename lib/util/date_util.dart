@@ -86,15 +86,17 @@ class DateUtil{
 
   //将字符串的时间转为dateTime
   static DateTime stringToDateTime(String dateString) {
-    DateTime dateTime = DateTime.tryParse(dateString);
-    return dateTime;
+    try {
+      DateTime dateTime = DateTime.tryParse(dateString);
+      return dateTime;
+    } catch (e) {
+      return new DateTime.now();
+    }
   }
 
   ///获取当前时间的毫秒级
   static int getNowDateMs() {
-    return DateTime
-        .now()
-        .millisecondsSinceEpoch;
+    return DateTime.now().millisecondsSinceEpoch;
   }
 
   /// get DateTime By Milliseconds.
@@ -102,5 +104,23 @@ class DateUtil{
     return ms == null
         ? null
         : DateTime.fromMillisecondsSinceEpoch(ms, isUtc: isUtc);
+  }
+
+  /// 将秒转换为中文
+  static String formatSecondToStringCn(int ms) {
+    if (ms < 60) {
+      return ms.toString() + "秒";
+    } else {
+      int hour = ms ~/ 3600;
+      int minute = ms % 3600 ~/ 60;
+      int second = ms % 60;
+      if (hour > 0) {
+        return "${hour}时${minute}分${second}秒";
+      } else if (minute > 0) {
+        return "${minute}分${second}秒";
+      } else {
+        return "${second}秒";
+      }
+    }
   }
 }

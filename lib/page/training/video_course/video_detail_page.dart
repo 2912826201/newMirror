@@ -5,12 +5,20 @@ import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
-import 'package:mirror/page/training/live_broadcast/sliver_custom_header_delegate.dart';
+import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/page/training/video_course/sliver_custom_header_delegate_video.dart';
+import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/comment_input_bottom_bar.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/live_broadcast/live_api.dart';
+import 'package:mirror/widget/post_comments.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:provider/provider.dart';
 
 import 'video_course_list_page.dart';
 
@@ -27,31 +35,41 @@ class VideoDetailPage extends StatefulWidget {
   @override
   createState() {
     return VideoDetailPageState(
-        heroTag: heroTag, liveCourseId: liveCourseId, courseId: courseId);
+        heroTag: heroTag, videoCourseId: liveCourseId, courseId: courseId);
   }
 }
 
 class VideoDetailPageState extends State<VideoDetailPage> {
   VideoDetailPageState(
-      {Key key, this.heroTag, this.liveCourseId, this.courseId});
+      {Key key, this.heroTag, this.videoCourseId, this.courseId});
 
   //头部hero的标签
   String heroTag;
 
-  //直播课程的id
-  int liveCourseId;
+  //视频课程的id
+  int videoCourseId;
 
-  //直播课程的大课程的id
+  //视频课程的大课程的id
   int courseId;
 
-  //当前直播的model
-  LiveModel liveModel;
+  //当前视频课程的model
+  LiveModel videoModel;
+
+  //其他用户的完成训练
+  List<UserModel> otherUsers;
 
   //加载状态
   LoadingStatus loadingStatus;
 
+  //评论加载状态
+  LoadingStatus loadingStatusComment;
+
+  //加载状态--子评论
+  var commentLoadingStatusList = <LoadingStatus>[];
+
   //title文字的样式
-  var titleTextStyle = TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
+  var titleTextStyle = TextStyle(
+      fontSize: 18, fontWeight: FontWeight.bold, color: AppColor.textPrimary1);
 
   //用户的评论热度
   CommentModel courseCommentHot;
@@ -59,28 +77,54 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   //评论
   CommentModel courseCommentTime;
 
+  //回复第二级别人的评论时-别人的id
+  int replyId = -1;
+
+  //回复第二级别人时 别人评论的id
+  int replyCommentId = -1;
+
+  //发布评论时的targetId
+  int targetId;
+
+  //发布评论时的targetType
+  int targetType;
+
   //判断是热度还是评论
   bool isHotOrTime = true;
 
   //用户评论的的一些动画参数
   var commentListSubSettingList = <CommentListSubSetting>[];
 
-  //每一个评论的高度
-  var commentItemHeight = 65;
-
   //折叠动画的时间
-  var animationTime = 300; //毫秒
+  var animationTime = 500; //毫秒
+
+  //是否可以回弹
+  bool isBouncingScrollPhysics = false;
+
+  //每次请求的评论个数
+  int courseCommentPageSize = 3;
+
+  //热门当前是第几页
+  int courseCommentPageHot = 1;
+
+  //时间排序当前是第几页
+  int courseCommentPageTime = 1;
+
+  //上拉加载数据
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
   @override
   void initState() {
     super.initState();
 
     //todo 先这样实现---以后再改为路由
-    liveModel = VideoCourseListPage.videoModel;
+    videoModel = VideoCourseListPage.videoModel;
     VideoCourseListPage.videoModel = null;
     courseCommentHot = null;
     courseCommentTime = null;
-    if (liveModel == null) {
+    loadingStatusComment = LoadingStatus.STATUS_LOADING;
+    if (videoModel == null) {
       loadingStatus = LoadingStatus.STATUS_LOADING;
       getDataAction();
       return;
@@ -101,6 +145,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   //判断加载什么布局
   Widget _buildSuggestions() {
     var widgetArray = <Widget>[];
+    //有数据
     if (loadingStatus == LoadingStatus.STATUS_COMPLETED) {
       return _buildSuggestionsComplete();
     } else {
@@ -108,27 +153,29 @@ class VideoDetailPageState extends State<VideoDetailPage> {
         height: 40,
       ));
       widgetArray.add(_getNoCompleteTitle());
+      //在加载中
       if (loadingStatus == LoadingStatus.STATUS_LOADING) {
         widgetArray.add(Expanded(
             child: SizedBox(
-          child: Center(
-            child: CircularProgressIndicator(),
-          ),
-        )));
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            )));
       } else {
+        //加载失败
         widgetArray.add(Expanded(
             child: SizedBox(
-          child: Center(
-            child: GestureDetector(
-              child: Text("加载失败"),
-              onTap: () {
-                loadingStatus = LoadingStatus.STATUS_LOADING;
-                setState(() {});
-                getDataAction();
-              },
-            ),
-          ),
-        )));
+              child: Center(
+                child: GestureDetector(
+                  child: Text("加载失败"),
+                  onTap: () {
+                    loadingStatus = LoadingStatus.STATUS_LOADING;
+                    setState(() {});
+                    getDataAction();
+                  },
+                ),
+              ),
+            )));
       }
       return Container(
         child: Column(children: widgetArray),
@@ -172,53 +219,193 @@ class VideoDetailPageState extends State<VideoDetailPage> {
 
   //加载数据成功时的布局
   Widget _buildSuggestionsComplete() {
-    print(heroTag);
-    return Stack(
-      children: [
-        ScrollConfiguration(
-          behavior: NoBlueEffectBehavior(),
-          child: CustomScrollView(
-            slivers: <Widget>[
-              SliverPersistentHeader(
-                pinned: true,
-                delegate: SliverCustomHeaderDelegate(
-                  title: liveModel.name,
-                  collapsedHeight: 40,
-                  expandedHeight: 300,
-                  paddingTop: MediaQuery.of(context).padding.top,
-                  valueArray: [
-                    liveModel.totalTrainingTime.toString(),
-                    liveModel.totalCalories.toString(),
-                    liveModel.coursewareDto?.levelDto?.name
-                  ],
-                  titleArray: ["分钟", "千卡", "难度"],
-                  coverImgUrl: 'images/test/bg.png',
-                  heroTag: heroTag,
+    Widget widget = Container(
+      color: AppColor.white,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
+      height: MediaQuery
+          .of(context)
+          .size
+          .height,
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            height: MediaQuery
+                .of(context)
+                .size
+                .height - 50,
+            child: ScrollConfiguration(
+              behavior: NoBlueEffectBehavior(),
+              child: NotificationListener<ScrollNotification>(
+                onNotification: (ScrollNotification notification) {
+                  ScrollMetrics metrics = notification.metrics;
+                  if (metrics.pixels < 10) {
+                    if (isBouncingScrollPhysics) {
+                      isBouncingScrollPhysics = false;
+                      setState(() {
+
+                      });
+                    }
+                  } else {
+                    if (!isBouncingScrollPhysics) {
+                      isBouncingScrollPhysics = true;
+                      setState(() {
+
+                      });
+                    }
+                  }
+                  return false;
+                },
+                child: SmartRefresher(
+                  enablePullDown: false,
+                  enablePullUp: true,
+                  footer: CustomFooter(
+                    builder: (BuildContext context, LoadStatus mode) {
+                      Widget body;
+                      if (mode == LoadStatus.idle) {
+                        body = Text("");
+                      } else if (mode == LoadStatus.loading) {
+                        body = CircularProgressIndicator();
+                      } else if (mode == LoadStatus.failed) {
+                        body = Text("");
+                      } else if (mode == LoadStatus.canLoading) {
+                        body = Text("");
+                      } else {
+                        body = Text("");
+                      }
+                      return Container(
+                        height: 55.0,
+                        child: Center(child: body),
+                      );
+                    },
+                  ),
+                  controller: _refreshController,
+                  onLoading: _onLoading,
+                  child: CustomScrollView(
+                    physics: isBouncingScrollPhysics
+                        ? BouncingScrollPhysics()
+                        : ClampingScrollPhysics(),
+                    slivers: <Widget>[
+                      // header,
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: SliverCustomHeaderDelegateVideo(
+                          title: videoModel.name,
+                          collapsedHeight: 40,
+                          expandedHeight: 300,
+                          paddingTop: MediaQuery
+                              .of(context)
+                              .padding
+                              .top,
+                          coverImgUrl: 'images/test/bg.png',
+                          heroTag: heroTag,
+                          startTime: videoModel.startTime,
+                          endTime: videoModel.endTime,
+                        ),
+                      ),
+                      _getTitleWidget(),
+                      _getCoachItem(),
+                      _getLineView(),
+                      _getActionUi(),
+                      _getOtherUsersUi(),
+                      _getLineView(),
+                      _getCourseCommentUi(),
+                      SliverToBoxAdapter(
+                        child: SizedBox(height: 50,),
+                      )
+                    ],
+                  ),
                 ),
               ),
-              _getCoachItem(),
-              _getLineView(),
-              _getActionUi(),
-              _getLineView(),
-              _getCourseCommentUi(),
-              SliverToBoxAdapter(
-                child: SizedBox(
-                  height: 100,
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-        Positioned(
-          child: Container(
-            color: Colors.lightBlueAccent,
-            width: MediaQuery.of(context).size.width,
+          Container(
+            width: double.infinity,
             height: 50,
+            color: AppColor.white,
             child: _getBottomBar(),
           ),
-          bottom: 0,
+        ],
+      ),
+    );
+    return SingleChildScrollView(
+      physics: NeverScrollableScrollPhysics(),
+      child: widget,
+    );
+  }
+
+
+  //获取训练数据ui
+  Widget _getTitleWidget() {
+    var widgetArray = <Widget>[];
+    var titleArray = [
+      videoModel.totalTrainingTime.toString(),
+      videoModel.totalCalories.toString(),
+      videoModel.coursewareDto?.levelDto?.ename
+    ];
+    var subTitleArray = ["分钟", "千卡", videoModel.coursewareDto?.levelDto?.name];
+    var tagArray = ["时间", "消耗", "难度"];
+
+    for (int i = 0; i < titleArray.length; i++) {
+      widgetArray.add(
+          Container(
+            child: Column(
+              children: [
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    verticalDirection: VerticalDirection.down,
+                    children: [
+                      Text(titleArray[i],
+                        style: TextStyle(fontSize: 23,
+                            color: AppColor.black,
+                            fontWeight: FontWeight.bold),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(width: 2,),
+                      Container(
+                        child: Text(subTitleArray[i], style: TextStyle(
+                            fontSize: 12, color: AppColor.textPrimary3),),
+                        margin: const EdgeInsets.only(top: 4),
+                      )
+                    ],
+                  ),
+                ),
+                SizedBox(height: 6,),
+                Text(tagArray[i],
+                  style: TextStyle(fontSize: 12, color: AppColor.textHint),),
+              ],
+            ),
+            width: (MediaQuery
+                .of(context)
+                .size
+                .width - 1) / 3,
+          )
+      );
+      if (i < titleArray.length - 1) {
+        widgetArray.add(
+            Container(
+              width: 0.5,
+              height: 18,
+              color: AppColor.textHint,
+            )
+        );
+      }
+    }
+    return SliverToBoxAdapter(
+      child: Container(
+        width: double.infinity,
+        color: AppColor.white,
+        padding: const EdgeInsets.only(top: 14, bottom: 14),
+        child: Row(
+          children: widgetArray,
         ),
-      ],
+      ),
     );
   }
 
@@ -227,23 +414,23 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     return SliverToBoxAdapter(
       child: Container(
         padding:
-            const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+        const EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 20),
         color: Colors.white,
         width: double.infinity,
         child: Row(
           children: [
             Container(
-              height: 45,
-              width: 45,
+              height: 32,
+              width: 32,
               decoration: BoxDecoration(
                 color: Colors.white,
-                border: Border.all(width: 0.5, color: Colors.black),
+                // border: Border.all(width: 0.0, color: Colors.black),
                 borderRadius: BorderRadius.circular(30),
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(30),
                 child: Image.asset(
-                  liveModel.coachDto?.avatarUri,
+                  "images/test/yxlm1.jpeg",
                   fit: BoxFit.cover,
                 ),
               ),
@@ -255,21 +442,33 @@ class VideoDetailPageState extends State<VideoDetailPage> {
               child: Column(
                 children: [
                   Text(
-                    liveModel.coachDto?.nickName + "教练",
-                    style: TextStyle(fontSize: 20),
+                    // ignore: null_aware_before_operator
+                    videoModel.coachDto?.nickName,
+                    style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColor.textPrimary2,
+                        fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
             ),
             Expanded(child: SizedBox()),
-            Container(
-              padding:
-                  const EdgeInsets.only(left: 15, right: 15, top: 3, bottom: 3),
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(3),
+            InkWell(
+              child: Container(
+                padding: const EdgeInsets.only(
+                    left: 16, right: 16, top: 5, bottom: 5),
+                decoration: BoxDecoration(
+                  color: AppColor.black,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: Text(
+                  "关注",
+                  style: TextStyle(color: AppColor.white, fontSize: 11),
+                ),
               ),
-              child: Text("关注"),
+              onTap: () {
+                ToastShow.show(msg: "点击了关注教练", context: context);
+              },
             )
           ],
         ),
@@ -282,51 +481,79 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     return SliverToBoxAdapter(
       child: Container(
         width: double.infinity,
-        height: 10,
-        color: Colors.grey,
+        height: 12,
+        color: AppColor.bgWhite_65,
       ),
     );
   }
 
   //获取动作的ui
   Widget _getActionUi() {
+    if (videoModel.movementDtos == null || videoModel.movementDtos.length < 1) {
+      return SliverToBoxAdapter();
+    }
     var widgetArray = <Widget>[];
-    var titleStyle = TextStyle(fontSize: 20);
     widgetArray.add(Container(
-      padding: const EdgeInsets.only(left: 20, top: 10, bottom: 10),
+      padding: const EdgeInsets.only(left: 16, top: 24, bottom: 11.5),
       width: double.infinity,
       child: Text(
-        "动作  1个",
+        "动作${videoModel.movementDtos.length}个",
         style: titleTextStyle,
       ),
     ));
 
-    // widgetArray.add(Container(
-    //   width: double.infinity,
-    //   height: 0.3,
-    //   margin: const EdgeInsets.only(left: 20, right: 20),
-    //   color: Colors.grey,
-    // ));
+    widgetArray.add(Container(
+      width: double.infinity,
+      height: 1,
+      margin: const EdgeInsets.only(left: 16, right: 16),
+      color: AppColor.bgWhite,
+    ));
+
     widgetArray.add(
       Container(
         width: double.infinity,
-        margin: const EdgeInsets.only(left: 30, right: 20),
-        padding: const EdgeInsets.only(top: 13, bottom: 13),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              liveModel.coursewareDto?.partDto.name,
-              style: titleStyle,
-            ),
-            Text(
-              liveModel.coursewareDto?.partDto?.updateTime?.toString(),
-              style: titleStyle,
-            ),
-          ],
+        height: 66,
+        margin: const EdgeInsets.only(top: 18, bottom: 18),
+        child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: videoModel.movementDtos.length,
+            itemBuilder: (context, index) {
+              return Container(
+                width: 136,
+                height: 66,
+                padding: const EdgeInsets.all(12),
+                margin: index == 0
+                    ? const EdgeInsets.only(left: 15.5)
+                    : (index == videoModel.movementDtos.length - 1
+                    ? const EdgeInsets.only(left: 8)
+                    : const EdgeInsets.only(left: 8, right: 15.5)),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  color: AppColor.bgWhite,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Container(width: double.infinity,
+                      child: Text(videoModel.movementDtos[index].name,
+                        style: TextStyle(
+                            fontSize: 14, color: AppColor.textPrimary2),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,),),
+                    Container(width: double.infinity,
+                        child: Text(
+                          videoModel.movementDtos[index].amount.toString() +
+                              videoModel.movementDtos[index].unit.toString(),
+                          style: TextStyle(
+                              fontSize: 12, color: AppColor.textSecondary),)),
+                  ],
+                ),
+              );
+            }
         ),
       ),
     );
+
 
     return SliverToBoxAdapter(
       child: Container(
@@ -339,12 +566,80 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     );
   }
 
+  //其他人完成的训练ui
+  Widget _getOtherUsersUi() {
+    if (otherUsers != null && otherUsers.length > 0) {
+      var imageArray = <Widget>[];
+      for (int i = 0; i < otherUsers.length; i++) {
+        imageArray.add(
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            child: Image.network(otherUsers[i].avatarUri, fit: BoxFit.cover,),
+            width: (MediaQuery
+                .of(context)
+                .size
+                .width - 16 * 3) / 3,
+            height: (MediaQuery
+                .of(context)
+                .size
+                .width - 16 * 3) / 3,
+          ),
+        );
+      }
+
+
+      return SliverToBoxAdapter(
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              height: 12,
+              color: AppColor.bgWhite_65,
+            ),
+            SizedBox(height: 23,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: Text("TA们刚刚完成训练", style: titleTextStyle,),
+                ),
+                Container(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: Icon(Icons.chevron_right, color: AppColor.textHint,),
+                ),
+              ],
+            ),
+            SizedBox(height: 11,),
+            Container(
+              width: double.infinity,
+              height: 1,
+              margin: const EdgeInsets.only(left: 16, right: 16),
+              color: AppColor.bgWhite,
+            ),
+            SizedBox(height: 12,),
+            Container(
+              padding: const EdgeInsets.only(left: 16, right: 8),
+              child: Row(
+                children: imageArray,
+              ),
+            ),
+            SizedBox(height: 16,),
+          ],
+        ),
+      );
+    } else {
+      return SliverToBoxAdapter();
+    }
+  }
+
+
   //课程评论的框架--头部的数据
   Widget _getCourseCommentUi() {
     List<Widget> widgetArray = <Widget>[];
     //评论头部title
     widgetArray.add(Container(
-      padding: const EdgeInsets.only(left: 20, top: 10, bottom: 10),
+      padding: const EdgeInsets.only(left: 16, top: 10, bottom: 10),
       width: double.infinity,
       child: Text(
         "课程评论",
@@ -352,41 +647,74 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       ),
     ));
     //评论数量等等
-    widgetArray.add(
-      Container(
-        width: double.infinity,
-        padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "${isHotOrTime ? (courseCommentHot?.totalCount) : (courseCommentTime?.totalCount)}评论",
-              style: TextStyle(fontSize: 20),
-            ),
-            GestureDetector(
-              child: Text(
-                "按热度/按时间",
-                style: TextStyle(fontSize: 20),
+    widgetArray.add(Container(
+      width: double.infinity,
+      padding: const EdgeInsets.only(left: 16.5, right: 16, top: 8),
+      child: Row(
+        children: [
+          Text(
+            "${isHotOrTime ? (courseCommentHot?.totalCount) : (courseCommentTime
+                ?.totalCount)}评论",
+            style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
+          ),
+          Expanded(child: SizedBox()),
+          InkWell(
+            child: Text(
+              "按热度",
+              style: TextStyle(
+                fontSize: 14,
+                color: isHotOrTime ? AppColor.textPrimary1 : AppColor
+                    .textSecondary,
+                fontWeight: isHotOrTime ? FontWeight.bold : FontWeight.normal,
               ),
-              onTap: () {
-                isHotOrTime = !isHotOrTime;
-                getDataAction();
-              },
             ),
-          ],
-        ),
+            splashColor: AppColor.textHint1,
+            onTap: () {
+              if (!isHotOrTime) {
+                _refreshController.loadComplete();
+                isHotOrTime = !isHotOrTime;
+                getDataAction(isFold: true);
+              }
+            },
+          ),
+          SizedBox(width: 7,),
+          Container(
+            width: 0.5,
+            height: 15.5,
+            color: AppColor.textHint1,
+          ),
+          SizedBox(width: 7,),
+          InkWell(
+            child: Text(
+              "按时间",
+              style: TextStyle(
+                fontSize: 14,
+                color: !isHotOrTime ? AppColor.textPrimary1 : AppColor
+                    .textSecondary,
+                fontWeight: !isHotOrTime ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+            splashColor: AppColor.textHint1,
+            onTap: () {
+              if (isHotOrTime) {
+                _refreshController.loadComplete();
+                isHotOrTime = !isHotOrTime;
+                getDataAction(isFold: true);
+              }
+            },
+          ),
+
+        ],
       ),
-    );
-    widgetArray.add(SizedBox(
-      height: 16,
-    ));
+    ),);
+    widgetArray.add(SizedBox(height: 12,));
     //点击写评论
     widgetArray.add(Center(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            margin: EdgeInsets.only(left: 20),
+            margin: EdgeInsets.only(left: 16),
             width: 28,
             height: 28,
             decoration: BoxDecoration(
@@ -407,10 +735,22 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                 color: AppColor.bgWhite_65,
               ),
               child: Text("说点什么吧~",
-                  style: TextStyle(fontSize: 14, color: AppColor.textHint)),
+                  style: TextStyle(
+                      fontSize: 14, color: AppColor.textHint)),
             ),
             onTap: () {
-              ToastShow.show(msg: "点击了添加评论", context: context);
+              targetId = videoModel.courseId;
+              targetType = 1;
+              replyId = -1;
+              replyCommentId = -1;
+
+              openInputBottomSheet(
+                context: this.context,
+                voidCallback: (String text, BuildContext context) {
+                  _publishComment(text);
+                  print("发表评论----" + text);
+                },
+              );
             },
           ),
         ],
@@ -433,65 +773,150 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   Widget _getCommentItemUi() {
     var widgetArray = <Widget>[];
 
-    widgetArray.add(SizedBox(
-      height: 10,
-    ));
-
-    if ((isHotOrTime ? (courseCommentHot) : (courseCommentTime)) == null) {
-      widgetArray.add(Container(
-        child: Text("暂无评论"),
-      ));
+    widgetArray.add(SizedBox(height: 23,));
+    if (loadingStatusComment == LoadingStatus.STATUS_LOADING) {
+      widgetArray.add(Container());
     } else {
-      for (int i = 0;
-          i <
-              (isHotOrTime ? (courseCommentHot) : (courseCommentTime))
-                  ?.list
-                  ?.length;
-          i++) {
-        CommentDtoModel value =
-            (isHotOrTime ? (courseCommentHot) : (courseCommentTime)).list[i];
-
+      if ((isHotOrTime ? (courseCommentHot) : (courseCommentTime)) == null) {
         widgetArray.add(Container(
-          width: double.infinity,
-          padding: const EdgeInsets.only(left: 20, right: 20),
           child: Column(
             children: [
-              _getCommentUi(value, false),
-              Offstage(
-                offstage: value.replyCount < 1,
-                child: Container(
-                  width: double.infinity,
-                  child: Column(
-                    children: [
-                      GestureDetector(
-                        child: Container(
-                          child: Text(
-                            "—— " +
-                                (commentListSubSettingList[i].isFold
-                                    ? "查看"
-                                    : "隐藏") +
-                                "${value.replys?.length}条回复",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                          width: double.infinity,
-                          padding: const EdgeInsets.only(left: 55),
-                        ),
-                        onTap: () {
-                          commentListSubSettingList[i].isFold =
-                              !commentListSubSettingList[i].isFold;
-                          setState(() {});
-                        },
-                      ),
-                      _getSubCommentItemUi(value, i),
-                    ],
-                  ),
-                ),
-              ),
+              Image.asset("images/test/bg.png", fit: BoxFit.cover,
+                width: 224,
+                height: 224,),
+              SizedBox(height: 16,),
+              Text("偷偷逆袭中，还没有人来冒泡呢",
+                style: TextStyle(fontSize: 14, color: AppColor.textSecondary),)
             ],
           ),
         ));
+      } else {
+        for (int i = 0; i <
+            (isHotOrTime ? (courseCommentHot) : (courseCommentTime))?.list
+                ?.length; i++) {
+          CommentDtoModel value = (isHotOrTime
+              ? (courseCommentHot)
+              : (courseCommentTime)).list[i];
+          var subCommentCompleteTitle =
+          // ignore: null_aware_before_operator
+          (value.replys?.length < value.replyCount + value.pullNumber
+              ? "查看"
+              : (commentListSubSettingList[i].isFold ? "查看" : "隐藏"));
+          var subCommentComplete =
+          // ignore: null_aware_before_operator
+          subCommentCompleteTitle +
+              // ignore: null_aware_before_operator
+              "${value.replys?.length >= value.replyCount + value.pullNumber
+                  ? value.replyCount
+                  : (value.replyCount + value.pullNumber -
+                  value.replys?.length)}条回复";
+          if (subCommentCompleteTitle == "隐藏") {
+            subCommentComplete = "隐藏回复";
+          }
+          var subCommentLoading = "正在加载。。。";
+
+
+          widgetArray.add(Container(
+            width: double.infinity,
+            padding: const EdgeInsets.only(left: 16, right: 16),
+            child: Column(
+              children: [
+                _getCommentUi(value, false, value.id),
+                SizedBox(height: 13,),
+                Offstage(
+                  offstage: value.replyCount + value.pullNumber < 1,
+                  child: Container(
+                    width: double.infinity,
+                    child: Column(
+                      children: [
+                        _getSubCommentItemUi(value, i),
+                        Offstage(
+                          offstage: value.replyCount < 1,
+                          child: Container(
+                            width: double.infinity,
+                            child: GestureDetector(
+                              child: Row(
+                                children: [
+                                  SizedBox(width: 57,),
+                                  Container(
+                                    width: 40,
+                                    height: 0.5,
+                                    color: AppColor.textSecondary,
+                                  ),
+                                  SizedBox(width: 4,),
+                                  Container(
+                                    child: Text(commentLoadingStatusList[i] ==
+                                        LoadingStatus.STATUS_COMPLETED
+                                        ? subCommentComplete
+                                        : subCommentLoading,
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              onTap: () {
+                                // ignore: null_aware_before_operator
+                                if (value.replys?.length >=
+                                    value.replyCount + value.pullNumber) {
+                                  (isHotOrTime
+                                      ? courseCommentHot.list[i].replys
+                                      : courseCommentTime.list[i].replys)
+                                      .clear();
+                                  if (isHotOrTime) {
+                                    courseCommentHot.list[i].replyCount +=
+                                        courseCommentHot.list[i].pullNumber;
+                                    courseCommentHot.list[i].pullNumber = 0;
+                                  } else {
+                                    courseCommentTime.list[i].replyCount +=
+                                        courseCommentTime.list[i].pullNumber;
+                                    courseCommentTime.list[i].pullNumber = 0;
+                                  }
+                                  courseCommentPageHot = 1;
+                                  courseCommentPageTime = 1;
+                                  setState(() {});
+                                  // if (commentListSubSettingList[i].subCommentAllHeight == null) {
+                                  //   commentListSubSettingList[i]
+                                  //       .subCommentAllHeight =
+                                  //       commentListSubSettingList[i].globalKey
+                                  //           .currentContext.size.height;
+                                  //   setState(() {
+                                  //
+                                  //   });
+                                  //   Future.delayed(Duration(milliseconds: 100), () {
+                                  //     commentListSubSettingList[i].isFold =
+                                  //     !commentListSubSettingList[i].isFold;
+                                  //     setState(() {});
+                                  //   });
+                                  // } else {
+                                  //   commentListSubSettingList[i].isFold = !commentListSubSettingList[i].isFold;
+                                  //   setState(() {});
+                                  // }
+                                } else {
+                                  commentListSubSettingList[i].isFold = false;
+                                  commentLoadingStatusList[i] =
+                                      LoadingStatus.STATUS_LOADING;
+                                  setState(() {
+
+                                  });
+                                  _getSubComment(value.id, value.replys?.length,
+                                      value.replyCount, value.pullNumber, i);
+                                }
+                              },
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 13,),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ));
+        }
       }
     }
+
 
     return Container(
       width: double.infinity,
@@ -506,101 +931,248 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     var widgetArray = <Widget>[];
     if (value.replys != null && value.replys.length > 0) {
       for (int i = 0; i < value.replys.length; i++) {
-        widgetArray.add(_getCommentUi(value.replys[i], true));
+        widgetArray.add(_getCommentUi(value.replys[i], true, value.id));
+        widgetArray.add(SizedBox(height: 13,));
       }
     }
-    return AnimatedContainer(
-      height: double.parse((commentListSubSettingList[index].isFold
-              ? 0.0
-              : commentListSubSettingList[index].subCommentAllHeight)
-          .toString()),
-      duration: Duration(milliseconds: animationTime),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.only(left: 55),
-        child: SingleChildScrollView(
-          physics: NeverScrollableScrollPhysics(),
-          child: Column(
-            children: widgetArray,
-          ),
+
+    Widget widget = Container(
+      key: commentListSubSettingList[index].globalKey,
+      width: double.infinity,
+      padding: const EdgeInsets.only(left: 55),
+      child: SingleChildScrollView(
+        physics: NeverScrollableScrollPhysics(),
+        child: Column(
+          children: widgetArray,
         ),
       ),
     );
+
+    return Offstage(
+      offstage: commentListSubSettingList[index].isFold,
+      child: widget,
+    );
+    // if(commentListSubSettingList[index].subCommentAllHeight==null||commentListSubSettingList[index].subCommentAllHeight<0) {
+    //   return Offstage(
+    //     offstage: commentListSubSettingList[index].isFold,
+    //     child: widget,
+    //   );
+    // }else{
+    //   return AnimatedContainer(
+    //     height: commentListSubSettingList[index].isFold?0.0:commentListSubSettingList[index].subCommentAllHeight,
+    //     duration: Duration(milliseconds: animationTime),
+    //     child: widget,
+    //   );
+    // }
   }
 
   //获取评论的item--每一个item
-  Widget _getCommentUi(CommentDtoModel value, bool isSubComment) {
-    return Container(
-      padding: const EdgeInsets.only(top: 10, bottom: 10),
-      height: commentItemHeight.toDouble(),
-      width: double.infinity,
+  Widget _getCommentUi(CommentDtoModel value, bool isSubComment,
+      int _targetId) {
+    var textSpanList = <TextSpan>[];
+    textSpanList.add(TextSpan(
+      text: value.name + " ",
+      style: TextStyle(
+        fontSize: 15,
+        color: AppColor.textPrimary1,
+        fontWeight: FontWeight.bold,
+      ),
+    ));
+    if (isSubComment) {
+      if (value.replyId != null && value.replyId > 0) {
+        textSpanList.add(TextSpan(
+          text: "回复 ",
+          style: TextStyle(
+            fontSize: 14,
+            color: AppColor.textPrimary1,
+          ),
+        ));
+
+        textSpanList.add(TextSpan(
+          text: value.replyName + " ",
+          style: TextStyle(
+            fontSize: 15,
+            color: AppColor.textPrimary1,
+            fontWeight: FontWeight.bold,
+          ),
+        ));
+      }
+    }
+    textSpanList.add(TextSpan(
+      text: value.content,
+      style: TextStyle(
+        fontSize: 14,
+        color: AppColor.textPrimary1,
+      ),
+    ));
+
+
+    return IntrinsicHeight(
       child: Row(
+        verticalDirection: VerticalDirection.up,
         children: [
           //头像
           Container(
-            width: 45,
-            height: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(width: 0.5, color: Colors.black),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(30),
-              child: Image.asset(
-                value.avatarUrl,
-                fit: BoxFit.cover,
-              ),
+            padding: const EdgeInsets.only(top: 2),
+            child: Column(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(30),
+                  child: Image.asset(
+                    "images/test/bg.png",
+                    fit: BoxFit.cover,
+                    width: 42,
+                    height: 42,
+                  ),
+                )
+              ],
             ),
           ),
           //间隔
           SizedBox(
-            width: 10,
+            width: 15,
           ),
-          //中间信息
+          // //中间信息
           Expanded(
               child: SizedBox(
-            child: Column(
-              children: [
-                Container(
-                  width: double.infinity,
-                  child: Text(
-                    value.name + "   " + value.content,
-                    style: TextStyle(fontSize: 13, color: Colors.black),
-                  ),
-                ),
-                SizedBox(
-                  height: 4,
-                ),
-                Container(
-                  width: double.infinity,
-                  child: Text(
-                    value.createTime.toString() +
-                        "  " +
-                        (value.laudCount.toString()) +
-                        "次赞   回复",
-                    style: TextStyle(fontSize: 11, color: Colors.grey),
-                  ),
-                ),
-              ],
-            ),
-          )),
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        child: Column(
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              child: RichText(
+                                text: TextSpan(
+                                  children: textSpanList,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 6,
+                            ),
+                            Container(
+                                width: double.infinity,
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      child: Text(
+                                        DateUtil.formatDateNoYearString(
+                                            DateUtil.getDateTimeByMs(
+                                                value.createTime)),
+                                        style: TextStyle(fontSize: 12,
+                                            color: AppColor.textSecondary),
+                                      ),
+                                    ),
+                                    SizedBox(width: 12,),
+                                    Container(
+                                      child: Text("回复",
+                                        style: TextStyle(fontSize: 12,
+                                            color: AppColor.textSecondary),
+                                      ),
+                                    ),
+                                    SizedBox(width: 12,),
+                                    Offstage(
+                                      // offstage: uId!=value.uid,
+                                      offstage: true,
+                                      child: InkWell(
+                                        child: Container(
+                                          child: Text("删除",
+                                            style: TextStyle(fontSize: 12,
+                                                color: AppColor.textSecondary),
+                                          ),
+                                        ),
+                                        onTap: () {
+                                          ToastShow.show(
+                                              msg: "点击删除", context: context);
+                                          showCupertinoDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return CupertinoAlertDialog(
+                                                  title: Text('删除评论'),
+                                                  content: Text('是否删除评论'),
+                                                  actions: <Widget>[
+                                                    CupertinoDialogAction(
+                                                      child: Text('不删除'),
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                    ),
+                                                    CupertinoDialogAction(
+                                                      child: Text('删除'),
+                                                      onPressed: () {
+                                                        _deleteComment(
+                                                            value.id);
+                                                        Navigator.pop(context);
+                                                      },
+                                                    ),
+                                                  ],
+                                                );
+                                              });
+                                        },
+                                      ),
+                                    )
+                                  ],
+                                )
+                            ),
+                          ],
+                        ),
+                      ),
+                      InkWell(
+                        child: Container(
+                          width: double.infinity,
+                          color: AppColor.transparent,
+                          height: double.infinity,
+                        ),
+                        onTap: () {
+                          targetId = _targetId;
+                          targetType = 2;
+                          if (isSubComment) {
+                            replyId = value.uid;
+                            replyCommentId = value.id;
+                          } else {
+                            replyId = -1;
+                            replyCommentId = -1;
+                          }
+                          openInputBottomSheet(
+                            context: this.context,
+                            hintText: "回复 " + value.name,
+                            voidCallback: (String text,
+                                BuildContext context) {
+                              // publishComment(text);
+                              _publishComment(text);
+                              print("回复评论----" + text);
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  )
+              )
+          ),
+          SizedBox(width: 16,),
           //点赞
           Container(
-            height: double.infinity,
-            child: Center(
-              child: GestureDetector(
-                child: Icon(
-                  Icons.favorite_border,
-                  color: value.isLaud == 1 ? Colors.red : Colors.grey,
-                ),
-                onTap: () {
-                  if (value.isLaud == 1) {
-                    return;
-                  }
-                  value.isLaud = 1;
-                  setState(() {});
-                },
+            child: GestureDetector(
+              child: Column(
+                children: [
+                  Icon(
+                    value.isLaud == 1 ? Icons.favorite : Icons.favorite_border,
+                    color: value.isLaud == 1 ? Colors.red : Colors.grey,
+                    size: 18,
+                  ),
+                  SizedBox(height: 7,),
+                  Text(
+                    IntegerUtil.formatIntegerEn(value.laudCount),
+                    style: TextStyle(
+                        fontSize: 12, color: AppColor.textSecondary),
+                  ),
+                ],
               ),
+              onTap: () {
+                _laudComment(value.id, value.isLaud == 0);
+              },
             ),
           ),
         ],
@@ -610,58 +1182,207 @@ class VideoDetailPageState extends State<VideoDetailPage> {
 
   //获取底部按钮
   Widget _getBottomBar() {
-    var textStyle = TextStyle(fontSize: 20, color: Colors.white);
+    bool isLoggedIn;
+    context.select((TokenNotifier notifier) =>
+    notifier.isLoggedIn ? isLoggedIn = true : isLoggedIn = false);
+
+    //todo 判断是否链接了终端
+    bool bindingTerminal = false;
+    //todo 判断用户是不是vip
+    bool isVip = false;
+    //todo 判断这个课程是不是vip直播
+    bool courseVip = false;
+    //todo 是否在下载中
+    bool isDownLoading = false;
+
+    TextStyle textStyle = const TextStyle(color: AppColor.white, fontSize: 16);
+    TextStyle textStyleVip = const TextStyle(
+        color: AppColor.textVipPrimary1, fontSize: 16);
+    EdgeInsetsGeometry margin_32 = const EdgeInsets.only(left: 32, right: 32);
+    EdgeInsetsGeometry marginLeft26Right20 = const EdgeInsets.only(
+        left: 26, right: 20);
+
+    var childrenArray = <Widget>[];
+
+    Widget widget3 = Container(
+      width: 60,
+      height: double.infinity,
+      margin: marginLeft26Right20,
+      child: Column(
+        children: [
+          Icon(Icons.headset),
+          Text("试听"),
+        ],
+      ),
+    );
+
+    if (!isDownLoading) {
+      if (!isLoggedIn || !bindingTerminal) {
+        childrenArray.add(
+            Expanded(child: SizedBox(
+              child: GestureDetector(
+                child: getBtnUi(
+                    false, "试听", textStyle, double.infinity, 40, margin_32),
+                onTap: () {
+                  print("绑定了终端");
+                  ToastShow.show(msg: "使用终端训练", context: context);
+                },
+              ),
+            ))
+        );
+      } else {
+        childrenArray.add(
+            GestureDetector(
+              child: widget3,
+              onTap: () {
+                print("试听");
+                ToastShow.show(msg: "试听", context: context);
+              },
+            )
+        );
+        if (!(!courseVip || isVip)) {
+          childrenArray.add(
+              Expanded(child: SizedBox(
+                child: GestureDetector(
+                  child: getBtnUi(
+                      true, "开通vip使用终端播放", textStyleVip, double.infinity, 40,
+                      margin_32),
+                  onTap: () {
+                    print("vip");
+                    ToastShow.show(msg: "开通vip使用终端播放", context: context);
+                  },
+                ),
+              ))
+          );
+        } else {
+          childrenArray.add(
+              Expanded(child: SizedBox(
+                child: GestureDetector(
+                  child: getBtnUi(
+                      false, "使用终端训练", textStyle, double.infinity, 40,
+                      margin_32),
+                  onTap: () {
+                    print("绑定了终端");
+                    ToastShow.show(msg: "使用终端训练", context: context);
+                  },
+                ),
+              ))
+          );
+        }
+      }
+    } else {
+      childrenArray.add(
+          Expanded(child: SizedBox(
+            child: GestureDetector(
+              child: getBtnUi(
+                  false, "下载中", textStyle, double.infinity, 40, margin_32),
+              onTap: () {
+                print("下载中");
+                ToastShow.show(msg: "下载中", context: context);
+              },
+            ),
+          ))
+      );
+    }
+
     return Container(
       width: double.infinity,
       height: double.infinity,
-      child: Center(
-        child: Text(
-          "预览视频",
-          style: textStyle,
-          textAlign: TextAlign.center,
+      child: Container(
+        width: double.infinity,
+        child: Row(
+          children: childrenArray,
         ),
       ),
     );
   }
 
+
+  Widget getBtnUi(bool isVip, String text, TextStyle textStyle, double width1,
+      double height1, EdgeInsetsGeometry marginData) {
+    var colors = <Color>[];
+    if (isVip) {
+      colors.add(AppColor.bgVip1);
+      colors.add(AppColor.bgVip2);
+    } else {
+      colors.add(AppColor.textPrimary1);
+      colors.add(AppColor.textPrimary1);
+    }
+    return Container(
+      width: width1,
+      height: height1,
+      margin: marginData,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(height1 / 2),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: colors,
+        ),
+      ),
+      child: Center(
+        child: Text(text, style: textStyle,),
+      ),
+    );
+  }
+
+
   //加载网络数据
-  void getDataAction() async {
-    print("getDataAction");
+  void getDataAction({bool isFold = false}) async {
+    // //获取评论
     if (isHotOrTime) {
-      print("courseCommentHot");
-      //todo 加载评论-*--没有分页加载只有第一页的
       if (courseCommentHot == null) {
         Map<String, dynamic> commentModel = await queryListByHot2(
-            targetId: courseId, targetType: 1, page: 1, size: 10);
+            targetId: courseId,
+            targetType: 1,
+            page: courseCommentPageHot,
+            size: courseCommentPageSize);
         if (commentModel != null) {
           courseCommentHot = CommentModel.fromJson(commentModel);
+          courseCommentPageHot++;
         }
       }
-      print("courseCommentHot--${courseCommentHot?.totalCount}");
-      setCommentListSubSetting(courseCommentHot);
+      setCommentListSubSetting(courseCommentHot, isFold: isFold);
     } else {
-      print("courseCommentTime");
       if (courseCommentTime == null) {
         Map<String, dynamic> commentModel = await queryListByTime(
-            targetId: courseId, targetType: 1, page: 1, size: 10);
+            targetId: courseId,
+            targetType: 1,
+            page: courseCommentPageTime,
+            size: courseCommentPageSize);
         if (commentModel != null) {
           courseCommentTime = CommentModel.fromJson(commentModel);
+          courseCommentPageTime++;
         }
       }
-      print("courseCommentTime--${courseCommentTime?.totalCount}");
-      setCommentListSubSetting(courseCommentTime);
+      setCommentListSubSetting(courseCommentTime, isFold: isFold);
     }
-    if (liveModel == null) {
+
+    loadingStatusComment = LoadingStatus.STATUS_COMPLETED;
+
+    //其他人完成训练
+    if (otherUsers == null) {
+      Map<String, dynamic> map = await getFinishedVideoCourse(courseId, 3);
+      if (map != null) {
+        otherUsers = <UserModel>[];
+        map["list"].forEach((v) {
+          otherUsers.add(UserModel.fromJson(v));
+        });
+      }
+    }
+
+    //获取直播详情数据
+    if (videoModel == null || videoModel.movementDtos == null) {
       //加载数据
-      Map<String, dynamic> model =
-          await liveCourseDetail(courseId: liveCourseId);
+      Map<String, dynamic> model = await liveCourseDetail(
+          courseId: videoCourseId);
       if (model == null) {
         loadingStatus = LoadingStatus.STATUS_IDEL;
         Future.delayed(Duration(seconds: 1), () {
           setState(() {});
         });
       } else {
-        liveModel = LiveModel.fromJson(model);
+        videoModel = LiveModel.fromJson(model);
         loadingStatus = LoadingStatus.STATUS_COMPLETED;
         setState(() {});
       }
@@ -672,25 +1393,290 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   }
 
   //设置评论的动画类
-  void setCommentListSubSetting(CommentModel commentModel) {
+  void setCommentListSubSetting(CommentModel commentModel,
+      {bool isFold = false}) {
     commentListSubSettingList.clear();
+    commentLoadingStatusList.clear();
     if (commentModel == null) {
       return;
     }
     for (int i = 0; i < commentModel?.list?.length; i++) {
       CommentListSubSetting commentListSubSetting = new CommentListSubSetting();
       commentListSubSetting.commentId = commentModel.list[i].id;
-      commentListSubSetting.isFold = true;
-      commentListSubSetting.subCommentAllHeight =
-          // ignore: null_aware_before_operator
-          commentModel.list[i]?.replys?.length * commentItemHeight;
+      commentListSubSetting.isFold = isFold;
       commentListSubSettingList.add(commentListSubSetting);
+      GlobalKey _globalKey = GlobalKey();
+      commentListSubSetting.globalKey = _globalKey;
+
+
+      //每一个加载评论的加载子评论的状态
+      LoadingStatus commentLoadingStatus = LoadingStatus.STATUS_COMPLETED;
+      commentLoadingStatusList.add(commentLoadingStatus);
     }
   }
+
+  //发布评论
+  _publishComment(String content) async {
+    await postComments(
+      targetId: targetId,
+      targetType: targetType,
+      content: content,
+      replyId: replyId > 0 ? replyId : null,
+      replyCommentId: replyCommentId > 0 ? replyCommentId : null,
+      commentModelCallback: (CommentDtoModel model) {
+        if (model != null) {
+          if (targetId == videoModel.courseId) {
+            if (courseCommentHot != null) {
+              courseCommentHot.list.insert(0, model);
+              setCommentListSubSetting(courseCommentHot);
+            }
+            if (courseCommentTime != null) {
+              courseCommentTime.list.insert(0, model);
+              setCommentListSubSetting(courseCommentTime);
+            }
+          } else {
+            if (courseCommentHot != null) {
+              for (int i = 0; i < courseCommentHot.list.length; i++) {
+                if (courseCommentHot.list[i].id == targetId) {
+                  courseCommentHot.list[i].replys.insert(0, model);
+                  courseCommentHot.list[i].pullNumber++;
+                  commentListSubSettingList[i].subCommentAllHeight = null;
+                }
+              }
+            }
+
+            if (courseCommentTime != null) {
+              for (int i = 0; i < courseCommentTime.list.length; i++) {
+                if (courseCommentTime.list[i].id == targetId) {
+                  courseCommentTime.list[i].replys.insert(0, model);
+                  courseCommentTime.list[i].pullNumber++;
+                  commentListSubSettingList[i].subCommentAllHeight = null;
+                }
+              }
+            }
+          }
+          ToastShow.show(msg: "发布成功", context: context);
+          setState(() {
+
+          });
+        } else {
+          ToastShow.show(msg: "发布失败", context: context);
+        }
+      },
+    );
+  }
+
+
+  //删除评论
+  _deleteComment(int commentId) async {
+    Map<String, dynamic> model = await deleteComment(commentId: commentId);
+    print(model);
+    if (model != null && model["state"] == true) {
+      _deleteCommentData(courseCommentHot, commentId, true);
+      _deleteCommentData(courseCommentTime, commentId, false);
+      ToastShow.show(msg: "删除成功", context: context);
+      setState(() {
+
+      });
+    } else {
+      ToastShow.show(msg: "删除失败，只能删除自己的评论", context: context);
+    }
+  }
+
+  _deleteCommentData(CommentModel commentModel, int commentId,
+      bool isHotOrTime) {
+    if (commentModel != null) {
+      for (int i = 0; i < commentModel.list.length; i++) {
+        if (commentModel.list[i].id == commentId) {
+          commentModel.list.removeAt(i);
+          break;
+        }
+        int judge = 0;
+        for (int j = 0; j < commentModel.list[i].replys.length; j++) {
+          if (commentModel.list[i].replys[j].id == commentId) {
+            commentModel.list[i].replys.removeAt(j);
+            (isHotOrTime ? courseCommentHot : courseCommentTime).list[i]
+                .replyCount--;
+            if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[i]
+                .pullNumber > 0) {
+              (isHotOrTime ? courseCommentHot : courseCommentTime).list[i]
+                  .replyCount +=
+                  (isHotOrTime ? courseCommentHot : courseCommentTime).list[i]
+                      .pullNumber;
+              (isHotOrTime ? courseCommentHot : courseCommentTime).list[i]
+                  .pullNumber = 0;
+            }
+            commentListSubSettingList[i].subCommentAllHeight = null;
+            judge = 1;
+            break;
+          }
+        }
+        if (judge == 1) {
+          break;
+        }
+      }
+    }
+  }
+
+  //获取子评论
+  _getSubComment(int targetId, int replyLength, int replyCount, int pullNumber,
+      int positionComment) async {
+    int subCommentPageSize = 3;
+    // int subCommentAllPage=replyCount%subCommentPageSize>0?(replyCount~/subCommentPageSize)+1:(replyCount~/subCommentPageSize);
+    int nowSubCommentPage = (replyLength - pullNumber) % subCommentPageSize > 0
+        ? ((replyLength - pullNumber) ~/ subCommentPageSize) + 1
+        : ((replyLength - pullNumber) ~/ subCommentPageSize);
+    int page = nowSubCommentPage + 1;
+
+    try {
+      Map<String, dynamic> commentModel = await (isHotOrTime
+          ? queryListByHot2
+          : queryListByTime)(targetId: targetId,
+          targetType: 2,
+          page: page,
+          size: subCommentPageSize);
+
+      if (commentModel != null) {
+        List<CommentDtoModel> commentDtoModelList = <CommentDtoModel>[];
+        commentDtoModelList.addAll(CommentModel
+            .fromJson(commentModel)
+            .list);
+
+        if ((isHotOrTime ? courseCommentHot : courseCommentTime)
+            .list[positionComment].replys != null) {
+          if ((isHotOrTime ? courseCommentHot : courseCommentTime)
+              .list[positionComment].pullNumber > 0) {
+            for (int i = 0; i <
+                (isHotOrTime ? courseCommentHot : courseCommentTime)
+                    .list[positionComment].replys.length; i++) {
+              for (int j = 0; j < commentDtoModelList.length; j++) {
+                if ((isHotOrTime ? courseCommentHot : courseCommentTime)
+                    .list[positionComment].replys[i].id ==
+                    commentDtoModelList[j].id) {
+                  commentDtoModelList.removeAt(j);
+                  j--;
+                  (isHotOrTime ? courseCommentHot : courseCommentTime)
+                      .list[positionComment].pullNumber--;
+                }
+              }
+            }
+          }
+          commentDtoModelList.insertAll(0,
+              (isHotOrTime ? courseCommentHot : courseCommentTime)
+                  .list[positionComment].replys);
+        }
+
+        (isHotOrTime ? courseCommentHot : courseCommentTime)
+            .list[positionComment].replys = commentDtoModelList;
+        if (commentDtoModelList.length >
+            (isHotOrTime ? courseCommentHot : courseCommentTime)
+                .list[positionComment].replyCount) {
+          (isHotOrTime ? courseCommentHot : courseCommentTime)
+              .list[positionComment].replyCount = commentDtoModelList.length;
+        }
+      }
+    } catch (e) {
+
+    }
+
+    commentLoadingStatusList[positionComment] = LoadingStatus.STATUS_COMPLETED;
+    setState(() {
+
+    });
+  }
+
+  //加载更多的评论
+  void _onLoading() async {
+    Future.delayed(Duration(milliseconds: 500), () async {
+      Map<String, dynamic> mapModel = await (isHotOrTime
+          ? queryListByHot2
+          : queryListByTime)(targetId: courseId,
+          targetType: 1,
+          page: (isHotOrTime ? courseCommentPageHot : courseCommentPageTime),
+          size: courseCommentPageSize);
+      if (mapModel != null) {
+        CommentModel commentModel = CommentModel.fromJson(mapModel);
+        if (commentModel == null || commentModel.list == null ||
+            commentModel.list.length < 1) {
+          _refreshController.loadNoData();
+        } else {
+          (isHotOrTime ? courseCommentHot : courseCommentTime)?.list?.addAll(
+              commentModel.list);
+          setCommentListSubSetting(
+              (isHotOrTime ? courseCommentHot : courseCommentTime));
+          isHotOrTime ? courseCommentPageHot++ : courseCommentPageTime++;
+          _refreshController.loadComplete();
+        }
+      } else {
+        _refreshController.loadNoData();
+      }
+      setState(() {});
+    });
+  }
+
+  //点赞-取消点赞
+  _laudComment(int commentId, bool laud) async {
+    Map<String, dynamic> model = await laudComment(
+        commentId: commentId, laud: laud ? 1 : 0);
+    if (model != null && model["state"]) {
+      _laudCommentData(courseCommentHot, commentId, true, laud);
+      _laudCommentData(courseCommentTime, commentId, false, laud);
+      if (laud) {
+        ToastShow.show(msg: "点赞成功", context: context);
+      } else {
+        ToastShow.show(msg: "取消点赞成功", context: context);
+      }
+      setState(() {
+
+      });
+    } else {
+      if (laud) {
+        ToastShow.show(msg: "点赞失败", context: context);
+      } else {
+        ToastShow.show(msg: "取消点赞失败", context: context);
+      }
+    }
+  }
+
+  //点赞
+  _laudCommentData(CommentModel commentModel, int commentId, bool isHotOrTime,
+      bool isLaud) {
+    if (commentModel != null) {
+      for (int i = 0; i < commentModel.list.length; i++) {
+        if (commentModel.list[i].id == commentId) {
+          isLaud ? (isHotOrTime ? courseCommentHot : courseCommentTime).list[i]
+              .laudCount++ : (isHotOrTime
+              ? courseCommentHot
+              : courseCommentTime).list[i].laudCount--;
+          (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].isLaud =
+          isLaud ? 1 : 0;
+          break;
+        }
+        int judge = 0;
+        for (int j = 0; j < commentModel.list[i].replys.length; j++) {
+          if (commentModel.list[i].replys[j].id == commentId) {
+            isLaud ? (isHotOrTime ? courseCommentHot : courseCommentTime)
+                .list[i].replys[j].laudCount++ : (isHotOrTime
+                ? courseCommentHot
+                : courseCommentTime).list[i].replys[j].laudCount--;
+            (isHotOrTime ? courseCommentHot : courseCommentTime).list[i]
+                .replys[j].isLaud = isLaud ? 1 : 0;
+            judge = 1;
+            break;
+          }
+        }
+        if (judge == 1) {
+          break;
+        }
+      }
+    }
+  }
+
 }
 
 class CommentListSubSetting {
   int commentId;
   bool isFold;
-  int subCommentAllHeight;
+  double subCommentAllHeight;
+  GlobalKey globalKey;
 }
