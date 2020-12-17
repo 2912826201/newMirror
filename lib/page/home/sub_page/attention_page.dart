@@ -416,9 +416,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                         itemCount: attentionIdList.length + 1,
                         controller: _controller,
                         itemBuilder: (context, index) {
-                          print("关注");
-                          print(index);
-                          print(attentionIdList.length);
                           int id = attentionIdList[index];
                           print("动态Id$id");
                           // 获取动态id指定model
@@ -442,6 +439,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
 
   //返回视图
   backToView(int index, PostFeedModel postFeedModel,HomeFeedModel feedmodel) {
+
     if (index == 0) {
       if (postFeedModel != null) {
         return createdPostPromptView();

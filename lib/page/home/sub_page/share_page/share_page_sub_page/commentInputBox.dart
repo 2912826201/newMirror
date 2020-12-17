@@ -96,7 +96,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
                               context.read<FeedMapNotifier>().feedPublishComment(commentModel, widget.feedModel.id);
                             }
                             // 关闭评论输入框
-                            Navigator.of(context).pop(1);
+                            // Navigator.of(context).pop(1);
                           });
                     },
                   );

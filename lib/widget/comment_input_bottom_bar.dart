@@ -143,8 +143,8 @@ class CommentInputBottomBar extends StatelessWidget {
                     offstage: Platform.isIOS,
                     child: GestureDetector(
                         onTap: () {
-                          Navigator.of(context).pop(1);
                           voidCallback(_textEditingController.text, context);
+                          Navigator.of(context).pop(1);
                         },
                         child: IgnorePointer(
                           // 监听输入框的值==""使外层点击不生效。非""手势生效。
