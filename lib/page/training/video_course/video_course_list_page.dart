@@ -435,13 +435,17 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
 
   //筛选的box
   Widget _filterBox() {
+    if (videoTagModel == null) {
+      return Container();
+    }
     return Container(
       width: double.infinity,
       height: double.infinity,
       child: Column(
         children: [
           //上半部分可滑动区域
-          Expanded(child: SizedBox(
+          Expanded(
+              child: SizedBox(
             child: _filterBoxItem(),
           )),
           //底部按钮
