@@ -255,7 +255,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
         Container(
           height: height*0.3,
           width: width,
-          child: Image.network(_avatar==null?"":_avatar,fit: BoxFit.cover,)
+          child: _avatar!=null?Image.network(_avatar,fit: BoxFit.cover,):Expanded(child:SizedBox())
         ),
         Positioned(
           top: 0,
@@ -458,7 +458,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
       width: 80,
       height: 80,
       child: CircleAvatar(
-            backgroundImage: NetworkImage(_avatar.isEmpty?"https://scpic.chinaz.net/files/pic/pic9/201911/zzpic21124.jpg":_avatar),
+            backgroundImage: NetworkImage(_avatar==null?"https://scpic.chinaz.net/files/pic/pic9/201911/zzpic21124.jpg":_avatar),
             maxRadius: 59,
           )
     );
