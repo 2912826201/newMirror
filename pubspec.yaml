@@ -60,7 +60,7 @@ dependencies:
   # ListView滚动插件
   scroll_to_index: ^1.0.6
   # 网络图片缓存
-  cached_network_image: ^2.3.3
+  cached_network_image: ^2.4.1
   # tarBar嵌套Tarbar联动
   union_tabs: ^1.0.0+7
   # 输入框内富文本显示
