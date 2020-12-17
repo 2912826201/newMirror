@@ -1,37 +1,29 @@
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/data/database/profile_db_helper.dart';
-import 'package:mirror/data/database/token_db_helper.dart';
-import 'package:mirror/data/dto/profile_dto.dart';
-import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/getExtrainfo_model.dart';
 import 'package:mirror/data/model/profile_model.dart';
-import 'package:mirror/data/model/token_model.dart';
-import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/data/notifier/token_notifier.dart';
-import 'package:mirror/route/router.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:r_scan/r_scan.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'profile_detail_page.dart';
 import 'scan_code_page.dart';
-enum ActionItems{
-  DENGCHU,DENGLU
-}
+
+enum ActionItems { DENGCHU, DENGLU }
+
 class ProfilePage extends StatefulWidget {
-  ProfilePage({Key key,this.panelController}):super(key:key);
+  ProfilePage({Key key, this.panelController}) : super(key: key);
   PanelController panelController;
+
   @override
   ProfileState createState() => new ProfileState();
 }
@@ -47,6 +39,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   int trainingSeconds;
   int weight;
   int albumNum;
+
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
@@ -57,16 +50,15 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     getProfileModel();
   }
 
-
-  getProfileModel()async{
-  ProfileModel attentionModel =  await ProfileFollowCount();
-  GetExtraInfoModel extraInfoModel = await ProfileGetExtraInfo();
-  print('resultModel============================${attentionModel==null}');
-    if(attentionModel!=null||extraInfoModel!=null){
-        print('uid========================${attentionModel.uid}'
-        'followingCount============================${attentionModel.followingCount}'
-        'feedCount==========${attentionModel.feedCount}'
-        'followerCount=======${attentionModel.followerCount}');
+  getProfileModel() async {
+    ProfileModel attentionModel = await ProfileFollowCount();
+    GetExtraInfoModel extraInfoModel = await ProfileGetExtraInfo();
+    print('resultModel============================${attentionModel == null}');
+    if (attentionModel != null || extraInfoModel != null) {
+      print('uid========================${attentionModel.uid}'
+          'followingCount============================${attentionModel.followingCount}'
+          'feedCount==========${attentionModel.feedCount}'
+          'followerCount=======${attentionModel.followerCount}');
       setState(() {
         uid = attentionModel.uid;
         followingCount = attentionModel.followingCount;
@@ -76,7 +68,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         weight = extraInfoModel.weight;
         albumNum = extraInfoModel.albumNum;
       });
-      }
+    }
   }
 
   @override
@@ -111,28 +103,28 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
               });
             },
             child: ListView(
-              physics: _isScroll
-                  ? BouncingScrollPhysics()
-                  : NeverScrollableScrollPhysics(),
+              physics: _isScroll ? BouncingScrollPhysics() : NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.only(top: 0),
               children: [
                 _blurrectAvatar(width),
-                SizedBox(height: 41,),
-                Container(
-                  padding: EdgeInsets.only(left: 20,right: 20,bottom: 20),
-                  child: Consumer<ProfileNotifier>(
-                    builder: (context, notifier, child){
-                    return Row(
-                      children: [
-                        _secondData(Icons.access_alarms_sharp,trainingSeconds,"训练记录"),
-                        Expanded(child: Container()),
-                        _secondData(Icons.access_alarms_sharp,weight,"体重记录"),
-                        Expanded(child: Container()),
-                        _secondData(Icons.access_alarms_sharp,albumNum,"健身相册")
-                      ],
-                    );
-                  },)
+                SizedBox(
+                  height: 41,
                 ),
+                Container(
+                    padding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                    child: Consumer<ProfileNotifier>(
+                      builder: (context, notifier, child) {
+                        return Row(
+                          children: [
+                            _secondData(Icons.access_alarms_sharp, trainingSeconds, "训练记录"),
+                            Expanded(child: Container()),
+                            _secondData(Icons.access_alarms_sharp, weight, "体重记录"),
+                            Expanded(child: Container()),
+                            _secondData(Icons.access_alarms_sharp, albumNum, "健身相册")
+                          ],
+                        );
+                      },
+                    )),
                 _bottomSetting("我的课程"),
                 _bottomSetting("我的订单"),
                 _bottomSetting("我的成就"),
@@ -143,121 +135,133 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       ),
     );
   }
+
   ///这里设置高斯模糊和白蒙层
-  Widget _blurrectAvatar(double width){
+  Widget _blurrectAvatar(double width) {
     return Stack(
       children: [
-        Container(
-          height: 133,
-          width: width,
-          child: Selector<ProfileNotifier, String>(
-            builder: (context, avatar, child) {
-              print("头像地址:$avatar");
-              return Image.network(avatar,fit: BoxFit.cover,);
-            }, selector: (context, notifier) {
-            return notifier.profile.avatarUri;
-          }),
-        ),
-        Positioned(
-          child:Container(
-            width: width,
+        Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
+          print("头像地址:$avatar");
+          // return Image.network(avatar,fit: BoxFit.cover,);
+          return CachedNetworkImage(
             height: 133,
-            color: AppColor.white.withOpacity(0.6),
-          )
-        ),
+            width: width,
+            imageUrl: avatar == null ? "" : avatar,
+            fit: BoxFit.cover,
+            placeholder: (context, url) => Image.asset("images/test.png", fit: BoxFit.cover,),
+            errorWidget: (context, url, error) => Image.asset("images/test.png", fit: BoxFit.cover,),
+          );
+        }, selector: (context, notifier) {
+          return notifier.profile.avatarUri;
+        }),
+        Positioned(
+            child: Container(
+          width: width,
+          height: 133,
+          color: AppColor.white.withOpacity(0.6),
+        )),
         BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),child: Column(
-          children: [
-            SizedBox(height: 13,),
-            _getTopText(width),
-            SizedBox(height: 17.5,),
-            _getUserImage(),
-          ],
-
-        ),),
-
+          filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 13,
+              ),
+              _getTopText(width),
+              SizedBox(
+                height: 17.5,
+              ),
+              _getUserImage(),
+            ],
+          ),
+        ),
       ],
     );
-
   }
+
   ///这是扫一扫
   Widget _getTopText(double width) {
     return Container(
       margin: EdgeInsets.only(top: 44),
       height: 44,
       width: width,
-      padding: EdgeInsets.only(left: 20, ),
+      padding: EdgeInsets.only(
+        left: 20,
+      ),
       child: Row(
         children: [
           Center(
             child: InkWell(
-            onTap: () async {
-              List<RScanCameraDescription> rScanCameras =
-                  await availableRScanCameras();
-              setState(() {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) {
-                      ///这里将扫码相机初始化传过去
-                  return ScanCodePage(
-                    rScanCameras: rScanCameras,
-                  );///通过then将扫码界面返回的信息接到，吐司出来
-                })).then((value) => {
-                          if (value != null)
-                            {
-                              print('这是从扫码界面传回的数据:$value'),
-                              Fluttertoast.showToast(
-                                  msg: value.toString(),
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  fontSize: 16,
-                                  gravity: ToastGravity.CENTER,
-                                  backgroundColor: AppColor.textHint,
-                                  textColor: AppColor.white)
-                            }
-                        });
-              });
-            },
-            child: Container(
-              height: 20,
-              width: 20,
-              child: Image.asset("images/test/scancode.png"),
+              onTap: () async {
+                List<RScanCameraDescription> rScanCameras = await availableRScanCameras();
+                setState(() {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                    ///这里将扫码相机初始化传过去
+                    return ScanCodePage(
+                      rScanCameras: rScanCameras,
+                    );
+
+                    ///通过then将扫码界面返回的信息接到，吐司出来
+                  })).then((value) => {
+                        if (value != null)
+                          {
+                            print('这是从扫码界面传回的数据:$value'),
+                            Fluttertoast.showToast(
+                                msg: value.toString(),
+                                toastLength: Toast.LENGTH_SHORT,
+                                fontSize: 16,
+                                gravity: ToastGravity.CENTER,
+                                backgroundColor: AppColor.textHint,
+                                textColor: AppColor.white)
+                          }
+                      });
+                });
+              },
+              child: Container(
+                height: 20,
+                width: 20,
+                child: Image.asset("images/test/scancode.png"),
+              ),
             ),
-          ),),
+          ),
           Expanded(child: SizedBox()),
         ],
       ),
     );
   }
-  _buildPopupMenuItem(int iconName,String title){
+
+  _buildPopupMenuItem(int iconName, String title) {
     return Row(
       children: <Widget>[
         Icon(
-          IconData(
-            iconName,
-            fontFamily: mIconFontFamily
-          ),
+          IconData(iconName, fontFamily: mIconFontFamily),
           size: 22.0,
-          color:AppColor.black.withOpacity(0.5),
+          color: AppColor.black.withOpacity(0.5),
         ),
         Container(),
         Text(
           title,
-          style: TextStyle(
-            color: AppColor.black.withOpacity(0.5)
-          ),
+          style: TextStyle(color: AppColor.black.withOpacity(0.5)),
         )
       ],
     );
   }
+
   ///这里是底部订单成就，为了代码复用写成一个布局，通过传值来改变
-  Widget _bottomSetting(String text){
+  Widget _bottomSetting(String text) {
     return Container(
       height: 48,
-      padding: EdgeInsets.only(left: 16,right: 16),
+      padding: EdgeInsets.only(left: 16, right: 16),
       child: Row(
         children: [
           Icon(Icons.account_balance_sharp),
-          SizedBox(width: 12,),
-          Text(text,style: AppStyle.textRegular16,),
+          SizedBox(
+            width: 12,
+          ),
+          Text(
+            text,
+            style: AppStyle.textRegular16,
+          ),
           Expanded(child: Container()),
           Icon(Icons.arrow_forward_ios)
         ],
@@ -268,118 +272,131 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   ///这里因为头像和关注等是水平，所以放在一起
   Widget _getUserImage() {
     return Container(
-      height: 87,
-      padding: EdgeInsets.only(left: 18.5,right: 15.5),
+        height: 87,
+        padding: EdgeInsets.only(left: 18.5, right: 15.5),
         child: Row(
-      children: [
-        Center(child: _ImgAvatar(),),
-        SizedBox(width: 40,),
-        Container(
-            ///把文字挤下去
-            padding: EdgeInsets.only(top: 44),
-          child:
-            Consumer<ProfileNotifier>(
-              builder: (context, notifier, child) {
-                return Row(
-                children: [
+          children: [
+            Center(
+              child: _ImgAvatar(),
+            ),
+            SizedBox(
+              width: 40,
+            ),
+            Container(
+              ///把文字挤下去
+              padding: EdgeInsets.only(top: 44),
+              child: Consumer<ProfileNotifier>(
+                builder: (context, notifier, child) {
+                  return Row(children: [
                     _TextAndNumber("关注", followingCount),
                     _TextAndNumber("粉丝", followerCount),
                     _TextAndNumber("动态", feedCount)
-                ]
-                );
-              },
-            ),
-
-          )
-      ],
-    ));
+                  ]);
+                },
+              ),
+            )
+          ],
+        ));
   }
 
   ///这是头像
-  Widget _ImgAvatar(){
+  Widget _ImgAvatar() {
     return Container(
       width: 87,
       height: 87,
       child: InkWell(
-    onTap: () {
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) {
-        ///这里传type来告知详情页该怎么展示
-        return ProfileDetailPage(
-         myselfId: uid,pc: widget.panelController,
-        );
-      }));
-    },
-    child: Stack(
-      children: [
-        Selector<ProfileNotifier, String>(
-          builder: (context, avatar, child) {
-            print("头像地址:$avatar");
-            return CircleAvatar(
-              //头像半径
-              radius: 45,
-              //头像图片 -> NetworkImage网络图片，AssetImage项目资源包图片, FileImage本地存储图片
-              backgroundImage: NetworkImage(avatar),
-            );
-          }, selector: (context, notifier) {
-          return notifier.profile.avatarUri;
-        }),
-        Positioned(
-          bottom: 5,
-          right: 5,
-          child: Container(
-           width: 20,
-          height: 20,
-          decoration: BoxDecoration(
-            color: AppColor.black,
-            borderRadius: BorderRadius.all(Radius.circular(59)),),
-            child: Center(
-            child: Text("+",style: TextStyle(fontSize: 20,color: Colors.white),),)
-        )
-        )
-      ],)
-  ),);
-}
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+              ///这里传type来告知详情页该怎么展示
+              return ProfileDetailPage(
+                myselfId: uid,pc: widget.panelController,
+              );
+            }));
+          },
+          child: Stack(
+            children: [
+              Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
+                print("头像地址:$avatar");
+                // return CircleAvatar(
+                //   //头像半径
+                //   radius: 45,
+                //   //头像图片 -> NetworkImage网络图片，AssetImage项目资源包图片, FileImage本地存储图片
+                //   backgroundImage: NetworkImage(avatar),
+                // );
+                return ClipOval(
+                  child: CachedNetworkImage(
+                    height: 90,
+                    width: 90,
+                    imageUrl: avatar == null ? "" : avatar,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Image.asset("images/test.png", fit: BoxFit.cover,),
+                    errorWidget: (context, url, error) => Image.asset("images/test.png", fit: BoxFit.cover,),
+                  ),
+                );
+              }, selector: (context, notifier) {
+                return notifier.profile.avatarUri;
+              }),
+              Positioned(
+                  bottom: 5,
+                  right: 5,
+                  child: Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: AppColor.black,
+                        borderRadius: BorderRadius.all(Radius.circular(59)),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "+",
+                          style: TextStyle(fontSize: 20, color: Colors.white),
+                        ),
+                      )))
+            ],
+          )),
+    );
+  }
+
   ///这里是关注粉丝动态
   Widget _TextAndNumber(String text, int number) {
     print('__________________________$number');
     return Container(
-          height: 73,
-          width: 73,
+        height: 73,
+        width: 73,
         child: Column(
-      children: [
-        Center(child: Text(
-          "${_getNumber(number)}",
-          style: TextStyle(fontSize: 18,color: AppColor.black),
-        ),),
-        Center(
-          child:
-        Text(
-          text,
-          style: AppStyle.textRegular12,
-        ),)
-      ],
-    ));
+          children: [
+            Center(
+              child: Text(
+                "${_getNumber(number)}",
+                style: TextStyle(fontSize: 18, color: AppColor.black),
+              ),
+            ),
+            Center(
+              child: Text(
+                text,
+                style: AppStyle.textRegular12,
+              ),
+            )
+          ],
+        ));
   }
 
   ///数值大小判断,过万用字符串拼接
   String _getNumber(int number) {
-    if(number==0||number==null){
+    if (number == 0 || number == null) {
       return 0.toString();
     }
     if (number < 10000) {
       return number.toString();
     } else {
       String db = "${(number / 10000).toString()}";
-      if(int.parse(db.substring(db.indexOf(".")+1,db.indexOf(".")+2))!=0){
-        String doubleText = db.substring(0, db.indexOf(".")+2);
+      if (int.parse(db.substring(db.indexOf(".") + 1, db.indexOf(".") + 2)) != 0) {
+        String doubleText = db.substring(0, db.indexOf(".") + 2);
         return doubleText + "W";
-      }else{
+      } else {
         String intText = db.substring(0, db.indexOf("."));
-        return intText +"W";
+        return intText + "W";
       }
-
-
     }
   }
 
@@ -389,8 +406,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       child: Container(
         margin: const EdgeInsets.only(left: 20, right: 20, top: 20),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(8), topRight: Radius.circular(8)),
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(8), topRight: Radius.circular(8)),
         ),
         child: Row(
           children: [
@@ -403,8 +419,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             ),
             Expanded(child: SizedBox()),
             Container(
-              padding:
-                  const EdgeInsets.only(left: 16, right: 16, top: 6, bottom: 6),
+              padding: const EdgeInsets.only(left: 16, right: 16, top: 6, bottom: 6),
               margin: const EdgeInsets.only(top: 8, bottom: 6, right: 16),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
@@ -417,42 +432,53 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       ),
     );
   }
+
   ///这里是训练计划，体重记录，健身相册的
   ///                这是中间的图标| 这是数值   |这是title
-  Widget _secondData(IconData icon,int number,String text) {
+  Widget _secondData(IconData icon, int number, String text) {
     var _userPlate = Column(
       children: [
         ///这里是固定的文字，直接用空格撑布局
-        Text(text+"                    ",style: AppStyle.textSecondaryRegular12,),
-        SizedBox(height: 8,),
-        Container(
-        height: 103.5,
-        width: 103.5,
-        padding: EdgeInsets.only(bottom: 10, top: 10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(8)),
-          border: Border.all(width: 0.5, color: AppColor.black),
+        Text(
+          text + "                    ",
+          style: AppStyle.textSecondaryRegular12,
         ),
-        child: Stack(
-          children: [
-            Container(
-              height: 120,
-              width: 120,
-              child: Image.network("https://scpic.chinaz.net/files/pic/pic9/201911/zzpic21124.jpg"),),
-            Center(
-          child: Column(
-            children: [
-                Icon(icon),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                number!=0&&number!=null?"$number":"— —",
-                style: AppStyle.textRegular14,
-              )
-            ],
-          ),
-        )],))],);
+        SizedBox(
+          height: 8,
+        ),
+        Container(
+            height: 103.5,
+            width: 103.5,
+            padding: EdgeInsets.only(bottom: 10, top: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+              border: Border.all(width: 0.5, color: AppColor.black),
+            ),
+            child: Stack(
+              children: [
+                Container(
+                  height: 120,
+                  width: 120,
+                  child: Image.network("https://scpic.chinaz.net/files/pic/pic9/201911/zzpic21124.jpg"),
+                ),
+                Center(
+                  child: Column(
+                    children: [
+                      Icon(icon),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        number != 0 && number != null ? "$number" : "— —",
+                        style: AppStyle.textRegular14,
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ))
+      ],
+    );
     return _userPlate;
   }
 }
