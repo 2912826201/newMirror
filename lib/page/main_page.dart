@@ -47,7 +47,18 @@ class MainPageState extends State<MainPage> {
     SingletonForWholePages.singleton().messagePageKey = widget.messagePageKey;
     pages =  [HomePage(), TrainingPage(), MessagePage(key:this.widget.messagePageKey), ProfilePage()];
   }
-
+  // 返回视图
+  returnView(int currentIndex) {
+    if (currentIndex == 0) {
+      return HomePage(pc: widget.pc,);
+    } else if (currentIndex == 1) {
+    return TrainingPage();
+    } else if (currentIndex == 2) {
+      return MessagePage();
+    } else {
+      return ProfilePage();
+    }
+  }
   @override
   Widget build(BuildContext context) {
     double itemWidth = MediaQuery.of(context).size.width / 5;
@@ -78,13 +89,10 @@ class MainPageState extends State<MainPage> {
         ]),
       ),
       // SlidingUpPanel
-      body: currentIndex == 0 ? HomePage(pc: widget.pc) : IndexedStack(
-        index: this.currentIndex,
-        children: this.pages,
-      )
-      // pages[currentIndex],
+      body:  returnView(currentIndex),
     );
   }
+
 
   // 自定义BottomAppBar
   Widget tabbar(int index, BuildContext context) {

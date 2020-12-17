@@ -355,7 +355,7 @@ class CommentBottomListView extends StatelessWidget {
                       commentModelCallback: (CommentDtoModel commentModel) {
                         context.read<FeedMapNotifier>().commentFeedCom(feedId, index, commentModel);
                         // 关闭评论输入框
-                        Navigator.of(context).pop(1);
+                        // Navigator.of(context).pop(1);
                       });
                 },
               );
@@ -581,7 +581,7 @@ class  BottomListViewSubCommentListItem extends StatelessWidget {
                 commentModelCallback: (CommentDtoModel commentModel) {
                   context.read<FeedMapNotifier>().commentFeedCom(feedId, mainIndex, commentModel);
                   // 关闭评论输入框
-                  Navigator.of(context).pop(1);
+                  // Navigator.of(context).pop(1);
                 });
           },
         );
