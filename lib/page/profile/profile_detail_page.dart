@@ -5,10 +5,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/profile/profile_details_carousel.dart';
 import 'package:mirror/page/profile/sticky_tabBar.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -29,6 +33,7 @@ class ProfileDetailPage extends StatefulWidget {
 
 class _ProfileDetailState extends State<ProfileDetailPage>
     with TickerProviderStateMixin {
+  bool get wantKeepAlive => true;
   final String _imgAseet = "images/test/back.png";
   final String _imgShared = "images/test/分享.png";
   final _Panelcontroller = PanelController();
@@ -42,12 +47,19 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   String _buttonText = "";
   SwiperController _swiperControl = SwiperController();
   ///这里是暂时的type,如果是2就是别人的页面，1是自己的页面
-  int StateType = 2;
+  int StateType = 1;
   TabController _mController;
   int id;
+  List<HomeFeedModel> attentionModel = [];
+
+  List<int> _listId = [];
   @override
   void initState() {
     super.initState();
+    if(StateType==1){
+      _getDynamicData(1);
+      print('attentionModel.length========================================${attentionModel.length}');
+    }
     _textTest();
     _mController = TabController(length: 2, vsync:this );
     _swiperControl.addListener(() {
@@ -61,13 +73,27 @@ class _ProfileDetailState extends State<ProfileDetailPage>
 
   _textTest() {
     StateType = widget.type;
-    if (StateType == 1) {
+    if (StateType == 2){
       _buttonText = "编辑资料";
     } else {
       _buttonText = "+ 关注";
     }
   }
 
+
+
+  _getDynamicData(int type ) async{
+    Map<String,dynamic> model = await getPullList(type:type, size: 20);
+    setState(() {
+        if(model["list"]!=null){
+          model["list"].forEach((result){
+            attentionModel.add(HomeFeedModel.fromJson(result));
+            _listId.add(HomeFeedModel.fromJson(result).id);
+          });
+        }
+    });
+    context.read<FeedMapNotifier>().updateFeedMap(attentionModel);
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -93,14 +119,14 @@ class _ProfileDetailState extends State<ProfileDetailPage>
                 shrinkWrap: true,
               children: [
                 mineHomeData(12,height,width),
-               _ListView(width, height,false)
+               _ListView(width,false)
             ],),)
           ),
         );
       }),
     );
   }
-    ///这是他人的页面，使用TabBarView
+    ///这是个人页面，使用TabBarView
   Widget _minehomeBody(double width, double height) {
     return NestedScrollView(
       headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled){
@@ -134,8 +160,8 @@ class _ProfileDetailState extends State<ProfileDetailPage>
       body:TabBarView(
       controller: _mController,
       children: <Widget>[
-        _ListView(width, height,true),
-        _ListView(width, height,true)
+        _ListView(width,true),
+        _ListView(width,true)
       ],
     ) ,
     );
@@ -281,7 +307,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
       ));
   }
   ///这是动态和喜欢展示的listView
-  Widget _ListView(double width, double height,bool isScroll) {
+  Widget _ListView(double width,bool isScroll,) {
     var _ListData = Expanded(
         child: Container(
       width: width,
@@ -289,50 +315,25 @@ class _ProfileDetailState extends State<ProfileDetailPage>
       child: ListView.builder(
         shrinkWrap: true, //解决无限高度问题
         physics:isScroll?AlwaysScrollableScrollPhysics():NeverScrollableScrollPhysics(),
-          itemCount: 20,
+          itemCount: _listId.length,
           itemBuilder: (context, index) {
-            return Column(
-              children: [
-                _AvatarRow("", "名字", "3小时前"),
-                SizedBox(height: 20,),
-                ProFileDetailesCarousel(height: 500,)
+          int id = _listId[index];
+          HomeFeedModel model = context.read<FeedMapNotifier>().feedMap[id];
+          if(model!=null){
+            return  DynamicListLayout(
+              index: index,
+              pc: _Panelcontroller,
+              isShowRecommendUser:false,
+              model: attentionModel[index],
+              key: GlobalObjectKey("attention$index"));
+          }else{
+            return Container(
 
-              ],
             );
+          }
           }),
     ));
     return _ListData;
-  }
-  Widget _AvatarRow(String imgUrl, String name, String time) {
-    return Container(
-      padding: EdgeInsets.only(left: 15,right: 15),
-      child: Row(
-      children: [
-        CircleAvatar(
-          radius: 30,
-          backgroundImage: NetworkImage(imgUrl),
-        ),
-        SizedBox(
-          width: 10,
-        ),
-        Column(
-          children: [
-            Text(
-              name,
-              style: AppStyle.textRegular14,
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-              time,
-              style: AppStyle.textRegular12,
-            )
-          ],
-        ),
-        Expanded(child: Container()),
-      ],
-    ),);
   }
   ///关注，编辑资料，私聊按钮
   Widget _mineButton() {

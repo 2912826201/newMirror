@@ -22,6 +22,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:r_scan/r_scan.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'profile_detail_page.dart';
 import 'scan_code_page.dart';
@@ -29,6 +30,8 @@ enum ActionItems{
   DENGCHU,DENGLU
 }
 class ProfilePage extends StatefulWidget {
+  ProfilePage({Key key,this.panelController}):super(key:key);
+  PanelController panelController;
   @override
   ProfileState createState() => new ProfileState();
 }
@@ -303,7 +306,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         MaterialPageRoute(builder: (context) {
         ///这里传type来告知详情页该怎么展示
         return ProfileDetailPage(
-          type: 2,
+          type: 1,
         );
       }));
     },
