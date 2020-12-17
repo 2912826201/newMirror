@@ -7,9 +7,13 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/api/user_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/profile_model.dart';
+import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
@@ -22,8 +26,10 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class ProfileDetailPage extends StatefulWidget {
   int type;
-
-  ProfileDetailPage({this.type});
+  int otherId;
+  int myselfId;
+  PanelController pc;
+  ProfileDetailPage({this.type,this.otherId,this.myselfId,this.pc});
 
   @override
   _ProfileDetailState createState() {
@@ -38,29 +44,41 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   final String _imgShared = "images/test/分享.png";
   final _Panelcontroller = PanelController();
   var _pageIndex = 0;
-  String _textName = "dwdawdawdawd";
-  int _id = 12121222222;
-  String _signature = "2我j2我j2我j2我j2我j2我j2我j2我j2我j2我j2我j2我j2我j2我j2我j2我j";
+  String _textName;
+  int _id;
+  String _signature;
+  String _avatar;
   int _attention;
   int _fans;
   int _dynmic;
   String _buttonText = "";
   SwiperController _swiperControl = SwiperController();
-  ///这里是暂时的type,如果是2就是别人的页面，1是自己的页面
-  int StateType = 1;
   TabController _mController;
-  int id;
   List<HomeFeedModel> attentionModel = [];
-
   List<int> _listId = [];
+  bool isMselfId;
+  UserModel userModel;
+  int relation;
   @override
   void initState() {
     super.initState();
-    if(StateType==1){
-      _getDynamicData(1);
-      print('attentionModel.length========================================${attentionModel.length}');
+      if(context.read<ProfileNotifier>().profile.uid==widget.otherId){
+          isMselfId = true;
+      }else if(widget.myselfId!=null){
+          isMselfId = true;
+      }else if(widget.otherId!=null){
+        isMselfId = false;
+      }
+    if(isMselfId){
+      _getUserInfo();
+      _getFollowCount();
+      _getDynamicData(2);
+    }else{
+      _getUserInfo(id: widget.otherId);
+      _getFollowCount(id: widget.otherId);
+      _getDynamicData(3,id: widget.otherId);
     }
-    _textTest();
+    _textChange();
     _mController = TabController(length: 2, vsync:this );
     _swiperControl.addListener(() {
       if(_swiperControl.animation){
@@ -71,22 +89,50 @@ class _ProfileDetailState extends State<ProfileDetailPage>
     });
   }
 
-  _textTest() {
-    StateType = widget.type;
-    if (StateType == 2){
+  _textChange() {
+    if (isMselfId){
       _buttonText = "编辑资料";
     } else {
-      _buttonText = "+ 关注";
+      if(relation!=null){
+        if(relation==0||relation==2){
+          _buttonText = "+ 关注";
+        }else if(relation==1){
+          _buttonText = "取消关注";
+        }else{
+          _buttonText = "私聊";
+        }
+      }
     }
   }
 
-
-
-  _getDynamicData(int type ) async{
-    Map<String,dynamic> model = await getPullList(type:type, size: 20);
+  _getFollowCount({int id}) async {
+    ProfileModel attentionModel =  await ProfileFollowCount(id: id);
     setState(() {
-        if(model["list"]!=null){
-          model["list"].forEach((result){
+      _attention = attentionModel.feedCount;
+      _fans = attentionModel.followerCount;
+      _dynmic = attentionModel.followingCount;
+    });
+  }
+
+  _getUserInfo({int id})async{
+     userModel = await getUserInfo(uid: id);
+     if(userModel!=null){
+       setState(() {
+         _avatar = userModel.avatarUri;
+         _id = userModel.uid;
+         _signature = userModel.description;
+         _textName = userModel.nickName;
+         relation = userModel.relation;
+       });
+     }
+  }
+
+
+  _getDynamicData(int type,{int id}) async{
+   DataResponseModel model = await getPullList(type:type, size: 20,targetId: id);
+    setState(() {
+        if(model.list.isNotEmpty){
+          model.list.forEach((result){
             attentionModel.add(HomeFeedModel.fromJson(result));
             _listId.add(HomeFeedModel.fromJson(result).id);
           });
@@ -110,7 +156,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
             backdropEnabled: true,
             controller: _Panelcontroller,
             minHeight: 0,
-            body: StateType==2?
+            body: isMselfId?
             _minehomeBody(width, height)
               :Container(
               height: height,
@@ -209,13 +255,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
         Container(
           height: height*0.3,
           width: width,
-          child: Selector<ProfileNotifier, String>(
-            builder: (context, avatar, child) {
-              print("头像地址:$avatar");
-              return Image.network(avatar,fit: BoxFit.cover,);
-            }, selector: (context, notifier) {
-            return notifier.profile.avatarUri;
-          }),
+          child: Image.network(_avatar==null?"":_avatar,fit: BoxFit.cover,)
         ),
         Positioned(
           top: 0,
@@ -263,7 +303,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
           Container(
             padding: EdgeInsets.only(left: 16, right: 16),
             child: Text(
-              _textName,
+              _textName!=null?_textName:"  ",
               style: TextStyle(fontSize: 20, color: AppColor.black),
             ),
           ),
@@ -279,7 +319,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
             padding: EdgeInsets.only(left: 16, right: 16),
               width: width*0.7,
               child: Text(
-              _signature,
+              _signature!=null?_signature:"      ",
                softWrap:true,
               style: AppStyle.textRegular14),
           ),
@@ -288,6 +328,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
           Container(
             padding: EdgeInsets.only(left: 16, right: 16),
             child: Row(
+
               children: [
                 _TextAndNumber("关注", _attention),
                 SizedBox(
@@ -322,7 +363,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
           if(model!=null){
             return  DynamicListLayout(
               index: index,
-              pc: _Panelcontroller,
+              pc: widget.pc,
               isShowRecommendUser:false,
               model: attentionModel[index],
               key: GlobalObjectKey("attention$index"));
@@ -345,15 +386,17 @@ class _ProfileDetailState extends State<ProfileDetailPage>
           border: Border.all(width: 1, color: AppColor.black)),
       child: FlatButton(
         onPressed: () {
-          if (StateType == 1) {
-
+          if (isMselfId) {
+            ///这里跳转到编辑资料页
           } else {
             setState(() {
               if (_buttonText == "+ 关注") {
                 _getAttention(true);
-              } else {
+              } else if(_buttonText == "取消关注"){
                 ///打开dialog
                 _Panelcontroller.open();
+              }else{
+                ///这里跳转到私聊界面
               }
             });
           }
@@ -414,16 +457,10 @@ class _ProfileDetailState extends State<ProfileDetailPage>
     return Container(
       width: 80,
       height: 80,
-      child:Selector<ProfileNotifier, String>(
-        builder: (context, avatar, child) {
-          print("头像地址:$avatar");
-          return CircleAvatar(
-            backgroundImage: NetworkImage(avatar),
+      child: CircleAvatar(
+            backgroundImage: NetworkImage(_avatar.isEmpty?"https://scpic.chinaz.net/files/pic/pic9/201911/zzpic21124.jpg":_avatar),
             maxRadius: 59,
-          );
-        }, selector: (context, notifier) {
-        return notifier.profile.avatarUri;
-      }),
+          )
     );
   }
 
@@ -470,15 +507,19 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   ///这是取消关注和关注的方法，true为关注，false为取消关注
   Future<bool> _getAttention(bool attention)async{
     if(attention){
-      int attntionResult = await ProfileAttention(id);
+      int attntionResult = await ProfileAttention(_id);
       if(attntionResult==1){
         ToastShow.show(msg: "关注成功!", context: context);
         setState(() {
           _buttonText = "取消关注";
         });
+      }else if(attntionResult==3){
+        setState(() {
+          _buttonText = "私聊";
+        });
       }
     }else{
-      int cancelResult = await ProfileCancelAttention(id);
+      int cancelResult = await ProfileCancelAttention(_id);
       if(cancelResult==0){
         ToastShow.show(msg: "已取消关注该用户", context: context);
         setState(() {

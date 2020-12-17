@@ -31,7 +31,7 @@ const String COLUMN_NAME_PROFILE_RELATION = 'relation';
 const String COLUMN_NAME_PROFILE_MUTUALFRIENDCOUNT = 'mutualFriendCount';
 
 
-// 这个表是用来存放当前已登录用户信息的表
+//这个表是用来存放当前已登录用户信息的表
 class ProfileDto {
   int uid; //账户Id
   String phone; //手机号
