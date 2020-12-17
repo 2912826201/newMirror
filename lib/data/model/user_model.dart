@@ -31,6 +31,9 @@ class UserModel {
   int feedCount; //动态数
   int relation; //与用户关系 0-没关系 1-关注 2-粉丝 3-好友
   int mutualFriendCount; //共同好友数
+  int trainingSeconds; //训练总时长
+  int weight; //最近体重
+  int albumNum; //相片数量
 
   UserModel({
       this.uid = 0, //默认给个uid为0
@@ -60,7 +63,10 @@ class UserModel {
       this.followerCount, 
       this.feedCount, 
       this.relation, 
-      this.mutualFriendCount});
+      this.mutualFriendCount,
+      this.trainingSeconds,
+      this.weight,
+      this.albumNum});
 
   UserModel.fromJson(Map<String, dynamic> json) {
     uid = json["uid"];
@@ -91,6 +97,9 @@ class UserModel {
     feedCount = json["feedCount"];
     relation = json["relation"];
     mutualFriendCount = json["mutualFriendCount"];
+    trainingSeconds = json["trainingSeconds"];
+    weight = json["weight"];
+    albumNum = json["albumNum"];
   }
 
   Map<String, dynamic> toJson() {
@@ -123,6 +132,9 @@ class UserModel {
     map["feedCount"] = feedCount;
     map["relation"] = relation;
     map["mutualFriendCount"] = mutualFriendCount;
+    map["trainingSeconds"] = trainingSeconds;
+    map["weight"] = weight;
+    map["albumNum"] = albumNum;
     return map;
   }
 

@@ -3,16 +3,26 @@ import 'dart:math';
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
+import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/page/activation_test_page.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/agora_input_page.dart';
 import 'package:mirror/page/media_test_page.dart';
 import 'package:mirror/page/qiniu_test_page.dart';
+import 'package:mirror/page/training/live_broadcast/live_room_page.dart';
+import 'package:mirror/page/training/video_course/video_test_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:provider/provider.dart';
+
+import 'profile/login_test_page.dart';
+import 'training/video_course/video_course_play_page.dart';
+import 'training/video_course/video_course_play_page2.dart';
 
 /// test_page
 /// Created by yangjiayi on 2020/10/27.
@@ -22,7 +32,10 @@ class TestPage extends StatefulWidget {
   _TestState createState() => _TestState();
 }
 
-class _TestState extends State<TestPage> {
+class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true; //必须重写
+
   @override
   Widget build(BuildContext context) {
     print("测试页");
@@ -110,21 +123,34 @@ class _TestState extends State<TestPage> {
               ),
               RaisedButton(
                 onPressed: () {
-                  Size c = getTextSize("查询数据库", TextStyle(fontSize: 16));
-                  print("++++++++++++++++$c+++++++++++++++++++++++");
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return MediaTestPage();
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                    return LoginTestPage();
                   }));
                 },
-                child: Text("图片视频测试"),
+                child: Text("登录入口"),
               ),
-              RaisedButton(
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return QiniuTest();
-                  }));
-                },
-                child: Text("七牛上传测试"),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  RaisedButton(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return QiniuTest();
+                      }));
+                    },
+                    child: Text("七牛上传测试"),
+                  ),
+                  RaisedButton(
+                    onPressed: () {
+                      Size c = getTextSize("查询数据库", TextStyle(fontSize: 16));
+                      print("++++++++++++++++$c+++++++++++++++++++++++");
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return MediaTestPage();
+                      }));
+                    },
+                    child: Text("图片视频测试"),
+                  ),
+                ],
               ),
               RaisedButton(
                 onPressed: () {
@@ -132,13 +158,82 @@ class _TestState extends State<TestPage> {
                 },
                 child: Text("Fluro跳转传参测试"),
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  RaisedButton(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return AgoraInputPage();
+                      }));
+                    },
+                    child: Text("声网测试"),
+                  ),
+                  RaisedButton(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return ActivationTestPage();
+                      }));
+                    },
+                    child: Text("激活登录测试"),
+                  ),
+                ],
+              ),
               RaisedButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return AgoraInputPage();
-                  }));
+                  AppRouter.navigateToLiveBroadcast(context);
                 },
-                child: Text("声网测试"),
+                child: Text("直播日程页"),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  AppRouter.navigateToVideoCourseList(context);
+                },
+                child: Text("视频课程页"),
+              ),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                RaisedButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return LiveRoomPage();
+                    }));
+                  },
+                  child: Text("直播"),
+                ),
+                RaisedButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return VideoCoursePlayPage();
+                    }));
+                  },
+                  child: Text("视频1"),
+                ),
+                RaisedButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return VideoCoursePlayPage2();
+                    }));
+                  },
+                  child: Text("视频2"),
+                ),
+              ]),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  RaisedButton(
+                    onPressed: () {
+                      bool isFirst = AppPrefs.isFirstLaunch();
+                      print(isFirst);
+                    },
+                    child: Text("从SP中取值"),
+                  ),
+                  RaisedButton(
+                    onPressed: () {
+                      AppPrefs.setIsFirstLaunch(false);
+                    },
+                    child: Text("将isFirstLaunch设置为false"),
+                  ),
+                ],
               ),
             ],
           ),

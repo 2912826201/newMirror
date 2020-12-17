@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
+import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/route/route_handler.dart';
 
 /// router
@@ -12,24 +13,34 @@ import 'package:mirror/route/route_handler.dart';
 
 class AppRouter {
   static String paramData = "data";
+
+  static String pathIfPage = "/";
   static String pathMain = "/main";
   static String pathLogin = "/login";
   static String pathTest = "/test";
   static String pathRCTest = "/rctest";
   static String pathMediaPicker = "/mediapicker";
   static String pathLike = "/like";
-  static String pathIfPage = "/";
   static String pathRelease = "/release";
-  static String pathChatPage = "/ChatPage";
-  static String pathPerfectUserPage = "/PerfectUserPage";
-  static String pathGuildCompleteInforPage = "/pathGuildCompleteInforPage";
+  static String pathChatPage = "/chat";
+  static String pathPerfectUserPage = "/perfectuser";
+  static String pathGuildCompleteInforPage = "/guildcompleteinfo";
+  static String pathPreviewPhoto = "/previewPhoto";
+  static String pathLiveBroadcast = "/liveBroadcast";
+  static String pathLiveDetail = "/liveDetail";
+  static String pathVideoDetail = "/videoDetail";
+  static String pathVideoCourseList = "/videoCourseList";
+  static String pathScanCode = "/ScanCode";
+  static String pathMineDetails = "mineDetails";
+
   static void configureRouter(FluroRouter router) {
-    router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
+    router.notFoundHandler = Handler(
+        handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
       print("ROUTE WAS NOT FOUND !!!");
     });
 
-    router.define(pathMain, handler: handlerMain);
     router.define(pathIfPage, handler: handlerIfPage);
+    router.define(pathMain, handler: handlerMain);
     router.define(pathRCTest, handler: handlerRCTest);
     router.define(pathMediaPicker, handler: handlerMediaPicker);
     router.define(pathLogin, handler: handlerLogin);
@@ -38,6 +49,13 @@ class AppRouter {
     router.define(pathChatPage, handler: handlerChatPage);
     router.define(pathPerfectUserPage, handler: handlerPerfectUserPage);
     router.define(pathGuildCompleteInforPage, handler: handlerGuildCompleteInfor);
+    router.define(pathPreviewPhoto, handler: handlerPreviewPhoto);
+    router.define(pathLiveBroadcast, handler: handlerLiveBroadcast);
+    router.define(pathLiveDetail, handler: handlerLiveDetail);
+    router.define(pathVideoDetail, handler: handlerVideoDetail);
+    router.define(pathScanCode, handler: handlerScan);
+    router.define(pathMineDetails, handler: handlermineDetails);
+    router.define(pathVideoCourseList, handler: handlerVideoCourseList);
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
   }
@@ -63,13 +81,15 @@ class AppRouter {
   }
 
   static void navigateToMediaPickerPage(
-      BuildContext context, int maxImageAmount, int mediaType, bool needCrop, Function(dynamic result) callback,
-      {bool cropOnlySquare}) {
+      BuildContext context, int maxImageAmount, int mediaType, bool needCrop, int startPage,
+      bool cropOnlySquare, bool isGoToPublish, Function(dynamic result) callback) {
     Map<String, dynamic> map = Map();
     map["maxImageAmount"] = maxImageAmount;
     map["mediaType"] = mediaType;
     map["needCrop"] = needCrop;
+    map["startPage"] = startPage;
     map["cropOnlySquare"] = cropOnlySquare;
+    map["isGoToPublish"] = isGoToPublish;
     _navigateToPage(context, pathMediaPicker, map, callback: callback);
   }
 
@@ -77,10 +97,46 @@ class AppRouter {
     _navigateToPage(context, pathLogin, {});
   }
 
+  static void navigateToLiveBroadcast(BuildContext context) {
+    _navigateToPage(context, pathLiveBroadcast, {});
+  }
+
+  static void navigateToVideoCourseList(BuildContext context) {
+    _navigateToPage(context, pathVideoCourseList, {});
+  }
+
+  static void navigateToLiveDetail(BuildContext context, String heroTag,
+      int liveCourseId, int courseId) {
+    Map<String, dynamic> map = Map();
+    map["heroTag"] = heroTag;
+    map["liveCourseId"] = liveCourseId;
+    map["courseId"] = courseId;
+    _navigateToPage(context, pathLiveDetail, map);
+  }
+
+  static void navigateToVideoDetail(BuildContext context, String heroTag,
+      int liveCourseId, int courseId) {
+    Map<String, dynamic> map = Map();
+    map["heroTag"] = heroTag;
+    map["liveCourseId"] = liveCourseId;
+    map["courseId"] = courseId;
+    _navigateToPage(context, pathVideoDetail, map);
+  }
+
+  static void navigationToScanCodePage(BuildContext context) {
+    _navigateToPage(context, pathScanCode, {});
+  }
+
   static void navigateToLikePage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathLike, map);
   }
+
+  static void navigateToMineDetail(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathMineDetails, map);
+  }
+
   static void navigateToReleasePage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathRelease, map);
@@ -93,5 +149,11 @@ class AppRouter {
     map["avatarUrl"] = avatarUrl;
     map["nickName"] = nicName;
     _navigateToPage(context, pathGuildCompleteInforPage,map);
+  }
+
+  static void navigateToPreviewPhotoPage(BuildContext context, String filePath, Function(dynamic result) callback) {
+    Map<String, dynamic> map = Map();
+    map["filePath"] = filePath;
+    _navigateToPage(context, pathPreviewPhoto, map, callback: callback);
   }
 }

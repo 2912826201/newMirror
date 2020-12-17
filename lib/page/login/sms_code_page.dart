@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/user_api.dart';
@@ -15,6 +16,7 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/message/delegate/callbacks.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/page/login/perfect_user_page.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/data/model/token_model.dart';
@@ -52,7 +54,7 @@ class _SmsCodePageState extends LoginBasePageState {
   var _smsBtnTitleColor;
   var _smsBtnColor;
   //是否一定调取后端发送了短信
-   bool sended;
+  bool sended;
   //默认的按钮的颜色
   final _sendSmsOriginColor = AppColor.textPrimary1.withOpacity(0.06) ;
   //默认的标题颜色
@@ -271,6 +273,8 @@ class _SmsCodePageState extends LoginBasePageState {
       print("登录失败");
     }
   }
+
+  //TODO 完整的用户的处理方法 这个方法在登录页 绑定手机号页 完善资料页都会用到 需要单独提出来
   _afterLogin(TokenModel token) async{
     TokenDto tokenDto = TokenDto.fromTokenModel(token);
     await TokenDBHelper().insertToken(tokenDto);
@@ -287,9 +291,6 @@ class _SmsCodePageState extends LoginBasePageState {
       arguments: {},
     );
   }
-
-
-
 }
 
 class SmsCounterWidget extends StatefulWidget {
@@ -469,8 +470,8 @@ class _SmsCounterWidgetState extends State<SmsCounterWidget> {
           });
         }
       });
-    
-   
+
+
 
   }
 

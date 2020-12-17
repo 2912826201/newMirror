@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/page/media_picker/camera_photo_page.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
 
@@ -15,31 +16,40 @@ int _galleryIndex = 0; // 相册
 int _photoIndex = 1; // 拍照
 int _videoIndex = 2; // 拍视频
 
-//限定一下文件类型的入参范围
+//限定一下文件类型和初始页面的入参范围
 int typeImage = 0;
 int typeImageAndVideo = 1;
 
+int startPageGallery = _galleryIndex;
+int startPagePhoto = _photoIndex;
+
 class MediaPickerPage extends StatefulWidget {
-  MediaPickerPage(this.maxImageAmount, this.mediaType, this.needCrop, {Key key, this.cropOnlySquare = false})
+  MediaPickerPage(
+      this.maxImageAmount, this.mediaType, this.needCrop, this.startPage, this.cropOnlySquare, this.isGoToPublish,
+      {Key key})
       : super(key: key);
 
   final int maxImageAmount;
   final int mediaType;
   final bool needCrop;
+  final int startPage;
   final bool cropOnlySquare;
+  final bool isGoToPublish;
 
   @override
   _MediaPickerState createState() => _MediaPickerState();
 }
 
 class _MediaPickerState extends State<MediaPickerPage> {
-  int _selectedIndex = _galleryIndex;
+  int _selectedIndex;
   PageController _pageController;
   List<Widget> _pageList = [];
 
   @override
   void initState() {
     super.initState();
+    //根据入参中的起始页来确定一开始进哪个页面
+    _selectedIndex = widget.startPage;
     _pageController = PageController(initialPage: _selectedIndex);
     _pageList.add(
         //需要在这里就把provider创建出来，以便页面内的所有context都能在provider下
@@ -50,9 +60,10 @@ class _MediaPickerState extends State<MediaPickerPage> {
               requestType: widget.mediaType == typeImageAndVideo ? RequestType.common : RequestType.image,
               needCrop: widget.needCrop,
               cropOnlySquare: widget.cropOnlySquare,
+              isGoToPublish: widget.isGoToPublish,
             )));
-    _pageList.add(Container(
-      color: Colors.grey,
+    _pageList.add(CameraPhotoPage(
+      isGoToPublish: widget.isGoToPublish,
     ));
     _pageList.add(Container(
       color: Colors.greenAccent,

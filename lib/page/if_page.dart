@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
+import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
+import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_bottom_sheet.dart';
+import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_ipunt_bar.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/message/message_page.dart';
 import 'package:mirror/page/search/search.dart';
@@ -31,99 +37,84 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     // 获取屏幕宽度，只能在home内才可调用。
-    double screen_top = MediaQuery.of(context).padding.top;
-    double screen_bottom = MediaQuery.of(context).padding.bottom;
-    Size screen_size = MediaQuery.of(context).size;
-    double inputHeight = MediaQuery.of(context).viewInsets.bottom;
+    double screen_top = MediaQuery
+        .of(context)
+        .padding
+        .top;
+    double screen_bottom = MediaQuery
+        .of(context)
+        .padding
+        .bottom;
+    Size screen_size = MediaQuery
+        .of(context)
+        .size;
+    double inputHeight = MediaQuery
+        .of(context)
+        .viewInsets
+        .bottom;
     // 初始化获取屏幕数据
     if (isInit == false) {
-      ScreenUtil.init(width: screen_size.width,height: screen_size.height,maxPhysicalSize: screen_size.width, bottomHeight: screen_bottom);
+      ScreenUtil.init(width: screen_size.width,
+          height: screen_size.height,
+          maxPhysicalSize: screen_size.width,
+          bottomHeight: screen_bottom);
       isInit = true;
     };
     return Scaffold(
       // 此属性是重新计算布局空间大小
       // 内部元素要监听键盘高度必需要设置为false,
-      resizeToAvoidBottomInset: false,
-      // UnionOuterTabBarView ChangeNotifierProvider
-      body: Container(
-          child: Stack(
-              children: [
-                SlidingUpPanel(
-                    panel: Container(
-                      margin: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
-                      child:SingletonForWholePages.singleton().panelWidget(),
-                    ),
-                    maxHeight: ScreenUtil.instance.height*0.7,
-                    backdropEnabled: true,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10.0),
-                      topRight: Radius.circular(10.0),
-                    ),
-                    controller: SingletonForWholePages.singleton().panelController(),
-                    minHeight: 0,
-                    body: ChangeNotifierProvider(
-                        create: (_) => SelectedbottomNavigationBarNotifier(0),
-                        builder: (context, _) {
-                          return UnionOuterTabBarView(
-                            physics: context.watch<SelectedbottomNavigationBarNotifier>().selectedIndex == 0
-                                ? ClampingScrollPhysics()
-                                : NeverScrollableScrollPhysics(),
-                            controller: _controller,
-                            children: _createTabContent(),
-                          );
-                        }
-                    )
-                ),
-                // 键盘蒙层
-                Positioned(
-                    child: Offstage(
-                        offstage: inputHeight == 0,
-                        child: GestureDetector(
-                            onTap: () => commentFocus.unfocus(), // 失去焦点,
-                            // onDoubleTap: () => print("双击"),
-                            // onLongPress: () => print("长按"),
-                            // onTapCancel: () => print("取消"),
-                            // onTapUp: (e) => print("松开"),
-                            // onTapDown: (e) => print("按下"),
-                            // onPanDown: (DragDownDetails e) {
-                            // commentFocus.unfocus(); // 失去焦点
-                            //   //打印手指按下的位置
-                            //   print("手指按下：${e.globalPosition}");
-                            // },
-                            // //手指滑动
-                            // onPanUpdate: (DragUpdateDetails e) {
-                            //   print(e.delta.dx);
-                            //   print(e.delta.dy);
-                            // },
-                            // onPanEnd: (DragEndDetails e) {
-                            //   //打印滑动结束时在x、y轴上的速度
-                            //   print(e.velocity);
-                            // },
-                            child: Container(
-                              width: ScreenUtil.instance.screenWidthDp,
-                              height: ScreenUtil.instance.screenHeightDp,
-                              color: AppColor.black.withOpacity(0.24),
-                            )))),
-                // 唤起键盘
-                Positioned(
-                    bottom: inputHeight,
-                    left: 0,
-                    child: Offstage(
-                      offstage: inputHeight == 0,
-                      child: Container(
-                        width: ScreenUtil.instance.screenWidthDp,
-                        color: AppColor.white,
-                        padding: EdgeInsets.only(top: 8, bottom: 8),
-                        child: commentInputBar(),
-                      ),
-                    ))
-              ]
-          )
-      ),
+        resizeToAvoidBottomInset: false,
+        body:
+           Container(
+                  child:
+                  Stack(
+                      children: [
+                        SlidingUpPanel(
+                            panel: Container(
+                              margin: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
+                              child:
+                              context.watch<FeedMapNotifier>().feedId != null
+                              ? CommentBottomSheet(
+                                pc: SingletonForWholePages.singleton().panelWidget(),
+                                feedId: context.select((FeedMapNotifier value) => value.feedId),
+                              ) :
+                              Container(),
+                            ),
+                            onPanelClosed: () {
+                              context.read<FeedMapNotifier>().clearTotalCount();
+                              // 关闭视图后清空动态Id
+                              context.read<FeedMapNotifier>().changeFeeId(null);
+                            },
+                            maxHeight: ScreenUtil.instance.height * 0.75,
+                            backdropEnabled: true,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(10.0),
+                              topRight: Radius.circular(10.0),
+                            ),
+                            controller: SingletonForWholePages.singleton().panelWidget(),
+                            minHeight: 0,
+                            body: ChangeNotifierProvider(
+                                create: (_) => SelectedbottomNavigationBarNotifier(0),
+                                builder: (context, _) {
+                                  return UnionOuterTabBarView(
+                                    physics: context
+                                        .watch<SelectedbottomNavigationBarNotifier>()
+                                        .selectedIndex == 0
+                                        ? BouncingScrollPhysics()
+                                        : NeverScrollableScrollPhysics(),
+                                    controller: _controller,
+                                    children: _createTabContent(),
+                                  );
+                                }
+                            )
+                        ),
+                      ]
+                  )
+           )
     );
   }
 
-   _createTabContent() {
+  List<Widget> _createTabContent() {
      List<Widget> tabContent = List();
      tabContent.add(Search());
      //四个常规业务tabBar

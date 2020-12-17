@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/main.dart';
 import 'package:mirror/page/home/home_page.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/if_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/page/message/message_page.dart';
-import 'package:mirror/page/test_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+
+import 'profile/profile_page.dart';
+import 'training/training_page.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({Key key, this.pc}) : super(key: key);
@@ -21,6 +24,8 @@ class MainPageState extends State<MainPage> {
   int currentIndex;
   bool isInit = false;
   var pages ;
+
+  // final pages = [HomePage(), TrainingPage(), MessagePage(), ProfilePage()];
   List titles = ["首页", "训练", "消息", "我的"];
   List normalImgUrls = [
     "images/test/home-filling1.png",
@@ -40,14 +45,14 @@ class MainPageState extends State<MainPage> {
     super.initState();
     currentIndex = 0;
     SingletonForWholePages.singleton().messagePageKey = widget.messagePageKey;
-    pages =  [HomePage(), TestPage(), MessagePage(key:this.widget.messagePageKey), ProfilePage()];
+    pages =  [HomePage(), TrainingPage(), MessagePage(key:this.widget.messagePageKey), ProfilePage()];
   }
 
   @override
   Widget build(BuildContext context) {
     double itemWidth = MediaQuery.of(context).size.width / 5;
-    print("初始创建底部页");
-    print(ScreenUtil.instance.bottomBarHeight);
+    // print("初始创建底部页");
+    // print(ScreenUtil.instance.bottomBarHeight);
     return Scaffold(
       // 此属性是重新计算布局空间大小
       // 内部元素要监听键盘高度必需要设置为false,
@@ -63,7 +68,7 @@ class MainPageState extends State<MainPage> {
             flex: 1,
           ),
           Expanded(
-            child:SizedBox(height: 51,width: itemWidth,child: tabbar(2, context),),
+            child: SizedBox(height: 51, width: itemWidth, child: tabbar(2, context)),
             flex: 1,
           ),
           Expanded(
@@ -73,7 +78,11 @@ class MainPageState extends State<MainPage> {
         ]),
       ),
       // SlidingUpPanel
-      body: currentIndex == 0 ? HomePage(pc: widget.pc) : pages[currentIndex],
+      body: currentIndex == 0 ? HomePage(pc: widget.pc) : IndexedStack(
+        index: this.currentIndex,
+        children: this.pages,
+      )
+      // pages[currentIndex],
     );
   }
 

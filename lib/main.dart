@@ -1,15 +1,22 @@
+import 'package:camera/camera.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/rongcloud_connection_notifier.dart';
+import 'package:mirror/data/model/video_tag_madel.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:provider/provider.dart';
 
+import 'api/live_broadcast/live_api.dart';
 import 'api/user_api.dart';
 import 'config/application.dart';
+import 'config/config.dart';
+import 'config/shared_preferences.dart';
 import 'data/dto/profile_dto.dart';
 import 'data/dto/token_dto.dart';
 import 'data/model/token_model.dart';
@@ -18,11 +25,14 @@ import 'data/notifier/profile_notifier.dart';
 import 'route/router.dart';
 
 void main() {
+  SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor:Colors.transparent);
+  SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   _initApp().then((value) => runApp(
         MultiProvider(
           providers: [
             ChangeNotifierProvider(create: (_) => TokenNotifier(Application.token)),
             ChangeNotifierProvider(create: (_) => ProfileNotifier(Application.profile)),
+            ChangeNotifierProvider(create: (_) => FeedMapNotifier(feedMap: {}))
             ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
           ],
           child: MyApp(),
@@ -34,6 +44,15 @@ void main() {
 Future _initApp() async {
   //要先执行该方法 不然插件无法加载调用
   WidgetsFlutterBinding.ensureInitialized();
+
+  // 强制竖屏
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown
+  ]);
+
+  //初始化SharedPreferences
+  AppPrefs.init();
 
   //从数据库获取已登录的用户token或匿名用户token
   TokenDto token = await TokenDBHelper().queryToken();
@@ -69,6 +88,23 @@ Future _initApp() async {
 
   //初始化融云IM
   RongCloud().init();
+
+  //创建各文件路径
+  AppConfig.createAppDir();
+
+  //获取相机信息
+  try {
+    Application.cameras = await availableCameras();
+  } on CameraException catch (e) {
+    print(e);
+    Application.cameras = [];
+  }
+
+  //获取视频课标签列表
+  try {
+    Map<String, dynamic> videoCourseTagMap = await getAllTags();
+    Application.videoTagModel = VideoTagModel.fromJson(videoCourseTagMap);
+  } catch (e) {}
 }
 
 class MyApp extends StatefulWidget {

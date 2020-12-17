@@ -61,7 +61,10 @@ Future<void> _createDB(Database db, int version) async {
       "$COLUMN_NAME_PROFILE_FOLLOWERCOUNT int," +
       "$COLUMN_NAME_PROFILE_FEEDCOUNT int," +
       "$COLUMN_NAME_PROFILE_RELATION tinyint(1)," +
-      "$COLUMN_NAME_PROFILE_MUTUALFRIENDCOUNT int" +
+      "$COLUMN_NAME_PROFILE_MUTUALFRIENDCOUNT int," +
+      "$COLUMN_NAME_PROFILE_TRAININGSECONDS bigint(20)," +
+      "$COLUMN_NAME_PROFILE_WEIGHT double," +
+      "$COLUMN_NAME_PROFILE_ALBUMNUM int" +
           ")");
   //token
   await db.execute("create table $TABLE_NAME_TOKEN (" +

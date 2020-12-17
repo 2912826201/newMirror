@@ -57,6 +57,7 @@ class _LoginPageState extends LoginBasePageState {
      ],
     ));
   }
+
   //背景图片
   Widget _backImage() {
     return Container(
@@ -66,16 +67,13 @@ class _LoginPageState extends LoginBasePageState {
       height: double.infinity,)
     );
   }
+
   //可选登录选项
   Widget _interactiveItems() {
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _sloganArea(),
-          _loginOptions(),
-          _agreementArea()
-        ],
+        children: [Spacer(), _sloganArea(), _loginOptions(), _agreementArea()],
       ),
       margin:const  EdgeInsets.only(bottom: 63, left: 41),
     );

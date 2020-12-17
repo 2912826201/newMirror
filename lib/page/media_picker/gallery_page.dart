@@ -3,8 +3,10 @@ import 'dart:ui' as ui;
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/image_cropper.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
@@ -31,13 +33,15 @@ class GalleryPage extends StatefulWidget {
       this.maxImageAmount = 1,
       this.requestType = RequestType.common,
       this.needCrop = false,
-      this.cropOnlySquare = false})
+      this.cropOnlySquare = false,
+      this.isGoToPublish = false})
       : super(key: key);
 
   final int maxImageAmount;
   final int maxVideoAmount = 1;
   final bool needCrop;
   final bool cropOnlySquare;
+  final bool isGoToPublish;
 
   // image是图片 common是图片和视频 目前需求只会用到这两种
   final RequestType requestType;
@@ -46,8 +50,9 @@ class GalleryPage extends StatefulWidget {
   _GalleryPageState createState() => _GalleryPageState();
 }
 
+// AutomaticKeepAliveClientMixin支持重新切回页面后保持之前页面状态
 class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClientMixin {
-  var _cropperKey = GlobalKey();
+  var _cropperKey = GlobalKey<_GalleryPageState>();
 
   double _screenWidth = 0;
   double _itemSize = 0;
@@ -76,7 +81,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
     _fetchGalleryData(true);
   }
 
-  //获取相册数据
+  //TODO 获取相册数据 需要排除掉不符合规则的文件
   _fetchGalleryData(bool isNew) async {
     if (_isFetchingData) {
       // 正在获取过程中则不做操作
@@ -153,31 +158,34 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                     behavior: NoBlueEffectBehavior(),
                     child: _buildScrollBody(),
                   ),
-                  // 裁剪区域
-                  Positioned(
-                      top: context.watch<_PreviewHeightNotifier>().previewHeight - _previewMaxHeight,
-                      child: Container(
-                        color: AppColor.bgBlack,
-                        width: _previewMaxHeight,
-                        height: _previewMaxHeight,
-                        child: Builder(
-                          builder: (context) {
-                            AssetEntity entity =
-                                context.select((SelectedMapNotifier notifier) => notifier.currentEntity);
-                            return entity == null
-                                ? Container()
-                                : entity.type == AssetType.video
-                                    ? VideoPreviewArea(_fileMap[entity.id], _screenWidth)
-                                    : entity.type == AssetType.image
-                                        ? CropperImage(
-                                            FileImage(_fileMap[entity.id]),
-                                            round: 0,
-                                            key: _cropperKey,
-                                          )
-                                        : Container();
-                          },
-                        ),
-                      )),
+                  widget.needCrop
+                      ?
+                      // 裁剪区域
+                      Positioned(
+                          top: context.watch<_PreviewHeightNotifier>().previewHeight - _previewMaxHeight,
+                          child: Container(
+                            color: AppColor.bgBlack,
+                            width: _previewMaxHeight,
+                            height: _previewMaxHeight,
+                            child: Builder(
+                              builder: (context) {
+                                AssetEntity entity =
+                                    context.select((SelectedMapNotifier notifier) => notifier.currentEntity);
+                                return entity == null
+                                    ? Container()
+                                    : entity.type == AssetType.video
+                                        ? VideoPreviewArea(_fileMap[entity.id], _screenWidth)
+                                        : entity.type == AssetType.image
+                                            ? CropperImage(
+                                                FileImage(_fileMap[entity.id]),
+                                                round: 0,
+                                                key: _cropperKey,
+                                              )
+                                            : Container();
+                              },
+                            ),
+                          ))
+                      : Container(),
                 ],
               );
             }));
@@ -264,6 +272,22 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
     return GestureDetector(
         onTap: () => _onGridItemTap(context, entity),
         child: Stack(overflow: Overflow.clip, children: [
+          // Builder(builder: (context){
+          //   if(_thumbMap[entity.id] == null){
+          //     return Image.memory(
+          //       _thumbMap[entity.id],
+          //       fit: BoxFit.cover,
+          //       height: _itemSize,
+          //       width: _itemSize,
+          //     );
+          //   }else{
+          //     print("缩略图是空的！！！");
+          //     print("${entity.relativePath}");
+          //     return Container();
+          //   }
+          //
+          //
+          // }),
           Image.memory(
             _thumbMap[entity.id],
             fit: BoxFit.cover,
@@ -293,12 +317,12 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                   child: context.watch<SelectedMapNotifier>().selectedMap.containsKey(entity.id)
                       ? Text(
                           context.watch<SelectedMapNotifier>().selectedMap[entity.id].order.toString(),
-                          style: TextStyle(color: Colors.white, fontSize: 18),
+                          style: TextStyle(color: AppColor.white, fontSize: 18),
                         )
                       : Icon(
                           Icons.add_circle_outline,
                           size: 20,
-                          color: Colors.white,
+                          color: AppColor.white,
                         ),
                 )),
           ),
@@ -311,7 +335,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                   : entity.type == AssetType.video
                       ? "V"
                       : "",
-              style: TextStyle(color: Colors.white, fontSize: 18),
+              style: TextStyle(color: AppColor.white, fontSize: 18),
             ),
           )
         ]));
@@ -403,7 +427,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
               }
 
               // 在裁剪模式下 当前预览的图像如果是选中的图 则需要获取下裁剪后的图像
-              if (widget.needCrop) {
+              if (widget.needCrop && notifier.selectedType == AssetType.image) {
                 if (notifier.currentEntity != null && notifier.selectedMap.containsKey(notifier.currentEntity.id)) {
                   await _getImage(context, notifier.currentEntity.id);
                 }
@@ -424,17 +448,50 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
               // 遍历所选Map将结果赋值
               for (_OrderedAssetEntity orderedEntity in selectedMap.values) {
                 // order要减1才是index
-                mediaFileList[orderedEntity.order - 1].file = _fileMap[orderedEntity.entity.id];
-                mediaFileList[orderedEntity.order - 1].thumb = _thumbMap[orderedEntity.entity.id];
+                MediaFileModel mediaFileModel = mediaFileList[orderedEntity.order - 1];
+                // 根据类型处理文件信息及尺寸信息
                 if (widget.needCrop) {
-                  mediaFileList[orderedEntity.order - 1].croppedImage = notifier._imageMap[orderedEntity.entity.id];
+                  switch (notifier.selectedType) {
+                    case AssetType.image:
+                      mediaFileModel.croppedImage = notifier.imageMap[orderedEntity.entity.id];
+                      mediaFileModel.sizeInfo.height = mediaFileModel.croppedImage.height;
+                      mediaFileModel.sizeInfo.width = mediaFileModel.croppedImage.width;
+                      break;
+                    case AssetType.video:
+                      mediaFileModel.file = _fileMap[orderedEntity.entity.id];
+                      mediaFileModel.thumb = _thumbMap[orderedEntity.entity.id];
+                      mediaFileModel.sizeInfo.height = orderedEntity.entity.height;
+                      mediaFileModel.sizeInfo.width = orderedEntity.entity.width;
+                      mediaFileModel.sizeInfo.duration = orderedEntity.entity.duration;
+                      SizeInfo sizeInfo = notifier.offsetMap[mediaFileModel.file.path];
+                      if (sizeInfo != null) {
+                        mediaFileModel.sizeInfo.offsetRatioX = sizeInfo.offsetRatioX;
+                        mediaFileModel.sizeInfo.offsetRatioY = sizeInfo.offsetRatioY;
+                      }
+                      break;
+                    default:
+                      break;
+                  }
+                } else {
+                  mediaFileModel.file = _fileMap[orderedEntity.entity.id];
+                  mediaFileModel.thumb = _thumbMap[orderedEntity.entity.id];
+                  mediaFileModel.sizeInfo.height = orderedEntity.entity.height;
+                  mediaFileModel.sizeInfo.width = orderedEntity.entity.width;
+                  mediaFileModel.sizeInfo.duration = orderedEntity.entity.duration;
                 }
               }
               // 赋值并退出页面
               SelectedMediaFiles files = SelectedMediaFiles();
               files.type = type;
               files.list = mediaFileList;
-              Navigator.pop(context, files);
+
+              Application.selectedMediaFiles = files;
+
+              Navigator.pop(context, true);
+
+              if (widget.isGoToPublish) {
+                AppRouter.navigateToReleasePage(context);
+              }
             },
             child: Container(
               alignment: Alignment.center,
@@ -499,12 +556,19 @@ class SelectedMapNotifier with ChangeNotifier {
 
   AssetType get selectedType => _selectedType;
 
-  Map<String, _OrderedAssetEntity> _selectedMap = Map<String, _OrderedAssetEntity>();
+  Map<String, _OrderedAssetEntity> _selectedMap = {};
 
   Map<String, _OrderedAssetEntity> get selectedMap => _selectedMap;
 
+  // 记录视频的偏移值
+  Map<String, SizeInfo> _offsetMap = {};
+
+  Map<String, SizeInfo> get offsetMap => _offsetMap;
+
   // 用来存放已经裁剪好的图像数据
-  Map<String, ui.Image> _imageMap = Map<String, ui.Image>();
+  Map<String, ui.Image> _imageMap = {};
+
+  Map<String, ui.Image> get imageMap => _imageMap;
 
   _removeFromSelectedMap(AssetEntity entity) {
     //删掉目标entity还要将排序重新整理
@@ -580,6 +644,13 @@ class SelectedMapNotifier with ChangeNotifier {
 
   removeImage(String id) {
     _imageMap.remove(id);
+  }
+
+  setOffset(String key, double offsetRatioX, double offsetRatioY) {
+    SizeInfo sizeInfo = SizeInfo();
+    sizeInfo.offsetRatioX = offsetRatioX;
+    sizeInfo.offsetRatioY = offsetRatioY;
+    _offsetMap[key] = sizeInfo;
   }
 }
 
@@ -669,12 +740,15 @@ class VideoPreviewArea extends StatefulWidget {
 }
 
 class VideoPreviewState extends State<VideoPreviewArea> {
+  File _file;
   VideoPlayerController _controller;
   Future<void> _initVideoPlayerFuture;
 
   @override
   void initState() {
-    _controller = VideoPlayerController.file(widget.file);
+    _file = widget.file;
+    context.read<SelectedMapNotifier>().setOffset(_file.path, 0.0, 0.0);
+    _controller = VideoPlayerController.file(_file);
     _initVideoPlayerFuture = _controller.initialize();
     _controller.setLooping(true);
     super.initState();
@@ -688,6 +762,19 @@ class VideoPreviewState extends State<VideoPreviewArea> {
   }
 
   @override
+  void didUpdateWidget(covariant VideoPreviewArea oldWidget) {
+    if (_controller != null && _file != widget.file) {
+      _controller.dispose();
+      _file = widget.file;
+      context.read<SelectedMapNotifier>().setOffset(_file.path, 0.0, 0.0);
+      _controller = VideoPlayerController.file(_file);
+      _initVideoPlayerFuture = _controller.initialize();
+      _controller.setLooping(true);
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: _initVideoPlayerFuture,
@@ -695,18 +782,50 @@ class VideoPreviewState extends State<VideoPreviewArea> {
           if (snapshot.connectionState == ConnectionState.done) {
             print("aspectRatio:${_controller.value.aspectRatio}");
             if (!_controller.value.isPlaying) {
-              _controller.play();
+              // _controller.play();
             }
-            return SingleChildScrollView(
-              //根据比例设置方向
-              scrollDirection: _controller.value.aspectRatio > 1 ? Axis.horizontal : Axis.vertical,
-              child: Container(
-                alignment: Alignment.center,
-                width: _getVideoPreviewSize(_controller.value.aspectRatio, widget.previewWidth).width,
-                height: _getVideoPreviewSize(_controller.value.aspectRatio, widget.previewWidth).height,
-                child: AspectRatio(
-                  aspectRatio: _controller.value.aspectRatio,
-                  child: VideoPlayer(_controller),
+            Size _previewSize = _getVideoPreviewSize(_controller.value.aspectRatio, widget.previewWidth);
+            //初始位置就是(0，0)所以暂不做初始偏移值的处理
+            return ScrollConfiguration(
+              behavior: NoBlueEffectBehavior(),
+              child: NotificationListener<ScrollNotification>(
+                onNotification: (ScrollNotification notification) {
+                  ScrollMetrics metrics = notification.metrics;
+                  // 注册通知回调
+                  if (notification is ScrollStartNotification) {
+                    // 滚动开始
+                  } else if (notification is ScrollUpdateNotification) {
+                    // 滚动位置更新
+                    // 当前位置
+                    // print("metrics.pixels当前值是：${metrics.pixels}");
+                    if (_controller.value.aspectRatio > 1) {
+                      //横向
+                      double offsetRatioX = -metrics.pixels / _previewSize.height / _controller.value.aspectRatio;
+                      context.read<SelectedMapNotifier>().setOffset(_file.path, offsetRatioX, 0.0);
+                    } else {
+                      //纵向
+                      double offsetRatioY = -metrics.pixels / _previewSize.width * _controller.value.aspectRatio;
+                      context.read<SelectedMapNotifier>().setOffset(_file.path, 0.0, offsetRatioY);
+                    }
+                  } else if (notification is ScrollEndNotification) {
+                    // 滚动结束
+                  }
+                  return false;
+                },
+                child: SingleChildScrollView(
+                  //禁止回弹效果
+                  physics: ClampingScrollPhysics(),
+                  //根据比例设置方向
+                  scrollDirection: _controller.value.aspectRatio > 1 ? Axis.horizontal : Axis.vertical,
+                  child: Container(
+                    alignment: Alignment.center,
+                    width: _previewSize.width,
+                    height: _previewSize.height,
+                    child: AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: VideoPlayer(_controller),
+                    ),
+                  ),
                 ),
               ),
             );

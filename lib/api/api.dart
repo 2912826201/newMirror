@@ -21,15 +21,24 @@ const int AUTH_TYPE_COMMON = 0;
 const int AUTH_TYPE_NONE = 1;
 const int AUTH_TYPE_TEMP = 2;
 
+//请求方法
+const String METHOD_GET = "get";
+const String METHOD_POST = "post";
+
 Dio _dio;
 
 //通用的请求api的方法，请在具体的子api中进行入参封装和结果处理 authType只在特定的接口中赋值
 Future<BaseResponseModel> requestApi(String path, Map<String, dynamic> queryParameters,
-    {int authType = AUTH_TYPE_COMMON}) async {
+    {int authType = AUTH_TYPE_COMMON, String requestMethod = METHOD_POST}) async {
   BaseResponseModel responseModel;
   try {
     _setHeaders(authType);
-    Response response = await _getDioInstance().post(path, queryParameters: queryParameters);
+    Response response;
+    if(requestMethod == METHOD_GET) {
+      response = await _getDioInstance().get(path, queryParameters: queryParameters);
+    }else{
+      response = await _getDioInstance().post(path, queryParameters: queryParameters);
+    }
     responseModel = BaseResponseModel.fromJson(json.decode(response.toString()));
     //要注意 只有服务端系统错误500被视为失败 其他错误码要在具体业务中处理
     responseModel.isSuccess = responseModel.code != CODE_SERVER_ERROR;
