@@ -185,17 +185,17 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                     : AppColor.textSecondary,
                               ),
                               child: Center(
-                                child: Text(
-                                  "发送",
-                                  style: TextStyle(
-                                      color: AppColor.white, fontSize: 14),
-                                ),
-                              )),
-                        )),
-                  ))
-            ],
-          );
-        });
+                                    child: Text(
+                                      "发送",
+                                      style: TextStyle(
+                                          color: AppColor.white, fontSize: 14),
+                                    ),
+                                  )),
+                            )),
+                      ))
+                ],
+              );
+            }));
   }
 }
 
