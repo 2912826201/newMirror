@@ -5,20 +5,20 @@
 /// target : [{"id":1,"type":2,"name":"减脂","updateTime":1607673809453},{"id":2,"type":2,"name":"塑性","updateTime":1607673809476},{"id":3,"type":2,"name":"增肌","updateTime":1607673809496},{"id":4,"type":2,"name":"健康","updateTime":1607673809513}]
 
 class VideoTagModel {
-  List<VideoSubTagModel> _level;
-  List<VideoSubTagModel> _part;
-  List<VideoSubTagModel> _target;
+  List<SubTagModel> _level;
+  List<SubTagModel> _part;
+  List<SubTagModel> _target;
 
-  List<VideoSubTagModel> get level => _level;
+  List<SubTagModel> get level => _level;
 
-  List<VideoSubTagModel> get part => _part;
+  List<SubTagModel> get part => _part;
 
-  List<VideoSubTagModel> get target => _target;
+  List<SubTagModel> get target => _target;
 
   VideoTagModel(
-      {List<VideoSubTagModel> level,
-      List<VideoSubTagModel> part,
-      List<VideoSubTagModel> target}) {
+      {List<SubTagModel> level,
+      List<SubTagModel> part,
+      List<SubTagModel> target}) {
     _level = level;
     _part = part;
     _target = target;
@@ -28,19 +28,19 @@ class VideoTagModel {
     if (json["level"] != null) {
       _level = [];
       json["level"].forEach((v) {
-        _level.add(VideoSubTagModel.fromJson(v));
+        _level.add(SubTagModel.fromJson(v));
       });
     }
     if (json["part"] != null) {
       _part = [];
       json["part"].forEach((v) {
-        _part.add(VideoSubTagModel.fromJson(v));
+        _part.add(SubTagModel.fromJson(v));
       });
     }
     if (json["target"] != null) {
       _target = [];
       json["target"].forEach((v) {
-        _target.add(VideoSubTagModel.fromJson(v));
+        _target.add(SubTagModel.fromJson(v));
       });
     }
   }
@@ -65,11 +65,12 @@ class VideoTagModel {
 /// name : "减脂"
 /// updateTime : 1607673809453
 
-class VideoSubTagModel {
+class SubTagModel {
   int _id;
   int _type;
   String _name;
   int _updateTime;
+  String _ename = "";
 
   int get id => _id;
 
@@ -79,18 +80,23 @@ class VideoSubTagModel {
 
   int get updateTime => _updateTime;
 
-  VideoSubTagModel({int id, int type, String name, int updateTime}) {
+  String get ename => _ename;
+
+
+  SubTagModel({int id, int type, String name, int updateTime, String ename}) {
     _id = id;
     _type = type;
     _name = name;
     _updateTime = updateTime;
+    _ename = ename;
   }
 
-  VideoSubTagModel.fromJson(dynamic json) {
+  SubTagModel.fromJson(dynamic json) {
     _id = json["id"];
     _type = json["type"];
     _name = json["name"];
     _updateTime = json["updateTime"];
+    _ename = json["ename"];
   }
 
   Map<String, dynamic> toJson() {
@@ -99,6 +105,7 @@ class VideoSubTagModel {
     map["type"] = _type;
     map["name"] = _name;
     map["updateTime"] = _updateTime;
+    map["ename"] = _ename;
     return map;
   }
 }

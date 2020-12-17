@@ -14,6 +14,8 @@ const String BOOKLIVECOURSE = "/sport/course/bookLiveCourse";
 const String GETALLTAGS = "/sport/course/getAllTags";
 // 获取视频课程库列表
 const String GETVIDEOCOURSELIST = "/sport/course/getVideoCourseList";
+// TA们也完成该视频课程的接口
+const String GETFINISHEDVIDEOCOURSE = "/sport/course/getFinishedVideoCourse";
 
 ///根据日期获取直播课程列表
 ///请求参数
@@ -97,7 +99,7 @@ Future<Map> getVideoCourseList(
     @required List<int> target,
     @required List<int> part,
     @required List<int> level,
-    String lastId = ""}) async {
+    int lastId}) async {
   Map<String, dynamic> params = {};
   params["size"] = size;
   if (target != null && target.length > 0) {
@@ -109,11 +111,30 @@ Future<Map> getVideoCourseList(
   if (level != null && level.length > 0) {
     params["level"] = level.toString();
   }
-  if (lastId != null && !lastId.isNotEmpty) {
+  if (lastId != null && lastId > 0) {
     params["lastId"] = lastId;
   }
   BaseResponseModel responseModel =
       await requestApi(GETVIDEOCOURSELIST, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
+
+///TA们也完成该视频课程的接口
+///请求参数
+Future<Map> getFinishedVideoCourse(int videoCourseId, int size,
+    {int lastId}) async {
+  Map<String, dynamic> params = {};
+  params["videoCourseId"] = videoCourseId;
+  params["size"] = size;
+  if (lastId != null && lastId > 0) {
+    params["lastId"] = lastId;
+  }
+  BaseResponseModel responseModel =
+      await requestApi(GETFINISHEDVIDEOCOURSE, params);
   if (responseModel.isSuccess) {
     return responseModel.data;
   } else {
