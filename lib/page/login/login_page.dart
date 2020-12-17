@@ -73,7 +73,7 @@ class _LoginPageState extends LoginBasePageState {
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [Spacer(), _sloganArea(), _loginOptions(), _agreementArea()],
+        children: [_sloganArea(), _loginOptions(), _agreementArea()],
       ),
       margin:const  EdgeInsets.only(bottom: 63, left: 41),
     );

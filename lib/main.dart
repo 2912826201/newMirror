@@ -32,7 +32,7 @@ void main() {
           providers: [
             ChangeNotifierProvider(create: (_) => TokenNotifier(Application.token)),
             ChangeNotifierProvider(create: (_) => ProfileNotifier(Application.profile)),
-            ChangeNotifierProvider(create: (_) => FeedMapNotifier(feedMap: {}))
+            ChangeNotifierProvider(create: (_) => FeedMapNotifier(feedMap: {})),
             ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
           ],
           child: MyApp(),
