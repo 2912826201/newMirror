@@ -56,7 +56,7 @@ class MainPageState extends State<MainPage> {
     } else if (currentIndex == 2) {
       return MessagePage();
     } else {
-      return ProfilePage();
+      return ProfilePage(panelController: widget.pc,);
     }
   }
   @override

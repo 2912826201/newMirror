@@ -26,14 +26,9 @@ class UserModel {
 
   int isPerfect; //0 未完善 1 完善
   int isPhone; // 是否绑定手机号 0-未绑定 1-已绑定
-  int followingCount; //关注数
-  int followerCount; //粉丝数
-  int feedCount; //动态数
+
   int relation; //与用户关系 0-没关系 1-关注 2-粉丝 3-好友
   int mutualFriendCount; //共同好友数
-  int trainingSeconds; //训练总时长
-  int weight; //最近体重
-  int albumNum; //相片数量
 
   UserModel({
       this.uid = 0, //默认给个uid为0
@@ -59,14 +54,8 @@ class UserModel {
       this.age, 
       this.isPerfect,
       this.isPhone,
-      this.followingCount, 
-      this.followerCount, 
-      this.feedCount, 
       this.relation, 
-      this.mutualFriendCount,
-      this.trainingSeconds,
-      this.weight,
-      this.albumNum});
+      this.mutualFriendCount,});
 
   UserModel.fromJson(Map<String, dynamic> json) {
     uid = json["uid"];
@@ -92,14 +81,8 @@ class UserModel {
     age = json["age"];
     isPerfect = json["isPerfect"];
     isPhone = json["isPhone"];
-    followingCount = json["followingCount"];
-    followerCount = json["followerCount"];
-    feedCount = json["feedCount"];
     relation = json["relation"];
     mutualFriendCount = json["mutualFriendCount"];
-    trainingSeconds = json["trainingSeconds"];
-    weight = json["weight"];
-    albumNum = json["albumNum"];
   }
 
   Map<String, dynamic> toJson() {
@@ -127,14 +110,8 @@ class UserModel {
     map["age"] = age;
     map["isPerfect"] = isPerfect;
     map["isPhone"] = isPhone;
-    map["followingCount"] = followingCount;
-    map["followerCount"] = followerCount;
-    map["feedCount"] = feedCount;
     map["relation"] = relation;
     map["mutualFriendCount"] = mutualFriendCount;
-    map["trainingSeconds"] = trainingSeconds;
-    map["weight"] = weight;
-    map["albumNum"] = albumNum;
     return map;
   }
 

@@ -12,8 +12,11 @@ const String  ATTENTION= "/appuser/web/user/follow/addFollow";
 const String CANCEL_ATTENTION = "/appuser/web/user/follow/removeFollow";
 ///获取用户关注相关【粉丝数、关注数、动态数】
 const String GET_FOLLOWCOUNT = "/appuser/web/user/getFollowCount";
-
+///获取用户训练记录
 const String GET_EXTRAINFO = "/appuser/web/user/getExtraInfo";
+///获取用户基础信息
+const String GET_USERBASEINFO = "/ucenter/web/user/getUserBaseInfo";
+
 Future<int> ProfileAttention(int id)async{
   BaseResponseModel responseModel = await requestApi(ATTENTION,{"id":id});
   int backCode;
@@ -41,7 +44,11 @@ Future<int> ProfileCancelAttention(int id)async{
   }
 }
 Future<ProfileModel> ProfileFollowCount({int id})async {
-  BaseResponseModel responseModel = await requestApi(GET_FOLLOWCOUNT, {"id": id});
+  Map<String,dynamic> parmas ={};
+  if(id!=null){
+    parmas["id"] = id;
+  }
+  BaseResponseModel responseModel = await requestApi(GET_FOLLOWCOUNT, parmas);
   if (responseModel.isSuccess) {
     return ProfileModel.fromJson(responseModel.data);
   } else {
