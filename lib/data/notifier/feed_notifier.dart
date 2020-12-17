@@ -94,5 +94,12 @@ class FeedMapNotifier extends ChangeNotifier {
     feedMap[feedId].totalCount = -1;
     notifyListeners();
   }
+  // 测试手动插入评论
+  void a(CommentDtoModel comModel, int id) {
+    print("评论model赋值");
+    feedMap[id].comments.insert(0, comModel);
+    notifyListeners();
+  }
+
 
 }

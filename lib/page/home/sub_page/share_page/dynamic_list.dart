@@ -200,35 +200,35 @@ class DynamicListLayout extends StatelessWidget {
   }
 }
 
-class DynamicModelNotifier extends ChangeNotifier {
-  DynamicModelNotifier({this.recommendModel});
-  // 推荐model
-  List<HomeFeedModel> recommendModel;
-  // // 关注model
-  // List<HomeFeedModel> attentionModel;
-  void setRecommendModel(List<HomeFeedModel> _dynamicModel) {
-    recommendModel = _dynamicModel;
-    //要将全局的profile赋值
-    notifyListeners();
-  }
-  // void setAttentionModel(List<HomeFeedModel> _dynamicModel) {
-  //   attentionModel = _dynamicModel;
-  //   //要将全局的profile赋值
-  //   notifyListeners();
-  // }
- //点赞
-  void setLaud(int laud ,String avatarUrl,int index) {
-    if(laud == 0) {
-      recommendModel[index].laudCount += 1;
-      recommendModel[index].laudUserInfo.insert(0,avatarUrl);
-      laud = 1;
-    } else {
-      recommendModel[index].laudCount -= 1;
-      recommendModel[index].laudUserInfo.removeAt(0);
-      laud = 0;
-    }
-    recommendModel[index].isLaud = laud;
-    notifyListeners();
-  }
-
-}
+// class DynamicModelNotifier extends ChangeNotifier {
+//   DynamicModelNotifier({this.recommendModel});
+//   // 推荐model
+//   List<HomeFeedModel> recommendModel;
+//   // // 关注model
+//   // List<HomeFeedModel> attentionModel;
+//   void setRecommendModel(List<HomeFeedModel> _dynamicModel) {
+//     recommendModel = _dynamicModel;
+//     //要将全局的profile赋值
+//     notifyListeners();
+//   }
+//   // void setAttentionModel(List<HomeFeedModel> _dynamicModel) {
+//   //   attentionModel = _dynamicModel;
+//   //   //要将全局的profile赋值
+//   //   notifyListeners();
+//   // }
+//  //点赞
+//   void setLaud(int laud ,String avatarUrl,int index) {
+//     if(laud == 0) {
+//       recommendModel[index].laudCount += 1;
+//       recommendModel[index].laudUserInfo.insert(0,avatarUrl);
+//       laud = 1;
+//     } else {
+//       recommendModel[index].laudCount -= 1;
+//       recommendModel[index].laudUserInfo.removeAt(0);
+//       laud = 0;
+//     }
+//     recommendModel[index].isLaud = laud;
+//     notifyListeners();
+//   }
+//
+// }
