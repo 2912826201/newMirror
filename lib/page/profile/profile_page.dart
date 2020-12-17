@@ -306,7 +306,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         MaterialPageRoute(builder: (context) {
         ///这里传type来告知详情页该怎么展示
         return ProfileDetailPage(
-          type: 1,
+         myselfId: uid,pc: widget.panelController,
         );
       }));
     },
