@@ -428,6 +428,9 @@ class _ProfileDetailState extends State<ProfileDetailPage>
 
   ///数值大小判断
   String _getNumber(int number) {
+    if(number==0||number==null){
+      return 0.toString();
+    }
     if (number < 10000) {
       return number.toString();
     } else {
