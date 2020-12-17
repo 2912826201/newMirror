@@ -20,7 +20,7 @@ class MainPage extends StatefulWidget {
 class MainPageState extends State<MainPage> {
   int currentIndex;
 
-  final pages = [HomePage(), TrainingPage(), MessagePage(), ProfilePage()];
+  // final pages = [HomePage(), TrainingPage(), MessagePage(), ProfilePage()];
   List titles = ["首页", "训练", "消息", "我的"];
   List normalImgUrls = [
     "images/test/home-filling1.png",
@@ -40,7 +40,18 @@ class MainPageState extends State<MainPage> {
     super.initState();
     currentIndex = 0;
   }
-
+  // 返回视图
+  returnView(int currentIndex) {
+    if (currentIndex == 0) {
+      return HomePage(pc: widget.pc,);
+    } else if (currentIndex == 1) {
+    return TrainingPage();
+    } else if (currentIndex == 2) {
+      return MessagePage();
+    } else {
+      return ProfilePage();
+    }
+  }
   @override
   Widget build(BuildContext context) {
     double itemWidth = MediaQuery.of(context).size.width / 5;
@@ -71,13 +82,10 @@ class MainPageState extends State<MainPage> {
         ]),
       ),
       // SlidingUpPanel
-      body: currentIndex == 0 ? HomePage(pc: widget.pc) : IndexedStack(
-        index: this.currentIndex,
-        children: this.pages,
-      )
-      // pages[currentIndex],
+      body:  returnView(currentIndex),
     );
   }
+
 
   // 自定义BottomAppBar
   Widget tabbar(int index, BuildContext context) {

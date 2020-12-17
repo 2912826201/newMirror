@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/data/model/base_response_model.dart';
+import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 
 // 获取动态列表
@@ -29,7 +30,7 @@ const String IMAGESCAN = "/third/green/imageScan";
 // 视频检测
 const String VIDEOSCAN = "/third/green/videoScan";
 //获取动态列表
-Future<Map> getPullList({@required int type, @required int size, int targetId, int lastTime}) async {
+Future<DataResponseModel> getPullList({@required int type, @required int size, int targetId, int lastTime}) async {
   Map<String, dynamic> params = {};
   params["type"] = type;
   params["size"] = size;
@@ -39,7 +40,9 @@ Future<Map> getPullList({@required int type, @required int size, int targetId, i
   params["lastTime"] = lastTime;
   BaseResponseModel responseModel = await requestApi(PULLLISTFEED, params);
   if (responseModel.isSuccess) {
-    return responseModel.data;
+     DataResponseModel  dataResponseModel;
+     dataResponseModel = DataResponseModel.fromJson(responseModel.data);
+    return dataResponseModel;
   } else {
     return null;
   }

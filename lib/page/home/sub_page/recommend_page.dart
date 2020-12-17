@@ -175,13 +175,13 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                     recommendModelList.clear();
                     loadStatus = LoadingStatus.STATUS_LOADING;
                     loadText = "加载中...";
-                    Map<String, dynamic> model = await getPullList(type: 1, size: 20, lastTime: lastTime);
+                    List<HomeFeedModel> modelList = await getHotList(size: 20);
                     setState(() {
-                      if (model["list"] != null) {
-                        model["list"].forEach((v) {
-                          recommendIdList.add(HomeFeedModel.fromJson(v).id);
-                          recommendModelList.add(HomeFeedModel.fromJson(v));
-                        });
+                      if (modelList.isNotEmpty) {
+                        for (HomeFeedModel model in modelList) {
+                          recommendIdList.add(model.id);
+                        }
+                        recommendModelList.addAll(modelList);
                       }
                     });
                     // 更新全局监听

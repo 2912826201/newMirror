@@ -95,14 +95,20 @@ class DynamicListLayout extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              margin: EdgeInsets.only(left: 16, right: 11),
-              child: CircleAvatar(
-                // backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
-                backgroundImage: NetworkImage(model.avatarUrl ?? ""),
-                maxRadius: 19,
+            GestureDetector(
+              onTap: () {
+
+              },
+              child:    Container(
+                margin: EdgeInsets.only(left: 16, right: 11),
+                child: CircleAvatar(
+                  // backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
+                  backgroundImage: NetworkImage(model.avatarUrl ?? ""),
+                  maxRadius: 19,
+                ),
               ),
             ),
+
             Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,

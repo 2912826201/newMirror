@@ -7,11 +7,13 @@ import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/course_model.dart';
+import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/post_feed/post_feed.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/route/router.dart';
@@ -65,7 +67,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   int dataPage = 1;
 
   // 数据源
-  List<HomeFeedModel> attentionModel = [];
+  List<int> attentionIdList = [];
+  List<HomeFeedModel> attentionModelList = [];
 
   // 请求下一页
   int lastTime;
@@ -76,10 +79,12 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   // 是否登录
   bool isLoggedIn = false;
   bool isPublishing = false;
+
   // 是否请求接口
   bool isRequestInterface = false;
 
   double _nowPercent = 0;
+
   @override
   void initState() {
     isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
@@ -108,7 +113,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     List<PicUrlsModel> picUrls = [];
     List<VideosModel> videos = [];
     context.watch<PublishMonitorNotifier>().getPublishing(true);
-    print('===========================================这是发布页入口的Publishing${context.watch<PublishMonitorNotifier>().isPublishing}');
+    print(
+        '===========================================这是发布页入口的Publishing${context.watch<PublishMonitorNotifier>().isPublishing}');
     if (postFeedModel != null) {
       // 正在发布
       context.watch<PublishMonitorNotifier>().getPostStatus(PostStatus.publishing);
@@ -131,23 +137,23 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           picUrls.add(PicUrlsModel(width: element.sizeInfo.width, height: element.sizeInfo.height));
         });
         results = await FileUtil().uploadPics(fileList, (path, percent) {
-                    double imgProgress = 0.8/fileList.length;
-                    if(percent<0.95){
-                      _nowPercent=0;
-                    }
-                    if(_process<0.8){
-                      if(percent!=_nowPercent){
-                        print('------------------------------这是文件上传监听$percent');
-                      if(percent==0.95){
-                            _process+=imgProgress;
-                            _nowPercent = percent;
-                            print('----------------------------这是进度条监听$_process');
-                        }
-                      }
-                    }else{
-                      return;
-                    }
-                    context.read<PublishMonitorNotifier>().getPostPlannedSpeed(_process);
+          double imgProgress = 0.8 / fileList.length;
+          if (percent < 0.95) {
+            _nowPercent = 0;
+          }
+          if (_process < 0.8) {
+            if (percent != _nowPercent) {
+              print('------------------------------这是文件上传监听$percent');
+              if (percent == 0.95) {
+                _process += imgProgress;
+                _nowPercent = percent;
+                print('----------------------------这是进度条监听$_process');
+              }
+            }
+          } else {
+            return;
+          }
+          context.read<PublishMonitorNotifier>().getPostPlannedSpeed(_process);
         });
         print(results.isSuccess);
         for (int i = 0; i < results.resultMap.length; i++) {
@@ -161,9 +167,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           videos.add(VideosModel(
               width: element.sizeInfo.width, height: element.sizeInfo.height, duration: element.sizeInfo.duration));
         });
-        results = await FileUtil().uploadMedias(fileList, (path, percent) {
-
-        });
+        results = await FileUtil().uploadMedias(fileList, (path, percent) {});
         for (int i = 0; i < results.resultMap.length; i++) {
           print("打印一下视频索引值￥$i");
           UploadResultModel model = results.resultMap.values.elementAt(i);
@@ -211,8 +215,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     // 展示文字
     return Container(
       height: 60,
-      width: ScreenUtil
-        .instance.screenWidthDp - 32,
+      width: ScreenUtil.instance.screenWidthDp - 32,
       margin: EdgeInsets.only(left: 16, right: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -252,7 +255,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       });
     }
     print("postFeedModel%%%%%%%$postFeedModel");
-    if (postFeedModel != null&&!context.watch<PublishMonitorNotifier>().isPublishing) {
+    if (postFeedModel != null && !context.watch<PublishMonitorNotifier>().isPublishing) {
       print("postFeedModel优质");
       pulishFeed();
     }
@@ -264,16 +267,16 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       print("返回不请求数据");
       return;
     }
-    Map<String, dynamic> model = await getPullList(type: 0, size: 20, lastTime: lastTime);
+    DataResponseModel model = await getPullList(type: 0, size: 20, lastTime: lastTime);
     setState(() {
       print("dataPage:  ￥￥$dataPage");
-      // print(model["list"].runtimeType);
       if (dataPage == 1) {
-        if (model["list"] is List && (model["list"] as List).isNotEmpty) {
-          model["list"].forEach((v) {
-            attentionModel.add(HomeFeedModel.fromJson(v));
+        if (model.list.isNotEmpty) {
+          model.list.forEach((v) {
+            attentionIdList.add(HomeFeedModel.fromJson(v).id);
+            attentionModelList.add(HomeFeedModel.fromJson(v));
           });
-          attentionModel.insert(0, HomeFeedModel());
+          attentionIdList.insert(0, -1);
           status = Status.concern;
         } else {
           status = Status.noConcern;
@@ -281,22 +284,24 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       } else if (dataPage > 1 && lastTime != null) {
         print("lastTime&￥$lastTime");
         print("5data");
-        if (model["list"] != null) {
-          model["list"].forEach((v) {
-            attentionModel.add(HomeFeedModel.fromJson(v));
+        if (model.list.isNotEmpty) {
+          model.list.forEach((v) {
+            attentionIdList.add(HomeFeedModel.fromJson(v).id);
+            attentionModelList.add(HomeFeedModel.fromJson(v));
           });
-          print("数据长度${attentionModel.length}");
+          loadStatus = LoadingStatus.STATUS_IDEL;
+          loadText = "加载中...";
+        } else {
+          // 加载完毕
+          loadText = "已加载全部动态";
+          loadStatus = LoadingStatus.STATUS_COMPLETED;
         }
-        loadStatus = LoadingStatus.STATUS_IDEL;
-        loadText = "加载中...";
-      } else {
-        // 加载完毕
-        loadText = "已加载全部动态";
-        loadStatus = LoadingStatus.STATUS_COMPLETED;
       }
     });
-    lastTime = model["lastTime"];
-    print("lastTime:    $lastTime");
+    lastTime = model.lastTime;
+    // 更新全局监听
+    context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
+    print("lastTime:$lastTime");
     print(status);
   }
 
@@ -385,44 +390,46 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
               child: RefreshIndicator(
                   onRefresh: () async {
                     dataPage = 1;
-                    attentionModel.clear();
+                    attentionIdList.clear();
+                    attentionModelList.clear();
                     loadStatus = LoadingStatus.STATUS_LOADING;
                     lastTime = null;
                     loadText = "加载中...";
-                    Map<String, dynamic> model = await getPullList(type: 0, size: 20, lastTime: lastTime);
+                    DataResponseModel model = await getPullList(type: 0, size: 20, lastTime: lastTime);
                     setState(() {
-                      if (model["list"] != null) {
-                        model["list"].forEach((v) {
-                          print(v["comments"]);
-                          if (v["comments"].length != 0) {
-                            print("评论名${v["comments"][0]["name"]}");
-                          }
-                          attentionModel.add(HomeFeedModel.fromJson(v));
+                      if (model.list.isNotEmpty) {
+                        model.list.forEach((v) {
+                          attentionIdList.add(HomeFeedModel.fromJson(v).id);
+                          attentionModelList.add(HomeFeedModel.fromJson(v));
                         });
-                        attentionModel.insert(0, HomeFeedModel());
-                        print("数据长度${attentionModel.length}");
-                        // print(attentionModel.)
+                        attentionIdList.insert(0, -1);
                       }
-                      lastTime = model["lastTime"];
+                      lastTime = model.lastTime;
+                      // 更新全局监听
+                      context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
                     });
                   },
                   child: MediaQuery.removePadding(
                     removeTop: true,
                     context: context,
                     child: ListView.builder(
-                        itemCount: attentionModel.length + 1,
+                        itemCount: attentionIdList.length + 1,
                         controller: _controller,
                         itemBuilder: (context, index) {
                           print("关注");
                           print(index);
-                          print(attentionModel.length);
-                          if (index == attentionModel.length ) {
+                          print(attentionIdList.length);
+                          int id = attentionIdList[index];
+                          print("动态Id$id");
+                          // 获取动态id指定model
+                          HomeFeedModel feedModel = context.read<FeedMapNotifier>().feedMap[id];
+                          if (index == attentionIdList.length) {
                             return LoadingView(
                               loadText: loadText,
                               loadStatus: loadStatus,
                             );
                           } else {
-                            return backToView(index, postFeedModel);
+                            return backToView(index, postFeedModel,feedModel);
                           }
                         }),
                   )),
@@ -434,7 +441,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   }
 
   //返回视图
-  backToView(int index, PostFeedModel postFeedModel) {
+  backToView(int index, PostFeedModel postFeedModel,HomeFeedModel feedmodel) {
     if (index == 0) {
       if (postFeedModel != null) {
         return createdPostPromptView();
@@ -448,7 +455,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           index: index,
           pc: widget.pc,
           isShowRecommendUser: true,
-          model: attentionModel[index],
+          model: feedmodel,
           // 可选参数 子Item的个数
           key: GlobalObjectKey("attention$index"));
     }
@@ -461,23 +468,22 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       context.read<PublishMonitorNotifier>().getRequestInterface(false);
       status = Status.notLoggedIn;
       this.dataPage = 1;
-      this.attentionModel = [];
+      this.attentionIdList.clear();
       this.lastTime = null;
     }
     print("isLogged:$isLogged");
     print("isRequestInterface:${context.watch<PublishMonitorNotifier>().isRequestInterface}");
     print('==================================${context.watch<PublishMonitorNotifier>().isPublishing}');
-    if (isLogged&&!context.watch<PublishMonitorNotifier>().isRequestInterface) {
+    if (isLogged && !context.watch<PublishMonitorNotifier>().isRequestInterface) {
       print('------------------------------------进推荐页');
       getRecommendFeed();
-
     } else {
       // postFeedModel = Application.postFeedModel;
       // print("Application.postFeedModel+++++_____________${Application.postFeedModel}");
       // Application.postFeedModel = null;
       print("postFeedModel*******$postFeedModel");
       // print("centent${postFeedModel.content}");
-      if(!context.watch<PublishMonitorNotifier>().isPublishing&&postFeedModel!=null) {
+      if (!context.watch<PublishMonitorNotifier>().isPublishing && postFeedModel != null) {
         print('------------------进发布页');
         pulishFeed();
       }
@@ -488,7 +494,13 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
 
 // 发布监听通知
 class PublishMonitorNotifier extends ChangeNotifier {
-  PublishMonitorNotifier({this.postStatus = PostStatus.publishing,this.attentionModel ,this.plannedSpeed,this.isRequestInterface = false,this.isPublishing = false});
+  PublishMonitorNotifier(
+      {this.postStatus = PostStatus.publishing,
+      this.attentionModel,
+      this.plannedSpeed,
+      this.isRequestInterface = false,
+      this.isPublishing = false});
+
   // 发布状态
   PostStatus postStatus;
 
@@ -496,6 +508,7 @@ class PublishMonitorNotifier extends ChangeNotifier {
   double plannedSpeed = 0.0;
   bool isRequestInterface;
   bool isPublishing;
+
   // 数据源调用model
   List<HomeFeedModel> attentionModel;
 
@@ -503,14 +516,17 @@ class PublishMonitorNotifier extends ChangeNotifier {
     this.postStatus = post;
     notifyListeners();
   }
-  getPublishing(bool publishing){
+
+  getPublishing(bool publishing) {
     this.isPublishing = publishing;
     notifyListeners();
   }
-  getRequestInterface(bool requestInterface){
+
+  getRequestInterface(bool requestInterface) {
     this.isRequestInterface = requestInterface;
     notifyListeners();
   }
+
   getPostPlannedSpeed(double plannedSpeed) {
     this.plannedSpeed = plannedSpeed;
     notifyListeners();
