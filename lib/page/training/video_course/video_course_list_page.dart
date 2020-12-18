@@ -669,10 +669,8 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
         ),
       ),
       onTap: () {
-        //todo 这里应该把类传到路由里面
-        VideoCourseListPage.videoModel = videoModel;
-        AppRouter.navigateToVideoDetail(
-            context, heroTagArray[index], videoModel.id, videoModel.courseId);
+        AppRouter.navigateToVideoDetail(context, heroTagArray[index],
+            videoModel.id, videoModel.courseId, videoModel);
       },
     );
   }

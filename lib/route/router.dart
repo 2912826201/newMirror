@@ -4,6 +4,7 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
+import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/route/route_handler.dart';
 
@@ -97,20 +98,24 @@ class AppRouter {
   }
 
   static void navigateToLiveDetail(BuildContext context, String heroTag,
-      int liveCourseId, int courseId) {
+      int liveCourseId, int courseId, LiveModel liveModel) {
     Map<String, dynamic> map = Map();
     map["heroTag"] = heroTag;
     map["liveCourseId"] = liveCourseId;
     map["courseId"] = courseId;
+    //todo 暂时使用 使用Application 转存取
+    Application.liveModel = liveModel;
     _navigateToPage(context, pathLiveDetail, map);
   }
 
   static void navigateToVideoDetail(BuildContext context, String heroTag,
-      int liveCourseId, int courseId) {
+      int liveCourseId, int courseId, LiveModel videoModel) {
     Map<String, dynamic> map = Map();
     map["heroTag"] = heroTag;
     map["liveCourseId"] = liveCourseId;
     map["courseId"] = courseId;
+    //todo 暂时使用 使用Application 转存取
+    Application.videoModel = videoModel;
     _navigateToPage(context, pathVideoDetail, map);
   }
 

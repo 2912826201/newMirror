@@ -18,30 +18,37 @@ import 'package:mirror/widget/post_comments.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../widget/comment_input_bottom_bar.dart';
-import 'live_broadcast_page.dart';
 import 'sliver_custom_header_delegate.dart';
 import 'package:provider/provider.dart';
 
 /// 直播详情页
 class LiveDetailPage extends StatefulWidget {
   const LiveDetailPage(
-      {Key key, this.heroTag, this.liveCourseId, this.courseId})
+      {Key key, this.heroTag, this.liveCourseId, this.courseId, this.liveModel})
       : super(key: key);
 
   final String heroTag;
   final int liveCourseId;
   final int courseId;
+  final LiveModel liveModel;
 
   @override
   createState() {
     return LiveDetailPageState(
-        heroTag: heroTag, liveCourseId: liveCourseId, courseId: courseId);
+        heroTag: heroTag,
+        liveCourseId: liveCourseId,
+        courseId: courseId,
+        liveModel: liveModel);
   }
 }
 
 class LiveDetailPageState extends State<LiveDetailPage> {
   LiveDetailPageState(
-      {Key key, this.heroTag, this.liveCourseId, this.courseId});
+      {Key key,
+      this.heroTag,
+      this.liveCourseId,
+      this.courseId,
+      this.liveModel});
 
   //头部hero的标签
   String heroTag;
@@ -109,9 +116,6 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   void initState() {
     super.initState();
 
-    //todo 先这样实现---以后再改为路由
-    liveModel = LiveBroadcastPage.liveModel;
-    LiveBroadcastPage.liveModel = null;
     courseCommentHot = null;
     courseCommentTime = null;
     loadingStatusComment = LoadingStatus.STATUS_LOADING;

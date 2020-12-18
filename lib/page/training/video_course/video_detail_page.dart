@@ -20,28 +20,35 @@ import 'package:mirror/widget/post_comments.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 
-import 'video_course_list_page.dart';
 
-/// 直播详情页
+/// 视频详情页
 class VideoDetailPage extends StatefulWidget {
   const VideoDetailPage(
-      {Key key, this.heroTag, this.liveCourseId, this.courseId})
+      {Key key,
+      this.heroTag,
+      this.liveCourseId,
+      this.courseId,
+      this.videoModel})
       : super(key: key);
 
   final String heroTag;
   final int liveCourseId;
   final int courseId;
+  final LiveModel videoModel;
 
   @override
   createState() {
     return VideoDetailPageState(
-        heroTag: heroTag, videoCourseId: liveCourseId, courseId: courseId);
+        heroTag: heroTag,
+        videoCourseId: liveCourseId,
+        courseId: courseId,
+        videoModel: videoModel);
   }
 }
 
 class VideoDetailPageState extends State<VideoDetailPage> {
   VideoDetailPageState(
-      {Key key, this.heroTag, this.videoCourseId, this.courseId});
+      {Key key, this.heroTag, this.videoCourseId, this.courseId, this.videoModel});
 
   //头部hero的标签
   String heroTag;
@@ -118,9 +125,6 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   void initState() {
     super.initState();
 
-    //todo 先这样实现---以后再改为路由
-    videoModel = VideoCourseListPage.videoModel;
-    VideoCourseListPage.videoModel = null;
     courseCommentHot = null;
     courseCommentTime = null;
     loadingStatusComment = LoadingStatus.STATUS_LOADING;
