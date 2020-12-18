@@ -739,7 +739,8 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
                                               ?.ename, style: textStyleBold),
                                       // ignore: null_aware_before_operator
                                       TextSpan(
-                                          text: value.coursewareDto?.levelDto
+                                          // ignore: null_aware_before_operator
+                              text: value.coursewareDto?.levelDto
                                               ?.name + " · ",
                                           style: textStyleNormal),
                                       TextSpan(

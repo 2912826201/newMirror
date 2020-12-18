@@ -315,7 +315,7 @@ class MovementDtos {
   String _movementFeeling;
   int _positionId;
   int _muscleId;
-  List<MuscleDto> _detail;
+  dynamic _detail;
   int _state;
   int _creatorId;
   int _dataState;
@@ -358,7 +358,7 @@ class MovementDtos {
 
   int get muscleId => _muscleId;
 
-  List<MuscleDto> get detail => _detail;
+  dynamic get detail => _detail;
 
   int get state => _state;
 
@@ -388,28 +388,28 @@ class MovementDtos {
     int point,
     String picUrl,
     int levelId,
-    SubTagModel levelDto,
-    int partId,
-    SubTagModel partDto,
-    int calories,
-    int expectHeartRate,
-    String steps,
-    String breathingRhythm,
-    String movementFeeling,
-    int positionId,
-    int muscleId,
-    List<MuscleDto> detail,
-    int state,
-    int creatorId,
-    int dataState,
-    int createTime,
-    int updateTime,
-    MuscleDto positionDto,
-    MuscleDto muscleDto,
-    int amount,
-    int seconds,
-    String unit,
-    List<MuscleDto> aicheckSteps}) {
+      SubTagModel levelDto,
+      int partId,
+      SubTagModel partDto,
+      int calories,
+      int expectHeartRate,
+      String steps,
+      String breathingRhythm,
+      String movementFeeling,
+      int positionId,
+      int muscleId,
+      dynamic detail,
+      int state,
+      int creatorId,
+      int dataState,
+      int createTime,
+      int updateTime,
+      MuscleDto positionDto,
+      MuscleDto muscleDto,
+      int amount,
+      int seconds,
+      String unit,
+      List<MuscleDto> aicheckSteps}) {
     _id = id;
     _name = name;
     _point = point;
