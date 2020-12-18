@@ -315,7 +315,7 @@ class MovementDtos {
   String _movementFeeling;
   int _positionId;
   int _muscleId;
-  dynamic _detail;
+  List<MuscleDto> _detail;
   int _state;
   int _creatorId;
   int _dataState;
@@ -358,7 +358,7 @@ class MovementDtos {
 
   int get muscleId => _muscleId;
 
-  dynamic get detail => _detail;
+  List<MuscleDto> get detail => _detail;
 
   int get state => _state;
 
@@ -398,7 +398,7 @@ class MovementDtos {
       String movementFeeling,
       int positionId,
       int muscleId,
-      dynamic detail,
+      List<MuscleDto> detail,
       int state,
       int creatorId,
       int dataState,
@@ -457,7 +457,6 @@ class MovementDtos {
     _movementFeeling = json["movementFeeling"];
     _positionId = json["positionId"];
     _muscleId = json["muscleId"];
-    _detail = json["detail"];
     _state = json["state"];
     _creatorId = json["creatorId"];
     _dataState = json["dataState"];
@@ -471,6 +470,12 @@ class MovementDtos {
     _amount = json["amount"];
     _seconds = json["seconds"];
     _unit = json["unit"];
+    if (json["detail"] != null) {
+      _detail = [];
+      json["detail"].forEach((v) {
+        _detail.add(MuscleDto.fromJson(v));
+      });
+    }
     if (json["aicheckSteps"] != null) {
       _aicheckSteps = [];
       json["aicheckSteps"].forEach((v) {
@@ -500,7 +505,6 @@ class MovementDtos {
     map["movementFeeling"] = _movementFeeling;
     map["positionId"] = _positionId;
     map["muscleId"] = _muscleId;
-    map["detail"] = _detail;
     map["state"] = _state;
     map["creatorId"] = _creatorId;
     map["dataState"] = _dataState;
@@ -517,6 +521,9 @@ class MovementDtos {
     map["unit"] = _unit;
     if (_aicheckSteps != null) {
       map["aicheckSteps"] = _aicheckSteps.map((v) => v.toJson()).toList();
+    }
+    if (_detail != null) {
+      map["detail"] = _detail.map((v) => v.toJson()).toList();
     }
     return map;
   }
