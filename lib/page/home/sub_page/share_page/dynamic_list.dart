@@ -12,6 +12,7 @@ import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_layout.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/course_address_label.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/getTripleArea.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/bottom_popup.dart';
 import 'package:mirror/widget/expandable_text.dart';
@@ -99,7 +100,9 @@ class DynamicListLayout extends StatelessWidget {
           children: [
             GestureDetector(
               onTap: () {
-
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                  return ProfileDetailPage(userId: model.pushId,);
+                }));
               },
               child:    Container(
                 margin: EdgeInsets.only(left: 16, right: 11),

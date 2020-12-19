@@ -22,7 +22,7 @@ enum ActionItems { DENGCHU, DENGLU }
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key key, this.panelController}) : super(key: key);
-  PanelController panelController;
+  PanelController panelController = new PanelController();
 
   @override
   ProfileState createState() => new ProfileState();
@@ -309,7 +309,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             Navigator.of(context).push(MaterialPageRoute(builder: (context) {
               ///这里传type来告知详情页该怎么展示
               return ProfileDetailPage(
-                myselfId: uid,pc: widget.panelController,
+                userId: uid
               );
             }));
           },

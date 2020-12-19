@@ -13,7 +13,9 @@ import 'package:mirror/page/login/login_page.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/media_picker/preview_photo_page.dart';
+import 'package:mirror/page/profile/Profile_add_remarks.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
+import 'package:mirror/page/profile/profile_details_more.dart';
 import 'package:mirror/page/profile/scan_code_page.dart';
 import 'package:mirror/page/rc_test_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_broadcast_page.dart';
@@ -65,6 +67,17 @@ var handlerScan = Handler(handlerFunc: (BuildContext context,Map<String,List<Str
 });
 var handlermineDetails = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
   return ProfileDetailPage();
+});
+var handlerProfileDetailMore = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+  return ProfileDetailsMore();
+});
+var handlerPerfileAddRemarks = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+  Map<String, dynamic> data = json.decode(
+    params[AppRouter.paramData].first);
+  return ProfileAddRemarks(
+    userName: data["username"],
+    userId: data["userId"],
+  );
 });
 var handlerReleaseFeed = Handler(
     handlerFunc: (BuildContext context, Map<String, List<String>> params) {
