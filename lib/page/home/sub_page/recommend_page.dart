@@ -207,7 +207,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                         delegate: SliverChildBuilderDelegate((content, index) {
                           // 获取动态id
                           int id = recommendIdList[index];
-                          print("动态Id$id");
+                          // print("动态Id$id");
                           // 获取动态id指定model
                           HomeFeedModel model = context.read<FeedMapNotifier>().feedMap[id];
                           if (model != null) {

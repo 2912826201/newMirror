@@ -83,7 +83,8 @@ class _ProfileDetailState extends State<ProfileDetailPage>
 
 
   _getDynamicData(int type ) async{
-    Map<String,dynamic> model = await getPullList(type:type, size: 20);
+    Map<String,dynamic> model = {};
+    // await getPullList(type:type, size: 20);
     setState(() {
         if(model["list"]!=null){
           model["list"].forEach((result){

@@ -15,7 +15,7 @@ class AppStyle {
       TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
   static const textHintRegular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textHint);
   static const textHintRegular13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textHint);
-
+  static const textHintRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.textHint);
   // Regular 灰色
   static const textPrimary3Regular14 =
       TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.textPrimary3);

@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 /*
  *只有文字的button
  */
-class TextButton extends StatelessWidget {
-  TextButton({
+class TextBtn extends StatelessWidget {
+  TextBtn({
     Key key,
     this.onTap,
     this.textColor,

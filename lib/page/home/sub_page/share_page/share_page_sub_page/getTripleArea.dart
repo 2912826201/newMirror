@@ -83,7 +83,6 @@ class GetTripleAreaState extends State<GetTripleArea> {
             left: 27,
             top: 13.5,
           ),
-          // Positioned(child: roundedLikeNum(context), top: 18, left: 53),
         ],
           ));
     } else {
@@ -95,7 +94,6 @@ class GetTripleAreaState extends State<GetTripleArea> {
           Positioned(top: 13.5, left: 16, child: roundedAvatar(context,laudUserInfo[0])),
           Positioned(child: roundedAvatar(context,laudUserInfo[1]), top: 13.5, left: 27),
           Positioned(child: roundedAvatar(context,laudUserInfo[2]), top: 13.5, left: 38),
-          // Positioned(child: roundedLikeNum(context), top: 18, left: 64),
         ],)
       );
     }
@@ -156,10 +154,6 @@ class GetTripleAreaState extends State<GetTripleArea> {
             }, selector: (context, notifier) {
               return notifier.feedMap[widget.model.id].laudCount;
             }),
-           // Text(
-           //    "${widget.model.laudCount}次赞",
-           //    style: TextStyle(fontSize: 12),
-           //  ),
           )
 
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/page/feed/release_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
+import 'package:mirror/page/search/search.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 
 import 'package:mirror/route/router.dart';
@@ -63,6 +64,9 @@ class _TopTabState extends State<HomeTopTab> {
           child: GestureDetector(
             child: Image.asset("images/resource/2.0x/Nav_search_icon @2x.png", width: 28, height: 28),
             onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return SearchPage();
+              }));
               print("点击了搜索");
               // widget.callBack("sssss");
             },
