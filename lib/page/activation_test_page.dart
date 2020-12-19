@@ -11,11 +11,15 @@ class ActivationTestPage extends StatefulWidget {
 }
 
 class _ActivationTestState extends State<ActivationTestPage> {
-  String _activationUrl = "/third/web/url/2dd";
-  String _loginUrl = "";
-  int _mid = 215338;
+  String _activationUrl = "/third/web/url/";
+  String _loginUrl = "/third/web/url/";
+  int _mid = 0;
   Map _activationResult = {};
   Map _loginResult = {};
+
+  TextEditingController _activationCodeController = TextEditingController();
+  TextEditingController _loginCodeController = TextEditingController();
+  TextEditingController _midController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -30,26 +34,47 @@ class _ActivationTestState extends State<ActivationTestPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text("先确保APP用户已登录，在我的tab页有登录入口"),
-              Text("机器ID："),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text("机器ID："),
+                  Expanded(
+                      child: TextField(
+                    keyboardType: TextInputType.number,
+                    controller: _midController,
+                  ))
+                ],
+              ),
               Text("激活机器"),
-              Text("$_activationUrl"),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text("http://ifdev.aimymusic.com/third/web/url/"),
+                  Expanded(
+                      child: TextField(
+                    controller: _activationCodeController,
+                  ))
+                ],
+              ),
               RaisedButton(
                 onPressed: () async {
-                  BaseResponseModel response = await requestApi(_activationUrl, {}, requestMethod: METHOD_GET);
+                  BaseResponseModel response =
+                      await requestApi(_activationUrl + _activationCodeController.text, {}, requestMethod: METHOD_GET);
                 },
                 child: Text("点击模拟扫码"),
               ),
               RaisedButton(
                 onPressed: () async {
                   Map<String, dynamic> map = {};
+                  _mid = int.parse(_midController.text);
                   map["machineId"] = _mid;
                   BaseResponseModel response = await requestApi("/appuser/web/machine/activate", map);
                   setState(() {
-                    if(response.isSuccess){
+                    if (response.isSuccess) {
                       _activationResult["code"] = response.code;
                       _activationResult["data"] = response.data;
                       _activationResult["message"] = response.message;
-                    }else{
+                    } else {
                       _activationResult["result"] = "请求失败";
                     }
                   });
@@ -58,16 +83,42 @@ class _ActivationTestState extends State<ActivationTestPage> {
               ),
               Text("激活结果：$_activationResult"),
               Text("扫码登录"),
-              Text("$_loginUrl"),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text("http://ifdev.aimymusic.com/third/web/url/"),
+                  Expanded(
+                      child: TextField(
+                    controller: _loginCodeController,
+                  ))
+                ],
+              ),
               RaisedButton(
-                onPressed: null,
+                onPressed: () async {
+                  BaseResponseModel response =
+                      await requestApi(_loginUrl + _loginCodeController.text, {}, requestMethod: METHOD_GET);
+                },
                 child: Text("点击模拟扫码"),
               ),
               RaisedButton(
-                onPressed: null,
+                onPressed: () async {
+                  Map<String, dynamic> map = {};
+                  _mid = int.parse(_midController.text);
+                  map["machineId"] = _mid;
+                  BaseResponseModel response = await requestApi("/appuser/web/machine/login", map);
+                  setState(() {
+                    if (response.isSuccess) {
+                      _loginResult["code"] = response.code;
+                      _loginResult["data"] = response.data;
+                      _loginResult["message"] = response.message;
+                    } else {
+                      _loginResult["result"] = "请求失败";
+                    }
+                  });
+                },
                 child: Text("点击登录机器"),
               ),
-              Text("登录结果：$_loginUrl"),
+              Text("登录结果：$_loginResult"),
             ],
           ),
         ),

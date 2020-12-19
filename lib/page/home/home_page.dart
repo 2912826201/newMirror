@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/data/model/course_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -68,9 +69,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     @override
     Widget build(BuildContext context) {
       print("首页");
-      // postFeedModel = Application.postFeedModel;
-      print("Application.postFeedModel￥${Application.postFeedModel}");
-      if ( Application.postFeedModel != null) {
+      if(context.watch<FeedMapNotifier>().postFeedModel != null) {
         controller.index = 0;
       }
       // pulishFeed();
@@ -103,14 +102,11 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                     child:TabBarView(
                           controller: this.controller,
                           children: [
-                            // CustomScrollComState(urls: courses,),
-                            ChangeNotifierProvider(
-                            create: (_) => PublishMonitorNotifier(attentionModel: [],plannedSpeed: 0.0),
-                           builder: (context, _) {
-                            return AttentionPage(
+                              AttentionPage(
+                                postFeedModel: context.watch<FeedMapNotifier>().postFeedModel,
                               coverUrls: courses,
                               pc: widget.pc,
-                            );}),
+                            ),
                             RecommendPage(
                               coverUrls: courses,
                               pc: widget.pc,
@@ -118,8 +114,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                             // RecommendPage()
                           ],
                         ),
-                    //   ],
-                    // ),
                   )
                 ],
               ),

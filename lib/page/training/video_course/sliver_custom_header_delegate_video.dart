@@ -4,8 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/date_util.dart';
 
-
-class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
+class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
   final double collapsedHeight;
   final double expandedHeight;
   final double paddingTop;
@@ -20,7 +19,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
   String startTime;
   String endTime;
 
-  SliverCustomHeaderDelegate({
+  SliverCustomHeaderDelegateVideo({
     this.collapsedHeight,
     this.expandedHeight,
     this.paddingTop,
@@ -45,19 +44,11 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
   }
 
   void updateStatusBarBrightness(shrinkOffset) {
-    if (shrinkOffset > 50 && this.statusBarMode == 'light') {
-      this.statusBarMode = 'dark';
-      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarBrightness: Brightness.dark,
-        statusBarIconBrightness: Brightness.dark,
-      ));
-    } else if (shrinkOffset <= 50 && this.statusBarMode == 'dark') {
-      this.statusBarMode = 'light';
-      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarBrightness: Brightness.light,
-        statusBarIconBrightness: Brightness.light,
-      ));
-    }
+    this.statusBarMode = 'light';
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.light,
+    ));
   }
 
   Color makeStickyHeaderBgColor(shrinkOffset) {
@@ -71,7 +62,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
       titleSize = 30 - alpha / 22;
       isGoneTitle = true;
     }
-    return Color.fromARGB(alpha, 255, 255, 255);
+    return Color.fromARGB(alpha, 0, 0, 0);
   }
 
   Color makeStickyHeaderTextColor(shrinkOffset, isIcon) {
@@ -92,7 +83,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
       final int alpha = (shrinkOffset / (this.maxExtent - this.minExtent) * 255)
           .clamp(0, 255)
           .toInt();
-      return Color.fromARGB(alpha, 0, 0, 0);
+      return Color.fromARGB(alpha, 51, 51, 51);
     }
   }
 
@@ -164,13 +155,31 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
           //数据显示
           Positioned(
             child: Container(
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
+              width: MediaQuery.of(context).size.width,
               child: _getTitleWidgetArray(),
             ),
             bottom: 0,
+            left: 0,
+          ),
+          //中间文字
+          Positioned(
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              padding: const EdgeInsets.only(left: 16, right: 16),
+              child: Offstage(
+                  offstage: !isGoneTitle,
+                  child: Text(
+                    this.title,
+                    style: TextStyle(
+                      fontSize: 21,
+                      // color: this.makeStickyHeaderTextColor1(shrinkOffset, true),
+                      color: AppColor.white,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  )),
+            ),
+            bottom: 53,
             left: 0,
           ),
           //头部信息
@@ -191,9 +200,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
                       IconButton(
                         icon: Icon(
                           Icons.arrow_back_ios,
-                          color: this
-                              .makeStickyHeaderTextColor(shrinkOffset, true),
-                          // color: Colors.black,
+                          color: AppColor.white,
                         ),
                         onPressed: () => Navigator.pop(context),
                       ),
@@ -202,13 +209,13 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
                         child: Offstage(
                           offstage: isGoneTitle,
                           child: Container(
+                            padding: const EdgeInsets.only(left: 30),
                             child: Text(
                               this.title,
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w500,
-                                color: this.makeStickyHeaderTextColor(
-                                    shrinkOffset, false),
+                                color: AppColor.white,
                               ),
                               textAlign: TextAlign.center,
                               maxLines: 1,
@@ -217,45 +224,33 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
                           ),
                         ),
                       )),
-                      IconButton(
-                        icon: Icon(
-                          Icons.share,
-                          color: this
-                              .makeStickyHeaderTextColor(shrinkOffset, true),
-                          // color: Colors.black,
-                        ),
-                        onPressed: () {},
-                      ),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              Icons.favorite_border_rounded,
+                              color: AppColor.white,
+                            ),
+                            onPressed: () {
+                              print("点击了收藏--视频课程头部详情页");
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.share,
+                              color: AppColor.white,
+                            ),
+                            onPressed: () {
+                              print("点击了分享--视频课程头部详情页");
+                            },
+                          ),
+                        ],
+                      )
                     ],
                   ),
                 ),
               ),
             ),
-          ),
-          //中间文字
-          Positioned(
-            child: Container(
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
-              padding: const EdgeInsets.only(left: 16, right: 16),
-              child: Offstage(
-                  offstage: !isGoneTitle,
-                  child: Text(
-                    this.title,
-                    style: TextStyle(
-                      fontSize: 21,
-                      // color: this.makeStickyHeaderTextColor1(shrinkOffset, true),
-                      color: AppColor.white,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  )
-              ),
-            ),
-            bottom: 53,
-            left: 0,
           ),
         ],
       ),

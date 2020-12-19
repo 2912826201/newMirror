@@ -13,6 +13,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/post_feed/post_feed.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/home_page.dart';
 import 'package:mirror/page/home/sub_page/attention_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
@@ -135,8 +136,9 @@ class FeedHeader extends StatelessWidget {
       feedModel.latitude = latitude;
       feedModel.longitude = longitude;
       feedModel.topicId = topicId;
-      Application.postFeedModel = feedModel;
       print("打印一下￥￥${(feedModel.selectedMediaFiles.list.length)}");
+      // 传入发布动态model
+      context.read<FeedMapNotifier>().setPublishFeedModel(feedModel);
       Navigator.pop(context, true);
       print("打印结束");
     } else {

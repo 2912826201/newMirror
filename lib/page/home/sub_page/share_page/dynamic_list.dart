@@ -12,6 +12,7 @@ import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_layout.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/course_address_label.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/getTripleArea.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/bottom_popup.dart';
 import 'package:mirror/widget/expandable_text.dart';
@@ -31,10 +32,12 @@ class DynamicListLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double screen_width = ScreenUtil.instance.screenWidthDp;
-    print("推荐页数据￥${ model.picUrls.isEmpty}");
+    // print("推荐页数据￥${ model.picUrls.isEmpty}");
     // return ChangeNotifierProvider(
     //     create: (_) => DynamicModelNotifier(model),
     //     builder: (context, _) {
+    // print("我要看model的值");
+     // print(model.toString());
           return Column(
             children: [
               // 头部头像时间
@@ -97,13 +100,17 @@ class DynamicListLayout extends StatelessWidget {
           children: [
             GestureDetector(
               onTap: () {
-
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                  return ProfileDetailPage(userId: model.pushId,);
+                }));
               },
               child:    Container(
                 margin: EdgeInsets.only(left: 16, right: 11),
                 child: CircleAvatar(
                   // backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
-                  backgroundImage: NetworkImage(model.avatarUrl ?? ""),
+                  backgroundImage:
+                  model.avatarUrl != null ? NetworkImage(model.avatarUrl ) :
+                  NetworkImage("https://pic2.zhimg.com/v2-639b49f2f6578eabddc458b84eb3c6a1.jpg" ),
                   maxRadius: 19,
                 ),
               ),
@@ -200,35 +207,3 @@ class DynamicListLayout extends StatelessWidget {
   }
 }
 
-// class DynamicModelNotifier extends ChangeNotifier {
-//   DynamicModelNotifier({this.recommendModel});
-//   // 推荐model
-//   List<HomeFeedModel> recommendModel;
-//   // // 关注model
-//   // List<HomeFeedModel> attentionModel;
-//   void setRecommendModel(List<HomeFeedModel> _dynamicModel) {
-//     recommendModel = _dynamicModel;
-//     //要将全局的profile赋值
-//     notifyListeners();
-//   }
-//   // void setAttentionModel(List<HomeFeedModel> _dynamicModel) {
-//   //   attentionModel = _dynamicModel;
-//   //   //要将全局的profile赋值
-//   //   notifyListeners();
-//   // }
-//  //点赞
-//   void setLaud(int laud ,String avatarUrl,int index) {
-//     if(laud == 0) {
-//       recommendModel[index].laudCount += 1;
-//       recommendModel[index].laudUserInfo.insert(0,avatarUrl);
-//       laud = 1;
-//     } else {
-//       recommendModel[index].laudCount -= 1;
-//       recommendModel[index].laudUserInfo.removeAt(0);
-//       laud = 0;
-//     }
-//     recommendModel[index].isLaud = laud;
-//     notifyListeners();
-//   }
-//
-// }

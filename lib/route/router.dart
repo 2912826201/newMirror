@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
+import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/route/route_handler.dart';
 
@@ -31,7 +32,9 @@ class AppRouter {
   static String pathVideoDetail = "/videoDetail";
   static String pathVideoCourseList = "/videoCourseList";
   static String pathScanCode = "/ScanCode";
-  static String pathMineDetails = "mineDetails";
+  static String pathMineDetails = "/mineDetails";
+  static String pathProfileDetailsMore = "/ProfileDetailsMore";
+  static String pathProfileAddRemarks = "/ProfileAddRemarks";
 
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(
@@ -56,6 +59,8 @@ class AppRouter {
     router.define(pathScanCode, handler: handlerScan);
     router.define(pathMineDetails, handler: handlermineDetails);
     router.define(pathVideoCourseList, handler: handlerVideoCourseList);
+    router.define(pathProfileDetailsMore, handler: handlerProfileDetailMore);
+    router.define(pathProfileAddRemarks, handler: handlerPerfileAddRemarks);
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
   }
@@ -106,27 +111,39 @@ class AppRouter {
   }
 
   static void navigateToLiveDetail(BuildContext context, String heroTag,
-      int liveCourseId, int courseId) {
+      int liveCourseId, int courseId, LiveModel liveModel) {
     Map<String, dynamic> map = Map();
     map["heroTag"] = heroTag;
     map["liveCourseId"] = liveCourseId;
     map["courseId"] = courseId;
+    //todo 暂时使用 使用Application 转存取
+    Application.liveModel = liveModel;
     _navigateToPage(context, pathLiveDetail, map);
   }
 
   static void navigateToVideoDetail(BuildContext context, String heroTag,
-      int liveCourseId, int courseId) {
+      int liveCourseId, int courseId, LiveModel videoModel) {
     Map<String, dynamic> map = Map();
     map["heroTag"] = heroTag;
     map["liveCourseId"] = liveCourseId;
     map["courseId"] = courseId;
+    //todo 暂时使用 使用Application 转存取
+    Application.videoModel = videoModel;
     _navigateToPage(context, pathVideoDetail, map);
   }
 
   static void navigationToScanCodePage(BuildContext context) {
     _navigateToPage(context, pathScanCode, {});
   }
-
+  static void navigationToProfiileDetailMore(BuildContext context) {
+    _navigateToPage(context, pathProfileDetailsMore, {});
+  }
+  static void navigationToProfileAddRemarks(BuildContext context,String username,int userId){
+    Map<String,dynamic> map = Map();
+    map["username"] = username;
+    map["userId"] = userId;
+    _navigateToPage(context, pathProfileAddRemarks,map);
+  }
   static void navigateToLikePage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathLike, map);

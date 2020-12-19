@@ -60,11 +60,11 @@ class _QiniuTestState extends State<QiniuTest> {
     List<File> list = [];
     list.add(file);
 
-    UploadResults results = await FileUtil().uploadPics(list, (path, percent) {
+    UploadResults results = await FileUtil().uploadPics(list, (percent) {
       setState(() {
         _process = percent;
       });
-      print(path + ":$percent");
+      print("总进度:$percent");
     });
     print(results.isSuccess);
     print(results.resultMap);

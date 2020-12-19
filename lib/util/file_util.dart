@@ -18,7 +18,7 @@ class FileUtil {
 
   // 当上传失败时返回的是null
   Future<UploadResults> _upload(
-      List<File> fileList, int type, Function(String path, double percent) progressCallback) async {
+      List<File> fileList, int type, Function(double percent) progressCallback) async {
     UploadResults uploadResults = UploadResults();
     QiniuTokenModel token = await _getQiniuToken(type);
     if (token == null) {
@@ -28,25 +28,33 @@ class FileUtil {
     }
     //预先设为成功 当有失败文件时则改为失败
     uploadResults.isSuccess = true;
+
     final syStorage = SyFlutterQiniuStorage();
-    for (File file in fileList) {
-      // 设置监听
-      syStorage.onChanged().listen((dynamic percent) {
-        double p = percent;
-        progressCallback(file.path, p);
-      });
+    int _finishedCount = 0;
+    // 设置监听
+    syStorage.onChanged().listen((dynamic percent) {
+      double p = percent;
+      print("单文件进度））））））））））））））$percent");
+      double totalPercent = (1.0 * _finishedCount + p) / (1.0 * fileList.length);
+      print("总进度））））））））））））））$totalPercent");
+      if(p == 1.0){
+        _finishedCount ++;
+      }
+      progressCallback(totalPercent);
+    });
+    for (int i = 0; i < fileList.length; i++) {
       // 生成文件名
-      String key = _genKey(file);
+      String key = _genKey(fileList[i]);
       // 上传文件
-      UploadResult result = await syStorage.upload(file.path, token.upToken, key);
+      UploadResult result = await syStorage.upload(fileList[i].path, token.upToken, key);
       // print("&@@@@@@@@@@@@@@${file.path}");
       // print(result);
       UploadResultModel resultModel = UploadResultModel();
       resultModel.isSuccess = result.success;
       resultModel.error = result.error;
-      resultModel.filePath = file.path;
+      resultModel.filePath = fileList[i].path;
       resultModel.url = token.domain + "/" + key;
-      uploadResults.resultMap[file.path] = resultModel;
+      uploadResults.resultMap[fileList[i].path] = resultModel;
       if (result.success == false) {
         // 只要有一个文件上传失败就将总结果设为失败 成功不需要更改状态
         uploadResults.isSuccess = false;
@@ -59,15 +67,15 @@ class FileUtil {
     return uploadResults;
   }
 
-  Future<UploadResults> uploadFiles(List<File> fileList, Function(String path, double percent) progressCallback) {
+  Future<UploadResults> uploadFiles(List<File> fileList, Function(double percent) progressCallback) {
     return _upload(fileList, 0, progressCallback);
   }
 
-  Future<UploadResults> uploadMedias(List<File> fileList, Function(String path, double percent) progressCallback) {
+  Future<UploadResults> uploadMedias(List<File> fileList, Function(double percent) progressCallback) {
     return _upload(fileList, 1, progressCallback);
   }
 
-  Future<UploadResults> uploadPics(List<File> fileList, Function(String path, double percent) progressCallback) {
+  Future<UploadResults> uploadPics(List<File> fileList, Function(double percent) progressCallback) {
     return _upload(fileList, 2, progressCallback);
   }
 
@@ -87,5 +95,9 @@ class FileUtil {
     // 由入参来控制文件名 避免同一时间生成的文件名相同
     String filePath = AppConfig.getAppPicDir() + "/" + fileName + ".jpg";
     return File(filePath).writeAsBytes(imageData);
+  }
+
+  Future<UploadResult> upload(SyFlutterQiniuStorage storage, String filepath, String token, String key) async {
+    storage.upload(filepath, token, key).then((value) => value);
   }
 }

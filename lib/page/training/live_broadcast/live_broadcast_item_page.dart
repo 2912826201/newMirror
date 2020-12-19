@@ -13,8 +13,6 @@ import 'package:mirror/util/date_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import 'live_broadcast_page.dart';
-
 /// 直播日程页
 class LiveBroadcastItemPage extends StatefulWidget {
   final DateTime dataDate;
@@ -682,9 +680,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   }
 
   void gotoNavigateToLiveDetail(LiveModel value, int index) {
-    //todo 先这样实现---以后再改为路由
-    LiveBroadcastPage.liveModel = value;
     AppRouter.navigateToLiveDetail(
-        context, heroTagArray[index], value.id, value.courseId);
+        context, heroTagArray[index], value.id, value.courseId, value);
   }
 }

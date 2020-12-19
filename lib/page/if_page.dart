@@ -10,6 +10,8 @@ import 'package:union_tabs/union_tabs.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
+import 'media_picker/media_picker_page.dart';
+
 class IfPage extends StatefulWidget {
   IfPage({Key key}) : super(key: key);
 
@@ -85,8 +87,8 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin {
 
   List<Widget> _createTabContent() {
     List<Widget> tabContent = List();
-    tabContent.add(Search());
     //四个常规业务tabBar
+    tabContent.add(MediaPickerPage(9,typeImageAndVideo,true,startPagePhoto,false,true));
     tabContent.add(MainPage(
       pc: SingletonForWholePages.singleton().panelController(),
     ));

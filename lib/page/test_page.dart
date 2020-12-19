@@ -156,7 +156,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                 onPressed: () {
                   AppRouter.navigateToRCTestPage(context, context.read<ProfileNotifier>().profile);
                 },
-                child: Text("Fluro跳转传参测试"),
+                child: Text("Fluro跳转融云测试页"),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

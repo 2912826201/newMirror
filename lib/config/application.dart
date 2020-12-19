@@ -2,6 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:fluro/fluro.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
+import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/post_feed/post_feed.dart';
 import 'package:mirror/data/model/token_model.dart';
@@ -44,18 +45,22 @@ class Application {
 
   // 动态主评论
   static CommentDtoModel commentDtoModel;
+
   // 动态子评论
   static CommentDtoModel replysModel;
 
   // 用于传递所选图片视频内容，用完后需要删除
   static SelectedMediaFiles selectedMediaFiles;
 
-  // 发布动态需要上传的model数据
-  static PostFeedModel postFeedModel;
-
   //发送验证码的全局计时
   static int smsCodeSendTime ;
 
   //全局的记录发送验证码的手机号
   static String sendSmsPhoneNum;
+
+  //直播详情页
+  static LiveModel liveModel;
+
+  //视频详情页
+  static LiveModel videoModel;
 }

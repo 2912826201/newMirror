@@ -16,7 +16,7 @@ class CommentLayout extends StatelessWidget {
   setBaseRichText(CommentDtoModel model) {
     List<BaseRichText> richTexts = [];
     String contextText;
-    if (model.replyId != null) {
+    if (model.replyName != null) {
       contextText = model.name + ": 回复 " + model.replyName + model.content;
       richTexts.add(BaseRichText(
         contextText.substring(0, model.name.length + 1),

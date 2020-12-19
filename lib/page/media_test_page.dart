@@ -187,21 +187,21 @@ class _MediaTestState extends State<MediaTestPage> {
           fileList.add(imageFile);
         }
       });
-      results = await FileUtil().uploadPics(fileList, (path, percent) {
+      results = await FileUtil().uploadPics(fileList, (percent) {
         setState(() {
           _process = percent;
         });
-        print(path + ":$percent");
+        print("总进度:$percent");
       });
     } else if (type == mediaTypeKeyVideo) {
       list.forEach((element) {
         fileList.add(element.file);
       });
-      results = await FileUtil().uploadMedias(fileList, (path, percent) {
+      results = await FileUtil().uploadMedias(fileList, (percent) {
         setState(() {
           _process = percent;
         });
-        print(path + ":$percent");
+        print("总进度:$percent");
       });
     }
     print(results.isSuccess);
