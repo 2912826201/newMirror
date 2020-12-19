@@ -60,29 +60,6 @@ class FileUtil {
         uploadResults.isSuccess = false;
       }
     }
-    // for (File file in fileList) {
-    //   // 设置监听
-    //   syStorage.onChanged().listen((dynamic percent) {
-    //     double p = percent;
-    //     progressCallback(file.path, p);
-    //   });
-    //   // 生成文件名
-    //   String key = _genKey(file);
-    //   // 上传文件
-    //   UploadResult result = await syStorage.upload(file.path, token.upToken, key);
-    //   // print("&@@@@@@@@@@@@@@${file.path}");
-    //   // print(result);
-    //   UploadResultModel resultModel = UploadResultModel();
-    //   resultModel.isSuccess = result.success;
-    //   resultModel.error = result.error;
-    //   resultModel.filePath = file.path;
-    //   resultModel.url = token.domain + "/" + key;
-    //   uploadResults.resultMap[file.path] = resultModel;
-    //   if (result.success == false) {
-    //     // 只要有一个文件上传失败就将总结果设为失败 成功不需要更改状态
-    //     uploadResults.isSuccess = false;
-    //   }
-    // }
     // 保险起见 检查一下数量
     if (uploadResults.resultMap.length < fileList.length) {
       uploadResults.isSuccess = false;

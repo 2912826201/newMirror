@@ -1,6 +1,3 @@
-import 'dart:async';
-
-import 'package:fijkplayer/fijkplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -16,10 +13,10 @@ class VideoCoursePlayPage2 extends StatefulWidget {
 
 class _VideoCoursePlayState2 extends State<VideoCoursePlayPage2> {
   final List<String> urls = [
+    "http://devmedia.aimymusic.com/alita/51be47a088ff3858c29653fd16536a37.mp4",
     "http://devmedia.aimymusic.com/0313a2d9f77857d073102320b1a4893c.mp4",
     "http://devmedia.aimymusic.com/25e85ec9a9399023629d3fc15bcb8877.mp4",
     "http://devmedia.aimymusic.com/01e889ed5d0314abba48382d669b739b",
-    "http://devmedia.aimymusic.com/alita/51be47a088ff3858c29653fd16536a37.mp4"
   ];
 
   VideoPlayerController _controller;
@@ -32,6 +29,36 @@ class _VideoCoursePlayState2 extends State<VideoCoursePlayPage2> {
 
   bool _isPlaying = false;
 
+  VoidCallback _playerListener;
+
+
+  _VideoCoursePlayState2(){
+    _playerListener = () {
+      if (!mounted) {
+        return;
+      }
+
+      VideoPlayerValue value = _controller.value;
+
+      print("controller value: $value");
+
+      setState(() {
+        _duration = value.duration.inMilliseconds;
+        _currentPos = value.position.inMilliseconds;
+        if (_duration == 0) {
+          _progress = 0;
+        } else {
+          _progress = _currentPos / _duration;
+        }
+      });
+      //当播放完成时开始播下一个视频
+      if (value.isPlaying == false && _isPlaying == true && _currentPos >= _duration) {
+        _playNext();
+      }
+      _isPlaying = value.isPlaying;
+    };
+  }
+
   @override
   void initState() {
     super.initState();
@@ -39,10 +66,10 @@ class _VideoCoursePlayState2 extends State<VideoCoursePlayPage2> {
   }
 
   @override
-  void dispose() {
+  dispose() async {
+    super.dispose();
     _controller.removeListener(_playerListener);
     _controller.dispose();
-    super.dispose();
   }
 
   @override
@@ -51,6 +78,7 @@ class _VideoCoursePlayState2 extends State<VideoCoursePlayPage2> {
       body: Stack(
         children: [
           Container(
+            alignment: Alignment.center,
             color: AppColor.bgBlack,
             child: _controller != null && _controller.value.initialized
                 ? AspectRatio(
@@ -100,27 +128,6 @@ class _VideoCoursePlayState2 extends State<VideoCoursePlayPage2> {
     );
   }
 
-  _playerListener() {
-    VideoPlayerValue value = _controller.value;
-
-    print("controller value: $value");
-
-    setState(() {
-      _duration = value.duration.inMilliseconds;
-      _currentPos = value.position.inMilliseconds;
-      if (_duration == 0) {
-        _progress = 0;
-      } else {
-        _progress = _currentPos / _duration;
-      }
-    });
-    //当播放完成时开始播下一个视频
-    if (value.isPlaying == false && _isPlaying == true && _currentPos >= _duration) {
-      _playNext();
-    }
-    _isPlaying = value.isPlaying;
-  }
-
   _playNext() {
     if (_currentPlayingIndex >= urls.length - 1) {
       //已经最后一条
@@ -130,17 +137,18 @@ class _VideoCoursePlayState2 extends State<VideoCoursePlayPage2> {
     _currentPlayingIndex++;
 
     _controller?.removeListener(_playerListener);
-    _controller?.dispose();
-    setState(() {
-      _controller = null;
-    });
+    //这里需要dispose掉之前的_controller不然会有初始化过的_controller没被释放导致再进入播放页播放器初始化失败
+    //但如果直接dispose页面会闪过一瞬界面报错状态
+    _controller?.pause();
+    var oldController = _controller;
 
     _controller = VideoPlayerController.network(urls[_currentPlayingIndex])
       ..initialize().then((_) {
-        _controller.addListener(_playerListener);
         setState(() {
+          _controller.addListener(_playerListener);
           _controller.play();
         });
+        oldController?.dispose();
       });
   }
 }
