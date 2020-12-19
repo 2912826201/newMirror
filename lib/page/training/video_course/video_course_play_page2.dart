@@ -1,6 +1,3 @@
-import 'dart:async';
-
-import 'package:fijkplayer/fijkplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -32,6 +29,36 @@ class _VideoCoursePlayState2 extends State<VideoCoursePlayPage2> {
 
   bool _isPlaying = false;
 
+  VoidCallback _playerListener;
+
+
+  _VideoCoursePlayState2(){
+    _playerListener = () {
+      if (!mounted) {
+        return;
+      }
+
+      VideoPlayerValue value = _controller.value;
+
+      print("controller value: $value");
+
+      setState(() {
+        _duration = value.duration.inMilliseconds;
+        _currentPos = value.position.inMilliseconds;
+        if (_duration == 0) {
+          _progress = 0;
+        } else {
+          _progress = _currentPos / _duration;
+        }
+      });
+      //当播放完成时开始播下一个视频
+      if (value.isPlaying == false && _isPlaying == true && _currentPos >= _duration) {
+        _playNext();
+      }
+      _isPlaying = value.isPlaying;
+    };
+  }
+
   @override
   void initState() {
     super.initState();
@@ -39,10 +66,10 @@ class _VideoCoursePlayState2 extends State<VideoCoursePlayPage2> {
   }
 
   @override
-  void dispose() {
+  dispose() async {
+    super.dispose();
     _controller.removeListener(_playerListener);
     _controller.dispose();
-    super.dispose();
   }
 
   @override
@@ -100,27 +127,6 @@ class _VideoCoursePlayState2 extends State<VideoCoursePlayPage2> {
     );
   }
 
-  _playerListener() {
-    VideoPlayerValue value = _controller.value;
-
-    print("controller value: $value");
-
-    setState(() {
-      _duration = value.duration.inMilliseconds;
-      _currentPos = value.position.inMilliseconds;
-      if (_duration == 0) {
-        _progress = 0;
-      } else {
-        _progress = _currentPos / _duration;
-      }
-    });
-    //当播放完成时开始播下一个视频
-    if (value.isPlaying == false && _isPlaying == true && _currentPos >= _duration) {
-      _playNext();
-    }
-    _isPlaying = value.isPlaying;
-  }
-
   _playNext() {
     if (_currentPlayingIndex >= urls.length - 1) {
       //已经最后一条
@@ -130,17 +136,18 @@ class _VideoCoursePlayState2 extends State<VideoCoursePlayPage2> {
     _currentPlayingIndex++;
 
     _controller?.removeListener(_playerListener);
-    _controller?.dispose();
-    setState(() {
-      _controller = null;
-    });
+    //这里需要dispose掉之前的_controller不然会有初始化过的_controller没被释放导致再进入播放页播放器初始化失败
+    //但如果直接dispose页面会闪过一瞬界面报错状态
+    _controller?.pause();
+    var oldController = _controller;
 
     _controller = VideoPlayerController.network(urls[_currentPlayingIndex])
       ..initialize().then((_) {
-        _controller.addListener(_playerListener);
         setState(() {
+          _controller.addListener(_playerListener);
           _controller.play();
         });
+        oldController?.dispose();
       });
   }
 }

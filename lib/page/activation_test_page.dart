@@ -108,11 +108,11 @@ class _ActivationTestState extends State<ActivationTestPage> {
                   BaseResponseModel response = await requestApi("/appuser/web/machine/login", map);
                   setState(() {
                     if (response.isSuccess) {
-                      _activationResult["code"] = response.code;
-                      _activationResult["data"] = response.data;
-                      _activationResult["message"] = response.message;
+                      _loginResult["code"] = response.code;
+                      _loginResult["data"] = response.data;
+                      _loginResult["message"] = response.message;
                     } else {
-                      _activationResult["result"] = "请求失败";
+                      _loginResult["result"] = "请求失败";
                     }
                   });
                 },
