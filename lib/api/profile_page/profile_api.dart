@@ -1,5 +1,7 @@
 
+import 'package:mirror/data/model/add_remarks_model.dart';
 import 'package:mirror/data/model/base_response_model.dart';
+import 'package:mirror/data/model/black_model.dart';
 import 'package:mirror/data/model/getExtrainfo_model.dart';
 import 'package:mirror/data/model/profile_model.dart';
 import 'package:mirror/data/model/user_model.dart';
@@ -16,9 +18,19 @@ const String GET_FOLLOWCOUNT = "/appuser/web/user/getFollowCount";
 const String GET_EXTRAINFO = "/appuser/web/user/getExtraInfo";
 ///获取用户基础信息
 const String GET_USERBASEINFO = "/ucenter/web/user/getUserBaseInfo";
-
-Future<int> ProfileAttention(int id)async{
-  BaseResponseModel responseModel = await requestApi(ATTENTION,{"id":id});
+///添加备注，取消备注
+const String ADD_REMARKS = "/appuser/web/user/addRemark";
+///拉黑
+const String ADD_BLACK = "/appuser/web/black/addBlack";
+///取消拉黑
+const String CANCEL_BLACK = "/appuser/web/black/removeBlack";
+///检测拉黑关系
+const String CHECK_BLACK = "/appuser/web/black/checkBlack";
+///黑名单
+const String QUERY_BLACKLIST = "/appuser/web/black/queryList";
+///关注
+Future<int> ProfileAddFollow(int id)async{
+  BaseResponseModel responseModel = await requestApi(ATTENTION,{"targetId":id});
   int backCode;
   if (responseModel.isSuccess) {
     Map<String,dynamic> result = responseModel.data;
@@ -30,8 +42,9 @@ Future<int> ProfileAttention(int id)async{
     return null;
   }
 }
-Future<int> ProfileCancelAttention(int id)async{
-  BaseResponseModel responseModel = await requestApi(CANCEL_ATTENTION, {"id":id});
+///取消关注
+Future<int> ProfileCancelFollow(int id)async{
+  BaseResponseModel responseModel = await requestApi(CANCEL_ATTENTION, {"targetId":id});
   Map<String,dynamic> result = responseModel.data;
   int backCode;
   if (responseModel.isSuccess) {
@@ -43,10 +56,11 @@ Future<int> ProfileCancelAttention(int id)async{
     return null;
   }
 }
+///获取关注、粉丝、动态数
 Future<ProfileModel> ProfileFollowCount({int id})async {
   Map<String,dynamic> parmas ={};
   if(id!=null){
-    parmas["id"] = id;
+    parmas["uid"] = id;
   }
   BaseResponseModel responseModel = await requestApi(GET_FOLLOWCOUNT, parmas);
   if (responseModel.isSuccess) {
@@ -55,10 +69,59 @@ Future<ProfileModel> ProfileFollowCount({int id})async {
     return null;
   }
 }
+///获取用户训练信息
 Future<GetExtraInfoModel> ProfileGetExtraInfo()async {
   BaseResponseModel responseModel = await requestApi(GET_EXTRAINFO,{});
   if (responseModel.isSuccess) {
     return GetExtraInfoModel.fromJson(responseModel.data);
+  } else {
+    return null;
+  }
+}
+///修改删除备注
+Future<AddRemarksModel> ChangeAddRemarks(int toUid,{String remark})async{
+  Map<String,dynamic> parmas = {};
+  if(remark!=null){
+    parmas["remark"] = remark;
+  }
+  parmas["toUid"] = toUid;
+  BaseResponseModel responseModel = await requestApi(ADD_REMARKS,parmas);
+  if(responseModel.isSuccess){
+    return AddRemarksModel.fromJson(responseModel.data);
+  }else{
+    return null;
+  }
+}
+
+///添加黑名单
+Future<bool> ProfileAddBlack(int blackId)async{
+  BaseResponseModel responseModel = await requestApi(ADD_BLACK,{"blackId":blackId});
+    bool backResult;
+    if(responseModel.isSuccess){
+      Map<String,dynamic> parmas = responseModel.data;
+      backResult = parmas["state"];
+      return backResult;
+    }else{
+      return null;
+    }
+}
+///取消拉黑
+Future<bool> ProfileCancelBlack(int blackId)async{
+  BaseResponseModel responseModel = await requestApi(CANCEL_BLACK,{"blackId":blackId});
+  bool backResult;
+  if(responseModel.isSuccess){
+    Map<String,dynamic> parmas = responseModel.data;
+    backResult = parmas["state"];
+    return backResult;
+  }else{
+    return null;
+  }
+}
+///检测黑名单关系
+Future<BlackModel> ProfileCheckBlack(int checkId)async {
+  BaseResponseModel responseModel = await requestApi(CHECK_BLACK,{"checkId":checkId});
+  if (responseModel.isSuccess) {
+    return BlackModel.fromJson(responseModel.data);
   } else {
     return null;
   }
