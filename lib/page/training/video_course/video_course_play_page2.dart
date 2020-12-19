@@ -13,10 +13,10 @@ class VideoCoursePlayPage2 extends StatefulWidget {
 
 class _VideoCoursePlayState2 extends State<VideoCoursePlayPage2> {
   final List<String> urls = [
+    "http://devmedia.aimymusic.com/alita/51be47a088ff3858c29653fd16536a37.mp4",
     "http://devmedia.aimymusic.com/0313a2d9f77857d073102320b1a4893c.mp4",
     "http://devmedia.aimymusic.com/25e85ec9a9399023629d3fc15bcb8877.mp4",
     "http://devmedia.aimymusic.com/01e889ed5d0314abba48382d669b739b",
-    "http://devmedia.aimymusic.com/alita/51be47a088ff3858c29653fd16536a37.mp4"
   ];
 
   VideoPlayerController _controller;
@@ -78,6 +78,7 @@ class _VideoCoursePlayState2 extends State<VideoCoursePlayPage2> {
       body: Stack(
         children: [
           Container(
+            alignment: Alignment.center,
             color: AppColor.bgBlack,
             child: _controller != null && _controller.value.initialized
                 ? AspectRatio(
