@@ -136,7 +136,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           }
           picUrls.add(PicUrlsModel(width: element.sizeInfo.width, height: element.sizeInfo.height));
         });
-        results = await FileUtil().uploadPics(fileList, (path, percent) {
+        results = await FileUtil().uploadPics(fileList, (path, percent, index) {
           double imgProgress = 0.8 / fileList.length;
           if (percent < 0.95) {
             _nowPercent = 0;
@@ -167,7 +167,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           videos.add(VideosModel(
               width: element.sizeInfo.width, height: element.sizeInfo.height, duration: element.sizeInfo.duration));
         });
-        results = await FileUtil().uploadMedias(fileList, (path, percent) {});
+        results = await FileUtil().uploadMedias(fileList, (path, percent, index) {
+          //TODO 这里还没有写回调方法
+        });
         for (int i = 0; i < results.resultMap.length; i++) {
           print("打印一下视频索引值￥$i");
           UploadResultModel model = results.resultMap.values.elementAt(i);
