@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
-import 'package:mirror/im/rongcloud_receive_manager.dart';
+import 'package:mirror/im/rongcloud_receive_manager1.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:rongcloud_im_plugin/src/info/message.dart';
 import 'chat_page_interfaces/chat_page_interfaces.dart';
@@ -55,7 +54,7 @@ class _ChatPageState extends State<ChatPage> implements MessageObserver,ChatUiDe
     print("chatPage conversationType is ${this.widget.conversation.type}");
     //对融云相关类型消息进行观察
     //FIXME:暂时未私聊消息
-    RongCloudReceiveManager.shareInstance().observeSpecificTypeMsg(RCConversationType.Private, this);
+    RongCloudReceiveManager1.shareInstance().observeSpecificTypeMsg(RCConversationType.Private, this);
     ui =  ChatPageUi();
     ui.actions_dataSource = this;
     dataSource = ChatPageDataSource(this.widget);
@@ -76,7 +75,7 @@ class _ChatPageState extends State<ChatPage> implements MessageObserver,ChatUiDe
   @override
   void dispose() {
     //取消注册
-    RongCloudReceiveManager.shareInstance().removeObserver(this);
+    RongCloudReceiveManager1.shareInstance().removeObserver(this);
     super.dispose();
   }
   //导航栏图标

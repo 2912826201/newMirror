@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mirror/data/notifier/rongcloud_connection_notifier.dart';
+import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
 import 'package:provider/provider.dart';
 
 class RongCloudStatusManager{

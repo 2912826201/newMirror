@@ -72,7 +72,7 @@ class RCTestState extends State<RCTestPage> {
             FlatButton(onPressed:  () async {
                 TextMessage msg = TextMessage();
                 msg.content = controller.text;
-                Message message = await RongCloudReceiveManager.shareInstance().sendPrivateMessage(SendToUser,msg);
+                Message message = await Application.rongCloud.sendPrivateMessage(SendToUser,msg);
                 print(message.toString());
              }, child: Text("发送消息"),minWidth: 100,height: 20,)
           ],

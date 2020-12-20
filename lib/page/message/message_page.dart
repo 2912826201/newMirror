@@ -5,14 +5,11 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/friends_cell_dto.dart';
 import 'package:mirror/data/dto/group_chat_dto.dart';
-import 'package:mirror/data/notifier/rongcloud_connection_notifier.dart';
-import 'package:mirror/im/rongcloud_receive_manager.dart';
-import 'package:mirror/im/rongcloud_status_manager.dart';
+import 'package:mirror/im/rongcloud_receive_manager1.dart';
 import 'package:mirror/page/if_page.dart';
 import 'package:mirror/page/message/delegate/callbacks.dart';
 import 'package:mirror/page/message/delegate/system_service_events.dart';
 import 'package:mirror/route/router.dart';
-import 'package:mirror/util/screen_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'delegate/hooks.dart';
@@ -23,7 +20,6 @@ import 'delegate/regular_events.dart';
 import 'delegate/business.dart';
 import 'delegate/frame.dart';
 import 'delegate/message_page_datasource.dart';
-import 'package:provider/provider.dart';
 
 
 
@@ -92,7 +88,7 @@ class MessagePageState extends State<MessagePage>
    //一些注册绑定类型的事情
    _registrations() {
 
-    RongCloudReceiveManager.shareInstance().observeAllKindsMsgs(this);
+    RongCloudReceiveManager1.shareInstance().observeAllKindsMsgs(this);
     //class RCConnectionStatus {
     //   static const int Connected = 0; //连接成功
     //   static const int Connecting = 1; //连接中
@@ -161,7 +157,7 @@ class MessagePageState extends State<MessagePage>
       //存储会话的数据
       this.dataSource.saveChats();
       this.dataSource = null;
-    RongCloudReceiveManager.shareInstance().removeObserver(this);
+    RongCloudReceiveManager1.shareInstance().removeObserver(this);
     this.viewDidDisappear();
     super.dispose();
    }

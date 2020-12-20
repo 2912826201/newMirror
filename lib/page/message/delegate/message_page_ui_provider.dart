@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/message/intercourse_model.dart';
-import 'package:mirror/data/notifier/rongcloud_connection_notifier.dart';
+import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
 import 'package:mirror/page/message/delegate/callbacks.dart';
 import 'package:mirror/page/message/delegate/message_page_datasource.dart';
 import 'package:mirror/page/message/delegate/regular_events.dart';

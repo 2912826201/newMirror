@@ -6,7 +6,7 @@ import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/model/user_model.dart';
-import 'package:mirror/data/notifier/rongcloud_connection_notifier.dart';
+import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/rongcloud.dart';
@@ -120,6 +120,8 @@ class MyAppState extends State<MyApp> {
     Application.router = router;
     //融云的状态管理者
     Application.rongCloud.initStatusManager(context);
+    //融云的收信管理者
+
   }
 
   @override
