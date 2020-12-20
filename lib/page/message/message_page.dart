@@ -54,8 +54,7 @@ class MessagePageState extends State<MessagePage>
         MPUIActionWithDataSource,
         MPIMDataSourceAction,
         MessageObserver ,
-        MessagepageLocate,
-        RCStatusObservable
+        MessagepageLocate
 {
   static const LOSE_CONNECTION_CODE = 3;
   static const CONNECTING_CODE = 1;
@@ -114,9 +113,6 @@ class MessagePageState extends State<MessagePage>
     //  RongCloudStatusManager.shareInstance().registerNotificationForStatus(CONNECTING_CODE, this);
     // // ConnectionStatus_Unconnected = 11,未连接
     //  RongCloudStatusManager.shareInstance().registerNotificationForStatus(LOSE_CONNECTION_CODE, this);
-
-     //需要传入context来使用readme.md中的ValueNotifier来进行通知
-     RongCloudStatusManager.shareInstance().context = context;
    }
     @override
     MPUiProxy uiProvider;
@@ -166,7 +162,6 @@ class MessagePageState extends State<MessagePage>
       this.dataSource.saveChats();
       this.dataSource = null;
     RongCloudReceiveManager.shareInstance().removeObserver(this);
-    RongCloudStatusManager.shareInstance().cancelNotifications(this);
     this.viewDidDisappear();
     super.dispose();
    }

@@ -87,7 +87,7 @@ Future _initApp() async {
   Application.profile = profile;
 
   //初始化融云IM
-  RongCloud().init();
+  Application.rongCloud = RongCloud.init();
 
   //创建各文件路径
   AppConfig.createAppDir();
@@ -113,10 +113,13 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
+  //需要APP环境的初始化
   MyAppState() {
     final router = FluroRouter();
     AppRouter.configureRouter(router);
     Application.router = router;
+    //融云的状态管理者
+    Application.rongCloud.initStatusManager(context);
   }
 
   @override

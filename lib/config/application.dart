@@ -4,15 +4,18 @@ import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
-import 'package:mirror/data/model/post_feed/post_feed.dart';
 import 'package:mirror/data/model/token_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
+import 'package:mirror/im/rongcloud.dart';
 
 /// application
 /// Created by yangjiayi on 2020/11/14.
 
 class Application {
+  //融云
+  static RongCloud rongCloud;
+
   //页面路由
   static FluroRouter router;
 

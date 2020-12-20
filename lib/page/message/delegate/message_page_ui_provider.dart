@@ -124,27 +124,7 @@ class MessagePageUiProvider implements MPUiProxy {
         ));
   }
   String _getPageTitle(){
-    // static const int Connected = 0; //连接成功
-    // static const int Connecting = 1; //连接中
-    // static const int KickedByOtherClient = 2; //该账号在其他设备登录，导致当前设备掉线
-    // static const int NetworkUnavailable = 3; //网络不可用
-    // static const int TokenIncorrect = 4; //token 非法，此时无法连接 im，需重新获取 token
-    // static const int UserBlocked = 5; //用户被封禁
-    // static const int DisConnected = 6; //用户主动断开
-    // static const int Suspend = 13; // 连接暂时挂起（多是由于网络问题导致），SDK 会在合适时机进行自动重连
-    // static const int Timeout =
-    // 14;
-    int status = context.watch<RongCloudStatusNotifier>().status;
-    if(status == 0){
-       pageTitle = "消息";
-     }
-     if(status == 1){
-      pageTitle = "连接中...";
-     }
-     if(status == 3){
-       pageTitle = "未连接";
-     }
-     return pageTitle;
+     return "消息(${context.watch<RongCloudStatusNotifier>().status})";
   }
   //对旧的数据做清除的工作
   _cleanDirtyConfigurations(){

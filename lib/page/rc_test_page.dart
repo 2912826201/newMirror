@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:mirror/api/rongcloud_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/im/rongcloud_receive_manager.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -81,7 +82,7 @@ class RCTestState extends State<RCTestPage> {
   }
   void _connectRC() {
     print("开始连接");
-    RongCloud().connect(_token, (int code, String userId) {
+    Application.rongCloud.connect(_token, (int code, String userId) {
       print('connect result ' + code.toString());
       if (code == 0) {
         SendToUser = "1021057";
@@ -100,7 +101,7 @@ class RCTestState extends State<RCTestPage> {
     });
   }
   void _disconnectRC() {
-    RongCloud().disconnect();
+    Application.rongCloud.disconnect();
     setState(() {
       _status = "已断开连接";
     });

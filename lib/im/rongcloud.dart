@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:mirror/im/rongcloud_receive_manager.dart';
 import 'package:mirror/im/rongcloud_status_manager.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -7,22 +8,37 @@ import '../config/config.dart';
 /// rongcloud
 /// Created by yangjiayi on 2020/11/2.
 
+//所有RongIMClient的方法都要经过此类封装,禁止直接调用RongIMClient
 class RongCloud {
-  RongCloudReceiveManager  receiveManager;
-  RongCloudStatusManager statusManager;
+  static RongCloud _instance;
+  RongCloudReceiveManager _receiveManager;
+  RongCloudStatusManager _statusManager;
+
   //初始化融云组件
-  void init() {
-    RongIMClient.init(AppConfig.getRCAppKey());
-    receiveManager = RongCloudReceiveManager.shareInstance();
-    statusManager = RongCloudStatusManager.shareInstance();
+  static RongCloud init() {
+    if (_instance == null) {
+      _instance = RongCloud();
+      RongIMClient.init(AppConfig.getRCAppKey());
+    }
+    _instance._receiveManager = RongCloudReceiveManager.shareInstance();
+    return _instance;
   }
+
+  RongCloudStatusManager initStatusManager(BuildContext context) {
+    if (_statusManager == null) {
+      _statusManager = RongCloudStatusManager.init(context);
+
+      RongIMClient.onConnectionStatusChange = _statusManager.onConnectionStatusChange;
+    }
+
+    return _statusManager;
+  }
+
   //连接融云服务器
-  void
-
-
-  connect(String token, Function(int code, String userId) finished) {
+  void connect(String token, Function(int code, String userId) finished) {
     RongIMClient.connect(token, finished);
   }
+
   //断开融云服务器
   void disconnect() {
     RongIMClient.disconnect(false);
