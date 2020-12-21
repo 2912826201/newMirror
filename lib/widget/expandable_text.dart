@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/widget/rich_text_widget.dart';
 // 收起展开的文字
@@ -35,7 +36,7 @@ class _ExpandableTextState extends State<ExpandableText> {
     for ( AtUsersModel atModel in model.atUsers) {
       richTexts.add(BaseRichText(
           text.substring(atModel.index,atModel.len),
-        style: TextStyle(color: Color(0xFF9C7BFF), fontSize: 14),
+        style: TextStyle(color:  AppColor.mainBlue, fontSize: 14),
         onTap: () {
           print("点击用户${atModel.uid}");
         },
@@ -45,7 +46,7 @@ class _ExpandableTextState extends State<ExpandableText> {
     for (TopicDtoModel toModel in model.topics){
       richTexts.add(BaseRichText(
         text.substring(toModel.index,toModel.len),
-        style: TextStyle(color: Color(0xFF9C7BFF), fontSize: 14),
+        style: TextStyle(color:  AppColor.mainBlue, fontSize: 14),
         onTap: () {
           print("点击用户${toModel.uid}");
         },
@@ -58,7 +59,7 @@ class _ExpandableTextState extends State<ExpandableText> {
     // var topicStr =  model.topicDto != null ? "#"+model.topicDto.name : "";
    // print("话题:topicStr:$topicStr");
    // print( "全文本：${topicStr+text}");
-    if ((model.atUsers.isNotEmpty && model.atUsers.last.len < model.content.length) || (model.topics.isNotEmpty && model.topics.last.len < model.content.length)) {
+    if ((model.atUsers.isNotEmpty && model.atUsers.last.len <= model.content.length) || (model.topics.isNotEmpty && model.topics.last.len < model.content.length)) {
         return MyRichTextWidget(
           Text(
             text,
@@ -70,7 +71,7 @@ class _ExpandableTextState extends State<ExpandableText> {
             setBaseRichText(),
         );
     }  else {
-      return Text(text ?? '', style: style,maxLines: expand ? null : maxLines);
+      return Text(text ?? '', style: style,maxLines: expand ? null : maxLines, overflow: expand ?  TextOverflow.clip : TextOverflow.ellipsis ,);
     }
   }
   @override

@@ -16,6 +16,7 @@ import 'package:mirror/page/if_page.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/widget/comment_input_bottom_bar.dart';
+import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/post_comments.dart';
 import 'package:mirror/widget/rich_text_widget.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -344,12 +345,21 @@ class CommentBottomListView extends StatelessWidget {
               openInputBottomSheet(
                 context: context,
                 hintText: "回复 ${model.name}",
-                voidCallback: (String text, BuildContext context) {
+                voidCallback: (String text,List<Rule> rules, BuildContext context) {
+                  List<AtUsersModel> atListModel = [];
+                  for (Rule rule in rules) {
+                    AtUsersModel atModel;
+                    atModel.index = rule.startIndex;
+                    atModel.len = rule.endIndex;
+                    atModel.uid = 1008611;
+                    atListModel.add(atModel);
+                  }
                   // 评论父评论
                   postComments(
                       targetId: model.id,
                       targetType: 2,
                       content: text,
+                      atUsers: jsonEncode(atListModel),
                       replyId: model.uid,
                       replyCommentId: model.id,
                       commentModelCallback: (CommentDtoModel commentModel) {
@@ -570,12 +580,21 @@ class  BottomListViewSubCommentListItem extends StatelessWidget {
         openInputBottomSheet(
           context: context,
           hintText: "回复 ${model.name}",
-          voidCallback: (String text, BuildContext context) {
+          voidCallback: (String text,List<Rule> rules, BuildContext context) {
+            List<AtUsersModel> atListModel = [];
+            for (Rule rule in rules) {
+              AtUsersModel atModel;
+              atModel.index = rule.startIndex;
+              atModel.len = rule.endIndex;
+              atModel.uid = 1008611;
+              atListModel.add(atModel);
+            }
             // 评论子评论
             postComments(
                 targetId: commentDtoModel.id,
                 targetType: 2,
                 content: text,
+                atUsers: jsonEncode(atListModel),
                 replyId: model.uid,
                 replyCommentId: model.id,
                 commentModelCallback: (CommentDtoModel commentModel) {

@@ -11,6 +11,7 @@ import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/live_broadcast/live_api.dart';
@@ -667,7 +668,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
 
               openInputBottomSheet(
                 context: this.context,
-                voidCallback:(String text,BuildContext context) {
+                voidCallback:(String text,List<Rule> rules,BuildContext context) {
                   _publishComment(text);
                   print("发表评论----" + text);
                 },
@@ -1058,7 +1059,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
                           openInputBottomSheet(
                             context: this.context,
                             hintText: "回复 " + value.name,
-                            voidCallback: (String text,
+                            voidCallback: (String text,List<Rule> rules,
                                 BuildContext context) {
                               // publishComment(text);
                               _publishComment(text);

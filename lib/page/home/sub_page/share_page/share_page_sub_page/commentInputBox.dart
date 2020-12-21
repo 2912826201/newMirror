@@ -1,4 +1,6 @@
 // 隐藏评论的输入框
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
@@ -8,6 +10,7 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/comment_input_bottom_bar.dart';
+import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/post_comments.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
@@ -82,12 +85,21 @@ class CommentInputBoxState extends State<CommentInputBox> {
                   openInputBottomSheet(
                     context: this.context,
                     hintText: widget.isUnderline ? "说点什么吧~" : "喜欢就评论吧~",
-                    voidCallback: (String text, BuildContext context) {
+                    voidCallback: (String text,List<Rule> rules, BuildContext context) {
+                      List<AtUsersModel> atListModel = [];
+                      for (Rule rule in rules) {
+                        AtUsersModel atModel = AtUsersModel();
+                        atModel.index = rule.startIndex;
+                        atModel.len = rule.endIndex;
+                        atModel.uid = 1008611;
+                        atListModel.add(atModel);
+                      }
                       // 发布评论
                       postComments(
                           targetId: widget.feedModel.id,
                           targetType: 0,
                           content: text,
+                          atUsers: jsonEncode(atListModel),
                           commentModelCallback: (CommentDtoModel commentModel) {
                             if (commentModel != null) {
                               print(commentModel.toString());
