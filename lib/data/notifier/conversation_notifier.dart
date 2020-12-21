@@ -14,7 +14,7 @@ class ConversationNotifier with ChangeNotifier {
   int get commonListLength => _commonIdList.length;
   ConversationDto getConversationInTopList(int index) => _conversationMap[_topIdList[index]];
   ConversationDto getConversationInCommonList(int index) => _conversationMap[_commonIdList[index]];
-
+  ConversationDto getConversationById(String id) => _conversationMap[id];
 
   clearAllData(){
     _topIdList.clear();
@@ -24,7 +24,7 @@ class ConversationNotifier with ChangeNotifier {
     notifyListeners();
   }
 
-  setTopList(List<ConversationDto> topList){
+  insertTopList(List<ConversationDto> topList){
     for(ConversationDto dto in topList){
       //为确保不重复添加 先删除一下
       _topIdList.remove(dto.id);
@@ -35,7 +35,7 @@ class ConversationNotifier with ChangeNotifier {
     notifyListeners();
   }
 
-  setCommonList(List<ConversationDto> commonList){
+  insertCommonList(List<ConversationDto> commonList){
     for(ConversationDto dto in commonList){
       //为确保不重复添加 先删除一下
       _commonIdList.remove(dto.id);

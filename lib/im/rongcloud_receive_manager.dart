@@ -1,5 +1,6 @@
 //融云消息接收管理者
 import 'package:flutter/material.dart';
+import 'package:mirror/im/message_manager.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 class RongCloudReceiveManager {
@@ -17,6 +18,8 @@ class RongCloudReceiveManager {
   //第二个参数表示的是还剩下的未取的消息数量，第三个参数表示是否是按照包的形势拉取的信息，第四个参数表示的是是否是离线消息
   onMessageReceivedWrapper(Message msg, int left, bool hasPackage, bool offline) {
     print("收到了融云消息：" + msg.toString());
+    MessageManager.updateConversationByMessage(_context, msg);
+
     switch (offline) {
       case true:
         // _processOffLineRawMsg(msg, left, hasPackage);

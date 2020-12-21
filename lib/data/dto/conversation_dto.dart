@@ -3,10 +3,20 @@ import 'package:mirror/data/model/message/group_chat_model.dart';
 
 /// conversation_dto
 /// Created by yangjiayi on 2020/11/30.
-//群聊会话的type类型
-const int GROUP_CHAT_TYPE = 101;
+
+//系统消息的type类型
+const int OFFICIAL_TYPE = 1;
+//直播消息的type类型
+const int LIVE_TYPE = 2;
+//运动消息的type类型
+const int TRAINING_TYPE = 3;
+//管家会话的type类型
+const int MANAGER_TYPE = 10;
 //私聊会话的type类型
-const int PRIVATE_CHAT_TYPE = 100;
+const int PRIVATE_TYPE = 100;
+//群聊会话的type类型
+const int GROUP_TYPE = 101;
+
 const String TABLE_NAME_CONVERSATION = "conversation";
 const String COLUMN_NAME_CONVERSATION_ID = 'id';
 const String COLUMN_NAME_CONVERSATION_CONVERSATIONID = 'conversationId';
@@ -21,11 +31,13 @@ const String COLUMN_NAME_CONVERSATION_ISTOP = 'isTop';
 const String COLUMN_NAME_CONVERSATION_UNREADCOUNT = 'unreadCount';
 // 这个表是用来存放当前用户的会话列表信息
 class ConversationDto {
+  ConversationDto();
+
   //创建群聊的网络model转换为本地的会话model
   ConversationDto.fromGroupChat(GroupChatModel gdto){
     this.conversationId = "${gdto.id}";
     this.uid = Application.profile.uid;
-    this.type = GROUP_CHAT_TYPE;
+    this.type = GROUP_TYPE;
     this.avatarUri = gdto.coverUrl;
     this.name = gdto.name;
     this.content = "";
@@ -46,7 +58,7 @@ class ConversationDto {
   int isTop;
   int unreadCount;
 
-  String get id => "${uid}_${conversationId}";
+  String get id => "${uid}_${type}_$conversationId";
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
