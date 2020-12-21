@@ -1,5 +1,6 @@
 // 隐藏评论的输入框
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -51,7 +52,11 @@ class CommentInputBoxState extends State<CommentInputBox> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
+              InkWell(
+                onTap: (){
+
+                },
+                child: Container(
                 margin: EdgeInsets.only(left: 16),
                 width: 28,
                 height: 28,
@@ -63,7 +68,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
                             ? NetworkImage(context.select((ProfileNotifier value) => value.profile.avatarUri))
                             : AssetImage("images/test/yxlm1.jpeg"),
                         fit: BoxFit.cover)),
-              ),
+              ),),
               GestureDetector(
                 child: Container(
                   width: ScreenUtil.instance.screenWidthDp - 32 - 40,

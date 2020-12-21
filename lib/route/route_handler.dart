@@ -14,6 +14,9 @@ import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/media_picker/preview_photo_page.dart';
 import 'package:mirror/page/profile/Profile_add_remarks.dart';
+import 'package:mirror/page/profile/edit_information/edit_information_Introduction.dart';
+import 'package:mirror/page/profile/edit_information/edit_information_name.dart';
+import 'package:mirror/page/profile/edit_information/edit_information_page.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/profile_details_more.dart';
 import 'package:mirror/page/profile/scan_code_page.dart';
@@ -66,18 +69,29 @@ var handlerScan = Handler(handlerFunc: (BuildContext context,Map<String,List<Str
   return ScanCodePage();
 });
 var handlermineDetails = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
-  return ProfileDetailPage();
+  Map<String, dynamic> data = json.decode(
+    params[AppRouter.paramData].first);
+  return ProfileDetailPage(userId: data["userId"],pcController:data["pcController"],);
 });
 var handlerProfileDetailMore = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
   return ProfileDetailsMore();
 });
-var handlerPerfileAddRemarks = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+var handlerProfileAddRemarks = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
   Map<String, dynamic> data = json.decode(
     params[AppRouter.paramData].first);
   return ProfileAddRemarks(
     userName: data["username"],
     userId: data["userId"],
   );
+});
+var handlerEditInformation = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+  return EditInformation();
+});
+var handlerEditInformationName = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+  return EditInformationName();
+});
+var handlerEditInformationIntroduction = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+  return EditInformationIntroduction();
 });
 var handlerReleaseFeed = Handler(
     handlerFunc: (BuildContext context, Map<String, List<String>> params) {

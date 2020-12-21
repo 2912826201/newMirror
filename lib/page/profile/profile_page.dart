@@ -7,10 +7,11 @@ import 'package:flutter/painting.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/data/model/getExtrainfo_model.dart';
+import 'package:mirror/data/model/user_extrainfo_model.dart';
 import 'package:mirror/data/model/profile_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
 import 'package:r_scan/r_scan.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -52,7 +53,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
   getProfileModel() async {
     ProfileModel attentionModel = await ProfileFollowCount();
-    GetExtraInfoModel extraInfoModel = await ProfileGetExtraInfo();
+    UserExtraInfoModel extraInfoModel = await ProfileGetExtraInfo();
     print('resultModel============================${attentionModel == null}');
     if (attentionModel != null || extraInfoModel != null) {
       print('uid========================${attentionModel.uid}'
@@ -75,13 +76,14 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   Widget build(BuildContext context) {
     // TODO: implement build
     super.build(context);
-    return MaterialApp(home: Builder(builder: (context) {
-      double width = MediaQuery.of(context).size.width;
-      return Scaffold(
+    double width = ScreenUtil.instance.screenWidthDp;
+    double height = ScreenUtil.instance.height;
+    return MaterialApp(
+          home:  Scaffold(
         appBar: null,
         body: _buildSuggestions(width),
-      );
-    }));
+      )
+    );
   }
 
   ///界面
@@ -309,7 +311,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             Navigator.of(context).push(MaterialPageRoute(builder: (context) {
               ///这里传type来告知详情页该怎么展示
               return ProfileDetailPage(
-                userId: uid
+                userId: uid,pcController: widget.panelController,
               );
             }));
           },

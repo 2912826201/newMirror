@@ -101,7 +101,7 @@ class DynamicListLayout extends StatelessWidget {
             GestureDetector(
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                  return ProfileDetailPage(userId: model.pushId,);
+                  return ProfileDetailPage(userId: model.pushId,pcController:pc,);
                 }));
               },
               child:    Container(
@@ -110,7 +110,7 @@ class DynamicListLayout extends StatelessWidget {
                   // backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
                   backgroundImage:
                   model.avatarUrl != null ? NetworkImage(model.avatarUrl ) :
-                  NetworkImage("https://pic2.zhimg.com/v2-639b49f2f6578eabddc458b84eb3c6a1.jpg" ),
+                  NetworkImage("images/test.png"),
                   maxRadius: 19,
                 ),
               ),
