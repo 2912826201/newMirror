@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/constant/style.dart';
@@ -34,6 +35,21 @@ class CommentLayout extends StatelessWidget {
           print("点击用户${model.replyId}");
         },
       ));
+      if(model.atUsers.isNotEmpty && model.atUsers.last.len <= model.content.length) {
+        // at高亮
+        for ( AtUsersModel atModel in model.atUsers) {
+          richTexts.add(BaseRichText(
+            contextText.substring(atModel.index + model.name.length + ": 回复 ".length + model.replyName.length,atModel.len +  model.name.length + ": 回复 ".length + model.replyName.length),
+            style: TextStyle(color: AppColor.mainBlue, fontSize: 14),
+            onTap: () {
+              print("点击用户${atModel.uid}");
+            },
+          ));
+        }
+      }
+      // richTexts.add(BaseRichText(
+      //
+      // ));
     } else {
       contextText = "${model.name}: ${model.content}";
       richTexts.add(BaseRichText(
@@ -43,6 +59,18 @@ class CommentLayout extends StatelessWidget {
           print("点击用户${model.uid}");
         },
       ));
+      if(model.atUsers.isNotEmpty && model.atUsers.last.len <= model.content.length) {
+        // at高亮
+        for ( AtUsersModel atModel in model.atUsers) {
+          richTexts.add(BaseRichText(
+            contextText.substring(atModel.index + model.name.length + 2,atModel.len+ model.name.length + 2),
+            style: TextStyle(color: AppColor.mainBlue, fontSize: 14),
+            onTap: () {
+              print("点击用户${atModel.uid}");
+            },
+          ));
+        }
+      }
     }
     return richTexts;
   }

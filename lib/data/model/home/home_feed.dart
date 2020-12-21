@@ -1,9 +1,9 @@
-
 enum CommentTypes {
   commentFeed, // 评论动态
   commentMainCom, // 评论主评论
   commentSubCom, // 评论子评论
 }
+
 // 动态model
 class HomeFeedModel {
   int id; //动态id
@@ -23,15 +23,17 @@ class HomeFeedModel {
   List<PicUrlsModel> picUrls = []; //图片json
   List<VideosModel> videos = []; //视频json
   List<AtUsersModel> atUsers = []; //@用户列表
-  TopicDtoModel topicDto; //话题信息
+  List<TopicDtoModel> topics = []; //话题信息
   CourseDtoModel courseDto; //课程信息
   int isFollow = 0; // 是否关注
   int isLaud = 0; // 是否点赞
   List<String> laudUserInfo = []; // 点赞头像
   List<CommentDtoModel> comments = [];
   String address;
- // 添加字段
+
+  // 添加字段
   int totalCount = -1;
+
   HomeFeedModel({
     this.id,
     this.type,
@@ -50,7 +52,7 @@ class HomeFeedModel {
     this.picUrls,
     this.videos,
     this.atUsers,
-    this.topicDto,
+    this.topics,
     this.courseDto,
     this.isFollow,
     this.isLaud,
@@ -94,8 +96,10 @@ class HomeFeedModel {
         atUsers.add(AtUsersModel.fromJson(v));
       });
     }
-    if (json["topicDto"] != null) {
-      topicDto = TopicDtoModel.fromJson(json["topicDto"]);
+    if (json["topics"] != null) {
+      json["topics"].forEach((v) {
+        topics.add(TopicDtoModel.fromJson(v));
+      });
     }
     if (json["courseDto"] != null) {
       courseDto = CourseDtoModel.fromJson(json["courseDto"]);
@@ -129,7 +133,7 @@ class HomeFeedModel {
     map["picUrls"] = picUrls;
     map["videos"] = videos;
     map["atUsers"] = atUsers;
-    map["topicDto"] = topicDto;
+    map["topics"] = topics;
     map["courseDto"] = courseDto;
     map["isLaud"] = isLaud;
     map["isFollow"] = isFollow;
@@ -138,6 +142,7 @@ class HomeFeedModel {
     map["address"] = address;
     return map;
   }
+
   @override
   String toString() {
     return toJson().toString();
@@ -171,7 +176,7 @@ class PicUrlsModel {
 
   @override
   String toString() {
-   return toJson().toString();
+    return toJson().toString();
   }
 }
 
@@ -205,6 +210,7 @@ class VideosModel {
     map["coverUrl"] = coverUrl;
     return map;
   }
+
   @override
   String toString() {
     return toJson().toString();
@@ -235,6 +241,7 @@ class AtUsersModel {
     map["type"] = type;
     return map;
   }
+
   @override
   String toString() {
     return toJson().toString();
@@ -244,6 +251,9 @@ class AtUsersModel {
 // 话题model
 class TopicDtoModel {
   int id;
+  int uid;
+  int index;
+  int len;
   String name;
   int creatorId;
   int isNew;
@@ -259,6 +269,9 @@ class TopicDtoModel {
 
   TopicDtoModel(
       {this.id,
+      this.uid,
+      this.index,
+      this.len,
       this.name,
       this.creatorId,
       this.isNew,
@@ -274,6 +287,9 @@ class TopicDtoModel {
 
   TopicDtoModel.fromJson(Map<String, dynamic> json) {
     id = json["id"];
+    uid = json["uid"];
+    index = json["index"];
+    len = json["len"];
     name = json["name"];
     creatorId = json["creatorId"];
     isNew = json["isNew"];
@@ -291,6 +307,9 @@ class TopicDtoModel {
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
     map["id"] = id;
+    map["uid"] = uid;
+    map["index"] = index;
+    map["len"] = len;
     map["name"] = name;
     map["creatorId"] = creatorId;
     map["isNew"] = isNew;
@@ -305,6 +324,7 @@ class TopicDtoModel {
     map["isFollow"] = isFollow;
     return map;
   }
+
   @override
   String toString() {
     return toJson().toString();
@@ -399,6 +419,7 @@ class CourseDtoModel {
     map["finishAmount"] = finishAmount;
     return map;
   }
+
   @override
   String toString() {
     return toJson().toString();
@@ -431,12 +452,16 @@ class CommentDtoModel {
 
   // 保存的总条数
   int initCount;
+
   // 是否显示交互按钮
   bool isShowInteractiveButton = false;
+
   // 是否点击过隐藏按钮
   bool isClickHideButton = false;
+
   // 添加字段
   int totalCount = -1;
+
   CommentDtoModel(
       {this.id,
       this.targetId,
@@ -525,6 +550,7 @@ class CommentDtoModel {
     map["replys"] = replys;
     return map;
   }
+
   @override
   String toString() {
     return toJson().toString();

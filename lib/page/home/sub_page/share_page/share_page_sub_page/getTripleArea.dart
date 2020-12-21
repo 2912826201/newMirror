@@ -102,7 +102,7 @@ class GetTripleAreaState extends State<GetTripleArea> {
   // 跳转点赞页
   jumpLike(BuildContext context) {
     Navigator.push(context, MaterialPageRoute(builder: (_) {
-      return Like();
+      return Like(model: widget.model,);
     }));
     // AppRouter.navigateToLikePage(context);
   }

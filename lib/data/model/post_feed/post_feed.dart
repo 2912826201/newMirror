@@ -5,7 +5,7 @@ import '../media_file_model.dart';
 class PostFeedModel {
   SelectedMediaFiles selectedMediaFiles;
   String content;
-  AtUsersModel atUsersModel;
+  List<AtUsersModel> atUsersModel;
   String address;
   String cityCode;
   String longitude;
