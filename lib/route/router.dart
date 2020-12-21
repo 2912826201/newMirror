@@ -28,7 +28,9 @@ class AppRouter {
   static String pathVideoDetail = "/videoDetail";
   static String pathVideoCourseList = "/videoCourseList";
   static String pathScanCode = "/ScanCode";
-  static String pathMineDetails = "mineDetails";
+  static String pathMineDetails = "/mineDetails";
+  static String pathProfileDetailsMore = "/ProfileDetailsMore";
+  static String pathProfileAddRemarks = "/ProfileAddRemarks";
 
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(
@@ -50,6 +52,8 @@ class AppRouter {
     router.define(pathScanCode, handler: handlerScan);
     router.define(pathMineDetails, handler: handlermineDetails);
     router.define(pathVideoCourseList, handler: handlerVideoCourseList);
+    router.define(pathProfileDetailsMore, handler: handlerProfileDetailMore);
+    router.define(pathProfileAddRemarks, handler: handlerPerfileAddRemarks);
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
   }
@@ -122,7 +126,15 @@ class AppRouter {
   static void navigationToScanCodePage(BuildContext context) {
     _navigateToPage(context, pathScanCode, {});
   }
-
+  static void navigationToProfiileDetailMore(BuildContext context) {
+    _navigateToPage(context, pathProfileDetailsMore, {});
+  }
+  static void navigationToProfileAddRemarks(BuildContext context,String username,int userId){
+    Map<String,dynamic> map = Map();
+    map["username"] = username;
+    map["userId"] = userId;
+    _navigateToPage(context, pathProfileAddRemarks,map);
+  }
   static void navigateToLikePage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathLike, map);

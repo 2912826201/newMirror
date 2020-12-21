@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+///这个是个人主页实现吸顶TabBar的类
 class StickyTabBarDelegate extends SliverPersistentHeaderDelegate {
   final TabBar child;
 
