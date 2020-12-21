@@ -29,44 +29,48 @@ class _ExpandableTextState extends State<ExpandableText> {
     }
   }
 
-  setBaseRichText(String topicStr) {
+  setBaseRichText() {
     List<BaseRichText> richTexts = [];
+    // at高亮
     for ( AtUsersModel atModel in model.atUsers) {
       richTexts.add(BaseRichText(
-        topicStr != "" ? (topicStr+text).substring(topicStr.length  + atModel.index,topicStr.length  + atModel.len) : text.substring(atModel.index,atModel.len),
+          text.substring(atModel.index,atModel.len),
         style: TextStyle(color: Color(0xFF9C7BFF), fontSize: 14),
         onTap: () {
           print("点击用户${atModel.uid}");
         },
       ));
     }
-    richTexts.add(BaseRichText(
-      (topicStr+text).substring(0,topicStr.length),
-      style: TextStyle(color: Color(0xFF9C7BFF), fontSize: 14),
-      onTap: () {
-        print("点击用户${model.topicDto.id}");
-      },
-    ));
+    // 话题高亮
+    for (TopicDtoModel toModel in model.topics){
+      richTexts.add(BaseRichText(
+        text.substring(toModel.index,toModel.len),
+        style: TextStyle(color: Color(0xFF9C7BFF), fontSize: 14),
+        onTap: () {
+          print("点击用户${toModel.uid}");
+        },
+      ));
+    }
     return richTexts;
   }
 
   RichText() {
-    var topicStr =  model.topicDto != null ? "#"+model.topicDto.name : "";
+    // var topicStr =  model.topicDto != null ? "#"+model.topicDto.name : "";
    // print("话题:topicStr:$topicStr");
    // print( "全文本：${topicStr+text}");
-    if (model.atUsers.length > 0  && model.atUsers.last.len < model.content.length) {
+    if ((model.atUsers.isNotEmpty && model.atUsers.last.len < model.content.length) || (model.topics.isNotEmpty && model.topics.last.len < model.content.length)) {
         return MyRichTextWidget(
           Text(
-            topicStr+text,
+            text,
             style: style,
           ),
           maxLines: expand ? null : maxLines ,
           textOverflow: expand ?  TextOverflow.clip : TextOverflow.ellipsis ,
           richTexts:
-            setBaseRichText(topicStr),
+            setBaseRichText(),
         );
     }  else {
-      return Text(text ?? '', style: style);
+      return Text(text ?? '', style: style,maxLines: expand ? null : maxLines);
     }
   }
   @override

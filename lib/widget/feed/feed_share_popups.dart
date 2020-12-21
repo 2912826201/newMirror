@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/feed/feed_share_select_contact.dart';
 
-import '../bottom_sheet.dart';
+// import '../bottom_sheet.dart';
 
 Future openShareBottomSheet({
   @required BuildContext context,
@@ -64,6 +66,13 @@ class FeedSharePopups extends StatelessWidget {
                   return GestureDetector(
                     onTap: () {
                       print("点击了￥${feedViewModel[index].name}");
+                      Navigator.of(context).pop(1);
+                      if(feedViewModel[index].name == "站内好友") {
+                         Navigator.push(context, MaterialPageRoute(builder: (_) {
+                           return FeedShareSelectContact();
+                         }));
+                      };
+
                     },
                     child: Container(
                       child: Column(

@@ -90,7 +90,8 @@ dependencies:
   pull_to_refresh: ^1.6.3
   # shared preferences
   shared_preferences: ^0.5.12+4
-
+  #  粘性header
+  sticky_headers: ^0.1.8+1
 
   # 测试用的生成英文单词的库
   english_words: ^3.1.3

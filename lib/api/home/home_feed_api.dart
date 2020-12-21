@@ -12,6 +12,8 @@ const String PULLHOTLIST = "/appuser/web/feed/pullHotList";
 const String PUBLISHFEED = "/appuser/web/feed/publish";
 // 动态点赞or取消赞
 const String LAUDFEED = "/appuser/web/feed/laud";
+// 动态点赞列表
+const String GETFEEDLAUDLIST ="/appuser/web/feed/getLaudList";
 
 // 发布/回复评论
 const String PUBLISHCOMMENT = "/appuser/web/comment/publish";
@@ -277,3 +279,16 @@ Future<Map> laudComment({@required int commentId, @required int laud}) async {
     return null;
   }
 }
+//   动态点赞列表  GETFEEDLAUDLIST
+  Future<DataResponseModel> getFeedLaudList({@required int targetId}) async {
+    Map<String, dynamic> params = {};
+    params["targetId"] = targetId;
+    BaseResponseModel responseModel = await requestApi(GETFEEDLAUDLIST, params);
+    if (responseModel.isSuccess) {
+      DataResponseModel  dataResponseModel;
+      dataResponseModel = DataResponseModel.fromJson(responseModel.data);
+      return dataResponseModel;
+    } else {
+      return null;
+    }
+  }

@@ -35,14 +35,13 @@ class DynamicListLayout extends StatelessWidget {
     // return ChangeNotifierProvider(
     //     create: (_) => DynamicModelNotifier(model),
     //     builder: (context, _) {
-    // print("我要看model的值");
-     // print(model.toString());
+    print("我要看model的值");
+     print(model.toString());
           return Column(
             children: [
               // 头部头像时间
               getHead(screen_width, context,model),
               // 图片区域
-
               model.picUrls.isNotEmpty ? SlideBanner(height: model.picUrls[0].height.toDouble(),model: model,) : Container(),
               // 点赞，转发，评论三连区域 getTripleArea
               GetTripleArea(pc: pc,model:model ,index:index),
