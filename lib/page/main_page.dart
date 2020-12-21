@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mirror/main.dart';
 import 'package:mirror/page/home/home_page.dart';
-import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/if_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/page/message/message_page.dart';
-import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -45,7 +42,7 @@ class MainPageState extends State<MainPage> {
     super.initState();
     currentIndex = 0;
     SingletonForWholePages.singleton().messagePageKey = widget.messagePageKey;
-    pages =  [HomePage(), TrainingPage(), MessagePage(key:this.widget.messagePageKey), ProfilePage()];
+    pages =  [HomePage(), TrainingPage(), MessagePage(), ProfilePage()];
   }
   // 返回视图
   returnView(int currentIndex) {
