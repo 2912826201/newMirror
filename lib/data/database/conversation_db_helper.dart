@@ -39,27 +39,30 @@ class ConversationDBHelper {
     await db.delete(TABLE_NAME_CONVERSATION, where: "$COLUMN_NAME_CONVERSATION_UID = $uid");
     await DBHelper().closeDB(db);
   }
-  //批量插入数据
- Future<bool> insertConversations(List<ConversationDto> conversations) async{
-   Database db = await DBHelper().openDB();
-   List<bool> results = List<bool>();
-   //先删掉已有数据 再插入数据
-     var transactionResult = await db.transaction((txn) async {
-       conversations.forEach((conversation)  async{
-       //事务中只能用txn不能用db
-       await txn.delete(TABLE_NAME_CONVERSATION, where: "$COLUMN_NAME_CONVERSATION_ID = '${conversation.id}'");
-       var result = await txn.insert(TABLE_NAME_CONVERSATION, conversation.toMap());
-       print("save single data ${result}");
-       results.add(result == 1 ? true : false);
-     });
-       bool initial = false;
-       results.forEach((element) {
-         initial = initial & element;
-       });
-       return initial;
-   });
-   await DBHelper().closeDB(db);
-   return (transactionResult == 1);
- }
 
+  //批量插入数据
+  Future<bool> insertConversationList(List<ConversationDto> conversations) async {
+    Database db = await DBHelper().openDB();
+    int totalResult = 0;
+    //先删掉已有数据 再插入数据
+    var transactionResult = await db.transaction((txn) async {
+      conversations.forEach((conversation) async {
+        //事务中只能用txn不能用db
+        await txn.delete(TABLE_NAME_CONVERSATION, where: "$COLUMN_NAME_CONVERSATION_ID = '${conversation.id}'");
+        var result = await txn.insert(TABLE_NAME_CONVERSATION, conversation.toMap());
+        totalResult += result;
+      });
+      return totalResult;
+    });
+    await DBHelper().closeDB(db);
+    return (transactionResult == conversations.length);
+  }
+
+  //更新会话（可用于更新未读数，名称头像等确定已存在会话的信息）
+  Future<bool> updateConversation(ConversationDto dto) async {
+    Database db = await DBHelper().openDB();
+    int result = await db.update(TABLE_NAME_CONVERSATION, dto.toMap());
+    await DBHelper().closeDB(db);
+    return result == 1;
+  }
 }

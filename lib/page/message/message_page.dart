@@ -4,7 +4,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/friends_cell_dto.dart';
-import 'package:mirror/data/dto/group_chat_dto.dart';
+import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/count_badge.dart';
@@ -182,7 +182,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                               ? 1
                               : 28,
                       18,
-                      12)),
+                      12, false)),
             ],
           ),
           SizedBox(
@@ -265,7 +265,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
 
 
 
-
+//TODO 原正国的代码 需要重写
 ///////////////////////////////////////////创建群聊页面/////////////////////////////////
 class CreateGroupChatWidget extends StatefulWidget {
   CreateGroupChatWidget({Key key}):super(key: key);
@@ -345,7 +345,7 @@ class CreatGroupChatWidgetState extends State<CreateGroupChatWidget> {
     print("thekeys :$theKeys");
     //创建请求群聊接口
     createGroupChat(theKeys).then(
-            (GroupChatDto dto){
+            (GroupChatModel dto){
           print("创建群聊是否成功 $dto");
           ConversationDto cdto = ConversationDto.fromGroupChat(dto);
           //需要取得消息页面的State属性进行添加会话的操作

@@ -324,7 +324,7 @@ class MessagePageDataSource implements MPDataProxy {
     if (fieldName == "content") {
       dto.content = _getPlainText(msg);
     }
-    dto.unread += 1;
+    dto.unreadCount += 1;
     dto.updateTime = DateTime.now().millisecondsSinceEpoch;
   }
 
@@ -343,7 +343,7 @@ class MessagePageDataSource implements MPDataProxy {
     newConv.conversationId = msg.targetId;
     newConv.type = int.parse(msg.senderUserId);
     newConv.name = msg.senderUserId;
-    newConv.unread = 1;
+    newConv.unreadCount = 1;
     this._conversations.add(newConv);
     _chatData[newConv.conversationId] = newConv;
   }
@@ -387,13 +387,13 @@ class MessagePageDataSource implements MPDataProxy {
     _chatData.keys.forEach((element) {
       list.add(_chatData[element]);
     });
-   bool rs = await ConversationDBHelper().insertConversations(list);
+   bool rs = await ConversationDBHelper().insertConversationList(list);
     print("saving chats  ${rs}");
   }
   //增加一个新的会话
   @override
   createNewConversation(ConversationDto dto) {
-    print("数据源开始添加新会话 ${dto.toStirng()}");
+    // print("数据源开始添加新会话 ${dto.toStirng()}");
    _chatData[dto.conversationId] = dto;
    print("after create NewChat: $_chatData");
    delegate.signals(payload: {MessagePageDataSource.REFRESH_ALL_LIST:null});

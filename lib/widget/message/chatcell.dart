@@ -342,8 +342,8 @@ class MPChatCellState extends State<MPChatCell> implements ChatCellBehaviors{
       if(model.content != null){
       _latestMsg = model.content;
      }
-      if(model.unread != null){
-        _unreadMsgCount = model.unread;
+      if(model.unreadCount != null){
+        _unreadMsgCount = model.unreadCount;
       }
     }
     setState(() {

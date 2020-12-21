@@ -356,7 +356,7 @@ class MessagePageUiProvider implements MPUiProxy {
     print(listKeys);
     listKeys.add(key);
     //获取对应的cell
-    MPChatCell cell = MPChatCell(key: key,model:dataActionPipe.imCellData()[expectedIndex],unreadMsgCount: dataActionPipe.imCellData()[expectedIndex].unread,);
+    MPChatCell cell = MPChatCell(key: key,model:dataActionPipe.imCellData()[expectedIndex],unreadMsgCount: dataActionPipe.imCellData()[expectedIndex].unreadCount,);
     //构建单个cell的过程
     return Row(children:
     [
@@ -502,7 +502,7 @@ class MessagePageUiProvider implements MPUiProxy {
      MPChatCellState state = listKeys[index].currentState;
       if(state != null) {
         if(dto != null) {
-          print("cell begin refresh ${dto.toStirng()}");
+          // print("cell begin refresh ${dto.toStirng()}");
           }
           state.refresh(model: dto);
         //若未读数有值，则进行刷新的操作

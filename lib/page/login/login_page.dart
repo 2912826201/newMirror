@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/constant/color.dart';
 import 'package:mirror/page/login/phone_login_page.dart';
 import 'package:mirror/page/login/login_base_page.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -62,7 +60,7 @@ class _LoginPageState extends LoginBasePageState {
   Widget _backImage() {
     return Container(
       child: Image.asset("images/test/bg.png",
-      fit: BoxFit.fill,
+      fit: BoxFit.cover,
       width: double.infinity,
       height: double.infinity,)
     );

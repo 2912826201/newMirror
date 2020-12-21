@@ -1,6 +1,5 @@
 import 'package:mirror/config/application.dart';
-import 'package:mirror/data/dto/group_chat_dto.dart';
-import 'package:mirror/data/model/token_model.dart';
+import 'package:mirror/data/model/message/group_chat_model.dart';
 
 /// conversation_dto
 /// Created by yangjiayi on 2020/11/30.
@@ -19,12 +18,12 @@ const String COLUMN_NAME_CONVERSATION_CONTENT = 'content';
 const String COLUMN_NAME_CONVERSATION_UPDATETIME = 'updateTime';
 const String COLUMN_NAME_CONVERSATION_CREATETIME = 'createTime';
 const String COLUMN_NAME_CONVERSATION_ISTOP = 'isTop';
-const String COLUMN_NAME_CONVERSATION_UNREAD = 'unread';
+const String COLUMN_NAME_CONVERSATION_UNREADCOUNT = 'unreadCount';
 // 这个表是用来存放当前用户的会话列表信息
 class ConversationDto {
   ConversationDto();
   //创建群聊的网络model转换为本地的会话model
-  ConversationDto.fromGroupChat(GroupChatDto gdto){
+  ConversationDto.fromGroupChat(GroupChatModel gdto){
     ConversationDto();
     this.conversationId = "${gdto.id}";
     this.uid = Application.profile.uid;
@@ -35,8 +34,9 @@ class ConversationDto {
     this.updateTime = gdto.updateTime;
     this.createTime = gdto.createTime;
     this.isTop = 0;
-    this.unread = 0;
+    this.unreadCount = 0;
   }
+
   String conversationId;
   int uid;
   int type;
@@ -46,7 +46,8 @@ class ConversationDto {
   int updateTime;
   int createTime;
   int isTop;
-  int unread;
+  int unreadCount;
+
   String get id => "${uid}_${conversationId}";
 
   Map<String, dynamic> toMap() {
@@ -61,7 +62,7 @@ class ConversationDto {
       COLUMN_NAME_CONVERSATION_UPDATETIME: updateTime,
       COLUMN_NAME_CONVERSATION_CREATETIME: createTime,
       COLUMN_NAME_CONVERSATION_ISTOP: isTop,
-      COLUMN_NAME_CONVERSATION_UNREAD:unread,
+      COLUMN_NAME_CONVERSATION_UNREADCOUNT:unreadCount,
     };
     return map;
   }
@@ -76,41 +77,6 @@ class ConversationDto {
     updateTime = map[COLUMN_NAME_CONVERSATION_UPDATETIME];
     createTime = map[COLUMN_NAME_CONVERSATION_CREATETIME];
     isTop = map[COLUMN_NAME_CONVERSATION_ISTOP];
-    unread = map[COLUMN_NAME_CONVERSATION_UNREAD];
+    unreadCount = map[COLUMN_NAME_CONVERSATION_UNREADCOUNT];
   }
-  String toStirng(){
-   print("cobversationDto toString()");
-    return " unread:${this.unread}-${this.conversationId}-${this.uid}-${this.type}-${this.avatarUri}-${this.name}-${this.content}-${this.updateTime}-${this.createTime}-${this.isTop}";
-  }
-// TokenModel toTokenModel() {
-  //   var model = TokenModel(
-  //     accessToken: accessToken,
-  //     tokenType: tokenType,
-  //     refreshToken: refreshToken,
-  //     expiresIn: expiresIn,
-  //     scope: scope,
-  //     isPerfect: isPerfect,
-  //     uid: uid,
-  //     anonymous: anonymous,
-  //     isPhone: isPhone,
-  //     jti: jti,
-  //   );
-  //   return model;
-  // }
-  //
-  // TokenDto.fromTokenModel(TokenModel model) {
-  //   accessToken = model.accessToken;
-  //   tokenType = model.tokenType;
-  //   refreshToken = model.refreshToken;
-  //   expiresIn = model.expiresIn;
-  //   scope = model.scope;
-  //   isPerfect = model.isPerfect;
-  //   uid = model.uid;
-  //   anonymous = model.anonymous;
-  //   isPhone = model.isPhone;
-  //   jti = model.jti;
-  //   //一般来说从服务端取到token后就直接存了 所以当前时间基本可以认为是token发下来的时间
-  //   createTime = DateTime.now().millisecondsSinceEpoch;
-  // }
-
 }

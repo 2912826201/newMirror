@@ -4,7 +4,7 @@ import 'package:mirror/api/message_page_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/friends_cell_dto.dart';
-import 'package:mirror/data/dto/group_chat_dto.dart';
+import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/im/rongcloud_receive_manager1.dart';
 import 'package:mirror/page/if_page.dart';
 import 'package:mirror/page/message/delegate/callbacks.dart';
@@ -268,7 +268,7 @@ class MessagePageState1 extends State<MessagePage1>
       int index = payload[MessagePageUiProvider.CellTapKey];
       uiProvider.imFreshData(index: index,newBadgets: 0);
       //model对应的数据也要更改
-      dataSource.imCellData()[index].unread = 0;
+      dataSource.imCellData()[index].unreadCount = 0;
       //进行跳转
       AppRouter.navigateToChatPage(context,dataSource.imCellData()[index],);
 
@@ -459,7 +459,7 @@ class CreatGroupChatWidgetState extends State<CreateGroupChatWidget> {
       print("thekeys :$theKeys");
      //创建请求群聊接口
       createGroupChat(theKeys).then(
-          (GroupChatDto dto){
+          (GroupChatModel dto){
             print("创建群聊是否成功 $dto");
             ConversationDto cdto = ConversationDto.fromGroupChat(dto);
             //需要取得消息页面的State属性进行添加会话的操作

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/im/rongcloud_receive_manager.dart';
-import 'package:mirror/im/rongcloud_receive_manager1.dart';
 import 'package:mirror/im/rongcloud_status_manager.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
@@ -21,8 +20,6 @@ class RongCloud {
       _instance = RongCloud();
       RongIMClient.init(AppConfig.getRCAppKey());
     }
-    //TODO 原方法需废弃
-    RongCloudReceiveManager1.shareInstance();
     return _instance;
   }
 
@@ -40,8 +37,8 @@ class RongCloud {
     if (_receiveManager == null) {
       _receiveManager = RongCloudReceiveManager.init(context);
 
-      // RongIMClient.onMessageReceivedWrapper = _receiveManager.onMessageReceivedWrapper;
-      // RongIMClient.onMessageSend = _receiveManager.onMessageSend;
+      RongIMClient.onMessageReceivedWrapper = _receiveManager.onMessageReceivedWrapper;
+      RongIMClient.onMessageSend = _receiveManager.onMessageSend;
     }
 
     return _receiveManager;

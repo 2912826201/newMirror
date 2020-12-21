@@ -1,5 +1,5 @@
 import 'package:mirror/api/api.dart';
-import 'package:mirror/data/dto/group_chat_dto.dart';
+import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/message/message_model.dart';
 
@@ -18,7 +18,7 @@ Future<Unreads> getUnReads() async {
 }
 
 //请求创建群聊
-Future<GroupChatDto> createGroupChat(List<String> members) async {
+Future<GroupChatModel> createGroupChat(List<String> members) async {
   print("createGroupChat");
   final String parameterName = "uids";
   print("members is $members");
@@ -35,7 +35,7 @@ Future<GroupChatDto> createGroupChat(List<String> members) async {
   if (responseModel.isSuccess) {
     print("request success");
     print(responseModel.data);
-    return GroupChatDto.fromJson(responseModel.data);
+    return GroupChatModel.fromJson(responseModel.data);
   } else {
     print("失败");
     return null;
