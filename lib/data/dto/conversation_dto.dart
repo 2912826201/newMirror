@@ -21,10 +21,8 @@ const String COLUMN_NAME_CONVERSATION_ISTOP = 'isTop';
 const String COLUMN_NAME_CONVERSATION_UNREADCOUNT = 'unreadCount';
 // 这个表是用来存放当前用户的会话列表信息
 class ConversationDto {
-  ConversationDto();
   //创建群聊的网络model转换为本地的会话model
   ConversationDto.fromGroupChat(GroupChatModel gdto){
-    ConversationDto();
     this.conversationId = "${gdto.id}";
     this.uid = Application.profile.uid;
     this.type = GROUP_CHAT_TYPE;

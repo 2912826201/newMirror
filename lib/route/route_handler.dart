@@ -13,7 +13,6 @@ import 'package:mirror/page/login/login_page.dart';
 import 'package:mirror/page/login/perfect_user_page.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
-import 'package:mirror/page/message/Chat/chat_page.dart';
 import 'package:mirror/page/media_picker/preview_photo_page.dart';
 import 'package:mirror/page/profile/Profile_add_remarks.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
@@ -133,15 +132,6 @@ var handlerPreviewPhoto = Handler(handlerFunc: (BuildContext context, Map<String
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return PreviewPhotoPage(
     filePath: data["filePath"],
-  );
-});
-
-//聊天页面
-var handlerChatPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  List<dynamic> list = params["data"];
-  ConversationDto dto = ConversationDto.fromMap(json.decode(list.first));
-  return ChatPage(
-    conversation: dto,
   );
 });
 

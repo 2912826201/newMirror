@@ -14,9 +14,8 @@ import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
-import 'package:mirror/page/message/delegate/callbacks.dart';
+import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/route/router.dart';
-import 'package:mirror/page/login/perfect_user_page.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/data/model/token_model.dart';
@@ -284,6 +283,10 @@ class _SmsCodePageState extends LoginBasePageState {
     ProfileDto profile = ProfileDto.fromUserModel(user);
     await ProfileDBHelper().insertProfile(profile);
     context.read<ProfileNotifier>().setProfile(profile);
+
+    //TODO 处理登录完成后的数据加载
+    MessageManager.loadConversationListFromDatabase(context);
+
     //TODO 页面跳转需要处理
     Navigator.of(context).pushNamedAndRemoveUntil(
       '/', (route) => false,
@@ -312,7 +315,7 @@ class SmsCounterWidget extends StatefulWidget {
 
 //倒计时按钮
 class _SmsCounterWidgetState extends State<SmsCounterWidget> {
-  final MPCallbackWithValueNoPara _requestTask;
+  final dynamic Function() _requestTask;
   ///初始状态常量
   final _resendText = Text(
     "重新获取",

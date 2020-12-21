@@ -23,14 +23,13 @@ class AppRouter {
   static String pathMediaPicker = "/mediapicker";
   static String pathLike = "/like";
   static String pathRelease = "/release";
-  static String pathChatPage = "/chat";
   static String pathPerfectUserPage = "/perfectuser";
   static String pathPreviewPhoto = "/previewPhoto";
   static String pathLiveBroadcast = "/liveBroadcast";
   static String pathLiveDetail = "/liveDetail";
   static String pathVideoDetail = "/videoDetail";
   static String pathVideoCourseList = "/videoCourseList";
-  static String pathScanCode = "/ScanCode";
+  static String pathScanCode = "/scanCode";
   static String pathMineDetails = "/mineDetails";
   static String pathProfileDetailsMore = "/ProfileDetailsMore";
   static String pathProfileAddRemarks = "/ProfileAddRemarks";
@@ -48,7 +47,6 @@ class AppRouter {
     router.define(pathLogin, handler: handlerLogin);
     router.define(pathLike, handler: handlerLike);
     router.define(pathRelease, handler: handlerReleaseFeed);
-    router.define(pathChatPage, handler: handlerChatPage);
     router.define(pathPerfectUserPage, handler: handlerPerfectUserPage);
     router.define(pathPreviewPhoto, handler: handlerPreviewPhoto);
     router.define(pathLiveBroadcast, handler: handlerLiveBroadcast);
@@ -155,10 +153,6 @@ class AppRouter {
   static void navigateToReleasePage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathRelease, map);
-  }
-
-  static void navigateToChatPage(BuildContext context,ConversationDto dto){
-    _navigateToPage(context, pathChatPage,dto.toMap());
   }
 
   static void navigateToPreviewPhotoPage(BuildContext context, String filePath, Function(dynamic result) callback) {

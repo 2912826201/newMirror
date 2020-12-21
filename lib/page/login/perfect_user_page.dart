@@ -7,9 +7,9 @@ import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/page/login/login_base_page_state.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/route/router.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
@@ -324,6 +324,10 @@ class _PerfectUserState extends LoginBasePageState {
     ProfileDto profile = ProfileDto.fromUserModel(user);
     await ProfileDBHelper().insertProfile(profile);
     context.read<ProfileNotifier>().setProfile(profile);
+
+    //TODO 处理登录完成后的数据加载
+    MessageManager.loadConversationListFromDatabase(context);
+
     //TODO 页面跳转需要处理
     Navigator.of(context).pushNamedAndRemoveUntil(
       '/', (route) => false,

@@ -6,6 +6,7 @@ import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
@@ -22,18 +23,21 @@ import 'data/dto/token_dto.dart';
 import 'data/model/token_model.dart';
 import 'data/notifier/token_notifier.dart';
 import 'data/notifier/profile_notifier.dart';
+import 'im/message_manager.dart';
 import 'route/router.dart';
 
 void main() {
-  SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor:Colors.transparent);
+  SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
   SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
-  _initApp().then((value) => runApp(
+  _initApp().then((value) =>
+      runApp(
         MultiProvider(
           providers: [
             ChangeNotifierProvider(create: (_) => TokenNotifier(Application.token)),
             ChangeNotifierProvider(create: (_) => ProfileNotifier(Application.profile)),
             ChangeNotifierProvider(create: (_) => FeedMapNotifier(feedMap: {})),
             ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
+            ChangeNotifierProvider(create: (_) => ConversationNotifier()),
           ],
           child: MyApp(),
         ),
@@ -58,7 +62,9 @@ Future _initApp() async {
   TokenDto token = await TokenDBHelper().queryToken();
   if (token == null ||
       (token.anonymous == 0 && (token.isPerfect == 0 || token.isPhone == 0)) ||
-      DateTime.now().second + token.expiresIn > (token.createTime / 1000)) {
+      DateTime
+          .now()
+          .second + token.expiresIn > (token.createTime / 1000)) {
     //如果token是空的 或者token非匿名但未完善资料 或者已过期 那么需要先去取一个匿名token
     TokenModel tokenModel = await login("anonymous", null, null, null);
     if (tokenModel != null) {
@@ -122,6 +128,12 @@ class MyAppState extends State<MyApp> {
   @override
   void initState() {
     //需要APP环境的初始化
+    //如果已登录则读取数据库
+    if (context
+        .read<TokenNotifier>()
+        .isLoggedIn) {
+      MessageManager.loadConversationListFromDatabase(context);
+    }
     //融云的状态管理者
     Application.rongCloud.initStatusManager(context);
     //融云的收信管理者
