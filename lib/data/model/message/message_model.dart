@@ -16,7 +16,7 @@ source: null,
 */
 
 //系统消息的model
-class SystemMessageModel{
+class MessageModel{
    String msgUID;              //主键、消息唯一id
    String fromUserId;          //发送用户id
    String toUserId;            //接收用户id        发给所有人则为-1
@@ -27,7 +27,7 @@ class SystemMessageModel{
    int sensitiveType;          //消息中敏感词标识 0 为不含有敏感词，1 为含有屏蔽敏感词，2 为含有替换敏感词String source;              //消息发送源头 iOS、Android、Websocket
    String groupUserIds;        //[表情]annelType 为 GROUP 时此参数有效，群组
 
-  SystemMessageModel.fromJson(Map<String,dynamic> jsons){
+  MessageModel.fromJson(Map<String,dynamic> jsons){
    this.msgUID = jsons["msgUID"];
    this.fromUserId = jsons["fromUserId"];
    this.toUserId = jsons["toUserId"];
@@ -57,25 +57,25 @@ class SystemMessageModel{
 
  //未读消息
  class Unreads{
-  List<SystemMessageModel> exerciseMsgList;
-  List<SystemMessageModel> sysMsgList;
-  List<SystemMessageModel> liveMsgList;
+  List<MessageModel> exerciseMsgList;
+  List<MessageModel> sysMsgList;
+  List<MessageModel> liveMsgList;
   UnreadInterCourses interCourses;
   Unreads.fromJson(Map<String,dynamic> json){
-    this.exerciseMsgList = List<SystemMessageModel>();
+    this.exerciseMsgList = List<MessageModel>();
     print(json["exerciseMsgList"].runtimeType);
     print(json["exerciseMsgList"]);
     json["exerciseMsgList"].forEach((element){
       print(element.runtimeType);
-     this.exerciseMsgList.add(SystemMessageModel.fromJson(element));
+     this.exerciseMsgList.add(MessageModel.fromJson(element));
     });
-    this.liveMsgList = List<SystemMessageModel>();
+    this.liveMsgList = List<MessageModel>();
     json["liveMsgList"].forEach((element){
-      this.liveMsgList.add(SystemMessageModel.fromJson(element));
+      this.liveMsgList.add(MessageModel.fromJson(element));
     });
-    this.sysMsgList = List<SystemMessageModel>();
+    this.sysMsgList = List<MessageModel>();
     json["sysMsgList"].forEach((element){
-      this.sysMsgList.add(SystemMessageModel.fromJson(element));
+      this.sysMsgList.add(MessageModel.fromJson(element));
     });
     this.interCourses = UnreadInterCourses.fromJson(json);
   }

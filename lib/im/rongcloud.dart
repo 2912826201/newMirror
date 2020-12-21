@@ -40,8 +40,8 @@ class RongCloud {
     if (_receiveManager == null) {
       _receiveManager = RongCloudReceiveManager.init(context);
 
-      RongIMClient.onMessageReceivedWrapper = _receiveManager.onMessageReceivedWrapper;
-      RongIMClient.onMessageSend = _receiveManager.onMessageSend;
+      // RongIMClient.onMessageReceivedWrapper = _receiveManager.onMessageReceivedWrapper;
+      // RongIMClient.onMessageSend = _receiveManager.onMessageSend;
     }
 
     return _receiveManager;

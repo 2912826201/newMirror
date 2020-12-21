@@ -9,7 +9,7 @@ import 'package:mirror/api/message_page_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/database/conversation_db_helper.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
-import 'package:mirror/data/model/message/intercourse_model.dart';
+import 'package:mirror/data/model/message/message_model.dart';
 import 'package:mirror/page/message/delegate/callbacks.dart';
 import 'package:mirror/page/message/delegate/frame.dart';
 import 'package:mirror/page/message/delegate/message_page_ui_provider.dart';
@@ -17,21 +17,21 @@ import 'package:mirror/page/message/delegate/regular_events.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'message_interfaces.dart';
 //普通的官方消息的消息id
-const OFFICIAL = 1;
+const SYSTEM_OFFICIAL = 1;
 //直播消息
-const LIVE_OFFICIAL = 2;
+const SYSTEM_LIVE = 2;
 //运动消息
-const EXERCISE_OFFICIAL = 3;
+const SYSTEM_TRAINING = 3;
 //官方消息枚举
-enum Authorizeds{
-  //运动
-  ExerciseMsg,
+enum SystemMsgType{
   //系统
-  SysMsg,
+  Official,
   //直播
-  LiveMsg,
+  Live,
+  //运动
+  Training,
   //未知
-  UnKnow
+  UnKnown
 }
 class MessagePageDataSource implements MPDataProxy {
   //事件key常量
@@ -69,12 +69,12 @@ class MessagePageDataSource implements MPDataProxy {
   //及时通讯部分的初始化(涉及到从数据库取出历史的会话数据)
   _initializationForIM() async {
     print("initialize three empty arrays");
-    _latestUnreadAuthorizeds[Authorizeds.LiveMsg] = List<ConversationDto>();
-    _latestUnreadAuthorizeds[Authorizeds.LiveMsg].add(ConversationDto());
-    _latestUnreadAuthorizeds[Authorizeds.SysMsg] = List<ConversationDto>();
-    _latestUnreadAuthorizeds[Authorizeds.SysMsg].add(ConversationDto());
-    _latestUnreadAuthorizeds[Authorizeds.ExerciseMsg] = List<ConversationDto>();
-    _latestUnreadAuthorizeds[Authorizeds.ExerciseMsg].add(ConversationDto());
+    _latestUnreadSystemMsgType[SystemMsgType.Live] = List<ConversationDto>();
+    _latestUnreadSystemMsgType[SystemMsgType.Live].add(ConversationDto());
+    _latestUnreadSystemMsgType[SystemMsgType.Official] = List<ConversationDto>();
+    _latestUnreadSystemMsgType[SystemMsgType.Official].add(ConversationDto());
+    _latestUnreadSystemMsgType[SystemMsgType.Training] = List<ConversationDto>();
+    _latestUnreadSystemMsgType[SystemMsgType.Training].add(ConversationDto());
     //非置顶的会话读取
     List<ConversationDto> notPinnied = await ConversationDBHelper().queryConversation(Application.profile.uid, 0);
     //置顶的会话读取
@@ -109,12 +109,12 @@ class MessagePageDataSource implements MPDataProxy {
   }
   String _sysChatName(int sys){
     switch(sys){
-      case OFFICIAL:
+      case SYSTEM_OFFICIAL:
         return "系统消息";
-      case EXERCISE_OFFICIAL:
+      case SYSTEM_TRAINING:
         return "运动消息";
 
-      case LIVE_OFFICIAL:
+      case SYSTEM_LIVE:
         return "直播消息";
      default:
       return "未知消息";
@@ -130,16 +130,16 @@ class MessagePageDataSource implements MPDataProxy {
      dto.isTop = 0;
      dto.uid = Application.profile.uid;
      if(i==0){
-       dto.type = OFFICIAL;
-       dto.conversationId = "$OFFICIAL";
+       dto.type = SYSTEM_OFFICIAL;
+       dto.conversationId = "$SYSTEM_OFFICIAL";
      }
      else if(i==1){
-       dto.type = LIVE_OFFICIAL;
-       dto.conversationId = "$LIVE_OFFICIAL";
+       dto.type = SYSTEM_LIVE;
+       dto.conversationId = "$SYSTEM_LIVE";
      }
      else if (i ==2){
-       dto.type = EXERCISE_OFFICIAL;
-       dto.conversationId = "$EXERCISE_OFFICIAL";
+       dto.type = SYSTEM_TRAINING;
+       dto.conversationId = "$SYSTEM_TRAINING";
      }
      dto.avatarUri = _fixedPortrait;
      dto.content = _fixedLatestMsg;
@@ -150,19 +150,19 @@ class MessagePageDataSource implements MPDataProxy {
     return list;
   }
   bool _sysChatsExist(List<ConversationDto> existDtos){
-  Map<Authorizeds,bool> map = Map<Authorizeds,bool>();
-  map[Authorizeds.SysMsg] = false;
-  map[Authorizeds.ExerciseMsg] = false;
-  map[Authorizeds.LiveMsg] = false;
+  Map<SystemMsgType,bool> map = Map<SystemMsgType,bool>();
+  map[SystemMsgType.Official] = false;
+  map[SystemMsgType.Training] = false;
+  map[SystemMsgType.Live] = false;
     existDtos.forEach((element) {
-      if(element.type == OFFICIAL){
-        map[Authorizeds.SysMsg] = true;
+      if(element.type == SYSTEM_OFFICIAL){
+        map[SystemMsgType.Official] = true;
       }
-      if(element.type == EXERCISE_OFFICIAL){
-        map[Authorizeds.ExerciseMsg] = true;
+      if(element.type == SYSTEM_TRAINING){
+        map[SystemMsgType.Training] = true;
       }
-      if(element.type == LIVE_OFFICIAL){
-        map[Authorizeds.LiveMsg] = true;
+      if(element.type == SYSTEM_LIVE){
+        map[SystemMsgType.Live] = true;
       }
     });
    bool rs = true;
@@ -187,7 +187,7 @@ class MessagePageDataSource implements MPDataProxy {
   List<ConversationDto>  _conversations = List<ConversationDto>();
 
   //最新消息的暂存数组
-  Map<Authorizeds, List<ConversationDto>> _latestUnreadAuthorizeds = Map<Authorizeds, List<ConversationDto>>();
+  Map<SystemMsgType, List<ConversationDto>> _latestUnreadSystemMsgType = Map<SystemMsgType, List<ConversationDto>>();
   Map<int, ConversationDto> _mapping = Map<int, ConversationDto>();
 
   //保存社交事件未读数
@@ -223,23 +223,23 @@ class MessagePageDataSource implements MPDataProxy {
     print(input.runtimeType);
     //做好对系统类型消息的最新一条消息的的内容准备
     if (input is Unreads) {
-      _latestUnreadAuthorizeds[Authorizeds.ExerciseMsg] = _defaultLatestMessage(input.exerciseMsgList);
-      _latestUnreadAuthorizeds[Authorizeds.SysMsg] = _defaultLatestMessage(input.sysMsgList);
-      _latestUnreadAuthorizeds[Authorizeds.LiveMsg] = _defaultLatestMessage(input.liveMsgList);
+      _latestUnreadSystemMsgType[SystemMsgType.Training] = _defaultLatestMessage(input.exerciseMsgList);
+      _latestUnreadSystemMsgType[SystemMsgType.Official] = _defaultLatestMessage(input.sysMsgList);
+      _latestUnreadSystemMsgType[SystemMsgType.Live] = _defaultLatestMessage(input.liveMsgList);
     }
      if (input is UnreadInterCourses) {
       return input;
     }
   }
   //会提供默认的最新消息或者解析最新的消息
-  List<ConversationDto> _defaultLatestMessage(List<SystemMessageModel> list){
+  List<ConversationDto> _defaultLatestMessage(List<MessageModel> list){
     if(list.isEmpty){
       ConversationDto dto = ConversationDto();
       dto.content = _fixedLatestMsg;
       return [dto];
     }
     print("_defaultLatestMessage${list.first}");
-    List<SystemMessageModel> rt = list ;
+    List<MessageModel> rt = list ;
     List<ConversationDto> t = List<ConversationDto>();
     rt.forEach((element) {
       ConversationDto dto = ConversationDto();
@@ -349,16 +349,16 @@ class MessagePageDataSource implements MPDataProxy {
   }
 
   //获取消息的类型
-  Authorizeds _getMsgType(Message msg) {
+  SystemMsgType _getMsgType(Message msg) {
     switch(int.parse(msg.senderUserId)){
-      case OFFICIAL:
-        return Authorizeds.SysMsg;
-      case LIVE_OFFICIAL:
-        return Authorizeds.LiveMsg;
-      case EXERCISE_OFFICIAL:
-        return Authorizeds.ExerciseMsg;
+      case SYSTEM_OFFICIAL:
+        return SystemMsgType.Official;
+      case SYSTEM_LIVE:
+        return SystemMsgType.Live;
+      case SYSTEM_TRAINING:
+        return SystemMsgType.Training;
       default:
-       return Authorizeds.UnKnow;
+       return SystemMsgType.UnKnown;
     }
   }
 
@@ -372,8 +372,8 @@ class MessagePageDataSource implements MPDataProxy {
   }
 
   @override
-  Map<Authorizeds, List<ConversationDto>> latestAuthorizedMsgs() {
-    return _latestUnreadAuthorizeds;
+  Map<SystemMsgType, List<ConversationDto>> latestAuthorizedMsgs() {
+    return _latestUnreadSystemMsgType;
   }
 
   //向controller通知数据的到达等或者进行刷新界面

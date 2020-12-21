@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
-import 'package:mirror/data/model/message/intercourse_model.dart';
+import 'package:mirror/data/model/message/message_model.dart';
 import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
 import 'package:mirror/page/message/delegate/callbacks.dart';
 import 'package:mirror/page/message/delegate/message_page_datasource.dart';
@@ -305,38 +305,38 @@ class MessagePageUiProvider implements MPUiProxy {
   //刷新系统会话的最新的一条消息
    _refreshSysChatsLatestMsg(){
     dataActionPipe.imCellData().forEach((element) {
-      if(element.type == OFFICIAL){
+      if(element.type == SYSTEM_OFFICIAL){
         int k = -1 ;
        listKeys.forEach((element) {
          ++k;
          MPChatCellState cellState = listKeys[k].currentState;
-         if(cellState.widget.model.type == OFFICIAL){
+         if(cellState.widget.model.type == SYSTEM_OFFICIAL){
            ConversationDto dto =ConversationDto();
-           dto.content = dataActionPipe.latestAuthorizedMsgs()[Authorizeds.SysMsg].last.content;
+           dto.content = dataActionPipe.latestAuthorizedMsgs()[SystemMsgType.Official].last.content;
            cellState.refresh(model: dto);
          }
        });
       }
-      if(element.type == LIVE_OFFICIAL){
+      if(element.type == SYSTEM_LIVE){
         int k = -1 ;
         listKeys.forEach((element) {
           ++k;
           MPChatCellState cellState = listKeys[k].currentState;
-          if(cellState.widget.model.type == LIVE_OFFICIAL){
+          if(cellState.widget.model.type == SYSTEM_LIVE){
             ConversationDto dto =ConversationDto();
-            dto.content = dataActionPipe.latestAuthorizedMsgs()[Authorizeds.LiveMsg].last.content;
+            dto.content = dataActionPipe.latestAuthorizedMsgs()[SystemMsgType.Live].last.content;
             cellState.refresh(model: dto);
           }
         });
       }
-      if(element.type == EXERCISE_OFFICIAL){
+      if(element.type == SYSTEM_TRAINING){
         int k = -1 ;
         listKeys.forEach((element) {
           ++k;
           MPChatCellState cellState = listKeys[k].currentState;
-          if(cellState.widget.model.type == EXERCISE_OFFICIAL){
+          if(cellState.widget.model.type == SYSTEM_TRAINING){
             ConversationDto dto =ConversationDto();
-            dto.content = dataActionPipe.latestAuthorizedMsgs()[Authorizeds.ExerciseMsg].last.content;
+            dto.content = dataActionPipe.latestAuthorizedMsgs()[SystemMsgType.Training].last.content;
             cellState.refresh(model: dto);
           }
         });

@@ -2,10 +2,7 @@
 import 'dart:convert';
 import 'dart:core';
 
-import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-
-class AuthoritativeMessageDto extends  MessageContent{
-  static const  AuthoritativeMessageDtoIdentifier = "AuthoritativeMessageDtoIdentifier";
+class SystemMessageModel {
    String title;       // 标题
    String text;        // 文字
    String atUsers;     // 文字中@用户的详细信息
@@ -33,7 +30,7 @@ class AuthoritativeMessageDto extends  MessageContent{
    int isMute;     // 0，解除禁言；1，禁言
    int minutes;    // 单个禁言时禁言的时长，单位：分钟
 
-   AuthoritativeMessageDto.fromJson(Map<String,dynamic> map){
+   SystemMessageModel.fromJson(Map<String,dynamic> map){
     this.title= map["title"] ;
     this.text = map["text"] ;
     this.atUsers = map["atUsers"];
@@ -107,16 +104,4 @@ class AuthoritativeMessageDto extends  MessageContent{
     map["minutes"] = this.minutes;
     return json.encode(map);
   }
-  //由json转化为byte[]
-   void decode(String jsonStr) {
-    return json.decode(this.toString());
-   }
-
-
-
-
-   @override
-   String getObjectName(){
-     return AuthoritativeMessageDtoIdentifier;
-   }
 }

@@ -337,7 +337,7 @@ class MessagePageState extends State<MessagePage>
   }
   //最新的官方会话的最新消息
   @override
-  Map<Authorizeds, List<ConversationDto>> latestAuthorizedMsgs() {
+  Map<SystemMsgType, List<ConversationDto>> latestAuthorizedMsgs() {
     return dataSource.latestAuthorizedMsgs();
   }
 

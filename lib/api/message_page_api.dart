@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/data/dto/group_chat_dto.dart';
 import 'package:mirror/data/model/base_response_model.dart';
-import 'package:mirror/data/model/message/intercourse_model.dart';
+import 'package:mirror/data/model/message/message_model.dart';
 
 
 const String UNREAD_COUNT = "/appuser/web/message/getUnreadMsgCount";

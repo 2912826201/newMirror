@@ -53,7 +53,7 @@ abstract class MPDataProxy implements MPInterCourcesDataSource,MPIMDataSource{
 //即时通讯的ui的展示需要的数据集
 abstract class MPIMDataSource {
   //最新的官方会话的一条及时消息
-  Map<Authorizeds,List<ConversationDto>> latestAuthorizedMsgs();
+  Map<SystemMsgType,List<ConversationDto>> latestAuthorizedMsgs();
   void newMsgsArrive(Set<Message> msgs);
   //返回即时聊天的数据集
   List<ConversationDto> imCellData();

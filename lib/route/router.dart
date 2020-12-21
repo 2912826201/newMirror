@@ -25,7 +25,6 @@ class AppRouter {
   static String pathRelease = "/release";
   static String pathChatPage = "/chat";
   static String pathPerfectUserPage = "/perfectuser";
-  static String pathGuildCompleteInforPage = "/guildcompleteinfo";
   static String pathPreviewPhoto = "/previewPhoto";
   static String pathLiveBroadcast = "/liveBroadcast";
   static String pathLiveDetail = "/liveDetail";
@@ -51,7 +50,6 @@ class AppRouter {
     router.define(pathRelease, handler: handlerReleaseFeed);
     router.define(pathChatPage, handler: handlerChatPage);
     router.define(pathPerfectUserPage, handler: handlerPerfectUserPage);
-    router.define(pathGuildCompleteInforPage, handler: handlerGuildCompleteInfor);
     router.define(pathPreviewPhoto, handler: handlerPreviewPhoto);
     router.define(pathLiveBroadcast, handler: handlerLiveBroadcast);
     router.define(pathLiveDetail, handler: handlerLiveDetail);
@@ -158,14 +156,9 @@ class AppRouter {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathRelease, map);
   }
+
   static void navigateToChatPage(BuildContext context,ConversationDto dto){
     _navigateToPage(context, pathChatPage,dto.toMap());
-  }
-  static void navigateToGuidCompleteInfor(BuildContext context,String avatarUrl,String nicName){
-    Map<String,dynamic> map = Map<String,dynamic>();
-    map["avatarUrl"] = avatarUrl;
-    map["nickName"] = nicName;
-    _navigateToPage(context, pathGuildCompleteInforPage,map);
   }
 
   static void navigateToPreviewPhotoPage(BuildContext context, String filePath, Function(dynamic result) callback) {

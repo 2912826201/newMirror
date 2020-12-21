@@ -89,6 +89,11 @@ Future _initApp() async {
   //初始化融云IM
   Application.rongCloud = RongCloud.init();
 
+  //初始化页面路由
+  final router = FluroRouter();
+  AppRouter.configureRouter(router);
+  Application.router = router;
+
   //创建各文件路径
   AppConfig.createAppDir();
 
@@ -113,15 +118,15 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
-  //需要APP环境的初始化
-  MyAppState() {
-    final router = FluroRouter();
-    AppRouter.configureRouter(router);
-    Application.router = router;
+
+  @override
+  void initState() {
+    //需要APP环境的初始化
     //融云的状态管理者
     Application.rongCloud.initStatusManager(context);
     //融云的收信管理者
-
+    Application.rongCloud.initReceiveManager(context);
+    super.initState();
   }
 
   @override
