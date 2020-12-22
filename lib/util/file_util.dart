@@ -11,6 +11,8 @@ import 'package:sy_flutter_qiniu_storage/sy_flutter_qiniu_storage.dart';
 /// file_util
 /// Created by yangjiayi on 2020/12/9.
 
+//七牛的视频第一帧是视频地址后加上?vframe/jpg/offset/1
+
 class FileUtil {
   Future<QiniuTokenModel> _getQiniuToken(int type) async {
     return requestQiniuToken(type);

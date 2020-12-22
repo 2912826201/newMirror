@@ -13,6 +13,8 @@ class AppStyle {
   // Regular 辅助字体灰色
   static const textSecondaryRegular12 =
       TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
+  static const textSecondaryRegular13 =
+      TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
   static const textSecondaryRegular14 =
       TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
   static const textHintRegular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textHint);
@@ -31,4 +33,5 @@ class AppStyle {
 
   //红色
   static const textRegularRed16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.mainRed);
+  static const textRegularRed13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.mainRed);
 }

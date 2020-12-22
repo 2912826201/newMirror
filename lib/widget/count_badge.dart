@@ -8,11 +8,11 @@ import 'package:mirror/constant/color.dart';
 
 class CountBadge extends StatelessWidget {
   final int count;
-  final double height;
-  final double fontSize;
+  final double height = 18.0;
+  final double fontSize = 12.0;
   final bool isSilent;
 
-  CountBadge(this.count, this.height, this.fontSize, this.isSilent);
+  CountBadge(this.count, this.isSilent);
 
   @override
   Widget build(BuildContext context) {

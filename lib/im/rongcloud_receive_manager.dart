@@ -33,8 +33,8 @@ class RongCloudReceiveManager {
   onMessageSend(int messageId, int status, int code) {
     //将发送的消息插入记录
 
-// RCSentStatus
-// static const int Sending = 10; //发送中
+//   RCSentStatus
+//   static const int Sending = 10; //发送中
 //   static const int Failed = 20; //发送失败
 //   static const int Sent = 30; //发送成功
 //   static const int Received = 40; //对方已接收

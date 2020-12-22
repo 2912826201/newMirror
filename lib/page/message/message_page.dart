@@ -7,6 +7,7 @@ import 'package:mirror/data/dto/friends_cell_dto.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
+import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/count_badge.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
@@ -85,7 +86,9 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                   if (index == 0) {
                     return _buildTopView();
                   } else {
-                    return _buildConversationItem(index);
+                    //因为有上方头部视图 所以index要-1
+                    return _buildConversationItem(
+                        index, context.watch<ConversationNotifier>().getConversationInAllList(index - 1));
                   }
                 })));
   }
@@ -182,8 +185,6 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                           : type == 1
                               ? 1
                               : 28,
-                      18,
-                      12,
                       false)),
             ],
           ),
@@ -241,11 +242,75 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
           );
   }
 
-  Widget _buildConversationItem(int index) {
+  Widget _buildConversationItem(int index, ConversationDto conversation) {
     var colors = [Colors.greenAccent, Colors.grey];
     return Container(
       height: 69,
-      color: colors[index % 2],
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 45,
+            width: 45,
+            color: colors[index % 2],
+          ),
+          SizedBox(
+            width: 12,
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                        child: Text(
+                      "${conversation.id}",
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: false,
+                      style: AppStyle.textRegular14,
+                    )),
+                    Text(
+                      DateUtil.formatDateTimeString(DateTime.fromMillisecondsSinceEpoch(conversation.updateTime)),
+                      style: AppStyle.textHintRegular12,
+                    )
+                  ],
+                ),
+                Spacer(),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "[有人@你]",
+                      style: AppStyle.textRegularRed13,
+                    ),
+                    Expanded(
+                        child: Text(
+                      "${conversation.content}",
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: false,
+                      style: AppStyle.textSecondaryRegular13,
+                    )),
+                    SizedBox(
+                      width: 12,
+                    ),
+                    //TODO 免打扰需要处理
+                    CountBadge(conversation.unreadCount, false),
+                  ],
+                ),
+                SizedBox(
+                  height: 12.5,
+                ),
+                Container(
+                  height: 0.5,
+                  color: AppColor.bgWhite,
+                )
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 }
