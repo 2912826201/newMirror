@@ -66,4 +66,7 @@ class Application {
 
   //视频详情页
   static LiveModel videoModel;
+
+  //键盘的高度
+  static double keyboardHeight = 0;
 }

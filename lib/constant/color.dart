@@ -51,6 +51,9 @@ class AppColor {
   //透明
   static const transparent = Color.fromRGBO(0x00, 0x00, 0x00, 0.0);
 
+  //url---规范内没有
+  static const urlText = Color.fromRGBO(0x18, 0x77, 0xf2, 1.0);
+
   //边框
   static const frame = Color.fromRGBO(204,204 ,204 ,1 );
 }
