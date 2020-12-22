@@ -13,7 +13,23 @@ const int _DB_VERSION = 1;
 
 //TODO 需要考虑是否需要单例，每次操作都要开关DB是否必要
 class DBHelper {
-  Future<Database> openDB() async {
+  static DBHelper _instance;
+  Database _db;
+
+  static DBHelper get instance {
+    if (_instance == null) {
+      _instance = DBHelper();
+    }
+    return _instance;
+  }
+
+  Database get db => _db;
+
+  initDB() async {
+    _db = await instance._openDB();
+  }
+
+  Future<Database> _openDB() async {
     return await openDatabase(_DB_NAME, version: _DB_VERSION,
         onUpgrade: (Database db, int oldVersion, int newVersion) async {
       print("数据库需要更新：${oldVersion}=>${newVersion}");
@@ -24,9 +40,13 @@ class DBHelper {
     });
   }
 
-  Future<void> closeDB(Database db) async {
-    return await db.close();
+  closeDB() {
+    return _closeDB(_db);
   }
+}
+
+Future<void> _closeDB(Database db) async {
+  return await db.close();
 }
 
 //TODO 创建数据库的方法需要根据需要写好
@@ -54,13 +74,11 @@ Future<void> _createDB(Database db, int version) async {
       "$COLUMN_NAME_PROFILE_CITYCODE varchar(16)," +
       "$COLUMN_NAME_PROFILE_LONGITUDE decimal(10,6)," +
       "$COLUMN_NAME_PROFILE_LATITUDE decimal(10,6)," +
-
       "$COLUMN_NAME_PROFILE_ISPERFECT tinyint(1)," +
       "$COLUMN_NAME_PROFILE_ISPHONE tinyint(1)," +
-
       "$COLUMN_NAME_PROFILE_RELATION tinyint(1)," +
       "$COLUMN_NAME_PROFILE_MUTUALFRIENDCOUNT int" +
-          ")");
+      ")");
   //token
   await db.execute("create table $TABLE_NAME_TOKEN (" +
       "$COLUMN_NAME_TOKEN_ACCESSTOKEN varchar(1024) primary key," +
@@ -74,7 +92,7 @@ Future<void> _createDB(Database db, int version) async {
       "$COLUMN_NAME_TOKEN_ISPHONE tinyint(1)," +
       "$COLUMN_NAME_TOKEN_JTI varchar(128)," +
       "$COLUMN_NAME_TOKEN_CREATETIME bigint(20)" +
-          ")");
+      ")");
   //conversation
   await db.execute("create table $TABLE_NAME_CONVERSATION (" +
       "$COLUMN_NAME_CONVERSATION_ID varchar(64) primary key," +
@@ -87,8 +105,8 @@ Future<void> _createDB(Database db, int version) async {
       "$COLUMN_NAME_CONVERSATION_UPDATETIME bigint(20)," +
       "$COLUMN_NAME_CONVERSATION_CREATETIME bigint(20)," +
       "$COLUMN_NAME_CONVERSATION_ISTOP tinyint(1)," +
-      "$COLUMN_NAME_CONVERSATION_UNREADCOUNT int"+
-          ")");
+      "$COLUMN_NAME_CONVERSATION_UNREADCOUNT int" +
+      ")");
 }
 
 Future<void> _updateDB(Database db, int oldVersion, int newVersion) async {}
