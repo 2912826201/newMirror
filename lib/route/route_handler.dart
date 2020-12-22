@@ -13,6 +13,7 @@ import 'package:mirror/page/login/perfect_user_page.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/media_picker/preview_photo_page.dart';
+import 'package:mirror/page/message/chat_page1.dart';
 import 'package:mirror/page/profile/Profile_add_remarks.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_Introduction.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_name.dart';
@@ -156,4 +157,10 @@ var handlerPreviewPhoto = Handler(handlerFunc: (BuildContext context, Map<String
 //完善信息界面
 var handlerPerfectUserPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return PerfectUserPage();
+});
+
+var handlerChatPage = Handler(
+    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return ChatPage1();
 });

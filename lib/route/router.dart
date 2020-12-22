@@ -4,6 +4,7 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
+
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
@@ -39,7 +40,7 @@ class AppRouter {
   static String pathEditInformation = "profileeditinformation";
   static String pathEditInformationName = "profileeditinformationname";
   static String pathEditInformationIntroduction = "profileeditinformationintroduction";
-
+  static String pathChatPage = "/chatPage";
 
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(
@@ -55,6 +56,7 @@ class AppRouter {
     router.define(pathLike, handler: handlerLike);
     router.define(pathRelease, handler: handlerReleaseFeed);
     router.define(pathPerfectUserPage, handler: handlerPerfectUserPage);
+    router.define(pathChatPage, handler: handlerChatPage);
     router.define(pathPreviewPhoto, handler: handlerPreviewPhoto);
     router.define(pathLiveBroadcast, handler: handlerLiveBroadcast);
     router.define(pathLiveDetail, handler: handlerLiveDetail);
@@ -177,7 +179,13 @@ class AppRouter {
     _navigateToPage(context, pathRelease, map);
   }
 
-  static void navigateToPreviewPhotoPage(BuildContext context, String filePath, Function(dynamic result) callback) {
+  static void navigateToChatPage(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathChatPage, map);
+  }
+
+  static void navigateToPreviewPhotoPage(BuildContext context, String filePath,
+      Function(dynamic result) callback) {
     Map<String, dynamic> map = Map();
     map["filePath"] = filePath;
     _navigateToPage(context, pathPreviewPhoto, map, callback: callback);
