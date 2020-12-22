@@ -72,6 +72,11 @@ class RCTestState extends State<RCTestPage> {
             ),
             FlatButton(onPressed:  () async {
                 TextMessage msg = TextMessage();
+                UserInfo userInfo = UserInfo();
+                userInfo.userId = Application.profile.uid.toString();
+                userInfo.name = Application.profile.nickName;
+                userInfo.portraitUri = Application.profile.avatarUri;
+                msg.sendUserInfo = userInfo;
                 msg.content = "测试消息${Random().nextInt(10000)}";
                 Message message = await Application.rongCloud.sendPrivateMessage(controller.text, msg);
                 print(message.toString());
@@ -83,7 +88,7 @@ class RCTestState extends State<RCTestPage> {
   }
   void _connectRC() {
     print("开始连接");
-    Application.rongCloud.connect(_token, (int code, String userId) {
+    Application.rongCloud.doConnect(_token, (int code, String userId) {
       print('connect result ' + code.toString());
       if (code == 0) {
         print("connect success userId" + userId);
@@ -92,6 +97,8 @@ class RCTestState extends State<RCTestPage> {
         setState(() {
           _status = "连接成功，userId为" + userId;
         });
+      } else if(code == 34001) {
+        // 已经连接上了
       } else if (code == 31004) {
         // token 非法，需要重新从 APP 服务获取新 token 并连接
         setState(() {

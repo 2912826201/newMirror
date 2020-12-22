@@ -19,13 +19,13 @@ class ConversationDBHelper {
     return transactionResult == 1;
   }
 
+  //这里正序查出即可 后续操作会倒序处理
   Future<List<ConversationDto>> queryConversation(int uid, int isTop) async {
     Database db = await DBHelper().openDB();
     List<ConversationDto> list = [];
-    //只取第一条数据
     List<Map<String, dynamic>> result = await db.query(TABLE_NAME_CONVERSATION,
         where: "$COLUMN_NAME_CONVERSATION_UID = $uid and $COLUMN_NAME_CONVERSATION_ISTOP = $isTop",
-        orderBy: "$COLUMN_NAME_CONVERSATION_UPDATETIME desc");
+        orderBy: "$COLUMN_NAME_CONVERSATION_UPDATETIME asc");
     for (Map<String, dynamic> map in result) {
       list.add(ConversationDto.fromMap(map));
     }
@@ -61,7 +61,8 @@ class ConversationDBHelper {
   //更新会话（可用于更新未读数，名称头像等确定已存在会话的信息）
   Future<bool> updateConversation(ConversationDto dto) async {
     Database db = await DBHelper().openDB();
-    int result = await db.update(TABLE_NAME_CONVERSATION, dto.toMap());
+    int result =
+        await db.update(TABLE_NAME_CONVERSATION, dto.toMap(), where: "$COLUMN_NAME_CONVERSATION_ID = '${dto.id}'");
     await DBHelper().closeDB(db);
     return result == 1;
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/api/basic_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
@@ -44,6 +45,8 @@ class LoginTestPage extends StatelessWidget {
                 context.read<TokenNotifier>().setToken(tokenDto);
                 await ProfileDBHelper().clearProfile();
                 context.read<ProfileNotifier>().setProfile(ProfileDto.fromUserModel(UserModel()));
+                // 登出融云
+                Application.rongCloud.disconnect();
                 //TODO 处理登出后需要清掉的用户数据
                 MessageManager.clearUserMessage(context);
               } else {

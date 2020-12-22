@@ -29,8 +29,7 @@ import 'route/router.dart';
 void main() {
   SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
   SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
-  _initApp().then((value) =>
-      runApp(
+  _initApp().then((value) => runApp(
         MultiProvider(
           providers: [
             ChangeNotifierProvider(create: (_) => TokenNotifier(Application.token)),
@@ -50,10 +49,7 @@ Future _initApp() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // 强制竖屏
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown
-  ]);
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
   //初始化SharedPreferences
   AppPrefs.init();
@@ -62,9 +58,7 @@ Future _initApp() async {
   TokenDto token = await TokenDBHelper().queryToken();
   if (token == null ||
       (token.anonymous == 0 && (token.isPerfect == 0 || token.isPhone == 0)) ||
-      DateTime
-          .now()
-          .second + token.expiresIn > (token.createTime / 1000)) {
+      DateTime.now().second + token.expiresIn > (token.createTime / 1000)) {
     //如果token是空的 或者token非匿名但未完善资料 或者已过期 那么需要先去取一个匿名token
     TokenModel tokenModel = await login("anonymous", null, null, null);
     if (tokenModel != null) {
@@ -124,20 +118,20 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
-
   @override
   void initState() {
     //需要APP环境的初始化
-    //如果已登录则读取数据库
-    if (context
-        .read<TokenNotifier>()
-        .isLoggedIn) {
-      MessageManager.loadConversationListFromDatabase(context);
-    }
     //融云的状态管理者
     Application.rongCloud.initStatusManager(context);
     //融云的收信管理者
     Application.rongCloud.initReceiveManager(context);
+    //如果已登录
+    if (context.read<TokenNotifier>().isLoggedIn) {
+      // 读取会话数据库
+      MessageManager.loadConversationListFromDatabase(context);
+      // 连接融云
+      Application.rongCloud.connect();
+    }
     super.initState();
   }
 

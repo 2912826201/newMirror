@@ -324,7 +324,8 @@ class _PerfectUserState extends LoginBasePageState {
     ProfileDto profile = ProfileDto.fromUserModel(user);
     await ProfileDBHelper().insertProfile(profile);
     context.read<ProfileNotifier>().setProfile(profile);
-
+    //连接融云
+    Application.rongCloud.connect();
     //TODO 处理登录完成后的数据加载
     MessageManager.loadConversationListFromDatabase(context);
 

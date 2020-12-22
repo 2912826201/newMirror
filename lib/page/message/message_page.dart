@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/message_page_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
@@ -12,6 +14,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/count_badge.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:provider/provider.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../if_page.dart';
@@ -243,7 +246,10 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   }
 
   Widget _buildConversationItem(int index, ConversationDto conversation) {
-    var colors = [Colors.greenAccent, Colors.grey];
+    MessageContent msgContent = MessageContent();
+    msgContent.decode(conversation.content);
+    bool isMentioned = msgContent.mentionedInfo != null &&
+        msgContent.mentionedInfo.userIdList.contains(Application.profile.uid.toString());
     return Container(
       height: 69,
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -253,7 +259,38 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
           Container(
             height: 45,
             width: 45,
-            color: colors[index % 2],
+            child: Stack(
+              children: [
+                ClipOval(
+                  child: CachedNetworkImage(
+                    height: 45,
+                    width: 45,
+                    imageUrl: conversation.avatarUri,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Image.asset(
+                      "images/test.png",
+                      fit: BoxFit.cover,
+                    ),
+                    errorWidget: (context, url, error) => Image.asset(
+                      "images/test.png",
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                conversation.type == OFFICIAL_TYPE ||
+                        conversation.type == LIVE_TYPE ||
+                        conversation.type == TRAINING_TYPE
+                    ? Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          height: 16,
+                          width: 16,
+                          color: AppColor.bgBlack,
+                        ))
+                    : Container()
+              ],
+            ),
           ),
           SizedBox(
             width: 12,
@@ -266,7 +303,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                   children: [
                     Expanded(
                         child: Text(
-                      "${conversation.id}",
+                      "${conversation.name}",
                       overflow: TextOverflow.ellipsis,
                       softWrap: false,
                       style: AppStyle.textRegular14,
@@ -281,10 +318,12 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      "[有人@你]",
-                      style: AppStyle.textRegularRed13,
-                    ),
+                    isMentioned
+                        ? Text(
+                            "[有人@你]",
+                            style: AppStyle.textRegularRed13,
+                          )
+                        : Container(),
                     Expanded(
                         child: Text(
                       "${conversation.content}",

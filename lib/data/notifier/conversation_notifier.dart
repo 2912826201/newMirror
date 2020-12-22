@@ -43,9 +43,9 @@ class ConversationNotifier with ChangeNotifier {
 
   insertTopList(List<ConversationDto> topList) {
     for (ConversationDto dto in topList) {
-      //为确保不重复添加 先删除一下
+      //为确保不重复添加 先删除一下 并且插在第一位 后进的排在前面
       _topIdList.remove(dto.id);
-      _topIdList.add(dto.id);
+      _topIdList.insert(0, dto.id);
       _conversationMap[dto.id] = dto;
     }
 
@@ -54,9 +54,9 @@ class ConversationNotifier with ChangeNotifier {
 
   insertCommonList(List<ConversationDto> commonList) {
     for (ConversationDto dto in commonList) {
-      //为确保不重复添加 先删除一下
+      //为确保不重复添加 先删除一下 并且插在第一位 后进的排在前面
       _commonIdList.remove(dto.id);
-      _commonIdList.add(dto.id);
+      _commonIdList.insert(0, dto.id);
       _conversationMap[dto.id] = dto;
     }
 
