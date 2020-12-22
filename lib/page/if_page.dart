@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_bottom_sheet.dart';
 import 'package:mirror/page/main_page.dart';
