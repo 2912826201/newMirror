@@ -35,6 +35,8 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
   // #后跟随的实时搜索文本
   String topicSearchStr = "";
 
+  List<Rule> delRules = [];
+
   ReleaseFeedInputFormatter({
     TriggerAtCallback triggerAtCallback,
     ValueChangedCallback valueChangedCallback,
@@ -53,6 +55,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
     // 判断是删除还是新增
+
     bool isAdd = oldValue.text.length < newValue.text.length;
     print("新值$newValue");
     print("新值前光标${newValue.selection.start}");
@@ -62,6 +65,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     print("旧值后光标${oldValue.selection.end}");
     // 如果是新增
     if (isAdd && oldValue.selection.start == oldValue.selection.end) {
+      print("新增？？？？？");
       if (newValue.text.length - oldValue.text.length == 1 &&
           newValue.text.substring(newValue.selection.start - 1, newValue.selection.end) == triggerAtSymbol) {
         // 因为在多@时只响应最后一个@的光标位置。
@@ -94,14 +98,25 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
       if (topicIndex > 0 && newValue.selection.start >= topicIndex) {
         topicSearchStr = newValue.text.substring(topicIndex,newValue.selection.start);
       }
+      // 在删除操作中删除了rules中的数据，使用了provide后， 回调后会再次进入重走逻辑。在此阻止。
+      if (delRules.isNotEmpty) {
+        if (oldValue.text == newValue.text.substring(0,delRules[0].startIndex)) {
+          delRules = [];
+          return oldValue;
+        }
+      }
     } else {
       /// 删除或替换内容 （含直接delete、选中后输入别的字符替换）
       if (!oldValue.composing.isValid || oldValue.selection.start != oldValue.selection.end) {
         print("进了这里面");
         /// 直接delete情况 / 选中一部分替换的情况
+        delRules = [];
         return checkRules(oldValue, newValue);
       }
     }
+
+    print("还调用了下面");
+    print(delRules);
     _correctRules(oldValue.selection.start, oldValue.text.length, newValue.text.length);
     _valueChangedCallback(rules, newValue.text, atIndex, topicIndex,atSearchStr,topicSearchStr);
     return newValue;
@@ -145,7 +160,6 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
         topicIndex = 0;
       }
     }
-    print("1");
     if (atIndex > 0 && startIndex + 1 > atIndex) {
       print("111");
       print(oldValue.text);
@@ -159,11 +173,11 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     print("3");
     /// 用于迭代的时候不能删除@的处理
      print(rules);
-    List<Rule> delRules = [];
+
     for (int i = 0; i < rules.length; i++) {
       Rule rule = rules[i];
       print(rule);
-      if ((startIndex >= rule.startIndex && startIndex + 1 <= rule.endIndex) ||
+      if ((startIndex >= rule.startIndex && startIndex <= rule.endIndex -1) ||
           (endIndex >= rule.startIndex && endIndex <= rule.endIndex)) {
         print("光标开始位置$startIndex");
         print("光标结束位置$endIndex");
@@ -175,11 +189,11 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
 
         /// 原字符串选中的光标范围 与 rule的范围相交，命中
         delRules.add(rule);
-
         /// 对命中的rule 的边界与原字符串选中的光标边界比较，对原来的选中要被替换/删除的光标界限 进行扩展
         /// 用来自动覆盖@user 的全部字符
         startIndex = math.min(startIndex, rule.startIndex);
         endIndex = math.max(endIndex, rule.endIndex);
+        print("用来自动覆盖$startIndex,,,,,,,,,,,$endIndex");
       }
     }
 
@@ -197,19 +211,22 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
         (oldValue.selection.end != oldValue.selection.start) &&
         newStartSelBeforeStr.compareTo(oldStartSelBeforeStr) != 0) {
       /// 此时为选中的删除时 有增加新的字符串的情况
+      print("新增");
       middleStr = newValue.text.substring(oldValue.selection.start, newValue.selection.end);
     } else {
       /// 此时为选中的删除时 没有增加新的字符串的情况
+      print("无新增");
     }
 
     int leftSubStringEndIndex = startIndex > oldValue.text.length ? oldValue.text.length : startIndex;
+    print("leftSubStringEndIndex:$leftSubStringEndIndex");
     String leftValue = "${startIndex == 0 ? "" : oldValue.text.substring(0, leftSubStringEndIndex)}";
-
+   print("leftValue&$leftValue");
     String middleValue = "$middleStr";
     String rightValue =
         "${endIndex == oldValue.text.length ? "" : oldValue.text.substring(endIndex, oldValue.text.length)}";
     String value = "$leftValue$middleValue$rightValue";
-
+   print("value::$value");
     /// 计算最终光标位置
     final TextSelection newSelection = newValue.selection.copyWith(
       baseOffset: leftValue.length + middleValue.length,
@@ -220,6 +237,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     print("newValue.text.length${newValue.text.length}");
     print(oldValue);
     print(newValue);
+
     print(delRules);
     // 因为之前把@和#的值改为了1删除时要还原
     if (delRules.isNotEmpty) {

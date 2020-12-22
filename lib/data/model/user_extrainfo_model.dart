@@ -1,20 +1,20 @@
 
 
 
-class GetExtraInfoModel{
+class UserExtraInfoModel{
   int uid;
   int trainingSeconds;
   int weight;
   int albumNum;
 
-  GetExtraInfoModel(
+  UserExtraInfoModel(
     {this.uid,
       this.trainingSeconds,
       this.weight,
       this.albumNum,
     });
 
-  GetExtraInfoModel.fromJson(Map<String, dynamic> json) {
+  UserExtraInfoModel.fromJson(Map<String, dynamic> json) {
     uid = json["uid"];
     trainingSeconds = json["trainingSeconds"];
     weight = json["weight"];

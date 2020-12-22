@@ -106,10 +106,10 @@ class FeedHeader extends StatelessWidget {
   SelectedMediaFiles selectedMediaFiles;
 
   // 发布动态
-  pulishFeed(String inputText, List<Rule> rule, BuildContext context) async {
-    print("打印一下规则$rule");
+  pulishFeed(String inputText, List<Rule> rules, BuildContext context) async {
+    print("打印一下规则$rules");
     PostFeedModel feedModel = PostFeedModel();
-    AtUsersModel atUsersModel = AtUsersModel();
+    List<AtUsersModel> atUsersModel = [];
     String address;
     String cityCode;
     String latitude;
@@ -121,7 +121,13 @@ class FeedHeader extends StatelessWidget {
     Map<String, dynamic> textModel = await feedTextScan(text: inputText);
     if (textModel["state"]) {
       print("feedModel.content${feedModel.content}");
-
+      for (Rule rule in rules) {
+        AtUsersModel atModel = AtUsersModel();
+        atModel.index = rule.startIndex;
+        atModel.len = rule.endIndex;
+        atModel.uid = 1008611;
+        atUsersModel.add(atModel);
+      }
       feedModel.selectedMediaFiles = selectedMediaFiles;
       feedModel.atUsersModel = atUsersModel;
       feedModel.address = address;
@@ -132,6 +138,7 @@ class FeedHeader extends StatelessWidget {
       print("打印一下￥￥${(feedModel.selectedMediaFiles.list.length)}");
       // 传入发布动态model
       context.read<FeedMapNotifier>().setPublishFeedModel(feedModel);
+      context.read<ReleaseFeedInputNotifier>().rules.clear();
       Navigator.pop(context, true);
       print("打印结束");
     } else {
@@ -306,7 +313,7 @@ class KeyboardInputState extends State<KeyboardInput> {
       result.add(
         RangeStyle(
           range: TextRange(start: rule.startIndex, end: rule.endIndex),
-          style: TextStyle(color: Color(0xFF9C7BFF)),
+          style: TextStyle(color: AppColor.mainBlue),
         ),
       );
     }
@@ -370,17 +377,17 @@ class TopicList extends StatelessWidget {
   TopicList({this.index, this.controller});
 
   List<TopicModel> topics = [
-    TopicModel(topic: "#坚持健身的动力", topicSubStr: "哈哈1"),
-    TopicModel(topic: "#坚持健身的动力啊啊", topicSubStr: "哈哈飒飒2"),
-    TopicModel(topic: "#坚持健身的动力十点多", topicSubStr: "哈哈撒触发3"),
-    TopicModel(topic: "#坚持健水电费身的动力", topicSubStr: "哈哈奥术大师4"),
-    TopicModel(topic: "#胜多负少的的动力", topicSubStr: "哈哈撒大声地5"),
-    TopicModel(topic: "#坚持健身胜多负少的的动力", topicSubStr: "哈哈梵蒂冈地方6"),
-    TopicModel(topic: "#佛挡杀佛", topicSubStr: "哈哈鬼地方个地方7"),
-    TopicModel(topic: "#奥术大师大所大所大所多", topicSubStr: "哈哈和官方回复8"),
-    TopicModel(topic: "#萨达所大所大", topicSubStr: "哈哈价格好几个9"),
-    TopicModel(topic: "#sad撒大所大所大所大所大所", topicSubStr: "哈哈讲话稿几个10"),
-    TopicModel(topic: "#坚发的啥地方胜多负少的持健身的动力", topicSubStr: "哈哈半年才能保持11"),
+    TopicModel(topic: "#坚持健身的动力 ", topicSubStr: "哈哈1"),
+    TopicModel(topic: "#坚持健身的动力啊啊 ", topicSubStr: "哈哈飒飒2"),
+    TopicModel(topic: "#坚持健身的动力十点多 ", topicSubStr: "哈哈撒触发3"),
+    TopicModel(topic: "#坚持健水电费身的动力 ", topicSubStr: "哈哈奥术大师4"),
+    TopicModel(topic: "#胜多负少的的动力 ", topicSubStr: "哈哈撒大声地5"),
+    TopicModel(topic: "#坚持健身胜多负少的的动力 ", topicSubStr: "哈哈梵蒂冈地方6"),
+    TopicModel(topic: "#佛挡杀佛 ", topicSubStr: "哈哈鬼地方个地方7"),
+    TopicModel(topic: "#奥术大师大所大所大所多 ", topicSubStr: "哈哈和官方回复8"),
+    TopicModel(topic: "#萨达所大所大 ", topicSubStr: "哈哈价格好几个9"),
+    TopicModel(topic: "#sad撒大所大所大所大所大所 ", topicSubStr: "哈哈讲话稿几个10"),
+    TopicModel(topic: "#坚发的啥地方胜多负少的持健身的动力 ", topicSubStr: "哈哈半年才能保持11"),
   ];
 
   @override
@@ -506,7 +513,7 @@ class AtList extends StatelessWidget {
   int index;
   TextEditingController controller;
 
-  List<String> stings = ["换行", "是撒", "阿斯达", "奥术大师", "奥术大师多", "胜多负少", "豆腐干豆腐", "爽肤水", "出现橙", "阿斯达"];
+  List<String> stings = ["换行 ", "是撒 ", "阿斯达 ", "奥术大师 ", "奥术大师多 ", "胜多负少 ", "豆腐干豆腐 ", "爽肤水 ", "出现橙 ", "阿斯达 "];
 
   @override
   Widget build(BuildContext context) {
@@ -553,6 +560,7 @@ class AtList extends StatelessWidget {
         // 拼接修改输入框的值
         controller.text = atBeforeStr + stings[index] + atRearStr;
         print("controller.text:${controller.text}");
+        context.read<ReleaseFeedInputNotifier>().getInputText(controller.text);
         // 这是替换输入的文本修改后面输入的@的规则
         if (searchStr != "" || searchStr.isNotEmpty) {
           int oldLength = searchStr.length;

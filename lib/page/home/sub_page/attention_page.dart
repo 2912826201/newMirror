@@ -162,7 +162,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           content: postModel.content,
           picUrls: jsonEncode(picUrls),
           videos: jsonEncode(videos),
-          // atUsers: jsonEncode(postFeedModel.atUsersModel),
+          atUsers: jsonEncode(postModel.atUsersModel),
           address: postModel.address,
           latitude: postModel.latitude,
           longitude: postModel.longitude,

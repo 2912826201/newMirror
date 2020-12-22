@@ -28,6 +28,7 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
   String _smarks = "未设置";
   bool isBlack = false;
   bool isNoChange = true;
+  bool isSucess = false;
   @override
   void initState() {
     super.initState();
@@ -65,7 +66,12 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
   Widget _notFollow(double width){
     return Column(
       children: [
-        _itemSelect(width, AppStyle.textRegular16, "举报"),
+        InkWell(
+          onTap: (){
+            _showDialog();
+          },
+          child: _itemSelect(width, AppStyle.textRegular16, "举报"),),
+
         Container(
           width: width,
           height: 0.5,
@@ -103,7 +109,12 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
           height: 12,
           color: AppColor.bgWhite_65,
         ),
-        _itemSelect(width, AppStyle.textRegular16, "举报"),
+        InkWell(
+          child: _itemSelect(width, AppStyle.textRegular16, "举报"),
+          onTap: (){
+            _showDialog();
+          },
+        ),
         Container(
           padding: EdgeInsets.only(left: 16,right: 16),
           width: width,
@@ -139,6 +150,24 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
         ),
       ],
     );
+  }
+  void _showDialog(){
+    showCupertinoDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: Text('提交举报'),
+          content: Text('确认举报该用户'),
+          actions: <Widget>[
+            CupertinoDialogAction(child: Text('再想想',style: AppStyle.textRegular16,),onPressed: (){
+              Navigator.pop(context);
+            },),
+            CupertinoDialogAction(child: Text('必须举报！',style: AppStyle.textRegularRed16,),onPressed: (){
+             _denounceUser(context);
+            },),
+          ],
+        );
+      });
   }
 
   Widget _itemSelect(double width,TextStyle style,String text){
@@ -176,7 +205,7 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
       ),)
     );
   }
-
+    ///取消关注
   _cancelFollow()async{
     int cancelResult = await ProfileCancelFollow(widget.userId);
     print('取消关注监听==============================$cancelResult');
@@ -185,6 +214,7 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
       Navigator.pop(context,true);
     }
   }
+  ///拉黑
   _pullBlack()async{
     bool blackStatus = await ProfileAddBlack(widget.userId);
     print('拉黑是否成功====================================$blackStatus');
@@ -198,6 +228,7 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
       }
     }
   }
+  ///取消拉黑
   _cancelBlack()async{
     bool blackStatus = await ProfileCancelBlack(widget.userId);
     print('取消拉黑是否成功====================================$blackStatus');
@@ -205,6 +236,7 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
       _checkBlackStatus();
     }
   }
+  ///请求黑名单关系
   _checkBlackStatus()async{
     BlackModel model = await ProfileCheckBlack(widget.userId);
     if(model!=null){
@@ -219,5 +251,14 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
       });
 
     }
+  }
+  ///举报
+  _denounceUser(WidgetContext)async{
+    bool isSucess = await ProfileMoreDenounce(widget.userId,0);
+    print('isSucess=======================================$isSucess');
+    if(isSucess){
+      ToastShow.show(msg:"举报成功" , context: context);
+    }
+    Navigator.pop(WidgetContext);
   }
 }

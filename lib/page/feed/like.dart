@@ -1,20 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/data_response_model.dart';
+import 'package:mirror/data/model/home/feed_laud_list.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 
 class Like extends StatefulWidget {
-  Like({Key key}) : super(key: key);
-
+  Like({Key key,this.model}) : super(key: key);
+  HomeFeedModel model;
   LikeState createState() => LikeState();
 }
 
 class LikeState extends State<Like> {
-  String text = "赞哈哈哈哈哈哈哈哈";
+  String text = "赞";
+  List<FeedLaudListModel> laudListModel = [];
   double offset(String texts) {
     // 屏幕宽度减去文字宽度对半分
     double half = (ScreenUtil.instance.screenWidthDp - getTextSize(texts,TextStyle(fontSize: 16)).width) / 2.0;
@@ -22,7 +27,21 @@ class LikeState extends State<Like> {
     double offsetWidth = half - 16 - 28;
     return offsetWidth;
   }
-
+@override
+  void initState() {
+    requestFeedLuadList();
+  }
+  requestFeedLuadList() async {
+    DataResponseModel model = await getFeedLaudList(targetId: widget.model.id);
+    setState(() {
+        if (model.list.isNotEmpty) {
+          model.list.forEach((v) {
+            laudListModel.add(FeedLaudListModel.fromJson(v));
+          });
+          laudListModel.insert(0, FeedLaudListModel());
+        }
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -70,7 +89,7 @@ class LikeState extends State<Like> {
                       child: ScrollConfiguration(
                         behavior: NoBlueEffectBehavior(),
                         child: ListView.builder(
-                          itemCount: 20,
+                          itemCount: laudListModel.length ,
                           itemBuilder: (context, index) {
                             return AnimationConfiguration.staggeredList(
                               position: index,
@@ -80,7 +99,7 @@ class LikeState extends State<Like> {
                                 verticalOffset: 50.0,
                                 child: FadeInAnimation(
                                     //渐隐渐现动画
-                                    child: index == 0 ? Container(height: 14) : LikeListViewItem()),
+                                    child: index == 0 ? Container(height: 14) : LikeListViewItem(model:laudListModel[index])),
                               ),
                             );
                           },
@@ -96,6 +115,8 @@ class LikeState extends State<Like> {
 }
 
 class LikeListViewItem extends StatelessWidget {
+  FeedLaudListModel model;
+  LikeListViewItem({this.model});
   @override
   Widget build(BuildContext context) {
     // 头像
@@ -106,7 +127,8 @@ class LikeListViewItem extends StatelessWidget {
         width: 38,
         child: ClipOval(
           child: Image.network(
-            "https://pic2.zhimg.com/v2-639b49f2f6578eabddc458b84eb3c6a1.jpg",
+            model.avatarUrl,
+            // "https://pic2.zhimg.com/v2-639b49f2f6578eabddc458b84eb3c6a1.jpg",
             fit: BoxFit.cover,
           ),
         ),
@@ -117,7 +139,8 @@ class LikeListViewItem extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Text(
-          '用户昵称显示',
+          "${model.uid}",
+          // '用户昵称显示',
           style: TextStyle(
             color: AppColor.textPrimary1,
             fontSize: 15,
@@ -128,7 +151,7 @@ class LikeListViewItem extends StatelessWidget {
         Container(
           width: ScreenUtil.instance.screenWidthDp - 32 - 38 - 38 - 12,
           child:Text(
-            '爱好广泛，喜欢一切有趣的事情微博显示区域万千瓦二翁绕弯儿翁绕弯儿',
+            "${model.laudTime}",
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(

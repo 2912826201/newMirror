@@ -27,8 +27,8 @@ class _addRemarkState extends State<ProfileAddRemarks>{
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Builder(builder: (context){
-          double width = MediaQuery.of(context).size.width;
-          double height = MediaQuery.of(context).size.height;
+          double width = ScreenUtil.instance.screenWidthDp;
+          double height = ScreenUtil.instance.height;
           return Scaffold(
           backgroundColor: AppColor.white,
           /*
@@ -41,38 +41,7 @@ class _addRemarkState extends State<ProfileAddRemarks>{
                 Container(
                   height: 44,
                 ),
-                Container(
-                  height: 44,
-                  width: width,
-                  padding: EdgeInsets.only(left: 16,right: 16),
-                  child: Row(
-                    children: [
-                      InkWell(
-                        onTap: (){
-                          Navigator.pop(this.context);
-                        },
-                        child: Image.asset("images/test/back.png"),
-                      ),
-                      Expanded(child: Center(child: Text("修改备注",style: AppStyle.textMedium18,),),),
-                      InkWell(
-                        onTap: (){
-                          if(_EditText!=null){
-                            _changeRemarks(remarks: _EditText);
-                          }else{
-                            _changeRemarks();
-                          }
-                        },
-                        child: Container(
-                        height: 28,
-                        width: 60,
-                        child: Center(child: Text("确定",style: TextStyle(fontSize: 14,color: AppColor.white),),),
-                        decoration: BoxDecoration(
-                          color: AppColor.mainRed,
-                          borderRadius: BorderRadius.all(Radius.circular(60)),
-                          border: Border.all(width: 1, color: AppColor.black))),)
-                    ],
-                  ),
-                ),
+                _title(width),
                 Container(
                   width: width,
                   height: 0.5,
@@ -102,6 +71,41 @@ class _addRemarkState extends State<ProfileAddRemarks>{
           ),
         );},)
       );
+  }
+
+  Widget _title(double width){
+   return Container(
+      height: 44,
+      width: width,
+      padding: EdgeInsets.only(left: 16,right: 16),
+      child: Row(
+        children: [
+          InkWell(
+            onTap: (){
+              Navigator.pop(this.context);
+            },
+            child: Image.asset("images/test/back.png"),
+          ),
+          Expanded(child: Center(child: Text("修改备注",style: AppStyle.textMedium18,),),),
+          InkWell(
+            onTap: (){
+              if(_EditText!=null){
+                _changeRemarks(remarks: _EditText);
+              }else{
+                _changeRemarks();
+              }
+            },
+            child: Container(
+              height: 28,
+              width: 60,
+              child: Center(child: Text("确定",style: TextStyle(fontSize: 14,color: AppColor.white),),),
+              decoration: BoxDecoration(
+                color: AppColor.mainRed,
+                borderRadius: BorderRadius.all(Radius.circular(60)),
+                border: Border.all(width: 1, color: AppColor.black))),)
+        ],
+      ),
+    );
   }
   Widget _inputWidget(){
     var putFiled = TextField(
