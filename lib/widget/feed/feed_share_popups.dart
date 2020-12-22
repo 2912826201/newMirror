@@ -69,7 +69,7 @@ class FeedSharePopups extends StatelessWidget {
                       Navigator.of(context).pop(1);
                       if(feedViewModel[index].name == "站内好友") {
                          Navigator.push(context, MaterialPageRoute(builder: (_) {
-                           return FeedShareSelectContact();
+                           return FriendsPage();
                          }));
                       };
 
