@@ -5,7 +5,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/rongcloud_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/data/database/conversation_db_helper.dart';
 import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
+import 'package:mirror/im/message_manager.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:provider/provider.dart';
 
@@ -80,7 +82,11 @@ class RCTestState extends State<RCTestPage> {
                 msg.content = "测试消息${Random().nextInt(10000)}";
                 Message message = await Application.rongCloud.sendPrivateMessage(controller.text, msg);
                 print(message.toString());
-             }, child: Text("发送消息"),minWidth: 100,height: 20,)
+             }, child: Text("发送消息"),minWidth: 100,height: 20,),
+            RaisedButton(
+              onPressed: _clearConversations,
+              child: Text("清除所有会话数据"),
+            ),
           ],
         ),
       ),
@@ -112,5 +118,10 @@ class RCTestState extends State<RCTestPage> {
     setState(() {
       _status = "已断开连接";
     });
+  }
+
+  void _clearConversations() async{
+    await ConversationDBHelper().clearConversation(Application.profile.uid);
+    MessageManager.clearUserMessage(context);
   }
 }
