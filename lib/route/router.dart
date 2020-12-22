@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/route/route_handler.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 /// router
 /// Created by yangjiayi on 2020/11/14.
@@ -22,15 +24,22 @@ class AppRouter {
   static String pathMediaPicker = "/mediapicker";
   static String pathLike = "/like";
   static String pathRelease = "/release";
-  static String pathPreviewPhoto = "/previewPhoto";
-  static String pathLiveBroadcast = "/liveBroadcast";
-  static String pathLiveDetail = "/liveDetail";
-  static String pathVideoDetail = "/videoDetail";
-  static String pathVideoCourseList = "/videoCourseList";
-  static String pathScanCode = "/ScanCode";
-  static String pathMineDetails = "/mineDetails";
-  static String pathProfileDetailsMore = "/ProfileDetailsMore";
-  static String pathProfileAddRemarks = "/ProfileAddRemarks";
+  static String pathPerfectUserPage = "/perfectuser";
+  static String pathPreviewPhoto = "/previewphoto";
+  static String pathLiveBroadcast = "/livebroadcast";
+  static String pathLiveDetail = "/livedetail";
+  static String pathVideoDetail = "/videodetail";
+  static String pathVideoCourseList = "/videocourselist";
+  static String pathScanCode = "/scancode";
+  static String pathMineDetails = "/minedetails";
+  static String pathProfileScanCode = "/profilescancode";
+  static String pathProfileDetails = "/profiledetails";
+  static String pathProfileDetailsMore = "/profiledetailsmore";
+  static String pathProfileAddRemarks = "/profileaddremarks";
+  static String pathEditInformation = "profileeditinformation";
+  static String pathEditInformationName = "profileeditinformationname";
+  static String pathEditInformationIntroduction = "profileeditinformationintroduction";
+
 
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(
@@ -45,15 +54,20 @@ class AppRouter {
     router.define(pathLogin, handler: handlerLogin);
     router.define(pathLike, handler: handlerLike);
     router.define(pathRelease, handler: handlerReleaseFeed);
+    router.define(pathPerfectUserPage, handler: handlerPerfectUserPage);
     router.define(pathPreviewPhoto, handler: handlerPreviewPhoto);
     router.define(pathLiveBroadcast, handler: handlerLiveBroadcast);
     router.define(pathLiveDetail, handler: handlerLiveDetail);
     router.define(pathVideoDetail, handler: handlerVideoDetail);
-    router.define(pathScanCode, handler: handlerScan);
-    router.define(pathMineDetails, handler: handlermineDetails);
+    router.define(pathProfileScanCode, handler: handlerScan);
+    router.define(pathProfileDetails, handler: handlermineDetails);
     router.define(pathVideoCourseList, handler: handlerVideoCourseList);
     router.define(pathProfileDetailsMore, handler: handlerProfileDetailMore);
-    router.define(pathProfileAddRemarks, handler: handlerPerfileAddRemarks);
+    router.define(pathProfileAddRemarks, handler: handlerProfileAddRemarks);
+    router.define(pathEditInformation, handler: handlerEditInformation);
+    router.define(pathEditInformationName, handler: handlerEditInformationName);
+    router.define(pathEditInformationIntroduction, handler: handlerEditInformationIntroduction);
+
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
   }
@@ -69,7 +83,9 @@ class AppRouter {
       Application.router.navigateTo(context, uri).then(callback);
     }
   }
-
+  static void navigateToPerfectUserPage(BuildContext context){
+    _navigateToPage(context, pathPerfectUserPage, {});
+  }
   static void navigateToRCTestPage(BuildContext context, ProfileDto profile) {
     Map<String, dynamic> map = Map();
     map["profile"] = profile.toMap();
@@ -124,7 +140,7 @@ class AppRouter {
   }
 
   static void navigationToScanCodePage(BuildContext context) {
-    _navigateToPage(context, pathScanCode, {});
+    _navigateToPage(context, pathProfileScanCode, {});
   }
   static void navigationToProfiileDetailMore(BuildContext context) {
     _navigateToPage(context, pathProfileDetailsMore, {});
@@ -135,14 +151,25 @@ class AppRouter {
     map["userId"] = userId;
     _navigateToPage(context, pathProfileAddRemarks,map);
   }
+  static void navigationToEditInfomation(BuildContext context) {
+    _navigateToPage(context, pathEditInformation, {});
+  }
+  static void navigationToEditInfomationName(BuildContext context) {
+    _navigateToPage(context, pathEditInformationName, {});
+  }
+  static void navigationToEditInfomationIntroduction(BuildContext context) {
+    _navigateToPage(context, pathEditInformationIntroduction, {});
+  }
   static void navigateToLikePage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathLike, map);
   }
 
-  static void navigateToMineDetail(BuildContext context) {
+  static void navigateToMineDetail(BuildContext context,int uId,PanelController pcController) {
     Map<String, dynamic> map = Map();
-    _navigateToPage(context, pathMineDetails, map);
+    map["userId"] = uId;
+    map["pcController"] = pcController;
+    _navigateToPage(context, pathProfileDetails, map);
   }
 
   static void navigateToReleasePage(BuildContext context) {

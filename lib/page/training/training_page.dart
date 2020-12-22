@@ -27,6 +27,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
         appBar: AppBar(
             leading: null,
@@ -56,11 +57,8 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
 
   //我的课程列表上方的所有部分
   Widget _buildTopView() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: Column(
-        children: [_buildBanner(), _buildConnection(), _buildEquipment(), _buildLive(), _buildCourseTitle()],
-      ),
+    return Column(
+      children: [_buildBanner(), _buildConnection(), _buildEquipment(), _buildLive(), _buildCourseTitle()],
     );
   }
 

@@ -86,7 +86,8 @@ Future<void> _createDB(Database db, int version) async {
       "$COLUMN_NAME_CONVERSATION_CONTENT varchar(256)," +
       "$COLUMN_NAME_CONVERSATION_UPDATETIME bigint(20)," +
       "$COLUMN_NAME_CONVERSATION_CREATETIME bigint(20)," +
-      "$COLUMN_NAME_CONVERSATION_ISTOP tinyint(1)" +
+      "$COLUMN_NAME_CONVERSATION_ISTOP tinyint(1)," +
+      "$COLUMN_NAME_CONVERSATION_UNREADCOUNT int"+
           ")");
 }
 

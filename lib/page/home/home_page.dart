@@ -1,18 +1,8 @@
-import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/api/home/home_feed_api.dart';
-import 'package:mirror/config/application.dart';
-import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
-import 'package:mirror/util/file_util.dart';
 import 'package:mirror/data/model/course_model.dart';
-import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/media_file_model.dart';
-import 'package:mirror/data/model/post_feed/post_feed.dart';
-import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/page/home/sub_page/attention_page.dart';
 import 'package:mirror/page/home/sub_page/home_top_tab.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';

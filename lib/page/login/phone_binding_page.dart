@@ -121,7 +121,7 @@ class _PhoneBindingPageState extends LoginBasePageState {
               //导航栏需要和页面上方具有间距
               Container(
                 child: navigationBar(),
-                margin: EdgeInsets.only(top: 40),
+                margin:const EdgeInsets.only(top: 40),
               ),
               _mainBody()
             ],
@@ -164,7 +164,7 @@ class _PhoneBindingPageState extends LoginBasePageState {
               _mainTitle,
               style: _mainTitleStyle,
             ),
-            margin: EdgeInsets.only(bottom: 9),
+            margin:const EdgeInsets.only(bottom: 9),
           ),
           Text(
             _circumstancialState,
@@ -202,7 +202,7 @@ class _PhoneBindingPageState extends LoginBasePageState {
         ));
     return Container(
       child: putfield,
-      margin: EdgeInsets.only(top: 38, bottom: 32, left: 41, right: 41),
+      margin:const EdgeInsets.only(top: 38, bottom: 32, left: 41, right: 41),
     );
   }
 

@@ -11,6 +11,7 @@ const String GET_USERINFO = "/appuser/web/user/getUserInfo";
 
 //完善用户信息
 Future<bool> perfectUserInfo(String nickName, String avatarUri) async {
+  print("perfectUserInfo $nickName");
   BaseResponseModel responseModel =
       await requestApi(PERFECT_USERINFO, {"nickName": nickName, "avatarUri": avatarUri}, authType: AUTH_TYPE_TEMP);
   if (responseModel.isSuccess) {

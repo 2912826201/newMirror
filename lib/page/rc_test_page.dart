@@ -1,16 +1,18 @@
 
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:mirror/api/rongcloud_api.dart';
-import 'package:mirror/im/rongcloud.dart';
-import 'package:mirror/im/rongcloud_receive_manager.dart';
+import 'package:mirror/config/application.dart';
+import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:provider/provider.dart';
 
 /// rc_test_page
 /// Created by yangjiayi on 2020/11/2.
 
 //融云的测试页
-String USERID;
 class RCTestPage extends StatefulWidget {
   @override
   RCTestState createState() => RCTestState();
@@ -24,7 +26,6 @@ class RCTestState extends State<RCTestPage> {
   @override
   void initState() {
     super.initState();
-    //TODO 测试数据 暂时写死 需要从接口获取
     _token = "";
     controller.addListener(() {
 
@@ -63,6 +64,7 @@ class RCTestState extends State<RCTestPage> {
               child: Text("断开连接"),
             ),
             Text("${_status}"),
+            Text("状态码：${context.watch<RongCloudStatusNotifier>().status}"),
             Container(
               child: inputText,
               width: 100,
@@ -70,8 +72,8 @@ class RCTestState extends State<RCTestPage> {
             ),
             FlatButton(onPressed:  () async {
                 TextMessage msg = TextMessage();
-                msg.content = controller.text;
-                Message message = await RongCloudReceiveManager.shareInstance().sendPrivateMessage(USERID,msg );
+                msg.content = "测试消息${Random().nextInt(10000)}";
+                Message message = await Application.rongCloud.sendPrivateMessage(controller.text, msg);
                 print(message.toString());
              }, child: Text("发送消息"),minWidth: 100,height: 20,)
           ],
@@ -79,18 +81,11 @@ class RCTestState extends State<RCTestPage> {
       ),
     );
   }
-
   void _connectRC() {
     print("开始连接");
-    RongCloud().connect(_token, (int code, String userId) {
+    Application.rongCloud.connect(_token, (int code, String userId) {
       print('connect result ' + code.toString());
       if (code == 0) {
-        if (userId == "1001531")
-          {
-            USERID =  "1021057";
-          }else{
-          USERID = "1001531";
-        };
         print("connect success userId" + userId);
         // 连接成功后打开数据库
         // _initUserInfoCache();
@@ -105,9 +100,8 @@ class RCTestState extends State<RCTestPage> {
       }
     });
   }
-
   void _disconnectRC() {
-    RongCloud().disconnect();
+    Application.rongCloud.disconnect();
     setState(() {
       _status = "已断开连接";
     });

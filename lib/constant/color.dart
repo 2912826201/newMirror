@@ -50,4 +50,7 @@ class AppColor {
 
   //透明
   static const transparent = Color.fromRGBO(0x00, 0x00, 0x00, 0.0);
+
+  //边框
+  static const frame = Color.fromRGBO(204,204 ,204 ,1 );
 }

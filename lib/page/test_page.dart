@@ -59,7 +59,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                     width: 28.0,
                     height: 28.0,
                     // height:ScreenUtil.instance.setHeight(28.0),
-                    margin: EdgeInsets.only(right: 10),
+                    margin: const EdgeInsets.only(right: 10),
                   ),
                   Padding(
                     padding: EdgeInsets.only(left: 12),

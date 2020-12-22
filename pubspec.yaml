@@ -93,6 +93,13 @@ dependencies:
   # 汉字转拼音
   lpinyin: ^1.1.0
 
+  #扫码测试
+  flutter_qr_reader: ^1.0.3
+  #测试用滚轮选择器
+  flutter_cupertino_date_picker:
+    git: https://github.com/yasseralsamman/flutter-cupertino-date-picker.git
+    #测试用城市选择器
+  address_picker: ^0.0.1
 
   # 测试用的生成英文单词的库
   english_words: ^3.1.3

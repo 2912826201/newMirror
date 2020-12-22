@@ -22,6 +22,7 @@ import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_bottom_sheet.dart';
 import 'package:mirror/page/profile/profile_details_more.dart';
 import 'package:mirror/page/profile/sticky_tabBar.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
@@ -38,7 +39,8 @@ enum  StateResult{
 ///判断lastTime，控件的controller冲突
 class ProfileDetailPage extends StatefulWidget {
   int userId;
-  ProfileDetailPage({this.userId});
+  PanelController pcController = PanelController();
+  ProfileDetailPage({this.userId,this.pcController});
 
   @override
   _ProfileDetailState createState() {
@@ -51,7 +53,6 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   bool get wantKeepAlive => true;
   final String _imgShared = "images/test/分享.png";
   final String _imgMore = "images/test/ic_big_dynamic_more.png";
-  final _Panelcontroller = PanelController();
   ///昵称
   String _textName;
   ///id
@@ -70,9 +71,13 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   String _buttonText = "";
   TabController _mController;
   ///动态model
-  List<HomeFeedModel> attentionModel = [];
+  List<HomeFeedModel> followModel = [];
   ///动态id
-  List<int> _listId = [];
+  List<int> _followListId = [];
+  ///喜欢model
+  List<HomeFeedModel> likeModel = [];
+  ///喜欢id
+  List<int> _likeListId = [];
   ///true是自己的页面，false是别人的页面
   bool isMselfId;
   ///用户信息
@@ -83,14 +88,16 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   bool _isFllow = false;
   String loadingText = "加载中...";
   int likeDataPage = 1;
-  int fllowDataPage = 1;
-  int lastTime;
+  int likeLastTime;
+  int followDataPage = 1;
+  int followlastTime;
   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
   StateResult fllowState = StateResult.RESULTNULL;
   RefreshController _refreshController = new RefreshController();
   @override
   void initState() {
     super.initState();
+    _mController = TabController(length: 2, vsync: this);
     ///判断是自己的页面还是别人的页面
     if (context.read<ProfileNotifier>().profile.uid == widget.userId) {
       isMselfId = true;
@@ -102,23 +109,32 @@ class _ProfileDetailState extends State<ProfileDetailPage>
       _getUserInfo();
       _getFollowCount();
       _getDynamicData(2);
+      _getlikeData();
     } else {
       _getUserInfo(id: widget.userId);
       _getFollowCount(id: widget.userId);
       _getDynamicData(3, id: widget.userId);
     }
-    _mController = TabController(length: 2, vsync: this);
+
   }
     ///上拉加载
   _onLoadding()async{
     if(isMselfId){
       if(_mController.index==0){
-        fllowDataPage+=1;
+        setState(() {
+          followDataPage+=1;
+        });
         _getDynamicData(2);
       }else{
+        setState(() {
+          likeDataPage+=1;
+        });
+        _getlikeData();
       }
     }else{
-      fllowDataPage+=1;
+      setState(() {
+        followDataPage+=1;
+      });
       _getDynamicData(3, id: widget.userId);
     }
   }
@@ -159,31 +175,66 @@ class _ProfileDetailState extends State<ProfileDetailPage>
       });
     }
   }
-    ///获取动态
-  _getDynamicData(int type, {int id}) async {
-    if(fllowDataPage>1&&lastTime==null){
+
+  _getlikeData()async{
+    if(likeDataPage>1&&likeLastTime==null){
       _refreshController.loadNoData();
       return;
     }
     DataResponseModel model =
-        await getPullList(type: type, size: 20, targetId: id,lastTime:lastTime);
+      await getPullList(type: 6, size: 20,lastTime:likeLastTime);
     setState(() {
-      if(fllowDataPage==1){
+      if(likeDataPage==1){
         if (model.list.isNotEmpty) {
           model.list.forEach((result) {
-              attentionModel.add(HomeFeedModel.fromJson(result));
-            _listId.add(HomeFeedModel.fromJson(result).id);
+            likeModel.add(HomeFeedModel.fromJson(result));
+            _likeListId.add(HomeFeedModel.fromJson(result).id);
           });
-          _listId.insert(0,-1);
+          _likeListId.insert(0,-1);
           fllowState = StateResult.HAVARESULT;
         }else{
           fllowState = StateResult.RESULTNULL;
         }
-      }else if(fllowDataPage>1&&lastTime!=null){
+      }else if(likeDataPage>1&&likeLastTime!=null){
         if (model.list.isNotEmpty) {
           model.list.forEach((result) {
-            attentionModel.add(HomeFeedModel.fromJson(result));
-            _listId.add(HomeFeedModel.fromJson(result).id);
+            likeModel.add(HomeFeedModel.fromJson(result));
+            _likeListId.add(HomeFeedModel.fromJson(result).id);
+          });
+          _refreshController.loadComplete();
+        }
+      }else{
+        _refreshController.loadNoData();
+      }
+    });
+    likeLastTime = model.lastTime;
+    context.read<FeedMapNotifier>().updateFeedMap(likeModel);
+  }
+    ///获取动态
+  _getDynamicData(int type, {int id}) async {
+    if(followDataPage>1&&followlastTime==null){
+      _refreshController.loadNoData();
+      return;
+    }
+    DataResponseModel model =
+        await getPullList(type: type, size: 20, targetId: id,lastTime:followlastTime);
+    setState(() {
+      if(followDataPage==1){
+        if (model.list.isNotEmpty) {
+          model.list.forEach((result) {
+            followModel.add(HomeFeedModel.fromJson(result));
+            _followListId.add(HomeFeedModel.fromJson(result).id);
+          });
+          _followListId.insert(0,-1);
+          fllowState = StateResult.HAVARESULT;
+        }else{
+          fllowState = StateResult.RESULTNULL;
+        }
+      }else if(followDataPage>1&&followlastTime!=null){
+        if (model.list.isNotEmpty) {
+          model.list.forEach((result) {
+            followModel.add(HomeFeedModel.fromJson(result));
+            _followListId.add(HomeFeedModel.fromJson(result).id);
           });
           _refreshController.loadComplete();
         }
@@ -192,8 +243,8 @@ class _ProfileDetailState extends State<ProfileDetailPage>
       }
 
     });
-    lastTime = model.lastTime;
-    context.read<FeedMapNotifier>().updateFeedMap(attentionModel);
+    followlastTime = model.lastTime;
+    context.read<FeedMapNotifier>().updateFeedMap(followModel);
   }
 
   @override
@@ -208,7 +259,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
               panel: Container(
                 child:context.watch<FeedMapNotifier>().feedId !=null?
                 CommentBottomSheet(
-                  pc: _Panelcontroller,
+                  pc: widget.pcController,
                   feedId: context.select((FeedMapNotifier value) => value.feedId),
                 ):Container(),
               ),
@@ -223,7 +274,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
               topLeft: Radius.circular(10.0),
               topRight: Radius.circular(10.0),
               ),
-              controller: _Panelcontroller,
+              controller: widget.pcController,
               minHeight: 0,
               body:  _minehomeBody(width, height)
            ),
@@ -299,9 +350,9 @@ class _ProfileDetailState extends State<ProfileDetailPage>
       ///根据布尔值返回body
       body: isMselfId?TabBarView(
         controller: _mController,
-        children: <Widget>[_ListView(width,_listId,fllowState,"发布你的第一条动态吧~"),
-          _ListView(width,_listId,fllowState,"发布你的第一条动态吧~")],
-      ):_ListView(width,_listId, fllowState,"他还没有动态呢~")
+        children: <Widget>[_ListView(width,_followListId,fllowState,"发布你的第一条动态吧~"),
+          _ListView(width,_likeListId,fllowState,"发布你的第一条动态吧~")],
+      ):_ListView(width,_followListId, fllowState,"他还没有动态呢~")
     );
   }
   ///高斯模糊
@@ -457,30 +508,24 @@ class _ProfileDetailState extends State<ProfileDetailPage>
           ),
           controller: _refreshController,
           onLoading: _onLoadding,
-          child: ListView.builder(
-          shrinkWrap: true, //解决无限高度问题
-          physics: AlwaysScrollableScrollPhysics(),
-          itemCount: listId.length,
-          itemBuilder: (context, index) {
-            int id = listId[index];
-            HomeFeedModel model = context.read<FeedMapNotifier>().feedMap[id];
-              if(index == listId.length){
-                return LoadingView(loadText: loadingText,loadStatus:loadStatus ,);
+          child:  ListView.builder(
+            shrinkWrap: true,//解决无限高度问题
+            physics: AlwaysScrollableScrollPhysics(),
+            itemCount: listId.length,
+            itemBuilder: (context, index) {
+              int id = listId[index];
+              HomeFeedModel model = context.read<FeedMapNotifier>().feedMap[id];
+              if(index==0){
+                return Container(height: 10,);
               }else{
-                if(index==0){
-                  return Container(height: 10,);
-                }else{
-                  return DynamicListLayout(
-                    index: index,
-                    pc: _Panelcontroller,
-                    isShowRecommendUser: false,
-                    model: model,
-                    key: GlobalObjectKey("attention$index"));
-                }
-
+                return DynamicListLayout(
+                  index: index,
+                  pc: widget.pcController,
+                  isShowRecommendUser: false,
+                  model: model,
+                  key: GlobalObjectKey("attention$index"));
               }
-
-          }),),
+            }),),
     ));
     ///这里当model为null或者刚进来接口还没获取到的时候放一张图片
     switch (state){
@@ -525,6 +570,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
         onPressed: () {
           if (isMselfId) {
             ///这里跳转到编辑资料页
+            AppRouter.navigationToEditInfomation(context);
           } else {
             setState(() {
               if (_buttonText == "+ 关注") {
@@ -586,7 +632,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
               )),
           InkWell(
               onTap: () {
-                _Panelcontroller.close();
+                widget.pcController.close();
               },
               child: Container(
                   height: 50,
@@ -599,7 +645,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
           ),
           InkWell(
               onTap: () {
-                _Panelcontroller.close();
+                widget.pcController.close();
               },
               child: Container(
                   height: 50,

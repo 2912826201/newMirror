@@ -2,7 +2,7 @@
 import 'package:mirror/data/model/add_remarks_model.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/black_model.dart';
-import 'package:mirror/data/model/getExtrainfo_model.dart';
+import 'package:mirror/data/model/user_extrainfo_model.dart';
 import 'package:mirror/data/model/profile_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 
@@ -28,6 +28,8 @@ const String CANCEL_BLACK = "/appuser/web/black/removeBlack";
 const String CHECK_BLACK = "/appuser/web/black/checkBlack";
 ///黑名单
 const String QUERY_BLACKLIST = "/appuser/web/black/queryList";
+///举报
+const String DENOUNCE ="/appuser/web/user/denounce";
 ///关注
 Future<int> ProfileAddFollow(int id)async{
   BaseResponseModel responseModel = await requestApi(ATTENTION,{"targetId":id});
@@ -70,10 +72,10 @@ Future<ProfileModel> ProfileFollowCount({int id})async {
   }
 }
 ///获取用户训练信息
-Future<GetExtraInfoModel> ProfileGetExtraInfo()async {
+Future<UserExtraInfoModel> ProfileGetExtraInfo()async {
   BaseResponseModel responseModel = await requestApi(GET_EXTRAINFO,{});
   if (responseModel.isSuccess) {
-    return GetExtraInfoModel.fromJson(responseModel.data);
+    return UserExtraInfoModel.fromJson(responseModel.data);
   } else {
     return null;
   }
@@ -125,4 +127,12 @@ Future<BlackModel> ProfileCheckBlack(int checkId)async {
   } else {
     return null;
   }
+}
+Future<bool> ProfileMoreDenounce(int targetId,int targetType)async{
+  BaseResponseModel responseModel = await requestApi(CHECK_BLACK,{"targetId":targetId,"targetType":targetType,});
+    if(responseModel.isSuccess){
+      return true;
+    }else{
+      return false;
+    }
 }
