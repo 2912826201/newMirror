@@ -3,6 +3,7 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/basic_api.dart';
+import 'package:mirror/data/database/db_helper.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/model/user_model.dart';
@@ -53,6 +54,9 @@ Future _initApp() async {
 
   //初始化SharedPreferences
   AppPrefs.init();
+
+  //初始化数据库
+  await DBHelper.instance.initDB();
 
   //从数据库获取已登录的用户token或匿名用户token
   TokenDto token = await TokenDBHelper().queryToken();
@@ -146,5 +150,11 @@ class MyAppState extends State<MyApp> {
       //通过统一方法处理页面跳转路由
       onGenerateRoute: Application.router.generator,
     );
+  }
+
+  @override
+  void dispose() {
+    DBHelper.instance.closeDB();
+    super.dispose();
   }
 }
