@@ -16,7 +16,7 @@ class ProfileDBHelper {
       return result;
     });
     // await DBHelper().closeDB(db);
-    return transactionResult == 1;
+    return transactionResult > 0;
   }
 
   Future<void> clearProfile() async {

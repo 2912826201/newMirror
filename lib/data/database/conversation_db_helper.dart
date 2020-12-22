@@ -16,7 +16,7 @@ class ConversationDBHelper {
       return result;
     });
     // await DBHelper().closeDB(db);
-    return transactionResult == 1;
+    return transactionResult > 0;
   }
 
   //这里正序查出即可 后续操作会倒序处理
@@ -61,9 +61,9 @@ class ConversationDBHelper {
   //更新会话（可用于更新未读数，名称头像等确定已存在会话的信息）
   Future<bool> updateConversation(ConversationDto dto) async {
     // Database db = await DBHelper().openDB();
-    int result =
-        await DBHelper.instance.db.update(TABLE_NAME_CONVERSATION, dto.toMap(), where: "$COLUMN_NAME_CONVERSATION_ID = '${dto.id}'");
+    int result = await DBHelper.instance.db
+        .update(TABLE_NAME_CONVERSATION, dto.toMap(), where: "$COLUMN_NAME_CONVERSATION_ID = '${dto.id}'");
     // await DBHelper().closeDB(db);
-    return result == 1;
+    return result > 0;
   }
 }
