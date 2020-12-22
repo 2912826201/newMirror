@@ -13,6 +13,7 @@ import 'package:mirror/page/login/login_page.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/media_picker/preview_photo_page.dart';
+import 'package:mirror/page/message/chat_page1.dart';
 import 'package:mirror/page/profile/Profile_add_remarks.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/profile_details_more.dart';
@@ -130,9 +131,14 @@ var handlerVideoDetail = Handler(
 
 var handlerPreviewPhoto = Handler(
     handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-      Map<String, dynamic> data = json.decode(
-          params[AppRouter.paramData].first);
-      return PreviewPhotoPage(
-        filePath: data["filePath"],
-      );
-    });
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return PreviewPhotoPage(
+    filePath: data["filePath"],
+  );
+});
+
+var handlerChatPage = Handler(
+    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return ChatPage1();
+});

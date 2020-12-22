@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:camera/camera.dart';
 import 'package:fluro/fluro.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
@@ -57,4 +59,7 @@ class Application {
 
   //视频详情页
   static LiveModel videoModel;
+
+  //键盘的高度
+  static double keyboardHeight = 0;
 }

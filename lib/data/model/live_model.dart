@@ -31,6 +31,7 @@ import 'package:mirror/util/date_util.dart';
 /// createTime : 1605254544449
 /// updateTime : 1605254544449
 
+//直播的model
 class LiveModel {
   int playType; //播放类型-0没有设置 1去上课  2预约  3回放 4已预约
 

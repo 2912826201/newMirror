@@ -4,6 +4,7 @@
 /// part : [{"id":1,"type":1,"name":"全身","updateTime":1607673781969},{"id":2,"type":1,"name":"颈肩","updateTime":1607673781996},{"id":3,"type":1,"name":"腹部","updateTime":1607673782019},{"id":4,"type":1,"name":"腰部","updateTime":1607673782034},{"id":5,"type":1,"name":"手臂","updateTime":1607673782048},{"id":6,"type":1,"name":"腿部","updateTime":1607673782068},{"id":7,"type":1,"name":"臀部","updateTime":1607673782083}]
 /// target : [{"id":1,"type":2,"name":"减脂","updateTime":1607673809453},{"id":2,"type":2,"name":"塑性","updateTime":1607673809476},{"id":3,"type":2,"name":"增肌","updateTime":1607673809496},{"id":4,"type":2,"name":"健康","updateTime":1607673809513}]
 
+//视频课程的model
 class VideoTagModel {
   List<SubTagModel> _level;
   List<SubTagModel> _part;

@@ -20,16 +20,23 @@ class RCTestState extends State<RCTestPage> {
   String _token = "";
   String _status = "未连接";
   TextEditingController controller = TextEditingController();
-  TextField inputText ;
+  TextEditingController controller1 = TextEditingController();
+  TextField inputText;
+
+  TextField inputText1;
+
   @override
   void initState() {
     super.initState();
     //TODO 测试数据 暂时写死 需要从接口获取
     _token = "";
-    controller.addListener(() {
-
-    });
-    inputText = TextField(controller: controller,);
+    controller.addListener(() {});
+    inputText = TextField(
+      controller: controller,
+    );
+    inputText1 = TextField(
+      controller: controller1,
+    );
   }
 
   @override
@@ -68,12 +75,19 @@ class RCTestState extends State<RCTestPage> {
               width: 100,
               height: 20,
             ),
-            FlatButton(onPressed:  () async {
-                TextMessage msg = TextMessage();
-                msg.content = controller.text;
-                Message message = await RongCloudReceiveManager.shareInstance().sendPrivateMessage(USERID,msg );
-                print(message.toString());
-             }, child: Text("发送消息"),minWidth: 100,height: 20,)
+            Container(
+              child: inputText1,
+              width: 100,
+              height: 20,
+            ),
+            FlatButton(onPressed: () async {
+              TextMessage msg = TextMessage();
+              msg.content = controller1.text;
+              USERID = controller.text;
+              Message message = await RongCloudReceiveManager.shareInstance()
+                  .sendPrivateMessage(USERID, msg);
+              print("=====发送给：${USERID}---消息是：${message.toString()}");
+            }, child: Text("发送消息"), minWidth: 100, height: 20,)
           ],
         ),
       ),
@@ -85,12 +99,12 @@ class RCTestState extends State<RCTestPage> {
     RongCloud().connect(_token, (int code, String userId) {
       print('connect result ' + code.toString());
       if (code == 0) {
-        if (userId == "1001531")
-          {
-            USERID =  "1021057";
-          }else{
-          USERID = "1001531";
-        };
+        // if (userId == "1001531")
+        //   {
+        //     USERID =  "1021057";
+        //   }else{
+        //
+        // };
         print("connect success userId" + userId);
         // 连接成功后打开数据库
         // _initUserInfoCache();

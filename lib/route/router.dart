@@ -22,6 +22,7 @@ class AppRouter {
   static String pathMediaPicker = "/mediapicker";
   static String pathLike = "/like";
   static String pathRelease = "/release";
+  static String pathChatPage = "/chatPage";
   static String pathPreviewPhoto = "/previewPhoto";
   static String pathLiveBroadcast = "/liveBroadcast";
   static String pathLiveDetail = "/liveDetail";
@@ -45,6 +46,7 @@ class AppRouter {
     router.define(pathLogin, handler: handlerLogin);
     router.define(pathLike, handler: handlerLike);
     router.define(pathRelease, handler: handlerReleaseFeed);
+    router.define(pathChatPage, handler: handlerChatPage);
     router.define(pathPreviewPhoto, handler: handlerPreviewPhoto);
     router.define(pathLiveBroadcast, handler: handlerLiveBroadcast);
     router.define(pathLiveDetail, handler: handlerLiveDetail);
@@ -150,7 +152,13 @@ class AppRouter {
     _navigateToPage(context, pathRelease, map);
   }
 
-  static void navigateToPreviewPhotoPage(BuildContext context, String filePath, Function(dynamic result) callback) {
+  static void navigateToChatPage(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathChatPage, map);
+  }
+
+  static void navigateToPreviewPhotoPage(BuildContext context, String filePath,
+      Function(dynamic result) callback) {
     Map<String, dynamic> map = Map();
     map["filePath"] = filePath;
     _navigateToPage(context, pathPreviewPhoto, map, callback: callback);

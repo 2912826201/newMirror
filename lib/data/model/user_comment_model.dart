@@ -1,7 +1,7 @@
 /// user_model
 /// Created by yangjiayi on 2020/10/29.
 
-//动作的model
+//用户评论的model
 class UserCommentModel {
   int id; //Id
   String userName; //用户名字
