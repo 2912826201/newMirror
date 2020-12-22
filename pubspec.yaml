@@ -90,8 +90,9 @@ dependencies:
   pull_to_refresh: ^1.6.3
   # shared preferences
   shared_preferences: ^0.5.12+4
-  #  粘性header
-  sticky_headers: ^0.1.8+1
+  # 汉字转拼音
+  lpinyin: ^1.1.0
+
 
   # 测试用的生成英文单词的库
   english_words: ^3.1.3
@@ -100,6 +101,8 @@ dependencies:
   #测试用图片放大拖拽
   flutter_drag_scale:
     git: https://github.com/LiuC520/flutter_drag_scale.git
+  #  粘性header
+  sticky_headers: ^0.1.8+1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -128,6 +131,7 @@ flutter:
     - images/resource/2.0x/shut_down@2x.png
     - images/resource/2.0x/search_icon_gray@2x.png
     - images/resource/2.0x/delete_icon_black@2x.png
+    - images/resource/share_index_bubble@2x.png
     - images/test/
     - images/test/2.0x/
     - images/test/3.0x/
