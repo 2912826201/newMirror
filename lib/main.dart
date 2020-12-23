@@ -154,7 +154,9 @@ class MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
+    print("❌APP dispose！！！❌");
     DBHelper.instance.closeDB();
+
     super.dispose();
   }
 }
