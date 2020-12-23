@@ -71,9 +71,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
         child: Center(
           child: RaisedButton(
             onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return TestPage();
-              }));
+              AppRouter.navigateToTestPage(context);
             },
             child: Text("去测试页"),
           ),

@@ -55,6 +55,9 @@ class Application {
   // 用于传递所选图片视频内容，用完后需要删除
   static SelectedMediaFiles selectedMediaFiles;
 
+  // 用于记录登录页之前页面的路由名称，以便完成登录后回退到该页完成页面返回
+  static String loginPopRouteName;
+
   //发送验证码的全局计时
   static int smsCodeSendTime ;
 
