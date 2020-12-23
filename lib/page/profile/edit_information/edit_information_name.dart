@@ -24,11 +24,9 @@ class _editInformationNameState extends State<EditInformationName>{
   int nowLength = 0;
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Builder(builder: (context){
-          double width = ScreenUtil.instance.screenWidthDp;
-          double height = ScreenUtil.instance.height;
-          return Scaffold(
+    double width = ScreenUtil.instance.screenWidthDp;
+    double height = ScreenUtil.instance.height;
+    return Scaffold(
           backgroundColor: AppColor.white,
           /*
            */
@@ -64,8 +62,7 @@ class _editInformationNameState extends State<EditInformationName>{
               ],
             ),
           ),
-        );},)
-      );
+        );
   }
 
   Widget _bottomText(double width){

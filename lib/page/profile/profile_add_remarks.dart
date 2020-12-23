@@ -25,14 +25,10 @@ class _addRemarkState extends State<ProfileAddRemarks>{
   String _remarks = "";
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Builder(builder: (context){
-          double width = ScreenUtil.instance.screenWidthDp;
-          double height = ScreenUtil.instance.height;
-          return Scaffold(
+    double width = ScreenUtil.instance.screenWidthDp;
+    double height = ScreenUtil.instance.height;
+    return Scaffold(
           backgroundColor: AppColor.white,
-          /*
-           */
           body: Container(
             height: height,
             width: width,
@@ -69,8 +65,7 @@ class _addRemarkState extends State<ProfileAddRemarks>{
               ],
             ),
           ),
-        );},)
-      );
+        );
   }
 
   Widget _title(double width){

@@ -9,6 +9,7 @@ import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/route/route_handler.dart';
+import 'package:photo_manager/photo_manager.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 /// router
@@ -160,6 +161,7 @@ class AppRouter {
   static void navigationToEditInfomationIntroduction(BuildContext context) {
     _navigateToPage(context, pathEditInformationIntroduction, {});
   }
+
   static void navigateToLikePage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathLike, map);

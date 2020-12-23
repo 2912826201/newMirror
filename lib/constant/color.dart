@@ -18,7 +18,6 @@ class AppColor {
   static const bgBlack = Color.fromRGBO(0x16, 0x16, 0x16, 1.0);
   static const bgVip1 = Color.fromRGBO(0xF3, 0xD2, 0x9C, 1.0);
   static const bgVip2 = Color.fromRGBO(0xC4, 0x8B, 0x3C, 1.0);
-
   //N2 背景及分割线
   static const bgWhite = Color.fromRGBO(0xF3, 0xF3, 0xF3, 1.0);
   static const bgWhite_65 = Color.fromRGBO(0xF3, 0xF3, 0xF3, 0.65);
@@ -54,6 +53,7 @@ class AppColor {
   //url---规范内没有
   static const urlText = Color.fromRGBO(0x18, 0x77, 0xf2, 1.0);
 
+  //不在规范中颜色
   //边框
   static const frame = Color.fromRGBO(204,204 ,204 ,1 );
 }
