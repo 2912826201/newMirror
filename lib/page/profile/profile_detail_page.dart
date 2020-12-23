@@ -167,7 +167,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
           if (relation == 0 || relation == 2){
             _buttonText = "+ 关注";
             _isFllow = true;
-          } else{
+          } else if(relation ==1||relation==3){
             _isFllow = false;
             _buttonText = "私聊";
           }
@@ -249,11 +249,9 @@ class _ProfileDetailState extends State<ProfileDetailPage>
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Builder(builder: (context) {
-        double width =ScreenUtil.instance.screenWidthDp;
-        double height =ScreenUtil.instance.height;
-        return Scaffold(
+    double width =ScreenUtil.instance.screenWidthDp;
+    double height =ScreenUtil.instance.height;
+    return Scaffold(
           appBar: null,
           body: SlidingUpPanel(
               panel: Container(
@@ -279,8 +277,6 @@ class _ProfileDetailState extends State<ProfileDetailPage>
               body:  _minehomeBody(width, height)
            ),
         );
-      }),
-    );
   }
   ///这是个人页面，使用TabBarView
   Widget _minehomeBody(double width, double height) {
@@ -318,7 +314,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
               SizedBox(width: 15.5,)
             ],
             backgroundColor: AppColor.white,
-            expandedHeight: height * 0.42,
+            expandedHeight: height*0.42-ScreenUtil.instance.statusBarHeight,
             ///这里是资料展示页,写在这个里面相当于是appBar的背景板
             flexibleSpace: FlexibleSpaceBar(
                 background: Container(
@@ -358,17 +354,17 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   ///高斯模糊
   Widget mineHomeData(double height, double width) {
     return Container(
-      padding: EdgeInsets.only(top: 15),
+      height: height*0.42,
       color: AppColor.white,
       child: Stack(
         children: [
           Container(
-              height: ScreenUtil.instance.height*0.3,
+              height: height*0.33,
               width: width,
               child: ClipOval(
                   child:CachedNetworkImage(
-                    height: 90,
-                    width: 90,
+                    height: height*0.33,
+                    width: height*0.33,
                     imageUrl:_avatar != null ? _avatar: "",
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Image.asset("images/test.png", fit: BoxFit.cover,),
@@ -380,7 +376,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
               top: 0,
               child: Container(
                 width: width,
-                height: ScreenUtil.instance.height*0.3,
+                height: height*0.33,
                 color: AppColor.white.withOpacity(0.7),
               )),
           BackdropFilter(
@@ -395,26 +391,25 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   ///资料展示
   Widget _MineDetailsData( double height, double width) {
     return Container(
-        height: height * 0.45,
+        height: height*0.42,
         width: width,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 49,),
+            SizedBox(height: ScreenUtil.instance.statusBarHeight+height*0.06,),
             ///头像和按钮
             Container(
               padding: EdgeInsets.only(left: 16, right: 16),
-              margin: EdgeInsets.only(top: 10),
               width: width,
               child: Stack(
                 children: [
-                  _mineAvatar(),
-                  Positioned(right: 0,top: 26.5, child: _mineButton())
+                  _mineAvatar(height),
+                  Positioned(right: 0,top: 24, child: _mineButton(height))
                 ],
               ),
             ),
             SizedBox(
-              height: 16,
+              height: height*0.02,
             ),
 
             ///昵称
@@ -426,7 +421,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
               ),
             ),
             SizedBox(
-              height: 12,
+              height: height*0.02,
             ),
 
             ///id
@@ -435,9 +430,8 @@ class _ProfileDetailState extends State<ProfileDetailPage>
               child: Text("ID: $_id"),
             ),
             SizedBox(
-              height: 6,
+              height: height*0.007,
             ),
-
             ///签名
             Container(
               padding: EdgeInsets.only(left: 16, right: 16),
@@ -446,7 +440,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
                   softWrap: true, style: AppStyle.textRegular14),
             ),
             SizedBox(
-              height: 16,
+              height: height*0.01,
             ),
 
             ///关注，获赞，粉丝
@@ -454,22 +448,22 @@ class _ProfileDetailState extends State<ProfileDetailPage>
               padding: EdgeInsets.only(left: 16, right: 16),
               child: Row(
                 children: [
-                  _TextAndNumber("关注", _attention),
+                  _TextAndNumber("关注", _attention,height),
                   SizedBox(
                     width: 61,
                   ),
-                  _TextAndNumber("粉丝", _fans),
+                  _TextAndNumber("粉丝", _fans,height),
                   SizedBox(
                     width: 61,
                   ),
-                  _TextAndNumber("动态", _dynmic),
+                  _TextAndNumber("动态", _dynmic,height),
                 ],
               ),
             ),
             Expanded(child: (Container())),
             Container(
               color: AppColor.bgWhite_65,
-              height: 12,
+              height: height*0.01,
               width: width,
             )
           ],
@@ -558,42 +552,42 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   }
 
   ///关注，编辑资料，私聊按钮
-  Widget _mineButton() {
-    return Container(
-      height: 30,
-      width: 80,
+  Widget _mineButton(double height) {
+    return InkWell(
+      onTap: () {
+      if (isMselfId) {
+        ///这里跳转到编辑资料页
+        AppRouter.navigationToEditInfomation(context);
+      } else {
+        setState(() {
+          if (_buttonText == "+ 关注") {
+            _getAttention(true);
+          } else if (_buttonText == "取消关注") {
+            ///打开dialog
+            _getAttention(false);
+          } else {
+            ///这里跳转到私聊界面
+          }
+        });
+      }
+    },
+    child:Container(
+      height: height*0.03,
+      width: height*0.08,
       decoration: BoxDecoration(
           color: _isFllow?AppColor.mainRed:AppColor.transparent,
-          borderRadius: BorderRadius.all(Radius.circular(50)),
-          border: Border.all(width: 1, color: AppColor.black)),
-      child: FlatButton(
-        onPressed: () {
-          if (isMselfId) {
-            ///这里跳转到编辑资料页
-            AppRouter.navigationToEditInfomation(context);
-          } else {
-            setState(() {
-              if (_buttonText == "+ 关注") {
-                _getAttention(true);
-              } else if (_buttonText == "取消关注") {
-                ///打开dialog
-                _getAttention(false);
-              } else {
-                ///这里跳转到私聊界面
-              }
-            });
-          }
-        },
-        ///判断是我的页面还是别人的页面
-        child:isMselfId?Center(
-                child:Text(
+          borderRadius: BorderRadius.all(Radius.circular(14)),
+          border: Border.all(width: 0.5, color: AppColor.black)),
+      ///判断是我的页面还是别人的页面
+          child:isMselfId?Center(
+                      child: Text(
                         _buttonText,
-                        style:
-                            TextStyle(fontSize: 12, color: AppColor.black),
-                      )
-                    )
+                        style: AppStyle.textRegular12,
+                      ),)
+
           :_buttonLayoutSelect(),
-      ),
+
+    )
     );
   }
 
@@ -604,12 +598,14 @@ class _ProfileDetailState extends State<ProfileDetailPage>
         child:Text(
           _buttonText,
           style:
-          TextStyle(fontSize: 12, color: AppColor.white),
+          AppStyle.textRegular14,
         )
       );
     }else{
-      return Row(
+      return Center(
+        child: Row(
         children: [
+          SizedBox(width: 15,),
          Image.asset("images/test/comment-filling.png",width:12,height:12 ,),
           SizedBox(width: 2,),
           Text(
@@ -617,7 +613,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
             style:AppStyle.textRegular12,
           ),
         ],
-      );
+      ),);
     }
   }
   ///取消关注时弹出dialog提醒用户确认取消关注(暂时没用先留着)
@@ -660,12 +656,12 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   }
 
   ///头像
-  Widget _mineAvatar() {
+  Widget _mineAvatar(double height) {
     return Container(
         child: ClipOval(
       child: CachedNetworkImage(
-        height: 90,
-        width: 90,
+        height: height*0.09,
+        width: height*0.09,
         imageUrl: _avatar,
         fit: BoxFit.cover,
         placeholder: (context, url) => Image.asset(
@@ -696,7 +692,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   }
 
   ///这是关注粉丝获赞
-  Widget _TextAndNumber(String text, int number) {
+  Widget _TextAndNumber(String text, int number,double height) {
     return Container(
         child: Column(
       children: [
@@ -705,7 +701,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
           style: AppStyle.textRegular18,
         ),
         SizedBox(
-          height: 6.5,
+          height:height*0.008,
         ),
         Text(
           text,

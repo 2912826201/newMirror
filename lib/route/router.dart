@@ -7,6 +7,7 @@ import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/route/route_handler.dart';
+import 'package:photo_manager/photo_manager.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 /// router
@@ -35,8 +36,7 @@ class AppRouter {
   static String pathEditInformation = "ProfileEditInformation";
   static String pathEditInformationName = "ProfileEditInformationName";
   static String pathEditInformationIntroduction = "ProfileEditInformationIntroduction";
-
-
+  static String pathEditInformationCropImage = "ProfileEditInformationCropImage";
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(
         handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
@@ -62,6 +62,7 @@ class AppRouter {
     router.define(pathEditInformation, handler: handlerEditInformation);
     router.define(pathEditInformationName, handler: handlerEditInformationName);
     router.define(pathEditInformationIntroduction, handler: handlerEditInformationIntroduction);
+    router.define(pathEditInformationCropImage, handler: handlerEditInformationCropImage);
 
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
@@ -152,6 +153,15 @@ class AppRouter {
   }
   static void navigationToEditInfomationIntroduction(BuildContext context) {
     _navigateToPage(context, pathEditInformationIntroduction, {});
+  }
+  static void navigationToEditInfomationCropImage(BuildContext context,int maxImageAmount,RequestType requestType,bool needCrop,bool cropOnlySquare,bool isGoToPublish) {
+    Map<String,dynamic> map = Map();
+    map["maxImageAmount"] = maxImageAmount;
+    map["requestType"] = requestType;
+    map["needCrop"] = needCrop;
+    map["cropOnlySquare"] = cropOnlySquare;
+    map["isGoToPublish"] = isGoToPublish;
+    _navigateToPage(context, pathEditInformationCropImage, map);
   }
   static void navigateToLikePage(BuildContext context) {
     Map<String, dynamic> map = Map();

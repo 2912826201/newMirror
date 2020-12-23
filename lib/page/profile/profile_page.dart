@@ -78,12 +78,10 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     super.build(context);
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
-    return MaterialApp(
-          home:  Scaffold(
+    return Scaffold(
         appBar: null,
         body: _buildSuggestions(width),
-      )
-    );
+      );
   }
 
   ///界面
@@ -351,7 +349,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                       child: Center(
                         child: Text(
                           "+",
-                          style: TextStyle(fontSize: 20, color: Colors.white),
+                          style: TextStyle(fontSize: 15, color: Colors.white),
                         ),
                       )))
             ],

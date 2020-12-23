@@ -11,6 +11,7 @@ import 'package:mirror/page/feed/release_page.dart';
 import 'package:mirror/page/if_page.dart';
 import 'package:mirror/page/login/login_page.dart';
 import 'package:mirror/page/main_page.dart';
+import 'package:mirror/page/media_picker/gallery_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/media_picker/preview_photo_page.dart';
 import 'package:mirror/page/profile/Profile_add_remarks.dart';
@@ -26,6 +27,7 @@ import 'package:mirror/page/training/live_broadcast/live_detail_page.dart';
 import 'package:mirror/page/training/video_course/video_course_list_page.dart';
 import 'package:mirror/page/training/video_course/video_detail_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:photo_manager/photo_manager.dart';
 
 /// route_handler
 /// Created by yangjiayi on 2020/11/14.
@@ -92,6 +94,17 @@ var handlerEditInformationName = Handler(handlerFunc: (BuildContext context,Map<
 });
 var handlerEditInformationIntroduction = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
   return EditInformationIntroduction();
+});
+var handlerEditInformationCropImage = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+  Map<String, dynamic> data = json.decode(
+    params[AppRouter.paramData].first);
+  return GalleryPage(
+    maxImageAmount: data["maxImageAmount"],
+    requestType:data["requestType"],
+    needCrop:data["needCrop"],
+    cropOnlySquare: data["cropOnlySquare"],
+    isGoToPublish: data["isGoToPublish"],
+  );
 });
 var handlerReleaseFeed = Handler(
     handlerFunc: (BuildContext context, Map<String, List<String>> params) {
