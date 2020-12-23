@@ -123,4 +123,22 @@ class DateUtil{
       }
     }
   }
+
+  /// 将秒转换为数字 01:12
+  static String formatSecondToStringNum(int ms) {
+    if (ms < 60) {
+      return "00:" + ms.toString();
+    } else {
+      int hour = ms ~/ 3600;
+      int minute = ms % 3600 ~/ 60;
+      int second = ms % 60;
+      if (hour > 0) {
+        return "${hour > 10 ? hour : "0" + hour.toString()}:${minute > 10 ? minute : "0" + minute.toString()}:${second > 10 ? second : "0" + second.toString()}";
+      } else if (minute > 0) {
+        return "${minute > 10 ? minute : "0" + minute.toString()}:${second > 10 ? second : "0" + second.toString()}";
+      } else {
+        return "00:${second > 10 ? second : "0" + second.toString()}";
+      }
+    }
+  }
 }

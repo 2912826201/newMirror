@@ -8,6 +8,7 @@ import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -255,6 +256,13 @@ class LiveDetailPageState extends State<LiveDetailPage> {
 
   //加载数据成功时的布局
   Widget _buildSuggestionsComplete() {
+    String imageUrl;
+    if (liveModel.playBackUrl != null) {
+      imageUrl = liveModel.playBackUrl;
+    } else if (liveModel.videoUrl != null) {
+      imageUrl = FileUtil.getVideoFirstPhoto(liveModel.videoUrl);
+    }
+
     Widget widget = Container(
       color: AppColor.white,
       width: MediaQuery.of(context).size.width,
@@ -325,7 +333,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
                               .of(context)
                               .padding
                               .top,
-                          coverImgUrl: 'images/test/bg.png',
+                          coverImgUrl: imageUrl,
                           heroTag: heroTag,
                           startTime: liveModel.startTime,
                           endTime: liveModel.endTime,

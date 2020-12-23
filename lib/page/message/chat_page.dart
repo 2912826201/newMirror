@@ -4,12 +4,14 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
 import 'package:mirror/page/message/test_message_post.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
-import 'ChatDetailsBody.dart';
+import 'chat_details_body.dart';
 import 'item/chat_more_icon.dart';
 import 'item/emoji_manager.dart';
 import 'item/message_body_input.dart';
@@ -23,11 +25,13 @@ import 'item/message_input_bar.dart';
 
 enum ButtonType { voice, more }
 
-class ChatPage1 extends StatefulWidget {
-  final _ChatPageState1 _state = _ChatPageState1();
+class ChatPage extends StatefulWidget {
+  final _ChatPageState _state = _ChatPageState();
   final ConversationDto conversation;
+  final Message shareMessage;
 
-  ChatPage1({Key key, this.conversation}) : super(key: key);
+  ChatPage({Key key, @required this.conversation, this.shareMessage})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -35,9 +39,11 @@ class ChatPage1 extends StatefulWidget {
   }
 }
 
-class _ChatPageState1 extends State<ChatPage1>
+class _ChatPageState extends State<ChatPage>
     with TickerProviderStateMixin, WidgetsBindingObserver {
+  //所有的会话消息
   List<ChatDataModel> chatDataList = <ChatDataModel>[];
+
   bool _emojiState = false;
   TextEditingController _textController = TextEditingController();
   FocusNode _focusNode = new FocusNode();
@@ -48,16 +54,24 @@ class _ChatPageState1 extends State<ChatPage1>
   bool isResizeToAvoidBottomInset = true;
   List<EmojiModel> emojiModelList = <EmojiModel>[];
 
+  String chatUserName;
+  int chatUserId;
+  String chatType;
+
   @override
   void initState() {
     super.initState();
     //初始化
     WidgetsBinding.instance.addObserver(this);
     _getEmojiModelList();
+    initData();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (chatUserName == null) {
+      initData();
+    }
     var body = [
       (chatDataList != null && chatDataList.length > 0)
           ? ChatDetailsBody(
@@ -75,7 +89,7 @@ class _ChatPageState1 extends State<ChatPage1>
         resizeToAvoidBottomInset: isResizeToAvoidBottomInset,
         appBar: AppBar(
           title: Text(
-            widget.conversation?.name ?? "聊天界面",
+            chatUserName + "-" + chatType,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -325,9 +339,9 @@ class _ChatPageState1 extends State<ChatPage1>
   }
 
   //发送文字信息
-  _handleSubmittedData() {
+  _handleSubmittedData() async {
     String text = _textController.text;
-    chatDataList.insert(0, postText(text));
+    chatDataList.insert(0, await postText(text, chatUserId.toString()));
     setState(() {
       _textController.text = "";
       isHaveTextLen = false;
@@ -391,6 +405,28 @@ class _ChatPageState1 extends State<ChatPage1>
     }
     if (isReset) {
       setState(() {});
+    }
+  }
+
+
+  //初始化一些数据
+  void initData() {
+    chatUserName = "聊天界面";
+    chatUserId = 0;
+    chatType = "测试聊天";
+    if (widget.conversation == null) {
+      print("未知信息");
+    } else {
+      chatUserName = widget.conversation.name;
+      chatUserId = widget.conversation.uid;
+      chatType = getMessageType(widget.conversation, context);
+    }
+
+    if (widget.shareMessage != null) {
+      chatDataList.insert(0, postMessage(widget.shareMessage));
+      setState(() {
+
+      });
     }
   }
 
