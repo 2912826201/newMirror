@@ -8,6 +8,7 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/route/route_handler.dart';
+import 'package:photo_manager/photo_manager.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 /// router
@@ -42,7 +43,6 @@ class AppRouter {
   static String pathEditInformationName = "/profile/editinformation/name";
   static String pathEditInformationIntroduction = "/profile/editinformation/introduction";
   static String pathChatPage = "/chatPage";
-
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(
         handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {

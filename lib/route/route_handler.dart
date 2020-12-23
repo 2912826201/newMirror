@@ -12,6 +12,7 @@ import 'package:mirror/page/login/login_page.dart';
 import 'package:mirror/page/login/perfect_user_page.dart';
 import 'package:mirror/page/login/phone_login_page.dart';
 import 'package:mirror/page/main_page.dart';
+import 'package:mirror/page/media_picker/gallery_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/media_picker/preview_photo_page.dart';
 import 'package:mirror/page/message/chat_page1.dart';
@@ -30,6 +31,7 @@ import 'package:mirror/page/training/live_broadcast/live_detail_page.dart';
 import 'package:mirror/page/training/video_course/video_course_list_page.dart';
 import 'package:mirror/page/training/video_course/video_detail_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:photo_manager/photo_manager.dart';
 
 /// route_handler
 /// Created by yangjiayi on 2020/11/14.
