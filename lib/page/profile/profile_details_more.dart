@@ -38,8 +38,7 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
   Widget build(BuildContext context) {
         double width = ScreenUtil.instance.screenWidthDp;
         double height = ScreenUtil.instance.height;
-        return MaterialApp(
-          home: Scaffold(
+        return Scaffold(
             appBar: AppBar(
               backgroundColor: AppColor.white,
               title: Text("更多",style: AppStyle.textRegular18,),
@@ -59,8 +58,7 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
               width: width,
               color: AppColor.white,
               child:!widget.isFollow?_follow(width):_notFollow(width))
-          ),
-        );
+          );
   }
   ///没关注的布局
   Widget _notFollow(double width){

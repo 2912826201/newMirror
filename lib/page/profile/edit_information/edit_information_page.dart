@@ -1,14 +1,22 @@
 
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:address_picker/address_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/page/media_picker/gallery_page.dart';
+import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:photo_manager/photo_manager.dart';
+import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:intl/intl.dart';
 class EditInformation extends StatefulWidget{
@@ -28,13 +36,20 @@ class _editInformationState extends State<EditInformation>{
   String _province = "";
   String _city = "";
   String _provinceCity = "";
+
+  //取图裁剪得到的图片数据
+  Uint8List imageData;
+
+  @override
+  void initState() {
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
-    return MaterialApp(
-      home: Scaffold(
-          body:SlidingUpPanel(
+    return Scaffold(
+          body: SlidingUpPanel(
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(isCity?0.0:10.0),
               topRight: Radius.circular(isCity?0.0:10.0),
@@ -66,7 +81,37 @@ class _editInformationState extends State<EditInformation>{
                 margin: EdgeInsets.only(top: 16),
                 width: 71,
                 height: 71,
-                child: _avatar(),
+                child: InkWell(
+                  child: _avatar(context),
+                onTap: (){
+                  AppRouter.navigateToMediaPickerPage(
+                    context, 1, typeImage, true, startPageGallery, true, false, (result) async {
+                    SelectedMediaFiles files = Application.selectedMediaFiles;
+                    print('Application.mediaFileModel=======================${files.list.first}');
+                              if(result!=true||files==null){
+                        return ;
+                      }
+                      Application.selectedMediaFiles = null;
+                    MediaFileModel model = files.list.first;
+                    if (model != null) {
+                      print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                      ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
+                      print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                      Uint8List picBytes = byteData.buffer.asUint8List();
+                      print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
+                      model.croppedImageData = picBytes;
+                    }
+                    print('model.croppedImageData===========================${model.croppedImageData}');
+                              // context.read<InformationImageNotifier>().setImage(model.croppedImageData);
+                    setState(() {
+                      imageData = model.croppedImageData;
+                    });
+                  }
+
+                  );
+                }
+                ,)
+              /*  context.read<InformationImageNotifier>();*/
               ),
               SizedBox(height: 16,),
               InkWell(
@@ -136,9 +181,8 @@ class _editInformationState extends State<EditInformation>{
               ),
 
             ],
-          ),)),
-      ),
-    );
+          ),))
+      );
   }
 
 
@@ -169,21 +213,17 @@ class _editInformationState extends State<EditInformation>{
       ),
     );
   }
-  Widget _avatar(){
+  Widget _avatar(BuildContext context){
     return Stack(
       children: [
-        ClipOval(
-            child: CachedNetworkImage(
-              height: 71,
-              width:  71,
-              imageUrl: "_avatar",
-              fit: BoxFit.cover,
-              placeholder: (context, url) => Image.asset(
-                "images/test.png",
-                fit: BoxFit.cover,
-              ),
-            ),
+        Container(
+          height: 71,
+          width:  71,
+          child: ClipOval(
+            child: imageData!=null?Image.memory(imageData, fit: BoxFit.cover,)
+              :Image.asset("images/test/test.png")
           ),
+        ),
         Positioned(
           bottom: 0,
           right: 0,

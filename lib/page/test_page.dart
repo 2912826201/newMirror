@@ -118,9 +118,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
               ),
               RaisedButton(
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                    return LoginTestPage();
-                  }));
+                  AppRouter.navigateToLoginTestPage(context);
                 },
                 child: Text("登录入口"),
               ),

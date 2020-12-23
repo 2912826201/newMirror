@@ -7,9 +7,9 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/live_model.dart';
-import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/route/route_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:photo_manager/photo_manager.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 /// router
@@ -21,7 +21,9 @@ class AppRouter {
   static String pathIfPage = "/";
   static String pathMain = "/main";
   static String pathLogin = "/login";
+  static String pathLoginPhone = "/login/phone";
   static String pathTest = "/test";
+  static String pathLoginTest = "/logintest";
   static String pathRCTest = "/rctest";
   static String pathMediaPicker = "/mediapicker";
   static String pathLike = "/like";
@@ -34,15 +36,14 @@ class AppRouter {
   static String pathVideoCourseList = "/videocourselist";
   static String pathScanCode = "/scancode";
   static String pathMineDetails = "/minedetails";
-  static String pathProfileScanCode = "/profilescancode";
-  static String pathProfileDetails = "/profiledetails";
-  static String pathProfileDetailsMore = "/profiledetailsmore";
-  static String pathProfileAddRemarks = "/profileaddremarks";
-  static String pathEditInformation = "profileeditinformation";
-  static String pathEditInformationName = "profileeditinformationname";
-  static String pathEditInformationIntroduction = "profileeditinformationintroduction";
+  static String pathProfileScanCode = "/profile/scancode";
+  static String pathProfileDetails = "/profile/details";
+  static String pathProfileDetailsMore = "/profile/details/more";
+  static String pathProfileAddRemarks = "/profile/addremarks";
+  static String pathEditInformation = "/profile/editinformation";
+  static String pathEditInformationName = "/profile/editinformation/name";
+  static String pathEditInformationIntroduction = "/profile/editinformation/introduction";
   static String pathChatPage = "/chatPage";
-
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(
         handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
@@ -51,9 +52,12 @@ class AppRouter {
 
     router.define(pathIfPage, handler: handlerIfPage);
     router.define(pathMain, handler: handlerMain);
+    router.define(pathTest, handler: handlerTest);
+    router.define(pathLoginTest, handler: handlerLoginTest);
     router.define(pathRCTest, handler: handlerRCTest);
     router.define(pathMediaPicker, handler: handlerMediaPicker);
     router.define(pathLogin, handler: handlerLogin);
+    router.define(pathLoginPhone, handler: handlerLoginPhone);
     router.define(pathLike, handler: handlerLike);
     router.define(pathRelease, handler: handlerReleaseFeed);
     router.define(pathPerfectUserPage, handler: handlerPerfectUserPage);
@@ -86,13 +90,33 @@ class AppRouter {
       Application.router.navigateTo(context, uri).then(callback);
     }
   }
+
+  static void popToBeforeLogin(BuildContext context){
+    if(Application.loginPopRouteName != null) {
+      Navigator.of(context).popUntil(ModalRoute.withName(Application.loginPopRouteName));
+    }else{
+      Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
+    }
+  }
+
   static void navigateToPerfectUserPage(BuildContext context){
     _navigateToPage(context, pathPerfectUserPage, {});
   }
+
   static void navigateToRCTestPage(BuildContext context, ProfileDto profile) {
     Map<String, dynamic> map = Map();
     map["profile"] = profile.toMap();
     _navigateToPage(context, pathRCTest, map);
+  }
+
+  static void navigateToTestPage(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathTest, map);
+  }
+
+  static void navigateToLoginTestPage(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathLoginTest, map);
   }
 
   static void navigateToMediaPickerPage(
@@ -109,7 +133,18 @@ class AppRouter {
   }
 
   static void navigateToLoginPage(BuildContext context) {
-    _navigateToPage(context, pathLogin, {});
+    Map<String, dynamic> map = Map();
+    //将当前页面路由名字存起来 登录完成后直接返回到该页面
+    var route = ModalRoute.of(context);
+    if (route != null) {
+      Application.loginPopRouteName = route.settings.name;
+    }
+    _navigateToPage(context, pathLogin, map);
+  }
+
+  static void navigateToPhoneLoginPage(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathLoginPhone, map);
   }
 
   static void navigateToLiveBroadcast(BuildContext context) {

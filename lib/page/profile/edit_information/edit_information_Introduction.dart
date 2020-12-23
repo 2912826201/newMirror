@@ -19,8 +19,7 @@ class _troductionState extends State<EditInformationIntroduction>{
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
-          return MaterialApp(
-            home: Scaffold(
+          return Scaffold(
               body: Container(
                 color: AppColor.white,
                 height: height,
@@ -41,8 +40,7 @@ class _troductionState extends State<EditInformationIntroduction>{
                   ],
                 ),
               ),
-            ),
-          );
+            );
   }
 
 
