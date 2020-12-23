@@ -3,29 +3,35 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/page/message/jump_share_message.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/feed_share_select_contact.dart';
 
 // import '../bottom_sheet.dart';
 
 Future openShareBottomSheet({
   @required BuildContext context,
-  @required HomeFeedModel feedModel,
+  @required Map<String, dynamic> map,
+  @required String chatTypeModel,
 }) async {
   await showModalBottomSheet(
       isScrollControlled: true,
       context: context,
       builder: (BuildContext context) {
         return SingleChildScrollView(
-          child: FeedSharePopups(feedModel: feedModel),
+          child: FeedSharePopups(map: map, chatTypeModel: chatTypeModel),
         );
       });
 }
 
 class FeedSharePopups extends StatelessWidget {
-  FeedSharePopups({this.feedModel});
+  String chatTypeModel;
+  Map<String, dynamic> map;
 
-  HomeFeedModel feedModel;
+  FeedSharePopups({this.map, this.chatTypeModel});
+
   List<FeedViewModel> feedViewModel = [];
   List<String> name = ["站内好友", "微信好友", "朋友圈", "微博", "QQ好友", "QQ空间"];
   List<String> image = [
@@ -68,9 +74,11 @@ class FeedSharePopups extends StatelessWidget {
                       print("点击了￥${feedViewModel[index].name}");
                       Navigator.of(context).pop(1);
                       if(feedViewModel[index].name == "站内好友") {
-                         Navigator.push(context, MaterialPageRoute(builder: (_) {
-                           return FriendsPage();
-                         }));
+                        Navigator.push(context, MaterialPageRoute(builder: (_) {
+                          return FriendsPage(voidCallback: (text, context) {
+                            JumpShareMessage(map, chatTypeModel, text, context);
+                          });
+                        }));
                       };
 
                     },

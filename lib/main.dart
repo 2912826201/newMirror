@@ -105,7 +105,7 @@ Future _initApp() async {
     Application.cameras = [];
   }
 
-  //获取视频课标签列表
+  //todo 获取视频课标签列表 其实在没有登录时无法获取
   try {
     Map<String, dynamic> videoCourseTagMap = await getAllTags();
     Application.videoTagModel = VideoTagModel.fromJson(videoCourseTagMap);
