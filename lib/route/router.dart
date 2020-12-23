@@ -42,20 +42,6 @@ class AppRouter {
   static String pathEditInformationName = "profileeditinformationname";
   static String pathEditInformationIntroduction = "profileeditinformationintroduction";
   static String pathChatPage = "/chatPage";
-
-  static String pathPreviewPhoto = "/previewPhoto";
-  static String pathLiveBroadcast = "/liveBroadcast";
-  static String pathLiveDetail = "/liveDetail";
-  static String pathVideoDetail = "/videoDetail";
-  static String pathVideoCourseList = "/videoCourseList";
-  static String pathProfileScanCode = "/ProfileScanCode";
-  static String pathProfileDetails = "/ProfileDetails";
-  static String pathProfileDetailsMore = "/ProfileDetailsMore";
-  static String pathProfileAddRemarks = "/ProfileAddRemarks";
-  static String pathEditInformation = "ProfileEditInformation";
-  static String pathEditInformationName = "ProfileEditInformationName";
-  static String pathEditInformationIntroduction = "ProfileEditInformationIntroduction";
-  static String pathEditInformationCropImage = "ProfileEditInformationCropImage";
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(
         handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
