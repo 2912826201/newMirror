@@ -13,6 +13,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/profile_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
@@ -298,10 +299,18 @@ class _ProfileDetailState extends State<ProfileDetailPage>
             ),
             actions: [
               InkWell(
-                onTap: (){
-                  openShareBottomSheet(context: context);
-                },
-                child: Image.asset(_imgShared, width: 24, height: 24,),),
+                onTap: () {
+                    openShareBottomSheet(
+                        context: context,
+                        map: userModel.toJson(),
+                        chatTypeModel: ChatTypeModel.USER_INFORMATION);
+                  },
+                  child: Image.asset(
+                    _imgShared,
+                    width: 24,
+                    height: 24,
+                  ),
+                ),
               SizedBox(width: 16,),
               !isMselfId?InkWell(
                 onTap: (){

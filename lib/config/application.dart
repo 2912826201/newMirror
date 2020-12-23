@@ -61,12 +61,6 @@ class Application {
   //全局的记录发送验证码的手机号
   static String sendSmsPhoneNum;
 
-  //直播详情页
-  static LiveModel liveModel;
-
-  //视频详情页
-  static LiveModel videoModel;
-
   //键盘的高度
   static double keyboardHeight = 0;
 }

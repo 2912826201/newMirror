@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
 import 'package:mirror/page/message/test_message_post.dart';
@@ -24,6 +25,9 @@ enum ButtonType { voice, more }
 
 class ChatPage1 extends StatefulWidget {
   final _ChatPageState1 _state = _ChatPageState1();
+  final ConversationDto conversation;
+
+  ChatPage1({Key key, this.conversation}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -71,7 +75,7 @@ class _ChatPageState1 extends State<ChatPage1>
         resizeToAvoidBottomInset: isResizeToAvoidBottomInset,
         appBar: AppBar(
           title: Text(
-            "聊天界面" * 10,
+            widget.conversation?.name ?? "聊天界面",
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),

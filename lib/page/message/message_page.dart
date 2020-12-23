@@ -9,8 +9,10 @@ import 'package:mirror/data/dto/friends_cell_dto.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/count_badge.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:provider/provider.dart';
@@ -247,13 +249,40 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   }
 
   Widget _buildConversationItem(int index, ConversationDto conversation) {
+    return GestureDetector(
+      child: _conversationItem(index, conversation),
+      onTap: () {
+        if (conversation.type == OFFICIAL_TYPE) {
+          ToastShow.show(msg: "系统消息的type类型", context: context);
+        } else if (conversation.type == LIVE_TYPE) {
+          ToastShow.show(msg: "直播消息的type类型", context: context);
+        } else if (conversation.type == TRAINING_TYPE) {
+          ToastShow.show(msg: "运动消息的type类型", context: context);
+        } else if (conversation.type == MANAGER_TYPE) {
+          ToastShow.show(msg: "管家会话的type类型", context: context);
+        } else if (conversation.type == PRIVATE_TYPE) {
+          ToastShow.show(msg: "私聊会话的type类型", context: context);
+        } else if (conversation.type == GROUP_TYPE) {
+          ToastShow.show(msg: "群聊会话的type类型", context: context);
+        } else {
+          ToastShow.show(msg: "未知消息", context: context);
+        }
+        //todo 去聊天界面 暂时还没有细分是哪一个界面
+        AppRouter.navigateToChatPage(context, conversation: conversation);
+      },
+    );
+  }
+
+  Widget _conversationItem(int index, ConversationDto conversation) {
     MessageContent msgContent = MessageContent();
     msgContent.decode(conversation.content);
     bool isMentioned = msgContent.mentionedInfo != null &&
-        msgContent.mentionedInfo.userIdList.contains(Application.profile.uid.toString());
+        msgContent.mentionedInfo.userIdList
+            .contains(Application.profile.uid.toString());
     return Container(
       height: 69,
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      color: AppColor.transparent,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -279,16 +308,16 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                   ),
                 ),
                 conversation.type == OFFICIAL_TYPE ||
-                        conversation.type == LIVE_TYPE ||
-                        conversation.type == TRAINING_TYPE
+                    conversation.type == LIVE_TYPE ||
+                    conversation.type == TRAINING_TYPE
                     ? Positioned(
-                        right: 0,
-                        bottom: 0,
-                        child: Container(
-                          height: 16,
-                          width: 16,
-                          color: AppColor.bgBlack,
-                        ))
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      height: 16,
+                      width: 16,
+                      color: AppColor.bgBlack,
+                    ))
                     : Container()
               ],
             ),
@@ -304,13 +333,15 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                   children: [
                     Expanded(
                         child: Text(
-                      "${conversation.name}",
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                      style: AppStyle.textRegular14,
-                    )),
+                          "${conversation.name}",
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                          style: AppStyle.textRegular14,
+                        )),
                     Text(
-                      DateUtil.formatDateTimeString(DateTime.fromMillisecondsSinceEpoch(conversation.updateTime)),
+                      DateUtil.formatDateTimeString(
+                          DateTime.fromMillisecondsSinceEpoch(
+                              conversation.updateTime)),
                       style: AppStyle.textHintRegular12,
                     )
                   ],
@@ -321,17 +352,17 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                   children: [
                     isMentioned
                         ? Text(
-                            "[有人@你]",
-                            style: AppStyle.textRegularRed13,
-                          )
+                      "[有人@你]",
+                      style: AppStyle.textRegularRed13,
+                    )
                         : Container(),
                     Expanded(
                         child: Text(
-                      "${conversation.content}",
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                      style: AppStyle.textSecondaryRegular13,
-                    )),
+                          "${conversation.content}",
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                          style: AppStyle.textSecondaryRegular13,
+                        )),
                     SizedBox(
                       width: 12,
                     ),

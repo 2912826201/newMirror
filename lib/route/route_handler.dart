@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/page/feed/like.dart';
@@ -120,10 +121,7 @@ var handlerVideoCourseList = Handler(handlerFunc: (BuildContext context, Map<Str
 
 var handlerLiveDetail = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  //todo 暂时使用 使用Application 转存取
-  LiveModel liveModel = Application.liveModel;
-  Application.liveModel = null;
-
+  LiveModel liveModel = LiveModel.fromJson(data["liveModel"]);
   return LiveDetailPage(
     heroTag: data["heroTag"],
     liveCourseId: data["liveCourseId"],
@@ -134,11 +132,7 @@ var handlerLiveDetail = Handler(handlerFunc: (BuildContext context, Map<String, 
 
 var handlerVideoDetail = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-
-  //todo 暂时使用 使用Application 转存取
-  LiveModel videoModel = Application.videoModel;
-  Application.videoModel = null;
-
+  LiveModel videoModel = LiveModel.fromJson(data["videoModel"]);
   return VideoDetailPage(
     heroTag: data["heroTag"],
     liveCourseId: data["liveCourseId"],
@@ -162,5 +156,11 @@ var handlerPerfectUserPage = Handler(handlerFunc: (BuildContext context, Map<Str
 var handlerChatPage = Handler(
     handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return ChatPage1();
+  try {
+    ConversationDto conversation =
+        ConversationDto.fromMap(data["conversation"]);
+    return ChatPage1(conversation: conversation);
+  } catch (e) {
+    return ChatPage1();
+  }
 });

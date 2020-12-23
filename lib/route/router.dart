@@ -125,8 +125,7 @@ class AppRouter {
     map["heroTag"] = heroTag;
     map["liveCourseId"] = liveCourseId;
     map["courseId"] = courseId;
-    //todo 暂时使用 使用Application 转存取
-    Application.liveModel = liveModel;
+    map["liveModel"] = liveModel.toJson();
     _navigateToPage(context, pathLiveDetail, map);
   }
 
@@ -136,8 +135,7 @@ class AppRouter {
     map["heroTag"] = heroTag;
     map["liveCourseId"] = liveCourseId;
     map["courseId"] = courseId;
-    //todo 暂时使用 使用Application 转存取
-    Application.videoModel = videoModel;
+    map["videoModel"] = videoModel.toJson();
     _navigateToPage(context, pathVideoDetail, map);
   }
 
@@ -179,8 +177,12 @@ class AppRouter {
     _navigateToPage(context, pathRelease, map);
   }
 
-  static void navigateToChatPage(BuildContext context) {
+  static void navigateToChatPage(BuildContext context,
+      {ConversationDto conversation}) {
     Map<String, dynamic> map = Map();
+    if (conversation != null) {
+      map["conversation"] = conversation.toMap();
+    }
     _navigateToPage(context, pathChatPage, map);
   }
 

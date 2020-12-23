@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:lpinyin/lpinyin.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
+
+typedef VoidCallback = void Function(String content, BuildContext context);
 
 // 通讯录数据
 class Friends {
@@ -13,7 +16,6 @@ class Friends {
 
   Friends({this.imageUrl, this.name, this.indexLetter, this.uid});
 }
-
 
 // 通讯录索引bar
 class IndexBar extends StatefulWidget {
@@ -219,6 +221,13 @@ const INDEX_WORDS = [
 ];
 
 class FriendsPage extends StatefulWidget {
+  final VoidCallback voidCallback;
+
+  const FriendsPage({
+    Key key,
+    this.voidCallback,
+  }) : super(key: key);
+
   @override
   _FriendsPageState createState() => _FriendsPageState();
 }
@@ -363,7 +372,8 @@ class _FriendsPageState extends State<FriendsPage> {
       imageUrl: _listDatas[index].imageUrl,
       name: _listDatas[index].name,
       groupTitle: _hideIndexLetter ? null : _listDatas[index].indexLetter,
-      noBottomIndex:noBottomIndex ,
+      noBottomIndex: noBottomIndex,
+      voidCallback: widget.voidCallback,
     );
   }
 
@@ -466,12 +476,33 @@ class _FriendsCell extends StatelessWidget {
   final String name;
   final String groupTitle;
   final String imageAssets;
+  final VoidCallback voidCallback;
   int noBottomIndex = 0;
 
-   _FriendsCell({this.imageUrl, this.name, this.imageAssets, this.groupTitle, this.noBottomIndex = 0}); //首字母大写
+  _FriendsCell(
+      {this.imageUrl,
+      this.name,
+      this.imageAssets,
+      this.groupTitle,
+      this.noBottomIndex = 0,
+      this.voidCallback}); //首字母大写
 
   @override
   Widget build(BuildContext context) {
+    return GestureDetector(
+      child: Container(
+        child: _buildUi(),
+      ),
+      onTap: () {
+        print(name);
+        if (voidCallback != null) {
+          voidCallback(name, context);
+        }
+      },
+    );
+  }
+
+  Widget _buildUi() {
     return Column(
       children: <Widget>[
         Container(
@@ -516,6 +547,7 @@ class _FriendsCell extends StatelessWidget {
       ],
     );
   }
+
 }
 
 // 返回搜字母大写
