@@ -15,7 +15,7 @@ import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/media_picker/gallery_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/media_picker/preview_photo_page.dart';
-import 'package:mirror/page/message/chat_page1.dart';
+import 'package:mirror/page/message/chat_page.dart';
 import 'package:mirror/page/profile/Profile_add_remarks.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_Introduction.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_name.dart';
@@ -32,6 +32,7 @@ import 'package:mirror/page/training/video_course/video_course_list_page.dart';
 import 'package:mirror/page/training/video_course/video_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 /// route_handler
 /// Created by yangjiayi on 2020/11/14.
@@ -172,10 +173,8 @@ var handlerPerfectUserPage = Handler(handlerFunc: (BuildContext context, Map<Str
 
 var handlerChatPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  try {
-    ConversationDto conversation = ConversationDto.fromMap(data["conversation"]);
-    return ChatPage1(conversation: conversation);
-  } catch (e) {
-    return ChatPage1();
-  }
+  ConversationDto conversation = ConversationDto.fromMap(data["conversation"]);
+  Message shareMessage = Application.shareMessage;
+  Application.shareMessage = null;
+  return ChatPage(conversation: conversation, shareMessage: shareMessage);
 });

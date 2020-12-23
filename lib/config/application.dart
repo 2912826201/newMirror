@@ -8,6 +8,7 @@ import 'package:mirror/data/model/token_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/im/rongcloud.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 /// application
 /// Created by yangjiayi on 2020/11/14.
@@ -59,11 +60,14 @@ class Application {
   static String loginPopRouteName;
 
   //发送验证码的全局计时
-  static int smsCodeSendTime ;
+  static int smsCodeSendTime;
 
   //全局的记录发送验证码的手机号
   static String sendSmsPhoneNum;
 
   //键盘的高度
   static double keyboardHeight = 0;
+
+  //用户分享的消息
+  static Message shareMessage;
 }

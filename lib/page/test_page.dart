@@ -14,6 +14,8 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:provider/provider.dart';
 
+import 'message/test_message_post.dart';
+import 'profile/login_test_page.dart';
 import 'training/video_course/video_course_play_page.dart';
 import 'training/video_course/video_course_play_page2.dart';
 
@@ -188,7 +190,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                   ),
                   RaisedButton(
                     onPressed: () {
-                      AppRouter.navigateToChatPage(context);
+                      jumpChatPageTest(context);
                     },
                     child: Text("聊天界面"),
                   ),

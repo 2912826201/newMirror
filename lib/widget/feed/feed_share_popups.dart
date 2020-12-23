@@ -2,11 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/message/chat_type_model.dart';
-import 'package:mirror/page/message/jump_share_message.dart';
+import 'package:mirror/page/message/test_message_post.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/feed_share_select_contact.dart';
 
 // import '../bottom_sheet.dart';
@@ -75,12 +72,11 @@ class FeedSharePopups extends StatelessWidget {
                       Navigator.of(context).pop(1);
                       if(feedViewModel[index].name == "站内好友") {
                         Navigator.push(context, MaterialPageRoute(builder: (_) {
-                          return FriendsPage(voidCallback: (text, context) {
-                            JumpShareMessage(map, chatTypeModel, text, context);
+                          return FriendsPage(voidCallback: (name, context) {
+                            jumpShareMessage(map, chatTypeModel, name, context);
                           });
                         }));
-                      };
-
+                      }
                     },
                     child: Container(
                       child: Column(

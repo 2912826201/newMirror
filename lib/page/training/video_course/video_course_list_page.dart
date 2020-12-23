@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/live_broadcast/live_api.dart';
@@ -10,6 +11,7 @@ import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -669,6 +671,8 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
         ),
       ),
       onTap: () {
+        //点击事件
+        print("====heroTagArray[index]:${heroTagArray[index]}");
         AppRouter.navigateToVideoDetail(context, heroTagArray[index],
             videoModel.id, videoModel.courseId, videoModel);
       },
@@ -677,15 +681,29 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
 
   //获取left的图片
   Widget _getItemLeftImageUi(LiveModel value, int index) {
+    String imageUrl;
+    if (value.playBackUrl != null) {
+      imageUrl = value.playBackUrl;
+    } else if (value.videoUrl != null) {
+      imageUrl = FileUtil.getVideoFirstPhoto(value.videoUrl);
+    }
     return Container(
       width: 120,
       height: 90,
       child: Hero(
-        child: Image.asset(
-          "images/test/bg.png",
-          width: 120,
+        child: CachedNetworkImage(
           height: 90,
+          width: 120,
+          imageUrl: imageUrl == null ? "" : imageUrl,
           fit: BoxFit.cover,
+          placeholder: (context, url) => Image.asset(
+            "images/test/bg.png",
+            fit: BoxFit.cover,
+          ),
+          errorWidget: (context, url, error) => Image.asset(
+            "images/test/bg.png",
+            fit: BoxFit.cover,
+          ),
         ),
         tag: getHeroTag(value, index),
       ),
@@ -789,12 +807,16 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
 
 
   //给hero的tag设置唯一的值
-  Object getHeroTag(LiveModel liveModel, index) {
-    String string =
-        "heroTag_${DateUtil.getNowDateMs()}_${Random().nextInt(
-        100000)}_${liveModel.id}_$index";
-    heroTagArray.add(string);
-    return string;
+  Object getHeroTag(LiveModel videoModel, index) {
+    if (heroTagArray != null && heroTagArray.length > index) {
+      return heroTagArray[index];
+    } else {
+      String string =
+          "heroTag_video_${DateUtil.getNowDateMs()}_${Random().nextInt(
+          100000)}_${videoModel.id}_$index";
+      heroTagArray.add(string);
+      return string;
+    }
   }
 
   //初始化数据
@@ -853,6 +875,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
       if (model != null && model["list"] != null) {
         _lastId = model["lastId"];
         model["list"].forEach((v) {
+          print(v.toString());
           videoModelArray.add(LiveModel.fromJson(v));
           videoModelArray.add(LiveModel.fromJson(v));
           videoModelArray.add(LiveModel.fromJson(v));

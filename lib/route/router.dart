@@ -8,6 +8,7 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/route/route_handler.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -214,12 +215,15 @@ class AppRouter {
     _navigateToPage(context, pathRelease, map);
   }
 
-  static void navigateToChatPage(BuildContext context,
-      {ConversationDto conversation}) {
+  static void navigateToChatPage(
+      {@required BuildContext context,
+      @required ConversationDto conversation,
+      Message shareMessage}) {
     Map<String, dynamic> map = Map();
     if (conversation != null) {
       map["conversation"] = conversation.toMap();
     }
+    Application.shareMessage = shareMessage;
     _navigateToPage(context, pathChatPage, map);
   }
 

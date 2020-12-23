@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -102,7 +103,7 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
           ),
           Text(
             DateUtil.formatDateNoYearString(
-                    DateUtil.stringToDateTime(startTime)) +
+                DateUtil.stringToDateTime(startTime)) +
                 "${DateUtil.isToday(DateUtil.stringToDateTime(startTime)) ? " (今天) " : "  "}" +
                 "${DateUtil.formatTimeString(DateUtil.stringToDateTime(startTime))}"
                     "-"
@@ -118,8 +119,7 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     this.updateStatusBarBrightness(shrinkOffset);
     return Container(
       height: this.maxExtent,
@@ -130,7 +130,20 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
           //背景图
           Container(
               child: Hero(
-            child: Image.asset(this.coverImgUrl, fit: BoxFit.cover),
+            child: CachedNetworkImage(
+              height: double.infinity,
+              width: double.infinity,
+              imageUrl: this.coverImgUrl == null ? "" : this.coverImgUrl,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Image.asset(
+                "images/test/bg.png",
+                fit: BoxFit.cover,
+              ),
+              errorWidget: (context, url, error) => Image.asset(
+                "images/test/bg.png",
+                fit: BoxFit.cover,
+              ),
+            ),
             tag: heroTag,
           )),
           //文字背景色
@@ -206,24 +219,24 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
                       ),
                       Expanded(
                           child: SizedBox(
-                        child: Offstage(
-                          offstage: isGoneTitle,
-                          child: Container(
-                            padding: const EdgeInsets.only(left: 30),
-                            child: Text(
-                              this.title,
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w500,
-                                color: AppColor.white,
+                            child: Offstage(
+                              offstage: isGoneTitle,
+                              child: Container(
+                                padding: const EdgeInsets.only(left: 30),
+                                child: Text(
+                                  this.title,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColor.white,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                              textAlign: TextAlign.center,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                        ),
-                      )),
+                          )),
                       Row(
                         children: [
                           IconButton(

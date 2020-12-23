@@ -9,6 +9,7 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/training/video_course/sliver_custom_header_delegate_video.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -125,7 +126,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   @override
   void initState() {
     super.initState();
-
+    print("====heroTag:${heroTag}");
     courseCommentHot = null;
     courseCommentTime = null;
     loadingStatusComment = LoadingStatus.STATUS_LOADING;
@@ -224,16 +225,17 @@ class VideoDetailPageState extends State<VideoDetailPage> {
 
   //加载数据成功时的布局
   Widget _buildSuggestionsComplete() {
+    String imageUrl;
+    if (videoModel.playBackUrl != null) {
+      imageUrl = videoModel.playBackUrl;
+    } else if (videoModel.videoUrl != null) {
+      imageUrl = FileUtil.getVideoFirstPhoto(videoModel.videoUrl);
+    }
+
     Widget widget = Container(
       color: AppColor.white,
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
-      height: MediaQuery
-          .of(context)
-          .size
-          .height,
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
       child: Column(
         children: [
           Container(
@@ -305,7 +307,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                               .of(context)
                               .padding
                               .top,
-                          coverImgUrl: 'images/test/bg.png',
+                          coverImgUrl: imageUrl,
                           heroTag: heroTag,
                           startTime: videoModel.startTime,
                           endTime: videoModel.endTime,
