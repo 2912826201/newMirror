@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/api/basic_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
@@ -8,6 +9,7 @@ import 'package:mirror/data/model/token_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/im/message_manager.dart';
 import 'package:provider/provider.dart';
 
 import 'package:mirror/route/router.dart';
@@ -43,6 +45,10 @@ class LoginTestPage extends StatelessWidget {
                 context.read<TokenNotifier>().setToken(tokenDto);
                 await ProfileDBHelper().clearProfile();
                 context.read<ProfileNotifier>().setProfile(ProfileDto.fromUserModel(UserModel()));
+                // 登出融云
+                Application.rongCloud.disconnect();
+                //TODO 处理登出后需要清掉的用户数据
+                MessageManager.clearUserMessage(context);
               } else {
                 //失败的情况下 登出将无token可用 所以不能继续登出
               }

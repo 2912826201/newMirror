@@ -4,15 +4,18 @@ import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
-import 'package:mirror/data/model/post_feed/post_feed.dart';
 import 'package:mirror/data/model/token_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
+import 'package:mirror/im/rongcloud.dart';
 
 /// application
 /// Created by yangjiayi on 2020/11/14.
 
 class Application {
+  //融云
+  static RongCloud rongCloud;
+
   //页面路由
   static FluroRouter router;
 
@@ -41,9 +44,9 @@ class Application {
   static bool isArouse = false;
 
   // 评论类型
-  static  CommentTypes commentTypes = CommentTypes.commentFeed;
+  static CommentTypes commentTypes = CommentTypes.commentFeed;
 
-// 动态主评论
+  // 动态主评论
   static CommentDtoModel commentDtoModel;
 
   // 动态子评论
@@ -52,9 +55,12 @@ class Application {
   // 用于传递所选图片视频内容，用完后需要删除
   static SelectedMediaFiles selectedMediaFiles;
 
-  //直播详情页
-  static LiveModel liveModel;
+  //发送验证码的全局计时
+  static int smsCodeSendTime ;
 
-  //视频详情页
-  static LiveModel videoModel;
+  //全局的记录发送验证码的手机号
+  static String sendSmsPhoneNum;
+
+  //键盘的高度
+  static double keyboardHeight = 0;
 }

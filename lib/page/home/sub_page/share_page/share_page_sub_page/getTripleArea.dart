@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
@@ -181,15 +182,17 @@ class GetTripleAreaState extends State<GetTripleArea> {
         Container(
           margin: EdgeInsets.only(left: 16),
           child:GestureDetector(
-            onTap: () {
-              openShareBottomSheet(context: context, feedModel: widget.model);
-            },
+              onTap: () {
+                openShareBottomSheet(
+                    context: context,
+                    map: widget.model.toJson(),
+                    chatTypeModel: ChatTypeModel.FEED);
+              },
               child: Image.asset(
                 "images/test/分享.png",
                 width: 24,
                 height: 24,
-              )
-    ),
+              )),
 
         ),
         Container(

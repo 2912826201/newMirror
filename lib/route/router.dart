@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/data/dto/conversation_dto.dart';
+
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
@@ -24,6 +26,23 @@ class AppRouter {
   static String pathMediaPicker = "/mediapicker";
   static String pathLike = "/like";
   static String pathRelease = "/release";
+  static String pathPerfectUserPage = "/perfectuser";
+  static String pathPreviewPhoto = "/previewphoto";
+  static String pathLiveBroadcast = "/livebroadcast";
+  static String pathLiveDetail = "/livedetail";
+  static String pathVideoDetail = "/videodetail";
+  static String pathVideoCourseList = "/videocourselist";
+  static String pathScanCode = "/scancode";
+  static String pathMineDetails = "/minedetails";
+  static String pathProfileScanCode = "/profilescancode";
+  static String pathProfileDetails = "/profiledetails";
+  static String pathProfileDetailsMore = "/profiledetailsmore";
+  static String pathProfileAddRemarks = "/profileaddremarks";
+  static String pathEditInformation = "profileeditinformation";
+  static String pathEditInformationName = "profileeditinformationname";
+  static String pathEditInformationIntroduction = "profileeditinformationintroduction";
+  static String pathChatPage = "/chatPage";
+
   static String pathPreviewPhoto = "/previewPhoto";
   static String pathLiveBroadcast = "/liveBroadcast";
   static String pathLiveDetail = "/liveDetail";
@@ -50,6 +69,8 @@ class AppRouter {
     router.define(pathLogin, handler: handlerLogin);
     router.define(pathLike, handler: handlerLike);
     router.define(pathRelease, handler: handlerReleaseFeed);
+    router.define(pathPerfectUserPage, handler: handlerPerfectUserPage);
+    router.define(pathChatPage, handler: handlerChatPage);
     router.define(pathPreviewPhoto, handler: handlerPreviewPhoto);
     router.define(pathLiveBroadcast, handler: handlerLiveBroadcast);
     router.define(pathLiveDetail, handler: handlerLiveDetail);
@@ -62,7 +83,6 @@ class AppRouter {
     router.define(pathEditInformation, handler: handlerEditInformation);
     router.define(pathEditInformationName, handler: handlerEditInformationName);
     router.define(pathEditInformationIntroduction, handler: handlerEditInformationIntroduction);
-    router.define(pathEditInformationCropImage, handler: handlerEditInformationCropImage);
 
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
@@ -79,7 +99,9 @@ class AppRouter {
       Application.router.navigateTo(context, uri).then(callback);
     }
   }
-
+  static void navigateToPerfectUserPage(BuildContext context){
+    _navigateToPage(context, pathPerfectUserPage, {});
+  }
   static void navigateToRCTestPage(BuildContext context, ProfileDto profile) {
     Map<String, dynamic> map = Map();
     map["profile"] = profile.toMap();
@@ -117,8 +139,7 @@ class AppRouter {
     map["heroTag"] = heroTag;
     map["liveCourseId"] = liveCourseId;
     map["courseId"] = courseId;
-    //todo 暂时使用 使用Application 转存取
-    Application.liveModel = liveModel;
+    map["liveModel"] = liveModel.toJson();
     _navigateToPage(context, pathLiveDetail, map);
   }
 
@@ -128,8 +149,7 @@ class AppRouter {
     map["heroTag"] = heroTag;
     map["liveCourseId"] = liveCourseId;
     map["courseId"] = courseId;
-    //todo 暂时使用 使用Application 转存取
-    Application.videoModel = videoModel;
+    map["videoModel"] = videoModel.toJson();
     _navigateToPage(context, pathVideoDetail, map);
   }
 
@@ -154,15 +174,6 @@ class AppRouter {
   static void navigationToEditInfomationIntroduction(BuildContext context) {
     _navigateToPage(context, pathEditInformationIntroduction, {});
   }
-  static void navigationToEditInfomationCropImage(BuildContext context,int maxImageAmount,RequestType requestType,bool needCrop,bool cropOnlySquare,bool isGoToPublish) {
-    Map<String,dynamic> map = Map();
-    map["maxImageAmount"] = maxImageAmount;
-    map["requestType"] = requestType;
-    map["needCrop"] = needCrop;
-    map["cropOnlySquare"] = cropOnlySquare;
-    map["isGoToPublish"] = isGoToPublish;
-    _navigateToPage(context, pathEditInformationCropImage, map);
-  }
   static void navigateToLikePage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathLike, map);
@@ -180,7 +191,17 @@ class AppRouter {
     _navigateToPage(context, pathRelease, map);
   }
 
-  static void navigateToPreviewPhotoPage(BuildContext context, String filePath, Function(dynamic result) callback) {
+  static void navigateToChatPage(BuildContext context,
+      {ConversationDto conversation}) {
+    Map<String, dynamic> map = Map();
+    if (conversation != null) {
+      map["conversation"] = conversation.toMap();
+    }
+    _navigateToPage(context, pathChatPage, map);
+  }
+
+  static void navigateToPreviewPhotoPage(BuildContext context, String filePath,
+      Function(dynamic result) callback) {
     Map<String, dynamic> map = Map();
     map["filePath"] = filePath;
     _navigateToPage(context, pathPreviewPhoto, map, callback: callback);

@@ -59,7 +59,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                     width: 28.0,
                     height: 28.0,
                     // height:ScreenUtil.instance.setHeight(28.0),
-                    margin: EdgeInsets.only(right: 10),
+                    margin: const EdgeInsets.only(right: 10),
                   ),
                   Padding(
                     padding: EdgeInsets.only(left: 12),
@@ -171,7 +171,8 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                   ),
                   RaisedButton(
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return ActivationTestPage();
                       }));
                     },
@@ -179,22 +180,34 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                   ),
                 ],
               ),
-              RaisedButton(
-                onPressed: () {
-                  AppRouter.navigateToLiveBroadcast(context);
-                },
-                child: Text("直播日程页"),
-              ),
-              RaisedButton(
-                onPressed: () {
-                  AppRouter.navigateToVideoCourseList(context);
-                },
-                child: Text("视频课程页"),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  RaisedButton(
+                    onPressed: () {
+                      AppRouter.navigateToLiveBroadcast(context);
+                    },
+                    child: Text("直播日程页"),
+                  ),
+                  RaisedButton(
+                    onPressed: () {
+                      AppRouter.navigateToVideoCourseList(context);
+                    },
+                    child: Text("视频课程页"),
+                  ),
+                  RaisedButton(
+                    onPressed: () {
+                      AppRouter.navigateToChatPage(context);
+                    },
+                    child: Text("聊天界面"),
+                  ),
+                ],
               ),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 RaisedButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
                       return LiveRoomPage();
                     }));
                   },

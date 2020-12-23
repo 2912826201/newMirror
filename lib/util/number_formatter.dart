@@ -1,6 +1,6 @@
 
 
-class NumberFormata{
+class NumberFormatter{
  String getNumber(int number) {
     if(number==0||number==null){
       return 0.toString();

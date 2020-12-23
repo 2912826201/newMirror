@@ -34,8 +34,10 @@ class LoginBasePageState extends State<StatefulWidget> implements SteeringPageCa
 
   @mustCallSuper
   uiInitialization() {
-    popBtn = FlatButton(onPressed: back, child: null);
-    skipBtn = FlatButton(onPressed: skip, child: null);
+    popBtn = FlatButton(onPressed: back,
+        child: Image.asset("images/resource/return.png",
+          fit: BoxFit.fill,),padding: EdgeInsets.all(0),);
+    skipBtn = FlatButton(onPressed: skip, child: null,padding: EdgeInsets.all(0),);
   }
 
   @mustCallSuper

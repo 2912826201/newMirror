@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/post_feed/post_feed.dart';
+import 'package:mirror/data/model/feed/post_feed.dart';
 
 class FeedMapNotifier extends ChangeNotifier {
   FeedMapNotifier({this.feedMap, this.feedId,this.postFeedModel});

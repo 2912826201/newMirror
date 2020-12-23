@@ -74,7 +74,8 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
 
   //判断是否获取网络数据
   Widget _buildSuggestions() {
-    if (liveModelArray != null && liveModelArray.length > 0) {
+    if ((liveModelArray != null && liveModelArray.length > 0) ||
+        (liveModelOldArray != null && liveModelOldArray.length > 0)) {
       // setDataCalendar();
       return _getUi();
     } else {
@@ -614,13 +615,14 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     }
     //todo 这里应该是获取对应的日期 但是现在其他日期没有数据
     // Map<String, dynamic> model = await getLiveCourses(date: DateUtil.formatDateString(dataDate));
-    Map<String, dynamic> model = await getLiveCourses(date: "2020-11-16");
+    Map<String, dynamic> model = await getLiveCourses(date: "2020-12-23");
     if (model != null && model["list"] != null) {
       model["list"].forEach((v) {
         liveModelArray.add(LiveModel.fromJson(v));
       });
     }
 
+    print("直播回放的的数量：${liveModelOldArray.length}");
     print("直播当日的的数量：${liveModelArray.length}");
     if (liveModelArray.length > 0) {
       loadingStatus = LoadingStatus.STATUS_COMPLETED;

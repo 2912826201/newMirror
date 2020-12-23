@@ -16,7 +16,7 @@ abstract class LoginBasePageState extends State<StatefulWidget> {
     super.initState();
     backBtnImage ??= _backBtnImage;
     backButton = FlatButton(
-      onPressed: reverseAction,
+      onPressed: popAction,
       child: Image.asset(backBtnImage),
       padding: EdgeInsets.all(0),
     );
@@ -48,7 +48,8 @@ abstract class LoginBasePageState extends State<StatefulWidget> {
 
   //上一步
   @mustCallSuper
-  reverseAction() {
+  popAction() {
+    print("popBack");
     Navigator.pop(context);
   }
 

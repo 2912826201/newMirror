@@ -3,9 +3,12 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/basic_api.dart';
+import 'package:mirror/data/database/db_helper.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/data/notifier/conversation_notifier.dart';
+import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/rongcloud.dart';
@@ -21,17 +24,20 @@ import 'data/dto/token_dto.dart';
 import 'data/model/token_model.dart';
 import 'data/notifier/token_notifier.dart';
 import 'data/notifier/profile_notifier.dart';
+import 'im/message_manager.dart';
 import 'route/router.dart';
 
 void main() {
-  SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor:Colors.transparent);
+  SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
   SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   _initApp().then((value) => runApp(
         MultiProvider(
           providers: [
             ChangeNotifierProvider(create: (_) => TokenNotifier(Application.token)),
             ChangeNotifierProvider(create: (_) => ProfileNotifier(Application.profile)),
-            ChangeNotifierProvider(create: (_) => FeedMapNotifier(feedMap: {}))
+            ChangeNotifierProvider(create: (_) => FeedMapNotifier(feedMap: {})),
+            ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
+            ChangeNotifierProvider(create: (_) => ConversationNotifier()),
           ],
           child: MyApp(),
         ),
@@ -44,13 +50,13 @@ Future _initApp() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // 强制竖屏
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown
-  ]);
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
   //初始化SharedPreferences
   AppPrefs.init();
+
+  //初始化数据库
+  await DBHelper.instance.initDB();
 
   //从数据库获取已登录的用户token或匿名用户token
   TokenDto token = await TokenDBHelper().queryToken();
@@ -85,7 +91,12 @@ Future _initApp() async {
   Application.profile = profile;
 
   //初始化融云IM
-  RongCloud().init();
+  Application.rongCloud = RongCloud.init();
+
+  //初始化页面路由
+  final router = FluroRouter();
+  AppRouter.configureRouter(router);
+  Application.router = router;
 
   //创建各文件路径
   AppConfig.createAppDir();
@@ -98,7 +109,7 @@ Future _initApp() async {
     Application.cameras = [];
   }
 
-  //获取视频课标签列表
+  //todo 获取视频课标签列表 其实在没有登录时无法获取
   try {
     Map<String, dynamic> videoCourseTagMap = await getAllTags();
     Application.videoTagModel = VideoTagModel.fromJson(videoCourseTagMap);
@@ -111,10 +122,21 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
-  MyAppState() {
-    final router = FluroRouter();
-    AppRouter.configureRouter(router);
-    Application.router = router;
+  @override
+  void initState() {
+    //需要APP环境的初始化
+    //融云的状态管理者
+    Application.rongCloud.initStatusManager(context);
+    //融云的收信管理者
+    Application.rongCloud.initReceiveManager(context);
+    //如果已登录
+    if (context.read<TokenNotifier>().isLoggedIn) {
+      // 读取会话数据库
+      MessageManager.loadConversationListFromDatabase(context);
+      // 连接融云
+      Application.rongCloud.connect();
+    }
+    super.initState();
   }
 
   @override
@@ -128,5 +150,13 @@ class MyAppState extends State<MyApp> {
       //通过统一方法处理页面跳转路由
       onGenerateRoute: Application.router.generator,
     );
+  }
+
+  @override
+  void dispose() {
+    print("❌APP dispose！！！❌");
+    DBHelper.instance.closeDB();
+
+    super.dispose();
   }
 }

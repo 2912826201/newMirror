@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/page/login/phone_login_page.dart';
 import 'package:mirror/page/login/login_base_page.dart';
@@ -36,34 +35,45 @@ class _LoginPageState extends LoginBasePageState {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Stack(
-      children: [
-        _backImage(),
-        _interactiveItems(),
-      ],
+      body: Stack(
+        children: [
+       _backImage(),
+       Column(
+        children:
+        [
+          Row(
+            children: [
+            Container(child: this.popBtn,width: 28,height: 28,
+              margin:  EdgeInsets.only(top: ScreenUtil.instance.statusBarHeight+10,left: 16),
+            )
+            ],
+           ),
+           Spacer(),
+          _interactiveItems(),
+        ],
+      ),
+     ],
     ));
   }
 
   //背景图片
   Widget _backImage() {
     return Container(
-        child: Image.asset(
-      "images/test/bg.png",
-      fit: BoxFit.fill,
+      child: Image.asset("images/test/bg.png",
+      fit: BoxFit.cover,
       width: double.infinity,
-      height: double.infinity,
-    ));
+      height: double.infinity,)
+    );
   }
 
   //可选登录选项
   Widget _interactiveItems() {
     return Container(
-      color: Colors.transparent,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [Spacer(), _sloganArea(), _loginOptions(), _agreementArea()],
+        children: [_sloganArea(), _loginOptions(), _agreementArea()],
       ),
-      padding: EdgeInsets.only(bottom: 93 + ScreenUtil.instance.bottomBarHeight, left: 41),
+      margin:const  EdgeInsets.only(bottom: 63, left: 41),
     );
   }
 
@@ -74,7 +84,7 @@ class _LoginPageState extends LoginBasePageState {
     );
     var t = Container(
       child: agreement,
-      margin: EdgeInsets.only(top: 12),
+      margin:const EdgeInsets.only(top: 12),
     );
     return t;
   }
@@ -128,28 +138,28 @@ class _LoginPageState extends LoginBasePageState {
         Container(
           child: _phoneLoginBtn(),
           color: Colors.transparent,
-          margin: EdgeInsets.only(right: 12),
+          margin:const EdgeInsets.only(right: 12),
           width: btnWidth,
           height: btnWidth,
         ),
         Container(
           child: _appleLoginBtn(),
           color: Colors.transparent,
-          margin: EdgeInsets.only(right: 12),
+          margin:const EdgeInsets.only(right: 12),
           width: btnWidth,
           height: btnWidth,
         ),
         Container(
           child: _wechatLoginBtn(),
           color: Colors.transparent,
-          margin: EdgeInsets.only(right: 12),
+          margin:const EdgeInsets.only(right: 12),
           width: btnWidth,
           height: btnWidth,
         ),
         Container(
           child: _qqLoginBtn(),
           color: Colors.transparent,
-          margin: EdgeInsets.only(right: 12),
+          margin:const EdgeInsets.only(right: 12),
           width: btnWidth,
           height: btnWidth,
         )
