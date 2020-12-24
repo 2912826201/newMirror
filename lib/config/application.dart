@@ -1,6 +1,9 @@
+import 'dart:collection';
+
 import 'package:camera/camera.dart';
 import 'package:fluro/fluro.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
+import 'package:mirror/data/dto/region_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
@@ -59,11 +62,17 @@ class Application {
   static String loginPopRouteName;
 
   //发送验证码的全局计时
-  static int smsCodeSendTime ;
+  static int smsCodeSendTime;
 
   //全局的记录发送验证码的手机号
   static String sendSmsPhoneNum;
 
   //键盘的高度
   static double keyboardHeight = 0;
+
+  //省级地区的数据
+  static LinkedHashMap<int, RegionDto> provinceMap = LinkedHashMap<int, RegionDto>();
+
+  //市级地区的数据
+  static Map<int, List<RegionDto>> cityMap = Map<int, List<RegionDto>>();
 }
