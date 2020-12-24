@@ -231,7 +231,7 @@ class _editInformationState extends State<EditInformation> {
               Container(
                 width: width,
                 height: 0.5,
-                color: AppColor.bgWhite_65,
+                color: AppColor.bgWhite.withOpacity(0.65),
               ),
               Container(
                 margin: EdgeInsets.only(top: 16),
@@ -315,7 +315,7 @@ class _editInformationState extends State<EditInformation> {
                 margin: EdgeInsets.only(left: 16, right: 16),
                 width: width,
                 height: 0.5,
-                color: AppColor.bgWhite_65,
+                color: AppColor.bgWhite.withOpacity(0.65),
               ),
               InkWell(
                 onTap: () {
@@ -329,7 +329,7 @@ class _editInformationState extends State<EditInformation> {
                 margin: EdgeInsets.only(left: 16, right: 16),
                 width: width,
                 height: 0.5,
-                color: AppColor.bgWhite_65,
+                color: AppColor.bgWhite.withOpacity(0.65),
               ),
               InkWell(
                 onTap: () {
@@ -341,7 +341,7 @@ class _editInformationState extends State<EditInformation> {
                 margin: EdgeInsets.only(left: 16, right: 16),
                 width: width,
                 height: 0.5,
-                color: AppColor.bgWhite_65,
+                color: AppColor.bgWhite.withOpacity(0.65),
               ),
               InkWell(
                 child: _rowChose(width, "地区", _provinceCity),
@@ -356,7 +356,7 @@ class _editInformationState extends State<EditInformation> {
                 margin: EdgeInsets.only(left: 16, right: 16),
                 width: width,
                 height: 0.5,
-                color: AppColor.bgWhite_65,
+                color: AppColor.bgWhite.withOpacity(0.65),
               ),
               InkWell(
                 child: _rowChose(width, "简介",
@@ -375,7 +375,7 @@ class _editInformationState extends State<EditInformation> {
                 margin: EdgeInsets.only(left: 16, right: 16),
                 width: width,
                 height: 0.5,
-                color: AppColor.bgWhite_65,
+                color: AppColor.bgWhite.withOpacity(0.65),
               ),
 
             ],

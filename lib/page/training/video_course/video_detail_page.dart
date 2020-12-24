@@ -489,7 +489,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       child: Container(
         width: double.infinity,
         height: 12,
-        color: AppColor.bgWhite_65,
+        color: AppColor.bgWhite.withOpacity(0.65),
       ),
     );
   }
@@ -611,7 +611,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
             Container(
               width: double.infinity,
               height: 12,
-              color: AppColor.bgWhite_65,
+              color: AppColor.bgWhite.withOpacity(0.65),
             ),
             SizedBox(height: 23,),
             Row(
@@ -749,7 +749,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
               alignment: Alignment(-1, 0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(14)),
-                color: AppColor.bgWhite_65,
+                color: AppColor.bgWhite.withOpacity(0.65),
               ),
               child: Text("说点什么吧~",
                   style: TextStyle(

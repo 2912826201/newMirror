@@ -81,7 +81,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
                   alignment: Alignment(-1, 0),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(14)),
-                    color: AppColor.bgWhite_65,
+                    color: AppColor.bgWhite.withOpacity(0.65),
                   ),
                   child: Text(widget.isUnderline ? "说点什么吧~" : "喜欢就评论吧~",
                       style: TextStyle(fontSize: 14, color: AppColor.textHint)),

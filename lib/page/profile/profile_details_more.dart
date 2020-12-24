@@ -73,7 +73,7 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
         Container(
           width: width,
           height: 0.5,
-          color: AppColor.bgWhite_65,
+          color: AppColor.bgWhite.withOpacity(0.65),
         ),
         InkWell(
           onTap: (){
@@ -87,7 +87,7 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
         Container(
           width: width,
           height: 0.5,
-          color: AppColor.bgWhite_65,
+          color: AppColor.bgWhite.withOpacity(0.65),
         ),
       ],
     );
@@ -99,13 +99,13 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
         Container(
           width: width,
           height: 0.5,
-          color: AppColor.bgWhite_65,
+          color: AppColor.bgWhite.withOpacity(0.65),
         ),
         _remarks(width),
         Container(
           width: width,
           height: 12,
-          color: AppColor.bgWhite_65,
+          color: AppColor.bgWhite.withOpacity(0.65),
         ),
         InkWell(
           child: _itemSelect(width, AppStyle.textRegular16, "举报"),
@@ -117,7 +117,7 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
           padding: EdgeInsets.only(left: 16,right: 16),
           width: width,
           height: 0.5,
-          color: AppColor.bgWhite_65,
+          color: AppColor.bgWhite.withOpacity(0.65),
         ),
         InkWell(
           onTap: (){
@@ -131,7 +131,7 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
         Container(
           width: width,
           height: 12,
-          color: AppColor.bgWhite_65,
+          color: AppColor.bgWhite.withOpacity(0.65),
         ),
         InkWell(
           onTap: (){
@@ -144,7 +144,7 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
           padding: EdgeInsets.only(left: 16,right: 16),
           width: width,
           height: 0.5,
-          color: AppColor.bgWhite_65,
+          color: AppColor.bgWhite.withOpacity(0.65),
         ),
       ],
     );

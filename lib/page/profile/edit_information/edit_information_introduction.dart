@@ -1,20 +1,18 @@
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
 
 class EditInformationIntroduction extends StatefulWidget{
-  String troduction;
-  EditInformationIntroduction({this.troduction});
+  final String introduction;
+  EditInformationIntroduction({this.introduction});
   @override
-  State<StatefulWidget> createState() {
-   return _troductionState();
+  _IntroductionState createState() {
+   return _IntroductionState();
   }
 
 }
-class _troductionState extends State<EditInformationIntroduction>{
+class _IntroductionState extends State<EditInformationIntroduction>{
   //同步的输入框和上个界面带过来的简介
   String editText;
   //底部的提示int
@@ -23,11 +21,11 @@ class _troductionState extends State<EditInformationIntroduction>{
   void initState() {
     super.initState();
     //先同步简介
-    if(widget.troduction==null||widget.troduction=="去编辑"){
+    if(widget.introduction==null||widget.introduction=="去编辑"){
       editText = "";
     }else{
-      editText = widget.troduction;
-      textLength = widget.troduction.length;
+      editText = widget.introduction;
+      textLength = widget.introduction.length;
     }
   }
   @override
@@ -48,7 +46,7 @@ class _troductionState extends State<EditInformationIntroduction>{
                     Container(
                       width: width,
                       height: 0.5,
-                      color: AppColor.bgWhite_65,
+                      color: AppColor.bgWhite.withOpacity(0.65),
                     ),
                     SizedBox(height: 21,),
                     _inputBox(width),

@@ -74,7 +74,7 @@ class MessageInputBarState extends State<MessageInputBar> {
                       margin: const EdgeInsets.only(
                           top: 8.0, bottom: 8.0, left: 13.0, right: 13.0),
                       decoration: BoxDecoration(
-                          color: AppColor.bgWhite_65,
+                          color: AppColor.bgWhite.withOpacity(0.65),
                           // color: Colors.red,
                           borderRadius: BorderRadius.circular(5.0)),
                       child: LayoutBuilder(builder: widget.edit),

@@ -52,7 +52,7 @@ class _editInformationNameState extends State<EditInformationName>{
                 Container(
                   width: width,
                   height: 0.5,
-                  color: AppColor.bgWhite_65,
+                  color: AppColor.bgWhite.withOpacity(0.65),
                 ),
                   SizedBox(height: 17,),
                   Container(
@@ -64,7 +64,7 @@ class _editInformationNameState extends State<EditInformationName>{
                   margin: EdgeInsets.only(left: 16,right: 16),
                   width: width,
                   height: 0.5,
-                  color: AppColor.bgWhite_65,
+                  color: AppColor.bgWhite.withOpacity(0.65),
                 ),
                   SizedBox(height: 12,),
                   _bottomText(width)

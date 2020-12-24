@@ -41,7 +41,7 @@ class _addRemarkState extends State<ProfileAddRemarks>{
                 Container(
                   width: width,
                   height: 0.5,
-                  color: AppColor.bgWhite_65,
+                  color: AppColor.bgWhite.withOpacity(0.65),
                 ),
                   SizedBox(height: 17,),
                   Container(
@@ -54,7 +54,7 @@ class _addRemarkState extends State<ProfileAddRemarks>{
                   margin: EdgeInsets.only(left: 16,right: 16),
                   width: width,
                   height: 0.5,
-                  color: AppColor.bgWhite_65,
+                  color: AppColor.bgWhite.withOpacity(0.65),
                 ),
                 Container(
                   padding: EdgeInsets.only(top: 12,left: 16),
