@@ -130,8 +130,9 @@ Future<BlackModel> ProfileCheckBlack(int checkId)async {
     return null;
   }
 }
+
 Future<bool> ProfileMoreDenounce(int targetId,int targetType)async{
-  BaseResponseModel responseModel = await requestApi(CHECK_BLACK,{"targetId":targetId,"targetType":targetType,});
+  BaseResponseModel responseModel = await requestApi(DENOUNCE,{"targetId":targetId,"targetType":targetType,});
     if(responseModel.isSuccess){
       return true;
     }else{
