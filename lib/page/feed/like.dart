@@ -22,7 +22,7 @@ class LikeState extends State<Like> {
   List<FeedLaudListModel> laudListModel = [];
   double offset(String texts) {
     // 屏幕宽度减去文字宽度对半分
-    double half = (ScreenUtil.instance.screenWidthDp - getTextSize(texts,TextStyle(fontSize: 16)).width) / 2.0;
+    double half = (ScreenUtil.instance.screenWidthDp - getTextSize(texts,TextStyle(fontSize: 16),1).width) / 2.0;
 
     double offsetWidth = half - 16 - 28;
     return offsetWidth;

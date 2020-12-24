@@ -25,6 +25,7 @@ import 'package:mirror/page/profile/profile_details_more.dart';
 import 'package:mirror/page/profile/sticky_tabBar.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:provider/provider.dart';
@@ -95,6 +96,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
   StateResult fllowState = StateResult.RESULTNULL;
   RefreshController _refreshController = new RefreshController();
+  double textHeight = 10;
   @override
   void initState() {
     super.initState();
@@ -159,6 +161,12 @@ class _ProfileDetailState extends State<ProfileDetailPage>
         _avatar = userModel.avatarUri;
         _id = userModel.uid;
         _signature = userModel.description;
+        if(_signature!=null){
+          ///判断文字的高度，动态改变
+          TextPainter testSize = calculateTextWidth(_signature,AppStyle.textRegular14,255,5);
+          textHeight = testSize.height;
+          print('textHeight==============================$textHeight');
+        }
         _textName = userModel.nickName;
         relation = userModel.relation;
         if (isMselfId) {
@@ -323,7 +331,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
               SizedBox(width: 15.5,)
             ],
             backgroundColor: AppColor.white,
-            expandedHeight: height*0.42-ScreenUtil.instance.statusBarHeight,
+            expandedHeight: height*0.42-ScreenUtil.instance.statusBarHeight+ textHeight,
             ///这里是资料展示页,写在这个里面相当于是appBar的背景板
             flexibleSpace: FlexibleSpaceBar(
                 background: Container(
@@ -363,7 +371,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   ///高斯模糊
   Widget mineHomeData(double height, double width) {
     return Container(
-      height: height*0.42,
+      height: height*0.42+ textHeight,
       color: AppColor.white,
       child: Stack(
         children: [
@@ -400,7 +408,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   ///资料展示
   Widget _MineDetailsData( double height, double width) {
     return Container(
-        height: height*0.42,
+        height: height*0.42 + textHeight,
         width: width,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -443,6 +451,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
             ),
             ///签名
             Container(
+              height: textHeight,
               padding: EdgeInsets.only(left: 16, right: 16),
               width: width * 0.7,
               child: Text(_signature != null ? _signature : "      ",
@@ -566,7 +575,11 @@ class _ProfileDetailState extends State<ProfileDetailPage>
       onTap: () {
       if (isMselfId) {
         ///这里跳转到编辑资料页
-        AppRouter.navigationToEditInfomation(context);
+        AppRouter.navigationToEditInfomation(context,(result){
+          if(result){
+            _getUserInfo();
+          }
+        });
       } else {
         setState(() {
           if (_buttonText == "+ 关注") {
@@ -731,5 +744,23 @@ class _ProfileDetailState extends State<ProfileDetailPage>
       }
 
   }
+
+   calculateTextHeight() {
+     String value = "wwwwwwwwwwwwwww";
+    TextPainter painter = TextPainter(
+      ///AUTO：华为手机如果不指定locale的时候，该方法算出来的文字高度是比系统计算偏小的。
+      maxLines: 2,
+      textDirection: TextDirection.ltr,
+      text: TextSpan(
+        text: value,
+        style: TextStyle(
+          fontWeight: FontWeight.w700,
+          fontSize: 16,
+        )));
+    painter.layout(maxWidth: 262);
+    ///文字的宽度:painter.width
+    print('painter.width==========================${painter.width}');
+    print('painter.height==========================${painter.height}');
+   }
 }
 

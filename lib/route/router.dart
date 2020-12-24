@@ -7,6 +7,8 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/live_model.dart';
+import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/page/main_page.dart';
 import 'package:mirror/route/route_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -187,14 +189,18 @@ class AppRouter {
     map["userId"] = userId;
     _navigateToPage(context, pathProfileAddRemarks,map);
   }
-  static void navigationToEditInfomation(BuildContext context) {
-    _navigateToPage(context, pathEditInformation, {});
+  static void navigationToEditInfomation(BuildContext context,Function(dynamic result) callback) {
+    _navigateToPage(context, pathEditInformation, {},callback: callback);
   }
-  static void navigationToEditInfomationName(BuildContext context) {
-    _navigateToPage(context, pathEditInformationName, {});
+  static void navigationToEditInfomationName(BuildContext context,String username,Function(dynamic result) callback) {
+    Map<String,dynamic> map = Map();
+    map["username"] = username;
+    _navigateToPage(context, pathEditInformationName, map,callback: callback);
   }
-  static void navigationToEditInfomationIntroduction(BuildContext context) {
-    _navigateToPage(context, pathEditInformationIntroduction, {});
+  static void navigationToEditInfomationIntroduction(BuildContext context,String introduction,Function(dynamic result) callback) {
+    Map<String,dynamic> map = Map();
+    map["introduction"] = introduction;
+    _navigateToPage(context, pathEditInformationIntroduction, map,callback: callback);
   }
   static void navigateToLikePage(BuildContext context) {
     Map<String, dynamic> map = Map();

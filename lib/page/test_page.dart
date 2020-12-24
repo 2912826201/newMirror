@@ -135,7 +135,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                   ),
                   RaisedButton(
                     onPressed: () {
-                      Size c = getTextSize("查询数据库", TextStyle(fontSize: 16));
+                      Size c = getTextSize("查询数据库", TextStyle(fontSize: 16),1);
                       print("++++++++++++++++$c+++++++++++++++++++++++");
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return MediaTestPage();

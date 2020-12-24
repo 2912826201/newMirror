@@ -113,16 +113,22 @@ var handlerProfileAddRemarks = Handler(handlerFunc: (BuildContext context, Map<S
   );
 });
 
-var handlerEditInformation = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+var handlerEditInformation = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
   return EditInformation();
 });
 
-var handlerEditInformationName = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return EditInformationName();
+var handlerEditInformationName = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+  Map<String, dynamic> data = json.decode(
+    params[AppRouter.paramData].first);
+  return EditInformationName(
+    userName: data["username"],
+  );
 });
 
-var handlerEditInformationIntroduction = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return EditInformationIntroduction();
+var handlerEditInformationIntroduction = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+  Map<String, dynamic> data = json.decode(
+    params[AppRouter.paramData].first);
+  return EditInformationIntroduction(troduction: data["introduction"],);
 });
 
 var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
@@ -180,4 +186,3 @@ var handlerChatPage = Handler(
       Application.shareMessage = null;
       return ChatPage(conversation: conversation, shareMessage: shareMessage);
     });
-
