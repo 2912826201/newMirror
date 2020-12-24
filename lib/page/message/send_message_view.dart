@@ -1,9 +1,11 @@
-import 'dart:io' as send_message_view;
+import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/page/message/message_view/feed_msg.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import 'message_view/text_msg.dart';
 
@@ -19,40 +21,25 @@ class SendMessageView extends StatefulWidget {
 class _SendMessageViewState extends State<SendMessageView> {
   @override
   Widget build(BuildContext context) {
-    Map msg = widget.model.msg;
+    Message msg = widget.model.msg;
     if (msg == null) {
       print(msg.toString() + "为空");
       return Container();
     }
+    String msgType = msg.objectName;
 
-    String msgType = msg["type"];
-    String msgStr = msg.toString();
+    //todo 目前是使用的是 TextMessage 等以后有了自定义的 再改
+    if (msgType == ChatTypeModel.MESSAGE_TYPE_TEXT) {
+      // return TextMsg(((msg.content) as TextMessage).content, widget.model);
 
-    // bool isIos = send_message_view.Platform.isIOS;
-    // bool iosText = isIos && msgStr.contains('text:');
-    // bool iosImg = isIos && msgStr.contains('imageList:');
-    // var iosS = msgStr.contains('downloadFlag:') && msgStr.contains('second:');
-    // bool iosSound = isIos && iosS;
-
-    if (msgType == ChatTypeModel.COMMENT_TEXT) {
-      return TextMsg(msg['text'], widget.model);
-    } else if (msgType == "Image") {
-      // return new ImgMsg(msg, widget.model);
-    } else if (msgType == 'Sound') {
-      // return new SoundMsg(widget.model);
-//    } else if (msg.toString().contains('snapshotPath') &&
-//        msg.toString().contains('videoPath')) {
-//      return VideoMessage(msg, msgType, widget.data);
-    } else if (msg['tipsType'] == 'Join') {
-      // return JoinMessage(msg);
-    } else if (msg['tipsType'] == 'Quit') {
-      // return QuitMessage(msg);
-    } else if (msg['groupInfoList'][0]['type'] == 'ModifyIntroduction') {
-      // return ModifyNotificationMessage(msg);
-    } else if (msg['groupInfoList'][0]['type'] == 'ModifyName') {
-      // return ModifyGroupInfoMessage(msg);
-    } else {
-      return new Text('未知消息');
+      Map<String, dynamic> model =
+          json.decode(((msg.content) as TextMessage).content);
+      if (model["type"] == ChatTypeModel.MESSAGE_TYPE_TEXT) {
+        return TextMsg(model["content"], widget.model);
+      } else if (model["type"] == ChatTypeModel.MESSAGE_TYPE_FEED) {
+        return FeedMsg(widget.model);
+      }
     }
+    return new Text('未知消息');
   }
 }

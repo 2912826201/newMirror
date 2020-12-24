@@ -2,24 +2,19 @@ import 'dart:math';
 
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/config/application.dart';
 import 'package:mirror/config/shared_preferences.dart';
-import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
-import 'package:mirror/data/dto/token_dto.dart';
-import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/activation_test_page.dart';
-import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/agora_input_page.dart';
 import 'package:mirror/page/media_test_page.dart';
 import 'package:mirror/page/qiniu_test_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_page.dart';
-import 'package:mirror/page/training/video_course/video_test_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:provider/provider.dart';
 
+import 'message/test_message_post.dart';
 import 'profile/login_test_page.dart';
 import 'training/video_course/video_course_play_page.dart';
 import 'training/video_course/video_course_play_page2.dart';
@@ -123,9 +118,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
               ),
               RaisedButton(
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                    return LoginTestPage();
-                  }));
+                  AppRouter.navigateToLoginTestPage(context);
                 },
                 child: Text("登录入口"),
               ),
@@ -197,7 +190,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                   ),
                   RaisedButton(
                     onPressed: () {
-                      AppRouter.navigateToChatPage(context);
+                      jumpChatPageTest(context);
                     },
                     child: Text("聊天界面"),
                   ),

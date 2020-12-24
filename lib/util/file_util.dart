@@ -93,13 +93,20 @@ class FileUtil {
     SyFlutterQiniuStorage.cancelUpload();
   }
 
-  Future<File> writeImageDataToFile(Uint8List imageData, String fileName) async {
+  Future<File> writeImageDataToFile(
+      Uint8List imageData, String fileName) async {
     // 由入参来控制文件名 避免同一时间生成的文件名相同
     String filePath = AppConfig.getAppPicDir() + "/" + fileName + ".jpg";
     return File(filePath).writeAsBytes(imageData);
   }
 
-  Future<UploadResult> upload(SyFlutterQiniuStorage storage, String filepath, String token, String key) async {
+  Future<UploadResult> upload(SyFlutterQiniuStorage storage, String filepath,
+      String token, String key) async {
     storage.upload(filepath, token, key).then((value) => value);
+  }
+
+  //获取视频第一针的图片
+  static String getVideoFirstPhoto(String videoUrl) {
+    return videoUrl + "?vframe/jpg/offset/1";
   }
 }

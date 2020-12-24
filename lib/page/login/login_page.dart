@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mirror/page/login/phone_login_page.dart';
 import 'package:mirror/page/login/login_base_page.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 
 class LoginPage extends StatefulWidget {
@@ -35,35 +35,38 @@ class _LoginPageState extends LoginBasePageState {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-       _backImage(),
-       Column(
-        children:
-        [
-          Row(
-            children: [
-            Container(child: this.popBtn,width: 28,height: 28,
-              margin:  EdgeInsets.only(top: ScreenUtil.instance.statusBarHeight+10,left: 16),
-            )
-            ],
-           ),
-           Spacer(),
-          _interactiveItems(),
-        ],
-      ),
-     ],
+        body: Stack(
+      children: [
+        _backImage(),
+        Column(
+          children: [
+            Row(
+              children: [
+                Container(
+                  child: this.popBtn,
+                  width: 28,
+                  height: 28,
+                  margin: EdgeInsets.only(top: ScreenUtil.instance.statusBarHeight + 10, left: 16),
+                )
+              ],
+            ),
+            Spacer(),
+            _interactiveItems(),
+          ],
+        ),
+      ],
     ));
   }
 
   //背景图片
   Widget _backImage() {
     return Container(
-      child: Image.asset("images/test/bg.png",
+        child: Image.asset(
+      "images/test/bg.png",
       fit: BoxFit.cover,
       width: double.infinity,
-      height: double.infinity,)
-    );
+      height: double.infinity,
+    ));
   }
 
   //可选登录选项
@@ -73,7 +76,7 @@ class _LoginPageState extends LoginBasePageState {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [_sloganArea(), _loginOptions(), _agreementArea()],
       ),
-      margin:const  EdgeInsets.only(bottom: 63, left: 41),
+      margin: const EdgeInsets.only(bottom: 63, left: 41),
     );
   }
 
@@ -84,7 +87,7 @@ class _LoginPageState extends LoginBasePageState {
     );
     var t = Container(
       child: agreement,
-      margin:const EdgeInsets.only(top: 12),
+      margin: const EdgeInsets.only(top: 12),
     );
     return t;
   }
@@ -138,28 +141,28 @@ class _LoginPageState extends LoginBasePageState {
         Container(
           child: _phoneLoginBtn(),
           color: Colors.transparent,
-          margin:const EdgeInsets.only(right: 12),
+          margin: const EdgeInsets.only(right: 12),
           width: btnWidth,
           height: btnWidth,
         ),
         Container(
           child: _appleLoginBtn(),
           color: Colors.transparent,
-          margin:const EdgeInsets.only(right: 12),
+          margin: const EdgeInsets.only(right: 12),
           width: btnWidth,
           height: btnWidth,
         ),
         Container(
           child: _wechatLoginBtn(),
           color: Colors.transparent,
-          margin:const EdgeInsets.only(right: 12),
+          margin: const EdgeInsets.only(right: 12),
           width: btnWidth,
           height: btnWidth,
         ),
         Container(
           child: _qqLoginBtn(),
           color: Colors.transparent,
-          margin:const EdgeInsets.only(right: 12),
+          margin: const EdgeInsets.only(right: 12),
           width: btnWidth,
           height: btnWidth,
         )
@@ -276,21 +279,19 @@ class _LoginPageState extends LoginBasePageState {
     return btn;
   }
 
-  Function _qqLogin() {
+  _qqLogin() {
     print("qq");
   }
 
-  Function _wechatLogin() {
+  _wechatLogin() {
     print("wechat");
   }
 
-  Function _phoneLogin() {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return PhoneLoginPage();
-    }));
+  _phoneLogin() {
+    AppRouter.navigateToPhoneLoginPage(context);
   }
 
-  Function _appleLogin() {
+  _appleLogin() {
     print("apple");
   }
 }

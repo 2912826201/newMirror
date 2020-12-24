@@ -20,6 +20,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../if_page.dart';
+import 'test_message_post.dart';
 
 /// message_page
 /// Created by yangjiayi on 2020/12/21.
@@ -252,23 +253,8 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     return GestureDetector(
       child: _conversationItem(index, conversation),
       onTap: () {
-        if (conversation.type == OFFICIAL_TYPE) {
-          ToastShow.show(msg: "系统消息的type类型", context: context);
-        } else if (conversation.type == LIVE_TYPE) {
-          ToastShow.show(msg: "直播消息的type类型", context: context);
-        } else if (conversation.type == TRAINING_TYPE) {
-          ToastShow.show(msg: "运动消息的type类型", context: context);
-        } else if (conversation.type == MANAGER_TYPE) {
-          ToastShow.show(msg: "管家会话的type类型", context: context);
-        } else if (conversation.type == PRIVATE_TYPE) {
-          ToastShow.show(msg: "私聊会话的type类型", context: context);
-        } else if (conversation.type == GROUP_TYPE) {
-          ToastShow.show(msg: "群聊会话的type类型", context: context);
-        } else {
-          ToastShow.show(msg: "未知消息", context: context);
-        }
-        //todo 去聊天界面 暂时还没有细分是哪一个界面
-        AppRouter.navigateToChatPage(context, conversation: conversation);
+        getMessageType(conversation, context);
+        jumpChatPageConversationDto(context, conversation);
       },
     );
   }

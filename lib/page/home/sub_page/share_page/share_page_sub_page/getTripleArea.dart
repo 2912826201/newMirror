@@ -186,7 +186,7 @@ class GetTripleAreaState extends State<GetTripleArea> {
                 openShareBottomSheet(
                     context: context,
                     map: widget.model.toJson(),
-                    chatTypeModel: ChatTypeModel.FEED);
+                    chatTypeModel: ChatTypeModel.MESSAGE_TYPE_FEED);
               },
               child: Image.asset(
                 "images/test/分享.png",

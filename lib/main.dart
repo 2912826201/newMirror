@@ -5,7 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/data/database/db_helper.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
+import 'package:mirror/data/database/region_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
+import 'package:mirror/data/dto/region_dto.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
@@ -109,11 +111,30 @@ Future _initApp() async {
     Application.cameras = [];
   }
 
+  _initRegionMap();
+
   //todo 获取视频课标签列表 其实在没有登录时无法获取
   try {
     Map<String, dynamic> videoCourseTagMap = await getAllTags();
     Application.videoTagModel = VideoTagModel.fromJson(videoCourseTagMap);
   } catch (e) {}
+}
+
+//初始化地区数据
+_initRegionMap() {
+  RegionDBHelper().queryRegionList().then((regionList) {
+    for (RegionDto region in regionList) {
+      if (region.level == 1) {
+        Application.provinceMap[region.id] = region;
+      } else if (region.level == 2) {
+        if (!Application.cityMap.containsKey(region.parentId)) {
+          //如果map里没有该key 则需要向该key中放入一个空list
+          Application.cityMap[region.parentId] = List<RegionDto>();
+        }
+        Application.cityMap[region.parentId].add(region);
+      }
+    }
+  });
 }
 
 class MyApp extends StatefulWidget {

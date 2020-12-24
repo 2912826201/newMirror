@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:math';
 
-import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/user_api.dart';
@@ -289,12 +287,8 @@ class _SmsCodePageState extends LoginBasePageState {
     //TODO 处理登录完成后的数据加载
     MessageManager.loadConversationListFromDatabase(context);
 
-    //TODO 页面跳转需要处理
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      '/', (route) => false,
-      //true 保留当前栈 false 销毁所有 只留下RepeatLogin
-      arguments: {},
-    );
+    //页面跳转至登录前的页面
+    AppRouter.popToBeforeLogin(context);
   }
 }
 
