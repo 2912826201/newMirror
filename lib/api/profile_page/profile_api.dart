@@ -30,6 +30,8 @@ const String CHECK_BLACK = "/appuser/web/black/checkBlack";
 const String QUERY_BLACKLIST = "/appuser/web/black/queryList";
 ///举报
 const String DENOUNCE ="/appuser/web/user/denounce";
+///更新用户信息
+const String UPDATA_USERINFO = "/ucenter/web/user/updateUserInfo";
 ///关注
 Future<int> ProfileAddFollow(int id)async{
   BaseResponseModel responseModel = await requestApi(ATTENTION,{"targetId":id});
@@ -135,4 +137,29 @@ Future<bool> ProfileMoreDenounce(int targetId,int targetType)async{
     }else{
       return false;
     }
+}
+Future<UserModel> ProfileUpdataUserInfo(String nickName,String avatarUri,{String description,int sex,String birthday,String cityCode,double longitude,String latitude})async {
+  Map<String,dynamic> map = Map();
+  map["nickName"] =nickName ;
+  map["avatarUri"] = avatarUri;
+  if(description!=null){
+    map["description"] = description;
+  }if(sex!=null){
+    map["sex"] = sex;
+  }if(birthday!=null){
+    map["birthday"] = birthday;
+  }if(cityCode!=null){
+    map["cityCode"] = cityCode;
+  }if(longitude!=null){
+    map["longitude"] = longitude;
+  }if(latitude!=null){
+    map["latitude"] = latitude;
+  }
+  BaseResponseModel responseModel = await requestApi(UPDATA_USERINFO,map);
+  if (responseModel.isSuccess) {
+    UserModel model = UserModel.fromJson(responseModel.data);
+    return model;
+  } else {
+    return null;
+  }
 }

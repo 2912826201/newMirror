@@ -21,7 +21,7 @@ class CourseAddressLabel extends StatelessWidget {
     // 文本最大宽度
     double textMaxWidth = maxWidth - 16 - 16 - 3; // 文本最大宽度要减去两边间距16，图片 16，文本和图片间距3.
     // 获取文本宽度
-    double textWidth = getTextSize(text, TextStyle(fontSize: 12)).width;
+    double textWidth = getTextSize(text, TextStyle(fontSize: 12),1).width;
     // 获取背景边框宽度
     double BgWidth = textWidth + 16 + 16 + 3;
     // 为课程时
@@ -34,12 +34,12 @@ class CourseAddressLabel extends StatelessWidget {
       }
     } else {
       // 地址位置
-      if (getTextSize(tas[0], TextStyle(fontSize: 12)).width >= textMaxWidth) {
+      if (getTextSize(tas[0], TextStyle(fontSize: 12),1).width >= textMaxWidth) {
         return (screenWidth - 32 - 12) * 0.25;
       } else {
-        if (getTextSize(tas[0], TextStyle(fontSize: 12)).width + textWidth >
+        if (getTextSize(tas[0], TextStyle(fontSize: 12),1).width + textWidth >
             (screenWidth - 32 - 12 - 32 - 3 - 32 - 3)) {
-          return (screenWidth - 32 - 12) - getTextSize(tas[0], TextStyle(fontSize: 12)).width - 35;
+          return (screenWidth - 32 - 12) - getTextSize(tas[0], TextStyle(fontSize: 12),1).width - 35;
         } else {
           return BgWidth;
         }
@@ -57,7 +57,7 @@ class CourseAddressLabel extends StatelessWidget {
   // 虽然有属性可设置，但是有个问题是汉字和数字，或者汉字和英文混排时，flutter 设置属性超出显示...数字和英文会自动换行。
   String interceptText(String textStr) {
     // 获取文本宽度
-    double textWidth = getTextSize(text, TextStyle(fontSize: 12)).width;
+    double textWidth = getTextSize(text, TextStyle(fontSize: 12),1).width;
     if (textWidth > getTextWidth()) {
       String frontText = textStr.substring(0, getTextWidth() ~/ 12);
       if (interceptNum(frontText) > 0) {

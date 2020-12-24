@@ -10,6 +10,8 @@ import 'package:mirror/util/screen_util.dart';
 
 ///编辑昵称
 class EditInformationName extends StatefulWidget{
+  String userName;
+  EditInformationName({this.userName});
   @override
   State<StatefulWidget> createState() {
    return _editInformationNameState();
@@ -19,9 +21,17 @@ class EditInformationName extends StatefulWidget{
 class _editInformationNameState extends State<EditInformationName>{
   int textLength = 0;
   String _EditText = "";
-  String _newName = "";
   int _reciprocal = 15;
   int nowLength = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _EditText = widget.userName;
+    textLength = widget.userName.length;
+    _reciprocal+= nowLength - textLength;
+    nowLength = textLength;
+  }
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -46,7 +56,6 @@ class _editInformationNameState extends State<EditInformationName>{
                 ),
                   SizedBox(height: 17,),
                   Container(
-                    height:23,
                     width: width,
                     margin: EdgeInsets.only(top: 29),
                     child: _inputWidget(width)
@@ -71,7 +80,7 @@ class _editInformationNameState extends State<EditInformationName>{
       padding: EdgeInsets.only(left: 16,right: 16),
       child: Row(
         children: [
-          Text("0-15个字符，起个好听的，名字吧~",style: AppStyle.textPrimary3Regular14,),
+          Text("0-15个字符，起个好听的名字吧~",style: AppStyle.textPrimary3Regular14,),
           Expanded(child: Container()),
           Text("$_reciprocal",style: AppStyle.textPrimary3Regular14,)
         ],
@@ -94,7 +103,7 @@ class _editInformationNameState extends State<EditInformationName>{
           Expanded(child: Center(child: Text("编辑昵称",style: AppStyle.textMedium18,),),),
           InkWell(
             onTap: (){
-
+              Navigator.pop(this.context,_EditText);
             },
             child: Container(
               height: 28,
@@ -102,8 +111,7 @@ class _editInformationNameState extends State<EditInformationName>{
               child: Center(child: Text("确定",style: TextStyle(fontSize: 14,color: AppColor.white),),),
               decoration: BoxDecoration(
                 color: AppColor.mainRed,
-                borderRadius: BorderRadius.all(Radius.circular(60)),
-                border: Border.all(width: 1, color: AppColor.black))),)
+                borderRadius: BorderRadius.all(Radius.circular(60)),)),)
         ],
       ),
     );
@@ -111,6 +119,12 @@ class _editInformationNameState extends State<EditInformationName>{
   Widget _inputWidget(double width){
     var putFiled = TextField(
       maxLength: 15,
+      controller: TextEditingController.fromValue(TextEditingValue(
+        text: _EditText,
+        selection: TextSelection.fromPosition(TextPosition(
+        affinity: TextAffinity.downstream,
+        offset: _EditText.length))
+      )),
       cursorColor:AppColor.black,
       style: AppStyle.textRegular16,
       decoration: InputDecoration(

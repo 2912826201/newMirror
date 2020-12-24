@@ -45,7 +45,7 @@ class AttentionUserState extends State<AttentionUser> {
                   ),
                   Spacer(),
                   Container(
-                      width: getTextSize("查看全部", TextStyle(fontSize: 14)).width + 20,
+                      width: getTextSize("查看全部", TextStyle(fontSize: 14),1).width + 20,
                       child: Row(children: [
                         Container(
                           margin: EdgeInsets.only(right: 4),

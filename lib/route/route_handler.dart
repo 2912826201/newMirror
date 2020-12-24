@@ -101,11 +101,17 @@ var handlerEditInformation = Handler(handlerFunc: (BuildContext context,Map<Stri
 });
 
 var handlerEditInformationName = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
-  return EditInformationName();
+  Map<String, dynamic> data = json.decode(
+    params[AppRouter.paramData].first);
+  return EditInformationName(
+    userName: data["username"],
+  );
 });
 
 var handlerEditInformationIntroduction = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
-  return EditInformationIntroduction();
+  Map<String, dynamic> data = json.decode(
+    params[AppRouter.paramData].first);
+  return EditInformationIntroduction(troduction: data["introduction"],);
 });
 
 var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {

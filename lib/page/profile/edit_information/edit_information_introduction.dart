@@ -6,6 +6,8 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
 
 class EditInformationIntroduction extends StatefulWidget{
+  String troduction;
+  EditInformationIntroduction({this.troduction});
   @override
   State<StatefulWidget> createState() {
    return _troductionState();
@@ -13,8 +15,21 @@ class EditInformationIntroduction extends StatefulWidget{
 
 }
 class _troductionState extends State<EditInformationIntroduction>{
-  String editText = "";
+  //同步的输入框和上个界面带过来的简介
+  String editText;
+  //底部的提示int
   int textLength = 0;
+  @override
+  void initState() {
+    super.initState();
+    //先同步简介
+    if(widget.troduction==null||widget.troduction=="去编辑"){
+      editText = "";
+    }else{
+      editText = widget.troduction;
+      textLength = widget.troduction.length;
+    }
+  }
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -60,6 +75,13 @@ class _troductionState extends State<EditInformationIntroduction>{
           maxLines: 5,
           cursorColor:AppColor.black,
           style: AppStyle.textRegular16,
+            //初始化值，设置光标始终在最后
+            controller: TextEditingController.fromValue(TextEditingValue(
+              text: editText,
+              selection: TextSelection.fromPosition(TextPosition(
+                affinity: TextAffinity.downstream,
+                offset: editText.length))
+            )),
           decoration: InputDecoration(
             counterText: '',
             hintText: "有意思的简介会吸引更多关注~",
@@ -96,16 +118,15 @@ class _troductionState extends State<EditInformationIntroduction>{
           Expanded(child: Center(child: Text("编辑简介",style: AppStyle.textMedium18,),),),
           InkWell(
             onTap: (){
-
+              Navigator.pop(this.context,editText);
             },
             child: Container(
               height: 28,
               width: 60,
               child: Center(child: Text("确定",style: TextStyle(fontSize: 14,color:AppColor.white),),),
               decoration: BoxDecoration(
-                color: editText.isEmpty?AppColor.textHint:AppColor.mainRed,
-                borderRadius: BorderRadius.all(Radius.circular(60)),
-                border: Border.all(width: 1, color: AppColor.black))),)
+                color: AppColor.mainRed,
+                borderRadius: BorderRadius.all(Radius.circular(60)),)),)
         ],
       ),
     );
