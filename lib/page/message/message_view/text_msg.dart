@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/util/string_util.dart';
@@ -17,7 +18,8 @@ class TextMsg extends StatelessWidget {
   Widget build(BuildContext context) {
     //todo 获取用户id 与消息里面的id进行对比 判断是不是我自己的消息
 
-    bool isMyself = Random().nextInt(1000) > 500;
+    bool isMyself =
+        Application.profile.uid.toString() == model.msg.senderUserId;
     String imageUrl = "images/test/icon_white_message_bugle.png";
     if (isMyself) {
       imageUrl = "images/test/icon_black_message_bugle.png";
@@ -26,7 +28,7 @@ class TextMsg extends StatelessWidget {
       ClipRRect(
         borderRadius: BorderRadius.circular(19),
         child: Image.network(
-          model.avatar,
+          model.msg.content.sendUserInfo.portraitUri,
           fit: BoxFit.cover,
           width: 38,
           height: 38,

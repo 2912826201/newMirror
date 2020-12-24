@@ -5,12 +5,12 @@ import 'package:fluro/fluro.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/region_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
-import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/token_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/im/rongcloud.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 /// application
 /// Created by yangjiayi on 2020/11/14.
@@ -69,6 +69,9 @@ class Application {
 
   //键盘的高度
   static double keyboardHeight = 0;
+
+  //用户分享的消息
+  static Message shareMessage;
 
   //省级地区的数据
   static LinkedHashMap<int, RegionDto> provinceMap = LinkedHashMap<int, RegionDto>();

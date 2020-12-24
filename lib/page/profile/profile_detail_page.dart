@@ -299,7 +299,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
                     openShareBottomSheet(
                         context: context,
                         map: userModel.toJson(),
-                        chatTypeModel: ChatTypeModel.USER_INFORMATION);
+                        chatTypeModel: ChatTypeModel.MESSAGE_TYPE_USER);
                   },
                   child: Image.asset(
                     _imgShared,
