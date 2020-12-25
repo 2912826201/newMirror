@@ -171,22 +171,26 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
               child: RefreshIndicator(
                   onRefresh: () async {
                     dataPage = 1;
-                    recommendIdList.clear();
-                    recommendModelList.clear();
-                    loadStatus = LoadingStatus.STATUS_LOADING;
-                    loadText = "加载中...";
-                    List<HomeFeedModel> modelList = await getHotList(size: 20);
-                    setState(() {
-                      if (modelList.isNotEmpty) {
-                        for (HomeFeedModel model in modelList) {
-                          recommendIdList.add(model.id);
-                        }
-                        recommendModelList.addAll(modelList);
+                recommendIdList.clear();
+                recommendModelList.clear();
+                loadStatus = LoadingStatus.STATUS_LOADING;
+                loadText = "加载中...";
+                List<HomeFeedModel> modelList = await getHotList(size: 20);
+                setState(() {
+                  try {
+                    if (modelList.isNotEmpty) {
+                      for (HomeFeedModel model in modelList) {
+                        recommendIdList.add(model.id);
                       }
-                    });
-                    // 更新全局监听
-                    context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
-                  },
+                      recommendModelList.addAll(modelList);
+                    }
+                  } catch (e) {}
+                });
+                // 更新全局监听
+                context
+                    .read<FeedMapNotifier>()
+                    .updateFeedMap(recommendModelList);
+              },
                   child: CustomScrollView(
                     controller: _controller,
                     // BouncingScrollPhysics

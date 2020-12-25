@@ -145,6 +145,11 @@ flutter:
     - images/test/
     - images/test/2.0x/
     - images/test/3.0x/
+    - assets/emoji.json
+    - videos/1.mp4
+    - videos/2.mp4
+    - videos/3.mp4
+    - videos/4.mp4
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

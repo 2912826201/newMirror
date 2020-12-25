@@ -10,6 +10,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/page/login/login_base_page_state.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/route/router.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
@@ -324,15 +325,12 @@ class _PerfectUserState extends LoginBasePageState {
     ProfileDto profile = ProfileDto.fromUserModel(user);
     await ProfileDBHelper().insertProfile(profile);
     context.read<ProfileNotifier>().setProfile(profile);
-
+    //连接融云
+    Application.rongCloud.connect();
     //TODO 处理登录完成后的数据加载
     MessageManager.loadConversationListFromDatabase(context);
 
-    //TODO 页面跳转需要处理
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      '/', (route) => false,
-      //true 保留当前栈 false 销毁所有 只留下RepeatLogin
-      arguments: {},
-    );
+    //页面跳转至登录前的页面
+    AppRouter.popToBeforeLogin(context);
   }
 }

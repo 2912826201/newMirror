@@ -16,25 +16,18 @@ class AppColor {
 
   //N3 背景
   static const bgBlack = Color.fromRGBO(0x16, 0x16, 0x16, 1.0);
-  static const bgVip1 = Color.fromRGBO(0xF3, 0xD2, 0x9C, 1.0);
-  static const bgVip2 = Color.fromRGBO(0xC4, 0x8B, 0x3C, 1.0);
 
   //N2 背景及分割线
   static const bgWhite = Color.fromRGBO(0xF3, 0xF3, 0xF3, 1.0);
-  static const bgWhite_65 = Color.fromRGBO(0xF3, 0xF3, 0xF3, 0.65);
 
   //N8 主文字1
   static const textPrimary1 = Color.fromRGBO(0x11, 0x11, 0x11, 1.0);
-  static const textVipPrimary1 = Color.fromRGBO(0x8F, 0x58, 0x08, 1.0);
-  static const textPrimary1_50 = Color.fromRGBO(0x11, 0x11, 0x11, 0.5);
 
   //N7 主文字2
   static const textPrimary2 = Color.fromRGBO(0x33, 0x33, 0x33, 1.0);
 
   //N6 主文字3
   static const textPrimary3 = Color.fromRGBO(0x66, 0x66, 0x66, 1.0);
-
-  static const color246 = Color.fromRGBO(246, 246, 246, 1.0);
 
   //N5 辅助、时间文字
   static const textSecondary = Color.fromRGBO(0x99, 0x99, 0x99, 1.0);
@@ -45,12 +38,18 @@ class AppColor {
   //N4 Disable、提示文字
   static const textHint1 = Color.fromRGBO(0xE8, 0xE8, 0xE8, 1.0);
 
+  // 标准颜色
   // 纯黑
   static const black = Color.fromRGBO(0x00, 0x00, 0x00, 1.0);
-
   //透明
   static const transparent = Color.fromRGBO(0x00, 0x00, 0x00, 0.0);
 
+  //不在规范中颜色
   //边框
-  static const frame = Color.fromRGBO(204,204 ,204 ,1 );
+  static const frame = Color.fromRGBO(204, 204 , 204 , 1.0);
+  static const urlText = Color.fromRGBO(0x18, 0x77, 0xF2, 1.0);
+  static const bgVip1 = Color.fromRGBO(0xF3, 0xD2, 0x9C, 1.0);
+  static const bgVip2 = Color.fromRGBO(0xC4, 0x8B, 0x3C, 1.0);
+  static const color246 = Color.fromRGBO(246, 246, 246, 1.0);
+  static const textVipPrimary1 = Color.fromRGBO(0x8F, 0x58, 0x08, 1.0);
 }

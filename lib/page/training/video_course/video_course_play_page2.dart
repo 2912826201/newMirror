@@ -1,7 +1,9 @@
+import 'dart:async';
+
+import 'package:fijkplayer/fijkplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:video_player/video_player.dart';
 
 /// video_course_play_page2
 /// Created by yangjiayi on 2020/12/15.
@@ -13,63 +15,45 @@ class VideoCoursePlayPage2 extends StatefulWidget {
 
 class _VideoCoursePlayState2 extends State<VideoCoursePlayPage2> {
   final List<String> urls = [
-    "http://devmedia.aimymusic.com/alita/51be47a088ff3858c29653fd16536a37.mp4",
     "http://devmedia.aimymusic.com/0313a2d9f77857d073102320b1a4893c.mp4",
     "http://devmedia.aimymusic.com/25e85ec9a9399023629d3fc15bcb8877.mp4",
     "http://devmedia.aimymusic.com/01e889ed5d0314abba48382d669b739b",
+    "http://devmedia.aimymusic.com/alita/51be47a088ff3858c29653fd16536a37.mp4"
   ];
 
-  VideoPlayerController _controller;
+  final FijkPlayer player = FijkPlayer();
 
   int _currentPlayingIndex = -1;
 
   double _progress = 0.0;
   int _duration = 0;
+  StreamSubscription _currentPosSubs;
   int _currentPos;
 
-  bool _isPlaying = false;
-
-  VoidCallback _playerListener;
-
-
-  _VideoCoursePlayState2(){
-    _playerListener = () {
-      if (!mounted) {
-        return;
-      }
-
-      VideoPlayerValue value = _controller.value;
-
-      print("controller value: $value");
-
+  @override
+  void initState() {
+    super.initState();
+    _currentPos = player.currentPos.inMilliseconds;
+    _currentPosSubs = player.onCurrentPosUpdate.listen((v) {
       setState(() {
-        _duration = value.duration.inMilliseconds;
-        _currentPos = value.position.inMilliseconds;
+        _currentPos = v.inMilliseconds;
         if (_duration == 0) {
           _progress = 0;
         } else {
           _progress = _currentPos / _duration;
         }
+        print("duration: $_duration, currentPos: $_currentPos, progress: $_progress");
       });
-      //当播放完成时开始播下一个视频
-      if (value.isPlaying == false && _isPlaying == true && _currentPos >= _duration) {
-        _playNext();
-      }
-      _isPlaying = value.isPlaying;
-    };
-  }
-
-  @override
-  void initState() {
-    super.initState();
+    });
+    player.addListener(_playerListener);
     _playNext();
   }
 
   @override
-  dispose() async {
+  void dispose() {
     super.dispose();
-    _controller.removeListener(_playerListener);
-    _controller.dispose();
+    player.removeListener(_playerListener);
+    player.release();
   }
 
   @override
@@ -77,22 +61,15 @@ class _VideoCoursePlayState2 extends State<VideoCoursePlayPage2> {
     return Scaffold(
       body: Stack(
         children: [
-          Container(
-            alignment: Alignment.center,
+          FijkView(
+            player: player,
             color: AppColor.bgBlack,
-            child: _controller != null && _controller.value.initialized
-                ? AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: VideoPlayer(_controller),
-                  )
-                : Container(),
+            fit: FijkFit.cover,
+            fsFit: FijkFit.cover,
           ),
+          //拦截一下播放器的默认手势操作
           GestureDetector(
-            onTap: () {
-              setState(() {
-                _controller.value.isPlaying ? _controller.pause() : _controller.play();
-              });
-            },
+            onTap: () {},
             child: Container(
               color: AppColor.transparent,
             ),
@@ -117,38 +94,43 @@ class _VideoCoursePlayState2 extends State<VideoCoursePlayPage2> {
           Positioned(
             bottom: 8,
             child: Container(
-                height: 10,
+              height: 10,
                 width: ScreenUtil.instance.screenWidthDp,
                 child: LinearProgressIndicator(
-                  value: _progress,
-                )),
+              value: _progress,
+            )),
           )
         ],
       ),
     );
   }
 
-  _playNext() {
-    if (_currentPlayingIndex >= urls.length - 1) {
-      //已经最后一条
-      return;
+  _playerListener() {
+    FijkValue value = player.value;
+
+    print("player value: $value");
+
+    if (value.prepared) {
+      _duration = value.duration.inMilliseconds;
+      print("width: ${value.size.width}, height: ${value.size.height}");
     }
 
-    _currentPlayingIndex++;
+    switch (value.state) {
+      case FijkState.completed:
+        if (_currentPlayingIndex < urls.length - 1) {
+          _playNext();
+        }
+        break;
+      default:
+        break;
+    }
+  }
 
-    _controller?.removeListener(_playerListener);
-    //这里需要dispose掉之前的_controller不然会有初始化过的_controller没被释放导致再进入播放页播放器初始化失败
-    //但如果直接dispose页面会闪过一瞬界面报错状态
-    _controller?.pause();
-    var oldController = _controller;
-
-    _controller = VideoPlayerController.network(urls[_currentPlayingIndex])
-      ..initialize().then((_) {
-        setState(() {
-          _controller.addListener(_playerListener);
-          _controller.play();
-        });
-        oldController?.dispose();
-      });
+  _playNext() async {
+    setState(() {
+      _currentPlayingIndex++;
+    });
+    await player.reset();
+    await player.setDataSource(urls[_currentPlayingIndex], autoPlay: true);
   }
 }

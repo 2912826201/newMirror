@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_bottom_sheet.dart';
 import 'package:mirror/page/main_page.dart';
@@ -18,7 +19,8 @@ class IfPage extends StatefulWidget {
 }
 
 // 嵌套二层TabBar
-class IfPageState extends State<IfPage> with TickerProviderStateMixin {
+class IfPageState extends State<IfPage>
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   TabController _controller;
   bool isInit = false;
 
@@ -27,6 +29,8 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin {
     // 最外层TabBar 默认定位到第二页
     _controller = TabController(length: 2, vsync: this, initialIndex: 1);
     super.initState();
+    //初始化
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
@@ -97,8 +101,26 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin {
   @override
   void dispose() {
     _controller.dispose();
+    //销毁
+    WidgetsBinding.instance.removeObserver(this);
     // _childController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (MediaQuery.of(context).viewInsets.bottom == 0) {
+        //关闭键盘
+      } else {
+        //显示键盘
+        if (Application.keyboardHeight <=
+            MediaQuery.of(context).viewInsets.bottom) {
+          Application.keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+        }
+      }
+    });
   }
 }
 

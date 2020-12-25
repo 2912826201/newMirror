@@ -33,6 +33,10 @@ class MessageManager {
   //TODO 这里应该解析转一下格式 暂时先用融云原数据 先处理数据库再更新通知器
   static updateConversationByMessage(BuildContext context, Message msg) async {
     ConversationDto dto = _convertMsgToConversation(msg);
+    if(dto == null){
+      //没有返回dto 则无需处理
+      return;
+    }
 
     ConversationDto exist = context.read<ConversationNotifier>().getConversationById(dto.id);
 
@@ -47,6 +51,14 @@ class MessageManager {
         dto.createTime = exist.createTime;
         //将未读数累加
         dto.unreadCount += exist.unreadCount;
+      }
+      //处理名字 新的没有值 旧的有值则用旧的
+      if (dto.name == "" && exist.name != ""){
+        dto.name = exist.name;
+      }
+      //处理头像 新的没有值 旧的有值则用旧的
+      if (dto.avatarUri == "" && exist.avatarUri != ""){
+        dto.avatarUri = exist.avatarUri;
       }
       result = await ConversationDBHelper().updateConversation(dto);
     } else {
@@ -64,32 +76,50 @@ class MessageManager {
 
   static ConversationDto _convertMsgToConversation(Message msg) {
     ConversationDto dto = ConversationDto();
-    //FIXME 这是收信的情况 发信的情况待测试
-    dto.conversationId = msg.senderUserId;
+    //FIXME 私聊群聊 收信和发信的情况 targetId是否表示会话id需要测试
+    dto.conversationId = msg.targetId;
     dto.uid = Application.profile.uid;
     dto.content = msg.content.encode();
+    dto.avatarUri = "";
+    dto.name = "";
     switch (msg.conversationType) {
       case RCConversationType.Private:
         //FIXME 这里需要处理管家消息
         dto.type = PRIVATE_TYPE;
+        if(msg.senderUserId == Application.profile.uid.toString()){
+          //如果发信人是自己。。。要从其他途径更新会话名字和头像
+        }else if(msg.content.sendUserInfo != null) {
+          dto.avatarUri = msg.content.sendUserInfo.portraitUri;
+          dto.name = msg.content.sendUserInfo.name;
+        }else{
+          dto.name = msg.targetId;
+        }
         break;
       case RCConversationType.Group:
-        dto.type = GROUP_TYPE;
+        dto.type = GROUP_TYPE;;
+        dto.name = msg.targetId;
         break;
       case RCConversationType.System:
         if (msg.senderUserId == "1") {
           dto.type = OFFICIAL_TYPE;
+          dto.avatarUri = "http://devpic.aimymusic.com/app/system_message_avatar.png";
+          dto.name = "系统消息";
         } else if (msg.senderUserId == "2") {
           dto.type = LIVE_TYPE;
+          dto.avatarUri = "http://devpic.aimymusic.com/app/group_notification_avatar.png";
+          dto.name = "官方直播";
         } else if (msg.senderUserId == "3") {
           dto.type = TRAINING_TYPE;
+          dto.avatarUri = "http://devpic.aimymusic.com/app/stranger_message_avatar.png";
+          dto.name = "运动数据";
         }
         break;
+      default:
+        //其他情况暂时不处理
+        return null;
     }
     //需要额外获取的信息
     dto.isTop = 0;
-    dto.avatarUri = "";
-    dto.name = "";
     //暂时将时间写一样
     dto.createTime = msg.sentTime;
     dto.updateTime = msg.sentTime;

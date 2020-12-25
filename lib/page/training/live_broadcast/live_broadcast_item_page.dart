@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
@@ -74,7 +76,8 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
 
   //判断是否获取网络数据
   Widget _buildSuggestions() {
-    if (liveModelArray != null && liveModelArray.length > 0) {
+    if ((liveModelArray != null && liveModelArray.length > 0) ||
+        (liveModelOldArray != null && liveModelOldArray.length > 0)) {
       // setDataCalendar();
       return _getUi();
     } else {
@@ -106,6 +109,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
 
   Widget _getUi() {
     var widgetArray = <Widget>[];
+    heroTagArray.clear();
     //不能回放的直播课程
     if (liveModelArray != null && liveModelArray.length > 0) {
       widgetArray.add(_getLiveBroadcastUI(liveModelArray, false));
@@ -173,7 +177,6 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     var imageWidth = 120;
     var imageHeight = 90;
     var columnArray = <Widget>[];
-    heroTagArray.clear();
     for (int i = 0; i < liveList.length; i++) {
       columnArray.add(GestureDetector(
         child: Container(
@@ -183,7 +186,8 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
           margin: const EdgeInsets.only(left: 16, right: 16, top: 6, bottom: 6),
           child: Row(
             children: [
-              _getItemLeftImageUi(liveList[i], imageWidth, imageHeight, i),
+              _getItemLeftImageUi(
+                  liveList[i], imageWidth, imageHeight, isOld, i),
               _getRightDataUi(liveList[i], imageWidth, imageHeight, isOld, i),
             ],
           ),
@@ -203,20 +207,34 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
 
   //获取left的图片
   Widget _getItemLeftImageUi(
-      LiveModel value, int imageWidth, int imageHeight, int index) {
+      LiveModel value, int imageWidth, int imageHeight, bool isOld, int index) {
+    String imageUrl;
+    if (value.playBackUrl != null) {
+      imageUrl = value.playBackUrl;
+    } else if (value.videoUrl != null) {
+      imageUrl = FileUtil.getVideoFirstPhoto(value.videoUrl);
+    }
     return Container(
       width: imageWidth.toDouble(),
       child: Stack(
         children: [
           Positioned(
             child: Hero(
-              child: Image.asset(
-                "images/test/bg.png",
-                width: imageWidth.toDouble(),
-                height: imageHeight.toDouble(),
+              child: CachedNetworkImage(
+                height: 90,
+                width: 120,
+                imageUrl: imageUrl == null ? "" : imageUrl,
                 fit: BoxFit.cover,
+                placeholder: (context, url) => Image.asset(
+                  "images/test/bg.png",
+                  fit: BoxFit.cover,
+                ),
+                errorWidget: (context, url, error) => Image.asset(
+                  "images/test/bg.png",
+                  fit: BoxFit.cover,
+                ),
               ),
-              tag: getHeroTag(value, index),
+              tag: getHeroTag(value, index, isOld),
             ),
             left: 0,
             top: 0,
@@ -614,13 +632,14 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     }
     //todo 这里应该是获取对应的日期 但是现在其他日期没有数据
     // Map<String, dynamic> model = await getLiveCourses(date: DateUtil.formatDateString(dataDate));
-    Map<String, dynamic> model = await getLiveCourses(date: "2020-11-16");
+    Map<String, dynamic> model = await getLiveCourses(date: "2020-12-23");
     if (model != null && model["list"] != null) {
       model["list"].forEach((v) {
         liveModelArray.add(LiveModel.fromJson(v));
       });
     }
 
+    print("直播回放的的数量：${liveModelOldArray.length}");
     print("直播当日的的数量：${liveModelArray.length}");
     if (liveModelArray.length > 0) {
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
@@ -634,12 +653,19 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   }
 
   //给hero的tag设置唯一的值
-  Object getHeroTag(LiveModel liveModel, index) {
-    String string =
-        "heroTag_${DateUtil.getNowDateMs()}_${Random().nextInt(
-            100000)}_${liveModel.id}_" + index.toString();
-    heroTagArray.add(string);
-    return string;
+  Object getHeroTag(LiveModel liveModel, int index, bool isOld) {
+    if (isOld) {
+      index += liveModelArray?.length;
+    }
+    if (heroTagArray != null && heroTagArray.length > index) {
+      return heroTagArray[index];
+    } else {
+      String string =
+          "heroTag_live_${DateUtil.getNowDateMs()}_${Random().nextInt(
+          100000)}_${liveModel.id}_$index";
+      heroTagArray.add(string);
+      return string;
+    }
   }
 
 

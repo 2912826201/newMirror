@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class RongCloudStatusNotifier with ChangeNotifier {
+  //   RCConnectionStatus
   //   static const int Connected = 0; //连接成功
   //   static const int Connecting = 1; //连接中
   //   static const int KickedByOtherClient = 2; //该账号在其他设备登录，导致当前设备掉线

@@ -244,7 +244,7 @@ class _SlideBannerState extends State<SlideBanner> {
                 child: Container(
                   padding: EdgeInsets.only(left: 6, top: 3, right: 6, bottom: 3),
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(12)), color: AppColor.textPrimary1_50),
+                      borderRadius: BorderRadius.all(Radius.circular(12)), color: AppColor.textPrimary1.withOpacity(0.5)),
                   child: Text(
                     "${zindex + 1}/${widget.model.picUrls.length}",
                     style: TextStyle(color: AppColor.white, fontSize: 12),

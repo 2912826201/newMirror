@@ -8,6 +8,7 @@ import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -255,6 +256,13 @@ class LiveDetailPageState extends State<LiveDetailPage> {
 
   //加载数据成功时的布局
   Widget _buildSuggestionsComplete() {
+    String imageUrl;
+    if (liveModel.playBackUrl != null) {
+      imageUrl = liveModel.playBackUrl;
+    } else if (liveModel.videoUrl != null) {
+      imageUrl = FileUtil.getVideoFirstPhoto(liveModel.videoUrl);
+    }
+
     Widget widget = Container(
       color: AppColor.white,
       width: MediaQuery.of(context).size.width,
@@ -325,7 +333,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
                               .of(context)
                               .padding
                               .top,
-                          coverImgUrl: 'images/test/bg.png',
+                          coverImgUrl: imageUrl,
                           heroTag: heroTag,
                           startTime: liveModel.startTime,
                           endTime: liveModel.endTime,
@@ -496,14 +504,16 @@ class LiveDetailPageState extends State<LiveDetailPage> {
       child: Container(
         width: double.infinity,
         height: 12,
-        color: AppColor.bgWhite_65,
+        color: AppColor.bgWhite.withOpacity(0.65),
       ),
     );
   }
 
   //获取动作的ui
   Widget _getActionUi() {
-    if(liveModel.movementDtos==null||liveModel.movementDtos.length<1){
+    // ignore: null_aware_before_operator
+    if (liveModel.coursewareDto?.movementDtos == null ||
+        liveModel.coursewareDto?.movementDtos?.length < 1) {
       return SliverToBoxAdapter();
     }
     var widgetArray = <Widget>[];
@@ -511,13 +521,12 @@ class LiveDetailPageState extends State<LiveDetailPage> {
       padding: const EdgeInsets.only(left: 16, top: 24, bottom: 11.5),
       width: double.infinity,
       child: Text(
-        "动作${liveModel.movementDtos.length}个",
+        "动作${liveModel.coursewareDto?.movementDtos?.length}个",
         style: titleTextStyle,
       ),
     ));
 
-    for(int i=0;i<liveModel.movementDtos.length;i++){
-
+    for (int i = 0; i < liveModel.coursewareDto?.movementDtos?.length; i++) {
       widgetArray.add(Container(
         width: double.infinity,
         height: 0.5,
@@ -534,12 +543,13 @@ class LiveDetailPageState extends State<LiveDetailPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                liveModel.movementDtos[i].name,
-                style: TextStyle(fontSize: 16,color: AppColor.textPrimary2),
+                liveModel.coursewareDto?.movementDtos[i].name,
+                style: TextStyle(fontSize: 16, color: AppColor.textPrimary2),
               ),
               Text(
-                liveModel.movementDtos[i].amount.toString()+liveModel.movementDtos[i].unit.toString(),
-                style: TextStyle(fontSize: 14,color: AppColor.textSecondary),
+                liveModel.coursewareDto?.movementDtos[i].amount.toString() +
+                    liveModel.coursewareDto?.movementDtos[i].unit.toString(),
+                style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
               ),
             ],
           ),
@@ -654,7 +664,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
               alignment: Alignment(-1, 0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(14)),
-                color: AppColor.bgWhite_65,
+                color: AppColor.bgWhite.withOpacity(0.65),
               ),
               child: Text("说点什么吧~",
                   style: TextStyle(
@@ -1312,10 +1322,10 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     loadingStatusComment = LoadingStatus.STATUS_COMPLETED;
 
     //获取直播详情数据
-    if (liveModel == null || liveModel.movementDtos == null) {
+    if (liveModel == null || liveModel.coursewareDto?.movementDtos == null) {
       //加载数据
-      Map<String, dynamic> model = await liveCourseDetail(
-          courseId: liveCourseId);
+      Map<String, dynamic> model =
+          await liveCourseDetail(courseId: liveCourseId);
       if (model == null) {
         loadingStatus = LoadingStatus.STATUS_IDEL;
         Future.delayed(Duration(seconds: 1), () {

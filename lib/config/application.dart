@@ -1,13 +1,16 @@
+import 'dart:collection';
+
 import 'package:camera/camera.dart';
 import 'package:fluro/fluro.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
+import 'package:mirror/data/dto/region_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
-import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/token_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/im/rongcloud.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 /// application
 /// Created by yangjiayi on 2020/11/14.
@@ -55,15 +58,24 @@ class Application {
   // 用于传递所选图片视频内容，用完后需要删除
   static SelectedMediaFiles selectedMediaFiles;
 
+  // 用于记录登录页之前页面的路由名称，以便完成登录后回退到该页完成页面返回
+  static String loginPopRouteName;
+
   //发送验证码的全局计时
-  static int smsCodeSendTime ;
+  static int smsCodeSendTime;
 
   //全局的记录发送验证码的手机号
   static String sendSmsPhoneNum;
 
-  //直播详情页
-  static LiveModel liveModel;
+  //键盘的高度
+  static double keyboardHeight = 0;
 
-  //视频详情页
-  static LiveModel videoModel;
+  //用户分享的消息
+  static Message shareMessage;
+
+  //省级地区的数据
+  static LinkedHashMap<int, RegionDto> provinceMap = LinkedHashMap<int, RegionDto>();
+
+  //市级地区的数据
+  static Map<int, List<RegionDto>> cityMap = Map<int, List<RegionDto>>();
 }

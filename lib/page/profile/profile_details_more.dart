@@ -38,8 +38,7 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
   Widget build(BuildContext context) {
         double width = ScreenUtil.instance.screenWidthDp;
         double height = ScreenUtil.instance.height;
-        return MaterialApp(
-          home: Scaffold(
+        return Scaffold(
             appBar: AppBar(
               backgroundColor: AppColor.white,
               title: Text("更多",style: AppStyle.textRegular18,),
@@ -59,8 +58,7 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
               width: width,
               color: AppColor.white,
               child:!widget.isFollow?_follow(width):_notFollow(width))
-          ),
-        );
+          );
   }
   ///没关注的布局
   Widget _notFollow(double width){
@@ -75,7 +73,7 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
         Container(
           width: width,
           height: 0.5,
-          color: AppColor.bgWhite_65,
+          color: AppColor.bgWhite.withOpacity(0.65),
         ),
         InkWell(
           onTap: (){
@@ -89,7 +87,7 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
         Container(
           width: width,
           height: 0.5,
-          color: AppColor.bgWhite_65,
+          color: AppColor.bgWhite.withOpacity(0.65),
         ),
       ],
     );
@@ -101,13 +99,13 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
         Container(
           width: width,
           height: 0.5,
-          color: AppColor.bgWhite_65,
+          color: AppColor.bgWhite.withOpacity(0.65),
         ),
         _remarks(width),
         Container(
           width: width,
           height: 12,
-          color: AppColor.bgWhite_65,
+          color: AppColor.bgWhite.withOpacity(0.65),
         ),
         InkWell(
           child: _itemSelect(width, AppStyle.textRegular16, "举报"),
@@ -119,7 +117,7 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
           padding: EdgeInsets.only(left: 16,right: 16),
           width: width,
           height: 0.5,
-          color: AppColor.bgWhite_65,
+          color: AppColor.bgWhite.withOpacity(0.65),
         ),
         InkWell(
           onTap: (){
@@ -133,7 +131,7 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
         Container(
           width: width,
           height: 12,
-          color: AppColor.bgWhite_65,
+          color: AppColor.bgWhite.withOpacity(0.65),
         ),
         InkWell(
           onTap: (){
@@ -146,7 +144,7 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
           padding: EdgeInsets.only(left: 16,right: 16),
           width: width,
           height: 0.5,
-          color: AppColor.bgWhite_65,
+          color: AppColor.bgWhite.withOpacity(0.65),
         ),
       ],
     );

@@ -13,6 +13,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/profile_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
@@ -24,6 +25,7 @@ import 'package:mirror/page/profile/profile_details_more.dart';
 import 'package:mirror/page/profile/sticky_tabBar.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:provider/provider.dart';
@@ -94,6 +96,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
   StateResult fllowState = StateResult.RESULTNULL;
   RefreshController _refreshController = new RefreshController();
+  double textHeight = 10;
   @override
   void initState() {
     super.initState();
@@ -158,6 +161,12 @@ class _ProfileDetailState extends State<ProfileDetailPage>
         _avatar = userModel.avatarUri;
         _id = userModel.uid;
         _signature = userModel.description;
+        if(_signature!=null){
+          ///判断文字的高度，动态改变
+          TextPainter testSize = calculateTextWidth(_signature,AppStyle.textRegular14,255,5);
+          textHeight = testSize.height;
+          print('textHeight==============================$textHeight');
+        }
         _textName = userModel.nickName;
         relation = userModel.relation;
         if (isMselfId) {
@@ -167,7 +176,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
           if (relation == 0 || relation == 2){
             _buttonText = "+ 关注";
             _isFllow = true;
-          } else{
+          } else if(relation ==1||relation==3){
             _isFllow = false;
             _buttonText = "私聊";
           }
@@ -249,11 +258,9 @@ class _ProfileDetailState extends State<ProfileDetailPage>
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Builder(builder: (context) {
-        double width =ScreenUtil.instance.screenWidthDp;
-        double height =ScreenUtil.instance.height;
-        return Scaffold(
+    double width =ScreenUtil.instance.screenWidthDp;
+    double height =ScreenUtil.instance.height;
+    return Scaffold(
           appBar: null,
           body: SlidingUpPanel(
               panel: Container(
@@ -279,8 +286,6 @@ class _ProfileDetailState extends State<ProfileDetailPage>
               body:  _minehomeBody(width, height)
            ),
         );
-      }),
-    );
   }
   ///这是个人页面，使用TabBarView
   Widget _minehomeBody(double width, double height) {
@@ -298,10 +303,18 @@ class _ProfileDetailState extends State<ProfileDetailPage>
             ),
             actions: [
               InkWell(
-                onTap: (){
-                  openShareBottomSheet(context: context);
-                },
-                child: Image.asset(_imgShared, width: 24, height: 24,),),
+                onTap: () {
+                    openShareBottomSheet(
+                        context: context,
+                        map: userModel.toJson(),
+                        chatTypeModel: ChatTypeModel.MESSAGE_TYPE_USER);
+                  },
+                  child: Image.asset(
+                    _imgShared,
+                    width: 24,
+                    height: 24,
+                  ),
+                ),
               SizedBox(width: 16,),
               !isMselfId?InkWell(
                 onTap: (){
@@ -318,7 +331,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
               SizedBox(width: 15.5,)
             ],
             backgroundColor: AppColor.white,
-            expandedHeight: height * 0.42,
+            expandedHeight: height*0.40-ScreenUtil.instance.statusBarHeight+ textHeight,
             ///这里是资料展示页,写在这个里面相当于是appBar的背景板
             flexibleSpace: FlexibleSpaceBar(
                 background: Container(
@@ -330,10 +343,11 @@ class _ProfileDetailState extends State<ProfileDetailPage>
             /// 可以吸顶的TabBar
             pinned: true,
             delegate: StickyTabBarDelegate(
+              width: width,
               child: TabBar(
                 unselectedLabelStyle: AppStyle.textHintRegular16,
                 unselectedLabelColor: AppColor.textSecondary,
-                labelStyle: AppStyle.textRegular16,
+                labelStyle: AppStyle.textMedium18,
                 labelColor: AppColor.black,
                 indicatorColor: AppColor.black,
                 controller: _mController,
@@ -358,17 +372,17 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   ///高斯模糊
   Widget mineHomeData(double height, double width) {
     return Container(
-      padding: EdgeInsets.only(top: 15),
+      height: height*0.40 + textHeight,
       color: AppColor.white,
       child: Stack(
         children: [
           Container(
-              height: ScreenUtil.instance.height*0.3,
+              height: height*0.33,
               width: width,
               child: ClipOval(
                   child:CachedNetworkImage(
-                    height: 90,
-                    width: 90,
+                    height: height*0.33,
+                    width: height*0.33,
                     imageUrl:_avatar != null ? _avatar: "",
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Image.asset("images/test.png", fit: BoxFit.cover,),
@@ -380,7 +394,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
               top: 0,
               child: Container(
                 width: width,
-                height: ScreenUtil.instance.height*0.3,
+                height: height*0.33,
                 color: AppColor.white.withOpacity(0.7),
               )),
           BackdropFilter(
@@ -395,26 +409,25 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   ///资料展示
   Widget _MineDetailsData( double height, double width) {
     return Container(
-        height: height * 0.45,
+        height: height*0.40 + textHeight,
         width: width,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 49,),
+            SizedBox(height: ScreenUtil.instance.statusBarHeight+height*0.06,),
             ///头像和按钮
             Container(
               padding: EdgeInsets.only(left: 16, right: 16),
-              margin: EdgeInsets.only(top: 10),
               width: width,
               child: Stack(
                 children: [
-                  _mineAvatar(),
-                  Positioned(right: 0,top: 26.5, child: _mineButton())
+                  _mineAvatar(height),
+                  Positioned(right: 0,top: 24, child: _mineButton(height))
                 ],
               ),
             ),
             SizedBox(
-              height: 16,
+              height: height*0.02,
             ),
 
             ///昵称
@@ -422,11 +435,11 @@ class _ProfileDetailState extends State<ProfileDetailPage>
               padding: EdgeInsets.only(left: 16, right: 16),
               child: Text(
                 _textName != null ? _textName : "  ",
-                style: TextStyle(fontSize: 20, color: AppColor.black),
+                style: AppStyle.textMedium18,
               ),
             ),
             SizedBox(
-              height: 12,
+              height: height*0.02,
             ),
 
             ///id
@@ -435,18 +448,18 @@ class _ProfileDetailState extends State<ProfileDetailPage>
               child: Text("ID: $_id"),
             ),
             SizedBox(
-              height: 6,
+              height: height*0.007,
             ),
-
             ///签名
             Container(
+              height: textHeight,
               padding: EdgeInsets.only(left: 16, right: 16),
               width: width * 0.7,
               child: Text(_signature != null ? _signature : "      ",
                   softWrap: true, style: AppStyle.textRegular14),
             ),
             SizedBox(
-              height: 16,
+              height: height*0.01,
             ),
 
             ///关注，获赞，粉丝
@@ -454,22 +467,22 @@ class _ProfileDetailState extends State<ProfileDetailPage>
               padding: EdgeInsets.only(left: 16, right: 16),
               child: Row(
                 children: [
-                  _TextAndNumber("关注", _attention),
+                  _TextAndNumber("关注", _attention,height),
                   SizedBox(
                     width: 61,
                   ),
-                  _TextAndNumber("粉丝", _fans),
+                  _TextAndNumber("粉丝", _fans,height),
                   SizedBox(
                     width: 61,
                   ),
-                  _TextAndNumber("动态", _dynmic),
+                  _TextAndNumber("动态", _dynmic,height),
                 ],
               ),
             ),
             Expanded(child: (Container())),
             Container(
-              color: AppColor.bgWhite_65,
-              height: 12,
+              color: AppColor.bgWhite.withOpacity(0.65),
+              height: height*0.01,
               width: width,
             )
           ],
@@ -539,7 +552,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
                   child: Container(
                  width: 224,
                  height: 224,
-                 color: AppColor.bgWhite_65,
+                 color: AppColor.bgWhite.withOpacity(0.65),
                ),
                 ),
                 SizedBox(height: 16,),
@@ -558,42 +571,46 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   }
 
   ///关注，编辑资料，私聊按钮
-  Widget _mineButton() {
-    return Container(
-      height: 30,
-      width: 80,
+  Widget _mineButton(double height) {
+    return InkWell(
+      onTap: () {
+      if (isMselfId) {
+        ///这里跳转到编辑资料页
+        AppRouter.navigationToEditInfomation(context,(result){
+          if(result){
+            _getUserInfo();
+          }
+        });
+      } else {
+        setState(() {
+          if (_buttonText == "+ 关注") {
+            _getAttention(true);
+          } else if (_buttonText == "取消关注") {
+            ///打开dialog
+            _getAttention(false);
+          } else {
+            ///这里跳转到私聊界面
+          }
+        });
+      }
+    },
+    child:Container(
+      height: 28,
+      width: 72,
       decoration: BoxDecoration(
           color: _isFllow?AppColor.mainRed:AppColor.transparent,
-          borderRadius: BorderRadius.all(Radius.circular(50)),
-          border: Border.all(width: 1, color: AppColor.black)),
-      child: FlatButton(
-        onPressed: () {
-          if (isMselfId) {
-            ///这里跳转到编辑资料页
-            AppRouter.navigationToEditInfomation(context);
-          } else {
-            setState(() {
-              if (_buttonText == "+ 关注") {
-                _getAttention(true);
-              } else if (_buttonText == "取消关注") {
-                ///打开dialog
-                _getAttention(false);
-              } else {
-                ///这里跳转到私聊界面
-              }
-            });
-          }
-        },
-        ///判断是我的页面还是别人的页面
-        child:isMselfId?Center(
-                child:Text(
+          borderRadius: BorderRadius.all(Radius.circular(14)),
+          border: Border.all(width: 0.5, color: AppColor.black)),
+      ///判断是我的页面还是别人的页面
+          child:isMselfId?Center(
+                      child: Text(
                         _buttonText,
-                        style:
-                            TextStyle(fontSize: 12, color: AppColor.black),
-                      )
-                    )
+                        style: AppStyle.textRegular12,
+                      ),)
+
           :_buttonLayoutSelect(),
-      ),
+
+    )
     );
   }
 
@@ -604,12 +621,14 @@ class _ProfileDetailState extends State<ProfileDetailPage>
         child:Text(
           _buttonText,
           style:
-          TextStyle(fontSize: 12, color: AppColor.white),
+          AppStyle.textRegular14,
         )
       );
     }else{
-      return Row(
+      return Center(
+        child: Row(
         children: [
+          SizedBox(width: 15,),
          Image.asset("images/test/comment-filling.png",width:12,height:12 ,),
           SizedBox(width: 2,),
           Text(
@@ -617,7 +636,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
             style:AppStyle.textRegular12,
           ),
         ],
-      );
+      ),);
     }
   }
   ///取消关注时弹出dialog提醒用户确认取消关注(暂时没用先留着)
@@ -660,12 +679,12 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   }
 
   ///头像
-  Widget _mineAvatar() {
+  Widget _mineAvatar(double height) {
     return Container(
         child: ClipOval(
       child: CachedNetworkImage(
-        height: 90,
-        width: 90,
+        height: height*0.09,
+        width: height*0.09,
         imageUrl: _avatar,
         fit: BoxFit.cover,
         placeholder: (context, url) => Image.asset(
@@ -696,16 +715,16 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   }
 
   ///这是关注粉丝获赞
-  Widget _TextAndNumber(String text, int number) {
+  Widget _TextAndNumber(String text, int number,double height) {
     return Container(
         child: Column(
       children: [
         Text(
           "${_getNumber(number)}",
-          style: AppStyle.textRegular18,
+          style: AppStyle.textMedium18,
         ),
         SizedBox(
-          height: 6.5,
+          height:height*0.008,
         ),
         Text(
           text,
@@ -726,5 +745,23 @@ class _ProfileDetailState extends State<ProfileDetailPage>
       }
 
   }
+
+   calculateTextHeight() {
+     String value = "wwwwwwwwwwwwwww";
+    TextPainter painter = TextPainter(
+      ///AUTO：华为手机如果不指定locale的时候，该方法算出来的文字高度是比系统计算偏小的。
+      maxLines: 2,
+      textDirection: TextDirection.ltr,
+      text: TextSpan(
+        text: value,
+        style: TextStyle(
+          fontWeight: FontWeight.w700,
+          fontSize: 16,
+        )));
+    painter.layout(maxWidth: 262);
+    ///文字的宽度:painter.width
+    print('painter.width==========================${painter.width}');
+    print('painter.height==========================${painter.height}');
+   }
 }
 

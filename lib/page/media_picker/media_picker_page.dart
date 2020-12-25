@@ -44,6 +44,7 @@ class _MediaPickerState extends State<MediaPickerPage> {
   int _selectedIndex;
   PageController _pageController;
   List<Widget> _pageList = [];
+  List<Widget> _tabList = [];
 
   @override
   void initState() {
@@ -62,12 +63,17 @@ class _MediaPickerState extends State<MediaPickerPage> {
               cropOnlySquare: widget.cropOnlySquare,
               isGoToPublish: widget.isGoToPublish,
             )));
+    _tabList.add(_buildButton(_galleryIndex, "相册", _onGallerySelected));
     _pageList.add(CameraPhotoPage(
       isGoToPublish: widget.isGoToPublish,
     ));
-    _pageList.add(Container(
-      color: Colors.greenAccent,
-    ));
+    _tabList.add(_buildButton(_photoIndex, "拍照", _onPhotoSelected));
+    if (widget.mediaType == typeImageAndVideo) {
+      _pageList.add(Container(
+        color: Colors.greenAccent,
+      ));
+      _tabList.add(_buildButton(_videoIndex, "拍视频", _onVideoSelected));
+    }
   }
 
   @override
@@ -86,11 +92,7 @@ class _MediaPickerState extends State<MediaPickerPage> {
           height: 48,
           child: Flex(
             direction: Axis.horizontal,
-            children: [
-              _buildButton(_galleryIndex, "相册", _onGallerySelected),
-              _buildButton(_photoIndex, "拍照", _onPhotoSelected),
-              _buildButton(_videoIndex, "拍视频", _onVideoSelected),
-            ],
+            children: _tabList,
           ),
         ),
       ),

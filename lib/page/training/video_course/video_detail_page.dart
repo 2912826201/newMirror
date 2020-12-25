@@ -9,6 +9,7 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/training/video_course/sliver_custom_header_delegate_video.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -125,7 +126,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   @override
   void initState() {
     super.initState();
-
+    print("====heroTag:${heroTag}");
     courseCommentHot = null;
     courseCommentTime = null;
     loadingStatusComment = LoadingStatus.STATUS_LOADING;
@@ -224,16 +225,17 @@ class VideoDetailPageState extends State<VideoDetailPage> {
 
   //加载数据成功时的布局
   Widget _buildSuggestionsComplete() {
+    String imageUrl;
+    if (videoModel.playBackUrl != null) {
+      imageUrl = videoModel.playBackUrl;
+    } else if (videoModel.videoUrl != null) {
+      imageUrl = FileUtil.getVideoFirstPhoto(videoModel.videoUrl);
+    }
+
     Widget widget = Container(
       color: AppColor.white,
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
-      height: MediaQuery
-          .of(context)
-          .size
-          .height,
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
       child: Column(
         children: [
           Container(
@@ -305,7 +307,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                               .of(context)
                               .padding
                               .top,
-                          coverImgUrl: 'images/test/bg.png',
+                          coverImgUrl: imageUrl,
                           heroTag: heroTag,
                           startTime: videoModel.startTime,
                           endTime: videoModel.endTime,
@@ -487,14 +489,16 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       child: Container(
         width: double.infinity,
         height: 12,
-        color: AppColor.bgWhite_65,
+        color: AppColor.bgWhite.withOpacity(0.65),
       ),
     );
   }
 
   //获取动作的ui
   Widget _getActionUi() {
-    if (videoModel.movementDtos == null || videoModel.movementDtos.length < 1) {
+    // ignore: null_aware_before_operator
+    if (videoModel.coursewareDto?.movementDtos == null ||
+        videoModel.coursewareDto?.movementDtos?.length < 1) {
       return SliverToBoxAdapter();
     }
     var widgetArray = <Widget>[];
@@ -502,7 +506,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       padding: const EdgeInsets.only(left: 16, top: 24, bottom: 11.5),
       width: double.infinity,
       child: Text(
-        "动作${videoModel.movementDtos.length}个",
+        "动作${videoModel.coursewareDto?.movementDtos?.length}个",
         style: titleTextStyle,
       ),
     ));
@@ -521,7 +525,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
         margin: const EdgeInsets.only(top: 18, bottom: 18),
         child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: videoModel.movementDtos.length,
+            itemCount: videoModel.coursewareDto?.movementDtos?.length,
             itemBuilder: (context, index) {
               return Container(
                 width: 136,
@@ -529,9 +533,11 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                 padding: const EdgeInsets.all(12),
                 margin: index == 0
                     ? const EdgeInsets.only(left: 15.5)
-                    : (index == videoModel.movementDtos.length - 1
-                    ? const EdgeInsets.only(left: 8)
-                    : const EdgeInsets.only(left: 8, right: 15.5)),
+                    // ignore: null_aware_before_operator
+                    : (index ==
+                            videoModel.coursewareDto?.movementDtos?.length - 1
+                        ? const EdgeInsets.only(left: 8)
+                        : const EdgeInsets.only(left: 8, right: 15.5)),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4),
                   color: AppColor.bgWhite,
@@ -539,16 +545,22 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Container(width: double.infinity,
-                      child: Text(videoModel.movementDtos[index].name,
+                    Container(
+                      width: double.infinity,
+                      child: Text(
+                        videoModel.coursewareDto?.movementDtos[index].name,
                         style: TextStyle(
                             fontSize: 14, color: AppColor.textPrimary2),
                         maxLines: 1,
-                        overflow: TextOverflow.ellipsis,),),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                     Container(width: double.infinity,
                         child: Text(
-                          videoModel.movementDtos[index].amount.toString() +
-                              videoModel.movementDtos[index].unit.toString(),
+                          videoModel.coursewareDto?.movementDtos[index].amount
+                              .toString() +
+                              videoModel.coursewareDto?.movementDtos[index].unit
+                                  .toString(),
                           style: TextStyle(
                               fontSize: 12, color: AppColor.textSecondary),)),
                   ],
@@ -599,7 +611,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
             Container(
               width: double.infinity,
               height: 12,
-              color: AppColor.bgWhite_65,
+              color: AppColor.bgWhite.withOpacity(0.65),
             ),
             SizedBox(height: 23,),
             Row(
@@ -737,7 +749,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
               alignment: Alignment(-1, 0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(14)),
-                color: AppColor.bgWhite_65,
+                color: AppColor.bgWhite.withOpacity(0.65),
               ),
               child: Text("说点什么吧~",
                   style: TextStyle(
@@ -1377,7 +1389,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     }
 
     //获取直播详情数据
-    if (videoModel == null || videoModel.movementDtos == null) {
+    if (videoModel == null || videoModel.coursewareDto?.movementDtos == null) {
       //加载数据
       Map<String, dynamic> model = await liveCourseDetail(
           courseId: videoCourseId);

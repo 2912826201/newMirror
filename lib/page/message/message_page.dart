@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/message_page_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
@@ -7,14 +9,18 @@ import 'package:mirror/data/dto/friends_cell_dto.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/count_badge.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:provider/provider.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../if_page.dart';
+import 'test_message_post.dart';
 
 /// message_page
 /// Created by yangjiayi on 2020/12/21.
@@ -39,6 +45,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
 
   @override
   Widget build(BuildContext context) {
+    print("消息列表页build");
     super.build(context);
     _listLength =
         context.watch<ConversationNotifier>().topListLength + context.watch<ConversationNotifier>().commonListLength;
@@ -243,17 +250,63 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   }
 
   Widget _buildConversationItem(int index, ConversationDto conversation) {
-    var colors = [Colors.greenAccent, Colors.grey];
+    return GestureDetector(
+      child: _conversationItem(index, conversation),
+      onTap: () {
+        getMessageType(conversation, context);
+        jumpChatPageConversationDto(context, conversation);
+      },
+    );
+  }
+
+  Widget _conversationItem(int index, ConversationDto conversation) {
+    MessageContent msgContent = MessageContent();
+    msgContent.decode(conversation.content);
+    bool isMentioned = msgContent.mentionedInfo != null &&
+        msgContent.mentionedInfo.userIdList
+            .contains(Application.profile.uid.toString());
     return Container(
       height: 69,
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      color: AppColor.transparent,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             height: 45,
             width: 45,
-            color: colors[index % 2],
+            child: Stack(
+              children: [
+                ClipOval(
+                  child: CachedNetworkImage(
+                    height: 45,
+                    width: 45,
+                    imageUrl: conversation.avatarUri,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Image.asset(
+                      "images/test.png",
+                      fit: BoxFit.cover,
+                    ),
+                    errorWidget: (context, url, error) => Image.asset(
+                      "images/test.png",
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                conversation.type == OFFICIAL_TYPE ||
+                    conversation.type == LIVE_TYPE ||
+                    conversation.type == TRAINING_TYPE
+                    ? Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      height: 16,
+                      width: 16,
+                      color: AppColor.bgBlack,
+                    ))
+                    : Container()
+              ],
+            ),
           ),
           SizedBox(
             width: 12,
@@ -266,13 +319,15 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                   children: [
                     Expanded(
                         child: Text(
-                      "${conversation.id}",
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                      style: AppStyle.textRegular14,
-                    )),
+                          "${conversation.name}",
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                          style: AppStyle.textRegular14,
+                        )),
                     Text(
-                      DateUtil.formatDateTimeString(DateTime.fromMillisecondsSinceEpoch(conversation.updateTime)),
+                      DateUtil.formatDateTimeString(
+                          DateTime.fromMillisecondsSinceEpoch(
+                              conversation.updateTime)),
                       style: AppStyle.textHintRegular12,
                     )
                   ],
@@ -281,17 +336,19 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
+                    isMentioned
+                        ? Text(
                       "[有人@你]",
                       style: AppStyle.textRegularRed13,
-                    ),
+                    )
+                        : Container(),
                     Expanded(
                         child: Text(
-                      "${conversation.content}",
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                      style: AppStyle.textSecondaryRegular13,
-                    )),
+                          "${conversation.content}",
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                          style: AppStyle.textSecondaryRegular13,
+                        )),
                     SizedBox(
                       width: 12,
                     ),

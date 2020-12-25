@@ -89,7 +89,7 @@ class SearchHeaderState extends State<SearchHeader> {
           Container(
             margin: EdgeInsets.only(left: 16),
             height: 32,
-            color: AppColor.bgWhite_65,
+            color: AppColor.bgWhite.withOpacity(0.65),
             width: ScreenUtil.instance.screenWidthDp - 32 - 32 - 12,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
