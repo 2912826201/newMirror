@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:mirror/page/search/sub_page/search_topic.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -154,7 +156,26 @@ class SearchHeaderState extends State<SearchHeader> {
 }
 
 // 搜索页中间默认布局
-class SearchMiddleView extends StatelessWidget {
+class SearchMiddleView extends StatefulWidget {
+  @override
+  SearchMiddleViewState createState() => SearchMiddleViewState();
+}
+
+class SearchMiddleViewState extends State<SearchMiddleView> {
+  List<TopicDtoModel> topicList = [];
+
+  @override
+  void initState() {
+    requestRecommendTopicIterface();
+    super.initState();
+  }
+
+  // 请求推荐话题接口
+  requestRecommendTopicIterface() async {
+    topicList = await getRecommendTopic(size: 20);
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -164,8 +185,8 @@ class SearchMiddleView extends StatelessWidget {
         historyRecord(context),
         HotCourseTitleBar(),
         HotCourseContent(),
-        HotTopicTitleBar(),
-        HotTopicContent()
+        topicList.isNotEmpty ? HotTopicTitleBar() : Container(),
+        topicList.isNotEmpty ? HotTopicContent() : Container(),
       ],
     );
   }
@@ -201,12 +222,17 @@ class SearchMiddleView extends StatelessWidget {
   historyRecord(BuildContext context) {
     return Container(
       height: 23,
-      color: AppColor.mainRed,
+      // color: AppColor.mainRed,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: 5,
+          itemCount: 10,
           itemBuilder: (context, index) {
-            return Container();
+            return Container(
+              color: AppColor.textSecondary.withOpacity(0.3),
+              margin: EdgeInsets.only(left: 16),
+              padding: EdgeInsets.only(left: 8,top: 3,right: 8,bottom: 3),
+              child:Text("瑜伽")
+            );
           }),
     );
   }
@@ -305,79 +331,104 @@ class SearchMiddleView extends StatelessWidget {
 // 热门话题推荐类容
   HotTopicContent() {
     return Container(
-      height: (ScreenUtil.instance.screenWidthDp - 38) * 0.42,
+      height: (ScreenUtil.instance.screenWidthDp - 38) * 0.43,
       width: ScreenUtil.instance.screenWidthDp,
       child: new Swiper(
         itemBuilder: (BuildContext context, int index) {
           return Container(
-            width: (ScreenUtil.instance.screenWidthDp - 42) * 0.42,
-            height: (ScreenUtil.instance.screenWidthDp - 38) * 0.42,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(2)),
-
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomLeft,
-                colors: [
-                  AppColor.bgWhite,
-                  Colors.white,
+            child: Container(
+              width: (ScreenUtil.instance.screenWidthDp - 42) * 0.43,
+              height: (ScreenUtil.instance.screenWidthDp - 38) * 0.43,
+              decoration: BoxDecoration(
+                // borderRadius: BorderRadius.all(Radius.circular(2)),
+              //  阴影位置由offset决定,阴影模糊层度由blurRadius大小决定（大就更透明更扩散），阴影模糊大小由spreadRadius决定
+              // boxShadow: [
+              //   BoxShadow(color: AppColor.textSecondary.withOpacity(0.4), blurRadius: 1.0, spreadRadius: 1.0),
+              // ],
+              //   border:  Border(  bottom: BorderSide(color: AppColor.textSecondary.withOpacity(0.4), width: 2)), // 边色与边宽度
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomLeft,
+                  colors: [
+                    AppColor.bgWhite,
+                    Colors.white,
+                  ],
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Image.asset(
+                    "images/test/674_288.png",
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 9),
+                    height: 39,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(left: 10),
+                          child: Icon(
+                            Icons.import_contacts_sharp,
+                            size: 32,
+                          ),
+                          // width: 32,
+                          // height: 32,
+                          // color: Colors.green,
+                        ),
+                        Expanded(
+                            child: Container(
+                          margin: EdgeInsets.only(left: 12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "#${topicList[index].name}",
+                                style: AppStyle.textRegular15,
+                              ),
+                              Spacer(),
+                              Text(
+                                "${topicList[index].feedCount}条动态",
+                                style: AppStyle.textSecondaryRegular12,
+                              ),
+                            ],
+                          ),
+                        )),
+                        SizedBox(
+                          width: 28,
+                        )
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 10, top: 63, right: 10),
+                    height: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
+                    child: ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: topicList[index].pics.length,
+                        itemBuilder: (context, indexs) {
+                          return Container(
+                            height: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
+                            width: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
+                            margin: EdgeInsets.only(right: indexs != 3 ? 7 : 0),
+                          child: ClipRRect(
+                          //圆角图片
+                          borderRadius: BorderRadius.circular(2),
+                            child: Image.network(
+                              topicList[index].pics[indexs],
+                              fit: BoxFit.cover,
+                            )),
+                          );
+                        }),
+                  ),
                 ],
               ),
+              //
             ),
-            child: Stack(
-              children: [
-                Image.asset(
-                  "images/test/674_288.png",
-                ),
-                Container(
-                  margin: EdgeInsets.only(top: 9),
-                  height: 39,
-                  color: Colors.lime,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(left: 10),
-                        width: 32,
-                        height: 32,
-                        color: Colors.green,
-                      ),
-                      Expanded(
-                          child: Container(
-                        height: 39,
-                        margin: EdgeInsets.only(left: 12),
-                        color: Colors.blue,
-                      )),
-                      SizedBox(
-                        width: 28,
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  color: Colors.limeAccent,
-                  margin: EdgeInsets.only(left: 10,top:63,right: 10),
-                  height: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
-                  child: ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                      scrollDirection: Axis.horizontal,
-                      itemCount: 4,
-                      itemBuilder: (context,index){
-                    return Container(
-                      height: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
-                      width: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
-                      margin: EdgeInsets.only(right:index != 3 ? 7 : 0),
-                      color: Colors.deepOrangeAccent,
-                    );
-                  }),
-
-                )
-              ],
-            ),
-            //
           );
         },
-        itemCount: 4,
+        itemCount: topicList.length > 5 ? 5 : topicList.length,
         itemWidth: ScreenUtil.instance.screenWidthDp - 38,
         layout: SwiperLayout.STACK,
       ),
