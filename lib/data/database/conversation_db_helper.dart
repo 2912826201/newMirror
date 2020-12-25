@@ -1,6 +1,5 @@
 import 'package:mirror/data/database/db_helper.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
-import 'package:sqflite/sqflite.dart';
 
 /// conversation_db_helper
 /// Created by yangjiayi on 2020/11/30.

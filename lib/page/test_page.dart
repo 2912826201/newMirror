@@ -16,8 +16,8 @@ import 'package:provider/provider.dart';
 
 import 'message/test_message_post.dart';
 import 'profile/login_test_page.dart';
-import 'training/video_course/video_course_play_page.dart';
 import 'training/video_course/video_course_play_page2.dart';
+import 'training/video_course/video_course_play_page.dart';
 
 /// test_page
 /// Created by yangjiayi on 2020/10/27.

@@ -70,7 +70,7 @@ class CommentInputBar extends StatelessWidget {
                 margin: EdgeInsets.only(left: 16, right: 16),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(16)),
-                  color: AppColor.bgWhite_65,
+                  color: AppColor.bgWhite.withOpacity(0.65),
                 ),
                 child: Stack(
                   children: [

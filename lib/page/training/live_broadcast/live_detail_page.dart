@@ -504,7 +504,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
       child: Container(
         width: double.infinity,
         height: 12,
-        color: AppColor.bgWhite_65,
+        color: AppColor.bgWhite.withOpacity(0.65),
       ),
     );
   }
@@ -664,7 +664,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
               alignment: Alignment(-1, 0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(14)),
-                color: AppColor.bgWhite_65,
+                color: AppColor.bgWhite.withOpacity(0.65),
               ),
               child: Text("说点什么吧~",
                   style: TextStyle(

@@ -13,12 +13,11 @@ import 'package:mirror/page/login/login_page.dart';
 import 'package:mirror/page/login/perfect_user_page.dart';
 import 'package:mirror/page/login/phone_login_page.dart';
 import 'package:mirror/page/main_page.dart';
-import 'package:mirror/page/media_picker/gallery_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/media_picker/preview_photo_page.dart';
 import 'package:mirror/page/message/chat_page.dart';
 import 'package:mirror/page/profile/Profile_add_remarks.dart';
-import 'package:mirror/page/profile/edit_information/edit_information_Introduction.dart';
+import 'package:mirror/page/profile/edit_information/edit_information_introduction.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_name.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_page.dart';
 import 'package:mirror/page/profile/login_test_page.dart';
@@ -33,7 +32,6 @@ import 'package:mirror/page/training/video_course/video_course_list_page.dart';
 import 'package:mirror/page/training/video_course/video_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:photo_manager/photo_manager.dart';
 
 /// route_handler
 /// Created by yangjiayi on 2020/11/14.
@@ -126,9 +124,8 @@ var handlerEditInformationName = Handler(handlerFunc: (BuildContext context,Map<
 });
 
 var handlerEditInformationIntroduction = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
-  Map<String, dynamic> data = json.decode(
-    params[AppRouter.paramData].first);
-  return EditInformationIntroduction(troduction: data["introduction"],);
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return EditInformationIntroduction(introduction: data["introduction"],);
 });
 
 var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
