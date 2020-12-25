@@ -1,6 +1,7 @@
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/region_dto.dart';
+import 'package:mirror/data/dto/search_history_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -8,7 +9,7 @@ import 'package:sqflite/sqflite.dart';
 /// Created by yangjiayi on 2020/11/3.
 
 // 数据库名 暂时只会用到一个库
-const String _DB_NAME = "mirror.db";
+const String _DB_NAME = "if.db";
 // 数据库版本 从1开始
 const int _DB_VERSION = 1;
 
@@ -33,10 +34,10 @@ class DBHelper {
   Future<Database> _openDB() async {
     return await openDatabase(_DB_NAME, version: _DB_VERSION,
         onUpgrade: (Database db, int oldVersion, int newVersion) async {
-      print("数据库需要更新：${oldVersion}=>${newVersion}");
+      print("数据库$_DB_NAME需要更新：${oldVersion}=>${newVersion}");
       await _updateDB(db, oldVersion, newVersion);
     }, onCreate: (Database db, int version) async {
-      print("数据库创建：${version}");
+      print("数据库$_DB_NAME需要创建：${version}");
       await _createDB(db, version);
     });
   }
@@ -519,6 +520,12 @@ Future<void> _createDB(Database db, int version) async {
   await db.execute("INSERT INTO $TABLE_NAME_REGION VALUES (402, 1, '1886', '台湾', 1, 121.509062, 25.044332, 'taiwan', 'TW', '台湾省');");
   await db.execute("INSERT INTO $TABLE_NAME_REGION VALUES (403, 1, '1852', '香港', 1, 114.171203, 22.277468, 'xianggang', 'XG', '香港特别行政区');");
   await db.execute("INSERT INTO $TABLE_NAME_REGION VALUES (422, 1, '1853', '澳门', 1, 113.543028, 22.186835, 'aomen', 'AM', '澳门特别行政区');");
+  //search_history
+  await db.execute("create table $TABLE_NAME_SEARCHHISTORY (" +
+      "$COLUMN_NAME_SEARCHHISTORY_ID bigint(20) primary key," +
+      "$COLUMN_NAME_SEARCHHISTORY_UID bigint(20) not null," +
+      "$COLUMN_NAME_SEARCHHISTORY_WORD varchar(128) not null" +
+      ")");
 }
 
 Future<void> _updateDB(Database db, int oldVersion, int newVersion) async {}
