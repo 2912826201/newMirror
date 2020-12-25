@@ -11,6 +11,7 @@ import 'package:mirror/data/model/user_extrainfo_model.dart';
 import 'package:mirror/data/model/profile_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
 import 'package:r_scan/r_scan.dart';
@@ -143,7 +144,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       children: [
         Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
           print("头像地址:$avatar");
-          // return Image.network(avatar,fit: BoxFit.cover,);
           return CachedNetworkImage(
             height: height*0.16,
             width: width,
@@ -220,6 +220,17 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             ),
           ),
           Expanded(child: SizedBox()),
+          InkWell(
+            onTap: (){
+            AppRouter.navigateToSettingHomePage(context);
+            },
+            child: Container(
+            height: 20,
+            width: 20,
+           child: Icon(
+             Icons.list,
+           ),
+          ),)
         ],
       ),
     );

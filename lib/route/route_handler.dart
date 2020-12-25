@@ -25,6 +25,7 @@ import 'package:mirror/page/profile/login_test_page.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/profile_details_more.dart';
 import 'package:mirror/page/profile/scan_code_page.dart';
+import 'package:mirror/page/profile/setting_page/setting_home_page.dart';
 import 'package:mirror/page/rc_test_page.dart';
 import 'package:mirror/page/test_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_broadcast_page.dart';
@@ -130,7 +131,9 @@ var handlerEditInformationIntroduction = Handler(handlerFunc: (BuildContext cont
     params[AppRouter.paramData].first);
   return EditInformationIntroduction(troduction: data["introduction"],);
 });
-
+var handlerSettingHomePage = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+  return SettingHomePage();
+});
 var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return ReleasePage();
