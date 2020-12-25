@@ -399,6 +399,7 @@ class _FriendsPageState extends State<FriendsPage> {
           ),
         ),
         leadingWidth: 28.0,
+        actions: [],
         // MyIconBtn(
         //   // width: 28,
         //   // height: 28,

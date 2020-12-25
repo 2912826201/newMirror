@@ -92,7 +92,8 @@ class ReleasePageState extends State<ReleasePage> {
                                               : 1),
                                 )
                               ],
-                            )))
+                            )
+                        ))
                   ],
                 ),
               );
@@ -114,7 +115,7 @@ class FeedHeader extends StatelessWidget {
     String cityCode;
     String latitude;
     String longitude;
-    String topicId;
+    List<TopicDtoModel> topics = [];
     print("输入框文字￥$inputText");
     feedModel.content = inputText;
     // 检测文本
@@ -122,11 +123,19 @@ class FeedHeader extends StatelessWidget {
     if (textModel["state"]) {
       print("feedModel.content${feedModel.content}");
       for (Rule rule in rules) {
-        AtUsersModel atModel = AtUsersModel();
-        atModel.index = rule.startIndex;
-        atModel.len = rule.endIndex;
-        atModel.uid = 1008611;
-        atUsersModel.add(atModel);
+        if (rule.isAt) {
+          AtUsersModel atModel = AtUsersModel();
+          atModel.index = rule.startIndex;
+          atModel.len = rule.endIndex;
+          atModel.uid = 1008611;
+          atUsersModel.add(atModel);
+        } else  {
+          TopicDtoModel topicDtoModel = TopicDtoModel();
+          topicDtoModel.index = rule.startIndex;
+          topicDtoModel.len = rule.endIndex;
+          topicDtoModel.id = 1008611;
+          topics.add(topicDtoModel);
+        }
       }
       feedModel.selectedMediaFiles = selectedMediaFiles;
       feedModel.atUsersModel = atUsersModel;
@@ -134,7 +143,7 @@ class FeedHeader extends StatelessWidget {
       feedModel.cityCode = cityCode;
       feedModel.latitude = latitude;
       feedModel.longitude = longitude;
-      feedModel.topicId = topicId;
+      feedModel.topics = topics;
       print("打印一下￥￥${(feedModel.selectedMediaFiles.list.length)}");
       // 传入发布动态model
       context.read<FeedMapNotifier>().setPublishFeedModel(feedModel);
@@ -433,6 +442,7 @@ class TopicList extends StatelessWidget {
           String topicMiddleStr = topics[index].topic.substring(1, topics[index].topic.length);
           // 拼接修改输入框的值
           controller.text = topicBeforeStr + topicMiddleStr + topicRearStr;
+          context.read<ReleaseFeedInputNotifier>().getInputText(controller.text);
           print("controller.text ${controller.text}");
           // 这是替换输入的文本修改后面输入的#的规则
           if (searchStr != "" || searchStr.isNotEmpty) {

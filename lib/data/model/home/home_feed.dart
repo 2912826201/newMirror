@@ -431,9 +431,9 @@ class CommentDtoModel {
   int targetId;
   int type;
   String content;
-  List<PicUrlsModel> picUrls;
+  List<PicUrlsModel> picUrls = [];
   int createTime;
-  List<AtUsersModel> atUsers;
+  List<AtUsersModel> atUsers = [];
   int uid;
   String name;
   String avatarUrl;
