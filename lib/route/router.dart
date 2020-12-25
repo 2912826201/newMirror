@@ -46,6 +46,7 @@ class AppRouter {
   static String pathEditInformationName = "/profile/editinformation/name";
   static String pathEditInformationIntroduction = "/profile/editinformation/introduction";
   static String pathChatPage = "/chatPage";
+  static String pathSettingHomePage = "/profile/settinghomepage";
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(
         handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
@@ -76,6 +77,7 @@ class AppRouter {
     router.define(pathEditInformation, handler: handlerEditInformation);
     router.define(pathEditInformationName, handler: handlerEditInformationName);
     router.define(pathEditInformationIntroduction, handler: handlerEditInformationIntroduction);
+    router.define(pathSettingHomePage, handler: handlerSettingHomePage);
 
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
@@ -201,6 +203,10 @@ class AppRouter {
     Map<String,dynamic> map = Map();
     map["introduction"] = introduction;
     _navigateToPage(context, pathEditInformationIntroduction, map,callback: callback);
+  }
+  static void navigateToSettingHomePage(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathSettingHomePage, map);
   }
   static void navigateToLikePage(BuildContext context) {
     Map<String, dynamic> map = Map();

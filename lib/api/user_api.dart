@@ -8,8 +8,9 @@ import 'api.dart';
 
 const String PERFECT_USERINFO = "/ucenter/web/user/perfectUserInfo";
 const String GET_USERINFO = "/appuser/web/user/getUserInfo";
-
-//完善用户信息
+///获取所有备注
+const String GET_REMARKBYUID = "/appuser/web/user/getRemarkByUid";
+///完善用户信息
 Future<bool> perfectUserInfo(String nickName, String avatarUri) async {
   print("perfectUserInfo $nickName");
   BaseResponseModel responseModel =

@@ -2,6 +2,7 @@
 import 'package:mirror/data/model/add_remarks_model.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/black_model.dart';
+import 'package:mirror/data/model/searchuser_model.dart';
 import 'package:mirror/data/model/user_extrainfo_model.dart';
 import 'package:mirror/data/model/profile_model.dart';
 import 'package:mirror/data/model/user_model.dart';
@@ -32,6 +33,9 @@ const String QUERY_BLACKLIST = "/appuser/web/black/queryList";
 const String DENOUNCE ="/appuser/web/user/denounce";
 ///更新用户信息
 const String UPDATA_USERINFO = "/ucenter/web/user/updateUserInfo";
+///搜索用户
+const String SEARCH_USER = "/appuser/web/user/searchUser";
+
 ///关注
 Future<int> ProfileAddFollow(int id)async{
   BaseResponseModel responseModel = await requestApi(ATTENTION,{"targetId":id});
@@ -161,6 +165,25 @@ Future<UserModel> ProfileUpdataUserInfo(String nickName,String avatarUri,{String
     UserModel model = UserModel.fromJson(responseModel.data);
     return model;
   } else {
+    return null;
+  }
+}
+Future<SearchUserModel> ProfileSearchUser(String  key,int size,{String uids,int lastTime})async{
+  Map<String,dynamic> map = Map();
+  if(uids.isNotEmpty){
+    map["uids"] = uids;
+  }
+  if(lastTime!=null){
+    map["lastTime"] = lastTime;
+  }
+  map["key"] = key;
+  map["size"] = size;
+  BaseResponseModel responseModel = await requestApi(SEARCH_USER,map);
+  if(responseModel.isSuccess){
+    SearchUserModel model;
+    model = SearchUserModel.fromJson(responseModel.data);
+    return model;
+  }else{
     return null;
   }
 }
