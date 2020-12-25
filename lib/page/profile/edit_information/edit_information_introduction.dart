@@ -19,6 +19,7 @@ class _troductionState extends State<EditInformationIntroduction>{
   String editText;
   //底部的提示int
   int textLength = 0;
+  double textHeight;
   @override
   void initState() {
     super.initState();
@@ -35,23 +36,52 @@ class _troductionState extends State<EditInformationIntroduction>{
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
           return Scaffold(
+            appBar: AppBar(
+            backgroundColor: AppColor.white,
+            leading:InkWell(
+              onTap: (){
+                Navigator.pop(this.context);
+              },
+              child: Image.asset("images/test/back.png"),
+            ),
+            title: Text("编辑昵称",style: AppStyle.textMedium18,),
+            centerTitle: true,
+            actions: [
+              InkWell(
+                onTap: (){
+                  Navigator.pop(this.context,editText);
+                },
+                child: Container(
+                width: 60,
+                margin: EdgeInsets.only(right: 16),
+                child: Center(
+                  child:Container(
+                    decoration: BoxDecoration(
+                      color: AppColor.mainRed,
+                      borderRadius: BorderRadius.all(Radius.circular(14)),
+                    ),
+                    padding: EdgeInsets.only(left:16 ,right:16 ,top: 4,bottom:4 ),
+                    child: Text(
+                      "确定",
+                      style: TextStyle(fontSize: 14, color: AppColor.white),
+                    ),)
+                ),
+              ) ,)
+            ],
+          ),
               body: Container(
                 color: AppColor.white,
-                height: height,
+                height: height - ScreenUtil.instance.statusBarHeight,
                 width: width,
                 child: Column(
                   children: [
-                    Container(
-                      height: 44,
-                    ),
-                    _title(width),
                     Container(
                       width: width,
                       height: 0.5,
                       color: AppColor.bgWhite_65,
                     ),
                     SizedBox(height: 21,),
-                    _inputBox(width),
+                    _inputBox(width,height),
                   ],
                 ),
               ),
@@ -59,12 +89,12 @@ class _troductionState extends State<EditInformationIntroduction>{
   }
 
 
-  Widget _inputBox(double width){
+  Widget _inputBox(double width,double height){
     return Container(
       height: 148,
       width: width,
       margin: EdgeInsets.only(left: 16,right: 16),
-      padding: EdgeInsets.only(left: 16,right: 16,top: 8,bottom: 12),
+      padding: EdgeInsets.only(left: 16,right: 16,top: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(8)),
         border: Border.all(width: 0.5, color: AppColor.frame)),
@@ -100,35 +130,6 @@ class _troductionState extends State<EditInformationIntroduction>{
             )
           ],
         ),
-    );
-  }
-  Widget _title(double width){
-    return Container(
-      height: 44,
-      width: width,
-      padding: EdgeInsets.only(left: 16,right: 16),
-      child: Row(
-        children: [
-          InkWell(
-            onTap: (){
-              Navigator.pop(this.context);
-            },
-            child: Image.asset("images/test/back.png"),
-          ),
-          Expanded(child: Center(child: Text("编辑简介",style: AppStyle.textMedium18,),),),
-          InkWell(
-            onTap: (){
-              Navigator.pop(this.context,editText);
-            },
-            child: Container(
-              height: 28,
-              width: 60,
-              child: Center(child: Text("确定",style: TextStyle(fontSize: 14,color:AppColor.white),),),
-              decoration: BoxDecoration(
-                color: AppColor.mainRed,
-                borderRadius: BorderRadius.all(Radius.circular(60)),)),)
-        ],
-      ),
     );
   }
 }

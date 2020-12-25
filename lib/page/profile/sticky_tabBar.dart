@@ -8,14 +8,15 @@ import 'package:mirror/constant/color.dart';
 ///这个是个人主页实现吸顶TabBar的类
 class StickyTabBarDelegate extends SliverPersistentHeaderDelegate {
   final TabBar child;
+  double width;
 
-  StickyTabBarDelegate({@required this.child});
+  StickyTabBarDelegate({@required this.child,this.width});
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
       color: AppColor.white,
-      padding: EdgeInsets.only(left: 129,right: 129),
+      padding: EdgeInsets.only(left: width*0.25,right: width*0.25),
       child: this.child,);
   }
 

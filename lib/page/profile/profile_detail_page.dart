@@ -331,7 +331,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
               SizedBox(width: 15.5,)
             ],
             backgroundColor: AppColor.white,
-            expandedHeight: height*0.42-ScreenUtil.instance.statusBarHeight+ textHeight,
+            expandedHeight: height*0.40-ScreenUtil.instance.statusBarHeight+ textHeight,
             ///这里是资料展示页,写在这个里面相当于是appBar的背景板
             flexibleSpace: FlexibleSpaceBar(
                 background: Container(
@@ -343,10 +343,11 @@ class _ProfileDetailState extends State<ProfileDetailPage>
             /// 可以吸顶的TabBar
             pinned: true,
             delegate: StickyTabBarDelegate(
+              width: width,
               child: TabBar(
                 unselectedLabelStyle: AppStyle.textHintRegular16,
                 unselectedLabelColor: AppColor.textSecondary,
-                labelStyle: AppStyle.textRegular16,
+                labelStyle: AppStyle.textMedium18,
                 labelColor: AppColor.black,
                 indicatorColor: AppColor.black,
                 controller: _mController,
@@ -371,7 +372,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   ///高斯模糊
   Widget mineHomeData(double height, double width) {
     return Container(
-      height: height*0.42+ textHeight,
+      height: height*0.40 + textHeight,
       color: AppColor.white,
       child: Stack(
         children: [
@@ -408,7 +409,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
   ///资料展示
   Widget _MineDetailsData( double height, double width) {
     return Container(
-        height: height*0.42 + textHeight,
+        height: height*0.40 + textHeight,
         width: width,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -434,7 +435,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
               padding: EdgeInsets.only(left: 16, right: 16),
               child: Text(
                 _textName != null ? _textName : "  ",
-                style: TextStyle(fontSize: 20, color: AppColor.black),
+                style: AppStyle.textMedium18,
               ),
             ),
             SizedBox(
@@ -594,8 +595,8 @@ class _ProfileDetailState extends State<ProfileDetailPage>
       }
     },
     child:Container(
-      height: height*0.03,
-      width: height*0.08,
+      height: 28,
+      width: 72,
       decoration: BoxDecoration(
           color: _isFllow?AppColor.mainRed:AppColor.transparent,
           borderRadius: BorderRadius.all(Radius.circular(14)),
@@ -720,7 +721,7 @@ class _ProfileDetailState extends State<ProfileDetailPage>
       children: [
         Text(
           "${_getNumber(number)}",
-          style: AppStyle.textRegular18,
+          style: AppStyle.textMedium18,
         ),
         SizedBox(
           height:height*0.008,
