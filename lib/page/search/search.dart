@@ -518,6 +518,7 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
       ],
     ));
   }
+
 }
 
 // 输入框输入文字的监听
