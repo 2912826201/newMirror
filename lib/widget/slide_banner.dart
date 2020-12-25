@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:animations/animations.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
@@ -11,6 +12,7 @@ import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
+import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
@@ -157,10 +159,21 @@ class _SlideBannerState extends State<SlideBanner> {
   // 轮播图图片设置
   Container buildShowItemContainer(int index) {
     return Container(
-      child: Image.network(
-        widget.model.picUrls[index].url,
-        fit: BoxFit.cover,
-      ),
+      // child: Image.network(
+      //   widget.model.picUrls[index].url,
+      //   fit: BoxFit.cover,
+      // ),
+        child: CachedNetworkImage(
+          // height: setAspectRatio(1.0 *  widget.model.picUrls[0].height, 1.0 *  widget.model.picUrls[0].width),
+          // width: ((ScreenUtil.instance.screenWidthDp) / 2),
+          fit: BoxFit.cover,
+          placeholder: (context, url) => new Container(
+              child: new Center(
+                child: new CircularProgressIndicator(),
+              )),
+          imageUrl:  widget.model.picUrls[index].url != null ?  widget.model.picUrls[index].url : "",
+          errorWidget: (context, url, error) => new Image.asset("images/test.png"),
+        )
     );
   }
 
@@ -275,30 +288,40 @@ class _SlideBannerState extends State<SlideBanner> {
 }
 
 class Item2Page extends StatefulWidget {
-  String photoUrl;
 
-  Item2Page({Key key, this.photoUrl}) : super(key: key);
+  String photoUrl;
+  HomeFeedModel model;
+  int index;
+  Item2Page({Key key, this.photoUrl,this.model,this.index}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _Item2PageState();
+    return _Item2PageState(model: model,index: index);
   }
 }
 
-class _Item2PageState extends State<Item2Page> {
+class _Item2PageState extends XCState {
+  _Item2PageState({ this.model,this.index});
+  HomeFeedModel model;
+  int index;
   @override
-  Widget build(BuildContext context) {
-    return Column(
+  Widget shouldBuild(BuildContext context) {
+    return  Scaffold(
+        backgroundColor: Colors.white,
+      body:
+      Column(
       children: [
         Container(
           child: InkWell(
             onTap: () {
-              Navigator.of(context).pop(true);
+              Navigator.of(context).pop();
             },
-            child: Image.network(
-              widget.photoUrl,
-              fit: BoxFit.cover,
+            child:Hero (
+              tag: "hero${model.id}",
+              child: Image.network(model.picUrls[0].url),
+              // SlideBanner(height: model.picUrls[0].height.toDouble(),model: model,),
             ),
+            // ,
           ),
         ),
         Container(
@@ -306,6 +329,7 @@ class _Item2PageState extends State<Item2Page> {
           color: Colors.red,
         )
       ],
+      )
     );
 
     ///页面二中的Hero

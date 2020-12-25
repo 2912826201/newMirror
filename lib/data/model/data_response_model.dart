@@ -3,7 +3,7 @@ class  DataResponseModel {
   int hasNext;
   int lastTime;
   int lastId;
-  int lastScore;
+  double lastScore;
   DataResponseModel({this.list,this.hasNext, this.lastTime, this.lastId,this.lastScore});
 
   DataResponseModel.fromJson(Map<String, dynamic> json) {

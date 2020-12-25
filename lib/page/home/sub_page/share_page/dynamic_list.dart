@@ -36,8 +36,8 @@ class DynamicListLayout extends StatelessWidget {
     // return ChangeNotifierProvider(
     //     create: (_) => DynamicModelNotifier(model),
     //     builder: (context, _) {
-    print("我要看model的值");
-     print(model.toString());
+    // print("我要看model的值");
+    //  print(model.toString());
           return Column(
             children: [
               // 头部头像时间

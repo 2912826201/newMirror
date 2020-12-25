@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/page/search/sub_page/search_feed.dart';
+import 'package:mirror/page/search/sub_page/search_topic.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
@@ -9,6 +12,9 @@ import 'package:provider/provider.dart';
 
 // 搜索页
 class SearchPage extends StatelessWidget {
+  // 输入框焦点控制器
+  FocusNode focusNode = new FocusNode();
+
   @override
   Widget build(BuildContext context) {
     print("搜索页");
@@ -22,26 +28,39 @@ class SearchPage extends StatelessWidget {
                   return Column(
                     children: [
                       // 头部
-                      SearchHeader(),
-                      context.watch<SearchEnterNotifier>().enterText.length > 0 ?  SearchTabBarView() :
-                      SearchMiddleView(),
+                      SearchHeader(
+                        focusNode: focusNode,
+                      ),
+                      context.watch<SearchEnterNotifier>().enterText.length > 0
+                          ? SearchTabBarView(
+                              focusNode: focusNode,
+                            )
+                          : SearchMiddleView(),
                     ],
                   );
                 })));
   }
 }
- // // 搜索头部布局
-class  SearchHeader extends StatefulWidget {
+
+// // 搜索头部布局
+class SearchHeader extends StatefulWidget {
+  FocusNode focusNode;
+
+  SearchHeader({Key key, this.focusNode}) : super(key: key);
+
   @override
   SearchHeaderState createState() => SearchHeaderState();
 }
 
 class SearchHeaderState extends State<SearchHeader> {
   final controller = TextEditingController();
+
   // 输入框旧值
   String oldValue;
+
   // 输入框新值
   String newValue;
+
   @override
   void initState() {
     controller.addListener(() {
@@ -54,6 +73,7 @@ class SearchHeaderState extends State<SearchHeader> {
       oldValue = newValue;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -88,6 +108,7 @@ class SearchHeaderState extends State<SearchHeader> {
                     alignment: Alignment.center,
                     child: TextField(
                       controller: controller,
+                      focusNode: widget.focusNode,
                       textInputAction: TextInputAction.search,
                       decoration: new InputDecoration(
                           isCollapsed: true,
@@ -129,10 +150,9 @@ class SearchHeaderState extends State<SearchHeader> {
         ],
       ),
     );
-
   }
-
 }
+
 // 搜索页中间默认布局
 class SearchMiddleView extends StatelessWidget {
   @override
@@ -160,7 +180,7 @@ class SearchMiddleView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            "热门推荐",
+            "最近搜索",
             style: AppStyle.textMedium15,
           ),
           Spacer(),
@@ -214,9 +234,59 @@ class SearchMiddleView extends StatelessWidget {
         left: 16,
         right: 16,
       ),
-      color: AppColor.mainRed,
+      child: Wrap(
+        direction: Axis.horizontal,
+        spacing: 16.0,
+        //在direction: Axis.horizontal的时候指左右两个Widget的间距,在direction: Axis.vertical的时候指上下两个widget的间距
+        // runSpacing: 16.0,//在direction: Axis.horizontal的时候指上下两个Widget的间距,在direction: Axis.vertical的时候指左右两个widget的间距
+        alignment: WrapAlignment.start,
+        crossAxisAlignment: WrapCrossAlignment.start,
+        textDirection: TextDirection.ltr,
+        children: HotCourseContentItem(),
+      ),
     );
   }
+
+  // 热门课程推荐类容Item
+  List<Widget> HotCourseContentItem() => List.generate(4, (index) {
+        return Container(
+          height: 48,
+          width: (ScreenUtil.instance.width - 48) / 2,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "${index + 1}",
+                style: index == 3 ? AppStyle.textSecondaryMedium14 : AppStyle.textMediumRed14,
+              ),
+              Spacer(),
+              Container(
+                height: 38,
+                width: ((ScreenUtil.instance.width - 48) / 2) - 40,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("胸背训练教学动作", style: AppStyle.textRegular14, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    SizedBox(
+                      height: 2,
+                    ),
+                    Text(
+                      "描述信息描述信息描述是男是女你说呢",
+                      style: AppStyle.textSecondaryRegular12,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    )
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: 22,
+              )
+            ],
+          ),
+        );
+      });
 
 // 热门话题标题
   HotTopicTitleBar() {
@@ -235,15 +305,91 @@ class SearchMiddleView extends StatelessWidget {
 // 热门话题推荐类容
   HotTopicContent() {
     return Container(
+      height: (ScreenUtil.instance.screenWidthDp - 38) * 0.42,
       width: ScreenUtil.instance.screenWidthDp,
-      height: 114,
-      color: AppColor.mainRed,
+      child: new Swiper(
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+            width: (ScreenUtil.instance.screenWidthDp - 42) * 0.42,
+            height: (ScreenUtil.instance.screenWidthDp - 38) * 0.42,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(2)),
+
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomLeft,
+                colors: [
+                  AppColor.bgWhite,
+                  Colors.white,
+                ],
+              ),
+            ),
+            child: Stack(
+              children: [
+                Image.asset(
+                  "images/test/674_288.png",
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 9),
+                  height: 39,
+                  color: Colors.lime,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(left: 10),
+                        width: 32,
+                        height: 32,
+                        color: Colors.green,
+                      ),
+                      Expanded(
+                          child: Container(
+                        height: 39,
+                        margin: EdgeInsets.only(left: 12),
+                        color: Colors.blue,
+                      )),
+                      SizedBox(
+                        width: 28,
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  color: Colors.limeAccent,
+                  margin: EdgeInsets.only(left: 10,top:63,right: 10),
+                  height: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
+                  child: ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: 4,
+                      itemBuilder: (context,index){
+                    return Container(
+                      height: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
+                      width: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
+                      margin: EdgeInsets.only(right:index != 3 ? 7 : 0),
+                      color: Colors.deepOrangeAccent,
+                    );
+                  }),
+
+                )
+              ],
+            ),
+            //
+          );
+        },
+        itemCount: 4,
+        itemWidth: ScreenUtil.instance.screenWidthDp - 38,
+        layout: SwiperLayout.STACK,
+      ),
     );
   }
 }
 
 // 搜索页TabBarView
 class SearchTabBarView extends StatefulWidget {
+  SearchTabBarView({Key key, this.focusNode}) : super(key: key);
+  FocusNode focusNode;
+
   @override
   SearchTabBarViewState createState() => SearchTabBarViewState();
 }
@@ -299,18 +445,15 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
                   child: Text("课程"),
                 ),
               ),
-              Container(
-                color: Colors.blue,
-                child: Center(
-                  child: Text("话题"),
-                ),
+              SearchTopic(
+                keyWord: context.watch<SearchEnterNotifier>().enterText,
+                focusNode: widget.focusNode,
               ),
-              Container(
-                color: Colors.lime,
-                child: Center(
-                  child: Text("动态"),
-                ),
+              SearchFeed(
+                keyWord: context.watch<SearchEnterNotifier>().enterText,
+                focusNode: widget.focusNode,
               ),
+              // ),
               Container(
                 color: Colors.green,
                 child: Center(
@@ -328,12 +471,20 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
 
 // 输入框输入文字的监听
 class SearchEnterNotifier extends ChangeNotifier {
-  SearchEnterNotifier({this.enterText});
+  SearchEnterNotifier({this.enterText, this.currentTimestamp = 0});
 
+  // 输入文字
   String enterText;
+
+  // 当前时间戳
+  int currentTimestamp;
 
   changeCallback(String str) {
     this.enterText = str;
     notifyListeners();
+  }
+
+  setCurrentTimestamp(int timestamp) {
+    this.currentTimestamp = timestamp;
   }
 }

@@ -192,6 +192,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                     // BouncingScrollPhysics
                     physics:
                     // ClampingScrollPhysics(),
+                    // FixedExtentScrollPhysics(),
                     AlwaysScrollableScrollPhysics(),
                     // BouncingScrollPhysics(),
                     slivers: [
@@ -206,17 +207,24 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                         // controller: _controller,
                         delegate: SliverChildBuilderDelegate((content, index) {
                           // 获取动态id
-                          int id = recommendIdList[index];
-                          // print("动态Id$id");
+                          int id;
                           // 获取动态id指定model
-                          HomeFeedModel model = context.read<FeedMapNotifier>().feedMap[id];
-                          if (model != null) {
-                            if (index == recommendIdList.length-1) {
+                          HomeFeedModel model;
+                          if (index < recommendModelList.length) {
+                            id = recommendIdList[index];
+                            model = context.read<FeedMapNotifier>().feedMap[id];
+                          }
+                          print("我要看model的值");
+                           print(model.toString());
+                          // if (model != null) {
+                            if (index == recommendIdList.length) {
+                              print("进入加载——————————————————————————————————");
                               return LoadingView(
                                 loadText: loadText,
                                 loadStatus: loadStatus,
                               );
-                            } else {
+                            }  else {
+                              print("数据加载——————————————————————————————————");
                               return DynamicListLayout(
                                   index: index,
                                   pc: widget.pc,
@@ -225,11 +233,11 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                   key: GlobalObjectKey("recommend$index"),
                                   isShowRecommendUser: false);
                             }
-                          } else {
-                            // 缺省图
-                            return Container();
-                          }
-                        }, childCount: recommendIdList.length),
+                          // } else {
+                          //   // 缺省图
+                          //   return Container();
+                          // }
+                        }, childCount: recommendIdList.length +1),
                       )
                     ],
                   )),

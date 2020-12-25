@@ -10,5 +10,5 @@ class PostFeedModel {
   String cityCode;
   String longitude;
   String latitude;
-  String topicId;
+  List<TopicDtoModel> topics;
 }

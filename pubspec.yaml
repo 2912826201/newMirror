@@ -56,7 +56,7 @@ dependencies:
   # 列表交错动画
   flutter_staggered_animations: ^0.1.2
   # 页面过渡动画此暂时运用到图片过渡
-  animations: ^1.1.1
+  animations: ^1.1.2
   # ListView滚动插件
   scroll_to_index: ^1.0.6
   # 网络图片缓存
@@ -92,6 +92,8 @@ dependencies:
   shared_preferences: ^0.5.12+4
   # 汉字转拼音
   lpinyin: ^1.1.0
+  # 瀑布流插件
+  flutter_staggered_grid_view: ^0.3.2
 
   #扫码测试
   flutter_qr_reader: ^1.0.3
@@ -138,7 +140,8 @@ flutter:
     - images/resource/2.0x/shut_down@2x.png
     - images/resource/2.0x/search_icon_gray@2x.png
     - images/resource/2.0x/delete_icon_black@2x.png
-    - images/resource/share_index_bubble@2x.png
+    - images/resource/2.0x/bg_topic@2x.png
+    - images/resource/2.0x/share_index_bubble@2x.png
     - images/test/
     - images/test/2.0x/
     - images/test/3.0x/
