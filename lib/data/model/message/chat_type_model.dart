@@ -9,7 +9,7 @@ class ChatTypeModel {
   //图片
   static const String MESSAGE_TYPE_IMAGE = "RC:ImgMsg";
 
-  //语音
+  //语音HQVCMsg
   static const String MESSAGE_TYPE_VOICE = "RC:VcMsg";
 
   //自定义消息类型：短视频
@@ -20,6 +20,12 @@ class ChatTypeModel {
 
   //自定义消息类型：用户名片
   static const String MESSAGE_TYPE_USER = "MD:UserMessage";
+
+  //自定义消息类型：直播课
+  static const String MESSAGE_TYPE_LIVE_COURSE = "MD:LiveCourseMessage";
+
+  //自定义消息类型：视频课
+  static const String MESSAGE_TYPE_VIDEO_COURSE = "MD:VideoCourseMessage";
 
   //自定义消息类型：圈子名片
   static const String MESSAGE_TYPE_CIRCLE = "MD:CircleMessage";

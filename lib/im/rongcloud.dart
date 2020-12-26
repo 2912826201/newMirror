@@ -73,11 +73,34 @@ class RongCloud {
     RongIMClient.disconnect(false);
   }
 
+  //todo 现在没有加 每一秒只发送5条数据的限制
   Future<Message> sendGroupMessage(String targetId, MessageContent content) {
-    return RongIMClient.sendMessage(RCConversationType.Group, targetId, content);
+    return RongIMClient.sendMessage(
+        RCConversationType.Group, targetId, content);
   }
 
+  //todo 现在没有加 每一秒只发送5条数据的限制
   Future<Message> sendPrivateMessage(String targetId, MessageContent content) {
-    return RongIMClient.sendMessage(RCConversationType.Private, targetId, content);
+    return RongIMClient.sendMessage(
+        RCConversationType.Private, targetId, content);
+  }
+
+  ///获取特定方向的历史消息
+  ///
+  ///[conversationType] 会话类型，参见枚举 [RCConversationType]
+  ///
+  ///[targetId] 会话 id
+  ///
+  ///[sentTime] 消息的发送时间
+  ///
+  ///[beforeCount] 指定消息的前部分消息数量
+  ///
+  ///[afterCount] 指定消息的后部分消息数量
+  ///
+  ///[return] 获取到的消息列表
+  Future<List> getHistoryMessages(int conversationType, String targetId,
+      int sentTime, int beforeCount, int afterCount) async {
+    return await RongIMClient.getHistoryMessages(
+        conversationType, targetId, sentTime, beforeCount, afterCount);
   }
 }

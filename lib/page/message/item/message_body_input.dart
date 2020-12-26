@@ -28,7 +28,7 @@ class MessageInputBodyState extends State<MessageInputBody> {
             child: new GestureDetector(
               child: widget.child,
               behavior: HitTestBehavior.translucent,
-              onTap: () {
+              onTapDown: (details) {
                 FocusScope.of(context).requestFocus(new FocusNode());
                 if (widget.onTap != null) {
                   widget.onTap();

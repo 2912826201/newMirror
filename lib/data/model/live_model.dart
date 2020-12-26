@@ -210,10 +210,11 @@ class LiveModel {
     _creatorId = json["creatorId"];
     _coachId = json["coachId"];
     _coachDto =
-    json["coachDto"] != null ? UserModel.fromJson(json["coachDto"]) : null;
+        json["coachDto"] != null ? UserModel.fromJson(json["coachDto"]) : null;
     _coursewareId = json["coursewareId"];
-    _coursewareDto = json["coursewareDto"] != null ? CoursewareDto.fromJson(
-        json["coursewareDto"]) : null;
+    _coursewareDto = json["coursewareDto"] != null
+        ? CoursewareDto.fromJson(json["coursewareDto"])
+        : null;
     _playBackUrl = json["playBackUrl"];
     _videoUrl = json["videoUrl"];
     _startTime = json["startTime"];
@@ -473,7 +474,9 @@ class CoursewareDto {
     if (json["movementDtos"] != null) {
       _movementDtos = [];
       json["movementDtos"].forEach((v) {
-        _movementDtos.add(MovementDtos.fromJson(v));
+        if (v != null) {
+          _movementDtos.add(MovementDtos.fromJson(v));
+        }
       });
     }
     _dataState = json["dataState"];
@@ -732,11 +735,17 @@ class MovementDtos {
     _amount = json["amount"];
     _seconds = json["seconds"];
     _unit = json["unit"];
-    if (json["aicheckSteps"] != null) {
-      _aicheckSteps = [];
-      json["aicheckSteps"].forEach((v) {
-        _aicheckSteps.add(MuscleDto.fromJson(v));
-      });
+    try {
+      if (json["aicheckSteps"] != null) {
+        _aicheckSteps = [];
+        json["aicheckSteps"].forEach((v) {
+          if (v != null) {
+            _aicheckSteps.add(MuscleDto.fromJson(v));
+          }
+        });
+      }
+    } catch (e) {
+
     }
   }
 
