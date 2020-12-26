@@ -194,10 +194,6 @@ class _editInformationState extends State<EditInformation> {
           ],
         ),
         body: SlidingUpPanel(
-            /*borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(isCity ? 0.0 : 10.0),
-              topRight: Radius.circular(isCity ? 0.0 : 10.0),
-            ),*/
             panel: isCity ? _addressPicler(height, width) : _bottomDialog(width),
             onPanelClosed: () {},
             maxHeight: isCity ? height * 0.35 : width * 0.5,

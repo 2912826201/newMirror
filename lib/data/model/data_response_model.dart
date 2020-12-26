@@ -1,5 +1,5 @@
 class  DataResponseModel {
-  List list;
+  List list = [];
   int hasNext;
   int lastTime;
   int lastId;

@@ -87,7 +87,11 @@ class _IndexBarState extends State<IndexBar> {
     for (int i = 0; i < _index_word.length; i++) {
       if (i == 0) {
         words.add(Expanded(
-          child: Image.asset("images/resource/2.0x/search_icon_gray@2x.png",width: 12,height: 12,),
+          child: Image.asset(
+            "images/resource/2.0x/search_icon_gray@2x.png",
+            width: 12,
+            height: 12,
+          ),
         ));
       } else {
         words.add(Expanded(
@@ -114,14 +118,20 @@ class _IndexBarState extends State<IndexBar> {
                     alignment: Alignment(-0.2, 0), //0, 0 是中心顶部是0，-1  左边中心是-1，0
                     children: <Widget>[
                       Image(
-                        image: AssetImage('images/resource/share_index_bubble@2x.png'),
+                        image: AssetImage('images/resource/2.0x/share_index_bubble@2x.png'),
                         width: 28,
                         height: 28,
                       ),
-                      Text(
-                        _indicatorText,
-                        style: TextStyle(fontSize: 12, color: Colors.white),
-                      ),
+                      _indicatorText == '🔍'
+                          ? Image.asset(
+                              "images/resource/2.0x/search_icon_gray@2x.png",
+                              width: 12,
+                              height: 12,
+                            )
+                          : Text(
+                              _indicatorText,
+                              style: TextStyle(fontSize: 12, color: Colors.white),
+                            ),
                     ],
                   ), //气泡
           ),
@@ -364,7 +374,7 @@ class _FriendsPageState extends State<FriendsPage> {
     _scrollController = ScrollController();
   }
 
-  Widget itemForRow(BuildContext context, int index,int noBottomIndex) {
+  Widget itemForRow(BuildContext context, int index, int noBottomIndex) {
     //显示剩下的cell
     //如果当前和上一个cell的indexLetter一样，就不显示
     bool _hideIndexLetter = (index > 0 && _listDatas[index].indexLetter == _listDatas[index - 1].indexLetter);
@@ -453,10 +463,11 @@ class _FriendsPageState extends State<FriendsPage> {
                   itemCount: _listDatas.length,
                   itemBuilder: (context, index) {
                     int noBottomIndex = 0;
-                    if (index < _listDatas.length - 1 && _listDatas[index + 1].indexLetter != _listDatas[index].indexLetter) {
+                    if (index < _listDatas.length - 1 &&
+                        _listDatas[index + 1].indexLetter != _listDatas[index].indexLetter) {
                       noBottomIndex = index;
                     }
-                    return itemForRow(context, index,noBottomIndex);
+                    return itemForRow(context, index, noBottomIndex);
                   })), //列表
           IndexBar(
             indexBarCallBack: (String str) {
@@ -481,12 +492,7 @@ class _FriendsCell extends StatelessWidget {
   int noBottomIndex = 0;
 
   _FriendsCell(
-      {this.imageUrl,
-      this.name,
-      this.imageAssets,
-      this.groupTitle,
-      this.noBottomIndex = 0,
-      this.voidCallback}); //首字母大写
+      {this.imageUrl, this.name, this.imageAssets, this.groupTitle, this.noBottomIndex = 0, this.voidCallback}); //首字母大写
 
   @override
   Widget build(BuildContext context) {
@@ -521,7 +527,7 @@ class _FriendsCell extends StatelessWidget {
         Container(
           color: Colors.white,
           height: 48,
-          margin: EdgeInsets.only(bottom:  noBottomIndex == 0 ? 10 : 0),
+          margin: EdgeInsets.only(bottom: noBottomIndex == 0 ? 10 : 0),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
@@ -548,10 +554,9 @@ class _FriendsCell extends StatelessWidget {
       ],
     );
   }
-
 }
 
-// 返回搜字母大写
+// 返回首字母大写
 extension StringExtension on String {
   String capitalize() {
     return "${this[0].toUpperCase()}";

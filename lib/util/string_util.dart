@@ -1,6 +1,10 @@
+import 'dart:convert';
+
+import 'package:convert/convert.dart';
+import 'package:crypto/crypto.dart';
+
 /// string_util
 /// Created by yangjiayi on 2020/11/24.
-
 class StringUtil {
   //TODO 这个正则表达式需要可以更新
   static bool matchPhoneNumber(String phoneNum) {
@@ -15,6 +19,14 @@ class StringUtil {
     if (value == null) return false;
 
     return value.trim().isNotEmpty;
+  }
+
+// md5 加密
+  static String generateMd5(String data) {
+    var content = new Utf8Encoder().convert(data);
+    var digest = md5.convert(content);
+    // 这里其实就是 digest.toString()
+    return hex.encode(digest.bytes);
   }
 
   static RegExp _ipv4Maybe =
@@ -33,11 +45,11 @@ class StringUtil {
   /// * [hostBlacklist] 设置不允许的主机列表
   static bool isURL(String str,
       {List<String> protocols = const ['http', 'https', 'ftp'],
-      bool requireTld = true,
-      bool requireProtocol = false,
-      bool allowUnderscore = false,
-      List<String> hostWhitelist = const [],
-      List<String> hostBlacklist = const []}) {
+        bool requireTld = true,
+        bool requireProtocol = false,
+        bool allowUnderscore = false,
+        List<String> hostWhitelist = const [],
+        List<String> hostBlacklist = const []}) {
     if (str == null ||
         str.length == 0 ||
         str.length > 2083 ||

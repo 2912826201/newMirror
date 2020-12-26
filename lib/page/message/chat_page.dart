@@ -1,14 +1,24 @@
+import 'dart:typed_data';
+
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/data/model/message/chat_voice_model.dart';
+import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
-import 'package:mirror/page/message/test_message_post.dart';
+import 'package:mirror/im/rongcloud.dart';
+import 'package:mirror/page/media_picker/media_picker_page.dart';
+import 'package:mirror/page/message/message_manager.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import 'chat_details_body.dart';
@@ -16,14 +26,13 @@ import 'item/chat_more_icon.dart';
 import 'item/emoji_manager.dart';
 import 'item/message_body_input.dart';
 import 'item/message_input_bar.dart';
+import 'package:provider/provider.dart';
 
 ////////////////////////////////
 //
 /////////////聊天会话页面
 //
 ///////////////////////////////
-
-enum ButtonType { voice, more }
 
 class ChatPage extends StatefulWidget {
   final _ChatPageState _state = _ChatPageState();
@@ -39,32 +48,29 @@ class ChatPage extends StatefulWidget {
   }
 }
 
-class _ChatPageState extends State<ChatPage>
-    with TickerProviderStateMixin, WidgetsBindingObserver {
+class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   //所有的会话消息
   List<ChatDataModel> chatDataList = <ChatDataModel>[];
 
   bool _emojiState = false;
+  bool _isVoiceState = false;
   TextEditingController _textController = TextEditingController();
   FocusNode _focusNode = new FocusNode();
   ScrollController _scrollController = ScrollController();
   bool isHaveTextLen = false;
-  double bottomSettingBoxHeight = Application.keyboardHeight;
   bool isContentClickOrEmojiClick = true;
   bool isResizeToAvoidBottomInset = true;
   List<EmojiModel> emojiModelList = <EmojiModel>[];
 
   String chatUserName;
-  int chatUserId;
+  String chatUserId;
   String chatType;
 
   @override
   void initState() {
     super.initState();
-    //初始化
-    WidgetsBinding.instance.addObserver(this);
-    _getEmojiModelList();
     initData();
+    initSetData();
   }
 
   @override
@@ -74,11 +80,7 @@ class _ChatPageState extends State<ChatPage>
     }
     var body = [
       (chatDataList != null && chatDataList.length > 0)
-          ? ChatDetailsBody(
-              sC: _scrollController,
-              chatData: chatDataList,
-              vsync: this,
-            )
+          ? getChatDetailsBody()
           : Spacer(),
       getMessageInputBar(),
       bottomSettingBox(),
@@ -87,26 +89,7 @@ class _ChatPageState extends State<ChatPage>
     return WillPopScope(
       child: Scaffold(
         resizeToAvoidBottomInset: isResizeToAvoidBottomInset,
-        appBar: AppBar(
-          title: Text(
-            chatUserName + "-" + chatType,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          centerTitle: true,
-          actions: [
-            Container(
-              margin: const EdgeInsets.only(right: 16),
-              child: IconButton(
-                icon: Icon(Icons.more_horiz),
-                onPressed: () {
-                  print("-----------------------");
-                  ToastShow.show(msg: "点击了更多那妞", context: context);
-                },
-              ),
-            )
-          ],
-        ),
+        appBar: getAppBar(),
         body: MessageInputBody(
           onTap: () => _messageInputBodyClick(),
           decoration: BoxDecoration(color: Color(0xffefefef)),
@@ -117,31 +100,55 @@ class _ChatPageState extends State<ChatPage>
     );
   }
 
+  //获取列表内容
+  Widget getChatDetailsBody() {
+    return ChatDetailsBody(
+      scrollController: _scrollController,
+      chatData: chatDataList,
+      vsync: this,
+    );
+  }
+
+  //获取appbar
+  Widget getAppBar() {
+    return AppBar(
+      title: Text(
+        chatUserName + "-" + chatType,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      centerTitle: true,
+      actions: [
+        Container(
+          margin: const EdgeInsets.only(right: 16),
+          child: IconButton(
+            icon: Icon(Icons.more_horiz),
+            onPressed: () {
+              print("-----------------------");
+              ToastShow.show(msg: "点击了更多那妞", context: context);
+            },
+          ),
+        )
+      ],
+    );
+  }
+
   //输入框bar
   Widget getMessageInputBar() {
     return MessageInputBar(
-      voiceOnTap: null,
-      onEmojio: () {
-        if (MediaQuery.of(context).viewInsets.bottom > 0) {
-          _emojiState = false;
-        }
-        _emojiState = !_emojiState;
-        isResizeToAvoidBottomInset = !_emojiState;
-        if (_emojiState) {
-          FocusScope.of(context).requestFocus(new FocusNode());
-        }
-        isContentClickOrEmojiClick = false;
-        setState(() {});
-      },
-      isVoice: false,
+      voiceOnTap: _voiceOnTapClick,
+      onEmojio: onEmojioClick,
+      isVoice: _isVoiceState,
+      voiceFile: _voiceFile,
       edit: edit,
       value: _textController.text,
       more: ChatMoreIcon(
         value: _textController.text,
         onTap: () {
+          print("231");
           _handleSubmittedData();
         },
-        moreTap: () => onTapHandle(ButtonType.more),
+        moreTap: () => onPicAndVideoBtnClick(),
       ),
       id: null,
       type: null,
@@ -194,7 +201,7 @@ class _ChatPageState extends State<ChatPage>
           Offstage(
             offstage: isOffstage,
             child: Container(
-              height: bottomSettingBoxHeight,
+              height: Application.keyboardHeight,
               width: double.infinity,
             ),
           )
@@ -207,7 +214,7 @@ class _ChatPageState extends State<ChatPage>
   Widget emoji() {
     //fixme 这里的300高度只是临时方案 其实应该是获取键盘的高度 但是在没有打开键盘时 暂时不知道键盘高度是多少
     double emojiHeight =
-        Application.keyboardHeight > 0 ? Application.keyboardHeight : 300;
+    Application.keyboardHeight > 0 ? Application.keyboardHeight : 300;
     if (!_emojiState) {
       emojiHeight = 0.0;
     }
@@ -241,8 +248,8 @@ class _ChatPageState extends State<ChatPage>
             children: [
               Expanded(
                   child: SizedBox(
-                child: _emojiGridTop(),
-              )),
+                    child: _emojiGridTop(),
+                  )),
               _emojiBottomBox(),
             ],
           ),
@@ -338,37 +345,20 @@ class _ChatPageState extends State<ChatPage>
         ));
   }
 
-  //发送文字信息
-  _handleSubmittedData() async {
-    String text = _textController.text;
-    chatDataList.insert(0, await postText(text, chatUserId.toString()));
-    setState(() {
-      _textController.text = "";
-      isHaveTextLen = false;
-    });
-  }
-
-  onTapHandle(ButtonType type) {
-    // print("=====${type}");
-  }
 
   //聊天内容的点击事件
   _messageInputBodyClick() {
-    setState(() {
-      _emojiState = false;
-      isContentClickOrEmojiClick = true;
-    });
-    Future.delayed(Duration(milliseconds: 300), () {
+    if (_emojiState || MediaQuery.of(context).viewInsets.bottom > 0) {
       setState(() {
-        isResizeToAvoidBottomInset = !_emojiState;
+        _emojiState = false;
+        isContentClickOrEmojiClick = true;
       });
-    });
-  }
-
-  //获取表情的数据
-  _getEmojiModelList() async {
-    emojiModelList = await EmojiManager.getEmojiModelList();
-    setState(() {});
+      Future.delayed(Duration(milliseconds: 300), () {
+        setState(() {
+          isResizeToAvoidBottomInset = !_emojiState;
+        });
+      });
+    }
   }
 
 // 监听返回
@@ -412,46 +402,170 @@ class _ChatPageState extends State<ChatPage>
   //初始化一些数据
   void initData() {
     chatUserName = "聊天界面";
-    chatUserId = 0;
+    chatUserId = "0";
     chatType = "测试聊天";
     if (widget.conversation == null) {
       print("未知信息");
     } else {
       chatUserName = widget.conversation.name;
-      chatUserId = widget.conversation.uid;
+      chatUserId = widget.conversation.conversationId;
       chatType = getMessageType(widget.conversation, context);
     }
+  }
 
+
+  //初始化一些数据
+  void initSetData() async {
+    List msgList = new List();
+    msgList =
+    await RongCloud.init().getHistoryMessages(widget.conversation.type,
+        widget.conversation.conversationId,
+        new DateTime.now().millisecondsSinceEpoch, 30, 0);
+    if (msgList != null && msgList.length > 0) {
+      for (int i = 0; i < msgList.length; i++) {
+        chatDataList.add(
+            getMessage((msgList[i] as Message), isHaveAnimation: false));
+      }
+    }
     if (widget.shareMessage != null) {
-      chatDataList.insert(0, postMessage(widget.shareMessage));
+      chatDataList[0].isHaveAnimation = true;
+      // if(chatDataList[chatDataList.length-1].msg.messageId==widget.shareMessage?.messageId){
+      //   chatDataList[chatDataList.length-1].isHaveAnimation=true;
+      // }else{
+      //   chatDataList.insert(0, getMessage(widget.shareMessage));
+      // }
+    }
+    //获取欧表情的数据
+    emojiModelList = await EmojiManager.getEmojiModelList();
+    Future.delayed(Duration(milliseconds: 200), () {
+      setState(() {});
+    });
+  }
+
+  //表情的点击事件
+  void onEmojioClick() {
+    if (MediaQuery
+        .of(context)
+        .viewInsets
+        .bottom > 0) {
+      _emojiState = false;
+    }
+    _emojiState = !_emojiState;
+    isResizeToAvoidBottomInset = !_emojiState;
+    if (_emojiState) {
+      FocusScope.of(context).requestFocus(new FocusNode());
+    }
+    isContentClickOrEmojiClick = false;
+    setState(() {});
+  }
+
+  //图片的点击事件
+  onPicAndVideoBtnClick() {
+    print("=====图片的点击事件");
+    SelectedMediaFiles selectedMediaFiles = new SelectedMediaFiles();
+    AppRouter.navigateToMediaPickerPage(
+        context,
+        9,
+        typeImageAndVideo,
+        false,
+        startPageGallery,
+        false,
+        false,
+            (result) async {
+          SelectedMediaFiles files = Application.selectedMediaFiles;
+          if (true != result || files == null) {
+            print("没有选择媒体文件");
+            return;
+          }
+          Application.selectedMediaFiles = null;
+          selectedMediaFiles.type = files.type;
+          selectedMediaFiles.list = files.list;
+          _handPicOrVideo(selectedMediaFiles);
+        });
+  }
+
+  //发送文字信息
+  _handleSubmittedData() async {
+    String text = _textController.text;
+    ChatDataModel chatDataModel = new ChatDataModel();
+    chatDataModel.type = ChatTypeModel.MESSAGE_TYPE_TEXT;
+    chatDataModel.content = text;
+    chatDataModel.isTemporary = true;
+    chatDataModel.isHaveAnimation = true;
+    chatDataList.insert(0, chatDataModel);
+    setState(() {
+      _textController.text = "";
+      isHaveTextLen = false;
+    });
+    postText(chatDataList[0], widget.conversation.conversationId, () {
+      delayedSetState();
+    });
+  }
+
+  //发送视频以及图片
+  _handPicOrVideo(SelectedMediaFiles selectedMediaFiles) {
+    List<ChatDataModel> modelList = <ChatDataModel>[];
+    for (int i = 0; i < selectedMediaFiles.list.length; i++) {
+      ChatDataModel chatDataModel = new ChatDataModel();
+      chatDataModel.type =
+      (selectedMediaFiles.type == mediaTypeKeyVideo ? ChatTypeModel
+          .MESSAGE_TYPE_VIDEO : ChatTypeModel.MESSAGE_TYPE_IMAGE);
+      chatDataModel.mediaFileModel = selectedMediaFiles.list[i];
+      chatDataModel.isTemporary = true;
+      chatDataModel.isHaveAnimation = true;
+      chatDataList.insert(0, chatDataModel);
+      modelList.add(chatDataList[0]);
+    }
+    setState(() {});
+    postImgOrVideo(modelList, widget.conversation.conversationId,
+        selectedMediaFiles.type, () {
+          delayedSetState();
+    });
+  }
+
+  //录音按钮的点击事件
+  _voiceOnTapClick() async {
+    await [Permission.speech].request();
+    _focusNode.unfocus();
+    _emojiState = false;
+    isContentClickOrEmojiClick = true;
+    _isVoiceState = !_isVoiceState;
+    setState(() {
+
+    });
+  }
+
+  //发送录音
+  _voiceFile(String path, int time) async {
+    ChatDataModel chatDataModel = new ChatDataModel();
+    ChatVoiceModel voiceModel = new ChatVoiceModel();
+    voiceModel.filePath = path;
+    voiceModel.longTime = time;
+    voiceModel.read = 0;
+    chatDataModel.type = ChatTypeModel.MESSAGE_TYPE_VOICE;
+    chatDataModel.chatVoiceModel = voiceModel;
+    chatDataModel.isTemporary = true;
+    chatDataModel.isHaveAnimation = true;
+    chatDataList.insert(0, chatDataModel);
+    setState(() {});
+    postVoice(chatDataList[0], widget.conversation.conversationId, () {
+      delayedSetState();
+    });
+  }
+
+  void delayedSetState() {
+    Future.delayed(Duration(milliseconds: 200), () {
       setState(() {
 
       });
-    }
+    });
   }
 
   @override
   void dispose() {
-    //销毁
-    WidgetsBinding.instance.removeObserver(this);
-    // _childController.dispose();
+    _scrollController.dispose();
+    context.read<VoiceSettingNotifier>().stop();
     super.dispose();
   }
 
-  //键盘的监听
-  @override
-  void didChangeMetrics() {
-    super.didChangeMetrics();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (MediaQuery.of(context).viewInsets.bottom == 0) {
-        //关闭键盘
-      } else {
-        //显示键盘
-        if (bottomSettingBoxHeight <= Application.keyboardHeight) {
-          bottomSettingBoxHeight = Application.keyboardHeight;
-          setState(() {});
-        }
-      }
-    });
-  }
 }

@@ -208,6 +208,7 @@ class AppRouter {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathSettingHomePage, map);
   }
+
   static void navigateToLikePage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathLike, map);

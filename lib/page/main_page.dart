@@ -86,7 +86,27 @@ class MainPageState extends State<MainPage> {
         ]),
       ),
       // SlidingUpPanel
-      body:  returnView(currentIndex),
+      body:  Stack(
+        children: <Widget>[
+          new Offstage(
+            offstage: currentIndex!=0, //这里控制
+            child: HomePage(pc: widget.pc,),
+          ),
+          new Offstage(
+            offstage: currentIndex!=1, //这里控制
+            child: TrainingPage(),
+          ),
+          new Offstage(
+            offstage: currentIndex!=2, //这里控制
+            child: MessagePage(),
+          ),
+          new Offstage(
+            offstage: currentIndex!=3, //这里控制
+            child: ProfilePage(panelController: widget.pc,),
+          ),
+        ],
+      ),
+      // returnView(currentIndex),
     );
   }
 

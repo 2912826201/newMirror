@@ -12,14 +12,18 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
+import 'currency_msg.dart';
+
+// ignore: must_be_immutable
 class FeedMsg extends StatelessWidget {
-  final ChatDataModel model;
+  final String userUrl;
+  final String name;
+  final bool isMyself;
+  final HomeFeedModel homeFeedMode;
+  final int status;
 
-  FeedMsg(this.model);
-
-  Map<String, dynamic> feedMap;
-  HomeFeedModel homeFeedMode;
-  bool isMyself;
+  FeedMsg(
+      {this.homeFeedMode, this.isMyself, this.userUrl, this.name, this.status});
 
   //0--pic    1-video  -1-都不是
   int isPicOrVideo = -1;
@@ -27,8 +31,45 @@ class FeedMsg extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     init();
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 9.0),
+      child: Column(
+        children: [
+          getLongClickBox(),
+          Row(
+            mainAxisAlignment:
+                isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
+            children: getBody(context),
+          ),
+        ],
+      ),
+    );
+  }
+
+  //最外层body 加载状态和消息结构
+  List<Widget> getBody(BuildContext context) {
     var body = [
-      _getUserImage(),
+      Row(
+        mainAxisAlignment:
+            isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: getSmallBody(context),
+      ),
+      getMessageState(status),
+      Spacer(),
+    ];
+    if (isMyself) {
+      body = body.reversed.toList();
+    } else {
+      body = body;
+    }
+    return body;
+  }
+
+  //里面的结构-头像和消息
+  List<Widget> getSmallBody(BuildContext context) {
+    var body = [
+      getUserImage(userUrl, 38, 38),
       SizedBox(
         width: 7,
       ),
@@ -38,38 +79,16 @@ class FeedMsg extends StatelessWidget {
           ToastShow.show(msg: "点击了动态-改跳转", context: context);
         },
       ),
-      Spacer(),
     ];
-
     if (isMyself) {
       body = body.reversed.toList();
     } else {
       body = body;
     }
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 9.0),
-      child: Row(
-        mainAxisAlignment:
-            isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: body,
-      ),
-    );
+    return body;
   }
 
-  //获取用户的头像
-  Widget _getUserImage() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(19),
-      child: Image.network(
-        model.msg.content.sendUserInfo.portraitUri,
-        fit: BoxFit.cover,
-        width: 38,
-        height: 38,
-      ),
-    );
-  }
-
+  //获取动态框
   Widget _getFeedUi() {
     return Container(
       width: 180,
@@ -96,7 +115,6 @@ class FeedMsg extends StatelessWidget {
       String showUrl = (isPicOrVideo == 0
           ? homeFeedMode.picUrls[0].url
           : FileUtil.getVideoFirstPhoto(homeFeedMode.videos[0].url));
-      print("showUrl:${showUrl}");
 
       int ms = 0;
       if (isPicOrVideo == 1) {
@@ -205,7 +223,7 @@ class FeedMsg extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                               style: textStyle),
                           constraints: BoxConstraints(
-                            maxWidth: 180 - 12 - 4 - 12 - 6 - 60.0,
+                            maxWidth: 180 - 12 - 4 - 12 - 6 - 80.0,
                           ),
                         ),
                         Container(
@@ -264,21 +282,13 @@ class FeedMsg extends StatelessWidget {
 
   //初始化数据
   void init() {
-    isMyself = Application.profile.uid.toString() == model.msg.senderUserId;
-    if (homeFeedMode == null) {
-      feedMap = json.decode(
-          json.decode(((model.msg.content) as TextMessage).content)["content"]);
-      homeFeedMode = HomeFeedModel.fromJson(feedMap);
-      print(feedMap.toString());
-      if (homeFeedMode.picUrls != null && homeFeedMode.picUrls.length > 0) {
-        isPicOrVideo = 0;
-      } else if (homeFeedMode.videos != null &&
-          homeFeedMode.videos.length > 0) {
-        isPicOrVideo = 1;
-      } else {
-        isPicOrVideo = -1;
-      }
-      print("isPicOrVideo:${isPicOrVideo}");
+    if (homeFeedMode.picUrls != null && homeFeedMode.picUrls.length > 0) {
+      isPicOrVideo = 0;
+    } else if (homeFeedMode.videos != null &&
+        homeFeedMode.videos.length > 0) {
+      isPicOrVideo = 1;
+    } else {
+      isPicOrVideo = -1;
     }
   }
 }

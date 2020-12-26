@@ -23,6 +23,8 @@ import 'config/config.dart';
 import 'config/shared_preferences.dart';
 import 'data/dto/profile_dto.dart';
 import 'data/dto/token_dto.dart';
+import 'data/model/message/chat_voice_setting.dart';
+import 'data/model/message/voice_alert_date_model.dart';
 import 'data/model/token_model.dart';
 import 'data/notifier/token_notifier.dart';
 import 'data/notifier/profile_notifier.dart';
@@ -30,16 +32,21 @@ import 'im/message_manager.dart';
 import 'route/router.dart';
 
 void main() {
-  SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
+  SystemUiOverlayStyle systemUiOverlayStyle =
+      SystemUiOverlayStyle(statusBarColor: Colors.transparent);
   SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   _initApp().then((value) => runApp(
         MultiProvider(
           providers: [
-            ChangeNotifierProvider(create: (_) => TokenNotifier(Application.token)),
-            ChangeNotifierProvider(create: (_) => ProfileNotifier(Application.profile)),
+            ChangeNotifierProvider(
+                create: (_) => TokenNotifier(Application.token)),
+            ChangeNotifierProvider(
+                create: (_) => ProfileNotifier(Application.profile)),
             ChangeNotifierProvider(create: (_) => FeedMapNotifier(feedMap: {})),
             ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
             ChangeNotifierProvider(create: (_) => ConversationNotifier()),
+            ChangeNotifierProvider(create: (_) => VoiceAlertData()),
+            ChangeNotifierProvider(create: (_) => VoiceSettingNotifier()),
           ],
           child: MyApp(),
         ),

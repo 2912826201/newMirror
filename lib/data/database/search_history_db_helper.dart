@@ -29,4 +29,8 @@ class SearchHistoryDBHelper {
     }
     return list;
   }
+
+  Future<void> clearSearchHistory(int uid) async {
+    await DBHelper.instance.db.delete(TABLE_NAME_SEARCHHISTORY, where: "$COLUMN_NAME_SEARCHHISTORY_UID = $uid");
+  }
 }

@@ -1,3 +1,5 @@
+import 'package:mirror/data/model/user_model.dart';
+
 enum CommentTypes {
   commentFeed, // 评论动态
   commentMainCom, // 评论主评论
@@ -266,6 +268,7 @@ class TopicDtoModel {
   int createTime;
   int updateTime;
   int isFollow;
+  List<String> pics = [];
 
   TopicDtoModel(
       {this.id,
@@ -283,7 +286,8 @@ class TopicDtoModel {
       this.dataState,
       this.createTime,
       this.updateTime,
-      this.isFollow});
+      this.isFollow,
+      this.pics});
 
   TopicDtoModel.fromJson(Map<String, dynamic> json) {
     id = json["id"];
@@ -302,6 +306,11 @@ class TopicDtoModel {
     createTime = json["createTime"];
     updateTime = json["updateTime"];
     isFollow = json["isFollow"];
+    if (json["pics"] != null) {
+      json["pics"].forEach((v) {
+        pics.add(v);
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -322,6 +331,7 @@ class TopicDtoModel {
     map["createTime"] = createTime;
     map["updateTime"] = updateTime;
     map["isFollow"] = isFollow;
+    map["pics"] = pics;
     return map;
   }
 
@@ -339,7 +349,7 @@ class CourseDtoModel {
   int creatorId; // 创建人Id
   int coachId;
 
-  // UserBaseInfoDto coachDto;           // 教练dto
+  UserModel coachDto;           // 教练dto
   int coursewareId;
 
   // CoursewareDto coursewareDto;      // 课件dto
@@ -395,6 +405,9 @@ class CourseDtoModel {
     dataState = json["dataState"];
     createTime = json["createTime"];
     updateTime = json["updateTime"];
+    if (json["coachDto"] != null) {
+      coachDto = UserModel.fromJson(json["coachDto"]);
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -417,6 +430,7 @@ class CourseDtoModel {
     map["createTime"] = createTime;
     map["updateTime"] = updateTime;
     map["finishAmount"] = finishAmount;
+    map["coachDto"] = coachDto;
     return map;
   }
 
