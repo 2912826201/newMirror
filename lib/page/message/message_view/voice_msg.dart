@@ -60,11 +60,16 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
     }
     return Container(
       padding: EdgeInsets.symmetric(vertical: 9.0),
-      child: Row(
-        mainAxisAlignment:
-            widget.isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: getBody(context),
+      child: Column(
+        children: [
+          getLongClickBox(),
+          Row(
+            mainAxisAlignment: widget.isMyself
+                ? MainAxisAlignment.end
+                : MainAxisAlignment.start,
+            children: getBody(context),
+          ),
+        ],
       ),
     );
   }
