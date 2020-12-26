@@ -19,6 +19,7 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
   double titleSize = 30;
   String startTime;
   String endTime;
+  final VoidCallback shareBtnClick;
 
   SliverCustomHeaderDelegateVideo({
     this.collapsedHeight,
@@ -31,6 +32,7 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
     this.heroTag,
     this.startTime,
     this.endTime,
+    this.shareBtnClick,
   });
 
   @override
@@ -253,9 +255,7 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
                               Icons.share,
                               color: AppColor.white,
                             ),
-                            onPressed: () {
-                              print("点击了分享--视频课程头部详情页");
-                            },
+                            onPressed: shareBtnClick,
                           ),
                         ],
                       )

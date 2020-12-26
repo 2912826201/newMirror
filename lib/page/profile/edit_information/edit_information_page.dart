@@ -63,8 +63,10 @@ class _editInformationState extends State<EditInformation> {
   Color textColor = AppColor.black;
   int leftIndex = 0;
   int rightIndex = 0;
-  FixedExtentScrollController leftfixedExtentController = FixedExtentScrollController(initialItem: 0);
-  FixedExtentScrollController rightfixedExtentController = FixedExtentScrollController(initialItem: 0);
+  FixedExtentScrollController leftfixedExtentController =
+      FixedExtentScrollController(initialItem: 0);
+  FixedExtentScrollController rightfixedExtentController =
+      FixedExtentScrollController(initialItem: 0);
   bool isFirst = true;
   bool cityNotChange = false;
   List<String> provinceNameList = [];
@@ -113,8 +115,10 @@ class _editInformationState extends State<EditInformation> {
       });
     }
     print('userSex==========================================$userSex');
-    print('userBirthday==========================================$userBirthday');
-    print('_introduction==========================================$_introduction');
+    print(
+        'userBirthday==========================================$userBirthday');
+    print(
+        '_introduction==========================================$_introduction');
     print('=====================================赋值完成');
   }
 
@@ -172,30 +176,32 @@ class _editInformationState extends State<EditInformation> {
                 }
               },
               child: Container(
-              width: 60,
-              margin: EdgeInsets.only(right: 16),
-              child: Center(
-                  child: Container(
-                decoration: BoxDecoration(
-                  color: AppColor.mainRed,
-                  borderRadius: BorderRadius.all(Radius.circular(14)),
-                ),
-                padding: EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 4),
-                child: Text(
-                  "确定",
-                  style: TextStyle(fontSize: 14, color: AppColor.white),
-                ),
-              )),
-            ),
+                width: 60,
+                margin: EdgeInsets.only(right: 16),
+                child: Center(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppColor.mainRed,
+                        borderRadius: BorderRadius.all(Radius.circular(14)),
+                      ),
+                      padding:
+                      EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 4),
+                      child: Text(
+                        "确定",
+                        style: TextStyle(fontSize: 14, color: AppColor.white),
+                      ),
+                    )),
+              ),
             )
           ],
         ),
         body: SlidingUpPanel(
-            /*borderRadius: BorderRadius.only(
+          /*borderRadius: BorderRadius.only(
               topLeft: Radius.circular(isCity ? 0.0 : 10.0),
               topRight: Radius.circular(isCity ? 0.0 : 10.0),
             ),*/
-            panel: isCity ? _addressPicler(height, width) : _bottomDialog(width),
+            panel:
+            isCity ? _addressPicler(height, width) : _bottomDialog(width),
             onPanelClosed: () {},
             maxHeight: isCity ? height * 0.31 + 42 : width * 0.5,
             backdropEnabled: true,
@@ -217,11 +223,18 @@ class _editInformationState extends State<EditInformation> {
                       width: 71,
                       height: 71,
                       child: InkWell(
-                        child: _avatar(context, height,width),
+                        child: _avatar(context, height, width),
                         onTap: () {
                           AppRouter.navigateToMediaPickerPage(
-                              context, 1, typeImage, true, startPageGallery, true, false, (result) async {
-                            SelectedMediaFiles files = Application.selectedMediaFiles;
+                              context,
+                              1,
+                              typeImage,
+                              true,
+                              startPageGallery,
+                              true,
+                              false, (result) async {
+                            SelectedMediaFiles files =
+                                Application.selectedMediaFiles;
                             if (result != true || files == null) {
                               print('===============================值为空退回');
                               return;
@@ -234,22 +247,47 @@ class _editInformationState extends State<EditInformation> {
                             print(
                                 'model croppedImageData 1=========================${model.croppedImageData}  ${model.croppedImage}   ${model.file}');
                             if (model != null) {
-                              print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-                              ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
-                              print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-                              Uint8List picBytes = byteData.buffer.asUint8List();
-                              print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
+                              print("开始获取ByteData" +
+                                  DateTime
+                                      .now()
+                                      .millisecondsSinceEpoch
+                                      .toString());
+                              ByteData byteData = await model.croppedImage
+                                  .toByteData(format: ui.ImageByteFormat.png);
+                              print("已获取到ByteData" +
+                                  DateTime
+                                      .now()
+                                      .millisecondsSinceEpoch
+                                      .toString());
+                              Uint8List picBytes =
+                              byteData.buffer.asUint8List();
+                              print("已获取到Uint8List" +
+                                  DateTime
+                                      .now()
+                                      .millisecondsSinceEpoch
+                                      .toString());
                               model.croppedImageData = picBytes;
                             }
-                            String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
+                            String timeStr = DateTime
+                                .now()
+                                .millisecondsSinceEpoch
+                                .toString();
                             if (model.croppedImageData != null) {
-                              print('==================================model.croppedImageData!=null');
-                              File imageFile = await FileUtil().writeImageDataToFile(model.croppedImageData, timeStr);
-                              print('imageFile==============================$imageFile');
+                              print(
+                                  '==================================model.croppedImageData!=null');
+                              File imageFile = await FileUtil()
+                                  .writeImageDataToFile(
+                                  model.croppedImageData, timeStr);
+                              print(
+                                  'imageFile==============================$imageFile');
                               fileList.add(imageFile);
-                              print('===============================${fileList.length}');
+                              print(
+                                  '===============================${fileList
+                                      .length}');
                             }
-                            print('model.croppedImageData 2===========================${model.croppedImageData}');
+                            print(
+                                'model.croppedImageData 2===========================${model
+                                    .croppedImageData}');
                             // context.read<InformationImageNotifier>().setImage(model.croppedImageData);
                             setState(() {
                               imageData = model.croppedImageData;
@@ -257,14 +295,15 @@ class _editInformationState extends State<EditInformation> {
                           });
                         },
                       )
-                      /*  context.read<InformationImageNotifier>();*/
-                      ),
+                    /*  context.read<InformationImageNotifier>();*/
+                  ),
                   SizedBox(
                     height: 16,
                   ),
                   InkWell(
                     onTap: () {
-                      AppRouter.navigationToEditInfomationName(context, userName, (result) {
+                      AppRouter.navigationToEditInfomationName(
+                          context, userName, (result) {
                         setState(() {
                           userName = result;
                         });
@@ -321,9 +360,11 @@ class _editInformationState extends State<EditInformation> {
                     color: AppColor.bgWhite,
                   ),
                   InkWell(
-                    child: _rowChose(width, "简介", _introduction != null ? _introduction : "去编辑"),
+                    child: _rowChose(width, "简介",
+                        _introduction != null ? _introduction : "去编辑"),
                     onTap: () {
-                      AppRouter.navigationToEditInfomationIntroduction(context, _introduction, (result) {
+                      AppRouter.navigationToEditInfomationIntroduction(
+                          context, _introduction, (result) {
                         setState(() {
                           _introduction = result;
                         });
@@ -377,7 +418,7 @@ class _editInformationState extends State<EditInformation> {
     );
   }
 
-  Widget _avatar(BuildContext context, double height,double width) {
+  Widget _avatar(BuildContext context, double height, double width) {
     return Container(
         height: 71,
         width: 71,
@@ -386,19 +427,20 @@ class _editInformationState extends State<EditInformation> {
             ClipOval(
               child: imageData != null
                   ? Image.memory(
-                      imageData,
-                      fit: BoxFit.cover,
-                    )
+                imageData,
+                fit: BoxFit.cover,
+              )
                   : CachedNetworkImage(
-                      height: 71,
-                      width: 71,
-                      imageUrl: avataruri,
+                height: 71,
+                width: 71,
+                imageUrl: avataruri,
+                fit: BoxFit.cover,
+                placeholder: (context, url) =>
+                    Image.asset(
+                      "images/test.png",
                       fit: BoxFit.cover,
-                      placeholder: (context, url) => Image.asset(
-                        "images/test.png",
-                        fit: BoxFit.cover,
-                      ),
                     ),
+              ),
             ),
             Positioned(
                 bottom: 0,
@@ -412,9 +454,9 @@ class _editInformationState extends State<EditInformation> {
                   ),
                   child: Center(
                       child: Text(
-                    "+",
-                    style: TextStyle(fontSize: 12, color: AppColor.white),
-                  )),
+                        "+",
+                        style: TextStyle(fontSize: 12, color: AppColor.white),
+                      )),
                 ))
           ],
         ));
@@ -462,9 +504,9 @@ class _editInformationState extends State<EditInformation> {
                   height: width * 0.13,
                   child: Center(
                       child: Text(
-                    "取消",
-                    style: AppStyle.textRegular16,
-                  ))))
+                        "取消",
+                        style: AppStyle.textRegular16,
+                      ))))
         ],
       ),
     );
@@ -517,11 +559,16 @@ class _editInformationState extends State<EditInformation> {
     if (isFirst) {
       cityNameList.clear();
       cityDtoList.clear();
-      if (cityMap[provinceIdList[leftfixedExtentController.initialItem]] == null) {
-        cityDtoList.add(provinceMap[provinceIdList[leftfixedExtentController.initialItem]]);
-        cityNameList.add(provinceMap[provinceIdList[leftfixedExtentController.initialItem]].regionName);
+      if (cityMap[provinceIdList[leftfixedExtentController.initialItem]] ==
+          null) {
+        cityDtoList.add(
+            provinceMap[provinceIdList[leftfixedExtentController.initialItem]]);
+        cityNameList.add(
+            provinceMap[provinceIdList[leftfixedExtentController.initialItem]]
+                .regionName);
       } else {
-        cityMap[provinceIdList[leftfixedExtentController.initialItem]].forEach((element) {
+        cityMap[provinceIdList[leftfixedExtentController.initialItem]].forEach((
+            element) {
           cityDtoList.add(element);
           cityNameList.add(element.regionName);
         });
@@ -556,8 +603,10 @@ class _editInformationState extends State<EditInformation> {
                     setState(() {
                       ///点击确定才更改城市码，否则就是初始
                       cityNotChange = true;
-                      _cityText = cityNameList[rightfixedExtentController.selectedItem];
-                      _provinceText = provinceNameList[leftfixedExtentController.selectedItem];
+                      _cityText =
+                      cityNameList[rightfixedExtentController.selectedItem];
+                      _provinceText =
+                      provinceNameList[leftfixedExtentController.selectedItem];
                       _provinceCity = "$_provinceText $_cityText";
                     });
                     pcController.close();
@@ -583,11 +632,13 @@ class _editInformationState extends State<EditInformation> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: _listScrollWheel(height, width, provinceNameList, leftfixedExtentController, 1),
+                      child: _listScrollWheel(height, width, provinceNameList,
+                          leftfixedExtentController, 1),
                       flex: 1,
                     ),
                     Expanded(
-                      child: _listScrollWheel(height, width, cityNameList, rightfixedExtentController, 2),
+                      child: _listScrollWheel(height, width, cityNameList,
+                          rightfixedExtentController, 2),
                       flex: 1,
                     )
                   ],
@@ -647,8 +698,8 @@ class _editInformationState extends State<EditInformation> {
   }
 
   ///自定义底部滚轮组件
-  Widget _listScrollWheel(
-      double height, double width, List textContext, FixedExtentScrollController controller, int type) {
+  Widget _listScrollWheel(double height, double width, List textContext,
+      FixedExtentScrollController controller, int type) {
     print('=====================================右边视图');
     /*print('===================================${textContext.first}');*/
     return ListWheelScrollView.useDelegate(
@@ -674,7 +725,9 @@ class _editInformationState extends State<EditInformation> {
           if (cityMap[provinceIdList[index]] == null) {
             cityDtoList.add(provinceMap[provinceIdList[index]]);
             cityNameList.add(provinceMap[provinceIdList[index]].regionName);
-            print('cityName======================================${provinceMap[provinceIdList[index]].regionName}');
+            print(
+                'cityName======================================${provinceMap[provinceIdList[index]]
+                    .regionName}');
           } else {
             cityMap[provinceIdList[index]].forEach((element) {
               cityDtoList.add(element);
@@ -689,7 +742,8 @@ class _editInformationState extends State<EditInformation> {
 
   ///这里是滚轮的item，通过type来改变选中颜色和大小
   Widget _listItem(List textContext, int index, int type) {
-    print('adress========%%%%%%%%%%%%%%%%%=================${provinceIdList[index]}');
+    print(
+        'adress========%%%%%%%%%%%%%%%%%=================${provinceIdList[index]}');
     return Column(
       children: [
         /*AnimatedOpacity(
@@ -705,9 +759,9 @@ class _editInformationState extends State<EditInformation> {
             child: Text("${textContext[index]}",
                 style: /*(type == 1 && index == leftIndex) || (type == 2 && index == rightIndex)
               ?*/
-                    AppStyle.textRegular18
-                /* : AppStyle.textHintRegular16,*/
-                ),
+                AppStyle.textRegular18
+              /* : AppStyle.textHintRegular16,*/
+            ),
           ),
         ),
         /*AnimatedOpacity(
@@ -727,16 +781,22 @@ class _editInformationState extends State<EditInformation> {
     print('===================================================转成cityCode');
     if (cityNotChange) {
       ///这个判断是为了防止原来的CityCode被清零，只有在按下doalog的确定按钮才会被设置成true，默认是false
-      if (cityMap[provinceIdList[leftfixedExtentController.selectedItem]] == null) {
+      if (cityMap[provinceIdList[leftfixedExtentController.selectedItem]] ==
+          null) {
         print('============================================这里是直辖市,拿的是省级code');
-        cityCode = provinceMap[leftfixedExtentController.selectedItem].regionCode;
-        longitude = provinceMap[leftfixedExtentController.selectedItem].longitude;
+        cityCode =
+            provinceMap[leftfixedExtentController.selectedItem].regionCode;
+        longitude =
+            provinceMap[leftfixedExtentController.selectedItem].longitude;
         latitude = provinceMap[leftfixedExtentController.selectedItem].latitude;
       } else {
         print('============================================这里是省市，拿的是市级code');
-        cityCode = cityDtoList[rightfixedExtentController.selectedItem].regionCode;
-        longitude = cityDtoList[rightfixedExtentController.selectedItem].longitude;
-        latitude = cityDtoList[rightfixedExtentController.selectedItem].latitude;
+        cityCode =
+            cityDtoList[rightfixedExtentController.selectedItem].regionCode;
+        longitude =
+            cityDtoList[rightfixedExtentController.selectedItem].longitude;
+        latitude =
+            cityDtoList[rightfixedExtentController.selectedItem].latitude;
       }
       setState(() {});
     } else {}
@@ -756,7 +816,10 @@ class _editInformationState extends State<EditInformation> {
     print('================================开始请求接口');
     print('城市码：==================================$cityCode');
     UserModel model = await ProfileUpdataUserInfo(userName, avataruri,
-        description: _introduction, sex: userSex, birthday: userBirthday, cityCode: cityCode);
+        description: _introduction,
+        sex: userSex,
+        birthday: userBirthday,
+        cityCode: cityCode);
     print('model==============================================${model.uid}');
     if (model != null) {
       print('=========================资料修改成功！=========================');
@@ -764,7 +827,10 @@ class _editInformationState extends State<EditInformation> {
       await ProfileDBHelper().insertProfile(profile);
       context.read<ProfileNotifier>().setProfile(profile);
       Navigator.pop(context, true);
-      print('更新过后的数据库用户头像${context.read<ProfileNotifier>().profile.avatarUri}');
+      print('更新过后的数据库用户头像${context
+          .read<ProfileNotifier>()
+          .profile
+          .avatarUri}');
     } else {
       print('=========================资料修改失败！=========================');
     }

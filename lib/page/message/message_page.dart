@@ -20,7 +20,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../if_page.dart';
-import 'test_message_post.dart';
+import 'message_manager.dart';
 
 /// message_page
 /// Created by yangjiayi on 2020/12/21.

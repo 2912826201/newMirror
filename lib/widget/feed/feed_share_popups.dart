@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/page/message/test_message_post.dart';
+import 'package:mirror/page/message/message_manager.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/feed/feed_share_select_contact.dart';
 
