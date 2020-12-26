@@ -167,7 +167,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           latitude: postModel.latitude,
           longitude: postModel.longitude,
           cityCode: postModel.cityCode,
-          topicId: postModel.topicId);
+          topics:jsonEncode( postModel.topics));
       print("发不接受发布结束：feedModel$feedModel");
       // 清空发布model
       context.read<FeedMapNotifier>().setPublishFeedModel(null);
@@ -295,7 +295,13 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           model.list.forEach((v) {
             attentionIdList.add(HomeFeedModel.fromJson(v).id);
             attentionModelList.add(HomeFeedModel.fromJson(v));
+            print("接口赶回");
+            print(HomeFeedModel.fromJson(v).comments);
           });
+          if (model.hasNext == 0) {
+            loadText = "";
+            loadStatus = LoadingStatus.STATUS_COMPLETED;
+          }
           attentionIdList.insert(0, -1);
           status = Status.concern;
         } else {
@@ -514,9 +520,14 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                   if (status == Status.noConcern || status == Status.notLoggedIn || status == Status.noConcern) {
                     return pageDisplay(0, HomeFeedModel());
                   }
-                  int id = attentionIdList[index];
+                  // 获取动态id
+                  int id;
                   // 获取动态id指定model
-                  HomeFeedModel feedModel = context.read<FeedMapNotifier>().feedMap[id];
+                  HomeFeedModel feedModel;
+                  if (index < attentionIdList.length) {
+                    id = attentionIdList[index];
+                    feedModel = context.read<FeedMapNotifier>().feedMap[id];
+                  }
                   return pageDisplay(index, feedModel);
                 }),
           )),
@@ -528,7 +539,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     if (status == Status.noConcern || status == Status.notLoggedIn || status == Status.noConcern) {
       count = 1;
     } else if (status == Status.concern) {
-      count = attentionIdList.length;
+      count = attentionIdList.length + 1;
     }
     return count;
   }

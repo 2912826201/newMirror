@@ -38,17 +38,45 @@ class _editInformationNameState extends State<EditInformationName>{
     double height = ScreenUtil.instance.height;
     return Scaffold(
           backgroundColor: AppColor.white,
-          /*
-           */
+          appBar: AppBar(
+            backgroundColor: AppColor.white,
+            leading:InkWell(
+              onTap: (){
+                Navigator.pop(this.context);
+              },
+              child: Image.asset("images/test/back.png"),
+            ),
+            title: Text("编辑昵称",style: AppStyle.textMedium18,),
+            centerTitle: true,
+            actions: [
+              InkWell(
+                onTap: (){
+                  Navigator.pop(this.context,_EditText);
+                },
+                child:Container(
+                width: 60,
+                margin: EdgeInsets.only(right: 16),
+                child: Center(
+                  child:Container(
+                    decoration: BoxDecoration(
+                      color: AppColor.mainRed,
+                      borderRadius: BorderRadius.all(Radius.circular(14)),
+                    ),
+                    padding: EdgeInsets.only(left:16 ,right:16 ,top: 4,bottom:4 ),
+                    child: Text(
+                      "确定",
+                      style: TextStyle(fontSize: 14, color: AppColor.white),
+                    ),)
+                ),
+              ),
+              )
+            ],
+          ),
           body: Container(
-            height: height,
+            height: height - ScreenUtil.instance.statusBarHeight,
             width: width,
             child: Column(
               children: [
-                Container(
-                  height: 44,
-                ),
-                _title(width),
                 Container(
                   width: width,
                   height: 0.5,
@@ -83,35 +111,6 @@ class _editInformationNameState extends State<EditInformationName>{
           Text("0-15个字符，起个好听的名字吧~",style: AppStyle.textPrimary3Regular14,),
           Expanded(child: Container()),
           Text("$_reciprocal",style: AppStyle.textPrimary3Regular14,)
-        ],
-      ),
-    );
-  }
-  Widget _title(double width){
-   return Container(
-      height: 44,
-      width: width,
-      padding: EdgeInsets.only(left: 16,right: 16),
-      child: Row(
-        children: [
-          InkWell(
-            onTap: (){
-              Navigator.pop(this.context);
-            },
-            child: Image.asset("images/test/back.png"),
-          ),
-          Expanded(child: Center(child: Text("编辑昵称",style: AppStyle.textMedium18,),),),
-          InkWell(
-            onTap: (){
-              Navigator.pop(this.context,_EditText);
-            },
-            child: Container(
-              height: 28,
-              width: 60,
-              child: Center(child: Text("确定",style: TextStyle(fontSize: 14,color: AppColor.white),),),
-              decoration: BoxDecoration(
-                color: AppColor.mainRed,
-                borderRadius: BorderRadius.all(Radius.circular(60)),)),)
         ],
       ),
     );

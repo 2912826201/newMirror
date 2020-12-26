@@ -44,8 +44,9 @@ class _ExpandableTextState extends State<ExpandableText> {
     }
     // 话题高亮
     for (TopicDtoModel toModel in model.topics){
+      print("我看看文本内容：：：：：：：：：：$text");
       richTexts.add(BaseRichText(
-        text.substring(toModel.index,toModel.len),
+        text.substring(toModel.index,toModel.index + toModel.len),
         style: TextStyle(color:  AppColor.mainBlue, fontSize: 14),
         onTap: () {
           print("点击用户${toModel.uid}");

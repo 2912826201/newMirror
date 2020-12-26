@@ -112,7 +112,7 @@ Future<Map> publishFeed(
     String longitude,
     String latitude,
     String address,
-    String topicId}) async {
+    String topics}) async {
   Map<String, dynamic> params = {};
   params["type"] = type;
   params["content"] = content;
@@ -137,8 +137,8 @@ Future<Map> publishFeed(
   if (address != null) {
     params["address"] = address;
   }
-  if (topicId != null) {
-    params["topicId"] = topicId;
+  if (topics != null) {
+    params["topics"] = topics;
   }
   BaseResponseModel responseModel = await requestApi(PUBLISHFEED, params);
   if (responseModel.isSuccess) {
