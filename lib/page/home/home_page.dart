@@ -29,28 +29,11 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
   TabController controller;
   @override
   bool get wantKeepAlive => true; //必须重写
-  // 测试图片
-  var coverUrls = [
-    "https://img9.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2623955494.webp",
-    "https://img9.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2615992304.webp",
-    "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2615642201.webp",
-    "https://img2.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2599858573.webp",
-    "https://img1.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2620104689.webp",
-    "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2620161520.webp",
-    "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2621884130.webp",
-    "https://img9.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2622904695.webp",
-    "https://img2.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2621751023.webp"
-  ];
-  List<CourseModel> courses = [];
 
   @override
   initState() {
     super.initState();
     controller = TabController(length: 2, vsync: this, initialIndex: 1);
-    for (var i in coverUrls) {
-      CourseModel a = new CourseModel(i, coverUrls.indexOf(i));
-      courses.add(a);
-    }
   }
 
 
@@ -94,11 +77,9 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                           children: [
                               AttentionPage(
                                 postFeedModel: context.watch<FeedMapNotifier>().postFeedModel,
-                              coverUrls: courses,
                               pc: widget.pc,
                             ),
                             RecommendPage(
-                              coverUrls: courses,
                               pc: widget.pc,
                             )
                             // RecommendPage()

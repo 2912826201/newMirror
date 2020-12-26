@@ -13,7 +13,7 @@ const String PUBLISHFEED = "/appuser/web/feed/publish";
 // 动态点赞or取消赞
 const String LAUDFEED = "/appuser/web/feed/laud";
 // 动态点赞列表
-const String GETFEEDLAUDLIST ="/appuser/web/feed/getLaudList";
+const String GETFEEDLAUDLIST = "/appuser/web/feed/getLaudList";
 
 // 发布/回复评论
 const String PUBLISHCOMMENT = "/appuser/web/comment/publish";
@@ -31,6 +31,8 @@ const String TEXTSCAN = "/third/green/textScan";
 const String IMAGESCAN = "/third/green/imageScan";
 // 视频检测
 const String VIDEOSCAN = "/third/green/videoScan";
+// 首页推荐教练
+const String RECOMMENDCOACH = "/sport/course/RecommendCoach";
 //获取动态列表
 Future<DataResponseModel> getPullList({@required int type, @required int size, int targetId, int lastTime}) async {
   Map<String, dynamic> params = {};
@@ -42,13 +44,16 @@ Future<DataResponseModel> getPullList({@required int type, @required int size, i
   params["lastTime"] = lastTime;
   BaseResponseModel responseModel = await requestApi(PULLLISTFEED, params);
   if (responseModel.isSuccess) {
-     DataResponseModel  dataResponseModel;
-     dataResponseModel = DataResponseModel.fromJson(responseModel.data);
+    DataResponseModel dataResponseModel;
+    if (responseModel.data != null) {
+      dataResponseModel = DataResponseModel.fromJson(responseModel.data);
+    }
     return dataResponseModel;
   } else {
     return null;
   }
 }
+
 // 获取推荐动态列表
 Future<List> getHotList({@required size}) async {
   Map<String, dynamic> params = {};
@@ -57,18 +62,21 @@ Future<List> getHotList({@required size}) async {
   if (responseModel.isSuccess) {
     Map<String, dynamic> model = responseModel.data;
     List<HomeFeedModel> feedModelList = [];
-    if (model["list"] != null) {
+    if (responseModel.data != null) {
+      if (model["list"] != null) {
         model["list"].forEach((v) {
           feedModelList.add(HomeFeedModel.fromJson(v));
         });
+      }
     }
     return feedModelList;
   } else {
     return null;
   }
 }
+
 // 文本检测
-Future<Map> feedTextScan({@required String text}) async{
+Future<Map> feedTextScan({@required String text}) async {
   Map<String, dynamic> params = {};
   params["text"] = text;
   BaseResponseModel responseModel = await requestApi(TEXTSCAN, params);
@@ -78,8 +86,9 @@ Future<Map> feedTextScan({@required String text}) async{
     return null;
   }
 }
+
 // 图片检测
-Future<Map> feedImageScan({@required String url}) async{
+Future<Map> feedImageScan({@required String url}) async {
   Map<String, dynamic> params = {};
   params["url"] = url;
   BaseResponseModel responseModel = await requestApi(IMAGESCAN, params);
@@ -91,7 +100,7 @@ Future<Map> feedImageScan({@required String url}) async{
 }
 
 // 视频检测
-Future<Map> feedVideoScan({@required String url}) async{
+Future<Map> feedVideoScan({@required String url}) async {
   Map<String, dynamic> params = {};
   params["url"] = url;
   BaseResponseModel responseModel = await requestApi(VIDEOSCAN, params);
@@ -101,6 +110,7 @@ Future<Map> feedVideoScan({@required String url}) async{
     return null;
   }
 }
+
 // 发布动态
 Future<Map> publishFeed(
     {@required int type,
@@ -122,7 +132,7 @@ Future<Map> publishFeed(
   if (videos != "[]") {
     params["videos"] = videos;
   }
-  if (atUsers !=null) {
+  if (atUsers != null) {
     params["atUsers"] = atUsers;
   }
   if (cityCode != null) {
@@ -197,10 +207,7 @@ Future<Map> publish(
 
 // 获取评论列表热度
 Future<Map> queryListByHot2(
-    {@required int targetId,
-    @required int targetType,
-    @required int page,
-    @required int size}) async {
+    {@required int targetId, @required int targetType, @required int page, @required int size}) async {
   Map<String, dynamic> params = {};
   params["targetId"] = targetId;
   params["targetType"] = targetType;
@@ -213,6 +220,7 @@ Future<Map> queryListByHot2(
     return null;
   }
 }
+
 // 更新获取评论列表热度接口返回数据方式
 Future<List> queryListByHot(
     {@required int targetId, @required int targetType, @required int page, @required int size}) async {
@@ -225,14 +233,15 @@ Future<List> queryListByHot(
   if (responseModel.isSuccess) {
     Map<String, dynamic> model = responseModel.data;
     List<CommentDtoModel> commentModelList = [];
-    print(model["list"]);
-    if (model["list"] is List && (model["list"] as List).isNotEmpty) {
-      model["list"].forEach((v) {
-        commentModelList.add(CommentDtoModel.fromJson(v));
-      });
-    }
+    if (responseModel.data != null) {
+      if (model["list"] is List && (model["list"] as List).isNotEmpty) {
+        model["list"].forEach((v) {
+          commentModelList.add(CommentDtoModel.fromJson(v));
+        });
+      }
       commentModelList.insert(0, CommentDtoModel());
       commentModelList[0].totalCount = model["totalCount"];
+    }
     return commentModelList;
   } else {
     return null;
@@ -279,16 +288,38 @@ Future<Map> laudComment({@required int commentId, @required int laud}) async {
     return null;
   }
 }
+
 //   动态点赞列表  GETFEEDLAUDLIST
-  Future<DataResponseModel> getFeedLaudList({@required int targetId}) async {
-    Map<String, dynamic> params = {};
-    params["targetId"] = targetId;
-    BaseResponseModel responseModel = await requestApi(GETFEEDLAUDLIST, params);
-    if (responseModel.isSuccess) {
-      DataResponseModel  dataResponseModel;
+Future<DataResponseModel> getFeedLaudList({@required int targetId}) async {
+  Map<String, dynamic> params = {};
+  params["targetId"] = targetId;
+  BaseResponseModel responseModel = await requestApi(GETFEEDLAUDLIST, params);
+  if (responseModel.isSuccess) {
+    DataResponseModel dataResponseModel;
+    if (responseModel.data != null) {
       dataResponseModel = DataResponseModel.fromJson(responseModel.data);
-      return dataResponseModel;
-    } else {
-      return null;
     }
+    return dataResponseModel;
+  } else {
+    return null;
   }
+}
+// 首页推荐教练
+Future<List> recommendCoach() async {
+  BaseResponseModel responseModel = await requestApi(RECOMMENDCOACH, {});
+  List<CourseDtoModel> courseList = [];
+  if (responseModel.isSuccess) {
+    DataResponseModel dataResponseModel;
+    if (responseModel.data != null) {
+      dataResponseModel = DataResponseModel.fromJson(responseModel.data);
+      if (dataResponseModel.list.isNotEmpty) {
+        dataResponseModel.list.forEach((v) {
+          courseList.add(CourseDtoModel.fromJson(v));
+        });
+      }
+    }
+    return courseList;
+  } else {
+    return null;
+  }
+}

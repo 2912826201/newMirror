@@ -1,10 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/database/search_history_db_helper.dart';
+import 'package:mirror/data/dto/search_history_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:mirror/page/search/sub_page/search_topic.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -68,6 +73,7 @@ class SearchHeaderState extends State<SearchHeader> {
     controller.addListener(() {
       newValue = controller.text;
       if (newValue == oldValue) {
+        SearchHistoryDBHelper().insertSearchHistory(context.read<ProfileNotifier>().profile.uid, newValue);
         print("点击了搜索按钮");
         return;
       }
@@ -163,26 +169,40 @@ class SearchMiddleView extends StatefulWidget {
 
 class SearchMiddleViewState extends State<SearchMiddleView> {
   List<TopicDtoModel> topicList = [];
+  List<SearchHistoryDto> searchHistoryList = [];
 
   @override
   void initState() {
-    requestRecommendTopicIterface();
+    // 合并请求
+    Future.wait([
+      // 请求推荐话题接口
+      getRecommendTopic(size:20),
+      // 请求历史记录
+      SearchHistoryDBHelper().querySearchHistory(context.read<ProfileNotifier>().profile.uid),
+      // 请求热门课程
+    ]).then((results) {
+      print("历史记录（（（（（（（））））））$searchHistoryList");
+      topicList = results[0];
+      if(context.read<TokenNotifier>().isLoggedIn) {
+        searchHistoryList = results[1];
+      }
+      setState(() {});
+    }).catchError((e) {
+      print("报错了");
+      print(e);
+    });
     super.initState();
   }
 
-  // 请求推荐话题接口
-  requestRecommendTopicIterface() async {
-    topicList = await getRecommendTopic(size: 20);
-    setState(() {});
-  }
 
   @override
   Widget build(BuildContext context) {
+    print("最近搜索历史 记录");
     return Column(
       children: [
         // 最近搜索标题栏
-        searchTitleBar(context),
-        historyRecord(context),
+        searchHistoryList.isNotEmpty ? searchTitleBar(context) : Container(),
+        searchHistoryList.isNotEmpty ? historyRecord(context) : Container(),
         HotCourseTitleBar(),
         HotCourseContent(),
         topicList.isNotEmpty ? HotTopicTitleBar() : Container(),
@@ -225,14 +245,13 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
       // color: AppColor.mainRed,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: 10,
+          itemCount: searchHistoryList.length > 10 ? 10 : searchHistoryList.length,
           itemBuilder: (context, index) {
             return Container(
-              color: AppColor.textSecondary.withOpacity(0.3),
-              margin: EdgeInsets.only(left: 16),
-              padding: EdgeInsets.only(left: 8,top: 3,right: 8,bottom: 3),
-              child:Text("瑜伽")
-            );
+                color: AppColor.textSecondary.withOpacity(0.3),
+                margin: EdgeInsets.only(left: 16),
+                padding: EdgeInsets.only(left: 8, top: 3, right: 8, bottom: 3),
+                child: Text(searchHistoryList[index].word));
           }),
     );
   }
@@ -341,11 +360,11 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
               height: (ScreenUtil.instance.screenWidthDp - 38) * 0.43,
               decoration: BoxDecoration(
                 // borderRadius: BorderRadius.all(Radius.circular(2)),
-              //  阴影位置由offset决定,阴影模糊层度由blurRadius大小决定（大就更透明更扩散），阴影模糊大小由spreadRadius决定
-              // boxShadow: [
-              //   BoxShadow(color: AppColor.textSecondary.withOpacity(0.4), blurRadius: 1.0, spreadRadius: 1.0),
-              // ],
-              //   border:  Border(  bottom: BorderSide(color: AppColor.textSecondary.withOpacity(0.4), width: 2)), // 边色与边宽度
+                //  阴影位置由offset决定,阴影模糊层度由blurRadius大小决定（大就更透明更扩散），阴影模糊大小由spreadRadius决定
+                // boxShadow: [
+                //   BoxShadow(color: AppColor.textSecondary.withOpacity(0.4), blurRadius: 1.0, spreadRadius: 1.0),
+                // ],
+                //   border:  Border(  bottom: BorderSide(color: AppColor.textSecondary.withOpacity(0.4), width: 2)), // 边色与边宽度
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomLeft,
@@ -358,7 +377,8 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
               child: Stack(
                 children: [
                   Image.asset(
-                    "images/test/674_288.png",
+                    "images/resource/2.0x/bg_topic@2x.png",
+                    // "images/test/674_288.png",
                   ),
                   Container(
                     margin: EdgeInsets.only(top: 9),
@@ -412,13 +432,13 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                             height: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
                             width: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
                             margin: EdgeInsets.only(right: indexs != 3 ? 7 : 0),
-                          child: ClipRRect(
-                          //圆角图片
-                          borderRadius: BorderRadius.circular(2),
-                            child: Image.network(
-                              topicList[index].pics[indexs],
-                              fit: BoxFit.cover,
-                            )),
+                            child: ClipRRect(
+                                //圆角图片
+                                borderRadius: BorderRadius.circular(2),
+                                child: Image.network(
+                                  topicList[index].pics[indexs],
+                                  fit: BoxFit.cover,
+                                )),
                           );
                         }),
                   ),
@@ -518,25 +538,17 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
       ],
     ));
   }
-
 }
 
 // 输入框输入文字的监听
 class SearchEnterNotifier extends ChangeNotifier {
-  SearchEnterNotifier({this.enterText, this.currentTimestamp = 0});
+  SearchEnterNotifier({this.enterText});
 
   // 输入文字
   String enterText;
 
-  // 当前时间戳
-  int currentTimestamp;
-
   changeCallback(String str) {
     this.enterText = str;
     notifyListeners();
-  }
-
-  setCurrentTimestamp(int timestamp) {
-    this.currentTimestamp = timestamp;
   }
 }
