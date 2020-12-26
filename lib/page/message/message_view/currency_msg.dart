@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/page/message/item/widget_ver.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
@@ -107,6 +108,27 @@ Widget getLiveStateUi() {
           width: 5,
         ),
       ],
+    ),
+  );
+}
+
+//获取长按的显示的方框
+Widget getLongClickBox({
+  double contentWidth,
+  double marginLeft,
+  double marginRight,
+  bool isMyself,
+  String contentType,
+  VoidCallback onCopyClick,
+  VoidCallback onWithdrawClick,
+  VoidCallback onDeleteClick,
+}) {
+  return Container(
+    width: 150,
+    height: 32,
+    color: AppColor.textPrimary1,
+    child: Row(
+      children: [],
     ),
   );
 }

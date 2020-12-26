@@ -498,9 +498,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       isHaveTextLen = false;
     });
     postText(chatDataList[0], widget.conversation.conversationId, () {
-      setState(() {
-
-      });
+      delayedSetState();
     });
   }
 
@@ -521,10 +519,8 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     setState(() {});
     postImgOrVideo(modelList, widget.conversation.conversationId,
         selectedMediaFiles.type, () {
-          setState(() {
-
-          });
-        });
+          delayedSetState();
+    });
   }
 
   //录音按钮的点击事件
@@ -553,6 +549,12 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     chatDataList.insert(0, chatDataModel);
     setState(() {});
     postVoice(chatDataList[0], widget.conversation.conversationId, () {
+      delayedSetState();
+    });
+  }
+
+  void delayedSetState() {
+    Future.delayed(Duration(milliseconds: 200), () {
       setState(() {
 
       });

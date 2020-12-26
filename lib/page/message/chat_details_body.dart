@@ -46,11 +46,16 @@ class ChatDetailsBody extends StatelessWidget {
               parent: animationController, curve: Curves.easeOut),
           axisAlignment: 0.0,
           child: Container(
-            child: SendMessageView(model),
+            child: getBodyItem(model),
           ));
     } else {
-      return SendMessageView(model);
+      return getBodyItem(model);
     }
+  }
+
+  //获取每一个item
+  Widget getBodyItem(ChatDataModel model) {
+    return SendMessageView(model);
   }
 }
 
