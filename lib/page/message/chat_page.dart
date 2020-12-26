@@ -69,8 +69,6 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(
-        () => FocusScope.of(context).requestFocus(new FocusNode()));
     initData();
     initSetData();
   }
@@ -81,12 +79,8 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       initData();
     }
     var body = [
-      (chatDataList != null && chatDataList.length > 0) ?
-      ChatDetailsBody(
-        sC: _scrollController,
-        chatData: chatDataList,
-        vsync: this,
-      )
+      (chatDataList != null && chatDataList.length > 0)
+          ? getChatDetailsBody()
           : Spacer(),
       getMessageInputBar(),
       bottomSettingBox(),
@@ -95,26 +89,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     return WillPopScope(
       child: Scaffold(
         resizeToAvoidBottomInset: isResizeToAvoidBottomInset,
-        appBar: AppBar(
-          title: Text(
-            chatUserName + "-" + chatType,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          centerTitle: true,
-          actions: [
-            Container(
-              margin: const EdgeInsets.only(right: 16),
-              child: IconButton(
-                icon: Icon(Icons.more_horiz),
-                onPressed: () {
-                  print("-----------------------");
-                  ToastShow.show(msg: "点击了更多那妞", context: context);
-                },
-              ),
-            )
-          ],
-        ),
+        appBar: getAppBar(),
         body: MessageInputBody(
           onTap: () => _messageInputBodyClick(),
           decoration: BoxDecoration(color: Color(0xffefefef)),
@@ -122,6 +97,39 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         ),
       ),
       onWillPop: _requestPop,
+    );
+  }
+
+  //获取列表内容
+  Widget getChatDetailsBody() {
+    return ChatDetailsBody(
+      scrollController: _scrollController,
+      chatData: chatDataList,
+      vsync: this,
+    );
+  }
+
+  //获取appbar
+  Widget getAppBar() {
+    return AppBar(
+      title: Text(
+        chatUserName + "-" + chatType,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      centerTitle: true,
+      actions: [
+        Container(
+          margin: const EdgeInsets.only(right: 16),
+          child: IconButton(
+            icon: Icon(Icons.more_horiz),
+            onPressed: () {
+              print("-----------------------");
+              ToastShow.show(msg: "点击了更多那妞", context: context);
+            },
+          ),
+        )
+      ],
     );
   }
 
@@ -340,15 +348,17 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //聊天内容的点击事件
   _messageInputBodyClick() {
-    setState(() {
-      _emojiState = false;
-      isContentClickOrEmojiClick = true;
-    });
-    Future.delayed(Duration(milliseconds: 300), () {
+    if (_emojiState || MediaQuery.of(context).viewInsets.bottom > 0) {
       setState(() {
-        isResizeToAvoidBottomInset = !_emojiState;
+        _emojiState = false;
+        isContentClickOrEmojiClick = true;
       });
-    });
+      Future.delayed(Duration(milliseconds: 300), () {
+        setState(() {
+          isResizeToAvoidBottomInset = !_emojiState;
+        });
+      });
+    }
   }
 
 // 监听返回
@@ -418,7 +428,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       }
     }
     if (widget.shareMessage != null) {
-      chatDataList[chatDataList.length - 1].isHaveAnimation = true;
+      chatDataList[0].isHaveAnimation = true;
       // if(chatDataList[chatDataList.length-1].msg.messageId==widget.shareMessage?.messageId){
       //   chatDataList[chatDataList.length-1].isHaveAnimation=true;
       // }else{

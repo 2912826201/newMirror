@@ -24,10 +24,10 @@ void jumpShareMessage(Map<String, dynamic> map, String chatType, String name,
     BuildContext context) async {
   ConversationDto conversation = new ConversationDto();
   conversation.name = name;
-  if (Application.profile.uid.toString() == "1009312") {
-    conversation.conversationId = "1018240";
+  if (Application.profile.uid.toString() == "1018240") {
+    conversation.conversationId = "1019293";
   } else {
-    conversation.conversationId = "1009312";
+    conversation.conversationId = "1018240";
   }
   conversation.uid = Application.profile.uid;
   conversation.type = PRIVATE_TYPE;

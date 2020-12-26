@@ -7,6 +7,7 @@ class VoiceSettingNotifier extends ChangeNotifier {
     isPlaying = false;
     isPause = false;
     audioPlayer = new AudioPlayer();
+    showTime = 0;
 
     audioPlayer.onAudioPositionChanged.listen((event) {
       print("======onAudioPositionChanged");

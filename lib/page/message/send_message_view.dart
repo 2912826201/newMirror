@@ -77,8 +77,9 @@ class _SendMessageViewState extends State<SendMessageView> {
           mediaFileModel: widget.model.mediaFileModel);
     } else if (widget.model.type == ChatTypeModel.MESSAGE_TYPE_VOICE) {
       //语音消息
-      return new Text('语音消息');
-      // return getVoiceMsgData(widget.model.chatVoiceModel.toJson(),true,StringUtil.generateMd5(widget.model.chatVoiceModel.filePath));
+      // return new Text('语音消息');
+      return getVoiceMsgData(widget.model.chatVoiceModel.toJson(), true,
+          StringUtil.generateMd5(widget.model.chatVoiceModel.filePath));
     } else {
       return new Text('未知消息');
     }
@@ -139,14 +140,19 @@ class _SendMessageViewState extends State<SendMessageView> {
           mediaFileModel: widget.model.mediaFileModel,
           imageMessage: imageMessage);
     } else if (msgType == VoiceMessage.objectName) {
-      return new Text('语音消息');
+      // return new Text('语音消息');
       // 语音消息
-      // VoiceMessage voiceMessage=((msg.content) as VoiceMessage);
-      // Map<String, dynamic> mapModel = json.decode(voiceMessage.extra);
-      // if(voiceMessage.remoteUrl!=null){
-      //   mapModel["pathUrl"]=voiceMessage.remoteUrl;
-      // }
-      // return getVoiceMsgData(mapModel,false,StringUtil.generateMd5(voiceMessage.remoteUrl!=null?voiceMessage.remoteUrl:mapModel["filePath"]));
+      VoiceMessage voiceMessage = ((msg.content) as VoiceMessage);
+      Map<String, dynamic> mapModel = json.decode(voiceMessage.extra);
+      if (voiceMessage.remoteUrl != null) {
+        mapModel["pathUrl"] = voiceMessage.remoteUrl;
+      }
+      return getVoiceMsgData(
+          mapModel,
+          false,
+          StringUtil.generateMd5(voiceMessage.remoteUrl != null
+              ? voiceMessage.remoteUrl
+              : mapModel["filePath"]));
     }
     return new Text('未知消息');
   }

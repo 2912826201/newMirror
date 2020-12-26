@@ -50,7 +50,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _getUrlMd5String();
-    // _initTimeDuration();
+    _initTimeDuration();
   }
 
   @override

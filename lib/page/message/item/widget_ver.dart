@@ -15,9 +15,8 @@ class _WidgetVerState extends State<WidgetVer> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    // _initTimeDuration();
+    _initTimeDuration();
   }
 
   @override
@@ -59,7 +58,7 @@ class _WidgetVerState extends State<WidgetVer> {
 
   //监听动画是否开始
   void _initTimeDuration() {
-    duration = Duration(milliseconds: 500);
+    duration = Duration(milliseconds: 200);
     Timer.periodic(duration, (timer) {
       try {
         double temp;
@@ -78,7 +77,6 @@ class _WidgetVerState extends State<WidgetVer> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     if (timer != null) {
       timer.cancel();
