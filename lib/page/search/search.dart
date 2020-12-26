@@ -1,3 +1,4 @@
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
@@ -5,13 +6,17 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:mirror/page/search/sub_page/search_topic.dart';
+import 'package:mirror/page/search/sub_page/search_user.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 // 搜索页
 class SearchPage extends StatelessWidget {
+  PanelController pcContrller;
+  SearchPage({this.pcContrller});
   // 输入框焦点控制器
   FocusNode focusNode = new FocusNode();
 
@@ -34,6 +39,7 @@ class SearchPage extends StatelessWidget {
                       context.watch<SearchEnterNotifier>().enterText.length > 0
                           ? SearchTabBarView(
                               focusNode: focusNode,
+                              pcController: pcContrller,
                             )
                           : SearchMiddleView(),
                     ],
@@ -63,6 +69,7 @@ class SearchHeaderState extends State<SearchHeader> {
 
   @override
   void initState() {
+    context.read<SearchEnterNotifier>().EditTextController(controller);
     controller.addListener(() {
       newValue = controller.text;
       if (newValue == oldValue) {
@@ -387,9 +394,9 @@ class SearchMiddleView extends StatelessWidget {
 
 // 搜索页TabBarView
 class SearchTabBarView extends StatefulWidget {
-  SearchTabBarView({Key key, this.focusNode}) : super(key: key);
+  SearchTabBarView({Key key, this.focusNode,this.pcController}) : super(key: key);
   FocusNode focusNode;
-
+  PanelController pcController;
   @override
   SearchTabBarViewState createState() => SearchTabBarViewState();
 }
@@ -406,6 +413,7 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
 
   @override
   Widget build(BuildContext context) {
+
     return Container(
         child: Column(
       children: [
@@ -454,12 +462,11 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
                 focusNode: widget.focusNode,
               ),
               // ),
-              Container(
-                color: Colors.green,
-                child: Center(
-                  child: Text("用户"),
-                ),
-              ),
+              SearchUser(
+                pc: widget.pcController,
+                text: context.watch<SearchEnterNotifier>().enterText,
+                width:ScreenUtil.instance.screenWidthDp,
+                textController: context.watch<SearchEnterNotifier>().textController),
               // RecommendPage()
             ],
           ),
@@ -472,7 +479,7 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
 
 // 输入框输入文字的监听
 class SearchEnterNotifier extends ChangeNotifier {
-  SearchEnterNotifier({this.enterText, this.currentTimestamp = 0});
+  SearchEnterNotifier({this.enterText, this.currentTimestamp = 0,this.textController});
 
   // 输入文字
   String enterText;
@@ -480,6 +487,8 @@ class SearchEnterNotifier extends ChangeNotifier {
   // 当前时间戳
   int currentTimestamp;
 
+  //控制器
+  TextEditingController textController;
   changeCallback(String str) {
     this.enterText = str;
     notifyListeners();
@@ -487,5 +496,9 @@ class SearchEnterNotifier extends ChangeNotifier {
 
   setCurrentTimestamp(int timestamp) {
     this.currentTimestamp = timestamp;
+  }
+  EditTextController(TextEditingController controller){
+    this.textController = controller;
+    notifyListeners();
   }
 }

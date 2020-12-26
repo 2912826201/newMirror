@@ -78,7 +78,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                       height: 44,
                       width: ScreenUtil.instance.screenWidthDp,
                       child: Container(
-                        child: HomeTopTab(controller: controller),
+                        child: HomeTopTab(controller: controller,pcController: widget.pc,),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           border: Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),

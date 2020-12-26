@@ -7,6 +7,7 @@ class AppStyle {
   // Regular主体文字黑色
   static const textRegular18 = TextStyle(fontSize: 18, fontWeight: FontWeight.w400, color: AppColor.textPrimary1);
   static const textRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.textPrimary1);
+  static const textRegular15 = TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: AppColor.textPrimary1);
   static const textRegular14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.textPrimary1);
   static const textRegular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textPrimary1);
 
@@ -38,4 +39,8 @@ class AppStyle {
   static const textRegularRed16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.mainRed);
   static const textRegularRed13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.mainRed);
   static const textMediumRed14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.mainRed);
+
+
+  //不在规范内style
+  static const textButtonwhite = TextStyle(fontSize: 12,fontWeight:FontWeight.w400,color: AppColor.textButtonCenter );
 }
