@@ -33,11 +33,15 @@ class UserMsg extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 9.0),
-      child: Row(
-        mainAxisAlignment:
-            isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: getBody(context),
+      child: Column(
+        children: [
+          getLongClickBox(),
+          Row(
+            mainAxisAlignment:
+                isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
+            children: getBody(context),
+          ),
+        ],
       ),
     );
   }
