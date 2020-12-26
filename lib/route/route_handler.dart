@@ -129,7 +129,9 @@ var handlerEditInformationName = Handler(handlerFunc: (BuildContext context,Map<
 
 var handlerEditInformationIntroduction = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  // return EditInformationIntroduction(introduction: data["introduction"],);
+  return EditInformationIntroduction(
+    introduction: data["introduction"],
+  );
 });
 var handlerSettingHomePage = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
   return SettingHomePage();
