@@ -550,7 +550,6 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
 // 输入框输入文字的监听
 class SearchEnterNotifier extends ChangeNotifier {
   SearchEnterNotifier({this.enterText, this.currentTimestamp = 0,this.textController});
-  SearchEnterNotifier({this.enterText});
 
   // 输入文字
   String enterText;
