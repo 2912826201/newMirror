@@ -172,10 +172,12 @@ var handlerPerfectUserPage = Handler(handlerFunc: (BuildContext context, Map<Str
   return PerfectUserPage();
 });
 
-var handlerChatPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  ConversationDto conversation = ConversationDto.fromMap(data["conversation"]);
-  Message shareMessage = Application.shareMessage;
-  Application.shareMessage = null;
-  return ChatPage(conversation: conversation, shareMessage: shareMessage);
-});
+var handlerChatPage = Handler(
+    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+      Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+      ConversationDto conversation = ConversationDto.fromMap(data["conversation"]);
+      Message shareMessage = Application.shareMessage;
+      Application.shareMessage = null;
+      conversation.conversationId = "1009312";
+      return ChatPage(conversation: conversation, shareMessage: shareMessage);
+    });

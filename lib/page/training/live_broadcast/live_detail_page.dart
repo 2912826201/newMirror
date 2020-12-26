@@ -5,6 +5,7 @@ import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
@@ -12,6 +13,7 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
@@ -329,14 +331,12 @@ class LiveDetailPageState extends State<LiveDetailPage> {
                           title: liveModel.name,
                           collapsedHeight: 40,
                           expandedHeight: 300,
-                          paddingTop: MediaQuery
-                              .of(context)
-                              .padding
-                              .top,
+                          paddingTop: MediaQuery.of(context).padding.top,
                           coverImgUrl: imageUrl,
                           heroTag: heroTag,
                           startTime: liveModel.startTime,
                           endTime: liveModel.endTime,
+                          shareBtnClick: _shareBtnClick,
                         ),
                       ),
                       _getTitleWidget(),
@@ -513,6 +513,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   Widget _getActionUi() {
     // ignore: null_aware_before_operator
     if (liveModel.coursewareDto?.movementDtos == null ||
+        // ignore: null_aware_before_operator
         liveModel.coursewareDto?.movementDtos?.length < 1) {
       return SliverToBoxAdapter();
     }
@@ -1620,6 +1621,15 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     }
   }
 
+
+  //分享的点击事件
+  void _shareBtnClick() {
+    print("分享点击事件直播课");
+    openShareBottomSheet(
+        context: context,
+        map: liveModel.toJson(),
+        chatTypeModel: ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE);
+  }
 }
 
 class CommentListSubSetting {

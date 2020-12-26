@@ -5,6 +5,7 @@ import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/training/video_course/sliver_custom_header_delegate_video.dart';
@@ -14,6 +15,7 @@ import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/comment_input_bottom_bar.dart';
+import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
@@ -303,14 +305,12 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                           title: videoModel.name,
                           collapsedHeight: 40,
                           expandedHeight: 300,
-                          paddingTop: MediaQuery
-                              .of(context)
-                              .padding
-                              .top,
+                          paddingTop: MediaQuery.of(context).padding.top,
                           coverImgUrl: imageUrl,
                           heroTag: heroTag,
                           startTime: videoModel.startTime,
                           endTime: videoModel.endTime,
+                          shareBtnClick: _shareBtnClick,
                         ),
                       ),
                       _getTitleWidget(),
@@ -1689,6 +1689,14 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     }
   }
 
+  //分享的点击事件
+  void _shareBtnClick() {
+    print("分享点击事件视频课");
+    openShareBottomSheet(
+        context: context,
+        map: videoModel.toJson(),
+        chatTypeModel: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
+  }
 }
 
 class CommentListSubSetting {

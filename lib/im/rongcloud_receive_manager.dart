@@ -38,6 +38,7 @@ class RongCloudReceiveManager {
   //发送消息结果的回调
   onMessageSend(int messageId, int status, int code) {
     //将发送的消息插入记录
+    print("messageId:${messageId},status:${status},code:${code}");
 
 //   RCSentStatus
 //   static const int Sending = 10; //发送中

@@ -92,6 +92,15 @@ dependencies:
   shared_preferences: ^0.5.12+4
   # 汉字转拼音
   lpinyin: ^1.1.0
+  #音频处理
+  flutter_sound: ^4.0.6
+  #音频处理
+  audioplayers: ^0.17.0
+  crypto: ^2.1.5
+  convert: ^2.1.1
+
+
+
 
   #扫码测试
   flutter_qr_reader: ^1.0.3
@@ -142,6 +151,7 @@ flutter:
     - images/test/
     - images/test/2.0x/
     - images/test/3.0x/
+    - images/chat/
     - assets/emoji.json
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/page/message/item/chat_voice.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
+
+typedef VoiceFile = void Function(String path, int time);
 
 class MessageInputBar extends StatefulWidget {
   final GestureTapCallback voiceOnTap;
   final bool isVoice;
   final LayoutWidgetBuilder edit;
   final VoidCallback onEmojio;
+  final VoiceFile voiceFile;
   final Widget more;
   final String id;
   final int type;
@@ -22,6 +26,7 @@ class MessageInputBar extends StatefulWidget {
     this.type,
     this.onEmojio,
     this.value,
+    this.voiceFile,
   });
 
   @override
@@ -77,7 +82,9 @@ class MessageInputBarState extends State<MessageInputBar> {
                           color: AppColor.bgWhite_65,
                           // color: Colors.red,
                           borderRadius: BorderRadius.circular(5.0)),
-                      child: LayoutBuilder(builder: widget.edit),
+                      child: widget.isVoice
+                          ? ChatVoice(voiceFile: widget.voiceFile,)
+                          : LayoutBuilder(builder: widget.edit),
                     ),
                   ),
                   SizedBox(
@@ -111,8 +118,9 @@ class MessageInputBarState extends State<MessageInputBar> {
                       ),
                     ),
                     onTap: () {
-                      print("21123125");
-                      ToastShow.show(msg: "点击了录音", context: context);
+                      if (widget.voiceOnTap != null) {
+                        widget.voiceOnTap();
+                      }
                     },
                   ),
                   Expanded(child: SizedBox()),

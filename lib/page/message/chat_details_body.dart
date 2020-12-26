@@ -15,19 +15,27 @@ class ChatDetailsBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Flexible(
-      child: ScrollConfiguration(
-        behavior: MyBehavior(),
-        child: ListView.builder(
-          controller: sC,
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          reverse: true,
-          itemBuilder: (context, int index) {
-            return judgeStartAnimation(chatData[index]);
-          },
-          itemCount: chatData.length,
-          dragStartBehavior: DragStartBehavior.down,
-        ),
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height - 200,
+      child: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+              child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height - 200,
+            child: ListView.builder(
+              controller: sC,
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              reverse: true,
+              itemBuilder: (context, int index) {
+                return judgeStartAnimation(chatData[index]);
+              },
+              itemCount: chatData.length,
+              dragStartBehavior: DragStartBehavior.down,
+            ),
+          )),
+        ],
       ),
     );
   }
@@ -56,14 +64,3 @@ class ChatDetailsBody extends StatelessWidget {
   }
 }
 
-class MyBehavior extends ScrollBehavior {
-  @override
-  Widget buildViewportChrome(
-      BuildContext context, Widget child, AxisDirection axisDirection) {
-    if (Platform.isAndroid || Platform.isFuchsia) {
-      return child;
-    } else {
-      return super.buildViewportChrome(context, child, axisDirection);
-    }
-  }
-}
