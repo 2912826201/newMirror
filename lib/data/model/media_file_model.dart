@@ -16,12 +16,57 @@ class MediaFileModel {
   Uint8List thumb;
   Uint8List croppedImageData;
 
+  MediaFileModel();
+
   SizeInfo sizeInfo = SizeInfo();
+
+  String toString() {
+    return "file:${file.path},sizeInfo:{${sizeInfo.toString()}}";
+  }
+
+  String filePath;
+
+  MediaFileModel.fromJson(dynamic json) {
+    filePath = json["filePath"];
+    sizeInfo =
+        json["sizeInfo"] != null ? SizeInfo.fromJson(json["sizeInfo"]) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    var map = <String, dynamic>{};
+    map["filePath"] = file.path;
+    if (sizeInfo != null) {
+      map["sizeInfo"] = sizeInfo.toJson();
+    }
+    return map;
+  }
 }
 
 class SelectedMediaFiles {
   String type;
   List<MediaFileModel> list;
+
+  SelectedMediaFiles();
+
+  SelectedMediaFiles.fromJson(dynamic json) {
+    type = json["type"];
+    if (json["list"] != null) {
+      list = [];
+      json["list"].forEach((v) {
+        list.add(MediaFileModel.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    var map = <String, dynamic>{};
+    map["type"] = type;
+    if (list != null) {
+      map["list"] = list.map((v) => v.toJson()).toList();
+    }
+    return map;
+  }
+
 }
 
 class SizeInfo {
@@ -30,4 +75,36 @@ class SizeInfo {
   double offsetRatioX = 0.0;
   double offsetRatioY = 0.0;
   int duration = 0; //时长，只有音视频有用，图片此值为0，单位秒
+  String type;
+  String showImageUrl;
+
+
+  SizeInfo();
+
+  String toString() {
+    return "height:${height},width:${width},offsetRatioX:${offsetRatioX},offsetRatioY:${offsetRatioY},duration:${duration},";
+  }
+
+  SizeInfo.fromJson(dynamic json) {
+    height = json["height"];
+    width = json["width"];
+    offsetRatioX = json["offsetRatioX"];
+    offsetRatioY = json["offsetRatioY"];
+    duration = json["duration"];
+    type = json["type"];
+    showImageUrl = json["showImageUrl"];
+  }
+
+  Map<String, dynamic> toJson() {
+    var map = <String, dynamic>{};
+    map["height"] = height;
+    map["width"] = width;
+    map["offsetRatioX"] = offsetRatioX;
+    map["offsetRatioY"] = offsetRatioY;
+    map["duration"] = duration;
+    map["type"] = type;
+    map["showImageUrl"] = showImageUrl;
+    return map;
+  }
+
 }

@@ -29,15 +29,16 @@ Future<List> getRecommendTopic({@required int size}) async {
   Map<String, dynamic> params = {};
   params["size"] = size;
   BaseResponseModel responseModel = await requestApi(GETRECOMMENDTOPIC, params);
+  List<TopicDtoModel> topicModelList = [];
   if (responseModel.isSuccess) {
     DataResponseModel  dataResponseModel;
-    dataResponseModel = DataResponseModel.fromJson(responseModel.data);
-    List<TopicDtoModel> topicModelList = [];
-    print(dataResponseModel.list);
-    if (dataResponseModel.list.isNotEmpty) {
-      dataResponseModel.list.forEach((v) {
-        topicModelList.add(TopicDtoModel.fromJson(v));
-      });
+    if (responseModel.data != null) {
+      dataResponseModel = DataResponseModel.fromJson(responseModel.data);
+      if (dataResponseModel.list.isNotEmpty) {
+        dataResponseModel.list.forEach((v) {
+          topicModelList.add(TopicDtoModel.fromJson(v));
+        });
+      }
     }
     return topicModelList;
   } else {

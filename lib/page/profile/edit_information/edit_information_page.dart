@@ -32,6 +32,8 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:intl/intl.dart';
 import 'package:toast/toast.dart';
 
+import 'loading.dart';
+
 class EditInformation extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -166,6 +168,7 @@ class _editInformationState extends State<EditInformation> {
             InkWell(
               onTap: () {
                 if (userName != null && avataruri != null) {
+                  Loading.showLoading(context);
                   _upDataUserInfo();
                 } else {
                   Toast.show("头像和昵称不能为空!", context);
@@ -191,13 +194,9 @@ class _editInformationState extends State<EditInformation> {
           ],
         ),
         body: SlidingUpPanel(
-            /*borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(isCity ? 0.0 : 10.0),
-              topRight: Radius.circular(isCity ? 0.0 : 10.0),
-            ),*/
             panel: isCity ? _addressPicler(height, width) : _bottomDialog(width),
             onPanelClosed: () {},
-            maxHeight: isCity ? height * 0.31 + 42 : width * 0.5,
+            maxHeight: isCity ? height * 0.35 : width * 0.5,
             backdropEnabled: true,
             controller: pcController,
             minHeight: 0,
@@ -532,12 +531,12 @@ class _editInformationState extends State<EditInformation> {
   Widget _addressPicler(double height, double width) {
     print('=====================================builder');
     return Container(
-      height: height * 0.31,
+      height: height * 0.33,
       width: width,
       child: Column(
         children: [
           Container(
-            height: 42,
+            height: height*0.05,
             padding: EdgeInsets.only(left: 16, right: 16),
             child: Row(
               children: [
@@ -578,7 +577,7 @@ class _editInformationState extends State<EditInformation> {
           Stack(
             children: [
               Container(
-                height: height * 0.31 - 20,
+                height: height * 0.32 - height*0.05,
                 width: width,
                 child: Row(
                   children: [
@@ -597,19 +596,19 @@ class _editInformationState extends State<EditInformation> {
                   top: 0,
                   child: Container(
                     width: width,
-                    height: (height * 0.31 - 20) / 2 - 15,
-                    color: AppColor.white.withOpacity(0.6),
+                    height: (height * 0.32 - height*0.05) / 2 - 15,
+                    color: AppColor.white.withOpacity(0.5),
                   )),
               Positioned(
                   bottom: 0,
                   child: Container(
                     width: width,
-                    height: (height * 0.31 - 20) / 2 - 15,
+                    height: (height * 0.32 - height*0.05) / 2 - 15,
                     color: AppColor.white.withOpacity(0.6),
                   )),
               Positioned(
                   left: width / 2 * 0.15,
-                  top: (height * 0.31 - 20) / 2 - 15,
+                  top: (height * 0.32 - height*0.05) / 2 - 15,
                   child: Container(
                     height: 0.5,
                     width: width / 2 * 0.7,
@@ -617,7 +616,7 @@ class _editInformationState extends State<EditInformation> {
                   )),
               Positioned(
                   left: width / 2 * 0.15,
-                  bottom: (height * 0.31 - 20) / 2 - 15,
+                  bottom:(height * 0.32 - height*0.05) / 2 - 15,
                   child: Container(
                     height: 0.5,
                     width: width / 2 * 0.7,
@@ -625,7 +624,7 @@ class _editInformationState extends State<EditInformation> {
                   )),
               Positioned(
                   right: width / 2 * 0.15,
-                  top: (height * 0.31 - 20) / 2 - 15,
+                  top: (height * 0.32 - height*0.05) / 2 - 15,
                   child: Container(
                     height: 0.5,
                     width: width / 2 * 0.7,
@@ -633,7 +632,7 @@ class _editInformationState extends State<EditInformation> {
                   )),
               Positioned(
                   right: width / 2 * 0.15,
-                  bottom: (height * 0.31 - 20) / 2 - 15,
+                  bottom: (height * 0.32 - height*0.05) / 2 - 15,
                   child: Container(
                     height: 0.5,
                     width: width / 2 * 0.7,
@@ -653,11 +652,11 @@ class _editInformationState extends State<EditInformation> {
     /*print('===================================${textContext.first}');*/
     return ListWheelScrollView.useDelegate(
       controller: controller,
-      diameterRatio: 0.9,
-      /* useMagnifier: true,
-      magnification: 1.3,*/
+      diameterRatio: 1,
+      useMagnifier: true,
+      magnification: 1.1,
       physics: FixedExtentScrollPhysics(),
-      itemExtent: 30,
+      itemExtent: 25,
       childDelegate: ListWheelChildBuilderDelegate(
           childCount: textContext.length,
           builder: (context, index) {
@@ -692,32 +691,14 @@ class _editInformationState extends State<EditInformation> {
     print('adress========%%%%%%%%%%%%%%%%%=================${provinceIdList[index]}');
     return Column(
       children: [
-        /*AnimatedOpacity(
-          opacity: (type == 1 && index == leftIndex) || (type == 2 && index == rightIndex)?1.0:0.0,
-          duration: Duration(milliseconds: 0),
-          child: Container(
-            height: 0.5,
-            color: AppColor.bgWhite,
-          ),
-        ),*/
         Container(
           child: Center(
             child: Text("${textContext[index]}",
-                style: /*(type == 1 && index == leftIndex) || (type == 2 && index == rightIndex)
-              ?*/
-                    AppStyle.textRegular18
-                /* : AppStyle.textHintRegular16,*/
+                style: AppStyle.textRegular15
+
                 ),
           ),
         ),
-        /*AnimatedOpacity(
-          opacity: (type == 1 && index == leftIndex) || (type == 2 && index == rightIndex)?1.0:0.0,
-          duration: Duration(milliseconds: 0),
-          child: Container(
-            height: 0.5,
-            color: AppColor.bgWhite,
-          ),
-        ),*/
       ],
     );
   }
@@ -763,6 +744,8 @@ class _editInformationState extends State<EditInformation> {
       var profile = ProfileDto.fromUserModel(model);
       await ProfileDBHelper().insertProfile(profile);
       context.read<ProfileNotifier>().setProfile(profile);
+      Toast.show("资料修改成功",context,);
+      Loading.hideLoading(context);
       Navigator.pop(context, true);
       print('更新过后的数据库用户头像${context.read<ProfileNotifier>().profile.avatarUri}');
     } else {

@@ -41,15 +41,18 @@ class AppColor {
   // 标准颜色
   // 纯黑
   static const black = Color.fromRGBO(0x00, 0x00, 0x00, 1.0);
+
   //透明
   static const transparent = Color.fromRGBO(0x00, 0x00, 0x00, 0.0);
 
   //不在规范中颜色
   //边框
-  static const frame = Color.fromRGBO(204, 204 , 204 , 1.0);
+  static const frame = Color.fromRGBO(204, 204, 204, 1.0);
   static const urlText = Color.fromRGBO(0x18, 0x77, 0xF2, 1.0);
   static const bgVip1 = Color.fromRGBO(0xF3, 0xD2, 0x9C, 1.0);
   static const bgVip2 = Color.fromRGBO(0xC4, 0x8B, 0x3C, 1.0);
   static const color246 = Color.fromRGBO(246, 246, 246, 1.0);
   static const textVipPrimary1 = Color.fromRGBO(0x8F, 0x58, 0x08, 1.0);
+  static const buttonBackground = Color.fromRGBO(17, 17, 17, 1);
+  static const textButtonCenter = Color.fromRGBO(255, 255, 255, 1);
 }

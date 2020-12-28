@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/data/model/add_remarks_model.dart';
+import 'file:///F:/HD/AndroidCode4/mirror/lib/data/model/profile/add_remarks_model.dart';
 import 'package:mirror/util/screen_util.dart';
 
 ///修改备注

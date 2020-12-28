@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/page/message/test_message_post.dart';
+import 'package:mirror/page/message/message_manager.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/feed/feed_share_select_contact.dart';
 
@@ -64,6 +64,7 @@ class FeedSharePopups extends StatelessWidget {
             height: 89,
             child: ListView.builder(
                 scrollDirection: Axis.horizontal,
+                shrinkWrap: true,
                 itemCount: feedViewModel.length,
                 itemBuilder: (context, index) {
                   return GestureDetector(
@@ -103,8 +104,7 @@ class FeedSharePopups extends StatelessWidget {
                             margin: EdgeInsets.only(
                                 left: index > 0 ? 32 : 16,
                                 right: index == feedViewModel.length - 1 ? 16 : 0,
-                                top: 0,
-                                bottom: 8),
+                                ),
                             child: Center(
                               child: Text(
                                 feedViewModel[index].name,

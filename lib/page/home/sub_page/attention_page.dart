@@ -39,8 +39,7 @@ enum PostStatus {
 
 // 关注
 class AttentionPage extends StatefulWidget {
-  AttentionPage({Key key, this.coverUrls, this.pc,this.postFeedModel}) : super(key: key);
-  List<CourseModel> coverUrls = [];
+  AttentionPage({Key key, this.pc,this.postFeedModel}) : super(key: key);
   PanelController pc = new PanelController();
   // 发布动态需要的数据
   PostFeedModel postFeedModel;

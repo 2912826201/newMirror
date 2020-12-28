@@ -64,9 +64,8 @@ class LoadingView extends StatelessWidget {
 
 // 推荐
 class RecommendPage extends StatefulWidget {
-  RecommendPage({Key key, this.coverUrls, this.pc}) : super(key: key);
+  RecommendPage({Key key, this.pc}) : super(key: key);
   PanelController pc = new PanelController();
-  List<CourseModel> coverUrls = [];
 
   RecommendPageState createState() => RecommendPageState();
 }
@@ -77,7 +76,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   // 数据源
   List<int> recommendIdList = [];
   List<HomeFeedModel> recommendModelList = [];
-
+  List<CourseDtoModel> courseList = [];
   // 列表监听
   ScrollController _controller = new ScrollController();
 
@@ -85,7 +84,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   int lastTime;
 
   // 加载中默认文字
-  String loadText = "加载中...";
+  String loadText = "";
 
   // 加载状态
   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
@@ -95,7 +94,29 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
 
   @override
   void initState() {
-    getRecommendFeed();
+    // 合并请求
+    mergeRequest();
+    // Future.wait([
+    // // 请求推荐接口
+    //  getHotList(size: 20),
+    //   // 请求推荐教练
+    //   recommendCoach(),
+    // ]).then((results) {
+    //   List<HomeFeedModel> modelList = results[0];
+    //    if (modelList.isNotEmpty) {
+    //      for (HomeFeedModel model in modelList) {
+    //        recommendIdList.add(model.id);
+    //      }
+    //      recommendModelList.addAll(modelList);
+    //    }
+    //   // 更新全局监听
+    //   context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
+    //   courseList = results[1];
+    //   setState(() {});
+    // }).catchError((e) {
+    //   print("报错了");
+    //   print(e);
+    // });
     _controller.addListener(() {
       if (_controller.position.pixels == _controller.position.maxScrollExtent) {
         dataPage += 1;
@@ -104,7 +125,31 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     });
     super.initState();
   }
-
+ // 合并请求
+  mergeRequest() {
+    // 合并请求
+    Future.wait([
+      // 请求推荐接口
+      getHotList(size: 20),
+      // 请求推荐教练
+      recommendCoach(),
+    ]).then((results) {
+      List<HomeFeedModel> modelList = results[0];
+      if (modelList.isNotEmpty) {
+        for (HomeFeedModel model in modelList) {
+          recommendIdList.add(model.id);
+        }
+        recommendModelList.addAll(modelList);
+      }
+      // 更新全局监听
+      context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
+      courseList = results[1];
+      setState(() {});
+    }).catchError((e) {
+      print("报错了");
+      print(e);
+    });
+  }
   // 推荐页model
   getRecommendFeed() async {
     if (loadStatus == LoadingStatus.STATUS_IDEL) {
@@ -173,23 +218,25 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                     dataPage = 1;
                 recommendIdList.clear();
                 recommendModelList.clear();
+                courseList.clear();
                 loadStatus = LoadingStatus.STATUS_LOADING;
                 loadText = "加载中...";
-                List<HomeFeedModel> modelList = await getHotList(size: 20);
-                setState(() {
-                  try {
-                    if (modelList.isNotEmpty) {
-                      for (HomeFeedModel model in modelList) {
-                        recommendIdList.add(model.id);
-                      }
-                      recommendModelList.addAll(modelList);
-                    }
-                  } catch (e) {}
-                });
-                // 更新全局监听
-                context
-                    .read<FeedMapNotifier>()
-                    .updateFeedMap(recommendModelList);
+                mergeRequest();
+                // List<HomeFeedModel> modelList = await getHotList(size: 20);
+                // setState(() {
+                //   try {
+                //     if (modelList.isNotEmpty) {
+                //       for (HomeFeedModel model in modelList) {
+                //         recommendIdList.add(model.id);
+                //       }
+                //       recommendModelList.addAll(modelList);
+                //     }
+                //   } catch (e) {}
+                // });
+                // // 更新全局监听
+                // context
+                //     .read<FeedMapNotifier>()
+                //     .updateFeedMap(recommendModelList);
               },
                   child: CustomScrollView(
                     controller: _controller,
@@ -256,11 +303,11 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     return Container(
       margin: EdgeInsets.only(top: 24, bottom: 18),
       height: 93,
-      child: ListView(
+      child: ListView.builder(
         scrollDirection: Axis.horizontal,
         shrinkWrap: true,
-        children: widget.coverUrls.map((e) {
-          var index = e.index;
+        itemCount: courseList.length,
+        itemBuilder: (context,index) {
           return Container(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -268,14 +315,14 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                 Container(
                   margin: EdgeInsets.only(
                       left: index > 0 ? 24 : 16,
-                      right: index == widget.coverUrls.length - 1 ? 16 : 0,
+                      right: index == courseList.length - 1 ? 16 : 0,
                       top: 0,
                       bottom: 8.5),
                   height: 53,
                   width: 53,
                   decoration: BoxDecoration(
                     // color: Colors.redAccent,
-                    image: DecorationImage(image: NetworkImage(e.avatar), fit: BoxFit.cover),
+                    image: DecorationImage(image: NetworkImage(courseList[index].coachDto.avatarUri), fit: BoxFit.cover),
                     // image
                     borderRadius: BorderRadius.all(Radius.circular(26.5)),
                   ),
@@ -284,12 +331,12 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                   width: 53,
                   margin: EdgeInsets.only(
                       left: index > 0 ? 24 : 16,
-                      right: index == widget.coverUrls.length - 1 ? 16 : 0,
+                      right: index == courseList.length - 1 ? 16 : 0,
                       top: 0,
                       bottom: 8.5),
                   child: Center(
                     child: Text(
-                      "小课${index}",
+                      courseList[index].coachDto.nickName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -298,7 +345,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
               ],
             ),
           );
-        }).toList(),
+        },
       ),
     );
   }

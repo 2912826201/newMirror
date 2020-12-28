@@ -20,6 +20,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
   double titleSize = 30;
   String startTime;
   String endTime;
+  final VoidCallback shareBtnClick;
 
   SliverCustomHeaderDelegate({
     this.collapsedHeight,
@@ -32,6 +33,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
     this.heroTag,
     this.startTime,
     this.endTime,
+    this.shareBtnClick,
   });
 
   @override
@@ -237,7 +239,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
                               .makeStickyHeaderTextColor(shrinkOffset, true),
                           // color: Colors.black,
                         ),
-                        onPressed: () {},
+                        onPressed: shareBtnClick,
                       ),
                     ],
                   ),

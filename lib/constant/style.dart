@@ -39,4 +39,8 @@ class AppStyle {
   static const textRegularRed16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.mainRed);
   static const textRegularRed13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.mainRed);
   static const textMediumRed14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.mainRed);
+
+
+  //不在规范内style
+  static const textButtonwhite = TextStyle(fontSize: 12,fontWeight:FontWeight.w400,color: AppColor.textButtonCenter );
 }

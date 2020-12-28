@@ -15,7 +15,9 @@ Future<DataResponseModel> searchFeed({@required String key, @required int size, 
   BaseResponseModel responseModel = await requestApi(SEARCHFEED, params);
   if (responseModel.isSuccess) {
     DataResponseModel  dataResponseModel;
-    dataResponseModel = DataResponseModel.fromJson(responseModel.data);
+    if (responseModel.data != null) {
+      dataResponseModel = DataResponseModel.fromJson(responseModel.data);
+    }
     return dataResponseModel;
   } else {
     return null;

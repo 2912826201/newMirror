@@ -1,3 +1,5 @@
+import 'package:mirror/data/model/user_model.dart';
+
 enum CommentTypes {
   commentFeed, // 评论动态
   commentMainCom, // 评论主评论
@@ -347,7 +349,7 @@ class CourseDtoModel {
   int creatorId; // 创建人Id
   int coachId;
 
-  // UserBaseInfoDto coachDto;           // 教练dto
+  UserModel coachDto;           // 教练dto
   int coursewareId;
 
   // CoursewareDto coursewareDto;      // 课件dto
@@ -403,6 +405,9 @@ class CourseDtoModel {
     dataState = json["dataState"];
     createTime = json["createTime"];
     updateTime = json["updateTime"];
+    if (json["coachDto"] != null) {
+      coachDto = UserModel.fromJson(json["coachDto"]);
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -425,6 +430,7 @@ class CourseDtoModel {
     map["createTime"] = createTime;
     map["updateTime"] = updateTime;
     map["finishAmount"] = finishAmount;
+    map["coachDto"] = coachDto;
     return map;
   }
 

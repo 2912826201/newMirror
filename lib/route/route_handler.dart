@@ -13,6 +13,7 @@ import 'package:mirror/page/login/login_page.dart';
 import 'package:mirror/page/login/perfect_user_page.dart';
 import 'package:mirror/page/login/phone_login_page.dart';
 import 'package:mirror/page/main_page.dart';
+import 'package:mirror/page/media_picker/gallery_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/media_picker/preview_photo_page.dart';
 import 'package:mirror/page/message/chat_page.dart';
@@ -32,6 +33,7 @@ import 'package:mirror/page/training/live_broadcast/live_detail_page.dart';
 import 'package:mirror/page/training/video_course/video_course_list_page.dart';
 import 'package:mirror/page/training/video_course/video_detail_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:photo_manager/photo_manager.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 /// route_handler
@@ -112,7 +114,8 @@ var handlerProfileAddRemarks = Handler(handlerFunc: (BuildContext context, Map<S
   );
 });
 
-var handlerEditInformation = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+var handlerEditInformation = Handler(
+    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return EditInformation();
 });
 
@@ -126,7 +129,9 @@ var handlerEditInformationName = Handler(handlerFunc: (BuildContext context,Map<
 
 var handlerEditInformationIntroduction = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return EditInformationIntroduction(introduction: data["introduction"],);
+  return EditInformationIntroduction(
+    introduction: data["introduction"],
+  );
 });
 var handlerSettingHomePage = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
   return SettingHomePage();
