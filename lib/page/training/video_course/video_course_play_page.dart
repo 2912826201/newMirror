@@ -139,54 +139,8 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
         Column(
           children: [
             Container(
-              height: 48 + ScreenUtil.instance.statusBarHeight,
+              height: ScreenUtil.instance.statusBarHeight,
               color: AppColor.black,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Spacer(),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: Text(
-                      _formatTrainingTime(_totalTrainingTime),
-                      style:
-                          TextStyle(color: AppColor.white.withOpacity(0.85), fontWeight: FontWeight.w500, fontSize: 18),
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                    height: 21,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          "训练时长",
-                          style: TextStyle(
-                            color: AppColor.white.withOpacity(0.35),
-                            fontSize: 10,
-                          ),
-                        ),
-                        Spacer(),
-                        Icon(
-                          Icons.play_circle_outline,
-                          color: AppColor.white.withOpacity(0.35),
-                          size: 12,
-                        ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Text(
-                          "1234人已学习",
-                          style: TextStyle(
-                            color: AppColor.white.withOpacity(0.35),
-                            fontSize: 10,
-                          ),
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              ),
             ),
             Expanded(
               child: Stack(
@@ -199,15 +153,62 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                     alignment: Alignment.center,
                     child: _controller != null && _controller.value.initialized
                         ? AspectRatio(
-                            aspectRatio: _controller.value.aspectRatio,
-                            child: VideoPlayer(_controller),
-                          )
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: VideoPlayer(_controller),
+                    )
                         : Container(),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.only(left: 16),
+                        height: 27,
+                        alignment: Alignment.bottomLeft,
+                        child: Text(
+                          _formatTrainingTime(_totalTrainingTime),
+                          style:
+                          TextStyle(color: AppColor.white.withOpacity(0.85), fontWeight: FontWeight.w500, fontSize: 18),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                        height: 21,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "训练时长",
+                              style: TextStyle(
+                                color: AppColor.white.withOpacity(0.35),
+                                fontSize: 10,
+                              ),
+                            ),
+                            Spacer(),
+                            Icon(
+                              Icons.play_circle_outline,
+                              color: AppColor.white.withOpacity(0.35),
+                              size: 12,
+                            ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            Text(
+                              "1234人已学习",
+                              style: TextStyle(
+                                color: AppColor.white.withOpacity(0.35),
+                                fontSize: 10,
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                    ],
                   ),
                   Positioned(bottom: 24, child: _buildInfoView()),
                   Positioned(
                       right: 16,
-                      top: 32,
+                      top: 80,
                       child: GestureDetector(
                         onTap: () {
                           Navigator.pop(context);
@@ -226,7 +227,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                       )),
                   Positioned(
                       right: 16,
-                      top: 80,
+                      top: 128,
                       child: GestureDetector(
                         onTap: () {},
                         child: Container(
@@ -256,7 +257,9 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                     child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                       GestureDetector(
                         onTap: () {
-                          int currentTime = DateTime.now().millisecondsSinceEpoch;
+                          int currentTime = DateTime
+                              .now()
+                              .millisecondsSinceEpoch;
                           if (currentTime - _buttonTapTime < _buttonTapInterval) {
                             return;
                           } else {
@@ -280,7 +283,9 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          int currentTime = DateTime.now().millisecondsSinceEpoch;
+                          int currentTime = DateTime
+                              .now()
+                              .millisecondsSinceEpoch;
                           if (currentTime - _buttonTapTime < _buttonTapInterval) {
                             return;
                           } else {
@@ -346,7 +351,9 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
           Spacer(),
           GestureDetector(
             onTap: () {
-              int currentTime = DateTime.now().millisecondsSinceEpoch;
+              int currentTime = DateTime
+                  .now()
+                  .millisecondsSinceEpoch;
               if (currentTime - _buttonTapTime < _buttonTapInterval) {
                 return;
               } else {
@@ -376,15 +383,15 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                 Center(
                   child: _isPlaying
                       ? Icon(
-                          Icons.pause,
-                          color: AppColor.white,
-                          size: 24,
-                        )
+                    Icons.pause,
+                    color: AppColor.white,
+                    size: 24,
+                  )
                       : Icon(
-                          Icons.play_arrow,
-                          color: AppColor.white,
-                          size: 24,
-                        ),
+                    Icons.play_arrow,
+                    color: AppColor.white,
+                    size: 24,
+                  ),
                 )
               ]),
             ),
@@ -412,7 +419,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                   child: Text(
                     _formatTime((partList[_currentPartIndex].duration * (1 - _restProgress)).round()),
                     style:
-                        TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 60, fontWeight: FontWeight.w500),
+                    TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 60, fontWeight: FontWeight.w500),
                   ),
                 ),
                 SizedBox(
@@ -431,7 +438,9 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
             ),
             GestureDetector(
               onTap: () {
-                int currentTime = DateTime.now().millisecondsSinceEpoch;
+                int currentTime = DateTime
+                    .now()
+                    .millisecondsSinceEpoch;
                 if (currentTime - _buttonTapTime < _buttonTapInterval) {
                   return;
                 } else {
@@ -486,7 +495,9 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
       //需要开始休息
       setState(() {
         _isResting = true;
-        _restStartTimeStamp = DateTime.now().millisecondsSinceEpoch;
+        _restStartTimeStamp = DateTime
+            .now()
+            .millisecondsSinceEpoch;
       });
     } else {
       //类型出错
@@ -528,7 +539,9 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
         _playNextPart();
         return;
       }
-      int restTime = DateTime.now().millisecondsSinceEpoch - _restStartTimeStamp;
+      int restTime = DateTime
+          .now()
+          .millisecondsSinceEpoch - _restStartTimeStamp;
       setState(() {
         _restProgress = restTime / (partList[_currentPartIndex].duration * 1000);
 
