@@ -7,6 +7,7 @@ import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/activation_test_page.dart';
 import 'package:mirror/page/agora_input_page.dart';
+import 'package:mirror/page/download_test_page.dart';
 import 'package:mirror/page/media_test_page.dart';
 import 'package:mirror/page/qiniu_test_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_page.dart';
@@ -240,6 +241,14 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                     child: Text("将isFirstLaunch设置为false"),
                   ),
                 ],
+              ),
+              RaisedButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context){
+                    return DownloadTestPage();
+                  }));
+                },
+                child: Text("下载测试页"),
               ),
             ],
           ),

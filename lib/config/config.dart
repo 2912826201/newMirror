@@ -84,11 +84,17 @@ class AppConfig {
 
     await Directory(_appDir).create(recursive: true);
     await Directory(getAppPicDir()).create(recursive: true);
+    await Directory(getAppDownloadDir()).create(recursive: true);
   }
 
   //获取图片文件的路径
   static String getAppPicDir() {
     return "$_appDir/pic";
+  }
+
+  //获取内部下载文件的路径
+  static String getAppDownloadDir() {
+    return "$_appDir/download";
   }
 }
 

@@ -100,6 +100,9 @@ dependencies:
   audioplayers: ^0.17.0
   crypto: ^2.1.5
   convert: ^2.1.1
+  #下载器
+  #解决问题 https://blog.csdn.net/qq_38774121/article/details/106175991
+  flutter_downloader: ^1.5.2
 
 
 
@@ -109,7 +112,7 @@ dependencies:
   #测试用滚轮选择器
   flutter_cupertino_date_picker:
     git: https://github.com/yasseralsamman/flutter-cupertino-date-picker.git
-    #测试用城市选择器
+  #测试用城市选择器
   address_picker: ^0.0.1
 
   # 测试用的生成英文单词的库

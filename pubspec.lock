@@ -204,6 +204,13 @@ packages:
       url: "https://github.com/yasseralsamman/flutter-cupertino-date-picker.git"
     source: git
     version: "1.0.26+2"
+  flutter_downloader:
+    dependency: "direct main"
+    description:
+      name: flutter_downloader
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.5.2"
   flutter_drag_scale:
     dependency: "direct main"
     description:
