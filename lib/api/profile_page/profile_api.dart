@@ -1,11 +1,11 @@
 
-import 'file:///F:/HD/AndroidCode4/mirror/lib/data/model/profile/add_remarks_model.dart';
 import 'package:mirror/data/model/base_response_model.dart';
+import 'package:mirror/data/model/profile/add_remarks_model.dart';
+import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/model/profile/follow_list_model.dart';
-import 'file:///F:/HD/AndroidCode4/mirror/lib/data/model/profile/black_model.dart';
-import 'file:///F:/HD/AndroidCode4/mirror/lib/data/model/profile/searchuser_model.dart';
+import 'package:mirror/data/model/profile/profile_model.dart';
+import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/model/user_extrainfo_model.dart';
-import 'file:///F:/HD/AndroidCode4/mirror/lib/data/model/profile/profile_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 
 import '../api.dart';
@@ -28,8 +28,6 @@ const String ADD_BLACK = "/appuser/web/black/addBlack";
 const String CANCEL_BLACK = "/appuser/web/black/removeBlack";
 ///检测拉黑关系
 const String CHECK_BLACK = "/appuser/web/black/checkBlack";
-///黑名单
-const String QUERY_BLACKLIST = "/appuser/web/black/queryList";
 ///举报
 const String DENOUNCE ="/appuser/web/user/denounce";
 ///更新用户信息
