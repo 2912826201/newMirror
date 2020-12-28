@@ -5,6 +5,8 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
 
+
+///通知设置
 class NoticeSettingPage extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
