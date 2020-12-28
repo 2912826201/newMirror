@@ -15,6 +15,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 
+///意见反馈
 class FeedBackPage extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
@@ -72,7 +73,7 @@ class _feedBackPage extends State<FeedBackPage>{
                 width: width,
                 child: Container(
                   alignment: Alignment.centerLeft,
-                  child:  Text("你的意见和建议,是对我们最大的支持"),
+                  child:  Text("你的意见和建议,是对我们最大的支持",style: AppStyle.textRegular16,),
                 ),
               ),
               _inputBox(width),

@@ -18,6 +18,7 @@ import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/util/screen_util.dart';
 
+///设置主页
 class SettingHomePage extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
