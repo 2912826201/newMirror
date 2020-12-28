@@ -2,26 +2,64 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/util/text_util.dart';
 
 import 'currency_msg.dart';
 
+// ignore: must_be_immutable
 class TextMsg extends StatelessWidget {
   final String text;
   final bool isMyself;
   final String userUrl;
   final String name;
   final int status;
+  final int position;
+  final VoidMessageClickCallBack voidMessageClickCallBack;
+  final VoidItemLongClickCallBack voidItemLongClickCallBack;
 
-  TextMsg({this.text, this.isMyself, this.userUrl, this.name, this.status});
+  TextMsg(
+      {this.text,
+      this.isMyself,
+      this.userUrl,
+      this.name,
+      this.status,
+      this.position,
+      this.voidMessageClickCallBack,
+      this.voidItemLongClickCallBack});
+
+  TextStyle textStyle = const TextStyle(
+    fontSize: 15,
+  );
 
   @override
   Widget build(BuildContext context) {
+    List<String> longClickStringList = getLongClickStringList(
+        isMySelf: isMyself, contentType: ChatTypeModel.MESSAGE_TYPE_TEXT);
+    return LongClickPopupMenu(
+      onValueChanged: (int value) {
+        voidItemLongClickCallBack(
+            position: position,
+            settingType: longClickStringList[value],
+            contentType: ChatTypeModel.MESSAGE_TYPE_TEXT,
+            content: text);
+        // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
+      },
+      contentType: ChatTypeModel.MESSAGE_TYPE_TEXT,
+      isMySelf: isMyself,
+      actions: longClickStringList,
+      contentWidth: getTextSize(text, textStyle, 10).width + 22.0,
+      child: getContentBoxItem(context),
+    );
+  }
+
+  Widget getContentBoxItem(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 9.0),
+      padding: EdgeInsets.symmetric(vertical: 12.0),
       child: Column(
         children: [
-          getLongClickBox(),
           Row(
             mainAxisAlignment:
                 isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
@@ -31,6 +69,7 @@ class TextMsg extends StatelessWidget {
       ),
     );
   }
+
 
   //最外层body 加载状态和消息结构
   List<Widget> getBody(BuildContext context) {
@@ -90,30 +129,47 @@ class TextMsg extends StatelessWidget {
             ),
           ),
           Container(
-            margin: isMyself
-                ? const EdgeInsets.only(right: 7.0)
-                : const EdgeInsets.only(left: 7.0),
-            constraints: BoxConstraints(
-              maxWidth:
-                  MediaQuery.of(context).size.width - (16 + 7 + 38 + 2) * 2,
-            ),
-            padding:
-                const EdgeInsets.only(left: 11, right: 11, top: 8, bottom: 8),
-            decoration: BoxDecoration(
-              color: isMyself ? AppColor.textPrimary2 : AppColor.white,
-              borderRadius: BorderRadius.all(Radius.circular(6)),
-            ),
-            child: RichText(
-                maxLines: 100,
-                text: TextSpan(
-                  style: TextStyle(
-                    fontSize: 15,
-                  ),
-                  children: getTextSpanArray(text, isMyself),
-                )),
+              margin: isMyself
+                  ? const EdgeInsets.only(right: 7.0)
+                  : const EdgeInsets.only(left: 7.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(6)),
+                child: Material(
+                    borderRadius: BorderRadius.all(Radius.circular(6)),
+                    color: isMyself ? AppColor.textPrimary2 : AppColor.white,
+                    child: new InkWell(
+                      child: getRichTextBox(context),
+                      splashColor: isMyself ? AppColor.textPrimary1 : AppColor
+                          .textHint,
+                      onTap: () {
+
+                      },
+                    )
+                ),
+              )
           ),
         ],
       ),
+    );
+  }
+
+  Widget getRichTextBox(BuildContext context) {
+    return Container(
+      constraints: BoxConstraints(
+        maxWidth:
+        MediaQuery
+            .of(context)
+            .size
+            .width - (16 + 7 + 38 + 2) * 2,
+      ),
+      padding:
+      const EdgeInsets.only(left: 11, right: 11, top: 8, bottom: 8),
+      child: RichText(
+          maxLines: 100,
+          text: TextSpan(
+            style: textStyle,
+            children: getTextSpanArray(text, isMyself),
+          )),
     );
   }
 
@@ -137,11 +193,10 @@ class TextMsg extends StatelessWidget {
         text: ("${index > 0 ? " " : ""}$content"),
         recognizer: new TapGestureRecognizer()
           ..onTap = () {
-            if (isUrl) {
-              print(content);
-            } else {
-              print("不是url链接");
-            }
+            voidMessageClickCallBack(
+                contentType: ChatTypeModel.MESSAGE_TYPE_TEXT,
+                content: content,
+                isUrl: isUrl);
           },
         style: TextStyle(
           color: !isUrl

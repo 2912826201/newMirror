@@ -85,6 +85,11 @@ class RongCloud {
         RCConversationType.Private, targetId, content);
   }
 
+  //撤回消息
+  Future<RecallNotificationMessage> recallMessage(Message message) async {
+    return await RongIMClient.recallMessage(message, null);
+  }
+
   ///获取特定方向的历史消息
   ///
   ///[conversationType] 会话类型，参见枚举 [RCConversationType]
@@ -102,5 +107,32 @@ class RongCloud {
       int sentTime, int beforeCount, int afterCount) async {
     return await RongIMClient.getHistoryMessages(
         conversationType, targetId, sentTime, beforeCount, afterCount);
+  }
+
+  /// 批量删除消息
+  ///
+  /// [messages] 需要删除的 messages List
+  void deleteMessageByIds(
+      List<Message> messages, Function(int code) finished) async {
+    List<int> messageIds = <int>[];
+    if (messages == null || messages.length < 1) {
+      return;
+    }
+    for (int i = 0; i < messages.length; i++) {
+      messageIds.add(messages[i].messageId);
+    }
+    RongIMClient.deleteMessageByIds(messageIds, finished);
+  }
+
+  /// 删除消息
+  ///
+  /// [messages] 需要删除的 messages List
+  void deleteMessageById(Message message, Function(int code) finished) async {
+    List<int> messageIds = <int>[];
+    if (message == null) {
+      return;
+    }
+    messageIds.add(message.messageId);
+    RongIMClient.deleteMessageByIds(messageIds, finished);
   }
 }

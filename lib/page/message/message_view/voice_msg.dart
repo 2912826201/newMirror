@@ -1,12 +1,12 @@
 import 'dart:async';
-import 'dart:convert';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
+import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +22,9 @@ class VoiceMsg extends StatefulWidget {
   final bool isTemporary;
   final ChatVoiceModel chatVoiceModel;
   final int status;
+  final int position;
+  final VoidMessageClickCallBack voidMessageClickCallBack;
+  final VoidItemLongClickCallBack voidItemLongClickCallBack;
 
   VoiceMsg(
       {this.chatVoiceModel,
@@ -29,7 +32,10 @@ class VoiceMsg extends StatefulWidget {
       this.isTemporary,
       this.userUrl,
       this.name,
-      this.status});
+      this.status,
+      this.position,
+      this.voidMessageClickCallBack,
+      this.voidItemLongClickCallBack});
 
   @override
   State<StatefulWidget> createState() {
@@ -55,18 +61,37 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    List<String> longClickStringList = getLongClickStringList(
+        isMySelf: widget.isMyself,
+        contentType: ChatTypeModel.MESSAGE_TYPE_VOICE);
     if (urlMd5String == null) {
       _getUrlMd5String();
     }
+    return LongClickPopupMenu(
+      onValueChanged: (int value) {
+        widget.voidItemLongClickCallBack(
+            position: widget.position,
+            settingType: longClickStringList[value],
+            contentType: ChatTypeModel.MESSAGE_TYPE_VOICE);
+        // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
+      },
+      contentType: ChatTypeModel.MESSAGE_TYPE_VOICE,
+      isMySelf: widget.isMyself,
+      actions: longClickStringList,
+      contentWidth: getNowWidth(context, widget.chatVoiceModel.longTime),
+      child: getContentBoxItem(context),
+    );
+  }
+
+
+  Widget getContentBoxItem(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 9.0),
+      padding: EdgeInsets.symmetric(vertical: 12.0),
       child: Column(
         children: [
-          getLongClickBox(),
           Row(
-            mainAxisAlignment: widget.isMyself
-                ? MainAxisAlignment.end
-                : MainAxisAlignment.start,
+            mainAxisAlignment:
+            widget.isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: getBody(context),
           ),
         ],
@@ -101,15 +126,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
       SizedBox(
         width: 7,
       ),
-      GestureDetector(
-        child: _getVoiceUi(context),
-        onTap: () {
-          ToastShow.show(msg: "点击了语音播放", context: context);
-          context
-              .read<VoiceSettingNotifier>()
-              .judgePlayModel(urlString, context, urlMd5String);
-        },
-      ),
+      _getVoiceUi(context),
     ];
     if (widget.isMyself) {
       body = body.reversed.toList();
@@ -143,23 +160,51 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
               fit: BoxFit.fill,
             ),
           ),
+
           Container(
-            margin: widget.isMyself
-                ? const EdgeInsets.only(right: 7.0)
-                : const EdgeInsets.only(left: 7.0),
-            width: getNowWidth(context, widget.chatVoiceModel.longTime),
-            padding:
-                const EdgeInsets.only(left: 11, right: 11, top: 8, bottom: 8),
-            decoration: BoxDecoration(
-              color: widget.isMyself ? AppColor.textPrimary2 : AppColor.white,
-              borderRadius: BorderRadius.all(Radius.circular(6)),
-            ),
-            child: _getShowText(),
+              margin: widget.isMyself
+                  ? const EdgeInsets.only(right: 7.0)
+                  : const EdgeInsets.only(left: 7.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(6)),
+                child: Material(
+                    borderRadius: BorderRadius.all(Radius.circular(6)),
+                    color: widget.isMyself ? AppColor.textPrimary2 : AppColor
+                        .white,
+                    child: new InkWell(
+                      child: _getShowTextBox(),
+                      splashColor: widget.isMyself
+                          ? AppColor.textPrimary1
+                          : AppColor.textHint,
+                      onTap: () {
+                        widget.voidMessageClickCallBack(
+                            contentType: ChatTypeModel.MESSAGE_TYPE_VOICE);
+                        // ToastShow.show(msg: "点击了语音播放", context: context);
+                        context
+                            .read<VoiceSettingNotifier>()
+                            .judgePlayModel(urlString, context, urlMd5String);
+                      },
+                    )
+                ),
+              )
           ),
         ],
       ),
     );
   }
+
+  Widget _getShowTextBox() {
+    return Container(
+      width: getNowWidth(context, widget.chatVoiceModel.longTime),
+      padding:
+      const EdgeInsets.only(left: 11, right: 11, top: 8, bottom: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(6)),
+      ),
+      child: _getShowText(),
+    );
+  }
+
 
   //底部文字
   Widget _getShowText() {

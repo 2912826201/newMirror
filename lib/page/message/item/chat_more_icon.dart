@@ -3,6 +3,7 @@ import 'package:mirror/util/string_util.dart';
 
 import 'commom_button.dart';
 
+//发送和图片按钮--消息界面底部
 class ChatMoreIcon extends StatelessWidget {
   final bool isMore;
   final String value;

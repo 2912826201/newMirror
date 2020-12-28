@@ -5,6 +5,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/voice_alert_date_model.dart';
 import 'package:provider/provider.dart';
 
+//语音的dialog
 showVoiceDialog(BuildContext context, {int index}) {
   OverlayEntry overlayEntry = new OverlayEntry(builder: (content) {
     return Positioned(
@@ -33,26 +34,6 @@ class _VoiceDialogState extends State<VoiceDialog> {
 
   @override
   Widget build(BuildContext context) {
-    int index = widget.index;
-
-    String icon() {
-      if (index > 0 && index <= 16) {
-        return 'images/chat/voice_volume_2.webp';
-      } else if (16 < index && index <= 32) {
-        return 'images/chat/voice_volume_3.webp';
-      } else if (32 < index && index <= 48) {
-        return 'images/chat/voice_volume_4.webp';
-      } else if (48 < index && index <= 64) {
-        return 'images/chat/voice_volume_5.webp';
-      } else if (64 < index && index <= 80) {
-        return 'images/chat/voice_volume_6.webp';
-      } else if (80 < index && index <= 99) {
-        return 'images/chat/voice_volume_7.webp';
-      } else {
-        return 'images/chat/voice_volume_1.webp';
-      }
-    }
-
     return Material(
       type: MaterialType.transparency,
       child: Container(

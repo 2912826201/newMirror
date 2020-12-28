@@ -46,7 +46,7 @@ class VoiceSettingNotifier extends ChangeNotifier {
 
   //获取一个音频播放器是否在播放
   bool getIsPlaying({String idMd5String}) {
-    print("======getIsPlaying");
+    // print("======getIsPlaying");
     if (isPlaying) {
       if (idMd5String != null && idMd5String == this.idMd5String) {
         return isPlaying;

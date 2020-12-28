@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 
+//竖条动画
 class WidgetVer extends StatefulWidget {
   @override
   _WidgetVerState createState() => _WidgetVerState();

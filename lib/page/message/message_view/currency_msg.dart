@@ -1,9 +1,19 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/page/message/item/widget_ver.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+
+//点击事件返回
+typedef VoidMessageClickCallBack = void Function(
+    {String contentType, String content, Map<String, dynamic> map, bool isUrl});
+typedef VoidItemLongClickCallBack = void Function(
+    {int position,
+    String settingType,
+    Map<String, dynamic> map,
+    String contentType,
+    String content});
 
 //获取用户的头像
 Widget getUserImage(String imageUrl, double height, double width) {
@@ -112,23 +122,18 @@ Widget getLiveStateUi() {
   );
 }
 
-//获取长按的显示的方框
-Widget getLongClickBox({
-  double contentWidth,
-  double marginLeft,
-  double marginRight,
-  bool isMyself,
-  String contentType,
-  VoidCallback onCopyClick,
-  VoidCallback onWithdrawClick,
-  VoidCallback onDeleteClick,
-}) {
-  return Container(
-    width: 150,
-    height: 32,
-    color: AppColor.textPrimary1,
-    child: Row(
-      children: [],
-    ),
-  );
+//获取长按操作的选项框
+List<String> getLongClickStringList(
+    {@required bool isMySelf, @required String contentType}) {
+  List<String> longClickStringList = <String>[];
+  longClickStringList.add("删除");
+  if (isMySelf) {
+    longClickStringList.insert(0, "撤回");
+  }
+  if (contentType == ChatTypeModel.MESSAGE_TYPE_TEXT) {
+    longClickStringList.insert(0, "复制");
+  }
+  return longClickStringList;
 }
+
+

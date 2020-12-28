@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+//信息界面-输入聊天信息的界面
 class MessageInputBody extends StatefulWidget {
   MessageInputBody({
     this.child,
