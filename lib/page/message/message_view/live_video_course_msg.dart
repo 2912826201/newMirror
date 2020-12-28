@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/live_model.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -17,6 +19,9 @@ class LiveVideoCourseMsg extends StatelessWidget {
   final LiveModel liveVideoModel;
   final bool isLiveOrVideo;
   final int status;
+  final int position;
+  final VoidMessageClickCallBack voidMessageClickCallBack;
+  final VoidItemLongClickCallBack voidItemLongClickCallBack;
 
   LiveVideoCourseMsg(
       {this.liveVideoModel,
@@ -24,15 +29,40 @@ class LiveVideoCourseMsg extends StatelessWidget {
       this.userUrl,
       this.name,
       this.status,
-      this.isLiveOrVideo});
+      this.position,
+      this.isLiveOrVideo,
+      this.voidMessageClickCallBack,
+      this.voidItemLongClickCallBack});
 
   @override
   Widget build(BuildContext context) {
+    List<String> longClickStringList = getLongClickStringList(
+        isMySelf: isMyself,
+        contentType: isLiveOrVideo
+            ? ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE
+            : ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
+    return LongClickPopupMenu(
+      onValueChanged: (int value) {
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text(longClickStringList[value]),
+          duration: Duration(milliseconds: 500),
+        ));
+      },
+      contentType: isLiveOrVideo
+          ? ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE
+          : ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE,
+      isMySelf: isMyself,
+      actions: longClickStringList,
+      contentWidth: 180.0,
+      child: getContentBoxItem(context),
+    );
+  }
+
+  Widget getContentBoxItem(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 9.0),
+      padding: EdgeInsets.symmetric(vertical: 12.0),
       child: Column(
         children: [
-          getLongClickBox(),
           Row(
             mainAxisAlignment:
                 isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
@@ -74,9 +104,15 @@ class LiveVideoCourseMsg extends StatelessWidget {
         child: _getLiveVideoCourseUi(),
         onTap: () {
           if (isLiveOrVideo) {
-            ToastShow.show(msg: "点击了直播课-该跳转", context: context);
+            // ToastShow.show(msg: "点击了直播课-该跳转", context: context);
+            voidMessageClickCallBack(
+                contentType: ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE,
+                map: liveVideoModel.toJson());
           } else {
-            ToastShow.show(msg: "点击了视频课-该跳转", context: context);
+            voidMessageClickCallBack(
+                contentType: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE,
+                map: liveVideoModel.toJson());
+            // ToastShow.show(msg: "点击了视频课-该跳转", context: context);
           }
         },
       ),

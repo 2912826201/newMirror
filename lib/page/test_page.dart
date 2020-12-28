@@ -14,7 +14,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:provider/provider.dart';
 
-import 'message/message_manager.dart';
+import 'message/message_chat_page_manager.dart';
 import 'profile/login_test_page.dart';
 import 'training/video_course/video_course_play_page2.dart';
 import 'training/video_course/video_course_play_page.dart';

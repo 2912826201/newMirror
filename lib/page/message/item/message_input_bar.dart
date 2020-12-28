@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/page/message/item/chat_voice.dart';
 import 'package:mirror/util/string_util.dart';
-import 'package:mirror/util/toast_util.dart';
 
 typedef VoiceFile = void Function(String path, int time);
 
+//聊天的底部bar
 class MessageInputBar extends StatefulWidget {
   final GestureTapCallback voiceOnTap;
   final bool isVoice;

@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
@@ -10,23 +9,26 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/chat_voice_model.dart';
-import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/message_view/feed_msg.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
+import 'message_view/currency_msg.dart';
 import 'message_view/img_video_msg.dart';
 import 'message_view/live_video_course_msg.dart';
 import 'message_view/text_msg.dart';
 import 'message_view/user_msg.dart';
 import 'message_view/voice_msg.dart';
-import 'package:provider/provider.dart';
 
 class SendMessageView extends StatefulWidget {
   final ChatDataModel model;
+  final VoidMessageClickCallBack voidMessageClickCallBack;
+  final VoidItemLongClickCallBack voidItemLongClickCallBack;
+  final int position;
 
-  SendMessageView(this.model);
+  SendMessageView(this.model, this.position, this.voidMessageClickCallBack,
+      this.voidItemLongClickCallBack);
 
   @override
   _SendMessageViewState createState() => _SendMessageViewState();
@@ -164,6 +166,9 @@ class _SendMessageViewState extends State<SendMessageView> {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        voidMessageClickCallBack: widget.voidMessageClickCallBack,
+        voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
+        position: widget.position,
         status: status);
   }
 
@@ -175,6 +180,9 @@ class _SendMessageViewState extends State<SendMessageView> {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        voidMessageClickCallBack: widget.voidMessageClickCallBack,
+        voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
+        position: widget.position,
         status: status);
   }
 
@@ -188,6 +196,9 @@ class _SendMessageViewState extends State<SendMessageView> {
         isTemporary: isTemporary,
         userUrl: userUrl,
         name: name,
+        voidMessageClickCallBack: widget.voidMessageClickCallBack,
+        voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
+        position: widget.position,
         status: status);
   }
 
@@ -201,6 +212,9 @@ class _SendMessageViewState extends State<SendMessageView> {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        voidMessageClickCallBack: widget.voidMessageClickCallBack,
+        voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
+        position: widget.position,
         status: status);
   }
 
@@ -212,6 +226,9 @@ class _SendMessageViewState extends State<SendMessageView> {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        voidMessageClickCallBack: widget.voidMessageClickCallBack,
+        voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
+        position: widget.position,
         status: status);
   }
 
@@ -232,6 +249,9 @@ class _SendMessageViewState extends State<SendMessageView> {
       mediaFileModel: mediaFileModel,
       imageMessage: imageMessage,
       sizeInfoMap: sizeInfoMap,
+      voidMessageClickCallBack: widget.voidMessageClickCallBack,
+      voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
+      position: widget.position,
     );
   }
 }
