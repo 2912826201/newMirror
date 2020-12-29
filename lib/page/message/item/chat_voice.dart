@@ -67,8 +67,6 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   bool voiceState = true;
   OverlayEntry overlayEntry;
 
-  bool _encoderSupported = true; // Optimist
-  bool _decoderSupported = true; // Optimist
 
   @override
   void initState() {
@@ -85,44 +83,13 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   }
 
   init() async {
-    // playerModule = await FlutterSoundPlayer().initialize();
-    // recorderModule = await FlutterSoundRecorder().initialize();
-
     await recorderModule.openAudioSession(
         focus: AudioFocus.requestFocusAndStopOthers,
         category: SessionCategory.playAndRecord,
         mode: SessionMode.modeDefault,
         device: AudioDevice.speaker);
-    await _initializeExample(false);
-
-    // if ((!kIsWeb) && Platform.isAndroid) {
-    //   await copyAssets();
-    // }
   }
 
-  Future<void> _initializeExample(bool withUI) async {
-    await playerModule.closeAudioSession();
-    // _isAudioPlayer = withUI;
-    await playerModule.openAudioSession(
-        withUI: withUI,
-        focus: AudioFocus.requestFocusAndStopOthers,
-        category: SessionCategory.playAndRecord,
-        mode: SessionMode.modeDefault,
-        device: AudioDevice.speaker);
-    await playerModule.setSubscriptionDuration(Duration(milliseconds: 10));
-    await recorderModule.setSubscriptionDuration(Duration(milliseconds: 10));
-    // await initializeDateFormatting();
-    await setCodec(_codec);
-  }
-
-  void setCodec(Codec codec) async {
-    _encoderSupported = await recorderModule.isEncoderSupported(codec);
-    _decoderSupported = await playerModule.isDecoderSupported(codec);
-
-    setState(() {
-      _codec = codec;
-    });
-  }
 
   void startRecorder() async {
     try {
@@ -169,7 +136,6 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
           sampleRate: tSAMPLERATE,
         );
       }
-      print('startRecorder');
 
       _recorderSubscription = recorderModule.onProgress.listen((e) {
         if (e != null && e.duration != null) {
@@ -185,10 +151,6 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
         }
       });
 
-      // setState(() {
-      //   _isRecording = true;
-      //   _path[_codec.index] = path;
-      // });
     } on Exception catch (err) {
       print('startRecorder error: $err');
       setState(() {
@@ -200,13 +162,12 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   }
 
   void stop() async {
-    print('结束了。当前路径');
+    print('结束了');
     try {
       await recorderModule.stopRecorder();
       print('stopRecorder');
       cancelRecorderSubscriptions();
       cancelRecordingDataSubscription();
-      // await getDuration();
     } on Exception catch (err) {
       print('stopRecorder error: $err');
     }

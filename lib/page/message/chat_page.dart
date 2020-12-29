@@ -531,14 +531,13 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //录音按钮的点击事件
   _voiceOnTapClick() async {
-    await [Permission.speech].request();
+    await [Permission.microphone].request();
+
     _focusNode.unfocus();
     _emojiState = false;
     isContentClickOrEmojiClick = true;
     _isVoiceState = !_isVoiceState;
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   //发送录音
