@@ -129,7 +129,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
             onPressed: () {
               print("-----------------------");
               ToastShow.show(msg: "点击了更多那妞", context: context);
-              _jumpPage(SimpleRecorder(), false);
+              // _jumpPage(SimpleRecorder(), false);
             },
           ),
         )
