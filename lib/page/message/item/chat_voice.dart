@@ -1,14 +1,11 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound_lite/flutter_sound.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/voice_alert_date_model.dart';
 import 'package:mirror/util/date_util.dart';
-import 'package:mirror/util/toast_util.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -52,36 +49,20 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   bool voiceState = true;
   OverlayEntry overlayEntry;
 
-  FlutterSoundPlayer _mPlayer = FlutterSoundPlayer();
   FlutterSoundRecorder _mRecorder = FlutterSoundRecorder();
-  bool _mPlayerIsInited = false;
-  bool _mRecorderIsInited = false;
-  bool _mplaybackReady = false;
   String _mPath;
+
+  Timer _timer;
 
   @override
   void initState() {
     super.initState();
 
-    _mPlayer.openAudioSession().then((value) {
-      setState(() {
-        _mPlayerIsInited = true;
-      });
-    });
-    openTheRecorder().then((value) {
-      setState(() {
-        _mRecorderIsInited = true;
-      });
-    });
+    openTheRecorder().then((value) {});
   }
-
 
   @override
   void dispose() {
-    stopPlayer();
-    _mPlayer.closeAudioSession();
-    _mPlayer = null;
-
     stopRecorder();
     _mRecorder.closeAudioSession();
     _mRecorder = null;
@@ -91,13 +72,17 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
         outputFile.delete();
       }
     }
+
+    if (overlayEntry != null) {
+      overlayEntry.remove();
+      overlayEntry = null;
+    }
     super.dispose();
   }
 
   Future<void> stopRecorder() async {
     await _mRecorder.stopRecorder();
     print(_mPath);
-    _mplaybackReady = true;
 
     setState(() {
       isHide = true;
@@ -105,16 +90,12 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   }
 
 
-  Future<void> stopPlayer() async {
-    await _mPlayer.stopPlayer();
-  }
-
   void startRecorder() async {
-    assert(_mRecorderIsInited && _mPlayer.isStopped);
     await _mRecorder.startRecorder(
       toFile: _mPath,
       codec: Codec.aacADTS,
     );
+    initTimer();
     setState(() {});
   }
 
@@ -152,7 +133,11 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       overlayEntry.remove();
       overlayEntry = null;
     }
-
+    if (_timer != null) {
+      costTime = _timer.tick + 1;
+      _timer.cancel();
+      _timer = null;
+    }
     if (isUp) {
       print("取消发送");
       records.removeLast();
@@ -226,6 +211,20 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       await outputFile.delete();
     }
     await _mRecorder.openAudioSession();
-    _mRecorderIsInited = true;
+  }
+
+  void initTimer() {
+    if (_timer != null) {
+      _timer.cancel();
+      _timer = null;
+    }
+    costTime = 1;
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      context.read<VoiceAlertData>().changeCallback(
+          showDataTime: DateUtil.formatSecondToStringNum(costTime));
+      setState(() {
+        costTime++;
+      });
+    });
   }
 }

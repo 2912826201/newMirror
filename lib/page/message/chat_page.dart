@@ -650,7 +650,9 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   @override
   void dispose() {
     _scrollController.dispose();
-    context.read<VoiceSettingNotifier>().stop();
+    if (Application.context != null) {
+      Application.context.read<VoiceSettingNotifier>().stop();
+    }
     super.dispose();
   }
 

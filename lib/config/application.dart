@@ -1,7 +1,9 @@
 import 'dart:collection';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:camera/camera.dart';
 import 'package:fluro/fluro.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/region_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
@@ -74,8 +76,15 @@ class Application {
   static Message shareMessage;
 
   //省级地区的数据
-  static LinkedHashMap<int, RegionDto> provinceMap = LinkedHashMap<int, RegionDto>();
+  static LinkedHashMap<int, RegionDto> provinceMap =
+      LinkedHashMap<int, RegionDto>();
 
   //市级地区的数据
   static Map<int, List<RegionDto>> cityMap = Map<int, List<RegionDto>>();
+
+  //播放音频组件
+  static AudioPlayer audioPlayer;
+
+  //main的上下文
+  static BuildContext context;
 }

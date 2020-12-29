@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:camera/camera.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
@@ -33,24 +34,24 @@ import 'route/router.dart';
 
 void main() {
   SystemUiOverlayStyle systemUiOverlayStyle =
-      SystemUiOverlayStyle(statusBarColor: Colors.transparent);
+  SystemUiOverlayStyle(statusBarColor: Colors.transparent);
   SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   _initApp().then((value) => runApp(
-        MultiProvider(
-          providers: [
-            ChangeNotifierProvider(
-                create: (_) => TokenNotifier(Application.token)),
-            ChangeNotifierProvider(
-                create: (_) => ProfileNotifier(Application.profile)),
-            ChangeNotifierProvider(create: (_) => FeedMapNotifier(feedMap: {})),
-            ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
-            ChangeNotifierProvider(create: (_) => ConversationNotifier()),
-            ChangeNotifierProvider(create: (_) => VoiceAlertData()),
-            ChangeNotifierProvider(create: (_) => VoiceSettingNotifier()),
-          ],
-          child: MyApp(),
-        ),
-      ));
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+            create: (_) => TokenNotifier(Application.token)),
+        ChangeNotifierProvider(
+            create: (_) => ProfileNotifier(Application.profile)),
+        ChangeNotifierProvider(create: (_) => FeedMapNotifier(feedMap: {})),
+        ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
+        ChangeNotifierProvider(create: (_) => ConversationNotifier()),
+        ChangeNotifierProvider(create: (_) => VoiceAlertData()),
+        ChangeNotifierProvider(create: (_) => VoiceSettingNotifier()),
+      ],
+      child: MyApp(),
+    ),
+  ));
 }
 
 //初始化APP
@@ -125,6 +126,9 @@ Future _initApp() async {
     Map<String, dynamic> videoCourseTagMap = await getAllTags();
     Application.videoTagModel = VideoTagModel.fromJson(videoCourseTagMap);
   } catch (e) {}
+
+  //全局的音频播放器
+  Application.audioPlayer = new AudioPlayer();
 }
 
 //初始化地区数据
@@ -157,6 +161,13 @@ class MyAppState extends State<MyApp> {
     Application.rongCloud.initStatusManager(context);
     //融云的收信管理者
     Application.rongCloud.initReceiveManager(context);
+    //设置一个全局的上下文
+    Application.context = context;
+    //全局音频播放器的回调
+    context.read<VoiceSettingNotifier>().onPlayerCompletion();
+    context.read<VoiceSettingNotifier>().onPlayerError();
+    context.read<VoiceSettingNotifier>().onAudioPositionChanged();
+
     //如果已登录
     if (context.read<TokenNotifier>().isLoggedIn) {
       // 读取会话数据库
