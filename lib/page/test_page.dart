@@ -12,7 +12,9 @@ import 'package:mirror/page/media_test_page.dart';
 import 'package:mirror/page/qiniu_test_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/text_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:provider/provider.dart';
 
 import 'message/message_manager.dart';
@@ -136,7 +138,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                   ),
                   RaisedButton(
                     onPressed: () {
-                      Size c = getTextSize("查询数据库", TextStyle(fontSize: 16),1);
+                      Size c = getTextSize("查询数据库", TextStyle(fontSize: 16), 1);
                       print("++++++++++++++++$c+++++++++++++++++++++++");
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return MediaTestPage();
@@ -165,8 +167,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                   ),
                   RaisedButton(
                     onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return ActivationTestPage();
                       }));
                     },
@@ -200,18 +201,22 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 RaisedButton(
                   onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
                       return LiveRoomPage();
                     }));
                   },
                   child: Text("直播"),
                 ),
                 RaisedButton(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return VideoCoursePlayPage();
-                    }));
+                  onPressed: () async {
+                    Map<String, String> result = await _videoDownloadCheck();
+                    if (result == null) {
+                      ToastShow.show(msg: "还没有下载完视频，先去下载测试页下载", context: context);
+                    } else {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return VideoCoursePlayPage(result);
+                      }));
+                    }
                   },
                   child: Text("视频1"),
                 ),
@@ -244,7 +249,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
               ),
               RaisedButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context){
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return DownloadTestPage();
                   }));
                 },
@@ -256,6 +261,19 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
       ),
     );
   }
+}
+
+Future<Map<String, String>> _videoDownloadCheck() async {
+  Map<String, String> map = {};
+  for (String videoUrl in testVideoUrls) {
+    String result = await FileUtil().getDownloadedPath(videoUrl);
+    if (result == null) {
+      return null;
+    } else {
+      map[videoUrl] = result;
+    }
+  }
+  return map;
 }
 
 void _changeUser(BuildContext context) {

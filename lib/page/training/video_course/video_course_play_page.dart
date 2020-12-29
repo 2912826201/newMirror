@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
@@ -7,6 +8,13 @@ import 'package:video_player/video_player.dart';
 
 /// video_course_play_page
 /// Created by yangjiayi on 2020/12/15.
+
+List<String> testVideoUrls = [
+  "http://media.aimymusic.com/0145ebc4f595f4cb9c4e014db8196c6d.mp4",
+  "http://media.aimymusic.com/0ed8e0430848f70646b09592ab86dc18.mp4",
+  "http://media.aimymusic.com/100f9b2588e9f1b1311aea8c50222d6a.mp4",
+  "http://media.aimymusic.com/029c7bd8c8a94659aff5fda7d798d50f.mp4",
+];
 
 //测试用数据结构
 class Part {
@@ -23,6 +31,11 @@ int _buttonTapInterval = 500;
 int _timerInterval = 100;
 
 class VideoCoursePlayPage extends StatefulWidget {
+  VideoCoursePlayPage(this.videoPathMap, {Key key}) : super(key: key);
+
+  //视频播放地址对应本地文件地址的map
+  final Map<String, String> videoPathMap;
+
   @override
   _VideoCoursePlayState createState() => _VideoCoursePlayState();
 }
@@ -38,18 +51,22 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
 
   final List<Part> partList = [
     Part([
-      "videos/1.mp4",
-      "videos/2.mp4",
+      // "videos/1.mp4",
+      // "videos/2.mp4",
+      testVideoUrls[0],
+      testVideoUrls[1],
     ], 50, "第一段多视频结束不休息", 0),
     Part([
-      "videos/3.mp4",
+      // "videos/3.mp4",
+      testVideoUrls[2],
     ], 55, "第二段单视频结束有休息", 0),
     Part([], 30, "休息", 1),
-    Part(["videos/4.mp4"], 182, "第三段单视频结束后完成", 0),
+    Part([
+      // "videos/4.mp4",
+      testVideoUrls[3],
+    ], 182, "第三段单视频结束后完成", 0),
   ];
 
-  //视频播放地址 应该是下载后的文件地址
-  List<String> videoList = [];
   Map<int, int> _indexMapWithoutRest = {};
   int _partAmountWithoutRest = 0;
 
@@ -90,7 +107,14 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
 
       VideoPlayerValue value = _controller.value;
 
-      print("controller value: $value");
+      print("【${DateTime.now().millisecondsSinceEpoch}】controller value: $value");
+
+      //这个智障回调可能会同时回调多次一样的值 如果都setState则浪费资源降低性能
+      //目前只用到了时长 播放进度位置 和播放状态3个值，如果这三个值并没有变化 则不做操作
+      if(_videoDuration == value.duration.inMilliseconds && _currentVideoPos == value.position.inMilliseconds &&
+          _isPlaying == value.isPlaying){
+        return;
+      }
 
       setState(() {
         _videoDuration = value.duration.inMilliseconds;
@@ -117,10 +141,11 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
   @override
   void initState() {
     super.initState();
+    _parsePartList();
     if (_timer == null) {
       _timer = Timer.periodic(Duration(milliseconds: _timerInterval), _updateInfoByTimer);
     }
-    _parsePartList();
+    //TODO 是否需要校验一下数据 比如视频文件map
     _playNextPart();
   }
 
@@ -128,8 +153,8 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
   dispose() async {
     super.dispose();
     _timer?.cancel();
-    _controller.removeListener(_playerListener);
-    _controller.dispose();
+    _controller?.removeListener(_playerListener);
+    _controller?.dispose();
   }
 
   @override
@@ -153,9 +178,9 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                     alignment: Alignment.center,
                     child: _controller != null && _controller.value.initialized
                         ? AspectRatio(
-                      aspectRatio: _controller.value.aspectRatio,
-                      child: VideoPlayer(_controller),
-                    )
+                            aspectRatio: _controller.value.aspectRatio,
+                            child: VideoPlayer(_controller),
+                          )
                         : Container(),
                   ),
                   Column(
@@ -167,8 +192,8 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                         alignment: Alignment.bottomLeft,
                         child: Text(
                           _formatTrainingTime(_totalTrainingTime),
-                          style:
-                          TextStyle(color: AppColor.white.withOpacity(0.85), fontWeight: FontWeight.w500, fontSize: 18),
+                          style: TextStyle(
+                              color: AppColor.white.withOpacity(0.85), fontWeight: FontWeight.w500, fontSize: 18),
                         ),
                       ),
                       Container(
@@ -257,9 +282,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                     child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                       GestureDetector(
                         onTap: () {
-                          int currentTime = DateTime
-                              .now()
-                              .millisecondsSinceEpoch;
+                          int currentTime = DateTime.now().millisecondsSinceEpoch;
                           if (currentTime - _buttonTapTime < _buttonTapInterval) {
                             return;
                           } else {
@@ -283,9 +306,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          int currentTime = DateTime
-                              .now()
-                              .millisecondsSinceEpoch;
+                          int currentTime = DateTime.now().millisecondsSinceEpoch;
                           if (currentTime - _buttonTapTime < _buttonTapInterval) {
                             return;
                           } else {
@@ -351,9 +372,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
           Spacer(),
           GestureDetector(
             onTap: () {
-              int currentTime = DateTime
-                  .now()
-                  .millisecondsSinceEpoch;
+              int currentTime = DateTime.now().millisecondsSinceEpoch;
               if (currentTime - _buttonTapTime < _buttonTapInterval) {
                 return;
               } else {
@@ -371,27 +390,30 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                 color: AppColor.white.withOpacity(0.12),
               ),
               child: Stack(children: [
-                SizedBox(
-                    height: 48,
-                    width: 48,
-                    child: CircularProgressIndicator(
-                      value: _progress,
-                      strokeWidth: 3,
-                      backgroundColor: AppColor.transparent,
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColor.white.withOpacity(0.24)),
-                    )),
+                Center(
+                  child: SizedBox(
+                    //TODO 描边会出框 减掉进度条粗细的一半试试
+                      height: 46.5,
+                      width: 46.5,
+                      child: CircularProgressIndicator(
+                        value: _progress,
+                        strokeWidth: 3,
+                        backgroundColor: AppColor.transparent,
+                        valueColor: AlwaysStoppedAnimation<Color>(AppColor.white.withOpacity(0.24)),
+                      )),
+                ),
                 Center(
                   child: _isPlaying
                       ? Icon(
-                    Icons.pause,
-                    color: AppColor.white,
-                    size: 24,
-                  )
+                          Icons.pause,
+                          color: AppColor.white,
+                          size: 24,
+                        )
                       : Icon(
-                    Icons.play_arrow,
-                    color: AppColor.white,
-                    size: 24,
-                  ),
+                          Icons.play_arrow,
+                          color: AppColor.white,
+                          size: 24,
+                        ),
                 )
               ]),
             ),
@@ -419,7 +441,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                   child: Text(
                     _formatTime((partList[_currentPartIndex].duration * (1 - _restProgress)).round()),
                     style:
-                    TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 60, fontWeight: FontWeight.w500),
+                        TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 60, fontWeight: FontWeight.w500),
                   ),
                 ),
                 SizedBox(
@@ -438,9 +460,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
             ),
             GestureDetector(
               onTap: () {
-                int currentTime = DateTime
-                    .now()
-                    .millisecondsSinceEpoch;
+                int currentTime = DateTime.now().millisecondsSinceEpoch;
                 if (currentTime - _buttonTapTime < _buttonTapInterval) {
                   return;
                 } else {
@@ -488,16 +508,13 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
         _isResting = false;
         _partCompletedDuration = 0;
       });
-      videoList = _parseVideoList(part.videoList);
       _currentVideoIndex = -1;
       _playNextVideo();
     } else if (part.type == 1) {
       //需要开始休息
       setState(() {
         _isResting = true;
-        _restStartTimeStamp = DateTime
-            .now()
-            .millisecondsSinceEpoch;
+        _restStartTimeStamp = DateTime.now().millisecondsSinceEpoch;
       });
     } else {
       //类型出错
@@ -507,7 +524,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
 
   //播放下一个视频
   _playNextVideo() {
-    if (_currentVideoIndex >= videoList.length - 1) {
+    if (_currentVideoIndex >= partList[_currentPartIndex].videoList.length - 1) {
       //已经最后一条 需要去播下一段落了
       _playNextPart();
       return;
@@ -521,14 +538,15 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
     _controller?.pause();
     var oldController = _controller;
 
-    _controller = VideoPlayerController.asset(videoList[_currentVideoIndex])
-      ..initialize().then((_) {
-        setState(() {
-          _controller.addListener(_playerListener);
-          _controller.play();
-        });
-        oldController?.dispose();
-      });
+    _controller =
+        VideoPlayerController.file(File(widget.videoPathMap[partList[_currentPartIndex].videoList[_currentVideoIndex]]))
+          ..initialize().then((_) {
+            setState(() {
+              _controller.addListener(_playerListener);
+              _controller.play();
+            });
+            oldController?.dispose();
+          });
   }
 
   _updateInfoByTimer(Timer timer) {
@@ -539,9 +557,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
         _playNextPart();
         return;
       }
-      int restTime = DateTime
-          .now()
-          .millisecondsSinceEpoch - _restStartTimeStamp;
+      int restTime = DateTime.now().millisecondsSinceEpoch - _restStartTimeStamp;
       setState(() {
         _restProgress = restTime / (partList[_currentPartIndex].duration * 1000);
 
@@ -608,11 +624,6 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
         _partAmountWithoutRest++;
       }
     }
-  }
-
-  List<String> _parseVideoList(List<String> list) {
-    //FIXME 这里要调用下载服务来获取已经下好的地址
-    return list;
   }
 
   String _formatTime(int duration) {

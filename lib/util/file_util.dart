@@ -122,17 +122,22 @@ class FileUtil {
     send.send([id, status, progress]);
   }
 
-  //检查指定url文件是否已下载且存在
-  Future<bool> checkIsDownloaded(String url) async {
+  //获取指定url文件下载后的文件路径 可用来判断是否已下载
+  Future<String> getDownloadedPath(String url) async {
     //取最近一条已完成的数据
     final tasks = await FlutterDownloader.loadTasksWithRawQuery(
         query: "SELECT * FROM task WHERE status = 3 AND url = '$url' ORDER BY time_created DESC LIMIT 1");
     if (tasks.isEmpty) {
-      //记录本身都不存在 则返回false 哪怕文件存在 但已无法访问到该文件 所以需要重新下载
-      return false;
+      //记录本身都不存在 则返回null 哪怕文件存在 但已无法访问到该文件 所以需要重新下载
+      return null;
     } else {
       //记录存在 再检查文件在不在
-      return File(tasks.first.savedDir + "/" + tasks.first.filename).existsSync();
+      String path = tasks.first.savedDir + "/" + tasks.first.filename;
+      if (File(path).existsSync()) {
+        return path;
+      } else {
+        return null;
+      }
     }
   }
 
