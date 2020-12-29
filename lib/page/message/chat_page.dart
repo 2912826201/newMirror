@@ -1,8 +1,7 @@
-import 'dart:typed_data';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
@@ -14,7 +13,7 @@ import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
-import 'package:mirror/page/message/message_manager.dart';
+import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -106,6 +105,8 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       scrollController: _scrollController,
       chatData: chatDataList,
       vsync: this,
+      voidItemLongClickCallBack: onItemLongClickCallBack,
+      voidMessageClickCallBack: onMessageClickCallBack,
     );
   }
 
@@ -487,6 +488,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   //发送文字信息
   _handleSubmittedData() async {
     String text = _textController.text;
+    if (text == null || text.isEmpty || text.length < 1) {
+      ToastShow.show(msg: "消息为空,请输入消息！", context: context);
+      return;
+    }
     ChatDataModel chatDataModel = new ChatDataModel();
     chatDataModel.type = ChatTypeModel.MESSAGE_TYPE_TEXT;
     chatDataModel.content = text;
@@ -555,10 +560,82 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   void delayedSetState() {
     Future.delayed(Duration(milliseconds: 200), () {
-      setState(() {
-
-      });
+      setState(() {});
     });
+  }
+
+  //所有的item长按事件
+  void onItemLongClickCallBack(
+      {int position,
+      String settingType,
+      Map<String, dynamic> map,
+      String contentType,
+      String content}) {
+    if (settingType == null || settingType.isEmpty || settingType.length < 1) {
+      print("暂无此配置");
+    } else if (settingType == "删除") {
+      RongCloud.init().deleteMessageById(chatDataList[position].msg, (code) {
+        print("====" + code.toString());
+        setState(() {
+          chatDataList.removeAt(position);
+        });
+      });
+      // ToastShow.show(msg: "删除-第$position个", context: context);
+    } else if (settingType == "撤回") {
+      recallMessage(chatDataList[position].msg, position);
+    } else if (settingType == "复制") {
+      if (context != null && content.isNotEmpty) {
+        Clipboard.setData(ClipboardData(text: content));
+        ToastShow.show(msg: "复制成功", context: context);
+      }
+    } else {
+      print("暂无此配置");
+    }
+    // print("position：$position--$contentType---${content==null?map.toString():content}----${chatDataList[position].msg.toString()}");
+  }
+
+  //所有的item点击事件
+  void onMessageClickCallBack(
+      {String contentType,
+      String content,
+      Map<String, dynamic> map,
+      bool isUrl}) {
+    if (contentType == null || contentType.isEmpty || contentType.length < 1) {
+      print("暂无此配置");
+    }
+    if (contentType == ChatTypeModel.MESSAGE_TYPE_TEXT && isUrl) {
+      ToastShow.show(msg: "跳转网页地址: $content", context: context);
+    } else if (contentType == ChatTypeModel.MESSAGE_TYPE_FEED) {
+      ToastShow.show(msg: "跳转动态详情页", context: context);
+    } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
+      ToastShow.show(msg: "跳转播放视频页-$content", context: context);
+    } else if (contentType == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
+      ToastShow.show(msg: "跳转放大图片页-$content", context: context);
+    } else if (contentType == ChatTypeModel.MESSAGE_TYPE_USER) {
+      ToastShow.show(msg: "跳转用户界面", context: context);
+    } else if (contentType == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
+      ToastShow.show(msg: "跳转直播课详情界面", context: context);
+    } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE) {
+      ToastShow.show(msg: "跳转视频课详情界面", context: context);
+    } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VOICE) {
+      ToastShow.show(msg: "播放录音", context: context);
+    } else {
+      print("暂无此类型");
+    }
+  }
+
+  //撤回消息
+  void recallMessage(Message message, int position) async {
+    RecallNotificationMessage recallNotificationMessage =
+        await RongCloud.init().recallMessage(message);
+    if (recallNotificationMessage == null) {
+      ToastShow.show(msg: "撤回失败", context: context);
+    } else {
+      chatDataList[position].msg.objectName =
+          RecallNotificationMessage.objectName;
+      chatDataList[position].msg.content = recallNotificationMessage;
+      setState(() {});
+    }
   }
 
   @override
@@ -567,5 +644,4 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     context.read<VoiceSettingNotifier>().stop();
     super.dispose();
   }
-
 }

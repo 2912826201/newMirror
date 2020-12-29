@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
 
+//获取表情的控制器
 class EmojiManager {
 // 读取 assets 文件夹中的 person.json 文件
   static Future<String> _loadPersonJson() async {

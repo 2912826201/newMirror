@@ -1,3 +1,5 @@
+import 'package:mirror/page/profile/setting_page/feedback_page.dart';
+import 'package:mirror/page/profile/setting_page/notice_setting_page.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,7 @@ import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/util/screen_util.dart';
 
+///设置主页
 class SettingHomePage extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
@@ -52,9 +55,23 @@ class _settingHomePageState extends State<SettingHomePage>{
               color: AppColor.bgWhite,
               width: width,
             ),
-            _rowItem(width, "通知设置"),
+            InkWell(
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return NoticeSettingPage();
+                }));
+              },
+              child: _rowItem(width, "通知设置"),
+            ),
             _rowItem(width, "清除缓存"),
-            _rowItem(width, "意见反馈"),
+            InkWell(
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return FeedBackPage();
+                }));
+              },
+              child: _rowItem(width, "意见反馈"),
+            ),
             _rowItem(width, "关于"),
             Container(
               height: 12,

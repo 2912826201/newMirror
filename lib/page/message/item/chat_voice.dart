@@ -1,10 +1,7 @@
-import 'dart:async';
 import 'dart:io';
 import 'package:flutter_sound/flauto.dart';
-import 'package:flutter_sound/flutter_sound.dart';
 import 'package:flutter_sound/flutter_sound_player.dart';
 import 'package:flutter_sound/flutter_sound_recorder.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/voice_alert_date_model.dart';
@@ -16,6 +13,7 @@ import 'voice_dialog.dart';
 
 typedef VoiceFile = void Function(String path, int time);
 
+//语音界面
 class ChatVoice extends StatefulWidget {
   final VoiceFile voiceFile;
 

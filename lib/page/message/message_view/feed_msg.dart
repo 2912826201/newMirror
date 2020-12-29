@@ -1,16 +1,13 @@
-import 'dart:convert';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/message/chat_data_model.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/toast_util.dart';
-import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import 'currency_msg.dart';
 
@@ -21,21 +18,50 @@ class FeedMsg extends StatelessWidget {
   final bool isMyself;
   final HomeFeedModel homeFeedMode;
   final int status;
+  final int position;
+  final VoidMessageClickCallBack voidMessageClickCallBack;
+  final VoidItemLongClickCallBack voidItemLongClickCallBack;
 
-  FeedMsg(
-      {this.homeFeedMode, this.isMyself, this.userUrl, this.name, this.status});
+  FeedMsg({
+    this.userUrl,
+    this.name,
+    this.isMyself,
+    this.homeFeedMode,
+    this.status,
+    this.position,
+    this.voidMessageClickCallBack,
+    this.voidItemLongClickCallBack,
+  });
 
-  //0--pic    1-video  -1-都不是
+  //0--pic    1-video  -1-都不是------动态
   int isPicOrVideo = -1;
 
   @override
   Widget build(BuildContext context) {
     init();
+    List<String> longClickStringList = getLongClickStringList(
+        isMySelf: isMyself, contentType: ChatTypeModel.MESSAGE_TYPE_FEED);
+    return LongClickPopupMenu(
+      onValueChanged: (int value) {
+        voidItemLongClickCallBack(
+            position: position,
+            settingType: longClickStringList[value],
+            contentType: ChatTypeModel.MESSAGE_TYPE_FEED);
+        // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
+      },
+      contentType: ChatTypeModel.MESSAGE_TYPE_FEED,
+      isMySelf: isMyself,
+      actions: longClickStringList,
+      contentWidth: 180.0,
+      child: getContentBoxItem(context),
+    );
+  }
+
+  Widget getContentBoxItem(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 9.0),
+      padding: EdgeInsets.symmetric(vertical: 12.0),
       child: Column(
         children: [
-          getLongClickBox(),
           Row(
             mainAxisAlignment:
                 isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
@@ -76,7 +102,9 @@ class FeedMsg extends StatelessWidget {
       GestureDetector(
         child: _getFeedUi(),
         onTap: () {
-          ToastShow.show(msg: "点击了动态-改跳转", context: context);
+          voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_FEED,
+              map: homeFeedMode.toJson());
+          // ToastShow.show(msg: "点击了动态-改跳转", context: context);
         },
       ),
     ];

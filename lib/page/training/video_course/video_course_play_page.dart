@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -16,7 +18,9 @@ class Part {
   Part(this.videoList, this.duration, this.name, this.type);
 }
 
+//单位毫秒
 int _buttonTapInterval = 500;
+int _timerInterval = 100;
 
 class VideoCoursePlayPage extends StatefulWidget {
   @override
@@ -58,7 +62,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
   int _videoDuration = 0;
   int _currentVideoPos = 0;
 
-  //记录当前part中已播完的视频的总长度
+  //记录当前part中已播完的视频的总长度 单位毫秒
   int _partCompletedDuration = 0;
 
   bool _isResting = false;
@@ -67,6 +71,16 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
   int _buttonTapTime = 0;
 
   VoidCallback _playerListener;
+
+  //计时器 每秒更新一些数据 并实现休息阶段的倒计时
+  Timer _timer;
+
+  //每秒更新 所以单位是秒
+  int _totalTrainingTime = 0;
+
+  //时间戳单位毫秒
+  int _restStartTimeStamp = 0;
+  double _restProgress = 0.0;
 
   _VideoCoursePlayState() {
     _playerListener = () {
@@ -85,6 +99,9 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
           _progress = 0;
         } else {
           _progress = (_currentVideoPos + _partCompletedDuration) / (partList[_currentPartIndex].duration * 1000);
+          if (_progress > 1) {
+            _progress = 1;
+          }
         }
         //当播放完成时开始播下一个视频
         if (value.isPlaying == false && _isPlaying == true && _currentVideoPos >= _videoDuration) {
@@ -100,6 +117,9 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
   @override
   void initState() {
     super.initState();
+    if (_timer == null) {
+      _timer = Timer.periodic(Duration(milliseconds: _timerInterval), _updateInfoByTimer);
+    }
     _parsePartList();
     _playNextPart();
   }
@@ -107,6 +127,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
   @override
   dispose() async {
     super.dispose();
+    _timer?.cancel();
     _controller.removeListener(_playerListener);
     _controller.dispose();
   }
@@ -118,7 +139,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
         Column(
           children: [
             Container(
-              height: 92,
+              height: ScreenUtil.instance.statusBarHeight,
               color: AppColor.black,
             ),
             Expanded(
@@ -132,15 +153,62 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                     alignment: Alignment.center,
                     child: _controller != null && _controller.value.initialized
                         ? AspectRatio(
-                            aspectRatio: _controller.value.aspectRatio,
-                            child: VideoPlayer(_controller),
-                          )
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: VideoPlayer(_controller),
+                    )
                         : Container(),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.only(left: 16),
+                        height: 27,
+                        alignment: Alignment.bottomLeft,
+                        child: Text(
+                          _formatTrainingTime(_totalTrainingTime),
+                          style:
+                          TextStyle(color: AppColor.white.withOpacity(0.85), fontWeight: FontWeight.w500, fontSize: 18),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                        height: 21,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "训练时长",
+                              style: TextStyle(
+                                color: AppColor.white.withOpacity(0.35),
+                                fontSize: 10,
+                              ),
+                            ),
+                            Spacer(),
+                            Icon(
+                              Icons.play_circle_outline,
+                              color: AppColor.white.withOpacity(0.35),
+                              size: 12,
+                            ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            Text(
+                              "1234人已学习",
+                              style: TextStyle(
+                                color: AppColor.white.withOpacity(0.35),
+                                fontSize: 10,
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                    ],
                   ),
                   Positioned(bottom: 24, child: _buildInfoView()),
                   Positioned(
                       right: 16,
-                      top: 32,
+                      top: 80,
                       child: GestureDetector(
                         onTap: () {
                           Navigator.pop(context);
@@ -159,7 +227,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                       )),
                   Positioned(
                       right: 16,
-                      top: 80,
+                      top: 128,
                       child: GestureDetector(
                         onTap: () {},
                         child: Container(
@@ -174,14 +242,6 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                           ),
                         ),
                       )),
-                  Positioned(
-                    left: 16,
-                    top: 26,
-                    child: Text(
-                      "$_currentVideoIndex",
-                      style: TextStyle(color: AppColor.white, backgroundColor: AppColor.mainRed),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -197,11 +257,14 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                     child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                       GestureDetector(
                         onTap: () {
-                          int currentTime = DateTime.now().millisecondsSinceEpoch;
+                          int currentTime = DateTime
+                              .now()
+                              .millisecondsSinceEpoch;
                           if (currentTime - _buttonTapTime < _buttonTapInterval) {
                             return;
                           } else {
                             _buttonTapTime = currentTime;
+                            _returnToPreviousPart(_currentPartIndex);
                           }
                         },
                         child: Container(
@@ -220,11 +283,14 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          int currentTime = DateTime.now().millisecondsSinceEpoch;
+                          int currentTime = DateTime
+                              .now()
+                              .millisecondsSinceEpoch;
                           if (currentTime - _buttonTapTime < _buttonTapInterval) {
                             return;
                           } else {
                             _buttonTapTime = currentTime;
+                            _skipToNextPart(_currentPartIndex);
                           }
                         },
                         child: Container(
@@ -285,7 +351,9 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
           Spacer(),
           GestureDetector(
             onTap: () {
-              int currentTime = DateTime.now().millisecondsSinceEpoch;
+              int currentTime = DateTime
+                  .now()
+                  .millisecondsSinceEpoch;
               if (currentTime - _buttonTapTime < _buttonTapInterval) {
                 return;
               } else {
@@ -307,7 +375,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                     height: 48,
                     width: 48,
                     child: CircularProgressIndicator(
-                      value: _progress > 1 ? 1 : _progress,
+                      value: _progress,
                       strokeWidth: 3,
                       backgroundColor: AppColor.transparent,
                       valueColor: AlwaysStoppedAnimation<Color>(AppColor.white.withOpacity(0.24)),
@@ -315,15 +383,15 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                 Center(
                   child: _isPlaying
                       ? Icon(
-                          Icons.pause,
-                          color: AppColor.white,
-                          size: 24,
-                        )
+                    Icons.pause,
+                    color: AppColor.white,
+                    size: 24,
+                  )
                       : Icon(
-                          Icons.play_arrow,
-                          color: AppColor.white,
-                          size: 24,
-                        ),
+                    Icons.play_arrow,
+                    color: AppColor.white,
+                    size: 24,
+                  ),
                 )
               ]),
             ),
@@ -349,16 +417,16 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
               child: Stack(children: [
                 Center(
                   child: Text(
-                    "29\"",
+                    _formatTime((partList[_currentPartIndex].duration * (1 - _restProgress)).round()),
                     style:
-                        TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 60, fontWeight: FontWeight.w500),
+                    TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 60, fontWeight: FontWeight.w500),
                   ),
                 ),
                 SizedBox(
                     height: 154,
                     width: 154,
                     child: CircularProgressIndicator(
-                      value: 0.5,
+                      value: _restProgress,
                       strokeWidth: 6,
                       backgroundColor: AppColor.transparent,
                       valueColor: AlwaysStoppedAnimation<Color>(AppColor.white),
@@ -370,7 +438,9 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
             ),
             GestureDetector(
               onTap: () {
-                int currentTime = DateTime.now().millisecondsSinceEpoch;
+                int currentTime = DateTime
+                    .now()
+                    .millisecondsSinceEpoch;
                 if (currentTime - _buttonTapTime < _buttonTapInterval) {
                   return;
                 } else {
@@ -425,6 +495,9 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
       //需要开始休息
       setState(() {
         _isResting = true;
+        _restStartTimeStamp = DateTime
+            .now()
+            .millisecondsSinceEpoch;
       });
     } else {
       //类型出错
@@ -456,6 +529,71 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
         });
         oldController?.dispose();
       });
+  }
+
+  _updateInfoByTimer(Timer timer) {
+    if (_isResting) {
+      //休息时
+      if (_restProgress == 1) {
+        //如果进度已经是满了 播放下一段落
+        _playNextPart();
+        return;
+      }
+      int restTime = DateTime
+          .now()
+          .millisecondsSinceEpoch - _restStartTimeStamp;
+      setState(() {
+        _restProgress = restTime / (partList[_currentPartIndex].duration * 1000);
+
+        if (_restProgress >= 1) {
+          _restProgress = 1;
+          //这里不直接播放下一段的目的是让进度满的状态展示停留一下
+        }
+      });
+    } else if (_isPlaying) {
+      //训练且在播放时 每次增加timer间隔
+      setState(() {
+        _totalTrainingTime += _timerInterval;
+      });
+    }
+  }
+
+  _returnToPreviousPart(int basePartIndex) {
+    if (basePartIndex == 0) {
+      //已经是第一段落 不做操作
+      return;
+    }
+    Part previousPart = partList[basePartIndex - 1];
+    if (previousPart.type == 0) {
+      //如果基准段落的上一段落是训练 则将基准段落的值-2赋值给当前段落索引 跳到基准段落的下一段落
+      _currentPartIndex = basePartIndex - 2;
+      _playNextPart();
+    } else if (previousPart.type == 1) {
+      //如果基准段落的上一段落是休息 则需要递归到上上个段落
+      _returnToPreviousPart(basePartIndex - 1);
+    } else {
+      //类型出错
+      return;
+    }
+  }
+
+  _skipToNextPart(int basePartIndex) {
+    if (basePartIndex >= partList.length - 1) {
+      //已经是最后一段落 直接结束
+      return;
+    }
+    Part nextPart = partList[basePartIndex + 1];
+    if (nextPart.type == 0) {
+      //如果基准段落的下一段落是训练 则将基准段落的值赋值给当前段落索引 跳到基准段落的下一段落
+      _currentPartIndex = basePartIndex;
+      _playNextPart();
+    } else if (nextPart.type == 1) {
+      //如果基准段落的下一段落是休息 则需要递归到下下个段落
+      _skipToNextPart(basePartIndex + 1);
+    } else {
+      //类型出错
+      return;
+    }
   }
 
   _parsePartList() {
@@ -499,5 +637,25 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
     }
     secondStr = "$second\"";
     return hourStr + minuteStr + secondStr;
+  }
+
+  //将毫秒秒数格式化为 分数:秒数 的格式 一位数前补0
+  String _formatTrainingTime(int time) {
+    //这里其实可以用正则补0 先自己判断了
+    int minute = (time / 60000).floor();
+    int second = (time % 60000 / 1000).floor();
+    String minuteStr;
+    String secondStr;
+    if (minute < 10) {
+      minuteStr = "0$minute";
+    } else {
+      minuteStr = "$minute";
+    }
+    if (second < 10) {
+      secondStr = "0$second";
+    } else {
+      secondStr = "$second";
+    }
+    return "$minuteStr:$secondStr";
   }
 }

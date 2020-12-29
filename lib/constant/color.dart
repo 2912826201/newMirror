@@ -53,4 +53,6 @@ class AppColor {
   static const bgVip2 = Color.fromRGBO(0xC4, 0x8B, 0x3C, 1.0);
   static const color246 = Color.fromRGBO(246, 246, 246, 1.0);
   static const textVipPrimary1 = Color.fromRGBO(0x8F, 0x58, 0x08, 1.0);
+  static const buttonBackground = Color.fromRGBO(17, 17, 17, 1);
+  static const textButtonCenter = Color.fromRGBO(255, 255, 255, 1);
 }

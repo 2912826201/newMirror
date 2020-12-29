@@ -1,10 +1,11 @@
 
-import 'package:mirror/data/model/add_remarks_model.dart';
 import 'package:mirror/data/model/base_response_model.dart';
-import 'package:mirror/data/model/black_model.dart';
-import 'package:mirror/data/model/searchuser_model.dart';
+import 'package:mirror/data/model/profile/add_remarks_model.dart';
+import 'package:mirror/data/model/profile/black_model.dart';
+import 'package:mirror/data/model/profile/follow_list_model.dart';
+import 'package:mirror/data/model/profile/profile_model.dart';
+import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/model/user_extrainfo_model.dart';
-import 'package:mirror/data/model/profile_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 
 import '../api.dart';
@@ -27,16 +28,15 @@ const String ADD_BLACK = "/appuser/web/black/addBlack";
 const String CANCEL_BLACK = "/appuser/web/black/removeBlack";
 ///检测拉黑关系
 const String CHECK_BLACK = "/appuser/web/black/checkBlack";
-///黑名单
-const String QUERY_BLACKLIST = "/appuser/web/black/queryList";
 ///举报
 const String DENOUNCE ="/appuser/web/user/denounce";
 ///更新用户信息
 const String UPDATA_USERINFO = "/ucenter/web/user/updateUserInfo";
 ///搜索用户
 const String SEARCH_USER = "/appuser/web/user/searchUser";
-
-///关注
+///关注列表
+const String FOLLOW_LIST = "/appuser/web/user/follow/QueryFollowingList";
+//关注
 Future<int> ProfileAddFollow(int id)async{
   BaseResponseModel responseModel = await requestApi(ATTENTION,{"targetId":id});
   int backCode;
@@ -135,6 +135,7 @@ Future<BlackModel> ProfileCheckBlack(int checkId)async {
   }
 }
 
+///举报
 Future<bool> ProfileMoreDenounce(int targetId,int targetType)async{
   BaseResponseModel responseModel = await requestApi(DENOUNCE,{"targetId":targetId,"targetType":targetType,});
     if(responseModel.isSuccess){
@@ -143,6 +144,8 @@ Future<bool> ProfileMoreDenounce(int targetId,int targetType)async{
       return false;
     }
 }
+
+///更改用户资料
 Future<UserModel> ProfileUpdataUserInfo(String nickName,String avatarUri,{String description,int sex,String birthday,String cityCode,double longitude,String latitude})async {
   Map<String,dynamic> map = Map();
   map["nickName"] =nickName ;
@@ -168,9 +171,10 @@ Future<UserModel> ProfileUpdataUserInfo(String nickName,String avatarUri,{String
     return null;
   }
 }
+///搜索用户
 Future<SearchUserModel> ProfileSearchUser(String  key,int size,{String uids,int lastTime})async{
   Map<String,dynamic> map = Map();
-  if(uids.isNotEmpty){
+  if(uids!=null){
     map["uids"] = uids;
   }
   if(lastTime!=null){
@@ -180,10 +184,28 @@ Future<SearchUserModel> ProfileSearchUser(String  key,int size,{String uids,int 
   map["size"] = size;
   BaseResponseModel responseModel = await requestApi(SEARCH_USER,map);
   if(responseModel.isSuccess){
+    print('查询用户接口请求成功=============================');
     SearchUserModel model;
     model = SearchUserModel.fromJson(responseModel.data);
     return model;
   }else{
+    print('查询用户接口请求失败============================================');
+    return null;
+  }
+}
+Future<FollowLsitModel> GetFollowList({String uid})async{
+  Map<String,dynamic> map = Map();
+  if(uid!=null){
+    map["uids"] = uid;
+  }
+  BaseResponseModel responseModel = await requestApi(FOLLOW_LIST,map);
+  if(responseModel.isSuccess){
+    print('用户关注列表请求接口=============================');
+    FollowLsitModel model;
+    model = FollowLsitModel.fromJson(responseModel.data);
+    return model;
+  }else{
+    print('用户关注列表请求接口失败============================================');
     return null;
   }
 }

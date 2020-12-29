@@ -6,6 +6,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/util/Image_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -22,20 +24,25 @@ class ImgVideoMsg extends StatelessWidget {
   final String userUrl;
   final String name;
   final int status;
+  final int position;
   final ImageMessage imageMessage;
   final Map<String, dynamic> sizeInfoMap;
+  final VoidMessageClickCallBack voidMessageClickCallBack;
+  final VoidItemLongClickCallBack voidItemLongClickCallBack;
 
-  ImgVideoMsg({
-    this.isMyself,
-    this.isTemporary,
-    this.isImgOrVideo,
-    this.mediaFileModel,
-    this.userUrl,
-    this.name,
-    this.status,
-    this.imageMessage,
-    this.sizeInfoMap,
-  });
+  ImgVideoMsg(
+      {this.isMyself,
+      this.isTemporary,
+      this.isImgOrVideo,
+      this.mediaFileModel,
+      this.userUrl,
+      this.name,
+      this.status,
+      this.position,
+      this.imageMessage,
+      this.sizeInfoMap,
+      this.voidMessageClickCallBack,
+      this.voidItemLongClickCallBack});
 
   double width = 200.0;
   double height = 200.0;
@@ -43,11 +50,37 @@ class ImgVideoMsg extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     intData();
+    List<String> longClickStringList = getLongClickStringList(
+        isMySelf: isMyself,
+        contentType: isImgOrVideo
+            ? ChatTypeModel.MESSAGE_TYPE_IMAGE
+            : ChatTypeModel.MESSAGE_TYPE_VIDEO);
+    return LongClickPopupMenu(
+      onValueChanged: (int value) {
+        voidItemLongClickCallBack(
+          position: position,
+          settingType: longClickStringList[value],
+          contentType: isImgOrVideo
+              ? ChatTypeModel.MESSAGE_TYPE_IMAGE
+              : ChatTypeModel.MESSAGE_TYPE_VIDEO,
+        );
+        // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
+      },
+      contentType: isImgOrVideo
+          ? ChatTypeModel.MESSAGE_TYPE_IMAGE
+          : ChatTypeModel.MESSAGE_TYPE_VIDEO,
+      isMySelf: isMyself,
+      actions: longClickStringList,
+      contentWidth: width,
+      child: getContentBoxItem(context),
+    );
+  }
+
+  Widget getContentBoxItem(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 9.0),
+      padding: EdgeInsets.symmetric(vertical: 12.0),
       child: Column(
         children: [
-          getLongClickBox(),
           Row(
             mainAxisAlignment:
                 isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
@@ -255,10 +288,17 @@ class ImgVideoMsg extends StatelessWidget {
   }
 
   void onImgVideoContentBoxClick(BuildContext context) {
+    String imageUrl;
     if (isImgOrVideo) {
-      ToastShow.show(msg: "点击了图片", context: context);
+      imageUrl = sizeInfoMap["showImageUrl"];
+      voidMessageClickCallBack(
+          contentType: ChatTypeModel.MESSAGE_TYPE_IMAGE, content: imageUrl);
+      // ToastShow.show(msg: "点击了图片", context: context);
     } else {
-      ToastShow.show(msg: "点击了视频", context: context);
+      imageUrl = FileUtil.getVideoFirstPhoto(sizeInfoMap["showImageUrl"]);
+      voidMessageClickCallBack(
+          contentType: ChatTypeModel.MESSAGE_TYPE_VIDEO, content: imageUrl);
+      // ToastShow.show(msg: "点击了视频", context: context);
     }
   }
 }

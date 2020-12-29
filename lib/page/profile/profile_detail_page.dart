@@ -3,8 +3,6 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/user_api.dart';
@@ -14,7 +12,7 @@ import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
-import 'package:mirror/data/model/profile_model.dart';
+import 'package:mirror/data/model/profile/profile_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
@@ -639,45 +637,6 @@ class _ProfileDetailState extends State<ProfileDetailPage>
       ),);
     }
   }
-  ///取消关注时弹出dialog提醒用户确认取消关注(暂时没用先留着)
-  Widget _bottomDialog() {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-              height: 50,
-              child: Center(
-                child: Text("确定要取消关注该用户吗?", style: AppStyle.textRegular16),
-              )),
-          InkWell(
-              onTap: () {
-                widget.pcController.close();
-              },
-              child: Container(
-                  height: 50,
-                  child: Center(
-                    child: Text("确定", style: AppStyle.textRegular16),
-                  ))),
-          Container(
-            color: AppColor.bgWhite,
-            height: 12,
-          ),
-          InkWell(
-              onTap: () {
-                widget.pcController.close();
-              },
-              child: Container(
-                  height: 50,
-                  child: Center(
-                      child: Text(
-                    "取消",
-                    style: AppStyle.textRegular16,
-                  ))))
-        ],
-      ),
-    );
-  }
-
   ///头像
   Widget _mineAvatar(double height) {
     return Container(
