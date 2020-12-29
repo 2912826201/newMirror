@@ -176,14 +176,14 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
     // 合并请求
     Future.wait([
       // 请求推荐话题接口
-      getRecommendTopic(size:20),
+      getRecommendTopic(size: 20),
       // 请求历史记录
       SearchHistoryDBHelper().querySearchHistory(context.read<ProfileNotifier>().profile.uid),
       // 请求热门课程
     ]).then((results) {
       print("历史记录（（（（（（（））））））$searchHistoryList");
       topicList = results[0];
-      if(context.read<TokenNotifier>().isLoggedIn) {
+      if (context.read<TokenNotifier>().isLoggedIn) {
         searchHistoryList = results[1];
       }
       setState(() {});
@@ -193,7 +193,6 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
     });
     super.initState();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -356,24 +355,22 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
         itemBuilder: (BuildContext context, int index) {
           return Container(
             child: Container(
-              width: (ScreenUtil.instance.screenWidthDp - 42) * 0.43,
-              height: (ScreenUtil.instance.screenWidthDp - 38) * 0.43,
+              // width: (ScreenUtil.instance.screenWidthDp - 42) * 0.43,
+              // height: (ScreenUtil.instance.screenWidthDp - 38) * 0.43,
               decoration: BoxDecoration(
-                // borderRadius: BorderRadius.all(Radius.circular(2)),
-                //  阴影位置由offset决定,阴影模糊层度由blurRadius大小决定（大就更透明更扩散），阴影模糊大小由spreadRadius决定
-                // boxShadow: [
-                //   BoxShadow(color: AppColor.textSecondary.withOpacity(0.4), blurRadius: 1.0, spreadRadius: 1.0),
-                // ],
-                //   border:  Border(  bottom: BorderSide(color: AppColor.textSecondary.withOpacity(0.4), width: 2)), // 边色与边宽度
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomLeft,
-                  colors: [
-                    AppColor.bgWhite,
-                    Colors.white,
-                  ],
-                ),
-              ),
+                  image: DecorationImage(
+                    centerSlice: Rect.fromLTWH(100, 100, (ScreenUtil.instance.screenWidthDp - 42) * 0.43, (ScreenUtil.instance.screenWidthDp - 38) * 0.43),
+                      image: AssetImage("images/resource/2.0x/投影.9png@2x.png"),
+                      fit: BoxFit.fill),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomLeft,
+                    colors: [
+                      AppColor.bgWhite,
+                      Colors.white,
+                    ],
+                  ),
+                  ),
               child: Stack(
                 children: [
                   Image.asset(

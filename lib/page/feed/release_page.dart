@@ -10,6 +10,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/feed/post_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/page/feed/search_location.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/constant/style.dart';
@@ -650,10 +651,13 @@ class ReleaseFeedMainView extends StatelessWidget {
   PanelController pc = new PanelController();
 
   // 选择地址
-  seletedAddress() {
+  seletedAddress(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+          return SearchLocation();
+        }));
         print("跳转选择地址页面");
       },
       child: Container(
@@ -725,7 +729,7 @@ class ReleaseFeedMainView extends StatelessWidget {
                 selectedMediaFiles: selectedMediaFiles,
               )
             : Container(),
-        seletedAddress(),
+        seletedAddress( context),
         recommendAddress()
       ],
     );

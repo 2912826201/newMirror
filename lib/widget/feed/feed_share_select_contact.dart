@@ -399,17 +399,17 @@ class _FriendsPageState extends State<FriendsPage> {
         automaticallyImplyLeading: false,
         backgroundColor: AppColor.white,
         leading: GestureDetector(
-          onTap: () {
-            Navigator.of(context).pop(true);
-          },
-          child: Image.asset(
-            "images/resource/2.0x/return2x.png",
-            width: 28,
-            height: 28,
-          ),
-        ),
-        leadingWidth: 28.0,
-        actions: [],
+            onTap: () {
+              Navigator.of(context).pop(true);
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: 16),
+              child: Image.asset(
+                "images/resource/2.0x/return2x.png",
+              ),
+            )),
+        leadingWidth: 44.0,
+        elevation: 0.5,
         // MyIconBtn(
         //   // width: 28,
         //   // height: 28,
