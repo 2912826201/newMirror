@@ -48,4 +48,9 @@ class RongCloudReceiveManager {
 //   static const int Received = 40; //对方已接收
 //   static const int Read = 50; //对方已阅读
   }
+
+  //消息撤回监听
+  onRecallMessageReceived(Message message) {
+    print("撤回消息====${message.objectName}");
+  }
 }

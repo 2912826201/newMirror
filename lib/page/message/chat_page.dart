@@ -522,9 +522,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       modelList.add(chatDataList[0]);
     }
     setState(() {});
-    postImgOrVideo(modelList, widget.conversation.conversationId,
-        selectedMediaFiles.type, () {
-          delayedSetState();
+    postImgOrVideo(
+        modelList, widget.conversation.conversationId, selectedMediaFiles.type,
+        () {
+      delayedSetState();
     });
   }
 
@@ -565,12 +566,11 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   }
 
   //所有的item长按事件
-  void onItemLongClickCallBack(
-      {int position,
-      String settingType,
-      Map<String, dynamic> map,
-      String contentType,
-      String content}) {
+  void onItemLongClickCallBack({int position,
+    String settingType,
+    Map<String, dynamic> map,
+    String contentType,
+    String content}) {
     if (settingType == null || settingType.isEmpty || settingType.length < 1) {
       print("暂无此配置");
     } else if (settingType == "删除") {
@@ -595,11 +595,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   }
 
   //所有的item点击事件
-  void onMessageClickCallBack(
-      {String contentType,
-      String content,
-      Map<String, dynamic> map,
-      bool isUrl}) {
+  void onMessageClickCallBack({String contentType,
+    String content,
+    Map<String, dynamic> map,
+    bool isUrl}) {
     if (contentType == null || contentType.isEmpty || contentType.length < 1) {
       print("暂无此配置");
     }
@@ -627,7 +626,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   //撤回消息
   void recallMessage(Message message, int position) async {
     RecallNotificationMessage recallNotificationMessage =
-        await RongCloud.init().recallMessage(message);
+    await RongCloud.init().recallMessage(message);
     if (recallNotificationMessage == null) {
       ToastShow.show(msg: "撤回失败", context: context);
     } else {

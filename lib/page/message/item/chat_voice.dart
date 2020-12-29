@@ -1,12 +1,15 @@
+import 'dart:async';
 import 'dart:io';
-import 'package:flutter_sound/flauto.dart';
-import 'package:flutter_sound/flutter_sound_player.dart';
-import 'package:flutter_sound/flutter_sound_recorder.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sound_lite/flutter_sound.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/voice_alert_date_model.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 import 'voice_dialog.dart';
@@ -41,16 +44,31 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   String toastShow = "手指上滑,取消发送";
   String voiceIco = "images/voice_volume_1.png";
 
-  FlutterSoundPlayer playerModule;
-  FlutterSoundRecorder recorderModule;
+  // FlutterSoundPlayer playerModule;
+  // FlutterSoundRecorder recorderModule;
+  // t_CODEC _codec = t_CODEC.CODEC_AAC;
+
+  FlutterSoundPlayer playerModule = FlutterSoundPlayer();
+  FlutterSoundRecorder recorderModule = FlutterSoundRecorder();
+  StreamSubscription _recorderSubscription;
+  StreamSubscription _recordingDataSubscription;
+
+  Codec _codec = Codec.aacADTS;
+
+  Media _media = Media.file;
+  IOSink sink;
+  StreamController<Food> recordingDataController;
+
   bool isHide = true;
   int costTime = 0;
-  t_CODEC _codec = t_CODEC.CODEC_AAC;
   List<String> records = [];
 
   ///默认隐藏状态
   bool voiceState = true;
   OverlayEntry overlayEntry;
+
+  bool _encoderSupported = true; // Optimist
+  bool _decoderSupported = true; // Optimist
 
   @override
   void initState() {
@@ -58,43 +76,140 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     init();
   }
 
-  init() async {
-    playerModule = await FlutterSoundPlayer().initialize();
-    recorderModule = await FlutterSoundRecorder().initialize();
+  @override
+  void dispose() {
+    super.dispose();
+    cancelRecorderSubscriptions();
+    cancelRecordingDataSubscription();
+    releaseFlauto();
   }
 
-  void start() async {
-    costTime = 0;
-    print('开始拉。当前路径');
-    context.read<VoiceAlertData>().changeCallback(
-        alertText: "手指上滑,取消发送",
-        imageString: "images/chat/voice_volume_2.webp",
-        showDataTime: "0:00");
-    Directory tempDir = await getTemporaryDirectory();
-    String path = await recorderModule.startRecorder(
-      uri:
-          '${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}-${Platform.isAndroid ? "aac" : "m4a"}',
-      codec: _codec,
-    );
-    records.add(path);
-    print(path);
-    recorderModule.onRecorderStateChanged.listen((e) {
-      if (e != null && e.currentPosition != null) {
-        DateTime date = new DateTime.fromMillisecondsSinceEpoch(
-            e.currentPosition.toInt(),
-            isUtc: true);
-        context.read<VoiceAlertData>().changeCallback(
-            showDataTime: DateUtil.formatSecondToStringNum(costTime));
-        setState(() {
-          costTime = date.second;
-        });
-      }
+  init() async {
+    // playerModule = await FlutterSoundPlayer().initialize();
+    // recorderModule = await FlutterSoundRecorder().initialize();
+
+    await recorderModule.openAudioSession(
+        focus: AudioFocus.requestFocusAndStopOthers,
+        category: SessionCategory.playAndRecord,
+        mode: SessionMode.modeDefault,
+        device: AudioDevice.speaker);
+    await _initializeExample(false);
+
+    // if ((!kIsWeb) && Platform.isAndroid) {
+    //   await copyAssets();
+    // }
+  }
+
+  Future<void> _initializeExample(bool withUI) async {
+    await playerModule.closeAudioSession();
+    // _isAudioPlayer = withUI;
+    await playerModule.openAudioSession(
+        withUI: withUI,
+        focus: AudioFocus.requestFocusAndStopOthers,
+        category: SessionCategory.playAndRecord,
+        mode: SessionMode.modeDefault,
+        device: AudioDevice.speaker);
+    await playerModule.setSubscriptionDuration(Duration(milliseconds: 10));
+    await recorderModule.setSubscriptionDuration(Duration(milliseconds: 10));
+    // await initializeDateFormatting();
+    await setCodec(_codec);
+  }
+
+  void setCodec(Codec codec) async {
+    _encoderSupported = await recorderModule.isEncoderSupported(codec);
+    _decoderSupported = await playerModule.isDecoderSupported(codec);
+
+    setState(() {
+      _codec = codec;
     });
+  }
+
+  void startRecorder() async {
+    try {
+      // Request Microphone permission if needed
+      if (!kIsWeb) {
+        var status = await Permission.microphone.request();
+        if (status != PermissionStatus.granted) {
+          throw RecordingPermissionException(
+              'Microphone permission not granted');
+        }
+      }
+      var path = AppConfig.getAppVoiceFilePath();
+
+      if (_media == Media.stream) {
+        assert(_codec == Codec.pcm16);
+        if (!kIsWeb) {
+          var outputFile = File(path);
+          if (outputFile.existsSync()) {
+            await outputFile.delete();
+          }
+          sink = outputFile.openWrite();
+        } else {
+          sink = IOSink(null); // TODO !!!!!
+        }
+        recordingDataController = StreamController<Food>();
+        _recordingDataSubscription =
+            recordingDataController.stream.listen((buffer) {
+          if (buffer is FoodData) {
+            sink.add(buffer.data);
+          }
+        });
+        await recorderModule.startRecorder(
+          toStream: recordingDataController.sink,
+          codec: _codec,
+          numChannels: 1,
+          sampleRate: tSAMPLERATE,
+        );
+      } else {
+        await recorderModule.startRecorder(
+          toFile: path,
+          codec: _codec,
+          bitRate: 8000,
+          numChannels: 1,
+          sampleRate: tSAMPLERATE,
+        );
+      }
+      print('startRecorder');
+
+      _recorderSubscription = recorderModule.onProgress.listen((e) {
+        if (e != null && e.duration != null) {
+          var date = DateTime.fromMillisecondsSinceEpoch(
+              e.duration.inMilliseconds,
+              isUtc: true);
+          // var txt = DateFormat('mm:ss:SS', 'en_GB').format(date);
+          setState(() {
+            costTime = date.second;
+            context.read<VoiceAlertData>().changeCallback(
+                showDataTime: DateUtil.formatSecondToStringNum(costTime));
+          });
+        }
+      });
+
+      // setState(() {
+      //   _isRecording = true;
+      //   _path[_codec.index] = path;
+      // });
+    } on Exception catch (err) {
+      print('startRecorder error: $err');
+      setState(() {
+        stop();
+        cancelRecordingDataSubscription();
+        cancelRecorderSubscriptions();
+      });
+    }
   }
 
   void stop() async {
     print('结束了。当前路径');
-    await recorderModule.stopRecorder();
+    try {
+      await recorderModule.stopRecorder();
+      print('stopRecorder');
+      cancelRecorderSubscriptions();
+      cancelRecordingDataSubscription();
+      // await getDuration();
+    } on Exception catch (err) {
+      print('stopRecorder error: $err');
+    }
     setState(() {
       isHide = true;
     });
@@ -114,7 +229,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       index = int.parse(recordingTime.toString().substring(3, 5));
     });
 
-    start();
+    startRecorder();
 
     if (overlayEntry == null) {
       overlayEntry = showVoiceDialog(context, index: index);
@@ -140,7 +255,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       records.removeLast();
     } else {
       print("进行发送");
-      widget.voiceFile(records[records.length - 1], costTime);
+      widget.voiceFile(AppConfig.getAppVoiceFilePath(), costTime);
     }
     print(records.toString());
   }
@@ -181,7 +296,10 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       child: new Container(
         height: 32.0,
         alignment: Alignment.center,
-        width: MediaQuery.of(context).size.width,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width,
         decoration: textShow == "按住说话" ? noSelectBoxUiStyle : selectBoxUiStyle,
         child: Text(
           textShow,
@@ -190,4 +308,59 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       ),
     );
   }
+
+  void cancelRecorderSubscriptions() {
+    if (_recorderSubscription != null) {
+      _recorderSubscription.cancel();
+      _recorderSubscription = null;
+    }
+  }
+
+  Future<void> releaseFlauto() async {
+    try {
+      await playerModule.closeAudioSession();
+      await recorderModule.closeAudioSession();
+    } on Exception {
+      print('Released unsuccessful');
+    }
+  }
+
+
+  void cancelRecordingDataSubscription() {
+    if (_recordingDataSubscription != null) {
+      _recordingDataSubscription.cancel();
+      _recordingDataSubscription = null;
+    }
+    recordingDataController = null;
+    if (sink != null) {
+      sink.close();
+      sink = null;
+    }
+  }
 }
+
+
+///
+const int tSAMPLERATE = 8000;
+
+///
+const int tBLOCKSIZE = 4096;
+
+///
+enum Media {
+  ///
+  file,
+
+  ///
+  buffer,
+
+  ///
+  asset,
+
+  ///
+  stream,
+
+  ///
+  remoteExampleFile,
+}
+
