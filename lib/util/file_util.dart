@@ -3,7 +3,6 @@ import 'dart:isolate';
 import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:mirror/api/qiniu_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
@@ -116,49 +115,40 @@ class FileUtil {
   }
 
   //===========================下载部分start===========================
-  //下载的全局回调方法 必须为static
-  static void downloadCallback(String id, DownloadTaskStatus status, int progress) {
-    final SendPort send = IsolateNameServer.lookupPortByName(downloadPortName);
-    send.send([id, status, progress]);
-  }
 
   //获取指定url文件下载后的文件路径 可用来判断是否已下载
   Future<String> getDownloadedPath(String url) async {
     //取最近一条已完成的数据
-    final tasks = await FlutterDownloader.loadTasksWithRawQuery(
-        query: "SELECT * FROM task WHERE status = 3 AND url = '$url' ORDER BY time_created DESC LIMIT 1");
-    if (tasks.isEmpty) {
-      //记录本身都不存在 则返回null 哪怕文件存在 但已无法访问到该文件 所以需要重新下载
-      return null;
-    } else {
-      //记录存在 再检查文件在不在
-      String path = tasks.first.savedDir + "/" + tasks.first.filename;
-      if (File(path).existsSync()) {
-        return path;
-      } else {
-        return null;
-      }
-    }
+    // final tasks = await FlutterDownloader.loadTasksWithRawQuery(
+    //     query: "SELECT * FROM task WHERE status = 3 AND url = '$url' ORDER BY time_created DESC LIMIT 1");
+    // if (tasks.isEmpty) {
+    //   //记录本身都不存在 则返回null 哪怕文件存在 但已无法访问到该文件 所以需要重新下载
+    //   return null;
+    // } else {
+    //   //记录存在 再检查文件在不在
+    //   String path = tasks.first.savedDir + "/" + tasks.first.filename;
+    //   if (File(path).existsSync()) {
+    //     return path;
+    //   } else {
+    //     return null;
+    //   }
+    // }
   }
 
   //任务和文件一起删了 下载器可能没有权限 所以自己删除
   removeDownloadTask(String url) async {
-    final tasks = await FlutterDownloader.loadTasksWithRawQuery(query: "SELECT * FROM task WHERE url = '$url'");
-    tasks.forEach((element) {
-      FlutterDownloader.remove(taskId: element.taskId);
-      File file = File(element.savedDir + "/" + element.filename);
-      if (file.existsSync()) {
-        file.deleteSync();
-      }
-    });
+    // final tasks = await FlutterDownloader.loadTasksWithRawQuery(query: "SELECT * FROM task WHERE url = '$url'");
+    // tasks.forEach((element) {
+    //   FlutterDownloader.remove(taskId: element.taskId);
+    //   File file = File(element.savedDir + "/" + element.filename);
+    //   if (file.existsSync()) {
+    //     file.deleteSync();
+    //   }
+    // });
   }
 
   Future<String> download(String url, bool showNotification, bool openFileFromNotification) async {
-    return await FlutterDownloader.enqueue(
-        url: url,
-        savedDir: AppConfig.getAppDownloadDir(),
-        showNotification: showNotification,
-        openFileFromNotification: openFileFromNotification);
+    return null;
   }
 //===========================下载部分end===========================
 }

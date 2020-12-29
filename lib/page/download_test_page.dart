@@ -1,8 +1,8 @@
-import 'dart:isolate';
 import 'dart:ui';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/page/training/video_course/video_course_play_page.dart';
 import 'package:mirror/util/file_util.dart';
 
@@ -16,31 +16,20 @@ class DownloadTestPage extends StatefulWidget {
 
 class _DownloadTestState extends State<DownloadTestPage> {
   TextEditingController _controller = TextEditingController();
-  ReceivePort _port = ReceivePort();
-  String _id;
-  DownloadTaskStatus _status;
-  int _progress;
+  double _progress;
   String _downloadedPath;
+  Function(int, int) _progressListener;
 
   @override
   void initState() {
     super.initState();
-    IsolateNameServer.registerPortWithName(_port.sendPort, downloadPortName);
-    _port.listen((dynamic data) {
-      _id = data[0];
-      _status = data[1];
-      _progress = data[2];
-      print("[${DateTime.now().millisecondsSinceEpoch}]id:$_id; status:$_status; progress:$_progress");
-      setState(() {});
-    });
+    _progressListener = (received, total) {
+      setState(() {
+        _progress = received / total;
+      });
 
-    FlutterDownloader.registerCallback(FileUtil.downloadCallback);
-  }
-
-  @override
-  void dispose() {
-    IsolateNameServer.removePortNameMapping(downloadPortName);
-    super.dispose();
+      print("[${DateTime.now().millisecondsSinceEpoch}]received:$received; total:$total; progress:$_progress");
+    };
   }
 
   @override
@@ -55,11 +44,16 @@ class _DownloadTestState extends State<DownloadTestPage> {
           ),
           RaisedButton(
               onPressed: () async {
-                final taskId = await FileUtil().download(_controller.text, true, true);
-                print("task的id是：$taskId");
+                String fileName = _controller.text.split("/").last;
+                Response response = await Dio().download(
+                    _controller.text, AppConfig.getAppDownloadDir() + "/" + fileName,
+                    onReceiveProgress: _progressListener);
+
+                // final taskId = await FileUtil().download(_controller.text, true, true);
+                print("response：$response");
               },
               child: Text("开始下载")),
-          Text("id:$_id; status:$_status; progress:$_progress"),
+          Text("progress:$_progress"),
           RaisedButton(
               onPressed: () async {
                 _downloadedPath = await FileUtil().getDownloadedPath(_controller.text);
@@ -69,7 +63,7 @@ class _DownloadTestState extends State<DownloadTestPage> {
           Text(_downloadedPath == null ? "尚未下载" : "$_downloadedPath"),
           RaisedButton(
               onPressed: () async {
-                for(String videoUrl in testVideoUrls){
+                for (String videoUrl in testVideoUrls) {
                   final taskId = await FileUtil().download(videoUrl, true, true);
                   print("task的id是：$taskId");
                 }

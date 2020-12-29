@@ -2,7 +2,6 @@ import 'package:camera/camera.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/data/database/db_helper.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
@@ -110,11 +109,6 @@ Future _initApp() async {
 
   //创建各文件路径
   AppConfig.createAppDir();
-
-  //初始化下载器
-  await FlutterDownloader.initialize(
-      debug: true // optional: set false to disable printing logs to console
-  );
 
   //获取相机信息
   try {
