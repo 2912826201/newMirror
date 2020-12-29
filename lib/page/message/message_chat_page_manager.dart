@@ -30,7 +30,8 @@ void jumpShareMessage(Map<String, dynamic> map, String chatType, String name,
     conversation.conversationId = "1018240";
   }
   conversation.uid = Application.profile.uid;
-  conversation.type = PRIVATE_TYPE;
+  //todo 目前这里是私聊--写死
+  conversation.type = RCConversationType.Private;
 
   Message message;
   if (chatType == ChatTypeModel.MESSAGE_TYPE_FEED) {

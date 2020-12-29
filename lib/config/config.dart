@@ -98,7 +98,7 @@ class AppConfig {
   }
 
   static String getAppVoiceFilePath() {
-    return "${getAppVoiceDir()}/record.mp3";
+    return "${getAppVoiceDir()}/record.aac";
   }
 }
 

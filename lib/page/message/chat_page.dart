@@ -27,6 +27,8 @@ import 'item/message_body_input.dart';
 import 'item/message_input_bar.dart';
 import 'package:provider/provider.dart';
 
+import 'item/simple_recorder.dart';
+
 ////////////////////////////////
 //
 /////////////聊天会话页面
@@ -127,6 +129,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
             onPressed: () {
               print("-----------------------");
               ToastShow.show(msg: "点击了更多那妞", context: context);
+              _jumpPage(SimpleRecorder(), false);
             },
           ),
         )
@@ -418,14 +421,22 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   //初始化一些数据
   void initSetData() async {
     List msgList = new List();
-    msgList =
-    await RongCloud.init().getHistoryMessages(widget.conversation.type,
+    int type = widget.conversation.type;
+    if (type == 100) {
+      type = 1;
+    } else if (type == 101) {
+      type = 3;
+    }
+    msgList = await RongCloud.init().getHistoryMessages(
+        widget.conversation.type,
         widget.conversation.conversationId,
-        new DateTime.now().millisecondsSinceEpoch, 30, 0);
+        new DateTime.now().millisecondsSinceEpoch,
+        30,
+        0);
     if (msgList != null && msgList.length > 0) {
       for (int i = 0; i < msgList.length; i++) {
-        chatDataList.add(
-            getMessage((msgList[i] as Message), isHaveAnimation: false));
+        chatDataList
+            .add(getMessage((msgList[i] as Message), isHaveAnimation: false));
       }
     }
     if (widget.shareMessage != null) {
@@ -641,5 +652,25 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     _scrollController.dispose();
     context.read<VoiceSettingNotifier>().stop();
     super.dispose();
+  }
+
+  void _jumpPage(var page, bool isCloseNewPage) {
+    if (isCloseNewPage) {
+      //跳转并关闭当前页面
+      Navigator.pushAndRemoveUntil(
+        context,
+        new MaterialPageRoute(builder: (context) => page),
+            (route) => route == null,
+      );
+    } else {
+      //跳转不关闭当前页面
+      Navigator.of(context).push(
+        new MaterialPageRoute(
+          builder: (context) {
+            return page;
+          },
+        ),
+      );
+    }
   }
 }

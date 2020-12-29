@@ -44,21 +44,6 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   String toastShow = "手指上滑,取消发送";
   String voiceIco = "images/voice_volume_1.png";
 
-  // FlutterSoundPlayer playerModule;
-  // FlutterSoundRecorder recorderModule;
-  // t_CODEC _codec = t_CODEC.CODEC_AAC;
-
-  FlutterSoundPlayer playerModule = FlutterSoundPlayer();
-  FlutterSoundRecorder recorderModule = FlutterSoundRecorder();
-  StreamSubscription _recorderSubscription;
-  StreamSubscription _recordingDataSubscription;
-
-  Codec _codec = Codec.aacADTS;
-
-  Media _media = Media.file;
-  IOSink sink;
-  StreamController<Food> recordingDataController;
-
   bool isHide = true;
   int costTime = 0;
   List<String> records = [];
@@ -67,113 +52,70 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   bool voiceState = true;
   OverlayEntry overlayEntry;
 
+  FlutterSoundPlayer _mPlayer = FlutterSoundPlayer();
+  FlutterSoundRecorder _mRecorder = FlutterSoundRecorder();
+  bool _mPlayerIsInited = false;
+  bool _mRecorderIsInited = false;
+  bool _mplaybackReady = false;
+  String _mPath;
 
   @override
   void initState() {
     super.initState();
-    init();
+
+    _mPlayer.openAudioSession().then((value) {
+      setState(() {
+        _mPlayerIsInited = true;
+      });
+    });
+    openTheRecorder().then((value) {
+      setState(() {
+        _mRecorderIsInited = true;
+      });
+    });
   }
+
 
   @override
   void dispose() {
+    stopPlayer();
+    _mPlayer.closeAudioSession();
+    _mPlayer = null;
+
+    stopRecorder();
+    _mRecorder.closeAudioSession();
+    _mRecorder = null;
+    if (_mPath != null) {
+      var outputFile = File(_mPath);
+      if (outputFile.existsSync()) {
+        outputFile.delete();
+      }
+    }
     super.dispose();
-    cancelRecorderSubscriptions();
-    cancelRecordingDataSubscription();
-    releaseFlauto();
   }
 
-  init() async {
-    await recorderModule.openAudioSession(
-        focus: AudioFocus.requestFocusAndStopOthers,
-        category: SessionCategory.playAndRecord,
-        mode: SessionMode.modeDefault,
-        device: AudioDevice.speaker);
-  }
+  Future<void> stopRecorder() async {
+    await _mRecorder.stopRecorder();
+    print(_mPath);
+    _mplaybackReady = true;
 
-
-  void startRecorder() async {
-    try {
-      // Request Microphone permission if needed
-      if (!kIsWeb) {
-        var status = await Permission.microphone.request();
-        if (status != PermissionStatus.granted) {
-          throw RecordingPermissionException(
-              'Microphone permission not granted');
-        }
-      }
-      var path = AppConfig.getAppVoiceFilePath();
-
-      if (_media == Media.stream) {
-        assert(_codec == Codec.pcm16);
-        if (!kIsWeb) {
-          var outputFile = File(path);
-          if (outputFile.existsSync()) {
-            await outputFile.delete();
-          }
-          sink = outputFile.openWrite();
-        } else {
-          sink = IOSink(null); // TODO !!!!!
-        }
-        recordingDataController = StreamController<Food>();
-        _recordingDataSubscription =
-            recordingDataController.stream.listen((buffer) {
-          if (buffer is FoodData) {
-            sink.add(buffer.data);
-          }
-        });
-        await recorderModule.startRecorder(
-          toStream: recordingDataController.sink,
-          codec: _codec,
-          numChannels: 1,
-          sampleRate: tSAMPLERATE,
-        );
-      } else {
-        await recorderModule.startRecorder(
-          toFile: path,
-          codec: _codec,
-          bitRate: 8000,
-          numChannels: 1,
-          sampleRate: tSAMPLERATE,
-        );
-      }
-
-      _recorderSubscription = recorderModule.onProgress.listen((e) {
-        if (e != null && e.duration != null) {
-          var date = DateTime.fromMillisecondsSinceEpoch(
-              e.duration.inMilliseconds,
-              isUtc: true);
-          // var txt = DateFormat('mm:ss:SS', 'en_GB').format(date);
-          setState(() {
-            costTime = date.second;
-            context.read<VoiceAlertData>().changeCallback(
-                showDataTime: DateUtil.formatSecondToStringNum(costTime));
-          });
-        }
-      });
-
-    } on Exception catch (err) {
-      print('startRecorder error: $err');
-      setState(() {
-        stop();
-        cancelRecordingDataSubscription();
-        cancelRecorderSubscriptions();
-      });
-    }
-  }
-
-  void stop() async {
-    print('结束了');
-    try {
-      await recorderModule.stopRecorder();
-      print('stopRecorder');
-      cancelRecorderSubscriptions();
-      cancelRecordingDataSubscription();
-    } on Exception catch (err) {
-      print('stopRecorder error: $err');
-    }
     setState(() {
       isHide = true;
     });
+  }
+
+
+  Future<void> stopPlayer() async {
+    await _mPlayer.stopPlayer();
+  }
+
+  void startRecorder() async {
+    assert(_mRecorderIsInited && _mPlayer.isStopped);
+    await _mRecorder.startRecorder(
+      toFile: _mPath,
+      codec: Codec.aacADTS,
+    );
+    setState(() {});
   }
 
   showVoiceView() {
@@ -204,7 +146,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       voiceState = true;
     });
 
-    stop();
+    stopRecorder();
 
     if (overlayEntry != null) {
       overlayEntry.remove();
@@ -270,58 +212,20 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     );
   }
 
-  void cancelRecorderSubscriptions() {
-    if (_recorderSubscription != null) {
-      _recorderSubscription.cancel();
-      _recorderSubscription = null;
+  Future<void> openTheRecorder() async {
+    var status = await Permission.microphone.request();
+    if (status != PermissionStatus.granted) {
+      throw RecordingPermissionException('Microphone permission not granted');
     }
-  }
 
-  Future<void> releaseFlauto() async {
-    try {
-      await playerModule.closeAudioSession();
-      await recorderModule.closeAudioSession();
-    } on Exception {
-      print('Released unsuccessful');
+    // var tempDir = await getTemporaryDirectory();
+    // _mPath = '${tempDir.path}/flutter_sound_example.aac';
+    _mPath = AppConfig.getAppVoiceFilePath();
+    var outputFile = File(_mPath);
+    if (outputFile.existsSync()) {
+      await outputFile.delete();
     }
-  }
-
-
-  void cancelRecordingDataSubscription() {
-    if (_recordingDataSubscription != null) {
-      _recordingDataSubscription.cancel();
-      _recordingDataSubscription = null;
-    }
-    recordingDataController = null;
-    if (sink != null) {
-      sink.close();
-      sink = null;
-    }
+    await _mRecorder.openAudioSession();
+    _mRecorderIsInited = true;
   }
 }
-
-
-///
-const int tSAMPLERATE = 8000;
-
-///
-const int tBLOCKSIZE = 4096;
-
-///
-enum Media {
-  ///
-  file,
-
-  ///
-  buffer,
-
-  ///
-  asset,
-
-  ///
-  stream,
-
-  ///
-  remoteExampleFile,
-}
-
