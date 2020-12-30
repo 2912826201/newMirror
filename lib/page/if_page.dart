@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
@@ -19,8 +20,7 @@ class IfPage extends StatefulWidget {
 }
 
 // 嵌套二层TabBar
-class IfPageState extends State<IfPage>
-    with TickerProviderStateMixin, WidgetsBindingObserver {
+class IfPageState extends State<IfPage> with TickerProviderStateMixin, WidgetsBindingObserver {
   TabController _controller;
   bool isInit = false;
 
@@ -50,48 +50,50 @@ class IfPageState extends State<IfPage>
       isInit = true;
     }
     ;
-    return Scaffold(
-        // 此属性是重新计算布局空间大小
-        // 内部元素要监听键盘高度必需要设置为false,
-        resizeToAvoidBottomInset: false,
-        body: Container(
-            child: Stack(children: [
-          SlidingUpPanel(
-              panel: Container(
-                margin: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
-                child: SingletonForWholePages.singleton().panelWidget(context),
-              ),
-              onPanelClosed: () {
-                context.read<FeedMapNotifier>().clearTotalCount();
-                // 关闭视图后清空动态Id
-                context.read<FeedMapNotifier>().changeFeeId(null);
-              },
-              maxHeight: ScreenUtil.instance.height * 0.75,
-              backdropEnabled: true,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(10.0),
-                topRight: Radius.circular(10.0),
-              ),
-              controller: SingletonForWholePages.singleton().panelController(),
-              minHeight: 0,
-              body: ChangeNotifierProvider(
-                  create: (_) => SelectedbottomNavigationBarNotifier(0),
-                  builder: (context, _) {
-                    return UnionOuterTabBarView(
-                      physics: context.watch<SelectedbottomNavigationBarNotifier>().selectedIndex == 0
-                          ? BouncingScrollPhysics()
-                          : NeverScrollableScrollPhysics(),
-                      controller: _controller,
-                      children: _createTabContent(),
-                    );
-                  })),
-        ])));
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.dark,
+        child: Scaffold(
+            // 此属性是重新计算布局空间大小
+            // 内部元素要监听键盘高度必需要设置为false,
+            resizeToAvoidBottomInset: false,
+            body: Container(
+                child: Stack(children: [
+              SlidingUpPanel(
+                  panel: Container(
+                    margin: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
+                    child: SingletonForWholePages.singleton().panelWidget(context),
+                  ),
+                  onPanelClosed: () {
+                    context.read<FeedMapNotifier>().clearTotalCount();
+                    // 关闭视图后清空动态Id
+                    context.read<FeedMapNotifier>().changeFeeId(null);
+                  },
+                  maxHeight: ScreenUtil.instance.height * 0.75,
+                  backdropEnabled: true,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(10.0),
+                    topRight: Radius.circular(10.0),
+                  ),
+                  controller: SingletonForWholePages.singleton().panelController(),
+                  minHeight: 0,
+                  body: ChangeNotifierProvider(
+                      create: (_) => SelectedbottomNavigationBarNotifier(0),
+                      builder: (context, _) {
+                        return UnionOuterTabBarView(
+                          physics: context.watch<SelectedbottomNavigationBarNotifier>().selectedIndex == 0
+                              ? BouncingScrollPhysics()
+                              : NeverScrollableScrollPhysics(),
+                          controller: _controller,
+                          children: _createTabContent(),
+                        );
+                      })),
+            ]))));
   }
 
   List<Widget> _createTabContent() {
     List<Widget> tabContent = List();
     //四个常规业务tabBar
-    tabContent.add(MediaPickerPage(9,typeImageAndVideo,true,startPagePhoto,false,true));
+    tabContent.add(MediaPickerPage(9, typeImageAndVideo, true, startPagePhoto, false, true));
     tabContent.add(MainPage(
       pc: SingletonForWholePages.singleton().panelController(),
     ));
@@ -115,8 +117,7 @@ class IfPageState extends State<IfPage>
         //关闭键盘
       } else {
         //显示键盘
-        if (Application.keyboardHeight <=
-            MediaQuery.of(context).viewInsets.bottom) {
+        if (Application.keyboardHeight <= MediaQuery.of(context).viewInsets.bottom) {
           Application.keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
         }
       }

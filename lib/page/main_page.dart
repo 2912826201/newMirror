@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/home/home_page.dart';
 import 'package:mirror/page/if_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/page/message/message_page.dart';
+import 'package:mirror/route/router.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -12,15 +14,16 @@ import 'training/training_page.dart';
 class MainPage extends StatefulWidget {
   MainPage({Key key, this.pc}) : super(key: key);
   PanelController pc = new PanelController();
+
   //此key用于向messagePage传输数据
   GlobalKey messagePageKey = GlobalKey();
+
   MainPageState createState() => MainPageState();
 }
 
 class MainPageState extends State<MainPage> {
   int currentIndex;
   bool isInit = false;
-  var pages ;
 
   // final pages = [HomePage(), TrainingPage(), MessagePage(), ProfilePage()];
   List titles = ["首页", "训练", "消息", "我的"];
@@ -42,20 +45,8 @@ class MainPageState extends State<MainPage> {
     super.initState();
     currentIndex = 0;
     SingletonForWholePages.singleton().messagePageKey = widget.messagePageKey;
-    pages =  [HomePage(), TrainingPage(), MessagePage(), ProfilePage()];
   }
-  // 返回视图
-  returnView(int currentIndex) {
-    if (currentIndex == 0) {
-      return HomePage(pc: widget.pc,);
-    } else if (currentIndex == 1) {
-    return TrainingPage();
-    } else if (currentIndex == 2) {
-      return MessagePage();
-    } else {
-      return ProfilePage(panelController: widget.pc,);
-    }
-  }
+
   @override
   Widget build(BuildContext context) {
     double itemWidth = MediaQuery.of(context).size.width / 5;
@@ -86,30 +77,35 @@ class MainPageState extends State<MainPage> {
         ]),
       ),
       // SlidingUpPanel
-      body:  Stack(
+      body: Stack(
         children: <Widget>[
           new Offstage(
-            offstage: currentIndex!=0, //这里控制
-            child: HomePage(pc: widget.pc,),
+            offstage: currentIndex != 0, //这里控制
+            child: HomePage(
+              pc: widget.pc,
+            ),
           ),
           new Offstage(
-            offstage: currentIndex!=1, //这里控制
+            offstage: currentIndex != 1, //这里控制
             child: TrainingPage(),
           ),
           new Offstage(
-            offstage: currentIndex!=2, //这里控制
-            child: MessagePage(),
+            offstage: currentIndex != 2, //这里控制
+            child: context.watch<TokenNotifier>().isLoggedIn ? MessagePage() : Container(),
           ),
           new Offstage(
-            offstage: currentIndex!=3, //这里控制
-            child: ProfilePage(panelController: widget.pc,),
+            offstage: currentIndex != 3, //这里控制
+            child: context.watch<TokenNotifier>().isLoggedIn
+                ? ProfilePage(
+                    panelController: widget.pc,
+                  )
+                : Container(),
           ),
         ],
       ),
       // returnView(currentIndex),
     );
   }
-
 
   // 自定义BottomAppBar
   Widget tabbar(int index, BuildContext context) {
@@ -140,7 +136,7 @@ class MainPageState extends State<MainPage> {
                     children: [
                       Image.asset(imgUrl, width: 28, height: 28),
                       Container(
-                          margin:const EdgeInsets.only(left: 6),
+                          margin: const EdgeInsets.only(left: 6),
                           child: Offstage(
                             offstage: currentIndex != index,
                             child: Text(
@@ -153,11 +149,15 @@ class MainPageState extends State<MainPage> {
                 ),
               ),
               onTap: () {
-                context.read<SelectedbottomNavigationBarNotifier>().changeIndex(index);
-                if (currentIndex != index) {
-                  setState(() {
-                    currentIndex = index;
-                  });
+                if ((index == 2 || index == 3) && !context.read<TokenNotifier>().isLoggedIn) {
+                  AppRouter.navigateToLoginPage(context);
+                } else {
+                  context.read<SelectedbottomNavigationBarNotifier>().changeIndex(index);
+                  if (currentIndex != index) {
+                    setState(() {
+                      currentIndex = index;
+                    });
+                  }
                 }
               },
             ),
@@ -180,8 +180,7 @@ class SelectedbottomNavigationBarNotifier extends ChangeNotifier {
     print("changeIndex $index");
     this.selectedIndex = index;
     SingletonForWholePages.singleton().index = index;
-    SingletonForWholePages.singleton().IfPagekey.currentState.setState(() {
-    });
+    SingletonForWholePages.singleton().IfPagekey.currentState.setState(() {});
     //控制panel的控制器对象
     notifyListeners();
   }
