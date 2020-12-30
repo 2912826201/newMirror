@@ -30,7 +30,8 @@ void jumpShareMessage(Map<String, dynamic> map, String chatType, String name,
     conversation.conversationId = "1018240";
   }
   conversation.uid = Application.profile.uid;
-  conversation.type = PRIVATE_TYPE;
+  //todo 目前这里是私聊--写死
+  conversation.type = RCConversationType.Private;
 
   Message message;
   if (chatType == ChatTypeModel.MESSAGE_TYPE_FEED) {
@@ -220,6 +221,23 @@ Future<Message> postMessageManager1(
       .sendPrivateMessage(targetId, messageContent);
 }
 
+//发送消息提示间隔
+void postMessageManagerAlertTime(
+    String chatTypeModel,
+    String content,
+    String targetId,
+    int conversationType,
+    Function(Message msg, int code) finished) {
+  TextMessage msg = TextMessage();
+  msg.sendUserInfo = getUserInfo();
+  Map<String, dynamic> feedMap = Map();
+  feedMap["type"] = chatTypeModel;
+  feedMap["content"] = content;
+  msg.content = jsonEncode(feedMap);
+  Application.rongCloud
+      .insertOutgoingMessage(conversationType, targetId, msg, finished);
+}
+
 //获取用户数据
 UserInfo getUserInfo() {
   UserInfo userInfo = UserInfo();
@@ -228,30 +246,6 @@ UserInfo getUserInfo() {
   userInfo.portraitUri = Application.profile.avatarUri;
   return userInfo;
 }
-
-// //发送消息
-// Future<Message> postMessageManager2(String targetId,String content)async{
-//   // return await Application.rongCloud.sendPrivateMessage(targetId, messageContent);
-//   Message message=new Message();
-//   message.messageId=Random().nextInt(10000);
-//   message.objectName="RC:TxtMsg";
-//   message.conversationType=PRIVATE_TYPE;
-//   message.targetId=targetId;//给什么人发送
-//   message.messageDirection=1;
-//   message.senderUserId="1018240";
-//   message.receivedStatus=0;
-//   message.sentStatus=10;
-//   message.sentTime=new DateTime.now().millisecondsSinceEpoch;
-//   Map<String, dynamic> map = Map();
-//   map["content"]=content;
-//   map["extra"]="null";
-//   UserModel userModel=new UserModel();
-//   userModel.uid=1018240;
-//   userModel.nickName="测试用户510";
-//   userModel.avatarUri="https://i1.hdslb.com/bfs/archive/eb4d6aed7800003da1c6bdfa1c8476d4b6f567db.jpg";
-//   map["user"]=userModel.toJson();
-//   message.content=map;
-// }
 
 //获取这个消息是什么类型的
 String getMessageType(ConversationDto conversation, BuildContext context) {
@@ -306,11 +300,33 @@ ChatDataModel getMessage(Message message, {bool isHaveAnimation = true}) {
   return chatDataModel;
 }
 
+//获取时间间隔的消息
+void getTimeChatDataModel(
+    {String targetId, int conversationType, Function(Message msg, int code) finished}) async {
+  postMessageManagerAlertTime(ChatTypeModel.MESSAGE_TYPE_ALERT_TIME,
+      new DateTime.now().millisecondsSinceEpoch.toString(), targetId,
+      conversationType, finished);
+}
+
+//voice 的更新
+void updateMessage(ChatDataModel chatDataModel, Function(int code) finished) {
+  VoiceMessage voiceMessage = ((chatDataModel.msg.content) as VoiceMessage);
+  Map<String, dynamic> mapModel = json.decode(voiceMessage.extra);
+  mapModel["read"] = 1;
+  voiceMessage.extra = json.encode(mapModel);
+  chatDataModel.msg.content = voiceMessage;
+  Map<String, dynamic> expansionDic = Map();
+  expansionDic["extra"] = voiceMessage.extra;
+  Application.rongCloud.updateMessage(
+      expansionDic, chatDataModel.msg.messageUId, finished);
+}
+
+
 //发送图片或者视频
 void postImgOrVideo(List<ChatDataModel> modelList, String targetId, String type,
     VoidCallback voidCallback) async {
   List<UploadResultModel> uploadResultModelList =
-      await onPostImgOrVideo(modelList, type);
+  await onPostImgOrVideo(modelList, type);
   for (int i = 0; i < modelList.length; i++) {
     int uploadResultModelIndex = -1;
     for (int j = 0; j < uploadResultModelList.length; j++) {

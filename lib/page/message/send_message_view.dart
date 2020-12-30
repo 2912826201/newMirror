@@ -10,6 +10,7 @@ import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/page/message/message_view/alert_msg.dart';
 import 'package:mirror/page/message/message_view/feed_msg.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -26,9 +27,10 @@ class SendMessageView extends StatefulWidget {
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
   final int position;
+  final String chatUserName;
 
   SendMessageView(this.model, this.position, this.voidMessageClickCallBack,
-      this.voidItemLongClickCallBack);
+      this.voidItemLongClickCallBack, this.chatUserName);
 
   @override
   _SendMessageViewState createState() => _SendMessageViewState();
@@ -128,36 +130,72 @@ class _SendMessageViewState extends State<SendMessageView> {
               json.decode(mapModel["content"]);
           return getLiveVideoCourseMsg(liveVideoModelMap,
               mapModel["type"] == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE);
+        } else if (mapModel["type"] == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME ||
+            mapModel["type"] == ChatTypeModel.MESSAGE_TYPE_ALERT_INVITE ||
+            mapModel["type"] == ChatTypeModel.MESSAGE_TYPE_ALERT_NEW ||
+            mapModel["type"] == ChatTypeModel.MESSAGE_TYPE_ALERT_REMOVE) {
+          // return new Text('提示消息');
+          return getAlertMsg(map: mapModel);
         }
       } catch (e) {
         return getTextMsg(text: textMessage.content);
       }
     } else if (msgType == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
       //图片--视频消息
-      ImageMessage imageMessage = ((msg.content) as ImageMessage);
-      Map<String, dynamic> mapModel = json.decode(imageMessage.extra);
-      return getImgVideoMsg(
-          isTemporary: false,
-          isImgOrVideo: mapModel["type"] == mediaTypeKeyImage,
-          mediaFileModel: widget.model.mediaFileModel,
-          imageMessage: imageMessage);
+      return getImageMessage(msg);
     } else if (msgType == VoiceMessage.objectName) {
       // return new Text('语音消息');
-      // 语音消息
-      VoiceMessage voiceMessage = ((msg.content) as VoiceMessage);
-      Map<String, dynamic> mapModel = json.decode(voiceMessage.extra);
-      if (voiceMessage.remoteUrl != null) {
-        mapModel["pathUrl"] = voiceMessage.remoteUrl;
-      }
-      return getVoiceMsgData(
-          mapModel,
-          false,
-          StringUtil.generateMd5(voiceMessage.remoteUrl != null
-              ? voiceMessage.remoteUrl
-              : mapModel["filePath"]));
+      return getVoiceMessage(msg);
+    } else if (msgType == RecallNotificationMessage.objectName) {
+      // return new Text('提示消息');
+      return getAlertMsg(
+          recallNotificationMessage:
+              ((msg.content) as RecallNotificationMessage));
     }
     return new Text('未知消息');
   }
+
+  //************************获取消息模块的方法 ----start
+
+  //图片--视频消息
+  Widget getImageMessage(Message msg) {
+    ImageMessage imageMessage = ((msg.content) as ImageMessage);
+    Map<String, dynamic> mapModel = json.decode(imageMessage.extra);
+    return getImgVideoMsg(
+        isTemporary: false,
+        isImgOrVideo: mapModel["type"] == mediaTypeKeyImage,
+        mediaFileModel: widget.model.mediaFileModel,
+        imageMessage: imageMessage);
+  }
+
+  //语音信息
+  Widget getVoiceMessage(Message msg) {
+    // 语音消息
+    VoiceMessage voiceMessage = ((msg.content) as VoiceMessage);
+    Map<String, dynamic> mapModel;
+    try {
+      if (msg.expansionDic != null && msg.expansionDic["extra"] != null) {
+        mapModel = json.decode(msg.expansionDic["extra"]);
+      } else {
+        mapModel = json.decode(voiceMessage.extra);
+      }
+    } catch (e) {
+      mapModel = json.decode(voiceMessage.extra);
+    }
+    if (voiceMessage.remoteUrl != null) {
+      mapModel["pathUrl"] = voiceMessage.remoteUrl;
+    }
+    return getVoiceMsgData(
+        mapModel,
+        false,
+        StringUtil.generateMd5(voiceMessage.remoteUrl != null
+            ? voiceMessage.remoteUrl
+            : mapModel["filePath"]));
+  }
+
+  //************************获取消息模块的方法 ----end
+
+  //***************************************获取每一个消息的模块-----start
 
   //获取普通文本模块
   Widget getTextMsg({String text}) {
@@ -254,4 +292,20 @@ class _SendMessageViewState extends State<SendMessageView> {
       position: widget.position,
     );
   }
+
+
+  //提示消息
+  Widget getAlertMsg({Map<String,
+      dynamic> map, RecallNotificationMessage recallNotificationMessage}) {
+    return AlertMsg(
+      position: widget.position,
+      chatUserName: widget.chatUserName,
+      voidMessageClickCallBack: widget.voidMessageClickCallBack,
+      voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
+      map: map,
+      recallNotificationMessage: recallNotificationMessage,
+    );
+  }
+
+//***************************************获取每一个消息的模块-----end
 }

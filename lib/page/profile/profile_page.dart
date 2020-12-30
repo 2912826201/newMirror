@@ -143,7 +143,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     return Stack(
       children: [
         Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
-          print("头像地址:$avatar");
+          // print("头像地址:$avatar");
           return CachedNetworkImage(
             height: height*0.16,
             width: width,

@@ -253,9 +253,8 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                     //长按框距离用户头像的另一边的宽度
                     var marginLeftOrRightWidth =
                         (MediaQuery.of(context).size.width -
-                                widget.leftAndRightWidth / 2 -
-                                widgetContentWidth) -
-                            2;
+                            widget.leftAndRightWidth / 2 -
+                            widgetContentWidth);
 
                     //如果内容的宽度小于长按框的宽度-则对齐用户头像位置
                     if (MediaQuery.of(context).size.width -
@@ -307,13 +306,13 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                                             alignment: alignment,
                                             child: UnconstrainedBox(
                                               child: Container(
-                                                width: customPaintWidth,
+                                                width: customPaintWidth - 2,
                                                 child: CustomPaint(
                                                   size: Size(_curPageWidth,
                                                       _triangleHeight),
                                                   painter: TrianglePainter(
                                                     color:
-                                                        widget.backgroundColor,
+                                                    widget.backgroundColor,
                                                     position: position,
                                                     isInverted: true,
                                                     size: widget.button.size,
@@ -436,17 +435,18 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                                             alignment: alignment,
                                             child: UnconstrainedBox(
                                               child: Container(
-                                                width: customPaintWidth,
+                                                width: customPaintWidth - 2,
                                                 child: CustomPaint(
                                                   size: Size(_curPageWidth,
                                                       _triangleHeight),
                                                   painter: TrianglePainter(
                                                     color:
-                                                        widget.backgroundColor,
+                                                    widget.backgroundColor,
                                                     position: position,
                                                     size: widget.button.size,
                                                     screenWidth:
-                                                        MediaQuery.of(context)
+                                                    MediaQuery
+                                                        .of(context)
                                                             .size
                                                             .width,
                                                   ),
