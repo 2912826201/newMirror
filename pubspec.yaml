@@ -98,6 +98,7 @@ dependencies:
   flutter_sound_lite: ^7.4.9+3
   #音频处理
   audioplayers: ^0.17.0
+  #md5
   crypto: ^2.1.5
   convert: ^2.1.1
   # 生成随机UUID字符串
