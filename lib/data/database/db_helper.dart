@@ -1,4 +1,5 @@
 import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/data/dto/download_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/region_dto.dart';
 import 'package:mirror/data/dto/search_history_dto.dart';
@@ -525,6 +526,14 @@ Future<void> _createDB(Database db, int version) async {
       "$COLUMN_NAME_SEARCHHISTORY_ID bigint(20) primary key," +
       "$COLUMN_NAME_SEARCHHISTORY_UID bigint(20) not null," +
       "$COLUMN_NAME_SEARCHHISTORY_WORD varchar(128) not null" +
+      ")");
+  //download
+  await db.execute("create table $TABLE_NAME_DOWNLOAD (" +
+      "$COLUMN_NAME_DOWNLOAD_ID integer primary key autoincrement," +
+      "$COLUMN_NAME_DOWNLOAD_TASKID varchar(256) not null," +
+      "$COLUMN_NAME_DOWNLOAD_URL varchar(256) not null," +
+      "$COLUMN_NAME_DOWNLOAD_FILEPATH varchar(256) not null," +
+      "$COLUMN_NAME_DOWNLOAD_CREATETIME bigint(20) not null" +
       ")");
 }
 

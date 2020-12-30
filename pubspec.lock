@@ -691,7 +691,7 @@ packages:
     source: hosted
     version: "1.0.0+7"
   uuid:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: uuid
       url: "https://pub.flutter-io.cn"

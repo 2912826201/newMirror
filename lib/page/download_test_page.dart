@@ -18,17 +18,18 @@ class _DownloadTestState extends State<DownloadTestPage> {
   TextEditingController _controller = TextEditingController();
   double _progress;
   String _downloadedPath;
-  Function(int, int) _progressListener;
+  Function(String, int, int) _progressListener;
 
   @override
   void initState() {
     super.initState();
-    _progressListener = (received, total) {
+    _progressListener = (taskId, received, total) {
       setState(() {
         _progress = received / total;
       });
 
-      print("[${DateTime.now().millisecondsSinceEpoch}]received:$received; total:$total; progress:$_progress");
+      print("[${DateTime.now().millisecondsSinceEpoch}]taskId:$taskId; received:$received; total:$total; "
+          "progress:$_progress");
     };
   }
 
@@ -44,13 +45,8 @@ class _DownloadTestState extends State<DownloadTestPage> {
           ),
           RaisedButton(
               onPressed: () async {
-                String fileName = _controller.text.split("/").last;
-                Response response = await Dio().download(
-                    _controller.text, AppConfig.getAppDownloadDir() + "/" + fileName,
-                    onReceiveProgress: _progressListener);
-
-                // final taskId = await FileUtil().download(_controller.text, true, true);
-                print("response：$response");
+                String taskId = await FileUtil().download(_controller.text, _progressListener);
+                print("task的id是：$taskId");
               },
               child: Text("开始下载")),
           Text("progress:$_progress"),
@@ -64,7 +60,7 @@ class _DownloadTestState extends State<DownloadTestPage> {
           RaisedButton(
               onPressed: () async {
                 for (String videoUrl in testVideoUrls) {
-                  final taskId = await FileUtil().download(videoUrl, true, true);
+                  String taskId = await FileUtil().download(videoUrl, _progressListener);
                   print("task的id是：$taskId");
                 }
               },

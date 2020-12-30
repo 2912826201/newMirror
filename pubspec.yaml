@@ -100,7 +100,8 @@ dependencies:
   audioplayers: ^0.17.0
   crypto: ^2.1.5
   convert: ^2.1.1
-
+  # 生成随机UUID字符串
+  uuid: ^2.2.2
 
 
 
@@ -156,10 +157,6 @@ flutter:
     - images/test/3.0x/
     - images/chat/
     - assets/emoji.json
-    - videos/1.mp4
-    - videos/2.mp4
-    - videos/3.mp4
-    - videos/4.mp4
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
