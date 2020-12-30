@@ -5,7 +5,7 @@ import 'package:mirror/data/model/user_model.dart';
 class SearchUserModel{
   int lastTime;
   int hasNext;
-  List<UserModel> list;
+  List<UserModel> list = [];
 
   SearchUserModel.fromJson(dynamic json) {
     hasNext = json["hasNext"];

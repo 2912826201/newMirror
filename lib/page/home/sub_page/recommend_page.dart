@@ -265,17 +265,13 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                             id = recommendIdList[index];
                             model = context.read<FeedMapNotifier>().feedMap[id];
                           }
-                          print("我要看model的值");
-                           print(model.toString());
                           // if (model != null) {
                             if (index == recommendIdList.length) {
-                              print("进入加载——————————————————————————————————");
                               return LoadingView(
                                 loadText: loadText,
                                 loadStatus: loadStatus,
                               );
                             }  else {
-                              print("数据加载——————————————————————————————————");
                               return DynamicListLayout(
                                   index: index,
                                   pc: widget.pc,

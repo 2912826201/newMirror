@@ -1,4 +1,3 @@
-
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/profile/add_remarks_model.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
@@ -11,38 +10,50 @@ import 'package:mirror/data/model/user_model.dart';
 import '../api.dart';
 
 ///关注接口
-const String  ATTENTION= "/appuser/web/user/follow/addFollow";
+const String ATTENTION = "/appuser/web/user/follow/addFollow";
+
 ///取消关注
 const String CANCEL_ATTENTION = "/appuser/web/user/follow/removeFollow";
+
 ///获取用户关注相关【粉丝数、关注数、动态数】
 const String GET_FOLLOWCOUNT = "/appuser/web/user/getFollowCount";
+
 ///获取用户训练记录
 const String GET_EXTRAINFO = "/appuser/web/user/getExtraInfo";
+
 ///获取用户基础信息
 const String GET_USERBASEINFO = "/ucenter/web/user/getUserBaseInfo";
+
 ///添加备注，取消备注
 const String ADD_REMARKS = "/appuser/web/user/addRemark";
+
 ///拉黑
 const String ADD_BLACK = "/appuser/web/black/addBlack";
+
 ///取消拉黑
 const String CANCEL_BLACK = "/appuser/web/black/removeBlack";
+
 ///检测拉黑关系
 const String CHECK_BLACK = "/appuser/web/black/checkBlack";
+
 ///举报
-const String DENOUNCE ="/appuser/web/user/denounce";
+const String DENOUNCE = "/appuser/web/user/denounce";
+
 ///更新用户信息
 const String UPDATA_USERINFO = "/ucenter/web/user/updateUserInfo";
+
 ///搜索用户
 const String SEARCH_USER = "/appuser/web/user/searchUser";
+
 ///关注列表
 const String FOLLOW_LIST = "/appuser/web/user/follow/QueryFollowingList";
 //关注
-Future<int> ProfileAddFollow(int id)async{
-  BaseResponseModel responseModel = await requestApi(ATTENTION,{"targetId":id});
+Future<int> ProfileAddFollow(int id) async {
+  BaseResponseModel responseModel = await requestApi(ATTENTION, {"targetId": id});
   int backCode;
   if (responseModel.isSuccess) {
-    Map<String,dynamic> result = responseModel.data;
-    if(result.isNotEmpty){
+    Map<String, dynamic> result = responseModel.data;
+    if (result.isNotEmpty) {
       backCode = result["relation"];
       return backCode;
     }
@@ -50,24 +61,26 @@ Future<int> ProfileAddFollow(int id)async{
     return null;
   }
 }
+
 ///取消关注
-Future<int> ProfileCancelFollow(int id)async{
-  BaseResponseModel responseModel = await requestApi(CANCEL_ATTENTION, {"targetId":id});
-  Map<String,dynamic> result = responseModel.data;
+Future<int> ProfileCancelFollow(int id) async {
+  BaseResponseModel responseModel = await requestApi(CANCEL_ATTENTION, {"targetId": id});
+  Map<String, dynamic> result = responseModel.data;
   int backCode;
   if (responseModel.isSuccess) {
-    if(result.isNotEmpty){
-     backCode = result["relation"];
+    if (result.isNotEmpty) {
+      backCode = result["relation"];
       return backCode;
     }
   } else {
     return null;
   }
 }
+
 ///获取关注、粉丝、动态数
-Future<ProfileModel> ProfileFollowCount({int id})async {
-  Map<String,dynamic> parmas ={};
-  if(id!=null){
+Future<ProfileModel> ProfileFollowCount({int id}) async {
+  Map<String, dynamic> parmas = {};
+  if (id != null) {
     parmas["uid"] = id;
   }
   BaseResponseModel responseModel = await requestApi(GET_FOLLOWCOUNT, parmas);
@@ -77,57 +90,61 @@ Future<ProfileModel> ProfileFollowCount({int id})async {
     return null;
   }
 }
+
 ///获取用户训练信息
-Future<UserExtraInfoModel> ProfileGetExtraInfo()async {
-  BaseResponseModel responseModel = await requestApi(GET_EXTRAINFO,{});
+Future<UserExtraInfoModel> ProfileGetExtraInfo() async {
+  BaseResponseModel responseModel = await requestApi(GET_EXTRAINFO, {});
   if (responseModel.isSuccess) {
     return UserExtraInfoModel.fromJson(responseModel.data);
   } else {
     return null;
   }
 }
+
 ///修改删除备注
-Future<AddRemarksModel> ChangeAddRemarks(int toUid,{String remark})async{
-  Map<String,dynamic> parmas = {};
-  if(remark!=null){
+Future<AddRemarksModel> ChangeAddRemarks(int toUid, {String remark}) async {
+  Map<String, dynamic> parmas = {};
+  if (remark != null) {
     parmas["remark"] = remark;
   }
   parmas["toUid"] = toUid;
-  BaseResponseModel responseModel = await requestApi(ADD_REMARKS,parmas);
-  if(responseModel.isSuccess){
+  BaseResponseModel responseModel = await requestApi(ADD_REMARKS, parmas);
+  if (responseModel.isSuccess) {
     return AddRemarksModel.fromJson(responseModel.data);
-  }else{
+  } else {
     return null;
   }
 }
 
 ///添加黑名单
-Future<bool> ProfileAddBlack(int blackId)async{
-  BaseResponseModel responseModel = await requestApi(ADD_BLACK,{"blackId":blackId});
-    bool backResult;
-    if(responseModel.isSuccess){
-      Map<String,dynamic> parmas = responseModel.data;
-      backResult = parmas["state"];
-      return backResult;
-    }else{
-      return null;
-    }
-}
-///取消拉黑
-Future<bool> ProfileCancelBlack(int blackId)async{
-  BaseResponseModel responseModel = await requestApi(CANCEL_BLACK,{"blackId":blackId});
+Future<bool> ProfileAddBlack(int blackId) async {
+  BaseResponseModel responseModel = await requestApi(ADD_BLACK, {"blackId": blackId});
   bool backResult;
-  if(responseModel.isSuccess){
-    Map<String,dynamic> parmas = responseModel.data;
+  if (responseModel.isSuccess) {
+    Map<String, dynamic> parmas = responseModel.data;
     backResult = parmas["state"];
     return backResult;
-  }else{
+  } else {
     return null;
   }
 }
+
+///取消拉黑
+Future<bool> ProfileCancelBlack(int blackId) async {
+  BaseResponseModel responseModel = await requestApi(CANCEL_BLACK, {"blackId": blackId});
+  bool backResult;
+  if (responseModel.isSuccess) {
+    Map<String, dynamic> parmas = responseModel.data;
+    backResult = parmas["state"];
+    return backResult;
+  } else {
+    return null;
+  }
+}
+
 ///检测黑名单关系
-Future<BlackModel> ProfileCheckBlack(int checkId)async {
-  BaseResponseModel responseModel = await requestApi(CHECK_BLACK,{"checkId":checkId});
+Future<BlackModel> ProfileCheckBlack(int checkId) async {
+  BaseResponseModel responseModel = await requestApi(CHECK_BLACK, {"checkId": checkId});
   if (responseModel.isSuccess) {
     return BlackModel.fromJson(responseModel.data);
   } else {
@@ -136,34 +153,43 @@ Future<BlackModel> ProfileCheckBlack(int checkId)async {
 }
 
 ///举报
-Future<bool> ProfileMoreDenounce(int targetId,int targetType)async{
-  BaseResponseModel responseModel = await requestApi(DENOUNCE,{"targetId":targetId,"targetType":targetType,});
-    if(responseModel.isSuccess){
-      return true;
-    }else{
-      return false;
-    }
+Future<bool> ProfileMoreDenounce(int targetId, int targetType) async {
+  BaseResponseModel responseModel = await requestApi(DENOUNCE, {
+    "targetId": targetId,
+    "targetType": targetType,
+  });
+  if (responseModel.isSuccess) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 ///更改用户资料
-Future<UserModel> ProfileUpdataUserInfo(String nickName,String avatarUri,{String description,int sex,String birthday,String cityCode,double longitude,String latitude})async {
-  Map<String,dynamic> map = Map();
-  map["nickName"] =nickName ;
+Future<UserModel> ProfileUpdataUserInfo(String nickName, String avatarUri,
+    {String description, int sex, String birthday, String cityCode, double longitude, String latitude}) async {
+  Map<String, dynamic> map = Map();
+  map["nickName"] = nickName;
   map["avatarUri"] = avatarUri;
-  if(description!=null){
+  if (description != null) {
     map["description"] = description;
-  }if(sex!=null){
+  }
+  if (sex != null) {
     map["sex"] = sex;
-  }if(birthday!=null){
+  }
+  if (birthday != null) {
     map["birthday"] = birthday;
-  }if(cityCode!=null){
+  }
+  if (cityCode != null) {
     map["cityCode"] = cityCode;
-  }if(longitude!=null){
+  }
+  if (longitude != null) {
     map["longitude"] = longitude;
-  }if(latitude!=null){
+  }
+  if (latitude != null) {
     map["latitude"] = latitude;
   }
-  BaseResponseModel responseModel = await requestApi(UPDATA_USERINFO,map);
+  BaseResponseModel responseModel = await requestApi(UPDATA_USERINFO, map);
   if (responseModel.isSuccess) {
     UserModel model = UserModel.fromJson(responseModel.data);
     return model;
@@ -171,40 +197,44 @@ Future<UserModel> ProfileUpdataUserInfo(String nickName,String avatarUri,{String
     return null;
   }
 }
+
 ///搜索用户
-Future<SearchUserModel> ProfileSearchUser(String  key,int size,{String uids,int lastTime})async{
-  Map<String,dynamic> map = Map();
-  if(uids!=null){
+Future<SearchUserModel> ProfileSearchUser(String key, int size, {String uids, int lastTime}) async {
+  Map<String, dynamic> map = Map();
+  if (uids != null) {
     map["uids"] = uids;
   }
-  if(lastTime!=null){
+  if (lastTime != null) {
     map["lastTime"] = lastTime;
   }
   map["key"] = key;
   map["size"] = size;
-  BaseResponseModel responseModel = await requestApi(SEARCH_USER,map);
-  if(responseModel.isSuccess){
+  BaseResponseModel responseModel = await requestApi(SEARCH_USER, map);
+  if (responseModel.isSuccess) {
     print('查询用户接口请求成功=============================');
     SearchUserModel model;
-    model = SearchUserModel.fromJson(responseModel.data);
+    if (responseModel.data != null) {
+      model = SearchUserModel.fromJson(responseModel.data);
+    }
     return model;
-  }else{
+  } else {
     print('查询用户接口请求失败============================================');
     return null;
   }
 }
-Future<FollowLsitModel> GetFollowList({String uid})async{
-  Map<String,dynamic> map = Map();
-  if(uid!=null){
+
+Future<FollowLsitModel> GetFollowList({String uid}) async {
+  Map<String, dynamic> map = Map();
+  if (uid != null) {
     map["uids"] = uid;
   }
-  BaseResponseModel responseModel = await requestApi(FOLLOW_LIST,map);
-  if(responseModel.isSuccess){
+  BaseResponseModel responseModel = await requestApi(FOLLOW_LIST, map);
+  if (responseModel.isSuccess) {
     print('用户关注列表请求接口=============================');
     FollowLsitModel model;
     model = FollowLsitModel.fromJson(responseModel.data);
     return model;
-  }else{
+  } else {
     print('用户关注列表请求接口失败============================================');
     return null;
   }

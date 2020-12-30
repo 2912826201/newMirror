@@ -82,6 +82,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
 
   @override
   void initState() {
+    print("初始化一下啊");
     isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     print("是否登录$isLoggedIn");
     if (!isLoggedIn) {
@@ -98,6 +99,63 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       }
     });
     super.initState();
+  }
+  // 请求关注接口
+  getRecommendFeed() async {
+    isRequestInterface = true;
+    if (loadStatus == LoadingStatus.STATUS_IDEL) {
+      // 先设置状态，防止下拉就直接加载
+      setState(() {
+        loadStatus = LoadingStatus.STATUS_LOADING;
+      });
+    }
+    print("postFeedModel%%%%%%%$widget.postFeedModel");
+    print("开始请求动态数据");
+    if (dataPage > 1 && lastTime == null) {
+      loadText = "已加载全部动态";
+      loadStatus = LoadingStatus.STATUS_COMPLETED;
+      print("返回不请求数据");
+      return;
+    }
+    DataResponseModel model = await getPullList(type: 0, size: 20, lastTime: lastTime);
+    setState(() {
+      print("dataPage:  ￥￥$dataPage");
+      if (dataPage == 1) {
+        if (model.list.isNotEmpty) {
+          model.list.forEach((v) {
+            attentionIdList.add(HomeFeedModel.fromJson(v).id);
+            attentionModelList.add(HomeFeedModel.fromJson(v));
+            print("接口赶回");
+            print(HomeFeedModel.fromJson(v).comments);
+          });
+          if (model.hasNext == 0) {
+            loadText = "";
+            loadStatus = LoadingStatus.STATUS_COMPLETED;
+          }
+          attentionIdList.insert(0, -1);
+          status = Status.concern;
+        } else {
+          status = Status.noConcern;
+        }
+      } else if (dataPage > 1 && lastTime != null) {
+        if (model.list.isNotEmpty) {
+          model.list.forEach((v) {
+            attentionIdList.add(HomeFeedModel.fromJson(v).id);
+            attentionModelList.add(HomeFeedModel.fromJson(v));
+          });
+          loadStatus = LoadingStatus.STATUS_IDEL;
+          loadText = "加载中...";
+        } else {
+          // 加载完毕
+          loadText = "已加载全部动态";
+          loadStatus = LoadingStatus.STATUS_COMPLETED;
+        }
+      }
+    });
+    lastTime = model.lastTime;
+    isRequestInterface = false;
+    // 更新全局监听
+    context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
   }
 
   // 发布动态
@@ -203,6 +261,44 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   }
 
 
+  // 返回关注视图
+  backToView(int index,  HomeFeedModel feedmodel) {
+    if (index == 0) {
+      // return
+      //   FlatButton(
+      //     child: Text(context.read<TokenNotifier>().token.anonymous == 0 ? "登出" : "登录"),
+      //     onPressed: () async {
+      //        Application.token.anonymous = 1;
+      //       //先取个匿名token
+      //        context.read<TokenNotifier>().setToken(Application.token);
+      //       }
+      //   );
+      return Container(
+        height: 14,
+      );
+    } else {
+      return DynamicListLayout(
+          index: index,
+          pc: widget.pc,
+          isShowRecommendUser: true,
+          model: feedmodel,
+          // 可选参数 子Item的个数
+          key: GlobalObjectKey("attention$index"));
+    }
+  }
+
+
+  // 缺省图未登录关注视图的长度。
+  int itemcount() {
+    int count = 0;
+    if (status == Status.noConcern || status == Status.notLoggedIn || status == Status.noConcern) {
+      count = 1;
+    } else if (status == Status.concern) {
+      count = attentionIdList.length + 1;
+    }
+    return count;
+  }
+
   // 创建发布进度视图
   createdPostPromptView() {
     // 展示文字
@@ -259,6 +355,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       ),
     );
   }
+
+  // 发布动态进度条视图
   publishTextStatus (double plannedSpeed) {
     print("空值的来历￥￥$plannedSpeed");
     if (plannedSpeed >= 0 && plannedSpeed < 1) {
@@ -269,63 +367,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       return Text("我们会在网络信号改善时重试",style:AppStyle.textHintRegular16 ,);
     }
   }
-  // // 推荐页model
-// 推荐页model
-  getRecommendFeed() async {
-    if (loadStatus == LoadingStatus.STATUS_IDEL) {
-      // 先设置状态，防止下拉就直接加载
-      setState(() {
-        loadStatus = LoadingStatus.STATUS_LOADING;
-      });
-    }
-    print("postFeedModel%%%%%%%$widget.postFeedModel");
-    print("开始请求动态数据");
-    if (dataPage > 1 && lastTime == null) {
-      loadText = "已加载全部动态";
-      loadStatus = LoadingStatus.STATUS_COMPLETED;
-      print("返回不请求数据");
-      return;
-    }
-    DataResponseModel model = await getPullList(type: 0, size: 20, lastTime: lastTime);
-    setState(() {
-      print("dataPage:  ￥￥$dataPage");
-      if (dataPage == 1) {
-        if (model.list.isNotEmpty) {
-          model.list.forEach((v) {
-            attentionIdList.add(HomeFeedModel.fromJson(v).id);
-            attentionModelList.add(HomeFeedModel.fromJson(v));
-            print("接口赶回");
-            print(HomeFeedModel.fromJson(v).comments);
-          });
-          if (model.hasNext == 0) {
-            loadText = "";
-            loadStatus = LoadingStatus.STATUS_COMPLETED;
-          }
-          attentionIdList.insert(0, -1);
-          status = Status.concern;
-        } else {
-          status = Status.noConcern;
-        }
-      } else if (dataPage > 1 && lastTime != null) {
-        if (model.list.isNotEmpty) {
-          model.list.forEach((v) {
-            attentionIdList.add(HomeFeedModel.fromJson(v).id);
-            attentionModelList.add(HomeFeedModel.fromJson(v));
-          });
-          loadStatus = LoadingStatus.STATUS_IDEL;
-          loadText = "加载中...";
-        } else {
-          // 加载完毕
-          loadText = "已加载全部动态";
-          loadStatus = LoadingStatus.STATUS_COMPLETED;
-        }
-      }
-    });
-    lastTime = model.lastTime;
-    // 更新全局监听
-    context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
-  }
 
+
+  // 缺省图未登录关注视图切换
   Widget pageDisplay(int index, HomeFeedModel feedModel) {
     switch (status) {
       case Status.notLoggedIn:
@@ -398,31 +442,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     }
   }
 
-  //返回视图
-  backToView(int index,  HomeFeedModel feedmodel) {
-    if (index == 0) {
-        return
-          FlatButton(
-            child: Text(context.read<TokenNotifier>().token.anonymous == 0 ? "登出" : "登录"),
-            onPressed: () async {
-               Application.token.anonymous = 1;
-              //先取个匿名token
-               context.read<TokenNotifier>().setToken(Application.token);
-              }
-          );
-        // return Container(
-        //   height: 14,
-        // );
-    } else {
-      return DynamicListLayout(
-          index: index,
-          pc: widget.pc,
-          isShowRecommendUser: true,
-          model: feedmodel,
-          // 可选参数 子Item的个数
-          key: GlobalObjectKey("attention$index"));
-    }
-  }
+
  @override
   void dispose() {
     print("关注页面销毁了");
@@ -445,18 +465,26 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     // context.read<FeedMapNotifier>().clearBuildCount();
     super.didUpdateWidget(oldWidget);
   }
+
   @override
   Widget build(BuildContext context) {
     print("关注页");
     print(  "当前时间${DateTime.now().millisecondsSinceEpoch.toString()}");
-   print(context.watch<FeedMapNotifier>().isPublish);
     var isLogged = context.watch<TokenNotifier>().isLoggedIn;
+    print(isLogged);
     if (!isLogged) {
       status = Status.notLoggedIn;
       this.dataPage = 1;
       this.attentionIdList.clear();
+      this.attentionModelList.clear();
       this.lastTime = null;
+      loadStatus = LoadingStatus.STATUS_LOADING;
     }
+
+    if (isLogged && attentionIdList.isEmpty && !isRequestInterface) {
+      getRecommendFeed();
+    }
+
     if (context.watch<FeedMapNotifier>().postFeedModel != null && context.watch<FeedMapNotifier>().isPublish) {
       if(status == Status.noConcern) {
         print("attentionIdList${attentionIdList.toString()}");
@@ -533,13 +561,4 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     ));
   }
 
-  int itemcount() {
-    int count = 0;
-    if (status == Status.noConcern || status == Status.notLoggedIn || status == Status.noConcern) {
-      count = 1;
-    } else if (status == Status.concern) {
-      count = attentionIdList.length + 1;
-    }
-    return count;
-  }
 }

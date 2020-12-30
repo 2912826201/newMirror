@@ -18,7 +18,9 @@ Future<DataResponseModel> searchTopic({@required String key, @required int size,
   BaseResponseModel responseModel = await requestApi(SEARCHTOPIC, params);
   if (responseModel.isSuccess) {
     DataResponseModel  dataResponseModel;
-    dataResponseModel = DataResponseModel.fromJson(responseModel.data);
+    if (responseModel.data != null ) {
+      dataResponseModel = DataResponseModel.fromJson(responseModel.data);
+    }
     return dataResponseModel;
   } else {
     return null;

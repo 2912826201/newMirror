@@ -12,7 +12,7 @@ class SearchHistoryDBHelper {
     var transactionResult = await DBHelper.instance.db.transaction((txn) async {
       //事务中只能用txn不能用db
       await txn.delete(TABLE_NAME_SEARCHHISTORY,
-          where: "$COLUMN_NAME_SEARCHHISTORY_UID = $uid and $COLUMN_NAME_SEARCHHISTORY_WORD = $word");
+          where: "$COLUMN_NAME_SEARCHHISTORY_UID = $uid and $COLUMN_NAME_SEARCHHISTORY_WORD = '$word'");
       var result = await txn.insert(TABLE_NAME_SEARCHHISTORY, dto.toMap());
       return result;
     });

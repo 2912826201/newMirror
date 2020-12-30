@@ -1,5 +1,7 @@
 import 'package:mirror/data/model/user_model.dart';
 
+import '../live_model.dart';
+
 enum CommentTypes {
   commentFeed, // 评论动态
   commentMainCom, // 评论主评论
@@ -352,7 +354,7 @@ class CourseDtoModel {
   UserModel coachDto;           // 教练dto
   int coursewareId;
 
-  // CoursewareDto coursewareDto;      // 课件dto
+  CoursewareDto coursewareDto;      // 课件dto
   String videoUrl;
   String startTime; // 开始时间
   String endTime; // 结束时间
@@ -384,7 +386,9 @@ class CourseDtoModel {
       this.finishAmount,
       this.dataState,
       this.createTime,
-      this.updateTime});
+      this.updateTime,
+      this.coachDto,
+      this.coursewareDto});
 
   CourseDtoModel.fromJson(Map<String, dynamic> json) {
     id = json["id"];
@@ -407,6 +411,9 @@ class CourseDtoModel {
     updateTime = json["updateTime"];
     if (json["coachDto"] != null) {
       coachDto = UserModel.fromJson(json["coachDto"]);
+    }
+    if (json["coursewareDto"] != null) {
+      coursewareDto = CoursewareDto.fromJson(json["coursewareDto"]);
     }
   }
 
@@ -431,6 +438,7 @@ class CourseDtoModel {
     map["updateTime"] = updateTime;
     map["finishAmount"] = finishAmount;
     map["coachDto"] = coachDto;
+    map["coursewareDto"] = coursewareDto;
     return map;
   }
 

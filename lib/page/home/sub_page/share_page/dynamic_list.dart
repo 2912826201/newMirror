@@ -13,6 +13,7 @@ import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/course_address_label.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/getTripleArea.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
+import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/bottom_popup.dart';
 import 'package:mirror/widget/expandable_text.dart';
@@ -129,7 +130,8 @@ class DynamicListLayout extends StatelessWidget {
                     ),
                     Container(
                       padding: EdgeInsets.only(top: 2),
-                      child: Text("${model.createTime}",
+                      child: Text("${ DateUtil.generateFormatDate(model.createTime)
+                      }",
                           style: TextStyle(
                             fontSize: 12,
                             color: AppColor.textSecondary,

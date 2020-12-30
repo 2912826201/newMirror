@@ -1,8 +1,6 @@
-
 import 'package:intl/intl.dart';
 
-class DateUtil{
-
+class DateUtil {
   /// 是否是今天.
   static bool isToday(DateTime old) {
     if (old == null) return false;
@@ -101,9 +99,7 @@ class DateUtil{
 
   /// get DateTime By Milliseconds.
   static DateTime getDateTimeByMs(int ms, {bool isUtc = false}) {
-    return ms == null
-        ? null
-        : DateTime.fromMillisecondsSinceEpoch(ms, isUtc: isUtc);
+    return ms == null ? null : DateTime.fromMillisecondsSinceEpoch(ms, isUtc: isUtc);
   }
 
   /// 将秒转换为中文
@@ -122,6 +118,88 @@ class DateUtil{
         return "${second}秒";
       }
     }
+  }
+
+  // MARK: - 把毫秒数转换成
+  /*
+   1分钟之类都显示刚刚
+
+   1小时之内的动态，显示 2分钟前，59分钟前；
+
+   在1-24小时期间的显示 n小时前。
+
+   超过24小时则显示“昨天 时分 ”，如 昨天 14:21 ；
+
+   超过48小时则显示为月日 时分 ，如7-8  7:21；
+
+   往年的显示 年-月-⽇ 如 16-5-21 12:12
+   */
+  static String generateFormatDate(int timeInterval) {
+    var result = "";
+    if (timeInterval == 0) {
+      return result;
+    }
+
+    var time = timeInterval;
+    if (timeInterval < 9999999999) {
+      time = time * 1000;
+    }
+    // 当前时间戳
+    var currentDate = DateTime.now().millisecondsSinceEpoch;
+    var currentDateString = DateTime.fromMillisecondsSinceEpoch(currentDate);
+    print(currentDateString);
+    // 传入时间戳转日期String
+    var date = new DateTime.fromMicrosecondsSinceEpoch(time * 1000);
+    print(date);
+    String year = date.year.toString();
+    String month = date.month.toString();
+    if (date.month <= 9) {
+      month = "0" + month;
+    }
+    String day = date.day.toString();
+    if (date.day <= 9) {
+      day = "0" + day;
+    }
+    String hour = date.hour.toString();
+    if (date.hour <= 9) {
+      hour = "0" + hour;
+    }
+    String minute = date.minute.toString();
+    if (date.minute <= 9) {
+      minute = "0" + minute;
+    }
+    if (currentDateString.year - date.year > 0) {
+      result = year + "-" + month + "-" + day + " " + hour + ":" + minute;
+    } else if (currentDateString.year - date.year == 0 && currentDateString.month - date.month > 0) {
+      result = month + "-" + day + " " + hour + ":" + minute;
+    } else if (currentDateString.year - date.year == 0 &&
+        currentDateString.month - date.month == 0 &&
+        currentDateString.day - date.day > 0) {
+      print(currentDateString.day - date.day);
+      // 昨天
+      if (currentDateString.day - date.day == 1) {
+        result = "昨天" + " " + hour + ":" + minute;
+      }
+      // 前天
+      if (currentDateString.day - date.day > 2) {
+        result = month + "-" + day + " " + hour + ":" + minute;
+      }
+    } else if (currentDateString.year - date.year == 0 &&
+        currentDateString.month - date.month == 0 &&
+        currentDateString.day - date.day == 0 &&
+        currentDateString.hour - date.hour > 0) {
+      result = "${currentDateString.hour - date.hour}小时前";
+    } else if (currentDateString.year - date.year == 0 &&
+        currentDateString.month - date.month == 0 &&
+        currentDateString.day - date.day == 0 &&
+        currentDateString.hour - date.hour == 0) {
+      if (currentDateString.minute - date.minute > 1) {
+        result = "${currentDateString.minute - date.minute}分钟前";
+      } else {
+        result = "刚刚";
+      }
+    }
+    return result;
   }
 
   /// 将秒转换为数字 01:12
@@ -152,8 +230,7 @@ class DateUtil{
       if (format.contains("yyyy")) {
         format = format.replaceAll("yyyy", year);
       } else {
-        format = format.replaceAll(
-            "yy", year.substring(year.length - 2, year.length));
+        format = format.replaceAll("yy", year.substring(year.length - 2, year.length));
       }
     }
 
@@ -167,12 +244,10 @@ class DateUtil{
     return format;
   }
 
-  static String _comFormat(
-      int value, String format, String single, String full) {
+  static String _comFormat(int value, String format, String single, String full) {
     if (format.contains(single)) {
       if (format.contains(full)) {
-        format =
-            format.replaceAll(full, value < 10 ? '0$value' : value.toString());
+        format = format.replaceAll(full, value < 10 ? '0$value' : value.toString());
       } else {
         format = format.replaceAll(single, value.toString());
       }

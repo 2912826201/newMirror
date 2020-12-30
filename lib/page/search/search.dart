@@ -1,6 +1,6 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
@@ -11,10 +11,12 @@ import 'package:mirror/data/dto/search_history_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/page/search/sub_page/search_complex.dart';
 import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:mirror/page/search/sub_page/search_topic.dart';
 import 'package:mirror/page/search/sub_page/search_user.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +25,9 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 // 搜索页
 class SearchPage extends StatelessWidget {
   PanelController pcContrller;
+
   SearchPage({this.pcContrller});
+
   // 输入框焦点控制器
   FocusNode focusNode = new FocusNode();
 
@@ -79,7 +83,10 @@ class SearchHeaderState extends State<SearchHeader> {
     context.read<SearchEnterNotifier>().EditTextController(controller);
     controller.addListener(() {
       newValue = controller.text;
-      if (newValue == oldValue) {
+      if(newValue.length > 30) {
+        ToastShow.show(msg: "字数超出", context: context);
+      }
+      if (newValue == oldValue && newValue.isNotEmpty) {
         SearchHistoryDBHelper().insertSearchHistory(context.read<ProfileNotifier>().profile.uid, newValue);
         print("点击了搜索按钮");
         return;
@@ -130,6 +137,11 @@ class SearchHeaderState extends State<SearchHeader> {
                           contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
                           hintText: '搜索结果的样式',
                           border: InputBorder.none),
+                      inputFormatters: [
+                        WhitelistingTextInputFormatter(RegExp(
+                            "[a-zA-Z]|[\u4e00-\u9fa5]|[0-9]")), //只能输入汉字或者字母或数字
+                        LengthLimitingTextInputFormatter(30),
+                      ],
                     ),
                   ),
                 ),
@@ -236,14 +248,26 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
             height: 18,
             iconSting: "images/resource/2.0x/delete_icon_black@2x.png",
             onPressed: () {
-              print("清空历史记录");
+              SearchHistoryDBHelper().clearSearchHistory(context.read<ProfileNotifier>().profile.uid);
+              setState(() {
+                searchHistoryList.clear();
+              });
             },
           )
         ],
       ),
     );
   }
-
+// 历史记录Item间距
+  historyRecordItemSpacing(int count, int index) {
+    if (count > 10 && index == 9) {
+      return 16.0;
+    } else if (count < 10 && index == count - 1) {
+      return 16.0;
+    } else {
+      return 0.0;
+    }
+  }
 // 历史记录
   historyRecord(BuildContext context) {
     return Container(
@@ -254,9 +278,10 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
           itemCount: searchHistoryList.length > 10 ? 10 : searchHistoryList.length,
           itemBuilder: (context, index) {
             return Container(
-                color: AppColor.textSecondary.withOpacity(0.3),
-                margin: EdgeInsets.only(left: 16),
+                decoration: BoxDecoration(color: AppColor.textHint.withOpacity(0.24), borderRadius: BorderRadius.all(Radius.circular(3))),
+                margin: EdgeInsets.only(left: 16,right: historyRecordItemSpacing(searchHistoryList.length,index)),
                 padding: EdgeInsets.only(left: 8, top: 3, right: 8, bottom: 3),
+                alignment: Alignment(0,0),
                 child: Text(searchHistoryList[index].word));
           }),
     );
@@ -365,19 +390,20 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
               // width: (ScreenUtil.instance.screenWidthDp - 42) * 0.43,
               // height: (ScreenUtil.instance.screenWidthDp - 38) * 0.43,
               decoration: BoxDecoration(
-                  image: DecorationImage(
-                    centerSlice: Rect.fromLTWH(100, 100, (ScreenUtil.instance.screenWidthDp - 42) * 0.43, (ScreenUtil.instance.screenWidthDp - 38) * 0.43),
-                      image: AssetImage("images/resource/2.0x/投影.9png@2x.png"),
-                      fit: BoxFit.fill),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomLeft,
-                    colors: [
-                      AppColor.bgWhite,
-                      Colors.white,
-                    ],
-                  ),
-                  ),
+                image: DecorationImage(
+                    centerSlice: Rect.fromLTWH(100, 100, (ScreenUtil.instance.screenWidthDp - 42) * 0.43,
+                        (ScreenUtil.instance.screenWidthDp - 38) * 0.43),
+                    image: AssetImage("images/resource/2.0x/投影.9png@2x.png"),
+                    fit: BoxFit.fill),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomLeft,
+                  colors: [
+                    AppColor.bgWhite,
+                    Colors.white,
+                  ],
+                ),
+              ),
               child: Stack(
                 children: [
                   Image.asset(
@@ -462,9 +488,10 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
 
 // 搜索页TabBarView
 class SearchTabBarView extends StatefulWidget {
-  SearchTabBarView({Key key, this.focusNode,this.pcController}) : super(key: key);
+  SearchTabBarView({Key key, this.focusNode, this.pcController}) : super(key: key);
   FocusNode focusNode;
   PanelController pcController;
+
   @override
   SearchTabBarViewState createState() => SearchTabBarViewState();
 }
@@ -481,7 +508,6 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
         child: Column(
       children: [
@@ -509,12 +535,10 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
           child: TabBarView(
             controller: controller,
             children: [
-              Container(
-                color: Colors.redAccent,
-                child: Center(
-                  child: Text("综合"),
-                ),
-              ),
+              SearchComplex( keyWord: context.watch<SearchEnterNotifier>().enterText,
+                  focusNode: widget.focusNode,
+                  controller: controller,
+                  textController: context.watch<SearchEnterNotifier>().textController),
               Container(
                 color: Colors.orange,
                 child: Center(
@@ -522,19 +546,19 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
                 ),
               ),
               SearchTopic(
-                keyWord: context.watch<SearchEnterNotifier>().enterText,
-                focusNode: widget.focusNode,
-              ),
+                  keyWord: context.watch<SearchEnterNotifier>().enterText,
+                  focusNode: widget.focusNode,
+                  textController: context.watch<SearchEnterNotifier>().textController),
               SearchFeed(
-                keyWord: context.watch<SearchEnterNotifier>().enterText,
-                focusNode: widget.focusNode,
-              ),
+                  keyWord: context.watch<SearchEnterNotifier>().enterText,
+                  focusNode: widget.focusNode,
+                  textController: context.watch<SearchEnterNotifier>().textController),
               // ),
               SearchUser(
-                pc: widget.pcController,
-                text: context.watch<SearchEnterNotifier>().enterText,
-                width:ScreenUtil.instance.screenWidthDp,
-                textController: context.watch<SearchEnterNotifier>().textController),
+                  pc: widget.pcController,
+                  text: context.watch<SearchEnterNotifier>().enterText,
+                  width: ScreenUtil.instance.screenWidthDp,
+                  textController: context.watch<SearchEnterNotifier>().textController),
               // RecommendPage()
             ],
           ),
@@ -546,7 +570,7 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
 
 // 输入框输入文字的监听
 class SearchEnterNotifier extends ChangeNotifier {
-  SearchEnterNotifier({this.enterText, this.currentTimestamp = 0,this.textController});
+  SearchEnterNotifier({this.enterText, this.currentTimestamp = 0, this.textController});
 
   // 输入文字
   String enterText;
@@ -556,6 +580,7 @@ class SearchEnterNotifier extends ChangeNotifier {
 
   //控制器
   TextEditingController textController;
+
   changeCallback(String str) {
     this.enterText = str;
     notifyListeners();
@@ -564,7 +589,8 @@ class SearchEnterNotifier extends ChangeNotifier {
   setCurrentTimestamp(int timestamp) {
     this.currentTimestamp = timestamp;
   }
-  EditTextController(TextEditingController controller){
+
+  EditTextController(TextEditingController controller) {
     this.textController = controller;
     notifyListeners();
   }

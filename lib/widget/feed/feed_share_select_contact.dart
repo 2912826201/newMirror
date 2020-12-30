@@ -12,7 +12,7 @@ class Friends {
   String imageUrl; //头像
   String name; // 用户名
   String indexLetter; //首字母大写
-  int uid;
+  int uid; // 用户Id
 
   Friends({this.imageUrl, this.name, this.indexLetter, this.uid});
 }

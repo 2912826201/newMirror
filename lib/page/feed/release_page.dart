@@ -710,7 +710,8 @@ class ReleaseFeedMainView extends StatelessWidget {
       // height: 23,
       margin: EdgeInsets.only(left: index == 0 ? 16 : 12, right: index == addresss.length - 1 ? 16 : 0),
       padding: EdgeInsets.symmetric(horizontal: 5, vertical: 3),
-      decoration: BoxDecoration(color: AppColor.textHint, borderRadius: BorderRadius.all(Radius.circular(3))),
+      alignment: Alignment(0,0),
+      decoration: BoxDecoration(color: AppColor.textHint.withOpacity(0.24), borderRadius: BorderRadius.all(Radius.circular(3))),
       child: Text(
         address,
         style: TextStyle(fontSize: 12),

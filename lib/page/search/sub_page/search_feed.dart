@@ -6,23 +6,29 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/search/search_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/slide_banner.dart';
+import 'package:provider/provider.dart';
 
 class SearchFeed extends StatefulWidget {
-  SearchFeed({Key key, this.keyWord, this.focusNode}) : super(key: key);
+  SearchFeed({Key key, this.keyWord, this.focusNode, this.textController}) : super(key: key);
   FocusNode focusNode;
   String keyWord;
+  TextEditingController textController;
+
   @override
   SearchFeedState createState() => SearchFeedState();
-
 }
 
 class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMixin {
@@ -60,12 +66,31 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
 
   @override
   void initState() {
+    requestFeednIterface();
     // 上拉加载
     _scrollController.addListener(() {
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
         dataPage += 1;
         requestFeednIterface();
       }
+    });
+    widget.textController.addListener(() {
+      // 取消延时
+      if (timer != null) {
+        timer.cancel();
+      }
+      // 延迟器:
+      timer = Timer(Duration(milliseconds: 700), () {
+        if (lastString != widget.keyWord) {
+          if (feedList.isNotEmpty) {
+            feedList.clear();
+            lastTime = null;
+            dataPage = 1;
+          }
+          requestFeednIterface();
+        }
+        lastString = widget.keyWord;
+      });
     });
     super.initState();
   }
@@ -120,31 +145,10 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
     lastTime = model.lastTime;
   }
 
-
   @override
   Widget build(BuildContext context) {
     print("biubiu!@@###%%^^^&&&&****(((()))))_+++==--009");
     print(feedList.isNotEmpty);
-    // 取消延时
-    if (timer != null) {
-      timer.cancel();
-    }
-    // 延迟器:
-    timer = Timer(Duration(milliseconds: 700), () {
-      print("1111111111111");
-      print("lastString+++++++++++++++++++++++++++++$lastString");
-      print("keyWord+++++++++++++++++++++++++++++$widget.keyWord");
-      if (lastString != widget.keyWord) {
-        if (feedList.isNotEmpty) {
-          print("333333333333333333333");
-          feedList.clear();
-          lastTime = null;
-          dataPage = 1;
-        }
-        requestFeednIterface();
-      }
-      lastString = widget.keyWord;
-    });
     if (feedList.isNotEmpty) {
       return Container(
           child: RefreshIndicator(
@@ -172,7 +176,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
                     crossAxisSpacing: 8.0,
                     itemBuilder: (context, index) {
                       // if (feedList.isNotEmpty) {
-                      if (index == feedList.length ) {
+                      if (index == feedList.length) {
                         return LoadingView(
                           loadText: loadText,
                           loadStatus: loadStatus,
@@ -333,9 +337,9 @@ class SearchFeeditemState extends XCState {
 
   // 宽高比例高度
   double setAspectRatio(double height, double width) {
-   if(index == 0)  {
-     return (((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) / width) * height - 20;
-   }
+    if (index == 0) {
+      return (((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) / width) * height - 20;
+    }
     return (((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) / width) * height;
   }
 
@@ -431,35 +435,79 @@ class SearchFeeditemState extends XCState {
                 ),
               ),
               Spacer(),
-              // Expanded(
-              Row(
-                children: [
-                  Icon(
-                    Icons.favorite,
-                    color: model.isLaud == 1 ? Colors.red : Colors.grey,
-                    size: 16,
-                  ),
-                  Offstage(
-                    offstage: model.laudCount == 0,
-                    child: Container(
-                      margin: EdgeInsets.only(left: 2),
-                      child: Text(
-                        "${model.laudCount}",
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: AppColor.textSecondary,
-                        ),
-                      ),
-                    ),
-                  )
-                ],
+              Expanded(
+                child: LaudItem(model: model,),
               ),
-              // ),
               // SizedBox(width: 1,)
             ],
           ),
         )
       ],
     ));
+  }
+}
+
+class LaudItem extends StatefulWidget {
+  LaudItem({Key key, this.model}) : super(key: key);
+  HomeFeedModel model;
+
+  @override
+  LaudItemState createState() => LaudItemState();
+}
+
+class LaudItemState extends State<LaudItem> {
+  // 点赞
+  setUpLuad() async {
+    bool  isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
+    if (isLoggedIn) {
+      Map<String, dynamic> model = await laud(id: widget.model.id, laud:widget.model.isLaud == 0 ? 1 : 0);
+      // 点赞/取消赞成功
+      if (model["state"]) {
+        setState(() {
+          if (widget.model.isLaud == 1) {
+            widget.model.isLaud = 0;
+            widget.model.laudCount -= 1;
+          } else {
+            widget.model.isLaud = 1;
+            widget.model.laudCount += 1;
+          }
+        });
+      } else { // 失败
+        print("shib ");
+      }
+    } else {
+      // 去登录
+      AppRouter.navigateToLoginPage(context);
+    }
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        GestureDetector(
+          onTap: () {
+            setUpLuad();
+          },
+          child: Icon(
+            Icons.favorite,
+            color: widget.model.isLaud == 1 ? Colors.red : Colors.grey,
+            size: 16,
+          ),
+        ),
+        Offstage(
+          offstage: widget.model.laudCount == 0,
+          child: Container(
+            margin: EdgeInsets.only(left: 2),
+            child: Text(
+              "${widget.model.laudCount}",
+              style: TextStyle(
+                fontSize: 10,
+                color: AppColor.textSecondary,
+              ),
+            ),
+          ),
+        )
+      ],
+    );
   }
 }

@@ -30,7 +30,7 @@ class CommentInputBox extends StatefulWidget {
 
 class CommentInputBoxState extends State<CommentInputBox> {
   var offstage = true;
-
+  GlobalKey<NavigatorState> _key = GlobalKey();
   inputHide() {
     setState(() {
       offstage = false;

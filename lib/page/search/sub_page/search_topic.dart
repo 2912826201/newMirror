@@ -12,8 +12,9 @@ import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/util/screen_util.dart';
 
 class SearchTopic extends StatefulWidget {
-  SearchTopic({Key key, this.keyWord, this.focusNode}) : super(key: key);
+  SearchTopic({Key key, this.keyWord, this.focusNode,this.textController}) : super(key: key);
   FocusNode focusNode;
+  TextEditingController textController;
   String keyWord;
 
   @override
@@ -49,18 +50,33 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
   }
 
   @override
-  bool useSubstance() {
-    return true;
-  }
-
-  @override
   void initState() {
+    requestFeednIterface();
     // 上拉加载
     _scrollController.addListener(() {
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
         dataPage += 1;
         requestFeednIterface();
       }
+    });
+    widget.textController.addListener(() {
+      // 取消延时器
+      if (timer != null) {
+        timer.cancel();
+      }
+      // 延迟器:
+      timer = Timer(Duration(milliseconds: 700), () {
+        if (lastString != widget.keyWord) {
+          if (topicList.isNotEmpty) {
+            print("333333333333333333333");
+            topicList.clear();
+            lastScore = null;
+            dataPage = 1;
+          }
+          requestFeednIterface();
+        }
+        lastString = widget.keyWord;
+      });
     });
     super.initState();
   }
@@ -121,22 +137,7 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
 
   @override
   Widget build(BuildContext context) {
-    if (timer != null) {
-      timer.cancel();
-    }
-    // 延迟器:
-    timer = Timer(Duration(milliseconds: 700), () {
-      if (lastString != widget.keyWord) {
-        if (topicList.isNotEmpty) {
-          print("333333333333333333333");
-          topicList.clear();
-          lastScore = null;
-          dataPage = 1;
-        }
-        requestFeednIterface();
-      }
-      lastString = widget.keyWord;
-    });
+
     if (topicList.isNotEmpty) {
       return Container(
           child: RefreshIndicator(
