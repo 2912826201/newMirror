@@ -97,4 +97,10 @@ class ChatTypeModel {
     }
     return false;
   }
+
+  //管家聊天界面：底部-可操作列表
+  static const String CHAT_SYSTEM_BOTTOM_BAR = "MD:chat_system_bottom_bar";
+
+  //管家聊天界面：可选择的列表
+  static const String MESSAGE_TYPE_SELECT = "MD:SelectMessage";
 }

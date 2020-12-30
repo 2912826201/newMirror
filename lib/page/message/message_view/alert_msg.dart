@@ -90,17 +90,28 @@ class AlertMsg extends StatelessWidget {
       );
       listTextSpan.add(textSpan1);
       // print("recallNotificationMessage.mOriginalObjectName:${recallNotificationMessage.mOriginalObjectName}-----TextMessage.objectName:${TextMessage.objectName}");
-      if (recallNotificationMessage.mOriginalObjectName ==
-          TextMessage.objectName) {
-        listTextSpan.add(getTextSpan());
-      } else {
-        try {
-          if (json.decode(recallNotificationMessage.recallContent)["content"] ==
-              TextMessage.objectName) {
-            listTextSpan.add(getTextSpan());
-          }
-        } catch (e) {}
+
+      try {
+        if (json.decode(recallNotificationMessage.recallContent)["type"] ==
+            TextMessage.objectName) {
+          listTextSpan.add(getTextSpan());
+        }
+      } catch (e) {
+        if (recallNotificationMessage.mOriginalObjectName ==
+            TextMessage.objectName) {
+          listTextSpan.add(getTextSpan());
+        }
       }
+      // if (recallNotificationMessage.mOriginalObjectName == TextMessage.objectName) {
+      //   listTextSpan.add(getTextSpan());
+      // } else {
+      //   try {
+      //     if (json.decode(recallNotificationMessage.recallContent)["content"] ==
+      //         TextMessage.objectName) {
+      //       listTextSpan.add(getTextSpan());
+      //     }
+      //   } catch (e) {}
+      // }
     } else {
       TextSpan textSpan1 = TextSpan(
         text: "“$chatUserName”撤回了一条消息",
