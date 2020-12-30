@@ -141,15 +141,12 @@ class DateUtil {
     }
 
     var time = timeInterval;
-    if (timeInterval < 9999999999) {
-      time = time * 1000;
-    }
     // 当前时间戳
     var currentDate = DateTime.now().millisecondsSinceEpoch;
     var currentDateString = DateTime.fromMillisecondsSinceEpoch(currentDate);
     print(currentDateString);
     // 传入时间戳转日期String
-    var date = new DateTime.fromMicrosecondsSinceEpoch(time * 1000);
+    var date = new DateTime.fromMillisecondsSinceEpoch(time);
     print(date);
     String year = date.year.toString();
     String month = date.month.toString();
