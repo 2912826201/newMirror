@@ -100,7 +100,8 @@ dependencies:
   audioplayers: ^0.17.0
   crypto: ^2.1.5
   convert: ^2.1.1
-
+  # 生成随机UUID字符串
+  uuid: ^2.2.2
 
 
   #高德三方库
@@ -110,7 +111,7 @@ dependencies:
   #测试用滚轮选择器
   flutter_cupertino_date_picker:
     git: https://github.com/yasseralsamman/flutter-cupertino-date-picker.git
-    #测试用城市选择器
+  #测试用城市选择器
   address_picker: ^0.0.1
 
   # 测试用的生成英文单词的库
@@ -159,10 +160,6 @@ flutter:
     - images/test/3.0x/
     - images/chat/
     - assets/emoji.json
-    - videos/1.mp4
-    - videos/2.mp4
-    - videos/3.mp4
-    - videos/4.mp4
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
