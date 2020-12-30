@@ -88,6 +88,12 @@ class RongCloud {
         RCConversationType.Private, targetId, content);
   }
 
+  // //todo 现在没有加 每一秒只发送5条数据的限制
+  // Future<Message> sendVoiceMessage(Message message, MessageContent content) {
+  //   return RongIMClient.sendMessage(
+  //       RCConversationType.Private, targetId, content);
+  // }
+
   //撤回消息
   Future<RecallNotificationMessage> recallMessage(Message message) async {
     return await RongIMClient.recallMessage(message, null);
@@ -137,5 +143,18 @@ class RongCloud {
     }
     messageIds.add(message.messageId);
     RongIMClient.deleteMessageByIds(messageIds, finished);
+  }
+
+  //插入发送的消息
+  void insertOutgoingMessage(int conversationType, String targetId,
+      MessageContent content, Function(Message msg, int code) finished) {
+    RongIMClient.insertOutgoingMessage(conversationType, targetId, 30, content,
+        new DateTime.now().millisecondsSinceEpoch, finished);
+  }
+
+  //插入发送的消息
+  void updateMessage(Map expansionDic, String messageUId,
+      Function(int code) finished) {
+    RongIMClient.updateMessageExpansion(expansionDic, messageUId, finished);
   }
 }

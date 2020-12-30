@@ -8,7 +8,6 @@ import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/util/string_util.dart';
-import 'package:mirror/util/toast_util.dart';
 import 'package:provider/provider.dart';
 
 import 'currency_msg.dart';
@@ -108,7 +107,8 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: getSmallBody(context),
       ),
-      getMessageState(widget.status),
+      getMessageState(widget.status,
+          isRead: widget.chatVoiceModel.read != 0, isMyself: widget.isMyself),
       Spacer(),
     ];
     if (widget.isMyself) {
@@ -178,7 +178,8 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
                           : AppColor.textHint,
                       onTap: () {
                         widget.voidMessageClickCallBack(
-                            contentType: ChatTypeModel.MESSAGE_TYPE_VOICE);
+                            contentType: ChatTypeModel.MESSAGE_TYPE_VOICE,
+                            position: widget.position);
                         // ToastShow.show(msg: "点击了语音播放", context: context);
                         context
                             .read<VoiceSettingNotifier>()

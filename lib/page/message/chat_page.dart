@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +24,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import 'chat_details_body.dart';
 import 'item/chat_more_icon.dart';
+import 'item/chat_system_bottom_bar.dart';
 import 'item/emoji_manager.dart';
 import 'item/message_body_input.dart';
 import 'item/message_input_bar.dart';
@@ -66,12 +69,17 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   String chatUserName;
   String chatUserId;
   String chatType;
+  bool isPersonalButler;
+
+  Timer _timer;
+  int _timerCount = 0;
 
   @override
   void initState() {
     super.initState();
     initData();
     initSetData();
+    initTime();
   }
 
   @override
@@ -82,7 +90,22 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     var body = [
       (chatDataList != null && chatDataList.length > 0)
           ? getChatDetailsBody()
-          : Spacer(),
+          : Expanded(
+              child: SizedBox(
+                  child: Stack(
+              children: [
+                Spacer(),
+                Positioned(
+                  child: Offstage(
+                    offstage: !isPersonalButler,
+                    child: ChatSystemBottomBar(),
+                  ),
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                )
+              ],
+            ))),
       getMessageInputBar(),
       bottomSettingBox(),
     ];
@@ -109,6 +132,8 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       vsync: this,
       voidItemLongClickCallBack: onItemLongClickCallBack,
       voidMessageClickCallBack: onMessageClickCallBack,
+      chatUserName: chatUserName,
+      isPersonalButler: isPersonalButler,
     );
   }
 
@@ -408,12 +433,14 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     chatUserName = "聊天界面";
     chatUserId = "0";
     chatType = "测试聊天";
+    isPersonalButler = false;
     if (widget.conversation == null) {
       print("未知信息");
     } else {
       chatUserName = widget.conversation.name;
       chatUserId = widget.conversation.conversationId;
       chatType = getMessageType(widget.conversation, context);
+      isPersonalButler = false;
     }
   }
 
@@ -447,6 +474,16 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       //   chatDataList.insert(0, getMessage(widget.shareMessage));
       // }
     }
+
+    if (isPersonalButler) {
+      ChatDataModel chatDataModel = new ChatDataModel();
+      chatDataModel.content = "私人管家";
+      chatDataList.insert(0, chatDataModel);
+    }
+
+    //判断是不是加入时间提示
+    postTimeChatDataModel(isSetState: false);
+
     //获取欧表情的数据
     emojiModelList = await EmojiManager.getEmojiModelList();
     Future.delayed(Duration(milliseconds: 200), () {
@@ -535,9 +572,9 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     setState(() {});
     postImgOrVideo(
         modelList, widget.conversation.conversationId, selectedMediaFiles.type,
-        () {
-      delayedSetState();
-    });
+            () {
+          delayedSetState();
+        });
   }
 
   //录音按钮的点击事件
@@ -607,6 +644,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   //所有的item点击事件
   void onMessageClickCallBack({String contentType,
     String content,
+    int position,
     Map<String, dynamic> map,
     bool isUrl}) {
     if (contentType == null || contentType.isEmpty || contentType.length < 1) {
@@ -628,6 +666,18 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       ToastShow.show(msg: "跳转视频课详情界面", context: context);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VOICE) {
       ToastShow.show(msg: "播放录音", context: context);
+      updateMessage(chatDataList[position], (code) {
+        setState(() {
+
+        });
+      });
+    } else if (contentType == RecallNotificationMessage.objectName) {
+      ToastShow.show(msg: "重新编辑消息", context: context);
+      // FocusScope.of(context).requestFocus(_focusNode);
+      _textController.text = json.decode(map["content"])["content"];
+      setState(() {
+
+      });
     } else {
       print("暂无此类型");
     }
@@ -647,11 +697,71 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     }
   }
 
+  //发送间隔时间
+  void postTimeChatDataModel({bool isSetState = true}) {
+    if (chatDataList != null &&
+        chatDataList.length > 0 &&
+        chatDataList[0].msg != null &&
+        !getNewestIsAlertMessage()) {
+      getTimeChatDataModel(
+        targetId: widget.conversation.conversationId,
+        conversationType: RCConversationType.Private,
+        finished: (Message msg, int code) {
+          ChatDataModel chatDataModel = new ChatDataModel();
+          chatDataModel.msg = msg;
+          chatDataModel.isTemporary = false;
+          chatDataModel.isHaveAnimation = true;
+          chatDataList.insert(0, chatDataModel);
+          if (isSetState) {
+            setState(() {
+
+            });
+          }
+        },
+      );
+    }
+  }
+
+  //判断最后一个消息是不是时间提示
+  bool getNewestIsAlertMessage() {
+    try {
+      bool isTextMessage = chatDataList[0].msg.objectName ==
+          TextMessage.objectName;
+      if (isTextMessage) {
+        TextMessage textMessage = chatDataList[0].msg.content as TextMessage;
+        Map<String, dynamic> map = json.decode(textMessage.content);
+        bool isAlertTimeMessage = map["type"] ==
+            ChatTypeModel.MESSAGE_TYPE_ALERT_TIME;
+        if (isAlertTimeMessage) {
+          return true;
+        }
+      }
+    } catch (e) {}
+    return false;
+  }
+
+  //计时
+  initTime() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      _timerCount++;
+      // print(_timerCount.toString());
+      if (_timerCount >= 300) {
+        _timerCount = 0;
+        // print("-----"+_timerCount.toString());
+        postTimeChatDataModel();
+      }
+    });
+  }
+
   @override
   void dispose() {
     _scrollController.dispose();
     if (Application.context != null) {
       Application.context.read<VoiceSettingNotifier>().stop();
+    }
+    if (_timer != null) {
+      _timer.cancel();
+      _timer = null;
     }
     super.dispose();
   }
