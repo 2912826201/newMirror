@@ -121,7 +121,13 @@ class LiveModel {
 
   List<EquipmentDtos> get equipmentDtos => _equipmentDtos;
 
-  int get videoSeconds => _videoSeconds;
+  int get videoSeconds {
+    if (_videoSeconds == null) {
+      return 0;
+    } else {
+      return _videoSeconds;
+    }
+  }
 
   int get isBooked => _isBooked;
 
