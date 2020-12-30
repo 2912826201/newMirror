@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/page/message/message_view/currency_msg.dart';
 
 class ChatSystemBottomBar extends StatelessWidget {
-  List<String> alertList = [
+  final List<String> alertList = [
     "获取个人数据",
     "获取食谱",
     "获取今日课件",
@@ -12,6 +14,10 @@ class ChatSystemBottomBar extends StatelessWidget {
     "其他操作",
     "其他操作"
   ];
+
+  final VoidMessageClickCallBack voidMessageClickCallBack;
+
+  ChatSystemBottomBar(this.voidMessageClickCallBack);
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +44,7 @@ class ChatSystemBottomBar extends StatelessWidget {
     );
   }
 
+  //每一个item
   Widget getItem(String text, int index, int len) {
     var firstMargin =
         const EdgeInsets.only(left: 15.5, top: 8, bottom: 8, right: 4);
@@ -45,25 +52,34 @@ class ChatSystemBottomBar extends StatelessWidget {
         const EdgeInsets.only(left: 4, top: 8, bottom: 8, right: 4);
     var endMargin =
         const EdgeInsets.only(left: 4, top: 8, bottom: 8, right: 15.5);
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(6),
-      child: Container(
-        decoration: BoxDecoration(
+    return Container(
+      margin:
+          index == 0 ? firstMargin : (index == len ? endMargin : commandMargin),
+      height: 32,
+      child: ClipRRect(
           borderRadius: BorderRadius.circular(6),
-          color: AppColor.white,
-        ),
-        margin: index == 0
-            ? firstMargin
-            : (index == len ? endMargin : commandMargin),
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        height: 32,
-        child: Center(
-          child: Text(
-            text,
-            style: TextStyle(fontSize: 14, color: AppColor.black),
-          ),
-        ),
-      ),
+          child: Material(
+              borderRadius: BorderRadius.all(Radius.circular(6)),
+              color: AppColor.white,
+              child: new InkWell(
+                child: Container(
+                  child: Center(
+                    child: Text(
+                      text,
+                      style: TextStyle(fontSize: 14, color: AppColor.black),
+                    ),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                ),
+                splashColor: AppColor.textHint,
+                onTap: () {
+                  voidMessageClickCallBack(
+                      content: text,
+                      contentType: ChatTypeModel.CHAT_SYSTEM_BOTTOM_BAR);
+                },
+              ))),
     );
   }
+
+
 }

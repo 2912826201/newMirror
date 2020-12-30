@@ -83,10 +83,11 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   Future<void> stopRecorder() async {
     await _mRecorder.stopRecorder();
     print(_mPath);
-
-    setState(() {
-      isHide = true;
-    });
+    if (context != null) {
+      setState(() {
+        isHide = true;
+      });
+    }
   }
 
 

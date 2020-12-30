@@ -9,6 +9,7 @@ import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'currency_msg.dart';
 
@@ -17,6 +18,7 @@ class VoiceMsg extends StatefulWidget {
   final _VoiceMsgState _state = _VoiceMsgState();
   final String userUrl;
   final String name;
+  final String messageUId;
   final bool isMyself;
   final bool isTemporary;
   final ChatVoiceModel chatVoiceModel;
@@ -28,6 +30,7 @@ class VoiceMsg extends StatefulWidget {
   VoiceMsg(
       {this.chatVoiceModel,
       this.isMyself,
+      this.messageUId,
       this.isTemporary,
       this.userUrl,
       this.name,
@@ -56,6 +59,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
     super.initState();
     _getUrlMd5String();
     _initTimeDuration();
+    _getIsRead();
   }
 
   @override
@@ -180,6 +184,15 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
                         widget.voidMessageClickCallBack(
                             contentType: ChatTypeModel.MESSAGE_TYPE_VOICE,
                             position: widget.position);
+
+                        if (widget.chatVoiceModel.read == 0) {
+                          widget.chatVoiceModel.read = 1;
+                          _setIsRead(1);
+                          setState(() {
+
+                          });
+                        }
+
                         // ToastShow.show(msg: "点击了语音播放", context: context);
                         context
                             .read<VoiceSettingNotifier>()
@@ -401,6 +414,26 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
     });
   }
 
+  //获取是否阅读过
+  void _getIsRead() async {
+    if (!widget.isMyself) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int counter = (prefs.getInt(widget.messageUId) ?? 0);
+      widget.chatVoiceModel.read = counter;
+      setState(() {
+
+      });
+    }
+  }
+
+  //设置阅读过
+  void _setIsRead(int read) async {
+    if (!widget.isMyself) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setInt(widget.messageUId, read);
+    }
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -410,3 +443,5 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
     }
   }
 }
+
+

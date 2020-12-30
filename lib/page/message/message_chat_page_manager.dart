@@ -121,6 +121,18 @@ Future<Message> postMessageManagerText(String targetId, String text) async {
   return await postMessageManager1(targetId, msg);
 }
 
+//发送可选择的消息
+Future<Message> postMessageManagerSelect(String targetId, String text) async {
+  TextMessage msg = TextMessage();
+  msg.sendUserInfo = getUserInfo();
+  // msg.content = text;
+  Map<String, dynamic> feedMap = Map();
+  feedMap["type"] = ChatTypeModel.MESSAGE_TYPE_SELECT;
+  feedMap["content"] = text;
+  msg.content = jsonEncode(feedMap);
+  return await postMessageManager1(targetId, msg);
+}
+
 //发送动态
 Future<Message> postMessageManagerFeed(
     String targetId, Map<String, dynamic> map) async {
@@ -319,6 +331,15 @@ void updateMessage(ChatDataModel chatDataModel, Function(int code) finished) {
   expansionDic["extra"] = voiceMessage.extra;
   Application.rongCloud.updateMessage(
       expansionDic, chatDataModel.msg.messageUId, finished);
+}
+
+//发送可选择的model
+void postSelectMessage(ChatDataModel chatDataModel, String targetId,
+    VoidCallback voidCallback) async {
+  chatDataModel.msg =
+  await postMessageManagerSelect(targetId, chatDataModel.content);
+  chatDataModel.isTemporary = false;
+  voidCallback();
 }
 
 

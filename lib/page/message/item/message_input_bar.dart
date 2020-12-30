@@ -76,6 +76,7 @@ class MessageInputBarState extends State<MessageInputBar> {
                   ),
                   Expanded(
                     child: Container(
+                      height: 32.0,
                       margin: const EdgeInsets.only(
                           top: 8.0, bottom: 8.0, left: 13.0, right: 13.0),
                       decoration: BoxDecoration(
@@ -111,6 +112,7 @@ class MessageInputBarState extends State<MessageInputBar> {
                 children: <Widget>[
                   GestureDetector(
                     child: Container(
+                      color: Colors.transparent,
                       height: 48,
                       width: 48,
                       padding: EdgeInsets.only(left: 16.0, right: 13.0),

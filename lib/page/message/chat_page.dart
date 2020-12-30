@@ -94,11 +94,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
               child: SizedBox(
                   child: Stack(
               children: [
-                Spacer(),
                 Positioned(
                   child: Offstage(
                     offstage: !isPersonalButler,
-                    child: ChatSystemBottomBar(),
+                    child: ChatSystemBottomBar(onMessageClickCallBack),
                   ),
                   left: 0,
                   right: 0,
@@ -128,7 +127,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   Widget getChatDetailsBody() {
     return ChatDetailsBody(
       scrollController: _scrollController,
-      chatData: chatDataList,
+      chatDataList: chatDataList,
       vsync: this,
       voidItemLongClickCallBack: onItemLongClickCallBack,
       voidMessageClickCallBack: onMessageClickCallBack,
@@ -440,7 +439,6 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       chatUserName = widget.conversation.name;
       chatUserId = widget.conversation.conversationId;
       chatType = getMessageType(widget.conversation, context);
-      isPersonalButler = false;
     }
   }
 
@@ -473,12 +471,6 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       // }else{
       //   chatDataList.insert(0, getMessage(widget.shareMessage));
       // }
-    }
-
-    if (isPersonalButler) {
-      ChatDataModel chatDataModel = new ChatDataModel();
-      chatDataModel.content = "私人管家";
-      chatDataList.insert(0, chatDataModel);
     }
 
     //判断是不是加入时间提示
@@ -534,8 +526,17 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   }
 
   //发送文字信息
-  _handleSubmittedData() async {
+  _handleSubmittedData() {
     String text = _textController.text;
+    if (text == null || text.isEmpty || text.length < 1) {
+      ToastShow.show(msg: "消息为空,请输入消息！", context: context);
+      return;
+    }
+    _postText(text);
+  }
+
+  //发送文字消息
+  _postText(String text) {
     if (text == null || text.isEmpty || text.length < 1) {
       ToastShow.show(msg: "消息为空,请输入消息！", context: context);
       return;
@@ -560,9 +561,9 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     List<ChatDataModel> modelList = <ChatDataModel>[];
     for (int i = 0; i < selectedMediaFiles.list.length; i++) {
       ChatDataModel chatDataModel = new ChatDataModel();
-      chatDataModel.type =
-      (selectedMediaFiles.type == mediaTypeKeyVideo ? ChatTypeModel
-          .MESSAGE_TYPE_VIDEO : ChatTypeModel.MESSAGE_TYPE_IMAGE);
+      chatDataModel.type = (selectedMediaFiles.type == mediaTypeKeyVideo
+          ? ChatTypeModel.MESSAGE_TYPE_VIDEO
+          : ChatTypeModel.MESSAGE_TYPE_IMAGE);
       chatDataModel.mediaFileModel = selectedMediaFiles.list[i];
       chatDataModel.isTemporary = true;
       chatDataModel.isHaveAnimation = true;
@@ -666,11 +667,11 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       ToastShow.show(msg: "跳转视频课详情界面", context: context);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VOICE) {
       ToastShow.show(msg: "播放录音", context: context);
-      updateMessage(chatDataList[position], (code) {
-        setState(() {
-
-        });
-      });
+      // updateMessage(chatDataList[position], (code) {
+      //   setState(() {
+      //
+      //   });
+      // });
     } else if (contentType == RecallNotificationMessage.objectName) {
       ToastShow.show(msg: "重新编辑消息", context: context);
       // FocusScope.of(context).requestFocus(_focusNode);
@@ -678,9 +679,37 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       setState(() {
 
       });
+    } else if (contentType == ChatTypeModel.CHAT_SYSTEM_BOTTOM_BAR) {
+      ToastShow.show(msg: "管家界面-底部点击了：$content", context: context);
+      _postSelectMessage(content);
+    } else if (contentType == ChatTypeModel.MESSAGE_TYPE_SELECT) {
+      ToastShow.show(msg: "选择列表选择了-底部点击了：$content", context: context);
+      // _textController.text=content;
+      _postText(content);
     } else {
       print("暂无此类型");
     }
+  }
+
+
+  //发送可选择的信息
+  _postSelectMessage(String text) async {
+    text += "," + text;
+    text += "," + text;
+    text += "," + text;
+    ChatDataModel chatDataModel = new ChatDataModel();
+    chatDataModel.type = ChatTypeModel.MESSAGE_TYPE_SELECT;
+    chatDataModel.content = text;
+    chatDataModel.isTemporary = true;
+    chatDataModel.isHaveAnimation = true;
+    chatDataList.insert(0, chatDataModel);
+    setState(() {
+      _textController.text = "";
+      isHaveTextLen = false;
+    });
+    postSelectMessage(chatDataList[0], widget.conversation.conversationId, () {
+      delayedSetState();
+    });
   }
 
   //撤回消息

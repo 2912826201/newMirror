@@ -8,9 +8,10 @@ import 'package:mirror/page/message/send_message_view.dart';
 import 'item/chat_system_bottom_bar.dart';
 import 'message_view/currency_msg.dart';
 
+// ignore: must_be_immutable
 class ChatDetailsBody extends StatelessWidget {
   final ScrollController scrollController;
-  final List<ChatDataModel> chatData;
+  final List<ChatDataModel> chatDataList;
   final TickerProvider vsync;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
@@ -19,33 +20,47 @@ class ChatDetailsBody extends StatelessWidget {
 
   ChatDetailsBody(
       {this.scrollController,
-      this.chatData,
+      this.chatDataList,
       this.vsync,
       this.chatUserName,
       this.isPersonalButler = false,
       this.voidMessageClickCallBack,
       this.voidItemLongClickCallBack});
 
+  List<ChatDataModel> chatData = <ChatDataModel>[];
+
   @override
   Widget build(BuildContext context) {
-    return new Flexible(
+    chatData.clear();
+    chatData.addAll(chatDataList);
+
+    if (isPersonalButler) {
+      ChatDataModel chatDataModel = new ChatDataModel();
+      chatDataModel.content = "私人管家";
+      chatData.insert(0, chatDataModel);
+    }
+
+    return Expanded(
+        child: SizedBox(
       child: Stack(
         children: [
-          ListView.builder(
-            physics: BouncingScrollPhysics(),
-            controller: scrollController,
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            reverse: true,
-            itemBuilder: (context, int index) {
-              return judgeStartAnimation(chatData[index], index);
-            },
-            itemCount: chatData.length,
-            dragStartBehavior: DragStartBehavior.down,
+          Positioned(
+            child: ListView.builder(
+              physics: BouncingScrollPhysics(),
+              controller: scrollController,
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              reverse: true,
+              itemBuilder: (context, int index) {
+                return judgeStartAnimation(chatData[index], index);
+              },
+              itemCount: chatData.length,
+              dragStartBehavior: DragStartBehavior.down,
+            ),
           ),
           Positioned(
             child: Offstage(
               offstage: !isPersonalButler,
-              child: ChatSystemBottomBar(),
+              child: ChatSystemBottomBar(voidMessageClickCallBack),
             ),
             left: 0,
             right: 0,
@@ -53,7 +68,7 @@ class ChatDetailsBody extends StatelessWidget {
           )
         ],
       ),
-    );
+    ));
   }
 
   //判断有没有动画

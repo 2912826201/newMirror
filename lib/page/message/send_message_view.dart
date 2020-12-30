@@ -18,6 +18,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'message_view/currency_msg.dart';
 import 'message_view/img_video_msg.dart';
 import 'message_view/live_video_course_msg.dart';
+import 'message_view/select_msg.dart';
 import 'message_view/text_msg.dart';
 import 'message_view/user_msg.dart';
 import 'message_view/voice_msg.dart';
@@ -82,8 +83,11 @@ class _SendMessageViewState extends State<SendMessageView> {
     } else if (widget.model.type == ChatTypeModel.MESSAGE_TYPE_VOICE) {
       //语音消息
       // return new Text('语音消息');
-      return getVoiceMsgData(widget.model.chatVoiceModel.toJson(), true,
+      return getVoiceMsgData(null, widget.model.chatVoiceModel.toJson(), true,
           StringUtil.generateMd5(widget.model.chatVoiceModel.filePath));
+    } else if (widget.model.type == ChatTypeModel.MESSAGE_TYPE_SELECT) {
+      //可选择的列表
+      return getSelectMsgData(widget.model.content);
     } else {
       return new Text('未知消息');
     }
@@ -136,6 +140,9 @@ class _SendMessageViewState extends State<SendMessageView> {
             mapModel["type"] == ChatTypeModel.MESSAGE_TYPE_ALERT_REMOVE) {
           // return new Text('提示消息');
           return getAlertMsg(map: mapModel);
+        } else if (mapModel["type"] == ChatTypeModel.MESSAGE_TYPE_SELECT) {
+          // return new Text('可选择的列表');
+          return getSelectMsgData(mapModel["content"]);
         }
       } catch (e) {
         return getTextMsg(text: textMessage.content);
@@ -186,6 +193,7 @@ class _SendMessageViewState extends State<SendMessageView> {
       mapModel["pathUrl"] = voiceMessage.remoteUrl;
     }
     return getVoiceMsgData(
+        msg.messageUId,
         mapModel,
         false,
         StringUtil.generateMd5(voiceMessage.remoteUrl != null
@@ -224,11 +232,29 @@ class _SendMessageViewState extends State<SendMessageView> {
         status: status);
   }
 
+  //获取选项列表
+  Widget getSelectMsgData(String selectListString) {
+    return SelectMsg(
+        selectListString: selectListString,
+        isMyself: isMyself,
+        userUrl: userUrl,
+        name: name,
+        voidMessageClickCallBack: widget.voidMessageClickCallBack,
+        voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
+        position: widget.position,
+        status: status);
+  }
+
   //获取语音
-  Widget getVoiceMsgData(Map<String, dynamic> chatVoiceModelMap,
-      bool isTemporary, String playMd5String) {
+  Widget getVoiceMsgData(
+      String messageUId,
+      Map<String, dynamic> chatVoiceModelMap,
+      bool isTemporary,
+      String playMd5String) {
     ChatVoiceModel chatVoiceModel = ChatVoiceModel.fromJson(chatVoiceModelMap);
+    chatVoiceModel.read = 1;
     return VoiceMsg(
+        messageUId: messageUId,
         chatVoiceModel: chatVoiceModel,
         isMyself: isMyself,
         isTemporary: isTemporary,
