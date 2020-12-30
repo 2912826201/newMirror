@@ -8,6 +8,13 @@ class DateUtil {
     return old.year == now.year && old.month == now.month && old.day == now.day;
   }
 
+  /// 是否是昨天.
+  static bool isYesterday(DateTime old) {
+    if (old == null) return false;
+    DateTime now = DateTime.now().add(Duration(days: -1));
+    return old.year == now.year && old.month == now.month && old.day == now.day;
+  }
+
   /// 返回这个日期是周几
   /// 从零开始的
   static String getStringWeekDayStartZero(int weekday) {
@@ -212,6 +219,21 @@ class DateUtil {
         return "00:${second > 10 ? second : "0" + second.toString()}";
       }
     }
+  }
+
+  //获取聊天框内消息提示的格式
+  static String formatMessageAlertTime(String millisecondsSinceEpoch) {
+    DateTime dateTime = getDateTimeByMs(int.parse(millisecondsSinceEpoch));
+    String alertString = "";
+    if (isToday(dateTime)) {
+      alertString += "今天";
+    } else if (isYesterday(dateTime)) {
+      alertString += "昨天";
+    } else {
+      alertString += formatDateV(dateTime, format: "yyyy-MM-dd");
+    }
+    alertString += " ${formatDateV(dateTime, format: "HH:mm")}";
+    return alertString;
   }
 
   static String full = "yyyy-MM-dd HH:mm:ss";

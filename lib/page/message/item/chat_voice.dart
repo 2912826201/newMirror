@@ -1,12 +1,12 @@
+import 'dart:async';
 import 'dart:io';
-import 'package:flutter_sound/flauto.dart';
-import 'package:flutter_sound/flutter_sound_player.dart';
-import 'package:flutter_sound/flutter_sound_recorder.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sound_lite/flutter_sound.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/voice_alert_date_model.dart';
 import 'package:mirror/util/date_util.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 import 'voice_dialog.dart';
@@ -41,63 +41,62 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   String toastShow = "手指上滑,取消发送";
   String voiceIco = "images/voice_volume_1.png";
 
-  FlutterSoundPlayer playerModule;
-  FlutterSoundRecorder recorderModule;
   bool isHide = true;
   int costTime = 0;
-  t_CODEC _codec = t_CODEC.CODEC_AAC;
   List<String> records = [];
 
   ///默认隐藏状态
   bool voiceState = true;
   OverlayEntry overlayEntry;
 
+  FlutterSoundRecorder _mRecorder = FlutterSoundRecorder();
+  String _mPath;
+
+  Timer _timer;
+
   @override
   void initState() {
     super.initState();
-    init();
+
+    openTheRecorder().then((value) {});
   }
 
-  init() async {
-    playerModule = await FlutterSoundPlayer().initialize();
-    recorderModule = await FlutterSoundRecorder().initialize();
-  }
-
-  void start() async {
-    costTime = 0;
-    print('开始拉。当前路径');
-    context.read<VoiceAlertData>().changeCallback(
-        alertText: "手指上滑,取消发送",
-        imageString: "images/chat/voice_volume_2.webp",
-        showDataTime: "0:00");
-    Directory tempDir = await getTemporaryDirectory();
-    String path = await recorderModule.startRecorder(
-      uri:
-          '${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}-${Platform.isAndroid ? "aac" : "m4a"}',
-      codec: _codec,
-    );
-    records.add(path);
-    print(path);
-    recorderModule.onRecorderStateChanged.listen((e) {
-      if (e != null && e.currentPosition != null) {
-        DateTime date = new DateTime.fromMillisecondsSinceEpoch(
-            e.currentPosition.toInt(),
-            isUtc: true);
-        context.read<VoiceAlertData>().changeCallback(
-            showDataTime: DateUtil.formatSecondToStringNum(costTime));
-        setState(() {
-          costTime = date.second;
-        });
+  @override
+  void dispose() {
+    stopRecorder();
+    _mRecorder.closeAudioSession();
+    _mRecorder = null;
+    if (_mPath != null) {
+      var outputFile = File(_mPath);
+      if (outputFile.existsSync()) {
+        outputFile.delete();
       }
-    });
+    }
+
+    if (overlayEntry != null) {
+      overlayEntry.remove();
+      overlayEntry = null;
+    }
+    super.dispose();
   }
 
-  void stop() async {
-    print('结束了。当前路径');
-    await recorderModule.stopRecorder();
+  Future<void> stopRecorder() async {
+    await _mRecorder.stopRecorder();
+    print(_mPath);
+
     setState(() {
       isHide = true;
     });
+  }
+
+
+  void startRecorder() async {
+    await _mRecorder.startRecorder(
+      toFile: _mPath,
+      codec: Codec.aacADTS,
+    );
+    initTimer();
+    setState(() {});
   }
 
   showVoiceView() {
@@ -114,7 +113,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       index = int.parse(recordingTime.toString().substring(3, 5));
     });
 
-    start();
+    startRecorder();
 
     if (overlayEntry == null) {
       overlayEntry = showVoiceDialog(context, index: index);
@@ -128,19 +127,23 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       voiceState = true;
     });
 
-    stop();
+    stopRecorder();
 
     if (overlayEntry != null) {
       overlayEntry.remove();
       overlayEntry = null;
     }
-
+    if (_timer != null) {
+      costTime = _timer.tick + 1;
+      _timer.cancel();
+      _timer = null;
+    }
     if (isUp) {
       print("取消发送");
       records.removeLast();
     } else {
       print("进行发送");
-      widget.voiceFile(records[records.length - 1], costTime);
+      widget.voiceFile(AppConfig.getAppVoiceFilePath(), costTime);
     }
     print(records.toString());
   }
@@ -181,7 +184,10 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       child: new Container(
         height: 32.0,
         alignment: Alignment.center,
-        width: MediaQuery.of(context).size.width,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width,
         decoration: textShow == "按住说话" ? noSelectBoxUiStyle : selectBoxUiStyle,
         child: Text(
           textShow,
@@ -189,5 +195,36 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
         ),
       ),
     );
+  }
+
+  Future<void> openTheRecorder() async {
+    var status = await Permission.microphone.request();
+    if (status != PermissionStatus.granted) {
+      throw RecordingPermissionException('Microphone permission not granted');
+    }
+
+    // var tempDir = await getTemporaryDirectory();
+    // _mPath = '${tempDir.path}/flutter_sound_example.aac';
+    _mPath = AppConfig.getAppVoiceFilePath();
+    var outputFile = File(_mPath);
+    if (outputFile.existsSync()) {
+      await outputFile.delete();
+    }
+    await _mRecorder.openAudioSession();
+  }
+
+  void initTimer() {
+    if (_timer != null) {
+      _timer.cancel();
+      _timer = null;
+    }
+    costTime = 1;
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      context.read<VoiceAlertData>().changeCallback(
+          showDataTime: DateUtil.formatSecondToStringNum(costTime));
+      setState(() {
+        costTime++;
+      });
+    });
   }
 }

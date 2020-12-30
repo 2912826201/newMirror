@@ -1,3 +1,5 @@
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+
 class ChatTypeModel {
   //没有信息
   static const String NULL_COMMENT = "null_comment";
@@ -62,4 +64,37 @@ class ChatTypeModel {
 
   //自定义消息类型：回复消息
   static const String MESSAGE_TYPE_REPLY = "MD:ReplyMessage";
+
+  //自定义消息类型：提示信息
+  static const String MESSAGE_TYPE_ALERT = "MD:AlertMessage";
+
+  //自定义消息类型：提示信息-时间提示
+  static const String MESSAGE_TYPE_ALERT_TIME = "MD:AlertTimeMessage";
+
+  //自定义消息类型：提示信息-邀请
+  static const String MESSAGE_TYPE_ALERT_INVITE = "MD:AlertInviteMessage";
+
+  //自定义消息类型：提示信息-移除
+  static const String MESSAGE_TYPE_ALERT_REMOVE = "MD:AlertRemoveMessage";
+
+  //自定义消息类型：提示信息-新的消息
+  static const String MESSAGE_TYPE_ALERT_NEW = "MD:AlertNewMessage";
+
+  //判断这个消息是不是提示消息
+  static bool getIsAlertMessage(String chatTypeModel) {
+    if (chatTypeModel == MESSAGE_TYPE_ALERT) {
+      return true;
+    } else if (chatTypeModel == MESSAGE_TYPE_ALERT_TIME) {
+      return true;
+    } else if (chatTypeModel == MESSAGE_TYPE_ALERT_INVITE) {
+      return true;
+    } else if (chatTypeModel == MESSAGE_TYPE_ALERT_REMOVE) {
+      return true;
+    } else if (chatTypeModel == MESSAGE_TYPE_ALERT_NEW) {
+      return true;
+    } else if (chatTypeModel == RecallNotificationMessage.objectName) {
+      return true;
+    }
+    return false;
+  }
 }

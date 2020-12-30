@@ -30,9 +30,6 @@ class UserMsg extends StatelessWidget {
       this.voidMessageClickCallBack,
       this.voidItemLongClickCallBack});
 
-  //0--pic    1-video  -1-都不是
-  int isPicOrVideo = -1;
-
   @override
   Widget build(BuildContext context) {
     List<String> longClickStringList = getLongClickStringList(

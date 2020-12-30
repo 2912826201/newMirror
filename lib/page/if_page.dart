@@ -159,7 +159,8 @@ class SingletonForWholePages {
       case 1:
         break;
       case 2:
-        return Container(child: CreateGroupChatWidget());
+        // return Container(child: CreateGroupChatWidget());
+        return Container();
         break;
       case 3:
         break;

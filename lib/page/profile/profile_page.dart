@@ -14,7 +14,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
-import 'package:r_scan/r_scan.dart';
+// import 'package:r_scan/r_scan.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'profile_detail_page.dart';
@@ -143,7 +143,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     return Stack(
       children: [
         Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
-          print("头像地址:$avatar");
+          // print("头像地址:$avatar");
           return CachedNetworkImage(
             height: height*0.16,
             width: width,
@@ -188,29 +188,29 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
           Center(
             child: InkWell(
               onTap: () async {
-                List<RScanCameraDescription> rScanCameras = await availableRScanCameras();
-                setState(() {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                    ///这里将扫码相机初始化传过去
-                    return ScanCodePage(
-                      rScanCameras: rScanCameras,
-                    );
-
-                    ///通过then将扫码界面返回的信息接到，吐司出来
-                  })).then((value) => {
-                        if (value != null)
-                          {
-                            print('这是从扫码界面传回的数据:$value'),
-                            Fluttertoast.showToast(
-                                msg: value.toString(),
-                                toastLength: Toast.LENGTH_SHORT,
-                                fontSize: 16,
-                                gravity: ToastGravity.CENTER,
-                                backgroundColor: AppColor.textHint,
-                                textColor: AppColor.white)
-                          }
-                      });
-                });
+                // List<RScanCameraDescription> rScanCameras = await availableRScanCameras();
+                // setState(() {
+                //   Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                //     ///这里将扫码相机初始化传过去
+                //     return ScanCodePage(
+                //       rScanCameras: rScanCameras,
+                //     );
+                //
+                //     ///通过then将扫码界面返回的信息接到，吐司出来
+                //   })).then((value) => {
+                //         if (value != null)
+                //           {
+                //             print('这是从扫码界面传回的数据:$value'),
+                //             Fluttertoast.showToast(
+                //                 msg: value.toString(),
+                //                 toastLength: Toast.LENGTH_SHORT,
+                //                 fontSize: 16,
+                //                 gravity: ToastGravity.CENTER,
+                //                 backgroundColor: AppColor.textHint,
+                //                 textColor: AppColor.white)
+                //           }
+                //       });
+                // });
               },
               child: Container(
                 height: 20,

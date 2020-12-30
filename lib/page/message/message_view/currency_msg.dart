@@ -1,13 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/page/message/item/widget_ver.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 //点击事件返回
 typedef VoidMessageClickCallBack = void Function(
-    {String contentType, String content, Map<String, dynamic> map, bool isUrl});
+    {String contentType,
+    String content,
+    Map<String, dynamic> map,
+    bool isUrl,
+    int position});
 typedef VoidItemLongClickCallBack = void Function(
     {int position,
     String settingType,
@@ -45,7 +50,8 @@ Widget getUserImage(String imageUrl, double height, double width) {
 //   static const int Sent = 30; //发送成功
 //   static const int Received = 40; //对方已接收
 //   static const int Read = 50; //对方已阅读
-Widget getMessageState(int status) {
+//isRead我是否阅读这个消息
+Widget getMessageState(int status, {bool isRead = true, bool isMyself}) {
   if (status == RCSentStatus.Sending) {
     //发送中
     return Container(
@@ -67,6 +73,22 @@ Widget getMessageState(int status) {
         Icons.sms_failed,
         size: 28,
         color: Colors.red,
+      ),
+    );
+  } else if (!isRead && !isMyself) {
+    //我没有阅读
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 6),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(7 / 2.0),
+        child: Container(
+          width: 7,
+          height: 7,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(7 / 2.0),
+            color: AppColor.mainRed,
+          ),
+        ),
       ),
     );
   } else if (status == RCSentStatus.Sent) {
