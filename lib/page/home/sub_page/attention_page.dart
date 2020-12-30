@@ -283,7 +283,28 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           isShowRecommendUser: true,
           model: feedmodel,
           // 可选参数 子Item的个数
-          key: GlobalObjectKey("attention$index"));
+          key: GlobalObjectKey("attention$index"),
+       deleteFeedChanged: (id) {
+            setState(() {
+              attentionIdList.remove(id);
+              context.read<FeedMapNotifier>().deleteFeed(id);
+            });
+       },
+        removeFollowChanged: (model) {
+           int pushId = model.pushId;
+           Map<int, HomeFeedModel> feedMap = context.read<FeedMapNotifier>().feedMap;
+           ///临时的空集合
+           List<int> themList =[];
+           feedMap.forEach((key, value) {
+             if(value.pushId != pushId) {
+               themList.add(key);
+             }
+           });
+           setState(() {
+             attentionIdList = themList;
+           });
+        },
+      );
     }
   }
 

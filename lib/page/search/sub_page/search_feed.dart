@@ -18,6 +18,7 @@ import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/slide_banner.dart';
 import 'package:provider/provider.dart';
 
@@ -499,7 +500,7 @@ class LaudItemState extends State<LaudItem> {
           child: Container(
             margin: EdgeInsets.only(left: 2),
             child: Text(
-              "${widget.model.laudCount}",
+              "${StringUtil.getNumber(widget.model.laudCount)}",
               style: TextStyle(
                 fontSize: 10,
                 color: AppColor.textSecondary,

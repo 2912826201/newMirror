@@ -4,6 +4,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/rich_text_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -92,7 +93,7 @@ class CommentLayout extends StatelessWidget {
                   pc.open();
                   context.read<FeedMapNotifier>().changeFeeId(model.id);
                 },
-                child: Text("共${commentCount}条评论", style: AppStyle.textHintRegular12),
+                child: Text("共${StringUtil.getNumber(commentCount)}条评论", style: AppStyle.textHintRegular12),
               );
             }, selector: (context, notifier) {
               return notifier.feedMap[model.id].commentCount;

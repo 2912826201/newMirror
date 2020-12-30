@@ -130,7 +130,7 @@ class DateUtil {
 
    超过24小时则显示“昨天 时分 ”，如 昨天 14:21 ；
 
-   超过48小时则显示为月日 时分 ，如7-8  7:21；
+   超过48小时则显示为月日 时分 ，如07-08  7:21；
 
    往年的显示 年-月-⽇ 如 16-5-21 12:12
    */
@@ -139,15 +139,12 @@ class DateUtil {
     if (timeInterval == 0) {
       return result;
     }
-
     var time = timeInterval;
     // 当前时间戳
     var currentDate = DateTime.now().millisecondsSinceEpoch;
     var currentDateString = DateTime.fromMillisecondsSinceEpoch(currentDate);
-    print(currentDateString);
     // 传入时间戳转日期String
     var date = new DateTime.fromMillisecondsSinceEpoch(time);
-    print(date);
     String year = date.year.toString();
     String month = date.month.toString();
     if (date.month <= 9) {
@@ -177,7 +174,7 @@ class DateUtil {
       if (currentDateString.day - date.day == 1) {
         result = "昨天" + " " + hour + ":" + minute;
       }
-      // 前天
+      //超过48小时
       if (currentDateString.day - date.day > 2) {
         result = month + "-" + day + " " + hour + ":" + minute;
       }

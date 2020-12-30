@@ -23,6 +23,20 @@ class FeedMapNotifier extends ChangeNotifier {
   }
  // 是否可以发布动态
   bool isPublish = true;
+  // 删除动态
+  void deleteFeed(int id) {
+    feedMap.remove(id);
+  }
+  // 关注or取消关注
+  void setIsFollow(int id,int isFollow) {
+    if (isFollow == 0) {
+      feedMap[id].isFollow = 1;
+    }
+    if (isFollow == 1) {
+      feedMap[id].isFollow = 0;
+    }
+    notifyListeners();
+  }
 // //点赞
   void setLaud(int laud, String avatarUrl, int id) {
     if (laud == 0) {

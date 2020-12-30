@@ -212,4 +212,30 @@ class StringUtil {
     }
     return true;
   }
+  /*
+  评论、分享、点赞数值显示规则：
+
+  无则不显示数字
+
+  小于10000，则显示具体数字；
+
+  大于10000，则显示为w，采取末位舍去法保留小数点后一位，如：60400显示为6w，63500显示为6.3w
+   */
+  static String getNumber(int number) {
+    if(number==0||number==null){
+      return 0.toString();
+    }
+    if (number < 10000) {
+      return number.toString();
+    } else {
+      String db = "${(number / 10000).toString()}";
+      if(int.parse(db.substring(db.indexOf(".")+1,db.indexOf(".")+2))!=0){
+        String doubleText = db.substring(0, db.indexOf(".")+2);
+        return doubleText + "W";
+      }else{
+        String intText = db.substring(0, db.indexOf("."));
+        return intText +"W";
+      }
+    }
+  }
 }

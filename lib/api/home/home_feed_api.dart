@@ -33,6 +33,9 @@ const String IMAGESCAN = "/third/green/imageScan";
 const String VIDEOSCAN = "/third/green/videoScan";
 // 首页推荐教练
 const String RECOMMENDCOACH = "/sport/course/RecommendCoach";
+// 删除动态
+const String DELETEFEED = "/appuser/web/feed/delete";
+
 //获取动态列表
 Future<DataResponseModel> getPullList({@required int type, @required int size, int targetId, int lastTime}) async {
   Map<String, dynamic> params = {};
@@ -319,6 +322,17 @@ Future<List> recommendCoach() async {
       }
     }
     return courseList;
+  } else {
+    return null;
+  }
+}
+// 删除动态
+Future<Map> deletefeed({@required int id}) async {
+  Map<String, dynamic> params = {};
+  params["id"] = id;
+  BaseResponseModel responseModel = await requestApi(DELETEFEED, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
   } else {
     return null;
   }

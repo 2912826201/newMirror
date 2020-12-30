@@ -12,6 +12,7 @@ import 'package:mirror/page/feed/like.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/if_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
@@ -151,7 +152,7 @@ class GetTripleAreaState extends State<GetTripleArea> {
             offstage: context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].laudCount) == null,
             child: //用Selector的方式监听数据
             Selector<FeedMapNotifier, int>(builder: (context,laudCount , child) {
-              return Text("$laudCount次赞",style: TextStyle(fontSize: 12),);
+              return Text("${StringUtil.getNumber(laudCount)}次赞",style: TextStyle(fontSize: 12),);
             }, selector: (context, notifier) {
               return notifier.feedMap[widget.model.id].laudCount;
             }),

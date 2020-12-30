@@ -15,6 +15,8 @@ import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment
 import 'package:mirror/page/if_page.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/comment_input_bottom_bar.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/post_comments.dart';
@@ -186,7 +188,7 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
                         // DynamicModelNotifier
                         child: Selector<FeedMapNotifier, int>(builder: (context, totalCount, child) {
                           return Text(
-                            "共$totalCount条评论",
+                            "共${StringUtil.getNumber(totalCount)}条评论",
                             style: AppStyle.textRegular12,
                           );
                         }, selector: (context, notifier) {
@@ -295,7 +297,7 @@ class CommentBottomListView extends StatelessWidget {
             Container(height: 6),
             Container(
               child: Text(
-                "${model.createTime}  回复",
+                "${DateUtil.generateFormatDate(model.createTime)} 回复",
                 style: TextStyle(
                   fontSize: 12,
                   color: AppColor.textSecondary,
@@ -328,7 +330,7 @@ class CommentBottomListView extends StatelessWidget {
         Offstage(
           offstage: context.watch<FeedMapNotifier>().feedMap[feedId].comments[index].laudCount == 0,
           child: Text(
-            "${context.select((FeedMapNotifier value) => value.feedMap[feedId].comments[index].laudCount)}",
+            "${StringUtil.getNumber(context.select((FeedMapNotifier value) => value.feedMap[feedId].comments[index].laudCount))}",
             style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
           ),
         )
@@ -490,7 +492,7 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
     } else {
       print("按钮initCount    ------${widget.commentDtoModel.initCount}");
       return GestureDetector(
-        child: Text("─── 查看${widget.commentDtoModel.initCount}条回复",
+        child: Text("─── 查看${StringUtil.getNumber(widget.commentDtoModel.initCount)}条回复",
             style: TextStyle(fontSize: 12, color: AppColor.textSecondary)),
         onTap: () {
           loadData();
@@ -643,7 +645,7 @@ class  BottomListViewSubCommentListItem extends StatelessWidget {
                     Container(
                       margin: EdgeInsets.only(bottom: 12),
                       child: Text(
-                        "${model.createTime}   回复",
+                        "${DateUtil.generateFormatDate( model.createTime)} 回复",
                         style: TextStyle(
                           fontSize: 12,
                           color: AppColor.textSecondary,
@@ -676,7 +678,7 @@ class  BottomListViewSubCommentListItem extends StatelessWidget {
                   offstage: context.watch<FeedMapNotifier>().feedMap[feedId].comments[mainIndex].replys[subIndex].laudCount == 0,
                   child:
                 Text(
-                  "${context.select((FeedMapNotifier value) => value.feedMap[feedId].comments[mainIndex].replys[subIndex].laudCount)}",
+                  "${StringUtil.getNumber(context.select((FeedMapNotifier value) => value.feedMap[feedId].comments[mainIndex].replys[subIndex].laudCount))}",
                   style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
                 ),
                 ),
