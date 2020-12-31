@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
@@ -20,23 +18,31 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/bottom_popup.dart';
 import 'package:mirror/widget/expandable_text.dart';
+import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:mirror/widget/slide_banner.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class DynamicListLayout extends StatelessWidget {
-  DynamicListLayout({Key key, this.index, this.pc, this.isShowRecommendUser,this.model,this.deleteFeedChanged,this.removeFollowChanged}) : super(key: key);
+  DynamicListLayout(
+      {Key key,
+      this.index,
+      this.pc,
+      this.isShowRecommendUser,
+      this.model,
+      this.deleteFeedChanged,
+      this.removeFollowChanged})
+      : super(key: key);
   final index;
   PanelController pc;
   bool isShowRecommendUser;
   HomeFeedModel model;
+
   // 删除动态
-  ValueChanged <int> deleteFeedChanged;
+  ValueChanged<int> deleteFeedChanged;
+
   // 取消关注
   ValueChanged<HomeFeedModel> removeFollowChanged;
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -47,71 +53,79 @@ class DynamicListLayout extends StatelessWidget {
     //     builder: (context, _) {
     // print("我要看model的值");
     //  print(model.toString());
-          return Column(
-            children: [
-              // 头部头像时间
-              getHead(screen_width, context,model),
-              // 图片区域
-              model.picUrls.isNotEmpty ? SlideBanner(height: model.picUrls[0].height.toDouble(),model: model,) : Container(),
-              // 点赞，转发，评论三连区域 getTripleArea
-              GetTripleArea(pc: pc,model:model ,index:index),
-              // 课程信息和地址
-              Offstage(
-                offstage: (model.address == null && model.courseDto == null),
-                child: Container(
-                  margin: EdgeInsets.only(left: 16, right: 16),
-                  // color: Colors.orange,
-                  width: screen_width,
-                  child: getCourseInfo(model),
-                ),
-              ),
-
-              // 文本文案
-              Offstage(
-                offstage: model.content.length == 0,
-                child: Container(
-                  margin: EdgeInsets.only(left: 16, right: 16, top: 12),
-                  width: ScreenUtil.instance.screenWidthDp,
-                  child:
-                  ExpandableText(
-                    text: model.content,
-                    model: model,
-                    maxLines: 2,
-                    style: TextStyle(fontSize: 14, color: AppColor.textPrimary1),
-                  ),
-                ),
-              ),
-
-              // 评论文本
-               context.watch<FeedMapNotifier>().feedMap[model.id].comments.length != 0 ? CommentLayout(model: model,pc: pc) : Container(),
-              // 输入框
-              CommentInputBox(feedModel: model),
-              // 推荐用户
-              getAttention(this.index, this.isShowRecommendUser),
-              // 分割块
-              Container(
-                height: 18,
-                color: AppColor.white,
+    return Column(
+      children: [
+        // 头部头像时间
+        getHead(screen_width, context, model),
+        // 图片区域
+        model.picUrls.isNotEmpty
+            ? SlideBanner(
+                height: model.picUrls[0].height.toDouble(),
+                model: model,
               )
-            ],
-          );
+            : Container(),
+        // 点赞，转发，评论三连区域 getTripleArea
+        GetTripleArea(pc: pc, model: model, index: index),
+        // 课程信息和地址
+        Offstage(
+          offstage: (model.address == null && model.courseDto == null),
+          child: Container(
+            margin: EdgeInsets.only(left: 16, right: 16),
+            // color: Colors.orange,
+            width: screen_width,
+            child: getCourseInfo(model),
+          ),
+        ),
+
+        // 文本文案
+        Offstage(
+          offstage: model.content.length == 0,
+          child: Container(
+            margin: EdgeInsets.only(left: 16, right: 16, top: 12),
+            width: ScreenUtil.instance.screenWidthDp,
+            child: ExpandableText(
+              text: model.content,
+              model: model,
+              maxLines: 2,
+              style: TextStyle(fontSize: 14, color: AppColor.textPrimary1),
+            ),
+          ),
+        ),
+
+        // 评论文本
+        context.watch<FeedMapNotifier>().feedMap[model.id].comments.length != 0
+            ? CommentLayout(model: model, pc: pc)
+            : Container(),
+        // 输入框
+        CommentInputBox(feedModel: model),
+        // 推荐用户
+        getAttention(this.index, this.isShowRecommendUser),
+        // 分割块
+        Container(
+          height: 18,
+          color: AppColor.white,
+        )
+      ],
+    );
     //     }
     // );
   }
+
   // 删除动态
   deleteFeed() async {
     Map<String, dynamic> map = await deletefeed(id: model.id);
-    if(map["state"]) {
+    if (map["state"]) {
       deleteFeedChanged(model.id);
-    }  else {
+    } else {
       print("删除失败");
     }
   }
+
   // 关注or取消关注
-  removeFollow( int isFollow,int id,BuildContext context) async {
+  removeFollow(int isFollow, int id, BuildContext context) async {
     print("isFollow:::::::::$isFollow");
     // 取消关注
-    if(isFollow == 1 ) {
+    if (isFollow == 1) {
       int relation = await ProfileCancelFollow(id);
       if (relation == 0 || relation == 2) {
         // context.read<FeedMapNotifier>().setIsFollow(id, isFollow);
@@ -121,10 +135,10 @@ class DynamicListLayout extends StatelessWidget {
         ToastShow.show(msg: "取消关注失败", context: context);
       }
     }
-    Navigator.pop(context);
   }
+
   // 头部
-  Widget getHead(double width, BuildContext context,HomeFeedModel model) {
+  Widget getHead(double width, BuildContext context, HomeFeedModel model) {
     return Container(
         height: 62,
         child: Row(
@@ -133,73 +147,68 @@ class DynamicListLayout extends StatelessWidget {
             GestureDetector(
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                  return ProfileDetailPage(userId: model.pushId,pcController:pc,);
+                  return ProfileDetailPage(
+                    userId: model.pushId,
+                    pcController: pc,
+                  );
                 }));
               },
-              child:    Container(
+              child: Container(
                 margin: EdgeInsets.only(left: 16, right: 11),
                 child: CircleAvatar(
                   // backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
                   backgroundImage:
-                  model.avatarUrl != null ? NetworkImage(model.avatarUrl ) :
-                  NetworkImage("images/test.png"),
+                      model.avatarUrl != null ? NetworkImage(model.avatarUrl) : NetworkImage("images/test.png"),
                   maxRadius: 19,
                 ),
               ),
             ),
-
             Expanded(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      child: Text(
-                        model.name ?? "空名字",
-                        style: TextStyle(fontSize: 15),
-                      ),
-                      onTap: () {},
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(top: 2),
-                      child: Text("${ DateUtil.generateFormatDate(model.createTime)
-                      }",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColor.textSecondary,
-                          )),
-                    )
-                  ],
-                )),
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  child: Text(
+                    model.name ?? "空名字",
+                    style: TextStyle(fontSize: 15),
+                  ),
+                  onTap: () {},
+                ),
+                Container(
+                  padding: EdgeInsets.only(top: 2),
+                  child: Text("${DateUtil.generateFormatDate(model.createTime)}",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColor.textSecondary,
+                      )),
+                )
+              ],
+            )),
             Container(
               margin: EdgeInsets.only(right: 16),
               child: GestureDetector(
                 child: Image.asset("images/test/ic_big_dynamic_more.png", fit: BoxFit.cover, width: 28, height: 28),
                 onTap: () {
-                  return showDialog(
+                 List<String> list = [];
+                  if (model.pushId == context.read<ProfileNotifier>().profile.uid) {
+                    list.add("删除");
+                  } else {
+                    if (model.isFollow == 1) {
+                      list.add("取消关注");
+                    }
+                    list.add("举报");
+                  }
+                  openMoreBottomSheet(
                       context: context,
-                      barrierDismissible: true, //是否点击空白区域关闭对话框,默认为true，可以关闭
-                      builder: (BuildContext context) {
-                        var list = List();
-                        if(model.pushId == context.watch<ProfileNotifier>().profile.uid) {
-                          list.add("删除");
-                        } else {
-                          if(model.isFollow == 1) {
-                            list.add("取消关注");
-                          }
-                          list.add("举报");
+                      lists: list,
+                      onItemClickListener: (index) {
+                        if (list[index] == "删除") {
+                          deleteFeed();
                         }
-                        return BottomPopup(
-                          list: list,
-                          onItemClickListener: (index) async {
-                            if(list[index] == "删除") {
-                              deleteFeed();
-                            }
-                            if( list[index] == "取消关注") {
-                              removeFollow(model.isFollow,model.pushId,context);
-                            }
-                          },
-                        );
+                        if (list[index] == "取消关注") {
+                          removeFollow(model.isFollow, model.pushId, context);
+                        }
                       });
                 },
               ),
@@ -207,8 +216,6 @@ class DynamicListLayout extends StatelessWidget {
           ],
         ));
   }
-
-
 
 // 视频
   Widget getVideo() {}
@@ -218,11 +225,10 @@ class DynamicListLayout extends StatelessWidget {
     List<String> tags = [];
     if (model.courseDto != null) {
       tags.add(model.courseDto.name);
-    }
-    else {
+    } else {
       tags.add("瑜伽课");
     }
-    if(model.address != null) {
+    if (model.address != null) {
       tags.add(model.address);
     }
     return Row(
@@ -241,4 +247,3 @@ class DynamicListLayout extends StatelessWidget {
     );
   }
 }
-

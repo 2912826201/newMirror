@@ -24,6 +24,7 @@ import 'config/config.dart';
 import 'config/shared_preferences.dart';
 import 'data/dto/profile_dto.dart';
 import 'data/dto/token_dto.dart';
+import 'data/model/message/chat_message_profile_notifier.dart';
 import 'data/model/message/chat_voice_setting.dart';
 import 'data/model/message/voice_alert_date_model.dart';
 import 'data/model/token_model.dart';
@@ -39,16 +40,17 @@ void main() {
   _initApp().then((value) => runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-            create: (_) => TokenNotifier(Application.token)),
-        ChangeNotifierProvider(
-            create: (_) => ProfileNotifier(Application.profile)),
-        ChangeNotifierProvider(create: (_) => FeedMapNotifier(feedMap: {})),
-        ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
-        ChangeNotifierProvider(create: (_) => ConversationNotifier()),
-        ChangeNotifierProvider(create: (_) => VoiceAlertData()),
-        ChangeNotifierProvider(create: (_) => VoiceSettingNotifier()),
-      ],
+            ChangeNotifierProvider(
+                create: (_) => TokenNotifier(Application.token)),
+            ChangeNotifierProvider(
+                create: (_) => ProfileNotifier(Application.profile)),
+            ChangeNotifierProvider(create: (_) => FeedMapNotifier(feedMap: {})),
+            ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
+            ChangeNotifierProvider(create: (_) => ConversationNotifier()),
+            ChangeNotifierProvider(create: (_) => VoiceAlertData()),
+            ChangeNotifierProvider(create: (_) => VoiceSettingNotifier()),
+            ChangeNotifierProvider(create: (_) => ChatMessageProfileNotifier()),
+          ],
       child: MyApp(),
     ),
   ));
@@ -162,14 +164,16 @@ class MyAppState extends State<MyApp> {
     //融云的收信管理者
     Application.rongCloud.initReceiveManager(context);
     //设置一个全局的上下文
-    Application.context = context;
+    Application.appContext = context;
     //全局音频播放器的回调
     context.read<VoiceSettingNotifier>().onPlayerCompletion();
     context.read<VoiceSettingNotifier>().onPlayerError();
     context.read<VoiceSettingNotifier>().onAudioPositionChanged();
 
     //如果已登录
-    if (context.read<TokenNotifier>().isLoggedIn) {
+    if (context
+        .read<TokenNotifier>()
+        .isLoggedIn) {
       // 读取会话数据库
       MessageManager.loadConversationListFromDatabase(context);
       // 连接融云

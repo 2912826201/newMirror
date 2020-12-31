@@ -1,8 +1,10 @@
 //融云消息接收管理者
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:provider/provider.dart';
 
 class RongCloudReceiveManager {
   BuildContext _context;
@@ -20,8 +22,13 @@ class RongCloudReceiveManager {
   onMessageReceivedWrapper(Message msg, int left, bool hasPackage, bool offline) {
     //TODO SDK 分批拉取离线消息，当离线消息量巨大的时候，建议当 left == 0 且 hasPackage == false 时刷新会话列表
     print("收到了融云消息：" + msg.toString());
+
+    Application.appContext
+        .read<ChatMessageProfileNotifier>()
+        .changeCallback(msg);
+
     //发信时间在用户注册时期之前的要舍弃掉 融云会保留一段时间 所以会查到用户注册前的消息
-    if(msg.sentTime < Application.profile.createTime){
+    if (msg.sentTime < Application.profile.createTime) {
       return;
     }
 

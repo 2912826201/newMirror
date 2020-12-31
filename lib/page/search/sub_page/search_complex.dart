@@ -84,8 +84,8 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
       // searchCourse(key: widget.keyWord, size: 2),
     ]).then((results) {
       print("历史记录（（（（（（（）））））");
-
-      SearchUserModel userModel = results[0];
+      SearchUserModel userModel;
+        userModel = results[0];
       DataResponseModel topicModel = results[1];
       DataResponseModel feedModel = results[2];
       // DataResponseModel courseModel = results[3];

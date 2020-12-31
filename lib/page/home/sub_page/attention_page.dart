@@ -39,10 +39,12 @@ enum PostStatus {
 
 // 关注
 class AttentionPage extends StatefulWidget {
-  AttentionPage({Key key, this.pc,this.postFeedModel}) : super(key: key);
+  AttentionPage({Key key, this.pc, this.postFeedModel}) : super(key: key);
   PanelController pc = new PanelController();
+
   // 发布动态需要的数据
   PostFeedModel postFeedModel;
+
   AttentionPageState createState() => AttentionPageState();
 }
 
@@ -56,7 +58,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   double _process = 0.0;
 
   // 加载中默认文字
-  String loadText = "加载中...";
+  String loadText = "";
 
   // 加载状态
   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
@@ -100,6 +102,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     });
     super.initState();
   }
+
   // 请求关注接口
   getRecommendFeed() async {
     isRequestInterface = true;
@@ -130,7 +133,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           });
           if (model.hasNext == 0) {
             loadText = "";
-            loadStatus = LoadingStatus.STATUS_COMPLETED;
+            loadStatus = LoadingStatus.STATUS_IDEL;
           }
           attentionIdList.insert(0, -1);
           status = Status.concern;
@@ -187,7 +190,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           }
           picUrls.add(PicUrlsModel(width: element.sizeInfo.width, height: element.sizeInfo.height));
         });
-        results = await FileUtil().uploadPics(fileList, ( percent) {
+        results = await FileUtil().uploadPics(fileList, (percent) {
           context.read<FeedMapNotifier>().getPostPlannedSpeed(percent);
         });
 
@@ -203,7 +206,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           videos.add(VideosModel(
               width: element.sizeInfo.width, height: element.sizeInfo.height, duration: element.sizeInfo.duration));
         });
-        results = await FileUtil().uploadMedias(fileList, ( percent) {
+        results = await FileUtil().uploadMedias(fileList, (percent) {
           context.read<FeedMapNotifier>().getPostPlannedSpeed(percent);
         });
         for (int i = 0; i < results.resultMap.length; i++) {
@@ -224,7 +227,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           latitude: postModel.latitude,
           longitude: postModel.longitude,
           cityCode: postModel.cityCode,
-          topics:jsonEncode( postModel.topics));
+          topics: jsonEncode(postModel.topics));
       print("发不接受发布结束：feedModel$feedModel");
       // 清空发布model
       context.read<FeedMapNotifier>().setPublishFeedModel(null);
@@ -256,13 +259,11 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         context.read<FeedMapNotifier>().getPostPlannedSpeed(_process);
         context.read<FeedMapNotifier>().setPublish(true);
       }
-
     }
   }
 
-
   // 返回关注视图
-  backToView(int index,  HomeFeedModel feedmodel) {
+  backToView(int index, HomeFeedModel feedmodel) {
     if (index == 0) {
       // return
       //   FlatButton(
@@ -278,45 +279,73 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       );
     } else {
       return DynamicListLayout(
-          index: index,
-          pc: widget.pc,
-          isShowRecommendUser: true,
-          model: feedmodel,
-          // 可选参数 子Item的个数
-          key: GlobalObjectKey("attention$index"),
-       deleteFeedChanged: (id) {
-            setState(() {
-              attentionIdList.remove(id);
-              context.read<FeedMapNotifier>().deleteFeed(id);
-            });
-       },
+        index: index,
+        pc: widget.pc,
+        isShowRecommendUser: true,
+        model: feedmodel,
+        // 可选参数 子Item的个数
+        key: GlobalObjectKey("attention$index"),
+        deleteFeedChanged: (id) {
+          setState(() {
+            attentionIdList.remove(id);
+            context.read<FeedMapNotifier>().deleteFeed(id);
+          });
+        },
         removeFollowChanged: (model) {
-           int pushId = model.pushId;
-           Map<int, HomeFeedModel> feedMap = context.read<FeedMapNotifier>().feedMap;
-           ///临时的空集合
-           List<int> themList =[];
-           feedMap.forEach((key, value) {
-             if(value.pushId != pushId) {
-               themList.add(key);
-             }
-           });
-           setState(() {
-             attentionIdList = themList;
-           });
+          int pushId = model.pushId;
+          Map<int, HomeFeedModel> feedMap = context.read<FeedMapNotifier>().feedMap;
+
+          ///临时的空数组
+          List<int> themList = [];
+          feedMap.forEach((key, value) {
+            if (value.pushId == pushId) {
+              themList.add(key);
+            }
+          });
+          setState(() {
+            attentionIdList = arrayDate(attentionIdList, themList);
+            loadStatus = LoadingStatus.STATUS_IDEL;
+            loadText = "";
+          });
         },
       );
     }
   }
 
+  /**比较两数组 取出不同的，
+   * array1 数组一
+   * array2 数组二
+   * **/
+  arrayDate(List<int> array1, List<int> array2) {
+    var arr1 = array1;
+    var arr2 = array2;
+    List<int> result = [];
+    for (var i = 0; i < array1.length; i++) {
+      var obj = array1[i];
+      var isExist = false;
+      for (var j = 0; j < array2.length; j++) {
+        var aj = array2[j];
+        if (obj == aj) {
+          isExist = true;
+          continue;
+        }
+      }
+      if (!isExist) {
+        result.add(obj);
+      }
+    }
+    print("result${result.toString()}");
+    return result;
+  }
 
   // 缺省图未登录关注视图的长度。
   int itemcount() {
     int count = 0;
-    if (status == Status.noConcern || status == Status.notLoggedIn || status == Status.noConcern) {
-      count = 1;
-    } else if (status == Status.concern) {
-      count = attentionIdList.length + 1;
-    }
+    // if (status == Status.noConcern || status == Status.notLoggedIn || status == Status.loggedIn) {
+    //   count = 1;
+    // } else if (status == Status.concern) {
+    count = attentionIdList.length + 1;
+    // }
     return count;
   }
 
@@ -332,7 +361,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         children: [
           Expanded(
               child: Container(
-                  margin: EdgeInsets.only(left: 16,right: 16),
+                  margin: EdgeInsets.only(left: 16, right: 16),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -345,26 +374,25 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                       publishTextStatus(context.read<FeedMapNotifier>().plannedSpeed),
                       Spacer(),
                       Offstage(
-                        offstage: context.read<FeedMapNotifier>().plannedSpeed != -1,
-                        child:Container(
-                          width: 76 ,
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 24,
-                                height: 24,
-                                color: Colors.lime,
-                              ),
-                              Spacer(),
-                              Container(
-                                width: 24,
-                                height: 24,
-                                color: Colors.lime,
-                              ),
-                            ],
-                          ),
-                        )
-                      )
+                          offstage: context.read<FeedMapNotifier>().plannedSpeed != -1,
+                          child: Container(
+                            width: 76,
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 24,
+                                  height: 24,
+                                  color: Colors.lime,
+                                ),
+                                Spacer(),
+                                Container(
+                                  width: 24,
+                                  height: 24,
+                                  color: Colors.lime,
+                                ),
+                              ],
+                            ),
+                          ))
                     ],
                   ))),
           LinearProgressIndicator(
@@ -378,17 +406,25 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   }
 
   // 发布动态进度条视图
-  publishTextStatus (double plannedSpeed) {
+  publishTextStatus(double plannedSpeed) {
     print("空值的来历￥￥$plannedSpeed");
     if (plannedSpeed >= 0 && plannedSpeed < 1) {
-      return Text("正在发布",style: AppStyle.textRegular16,);
-    } else if ( plannedSpeed  ==  1) {
-      return Text("完成",style: AppStyle.textRegular16,);
-    } else if (plannedSpeed  ==  -1) {
-      return Text("我们会在网络信号改善时重试",style:AppStyle.textHintRegular16 ,);
+      return Text(
+        "正在发布",
+        style: AppStyle.textRegular16,
+      );
+    } else if (plannedSpeed == 1) {
+      return Text(
+        "完成",
+        style: AppStyle.textRegular16,
+      );
+    } else if (plannedSpeed == -1) {
+      return Text(
+        "我们会在网络信号改善时重试",
+        style: AppStyle.textHintRegular16,
+      );
     }
   }
-
 
   // 缺省图未登录关注视图切换
   Widget pageDisplay(int index, HomeFeedModel feedModel) {
@@ -409,7 +445,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                 style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
               ),
               GestureDetector(
-                onTap: () async{
+                onTap: () async {
                   AppRouter.navigateToLoginPage(context);
                 },
                 child: Container(
@@ -463,23 +499,25 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     }
   }
 
-
- @override
+  @override
   void dispose() {
     print("关注页面销毁了");
 
     super.dispose();
   }
+
   @override
   void deactivate() {
     print("deactivate：：：：：：关注页");
     super.deactivate();
   }
+
   @override
   void didChangeDependencies() {
     print("didChangeDependencies：：：：：：关注页");
     super.didChangeDependencies();
   }
+
   @override
   void didUpdateWidget(covariant AttentionPage oldWidget) {
     print("didUpdateWidget：：：：：：关注页");
@@ -490,7 +528,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   @override
   Widget build(BuildContext context) {
     print("关注页");
-    print(  "当前时间${DateTime.now().millisecondsSinceEpoch.toString()}");
+    print("当前时间${DateTime.now().millisecondsSinceEpoch.toString()}");
     var isLogged = context.watch<TokenNotifier>().isLoggedIn;
     print(isLogged);
     if (!isLogged) {
@@ -500,14 +538,15 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       this.attentionModelList.clear();
       this.lastTime = null;
       loadStatus = LoadingStatus.STATUS_LOADING;
+      isRequestInterface = false;
     }
 
-    if (isLogged && attentionIdList.isEmpty && !isRequestInterface) {
+    if (isLogged && attentionIdList.isEmpty && !isRequestInterface && status != Status.noConcern) {
       getRecommendFeed();
     }
 
     if (context.watch<FeedMapNotifier>().postFeedModel != null && context.watch<FeedMapNotifier>().isPublish) {
-      if(status == Status.noConcern) {
+      if (status == Status.noConcern) {
         print("attentionIdList${attentionIdList.toString()}");
         if (attentionIdList.isEmpty) {
           attentionIdList.insert(0, -1);
@@ -538,48 +577,34 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             dataPage = 1;
             attentionIdList.clear();
             attentionModelList.clear();
-            loadStatus = LoadingStatus.STATUS_LOADING;
+            loadStatus = LoadingStatus.STATUS_IDEL;
             lastTime = null;
-            loadText = "加载中...";
-            DataResponseModel model = await getPullList(type: 0, size: 20, lastTime: lastTime);
-            setState(() {
-              if (model.list.isNotEmpty) {
-                model.list.forEach((v) {
-                  attentionIdList.add(HomeFeedModel.fromJson(v).id);
-                  attentionModelList.add(HomeFeedModel.fromJson(v));
-                });
-                attentionIdList.insert(0, -1);
-              }
-              lastTime = model.lastTime;
-              // 更新全局监听
-              context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
-            });
+            loadText = "";
+            getRecommendFeed();
           },
-          child: MediaQuery.removePadding(
-            removeTop: true,
-            context: context,
-            child: ListView.builder(
-                itemCount: itemcount(),
-                controller: _controller,
-                itemBuilder: (context, index) {
-                  if (index == 0 && widget.postFeedModel != null){
-                      return createdPostPromptView();
-                    }
-                  if (status == Status.noConcern || status == Status.notLoggedIn || status == Status.noConcern) {
-                    return pageDisplay(0, HomeFeedModel());
-                  }
-                  // 获取动态id
-                  int id;
-                  // 获取动态id指定model
-                  HomeFeedModel feedModel;
-                  if (index < attentionIdList.length) {
-                    id = attentionIdList[index];
-                    feedModel = context.read<FeedMapNotifier>().feedMap[id];
-                  }
-                  return pageDisplay(index, feedModel);
-                }),
-          )),
+          child: CustomScrollView(controller: _controller, physics: AlwaysScrollableScrollPhysics(), slivers: [
+            SliverList(
+              // controller: _controller,
+              delegate: SliverChildBuilderDelegate((content, index) {
+                if (index == 0 && widget.postFeedModel != null) {
+                  return createdPostPromptView();
+                }
+                if (status == Status.noConcern || status == Status.notLoggedIn || status == Status.noConcern) {
+                  return pageDisplay(0, HomeFeedModel());
+                }
+                // 获取动态id
+                int id;
+                // 获取动态id指定model
+                HomeFeedModel feedModel;
+                if (index < attentionIdList.length) {
+                  id = attentionIdList[index];
+                  feedModel = context.read<FeedMapNotifier>().feedMap[id];
+                }
+                return pageDisplay(index, feedModel);
+              }, childCount: itemcount()),
+            )
+            // )
+          ])),
     ));
   }
-
 }
