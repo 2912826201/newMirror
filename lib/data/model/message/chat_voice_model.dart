@@ -12,9 +12,9 @@ class ChatVoiceModel {
   int read;
 
   ChatVoiceModel(
-      {String type,
-      String filePath,
-      String pathUrl,
+      {String type = "",
+      String filePath = "",
+      String pathUrl = "",
       int longTime = 0,
       int read = 0}) {
     type = type;
