@@ -144,6 +144,8 @@ class _AppDialog extends StatelessWidget {
               }
             },
             child: Container(
+              //不加颜色则点击事件不会应用在整个container
+              color: AppColor.transparent,
               height: _buttonHeight,
               alignment: Alignment.center,
               child: Text(
@@ -166,6 +168,8 @@ class _AppDialog extends StatelessWidget {
               }
             },
             child: Container(
+              //不加颜色则点击事件不会应用在整个container
+              color: AppColor.transparent,
               height: _buttonHeight,
               alignment: Alignment.center,
               child: Text(
@@ -221,6 +225,8 @@ class _AppDialog extends StatelessWidget {
               }
             },
             child: Container(
+              //不加颜色则点击事件不会应用在整个container
+              color: AppColor.transparent,
               height: _buttonHeight,
               width: _dialogWidth,
               alignment: Alignment.center,
