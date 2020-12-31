@@ -16,7 +16,16 @@ For help getting started with Flutter, view our
 samples, guidance on mobile development, and a full API reference.
 
 ## 工程结构说明
-待完成。。。说明各包路径内容用途
+待完善。。。说明各包路径内容用途
+api/        各接口网络请求方法。
+config/     在APP运行时根据环境获取或生成的全局使用的变量及单例组件实例。
+constant/   统一标准和开发规范的常量。
+data/       数据模型及数据相关操作的工具类。
+im/         即时通讯消息通知相关功能组件。
+page/       各页面UI及业务逻辑实现。一些页面私有不复用的数据模型或界面组件也可以写在此路径下各页面文件中。
+route/      页面路由。
+util/       工具类。
+widget/     可复用的界面组件。
 
 ## 开发规范
 一、命名
@@ -31,7 +40,7 @@ samples, guidance on mobile development, and a full API reference.
 颜色时。使用withOpacity方法设置透明度。
 3.文字：之后会统一管理APP中用到的文字。暂时先写到各个页面代码中。
 
-## 开发指南
+## 业务逻辑开发指南
 一、页面路由中新建一个页面的跳转方法
 1./route/router.dart中新建路径。
 2./route/route_handler.dart中编写处理页面入参及创建页面的handler。
@@ -66,3 +75,11 @@ samples, guidance on mobile development, and a full API reference.
   context.read<TokenNotifier>().setToken(token);
   context.read<ProfileNotifier>().setProfile(profile);
   在notifier的方法中已经将值赋值到Application了，所以无需再次为Application中的token或profile赋值。
+  
+## UI界面开发指南
+一、状态栏字符颜色
+  用以下代码包裹Scaffold来实现控制状态栏字符颜色
+  AnnotatedRegion<SystemUiOverlayStyle>(
+    value: SystemUiOverlayStyle.dark, //黑色是dark 白色是light
+    child: Scaffold()
+  )

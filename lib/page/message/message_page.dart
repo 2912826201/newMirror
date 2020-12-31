@@ -4,6 +4,7 @@ import 'package:mirror/api/message_page_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/database/conversation_db_helper.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/friends_cell_dto.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
@@ -68,14 +69,39 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                   ),
                 )),
                 GestureDetector(
-                  onTap: () {
-                    //TODO 正国之前写的方法 需要仔细研究下
-                    PanelController expectedPc = SingletonForWholePages.singleton().panelController();
-                    if (expectedPc.isPanelClosed() == true) {
-                      SingletonForWholePages.singleton().panelController().open();
-                    } else {
-                      SingletonForWholePages.singleton().panelController().close();
+                  onTap: () async {
+                    //临时测试用的 创建群聊方法
+                    List<String> testGroupMemberList = [
+                      "1018240",
+                      "1005740",
+                      "1007890",
+                      "1004317",
+                      "1009100"];
+
+                    GroupChatModel model = await createGroupChat(testGroupMemberList);
+
+                    if(model == null){
+                      return;
                     }
+
+                    ConversationDto cdto = ConversationDto.fromGroupChat(model);
+
+                    bool result = await ConversationDBHelper().insertConversation(cdto);
+                    if (result) {
+                      if (cdto.isTop == 0) {
+                        context.read<ConversationNotifier>().insertCommonList([cdto]);
+                      } else {
+                        context.read<ConversationNotifier>().insertTopList([cdto]);
+                      }
+                    }
+
+                    //TODO 正国之前写的方法 需要仔细研究下
+                    // PanelController expectedPc = SingletonForWholePages.singleton().panelController();
+                    // if (expectedPc.isPanelClosed() == true) {
+                    //   SingletonForWholePages.singleton().panelController().open();
+                    // } else {
+                    //   SingletonForWholePages.singleton().panelController().close();
+                    // }
                   },
                   child: Container(
                     width: 28,
