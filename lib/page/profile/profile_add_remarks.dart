@@ -34,11 +34,14 @@ class _addRemarkState extends State<ProfileAddRemarks>{
             title: Text("修改备注",style: AppStyle.textMedium18,),
             centerTitle: true,
             leading:InkWell(
+              child: Container(
+                margin: EdgeInsets.only(left: 16),
+                child: Image.asset("images/resource/2.0x/return2x.png"),),
               onTap: (){
-                Navigator.pop(this.context);
+                Navigator.pop(context);
               },
-              child: Image.asset("images/test/back.png"),
             ),
+            leadingWidth: 44,
             actions: [
               Container(
                 width: 60,

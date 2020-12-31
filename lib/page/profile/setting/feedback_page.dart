@@ -29,8 +29,8 @@ class _feedBackPage extends State<FeedBackPage>{
   List<File> fileList = [];
   @override
   Widget build(BuildContext context) {
-    double width = ScreenUtil.instance.height;
-    double height = ScreenUtil.instance.screenWidthDp;
+    double width = ScreenUtil.instance.screenWidthDp;
+    double height = ScreenUtil.instance.height;
       return Scaffold(
         backgroundColor: AppColor.white,
           appBar: AppBar(
@@ -38,11 +38,14 @@ class _feedBackPage extends State<FeedBackPage>{
             title: Text("意见反馈",style: AppStyle.textMedium18,),
             centerTitle: true,
             leading:InkWell(
+              child: Container(
+                margin: EdgeInsets.only(left: 16),
+                child: Image.asset("images/resource/2.0x/return2x.png"),),
               onTap: (){
-                Navigator.pop(this.context);
+                Navigator.pop(context);
               },
-              child: Image.asset("images/test/back.png"),
             ),
+            leadingWidth: 44,
             actions: [
               Container(
                 width: 60,
@@ -93,9 +96,7 @@ Widget _inputBox(double width){
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(8)),
         border: Border.all(width: 0.5, color: AppColor.frame)),
-      child: Column(
-        children: [
-          TextField(
+      child: TextField(
             cursorColor:AppColor.black,
             style: AppStyle.textRegular16,
             decoration: InputDecoration(
@@ -109,8 +110,6 @@ Widget _inputBox(double width){
               });
             },
           ),
-        ],
-      ),
     );
 }
 
@@ -118,9 +117,14 @@ Widget _imageList(double width){
     return Container(
       height: 95,
       width: width,
-      child: ListView.builder(
+      child: ListView.separated(
         itemCount:imageDataList!=null?imageDataList.length+1:1,
         scrollDirection:Axis.horizontal,
+        separatorBuilder: (BuildContext context, int index) =>
+          VerticalDivider(
+            width: 10.0,
+            color: Color(0xFFFFFFFF),
+          ),
         itemBuilder:(context,index){
                 if(imageDataList!=null){
                   if(index==imageDataList.length){
@@ -151,7 +155,7 @@ Widget _item(int index){
              height: 86,
            )),
         Positioned(
-          top: 0,
+          top: 2,
           right: 0,
           child: InkWell(
             onTap: (){
@@ -159,11 +163,19 @@ Widget _item(int index){
               setState(() {
               });
             },
-            child: Container(
-            height: 16,
-            width: 16,
-            child: Icon(Icons.cancel),),
-          ))
+            child:Container(
+              width: 16,
+              height: 16,
+              decoration: BoxDecoration(
+                color: AppColor.bgBlack, borderRadius: BorderRadius.all(Radius.circular(8))),
+              child: Center(
+                child: Icon(
+                  Icons.close,
+                  color: AppColor.white,
+                  size: 12,
+                )),
+            ),
+          )),
       ],
     ),
   );
@@ -174,13 +186,18 @@ Widget _addImageItem(){
       onTap: (){
         _getImage();
       },
-      child:Container(
-      height: 86,
+      child: Container(
+      margin: EdgeInsets.only( top: 9, right: 16),
       width: 86,
-      child: Image.asset(
-        "images/test/爱心.png"
+      height: 86,
+      decoration: BoxDecoration(
+        color: AppColor.bgWhite,
+        borderRadius: BorderRadius.all(Radius.circular(3.0)),
       ),
-    ) ,):Container();
+      child: Center(
+        child: Icon(Icons.add, color: AppColor.textHint),
+      ),
+    ),):Container();
 }
 
   _getImage(){

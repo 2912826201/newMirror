@@ -37,11 +37,14 @@ class _IntroductionState extends State<EditInformationIntroduction>{
             appBar: AppBar(
             backgroundColor: AppColor.white,
             leading:InkWell(
+              child: Container(
+                margin: EdgeInsets.only(left: 16),
+                child: Image.asset("images/resource/2.0x/return2x.png"),),
               onTap: (){
-                Navigator.pop(this.context);
+                Navigator.pop(context);
               },
-              child: Image.asset("images/test/back.png"),
             ),
+              leadingWidth: 44,
             title: Text("编辑昵称",style: AppStyle.textMedium18,),
             centerTitle: true,
             actions: [

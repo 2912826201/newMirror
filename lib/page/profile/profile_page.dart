@@ -11,14 +11,14 @@ import 'package:mirror/data/model/profile/profile_model.dart';
 import 'package:mirror/data/model/user_extrainfo_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/page/profile/query_list/query_follow_list.dart';
+import 'package:mirror/page/profile/scan_code_test.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:r_scan/r_scan.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-
 import 'profile_detail_page.dart';
-import 'scan_code_page.dart';
 
 enum ActionItems { DENGCHU, DENGLU }
 
@@ -65,6 +65,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         uid = attentionModel.uid;
         followingCount = attentionModel.followingCount;
         followerCount = attentionModel.followerCount;
+        print('个人主页粉丝数================================$followerCount');
         feedCount = attentionModel.feedCount;
         trainingSeconds = extraInfoModel.trainingSeconds;
         weight = extraInfoModel.weight;
@@ -77,6 +78,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   Widget build(BuildContext context) {
     // TODO: implement build
     super.build(context);
+    print('===============================我的页build');
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return Scaffold(
@@ -118,7 +120,9 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                       builder: (context, notifier, child) {
                         return Row(
                           children: [
-                            _secondData(Icons.access_alarms_sharp, trainingSeconds, "训练记录",height,width),
+                            InkWell(
+                              child: _secondData(Icons.access_alarms_sharp, trainingSeconds, "训练记录",height,width),
+                            ),
                             Expanded(child: Container()),
                             _secondData(Icons.access_alarms_sharp, weight, "体重记录",height,width),
                             Expanded(child: Container()),
@@ -188,13 +192,13 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
           Center(
             child: InkWell(
               onTap: () async {
-                List<RScanCameraDescription> rScanCameras = await availableRScanCameras();
+                /*Map<Permission, PermissionStatus> statuses = await [
+                  Permission.camera,].request();*/
                 setState(() {
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                     ///这里将扫码相机初始化传过去
-                    return ScanCodePage(
-                      rScanCameras: rScanCameras,
-                    );
+                      return ScanCodeTest();
+
 
                     ///通过then将扫码界面返回的信息接到，吐司出来
                   })).then((value) => {
@@ -274,9 +278,25 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
               child: Column(children: [
                 Expanded(child: SizedBox()),
               Row(children: [
+                InkWell(
+                  child:
                 _TextAndNumber("关注", followingCount),
+                  onTap: (){
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                      return QueryFollowList(type: 1,pc: widget.panelController,userId: uid,);
+                    }));
+                  },
+                ),
                 SizedBox(width:width*0.13 ,),
+                InkWell(
+                  onTap: (){
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                      return QueryFollowList(type: 2,pc: widget.panelController,userId: uid,);
+                    }));
+                  },
+                  child:
                 _TextAndNumber("粉丝", followerCount),
+                ),
                 SizedBox(width:width*0.13 ,),
                 _TextAndNumber("动态", feedCount)
               ])],)

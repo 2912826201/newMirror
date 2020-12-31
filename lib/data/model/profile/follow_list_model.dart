@@ -28,7 +28,7 @@ class FollowModel{
   String avatarUri;
   String nickName;
   String description;
-  String  isFallow;
+  int  isFallow;
   FollowModel(
     {this.uid,
       this.avatarUri,
