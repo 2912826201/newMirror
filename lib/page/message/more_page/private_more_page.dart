@@ -113,7 +113,16 @@ class PrivateMorePageState extends State<PrivateMorePage> {
                   activeColor: AppColor.mainRed,
                   value: isOpen,
                   onChanged: (bool value) {
-                    return;
+                    if (type == 1) {
+                      disturbTheNews = !disturbTheNews;
+                      onClickItem(disturbTheNews, title);
+                    } else if (type == 2) {
+                      topChat = !topChat;
+                      onClickItem(topChat, title);
+                    } else {
+                      onClickItem(isOpen, title);
+                    }
+                    setState(() {});
                   },
                 ),
               ),

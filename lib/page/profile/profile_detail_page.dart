@@ -16,9 +16,9 @@ import 'package:mirror/data/model/profile/profile_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_bottom_sheet.dart';
+import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_details_more.dart';
 import 'package:mirror/page/profile/sticky_tabBar.dart';
 import 'package:mirror/route/router.dart';
@@ -587,9 +587,11 @@ class _ProfileDetailState extends State<ProfileDetailPage>
             ///打开dialog
             _getAttention(false);
           } else {
-            ///这里跳转到私聊界面
-          }
-        });
+                ///这里跳转到私聊界面
+                ToastShow.show(msg: "跳转私聊", context: context);
+                jumpChatPageUser(context, userModel);
+              }
+            });
       }
     },
     child:Container(
