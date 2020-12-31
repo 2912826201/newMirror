@@ -35,9 +35,6 @@ class AppColor {
   //N4 Disable、提示文字
   static const textHint = Color.fromRGBO(0xCC, 0xCC, 0xCC, 1.0);
 
-  //N4 Disable、提示文字
-  static const textHint1 = Color.fromRGBO(0xE8, 0xE8, 0xE8, 1.0);
-
   // 标准颜色
   // 纯黑
   static const black = Color.fromRGBO(0x00, 0x00, 0x00, 1.0);
@@ -55,4 +52,5 @@ class AppColor {
   static const textVipPrimary1 = Color.fromRGBO(0x8F, 0x58, 0x08, 1.0);
   static const buttonBackground = Color.fromRGBO(17, 17, 17, 1);
   static const textButtonCenter = Color.fromRGBO(255, 255, 255, 1);
+  static const textHint1 = Color.fromRGBO(0xE8, 0xE8, 0xE8, 1.0);
 }

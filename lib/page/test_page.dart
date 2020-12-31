@@ -15,6 +15,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:provider/provider.dart';
 
 import 'message/message_chat_page_manager.dart';
@@ -255,6 +256,63 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                 },
                 child: Text("下载测试页"),
               ),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                RaisedButton(
+                  onPressed: () {
+                    showAppDialog(context,
+                        title: "测试标题",
+                        info: "测试内容多一点多一点测试内容多一点多一点测试内容多一点多一点测试内容多一点多一点",
+                        cancel: AppDialogButton("取消", () {
+                          print("点了取消");
+                          return true;
+                        }),
+                        confirm: AppDialogButton("确定", () {
+                          print("点了确定");
+                          return true;
+                        }));
+                  },
+                  child: Text("提示框1"),
+                ),
+                RaisedButton(
+                  onPressed: () {
+                    showAppDialog(context,
+                        title: "今天吃什么",
+                        info: "必须选一个，不选不能关弹窗",
+                        barrierDismissible: false,
+                        buttonList: [
+                          AppDialogButton("乡村基", () {
+                            print("点了乡村基");
+                            return true;
+                          }),
+                          AppDialogButton("喜多米", () {
+                            print("点了喜多米");
+                            return true;
+                          }),
+                          AppDialogButton("猪脚饭", () {
+                            print("点了猪脚饭");
+                            return true;
+                          }),
+                        ]);
+                  },
+                  child: Text("提示框2"),
+                ),
+                RaisedButton(
+                  onPressed: () {
+                    showAppDialog(
+                      context,
+                      circleImageUrl: "",
+                      topImageUrl: "",
+                      title: "有图的版本",
+                      info: "还没有做加载图片，只是占位图",
+                      confirm: AppDialogButton("我知道了", () {
+                        print("点了我知道了");
+                        return true;
+                      }),
+                    );
+                  },
+                  child: Text("提示框3"),
+                ),
+              ]),
             ],
           ),
         ),
