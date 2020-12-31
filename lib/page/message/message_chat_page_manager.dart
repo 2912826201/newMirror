@@ -9,6 +9,7 @@ import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
+import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -18,6 +19,19 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 int imPostSecondNumber = 5;
 
 // typedef VoidCallback = void Function();
+
+//去对应的聊天界面
+void jumpChatPageUser(
+  BuildContext context,
+  UserModel userModel,
+) {
+  ConversationDto conversation = new ConversationDto();
+  conversation.conversationId = userModel.uid.toString();
+  conversation.uid = Application.profile.uid;
+  conversation.name = userModel.nickName;
+  conversation.avatarUri = userModel.avatarUri;
+  jumpChatPageConversationDto(context, conversation);
+}
 
 //分享跳转界面
 void jumpShareMessage(Map<String, dynamic> map, String chatType, String name,
@@ -117,7 +131,7 @@ void _jumpChatPage(
 Future<Message> postMessageManagerText(String targetId, String text,
     bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getUserInfo();
+  msg.sendUserInfo = getChatUserInfo();
   // msg.content = text;
   Map<String, dynamic> feedMap = Map();
   feedMap["type"] = ChatTypeModel.MESSAGE_TYPE_TEXT;
@@ -132,7 +146,7 @@ Future<Message> postMessageManagerText(String targetId, String text,
 Future<Message> postMessageManagerSelect(String targetId, String text,
     bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getUserInfo();
+  msg.sendUserInfo = getChatUserInfo();
   // msg.content = text;
   Map<String, dynamic> feedMap = Map();
   feedMap["type"] = ChatTypeModel.MESSAGE_TYPE_SELECT;
@@ -147,7 +161,7 @@ Future<Message> postMessageManagerSelect(String targetId, String text,
 Future<Message> postMessageManagerFeed(String targetId,
     Map<String, dynamic> map, bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getUserInfo();
+  msg.sendUserInfo = getChatUserInfo();
   Map<String, dynamic> feedMap = Map();
   feedMap["type"] = ChatTypeModel.MESSAGE_TYPE_FEED;
   feedMap["content"] = jsonEncode(map);
@@ -165,12 +179,12 @@ Future<Message> postMessageManagerImgOrVideo1(
     UploadResultModel uploadResultModel) async {
   ImageMessage msg = new ImageMessage();
   mediaFileModel.sizeInfo.type =
-      isImgOrVideo ? mediaTypeKeyImage : mediaTypeKeyVideo;
+  isImgOrVideo ? mediaTypeKeyImage : mediaTypeKeyVideo;
   msg.localPath = uploadResultModel.filePath;
   msg.extra = jsonEncode(mediaFileModel.sizeInfo.toJson());
   msg.imageUri = uploadResultModel.url;
   msg.mThumbUri = uploadResultModel.url;
-  msg.sendUserInfo = getUserInfo();
+  msg.sendUserInfo = getChatUserInfo();
   return await postPrivateMessageManager(targetId, msg);
 }
 
@@ -182,7 +196,7 @@ Future<Message> postMessageManagerImgOrVideo(String targetId, bool isImgOrVideo,
   isImgOrVideo ? mediaTypeKeyImage : mediaTypeKeyVideo;
   mediaFileModel.sizeInfo.showImageUrl = uploadResultModel.url;
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getUserInfo();
+  msg.sendUserInfo = getChatUserInfo();
   Map<String, dynamic> feedMap = Map();
   feedMap["type"] = isImgOrVideo
       ? ChatTypeModel.MESSAGE_TYPE_IMAGE
@@ -201,7 +215,7 @@ Future<Message> postMessageManagerVoice(String targetId,
   msg.localPath = chatVoiceModel.filePath;
   msg.extra = jsonEncode(chatVoiceModel.toJson());
   msg.duration = chatVoiceModel.longTime;
-  msg.sendUserInfo = getUserInfo();
+  msg.sendUserInfo = getChatUserInfo();
   Message message = new Message();
   message.conversationType = conversationType;
   message.senderUserId = Application.profile.uid.toString();
@@ -220,7 +234,7 @@ Future<Message> postMessageManagerVoice(String targetId,
 Future<Message> postMessageManagerUser(String targetId,
     Map<String, dynamic> map, bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getUserInfo();
+  msg.sendUserInfo = getChatUserInfo();
   Map<String, dynamic> feedMap = Map();
   feedMap["type"] = ChatTypeModel.MESSAGE_TYPE_USER;
   feedMap["content"] = jsonEncode(map);
@@ -234,7 +248,7 @@ Future<Message> postMessageManagerUser(String targetId,
 Future<Message> postMessageManagerLiveCourse(String targetId,
     Map<String, dynamic> map, bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getUserInfo();
+  msg.sendUserInfo = getChatUserInfo();
   Map<String, dynamic> feedMap = Map();
   feedMap["type"] = ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE;
   feedMap["content"] = jsonEncode(map);
@@ -248,7 +262,7 @@ Future<Message> postMessageManagerLiveCourse(String targetId,
 Future<Message> postMessageManagerVideoCourse(String targetId,
     Map<String, dynamic> map, bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getUserInfo();
+  msg.sendUserInfo = getChatUserInfo();
   Map<String, dynamic> feedMap = Map();
   feedMap["type"] = ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE;
   feedMap["content"] = jsonEncode(map);
@@ -278,7 +292,7 @@ void postMessageManagerAlertTime(String chatTypeModel,
     int conversationType,
     Function(Message msg, int code) finished, bool isPrivate) {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getUserInfo();
+  msg.sendUserInfo = getChatUserInfo();
   Map<String, dynamic> feedMap = Map();
   feedMap["type"] = chatTypeModel;
   feedMap["content"] = content;
@@ -288,7 +302,7 @@ void postMessageManagerAlertTime(String chatTypeModel,
 }
 
 //获取用户数据
-UserInfo getUserInfo() {
+UserInfo getChatUserInfo() {
   UserInfo userInfo = UserInfo();
   userInfo.userId = Application.profile.uid.toString();
   userInfo.name = Application.profile.nickName;
