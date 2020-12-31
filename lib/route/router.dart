@@ -47,6 +47,9 @@ class AppRouter {
   static String pathEditInformationIntroduction = "/profile/editinformation/introduction";
   static String pathChatPage = "/chatPage";
   static String pathSettingHomePage = "/profile/settinghomepage";
+  static String pathSettingFeedBack = "/profile/settingfeedback";
+  static String pathSettingBlackList = "/profile/settingblacklist";
+  static String pathSettingNoticeSetting = "/profile/settingnoticeSetting";
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(
         handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
@@ -78,6 +81,9 @@ class AppRouter {
     router.define(pathEditInformationName, handler: handlerEditInformationName);
     router.define(pathEditInformationIntroduction, handler: handlerEditInformationIntroduction);
     router.define(pathSettingHomePage, handler: handlerSettingHomePage);
+    router.define(pathSettingFeedBack, handler: handlerSettingFeedBack);
+    router.define(pathSettingNoticeSetting, handler: handlerSettingNoticeSetting);
+    router.define(pathSettingBlackList, handler: handlerSettingBlackList);
 
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
@@ -207,6 +213,18 @@ class AppRouter {
   static void navigateToSettingHomePage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathSettingHomePage, map);
+  }
+  static void navigateToSettingFeedBack(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathSettingFeedBack, map);
+  }
+  static void navigateToSettingNoticeSetting(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathSettingNoticeSetting, map);
+  }
+  static void navigateToSettingBlackList(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathSettingBlackList, map);
   }
 
   static void navigateToLikePage(BuildContext context) {

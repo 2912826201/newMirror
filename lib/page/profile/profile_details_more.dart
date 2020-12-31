@@ -43,7 +43,10 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
               backgroundColor: AppColor.white,
               title: Text("更多",style: AppStyle.textRegular18,),
               centerTitle: true,
-              leading: InkWell(
+              leading:InkWell(
+                child: Container(
+                  margin: EdgeInsets.only(left: 16),
+                  child: Image.asset("images/resource/2.0x/return2x.png"),),
                 onTap: (){
                   if(!isNoChange){
                     Navigator.pop(this.context,true);
@@ -51,7 +54,8 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
                     Navigator.pop(this.context);
                   }
                 },
-                child: Image.asset("images/test/back.png"),)
+              ),
+              leadingWidth: 44,
             ),
             body:Container(
               height: height,
@@ -207,7 +211,7 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
   _cancelFollow()async{
     int cancelResult = await ProfileCancelFollow(widget.userId);
     print('取消关注监听==============================$cancelResult');
-    if (cancelResult == 0) {
+    if (cancelResult == 0||cancelResult==2) {
       ToastShow.show(msg: "已取消关注该用户", context: context);
       Navigator.pop(context,true);
     }
@@ -240,14 +244,11 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
     if(model!=null){
       print('inThisBlack===================${model.inThisBlack}');
       print('inYouBlack===================${model.inYouBlack}');
-      setState(() {
         if(model.inYouBlack==1){
           isBlack = true;
         }else{
           isBlack = false;
         }
-      });
-
     }
   }
   ///举报

@@ -23,20 +23,21 @@ class _noticeSettingState extends State<NoticeSettingPage>{
   bool comment = false;
   @override
   Widget build(BuildContext context) {
-    double width = ScreenUtil.instance.height;
-    double height = ScreenUtil.instance.screenWidthDp;
+    double width = ScreenUtil.instance.screenWidthDp;
+    double height = ScreenUtil.instance.height;
       return Scaffold(
         backgroundColor: AppColor.white,
         appBar: AppBar(
           backgroundColor: AppColor.white,
           leading:  InkWell(
-            child: Image.asset(
-              "images/test/back.png",
-            ),
+            child: Container(
+              margin: EdgeInsets.only(left: 16),
+              child: Image.asset("images/resource/2.0x/return2x.png"),),
             onTap: (){
               Navigator.pop(context);
             },
           ),
+          leadingWidth: 44,
           title: Text("通知设置",style: AppStyle.textMedium18,),
           centerTitle: true,
         ),

@@ -25,7 +25,10 @@ import 'package:mirror/page/profile/login_test_page.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/profile_details_more.dart';
 import 'package:mirror/page/profile/scan_code_page.dart';
-import 'package:mirror/page/profile/setting_page/setting_home_page.dart';
+import 'package:mirror/page/profile/setting/blacklist_page.dart';
+import 'package:mirror/page/profile/setting/feedback_page.dart';
+import 'package:mirror/page/profile/setting/notice_setting_page.dart';
+import 'package:mirror/page/profile/setting/setting_home_page.dart';
 import 'package:mirror/page/rc_test_page.dart';
 import 'package:mirror/page/test_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_broadcast_page.dart';
@@ -94,7 +97,7 @@ var handlerLike = Handler(handlerFunc: (BuildContext context, Map<String, List<S
   return Like();
 });
 var handlerScan = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  // return ScanCodePage();
+  return ScanCodePage();
 });
 var handlermineDetails = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
@@ -135,6 +138,15 @@ var handlerEditInformationIntroduction = Handler(handlerFunc: (BuildContext cont
 });
 var handlerSettingHomePage = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
   return SettingHomePage();
+});
+var handlerSettingBlackList = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+  return BlackListPage();
+});
+var handlerSettingNoticeSetting = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+  return NoticeSettingPage();
+});
+var handlerSettingFeedBack = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+  return FeedBackPage();
 });
 var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);

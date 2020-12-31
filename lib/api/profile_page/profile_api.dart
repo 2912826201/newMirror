@@ -1,9 +1,11 @@
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/profile/add_remarks_model.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
+import 'package:mirror/data/model/profile/fans_list_model.dart';
 import 'package:mirror/data/model/profile/follow_list_model.dart';
 import 'package:mirror/data/model/profile/profile_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
+import 'package:mirror/data/model/profile/topic_list_model.dart';
 import 'package:mirror/data/model/user_extrainfo_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 
@@ -47,6 +49,10 @@ const String SEARCH_USER = "/appuser/web/user/searchUser";
 
 ///关注列表
 const String FOLLOW_LIST = "/appuser/web/user/follow/QueryFollowingList";
+///粉丝列表
+const String  FANS_LIST = "/appuser/web/user/follow/queryFansList";
+///话题列表
+const String TOPIC_LIST = "/appuser/web/topic/queryFollowTopicList";
 //关注
 Future<int> ProfileAddFollow(int id) async {
   BaseResponseModel responseModel = await requestApi(ATTENTION, {"targetId": id});
@@ -227,6 +233,11 @@ Future<FollowLsitModel> GetFollowList({String uid}) async {
   Map<String, dynamic> map = Map();
   if (uid != null) {
     map["uids"] = uid;
+///关注列表
+Future<FollowLsitModel> GetFollowList({String uid})async{
+  Map<String,dynamic> map = Map();
+  if(uid!=null){
+    map["uid"] = uid;
   }
   BaseResponseModel responseModel = await requestApi(FOLLOW_LIST, map);
   if (responseModel.isSuccess) {
@@ -236,6 +247,42 @@ Future<FollowLsitModel> GetFollowList({String uid}) async {
     return model;
   } else {
     print('用户关注列表请求接口失败============================================');
+    return null;
+  }
+}
+
+///粉丝列表
+Future<FansListModel> GetFansList(int page,int size,{int uid})async{
+  Map<String,dynamic> map = Map();
+  map["page"] = page;
+  map["size"] = size;
+  if(uid!=null){
+    map["uid"] = uid;
+  }
+  BaseResponseModel responseModel = await requestApi(FANS_LIST,map);
+  if(responseModel.isSuccess){
+    print('用户粉丝列表请求接口=============================');
+    FansListModel model;
+    model = FansListModel.fromJson(responseModel.data);
+    return model;
+  }else{
+    print('用户粉丝列表请求接口失败============================================');
+    return null;
+  }
+}
+///话题列表
+Future<TopicListModel> GetTopicList(int page,int size)async{
+  Map<String,dynamic> map = Map();
+  map["page"] = page;
+  map["size"] = size;
+  BaseResponseModel responseModel = await requestApi(TOPIC_LIST,map);
+  if(responseModel.isSuccess){
+    print('用户关注话题列表请求接口=============================');
+    TopicListModel model;
+    model = TopicListModel.fromJson(responseModel.data);
+    return model;
+  }else{
+    print('用户关注话题列表请求接口失败============================================');
     return null;
   }
 }
