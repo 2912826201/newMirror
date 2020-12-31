@@ -72,7 +72,6 @@ class AppRouter {
     router.define(pathLiveBroadcast, handler: handlerLiveBroadcast);
     router.define(pathLiveDetail, handler: handlerLiveDetail);
     router.define(pathVideoDetail, handler: handlerVideoDetail);
-    router.define(pathProfileScanCode, handler: handlerScan);
     router.define(pathProfileDetails, handler: handlermineDetails);
     router.define(pathVideoCourseList, handler: handlerVideoCourseList);
     router.define(pathProfileDetailsMore, handler: handlerProfileDetailMore);

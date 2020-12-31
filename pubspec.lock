@@ -276,14 +276,7 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.11"
-  flutter_qr_reader:
-    dependency: "direct main"
-    description:
-      name: flutter_qr_reader
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.0.3"
-  flutter_sound_lite:
+  flutter_sound:
     dependency: "direct main"
     description:
       name: flutter_sound_lite
