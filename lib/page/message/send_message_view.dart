@@ -180,18 +180,18 @@ class _SendMessageViewState extends State<SendMessageView> {
     // 语音消息
     VoiceMessage voiceMessage = ((msg.content) as VoiceMessage);
     Map<String, dynamic> mapModel;
+    mapModel = json.decode(voiceMessage.extra);
     try {
-      if (msg.expansionDic != null && msg.expansionDic["extra"] != null) {
-        mapModel = json.decode(msg.expansionDic["extra"]);
-      } else {
-        mapModel = json.decode(voiceMessage.extra);
+      if (msg.expansionDic != null && msg.expansionDic["read"] != null) {
+        if (msg.expansionDic["read"] == "1") {
+          mapModel["read"] = 1;
+        }
       }
-    } catch (e) {
-      mapModel = json.decode(voiceMessage.extra);
-    }
+    } catch (e) {}
     if (voiceMessage.remoteUrl != null) {
       mapModel["pathUrl"] = voiceMessage.remoteUrl;
     }
+    print("mapModel[read]" + mapModel["read"].toString());
     return getVoiceMsgData(
         msg.messageUId,
         mapModel,
@@ -252,7 +252,7 @@ class _SendMessageViewState extends State<SendMessageView> {
       bool isTemporary,
       String playMd5String) {
     ChatVoiceModel chatVoiceModel = ChatVoiceModel.fromJson(chatVoiceModelMap);
-    chatVoiceModel.read = 1;
+    // chatVoiceModel.read = 1;
     return VoiceMsg(
         messageUId: messageUId,
         chatVoiceModel: chatVoiceModel,

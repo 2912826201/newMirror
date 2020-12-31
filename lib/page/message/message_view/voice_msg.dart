@@ -9,7 +9,6 @@ import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'currency_msg.dart';
 
@@ -59,7 +58,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
     super.initState();
     _getUrlMd5String();
     _initTimeDuration();
-    _getIsRead();
+    // _getIsRead();
   }
 
   @override
@@ -185,13 +184,13 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
                             contentType: ChatTypeModel.MESSAGE_TYPE_VOICE,
                             position: widget.position);
 
-                        if (widget.chatVoiceModel.read == 0) {
-                          widget.chatVoiceModel.read = 1;
-                          _setIsRead(1);
-                          setState(() {
-
-                          });
-                        }
+                        // if (widget.chatVoiceModel.read == 0) {
+                        //   widget.chatVoiceModel.read = 1;
+                        //   _setIsRead(1);
+                        //   setState(() {
+                        //
+                        //   });
+                        // }
 
                         // ToastShow.show(msg: "点击了语音播放", context: context);
                         context
@@ -414,25 +413,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
     });
   }
 
-  //获取是否阅读过
-  void _getIsRead() async {
-    if (!widget.isMyself) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      int counter = (prefs.getInt(widget.messageUId) ?? 0);
-      widget.chatVoiceModel.read = counter;
-      setState(() {
 
-      });
-    }
-  }
-
-  //设置阅读过
-  void _setIsRead(int read) async {
-    if (!widget.isMyself) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setInt(widget.messageUId, read);
-    }
-  }
 
   @override
   void dispose() {

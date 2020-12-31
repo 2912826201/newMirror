@@ -6,6 +6,7 @@ import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/voice_alert_date_model.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -90,7 +91,6 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     }
   }
 
-
   void startRecorder() async {
     await _mRecorder.startRecorder(
       toFile: _mPath,
@@ -100,8 +100,18 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     setState(() {});
   }
 
-  showVoiceView() {
+  showVoiceView() async {
+    costTime = 0;
+    context.read<VoiceAlertData>().changeCallback(
+        showDataTime: DateUtil.formatSecondToStringNum(costTime));
     print("showVoiceView");
+
+    _mPath = AppConfig.getAppVoiceFilePath();
+    var outputFile = File(_mPath);
+    if (outputFile.existsSync()) {
+      await outputFile.delete();
+    }
+
     isUp = false;
     int index;
     setState(() {
@@ -121,7 +131,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     }
   }
 
-  hideVoiceView() {
+  hideVoiceView() async {
     print("hideVoiceView");
     setState(() {
       textShow = "按住说话";
@@ -139,12 +149,20 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       _timer.cancel();
       _timer = null;
     }
-    if (isUp) {
-      print("取消发送");
-      records.removeLast();
+    if (costTime < 2) {
+      ToastShow.show(msg: "录制时长不够", context: context);
+      var outputFile = File(_mPath);
+      if (outputFile.existsSync()) {
+        await outputFile.delete();
+      }
     } else {
-      print("进行发送");
-      widget.voiceFile(AppConfig.getAppVoiceFilePath(), costTime);
+      if (isUp) {
+        print("取消发送");
+        records.removeLast();
+      } else {
+        print("进行发送");
+        widget.voiceFile(_mPath, costTime);
+      }
     }
     print(records.toString());
   }
@@ -206,6 +224,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
 
     // var tempDir = await getTemporaryDirectory();
     // _mPath = '${tempDir.path}/flutter_sound_example.aac';
+
     _mPath = AppConfig.getAppVoiceFilePath();
     var outputFile = File(_mPath);
     if (outputFile.existsSync()) {
