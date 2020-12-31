@@ -86,5 +86,5 @@ class Application {
   static AudioPlayer audioPlayer;
 
   //main的上下文
-  static BuildContext context;
+  static BuildContext appContext;
 }

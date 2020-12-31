@@ -88,11 +88,10 @@ class RongCloud {
         RCConversationType.Private, targetId, content);
   }
 
-  // //todo 现在没有加 每一秒只发送5条数据的限制
-  // Future<Message> sendVoiceMessage(Message message, MessageContent content) {
-  //   return RongIMClient.sendMessage(
-  //       RCConversationType.Private, targetId, content);
-  // }
+  //todo 现在没有加 每一秒只发送5条数据的限制
+  Future<Message> sendVoiceMessage(Message message) {
+    return RongIMClient.sendIntactMessageWithCallBack(message, "", "", null);
+  }
 
   //撤回消息
   Future<RecallNotificationMessage> recallMessage(Message message) async {

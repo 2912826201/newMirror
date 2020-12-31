@@ -99,7 +99,7 @@ class AppConfig {
   }
 
   static String getAppVoiceFilePath() {
-    return "${getAppVoiceDir()}/record.aac";
+    return "${getAppVoiceDir()}/record_${new DateTime.now().millisecondsSinceEpoch}.aac";
   }
 
   //获取内部下载文件的路径

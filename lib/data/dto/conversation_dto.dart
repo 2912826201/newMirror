@@ -1,5 +1,6 @@
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 /// conversation_dto
 /// Created by yangjiayi on 2020/11/30.
@@ -57,6 +58,18 @@ class ConversationDto {
   int createTime;
   int isTop;
   int unreadCount;
+
+  int getType() {
+    switch (this.type) {
+      case 100:
+      case 10:
+        return RCConversationType.Private;
+      case 101:
+        return RCConversationType.Group;
+      default:
+        return RCConversationType.System;
+    }
+  }
 
   String get id => "${uid}_${type}_$conversationId";
 
