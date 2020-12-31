@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/page/home/home_page.dart';
 import 'package:mirror/page/if_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
@@ -132,7 +133,7 @@ class MainPageState extends State<MainPage> {
               child: Card(
                 elevation: 0,
                 shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16.0))),
-                color: currentIndex == index ? Colors.redAccent : Colors.transparent,
+                color: currentIndex == index ? AppColor.mainRed : Colors.transparent,
                 child: Container(
                   padding: EdgeInsets.only(top: 2, bottom: 2, left: 7.5, right: 7.5),
                   child: Row(

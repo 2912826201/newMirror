@@ -1,17 +1,40 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/screen_util.dart';
+
+import '../bottom_popup.dart';
+import '../bottom_sheet.dart';
+
+typedef OnItemClickListener = void Function(int index);
+Future openMoreBottomSheet({
+  @required BuildContext context,
+  @required OnItemClickListener onItemClickListener,
+  @required List<String> lists,
+}) async {
+  await showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (BuildContext context) {
+        return SingleChildScrollView(
+          child: BottomPopup(
+            list: lists,
+            onItemClickListener: onItemClickListener,
+          )
+        );
+      });
+}
 
 // 底部弹窗
 class BottomPopup extends StatefulWidget {
   BottomPopup({Key key, this.list, this.onItemClickListener})
       : assert(list != null),
         super(key: key);
-  final list;
-  final OnItemClickListener onItemClickListener;
+  List<String> list;
+   OnItemClickListener onItemClickListener;
   @override
   BottomopupState createState() => BottomopupState();
 }
-typedef OnItemClickListener = void Function(int index);
+
 class BottomopupState extends State<BottomPopup> {
   // 回调点击的哪个Item
   OnItemClickListener onItemClickListener;
@@ -31,6 +54,7 @@ class BottomopupState extends State<BottomPopup> {
   Widget build(BuildContext context) {
     // 获取设备的宽度
     var deviceWidth = MediaQuery.of(context).size.width;
+    // print("宽度$deviceWidth");
     /*
     区分刘海屏
      */
@@ -48,7 +72,7 @@ class BottomopupState extends State<BottomPopup> {
     var cancelContainer = Container(
         height: itemHeight + 12 + bottomPadding,
         decoration: BoxDecoration(
-          color: Colors.white, // 底色
+          color: AppColor.white, // 底色
         ),
         child:Column (
           children: [
@@ -106,17 +130,7 @@ class BottomopupState extends State<BottomPopup> {
       height: height,
       width: deviceWidth ,
     );
-    // 总布局
-    var stack = Stack(
-      alignment: Alignment.center,
-      children: <Widget>[
-        Positioned(
-          bottom: 0,
-          child: totalContainer,
-        ),
-      ],
-    );
-    return stack;
+    return totalContainer;
   }
   // 创建其他传入的Item
   Widget getItemContainer(BuildContext context, int index,int listLength) {
@@ -143,21 +157,22 @@ class BottomopupState extends State<BottomPopup> {
     var onTap2 = () {
       if (onItemClickListener != null) {
         onItemClickListener(index);
+        Navigator.pop(context);
       }
     };
 
     if(listLength==1){
       decoration = BoxDecoration(
-        color: Colors.white, // 底色
+        color: AppColor.white, // 底色
       );
     }else if(listLength>1){
       if (index == listLength - 1) {
         decoration = BoxDecoration(
-          color: Colors.white, // 底色
+          color: AppColor.white, // 底色
         );
       } else {
         decoration = BoxDecoration(
-          color: Colors.white, // 底色
+          color: AppColor.white, // 底色
           border: Border(
               bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
         );

@@ -344,9 +344,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text("胸背训练教学动作", style: AppStyle.textRegular14, maxLines: 1, overflow: TextOverflow.ellipsis),
-                    SizedBox(
-                      height: 2,
-                    ),
+                    Spacer(),
                     Text(
                       "描述信息描述信息描述是男是女你说呢",
                       style: AppStyle.textSecondaryRegular12,
@@ -391,9 +389,9 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
               // height: (ScreenUtil.instance.screenWidthDp - 38) * 0.43,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                    centerSlice: Rect.fromLTWH(100, 100, (ScreenUtil.instance.screenWidthDp - 42) * 0.43,
-                        (ScreenUtil.instance.screenWidthDp - 38) * 0.43),
-                    image: AssetImage("images/resource/2.0x/投影.9png@2x.png"),
+                    // centerSlice: Rect.fromLTWH(0, 0, (ScreenUtil.instance.screenWidthDp - 42) * 0.43,
+                    //     (ScreenUtil.instance.screenWidthDp - 38) * 0.43),
+                    image: AssetImage("images/resource/2.0x/渐变投影@2x.png"),
                     fit: BoxFit.fill),
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,

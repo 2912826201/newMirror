@@ -77,6 +77,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   List<int> recommendIdList = [];
   List<HomeFeedModel> recommendModelList = [];
   List<CourseDtoModel> courseList = [];
+
   // 列表监听
   ScrollController _controller = new ScrollController();
 
@@ -125,7 +126,8 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     });
     super.initState();
   }
- // 合并请求
+
+  // 合并请求
   mergeRequest() {
     // 合并请求
     Future.wait([
@@ -134,22 +136,27 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       // 请求推荐教练
       recommendCoach(),
     ]).then((results) {
-      List<HomeFeedModel> modelList = results[0];
-      if (modelList.isNotEmpty) {
-        for (HomeFeedModel model in modelList) {
-          recommendIdList.add(model.id);
+      if (results[0] != null) {
+        List<HomeFeedModel> modelList = results[0];
+        if (modelList.isNotEmpty) {
+          for (HomeFeedModel model in modelList) {
+            recommendIdList.add(model.id);
+          }
+          recommendModelList.addAll(modelList);
         }
-        recommendModelList.addAll(modelList);
+        // 更新全局监听
+        context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
       }
-      // 更新全局监听
-      context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
-      courseList = results[1];
+      if (results[1] != null) {
+        courseList = results[1];
+      }
       setState(() {});
     }).catchError((e) {
       print("报错了");
       print(e);
     });
   }
+
   // 推荐页model
   getRecommendFeed() async {
     if (loadStatus == LoadingStatus.STATUS_IDEL) {
@@ -197,98 +204,104 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       children: [
         Container(
             child: NotificationListener<ScrollNotification>(
-              onNotification: (ScrollNotification notification) {
-                ScrollMetrics metrics = notification.metrics;
-                // 注册通知回调
-                if (notification is ScrollStartNotification) {
-                  // 滚动开始
-                  // print('滚动开始');
-                } else if (notification is ScrollUpdateNotification) {
-                  // 滚动位置更新
-                  // print('滚动位置更新');
-                  // 当前位置
-                  // print("当前位置${metrics.pixels}");
-                } else if (notification is ScrollEndNotification) {
-                  // 滚动结束
-                  // print('滚动结束');
+          onNotification: (ScrollNotification notification) {
+            ScrollMetrics metrics = notification.metrics;
+            // 注册通知回调
+            if (notification is ScrollStartNotification) {
+              // 滚动开始
+              // print('滚动开始');
+            } else if (notification is ScrollUpdateNotification) {
+              // 滚动位置更新
+              // print('滚动位置更新');
+              // 当前位置
+              // print("当前位置${metrics.pixels}");
+            } else if (notification is ScrollEndNotification) {
+              // 滚动结束
+              // print('滚动结束');
+            }
+          },
+          child: RefreshIndicator(
+              onRefresh: () async {
+                print("推荐ye下拉刷新");
+                dataPage = 1;
+                if (recommendModelList.isNotEmpty) {
+                  recommendIdList.clear();
                 }
-              },
-              child: RefreshIndicator(
-                  onRefresh: () async {
-                    dataPage = 1;
-                recommendIdList.clear();
-                recommendModelList.clear();
-                courseList.clear();
+
+                if (recommendModelList.isNotEmpty) {
+                  recommendModelList.clear();
+                }
+                if (courseList.isNotEmpty) {
+                  courseList.clear();
+                }
                 loadStatus = LoadingStatus.STATUS_LOADING;
                 loadText = "加载中...";
-                mergeRequest();
-                // List<HomeFeedModel> modelList = await getHotList(size: 20);
-                // setState(() {
-                //   try {
-                //     if (modelList.isNotEmpty) {
-                //       for (HomeFeedModel model in modelList) {
-                //         recommendIdList.add(model.id);
-                //       }
-                //       recommendModelList.addAll(modelList);
-                //     }
-                //   } catch (e) {}
-                // });
-                // // 更新全局监听
-                // context
-                //     .read<FeedMapNotifier>()
-                //     .updateFeedMap(recommendModelList);
+                // mergeRequest();
+                List<HomeFeedModel> modelList = await getHotList(size: 20);
+                setState(() {
+                  try {
+                    if (modelList.isNotEmpty) {
+                      for (HomeFeedModel model in modelList) {
+                        recommendIdList.add(model.id);
+                      }
+                      recommendModelList.addAll(modelList);
+                    }
+                  } catch (e) {}
+                });
+                // 更新全局监听
+                context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
               },
-                  child: CustomScrollView(
-                    controller: _controller,
-                    // BouncingScrollPhysics
-                    physics:
+              child: CustomScrollView(
+                controller: _controller,
+                // BouncingScrollPhysics
+                physics:
                     // ClampingScrollPhysics(),
                     // FixedExtentScrollPhysics(),
                     AlwaysScrollableScrollPhysics(),
-                    // BouncingScrollPhysics(),
-                    slivers: [
-                      // 因为SliverList并不支持设置滑动方向由CustomScrollView统一管理，所有这里使用自定义滚动
-                      // CustomScrollView要求内部元素为Sliver组件， SliverToBoxAdapter可包裹普通的组件。
-                      // 横向滑动区域
-                      SliverToBoxAdapter(
-                        child: getCourse(),
-                      ),
-                      // 垂直列表
-                      SliverList(
-                        // controller: _controller,
-                        delegate: SliverChildBuilderDelegate((content, index) {
-                          // 获取动态id
-                          int id;
-                          // 获取动态id指定model
-                          HomeFeedModel model;
-                          if (index < recommendModelList.length) {
-                            id = recommendIdList[index];
-                            model = context.read<FeedMapNotifier>().feedMap[id];
-                          }
-                          // if (model != null) {
-                            if (index == recommendIdList.length) {
-                              return LoadingView(
-                                loadText: loadText,
-                                loadStatus: loadStatus,
-                              );
-                            }  else {
-                              return DynamicListLayout(
-                                  index: index,
-                                  pc: widget.pc,
-                                  model: model,
-                                  // 可选参数 子Item的个数
-                                  key: GlobalObjectKey("recommend$index"),
-                                  isShowRecommendUser: false);
-                            }
-                          // } else {
-                          //   // 缺省图
-                          //   return Container();
-                          // }
-                        }, childCount: recommendIdList.length +1),
-                      )
-                    ],
-                  )),
-            )),
+                // BouncingScrollPhysics(),
+                slivers: [
+                  // 因为SliverList并不支持设置滑动方向由CustomScrollView统一管理，所有这里使用自定义滚动
+                  // CustomScrollView要求内部元素为Sliver组件， SliverToBoxAdapter可包裹普通的组件。
+                  // 横向滑动区域
+                  SliverToBoxAdapter(
+                    child: courseList.isNotEmpty ? getCourse() : Container(),
+                  ),
+                  // 垂直列表
+                  SliverList(
+                    // controller: _controller,
+                    delegate: SliverChildBuilderDelegate((content, index) {
+                      // 获取动态id
+                      int id;
+                      // 获取动态id指定model
+                      HomeFeedModel model;
+                      if (index < recommendModelList.length) {
+                        id = recommendIdList[index];
+                        model = context.read<FeedMapNotifier>().feedMap[id];
+                      }
+                      // if (model != null) {
+                      if (index == recommendIdList.length) {
+                        return LoadingView(
+                          loadText: loadText,
+                          loadStatus: loadStatus,
+                        );
+                      } else {
+                        return DynamicListLayout(
+                            index: index,
+                            pc: widget.pc,
+                            model: model,
+                            // 可选参数 子Item的个数
+                            key: GlobalObjectKey("recommend$index"),
+                            isShowRecommendUser: false);
+                      }
+                      // } else {
+                      //   // 缺省图
+                      //   return Container();
+                      // }
+                    }, childCount: recommendIdList.length + 1),
+                  )
+                ],
+              )),
+        )),
       ],
       // )
     );
@@ -303,22 +316,20 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
         scrollDirection: Axis.horizontal,
         shrinkWrap: true,
         itemCount: courseList.length,
-        itemBuilder: (context,index) {
+        itemBuilder: (context, index) {
           return Container(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
                   margin: EdgeInsets.only(
-                      left: index > 0 ? 24 : 16,
-                      right: index == courseList.length - 1 ? 16 : 0,
-                      top: 0,
-                      bottom: 8.5),
+                      left: index > 0 ? 24 : 16, right: index == courseList.length - 1 ? 16 : 0, top: 0, bottom: 8.5),
                   height: 53,
                   width: 53,
                   decoration: BoxDecoration(
                     // color: Colors.redAccent,
-                    image: DecorationImage(image: NetworkImage(courseList[index].coachDto.avatarUri), fit: BoxFit.cover),
+                    image:
+                        DecorationImage(image: NetworkImage(courseList[index].coachDto.avatarUri), fit: BoxFit.cover),
                     // image
                     borderRadius: BorderRadius.all(Radius.circular(26.5)),
                   ),
@@ -326,10 +337,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                 Container(
                   width: 53,
                   margin: EdgeInsets.only(
-                      left: index > 0 ? 24 : 16,
-                      right: index == courseList.length - 1 ? 16 : 0,
-                      top: 0,
-                      bottom: 8.5),
+                      left: index > 0 ? 24 : 16, right: index == courseList.length - 1 ? 16 : 0, top: 0, bottom: 8.5),
                   child: Center(
                     child: Text(
                       courseList[index].coachDto.nickName,
