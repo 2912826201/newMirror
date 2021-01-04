@@ -32,7 +32,8 @@ import 'package:mirror/page/rc_test_page.dart';
 import 'package:mirror/page/test_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_broadcast_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_detail_page.dart';
-import 'package:mirror/page/training/machine/connection_info.dart';
+import 'package:mirror/page/training/machine/connection_info_page.dart';
+import 'package:mirror/page/training/machine/machine_setting_page.dart';
 import 'package:mirror/page/training/machine/remote_controller_page.dart';
 import 'package:mirror/page/training/video_course/video_course_list_page.dart';
 import 'package:mirror/page/training/video_course/video_detail_page.dart';
@@ -134,13 +135,13 @@ var handlerEditInformationIntroduction = Handler(handlerFunc: (BuildContext cont
 var handlerSettingHomePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return SettingHomePage();
 });
-var handlerSettingBlackList = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+var handlerSettingBlackList = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return BlackListPage();
 });
-var handlerSettingNoticeSetting = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+var handlerSettingNoticeSetting = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return NoticeSettingPage();
 });
-var handlerSettingFeedBack = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+var handlerSettingFeedBack = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return FeedBackPage();
 });
 var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
@@ -206,4 +207,9 @@ var handlerMachineRemoteController = Handler(handlerFunc: (BuildContext context,
 //机器连接信息页
 var handlerMachineConnectionInfo = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return ConnectionInfoPage();
+});
+
+//终端设置页
+var handlerMachineSetting = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return MachineSettingPage();
 });

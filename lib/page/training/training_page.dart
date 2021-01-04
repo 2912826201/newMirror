@@ -13,6 +13,7 @@ class TrainingPage extends StatefulWidget {
 }
 
 class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMixin {
+  bool _machineConnected = true;
   List<int> _courseList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   double _screenWidth = 0.0;
 
@@ -32,6 +33,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
         appBar: AppBar(
             leading: null,
             backgroundColor: AppColor.white,
+            brightness: Brightness.light,
             title: Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -95,9 +97,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
             ],
           ),
           GestureDetector(
-              onTap: () {
-                AppRouter.navigateToMachineRemoteController(context);
-              },
+              onTap: () {},
               child: Container(
                 margin: const EdgeInsets.only(top: 12),
                 height: 36,
@@ -146,39 +146,74 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
             ],
           ),
           //TODO 暂时先做个样式 实际可能有多个设备
-          Container(
-            margin: const EdgeInsets.only(top: 12),
-            height: 64,
-            child: Row(
-              children: [
-                Container(
-                  color: AppColor.mainBlue,
-                  width: 100,
-                  height: 64,
-                ),
-                SizedBox(
-                  width: 12,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "iF智能魔镜-CC10",
-                      style: AppStyle.textMedium15,
-                    ),
-                    Expanded(
-                      child: Container(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            "点击可操控终端设备",
-                            style: AppStyle.textSecondaryRegular12,
-                          )),
-                    )
-                  ],
-                ),
-              ],
+          GestureDetector(
+            onTap: () {
+              AppRouter.navigateToMachineRemoteController(context);
+            },
+            child: Container(
+              margin: const EdgeInsets.only(top: 12),
+              color: AppColor.transparent,
+              height: 64,
+              child: Row(
+                children: [
+                  Container(
+                    color: AppColor.mainBlue,
+                    width: 100,
+                    height: 64,
+                  ),
+                  SizedBox(
+                    width: 12,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            "iF智能魔镜-CC10",
+                            style: AppStyle.textMedium15,
+                          ),
+                          SizedBox(
+                            width: 4.5,
+                          ),
+                          Icon(
+                            Icons.book,
+                            color: AppColor.textPrimary2,
+                            size: 18,
+                          ),
+                          SizedBox(
+                            width: 2.5,
+                          ),
+                          Container(
+                            alignment: Alignment.center,
+                            height: 12,
+                            width: 12,
+                            child: Container(
+                              height: 4,
+                              width: 4,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: _machineConnected ? AppColor.lightGreen : AppColor.mainRed,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Expanded(
+                        child: Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "点击可操控终端设备",
+                              style: AppStyle.textSecondaryRegular12,
+                            )),
+                      )
+                    ],
+                  ),
+                ],
+              ),
             ),
-          )
+          ),
         ],
       ),
     );

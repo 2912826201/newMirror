@@ -83,3 +83,4 @@ widget/     可复用的界面组件。
     value: SystemUiOverlayStyle.dark, //黑色是dark 白色是light
     child: Scaffold()
   )
+  如果Scaffold中使用了AppBar，则还需在AppBar中设置brightness: Brightness.light //light是黑字，dark是白字

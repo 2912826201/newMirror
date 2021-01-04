@@ -28,6 +28,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
         child: Scaffold(
           appBar: AppBar(
             backgroundColor: AppColor.white,
+            brightness: Brightness.light,
             title: Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -52,7 +53,9 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                     Icons.menu,
                     color: AppColor.black,
                   ),
-                  onPressed: () {}),
+                  onPressed: () {
+                    AppRouter.navigateToMachineSetting(context);
+                  }),
             ],
           ),
           body: _buildBody(context),
