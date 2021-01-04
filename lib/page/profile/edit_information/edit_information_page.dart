@@ -1,9 +1,7 @@
 import 'dart:collection';
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-import 'package:address_picker/address_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,18 +13,14 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/region_dto.dart';
-import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
-import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/page/media_picker/gallery_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:intl/intl.dart';
@@ -571,7 +565,7 @@ class _editInformationState extends State<EditInformation> {
           ),
           Container(
             height: 0.5,
-            color: AppColor.frame,
+            color: AppColor.textHint,
             width: width,
           ),
           Stack(
@@ -612,7 +606,7 @@ class _editInformationState extends State<EditInformation> {
                   child: Container(
                     height: 0.5,
                     width: width / 2 * 0.7,
-                    color: AppColor.frame,
+                    color: AppColor.textHint,
                   )),
               Positioned(
                   left: width / 2 * 0.15,
@@ -620,7 +614,7 @@ class _editInformationState extends State<EditInformation> {
                   child: Container(
                     height: 0.5,
                     width: width / 2 * 0.7,
-                    color: AppColor.frame,
+                    color: AppColor.textHint,
                   )),
               Positioned(
                   right: width / 2 * 0.15,
@@ -628,7 +622,7 @@ class _editInformationState extends State<EditInformation> {
                   child: Container(
                     height: 0.5,
                     width: width / 2 * 0.7,
-                    color: AppColor.frame,
+                    color: AppColor.textHint,
                   )),
               Positioned(
                   right: width / 2 * 0.15,
@@ -636,7 +630,7 @@ class _editInformationState extends State<EditInformation> {
                   child: Container(
                     height: 0.5,
                     width: width / 2 * 0.7,
-                    color: AppColor.frame,
+                    color: AppColor.textHint,
                   )),
             ],
           )

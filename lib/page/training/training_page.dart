@@ -94,34 +94,38 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
               ))
             ],
           ),
-          Container(
-            margin: const EdgeInsets.only(top: 12),
-            height: 36,
-            decoration: BoxDecoration(
-                border: Border.all(
-              color: AppColor.textPrimary1,
-              width: 1,
-            )),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                //TODO 之后替换图标
-                Icon(
-                  Icons.link,
-                  size: 16,
-                  color: AppColor.black,
+          GestureDetector(
+              onTap: () {
+                AppRouter.navigateToMachineRemoteController(context);
+              },
+              child: Container(
+                margin: const EdgeInsets.only(top: 12),
+                height: 36,
+                decoration: BoxDecoration(
+                    border: Border.all(
+                  color: AppColor.textPrimary1,
+                  width: 1,
+                )),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    //TODO 之后替换图标
+                    Icon(
+                      Icons.link,
+                      size: 16,
+                      color: AppColor.black,
+                    ),
+                    SizedBox(
+                      width: 4,
+                    ),
+                    Text(
+                      "连接设备",
+                      style: AppStyle.textRegular14,
+                    )
+                  ],
                 ),
-                SizedBox(
-                  width: 4,
-                ),
-                Text(
-                  "连接设备",
-                  style: AppStyle.textRegular14,
-                )
-              ],
-            ),
-          )
+              ))
         ],
       ),
     );

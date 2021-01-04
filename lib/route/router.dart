@@ -7,11 +7,8 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/live_model.dart';
-import 'package:mirror/data/model/media_file_model.dart';
-import 'package:mirror/page/main_page.dart';
 import 'package:mirror/route/route_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:photo_manager/photo_manager.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 /// router
@@ -47,6 +44,10 @@ class AppRouter {
   static String pathEditInformationIntroduction = "/profile/editinformation/introduction";
   static String pathChatPage = "/chatPage";
   static String pathSettingHomePage = "/profile/settinghomepage";
+  static String pathMachineRemoteController = "/machine/remotecontroller";
+  static String pathMachineConnectionInfo = "/machine/connectioninfo";
+
+
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(
         handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
@@ -78,6 +79,8 @@ class AppRouter {
     router.define(pathEditInformationName, handler: handlerEditInformationName);
     router.define(pathEditInformationIntroduction, handler: handlerEditInformationIntroduction);
     router.define(pathSettingHomePage, handler: handlerSettingHomePage);
+    router.define(pathMachineRemoteController, handler: handlerMachineRemoteController);
+    router.define(pathMachineConnectionInfo, handler: handlerMachineConnectionInfo);
 
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
@@ -243,5 +246,13 @@ class AppRouter {
     Map<String, dynamic> map = Map();
     map["filePath"] = filePath;
     _navigateToPage(context, pathPreviewPhoto, map, callback: callback);
+  }
+
+  static void navigateToMachineRemoteController(BuildContext context) {
+    _navigateToPage(context, pathMachineRemoteController, {});
+  }
+
+  static void navigateToMachineConnectionInfo(BuildContext context) {
+    _navigateToPage(context, pathMachineConnectionInfo, {});
   }
 }

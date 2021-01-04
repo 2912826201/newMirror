@@ -92,7 +92,7 @@ Widget _inputBox(double width){
       padding: EdgeInsets.only(left: 16,right: 16,top: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(8)),
-        border: Border.all(width: 0.5, color: AppColor.frame)),
+        border: Border.all(width: 0.5, color: AppColor.textHint)),
       child: Column(
         children: [
           TextField(

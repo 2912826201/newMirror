@@ -44,13 +44,11 @@ class AppColor {
 
   //不在规范中颜色
   //边框
-  static const frame = Color.fromRGBO(204, 204, 204, 1.0);
   static const urlText = Color.fromRGBO(0x18, 0x77, 0xF2, 1.0);
   static const bgVip1 = Color.fromRGBO(0xF3, 0xD2, 0x9C, 1.0);
   static const bgVip2 = Color.fromRGBO(0xC4, 0x8B, 0x3C, 1.0);
   static const color246 = Color.fromRGBO(246, 246, 246, 1.0);
   static const textVipPrimary1 = Color.fromRGBO(0x8F, 0x58, 0x08, 1.0);
-  static const buttonBackground = Color.fromRGBO(17, 17, 17, 1);
-  static const textButtonCenter = Color.fromRGBO(255, 255, 255, 1);
   static const textHint1 = Color.fromRGBO(0xE8, 0xE8, 0xE8, 1.0);
+  static const lightGreen = Color.fromRGBO(0x76, 0xEF, 0x7B, 1.0);
 }

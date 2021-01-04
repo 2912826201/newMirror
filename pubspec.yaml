@@ -103,6 +103,8 @@ dependencies:
   convert: ^2.1.1
   # 生成随机UUID字符串
   uuid: ^2.2.2
+  # 可自定义拖拽进度条
+  flutter_xlider: ^3.4.0
 
 
   #高德三方库
@@ -112,8 +114,6 @@ dependencies:
   #测试用滚轮选择器
   flutter_cupertino_date_picker:
     git: https://github.com/yasseralsamman/flutter-cupertino-date-picker.git
-  #测试用城市选择器
-  address_picker: ^0.0.1
 
   # 测试用的生成英文单词的库
   english_words: ^3.1.3

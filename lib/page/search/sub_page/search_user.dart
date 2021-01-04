@@ -265,13 +265,13 @@ class searchUserState extends State<SearchUser> {
             height: 24,
             alignment: Alignment.centerRight,
             decoration: BoxDecoration(
-              color: !isFollow ? AppColor.buttonBackground : AppColor.transparent,
+              color: !isFollow ? AppColor.textPrimary1 : AppColor.transparent,
               borderRadius: BorderRadius.all(Radius.circular(14)),
               border: Border.all(width: !isFollow ? 0.5 : 0.0, color: AppColor.black),
             ),
             child: Center(
                 child: Text(!isFollow ? "关注" : "已关注",
-                  style: !isFollow ? AppStyle.textButtonwhite : AppStyle.textSecondaryRegular12),
+                  style: !isFollow ? AppStyle.whiteRegular12 : AppStyle.textSecondaryRegular12),
            ),
           )),
         ],
