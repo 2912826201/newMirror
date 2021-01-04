@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/widget/seekbar.dart';
 
-/// connection_info
+/// connection_info_page
 /// Created by yangjiayi on 2021/1/4.
 
 //机器连接信息页
@@ -24,6 +23,7 @@ class _ConnectionInfoState extends State<ConnectionInfoPage> {
         child: Scaffold(
           appBar: AppBar(
             backgroundColor: AppColor.white,
+            brightness: Brightness.light,
             title: Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -111,25 +111,28 @@ class _ConnectionInfoState extends State<ConnectionInfoPage> {
             height: 0.5,
             color: AppColor.bgWhite,
           ),
+          //wifi名称可能很长 所以做个长度处理
           SizedBox(
             height: 48,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  "Wi-Fi",
-                  style: AppStyle.textRegular16,
-                ),
                 SizedBox(
-                  width: 12,
+                  width: 96,
+                  child: Text(
+                    "Wi-Fi",
+                    textAlign: TextAlign.start,
+                    style: AppStyle.textRegular16,
+                  ),
                 ),
-                Spacer(),
-                Text(
+                Expanded(
+                    child: Text(
                   "aimymusic_guest",
                   softWrap: false,
                   overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.end,
                   style: AppStyle.textSecondaryRegular16,
-                ),
+                )),
                 SizedBox(
                   width: 12,
                 ),

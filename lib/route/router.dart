@@ -49,6 +49,7 @@ class AppRouter {
   static String pathSettingNoticeSetting = "/profile/settingnoticeSetting";
   static String pathMachineRemoteController = "/machine/remotecontroller";
   static String pathMachineConnectionInfo = "/machine/connectioninfo";
+  static String pathMachineSetting = "/machine/setting";
 
 
   static void configureRouter(FluroRouter router) {
@@ -86,6 +87,7 @@ class AppRouter {
     router.define(pathSettingBlackList, handler: handlerSettingBlackList);
     router.define(pathMachineRemoteController, handler: handlerMachineRemoteController);
     router.define(pathMachineConnectionInfo, handler: handlerMachineConnectionInfo);
+    router.define(pathMachineSetting, handler: handlerMachineSetting);
 
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
@@ -271,5 +273,9 @@ class AppRouter {
 
   static void navigateToMachineConnectionInfo(BuildContext context) {
     _navigateToPage(context, pathMachineConnectionInfo, {});
+  }
+
+  static void navigateToMachineSetting(BuildContext context) {
+    _navigateToPage(context, pathMachineSetting, {});
   }
 }
