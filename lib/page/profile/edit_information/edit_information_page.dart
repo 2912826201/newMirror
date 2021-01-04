@@ -51,7 +51,6 @@ class _editInformationState extends State<EditInformation> {
   double latitude;
   String _introduction = "";
   String avataruri = "";
-
   //取图裁剪得到的图片数据
   Uint8List imageData;
   List<File> fileList = [];
@@ -69,7 +68,6 @@ class _editInformationState extends State<EditInformation> {
   List<RegionDto> cityDtoList = [];
   LinkedHashMap<int, RegionDto> provinceMap = Application.provinceMap;
   Map<int, List<RegionDto>> cityMap = Application.cityMap;
-
   @override
   void initState() {
     super.initState();
@@ -120,16 +118,12 @@ class _editInformationState extends State<EditInformation> {
       rightIndex = rightfixedExtentController.initialItem;
     }
     leftfixedExtentController.addListener(() {
-      setState(() {
         isFirst = false;
         leftIndex = leftfixedExtentController.selectedItem;
-      });
     });
     rightfixedExtentController.addListener(() {
-      setState(() {
         isFirst = false;
         rightIndex = rightfixedExtentController.selectedItem;
-      });
     });
   }
 
@@ -149,11 +143,14 @@ class _editInformationState extends State<EditInformation> {
           centerTitle: true,
           backgroundColor: AppColor.white,
           leading: InkWell(
-            onTap: () {
-              Navigator.pop(this.context);
+            child: Container(
+              margin: EdgeInsets.only(left: 16),
+              child: Image.asset("images/resource/2.0x/return2x.png"),),
+            onTap: (){
+              Navigator.pop(context);
             },
-            child: Image.asset("images/test/back.png"),
           ),
+          leadingWidth: 44,
           title: Text(
             "编辑资料",
             style: AppStyle.textMedium18,
@@ -740,7 +737,7 @@ class _editInformationState extends State<EditInformation> {
       context.read<ProfileNotifier>().setProfile(profile);
       Toast.show("资料修改成功",context,);
       Loading.hideLoading(context);
-      Navigator.pop(context, true);
+      Navigator.pop(context);
       print('更新过后的数据库用户头像${context.read<ProfileNotifier>().profile.avatarUri}');
     } else {
       print('=========================资料修改失败！=========================');
