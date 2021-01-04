@@ -63,28 +63,12 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    List<String> longClickStringList = getLongClickStringList(
-        isMySelf: widget.isMyself,
-        contentType: ChatTypeModel.MESSAGE_TYPE_VOICE);
     if (urlMd5String == null) {
       _getUrlMd5String();
     }
-    return LongClickPopupMenu(
-      onValueChanged: (int value) {
-        widget.voidItemLongClickCallBack(
-            position: widget.position,
-            settingType: longClickStringList[value],
-            contentType: ChatTypeModel.MESSAGE_TYPE_VOICE);
-        // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
-      },
-      contentType: ChatTypeModel.MESSAGE_TYPE_VOICE,
-      isMySelf: widget.isMyself,
-      actions: longClickStringList,
-      contentWidth: getNowWidth(context, widget.chatVoiceModel.longTime),
-      child: getContentBoxItem(context),
-    );
-  }
 
+    return getContentBoxItem(context);
+  }
 
   Widget getContentBoxItem(BuildContext context) {
     return Container(
@@ -129,7 +113,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
       SizedBox(
         width: 7,
       ),
-      _getVoiceUi(context),
+      _getVoiceUiLongClick(),
     ];
     if (widget.isMyself) {
       body = body.reversed.toList();
@@ -137,6 +121,26 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
       body = body;
     }
     return body;
+  }
+
+  Widget _getVoiceUiLongClick() {
+    List<String> longClickStringList = getLongClickStringList(
+        isMySelf: widget.isMyself,
+        contentType: ChatTypeModel.MESSAGE_TYPE_VOICE);
+    return LongClickPopupMenu(
+      onValueChanged: (int value) {
+        widget.voidItemLongClickCallBack(
+            position: widget.position,
+            settingType: longClickStringList[value],
+            contentType: ChatTypeModel.MESSAGE_TYPE_VOICE);
+        // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
+      },
+      contentType: ChatTypeModel.MESSAGE_TYPE_VOICE,
+      isMySelf: widget.isMyself,
+      actions: longClickStringList,
+      contentWidth: getNowWidth(context, widget.chatVoiceModel.longTime),
+      child: _getVoiceUi(context),
+    );
   }
 
   //获取动态框

@@ -23,7 +23,8 @@ import 'message_view/text_msg.dart';
 import 'message_view/user_msg.dart';
 import 'message_view/voice_msg.dart';
 
-class SendMessageView extends StatefulWidget {
+// ignore: must_be_immutable
+class SendMessageView extends StatelessWidget {
   final ChatDataModel model;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
@@ -33,11 +34,6 @@ class SendMessageView extends StatefulWidget {
   SendMessageView(this.model, this.position, this.voidMessageClickCallBack,
       this.voidItemLongClickCallBack, this.chatUserName);
 
-  @override
-  _SendMessageViewState createState() => _SendMessageViewState();
-}
-
-class _SendMessageViewState extends State<SendMessageView> {
   bool isMyself;
   String userUrl;
   String name;
@@ -45,7 +41,7 @@ class _SendMessageViewState extends State<SendMessageView> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.model.isTemporary) {
+    if (model.isTemporary) {
       print("临时的");
       isMyself = true;
       userUrl = Application.profile.avatarUri;
@@ -53,11 +49,10 @@ class _SendMessageViewState extends State<SendMessageView> {
       status = RCSentStatus.Sending;
       return temporaryData();
     } else {
-      isMyself =
-          Application.profile.uid.toString() == widget.model.msg.senderUserId;
-      userUrl = widget.model.msg.content.sendUserInfo.portraitUri;
-      name = widget.model.msg.content.sendUserInfo.name;
-      status = widget.model.status;
+      isMyself = Application.profile.uid.toString() == model.msg.senderUserId;
+      userUrl = model.msg.content.sendUserInfo.portraitUri;
+      name = model.msg.content.sendUserInfo.name;
+      status = model.status;
       return notTemporaryData();
     }
   }
@@ -65,29 +60,29 @@ class _SendMessageViewState extends State<SendMessageView> {
   //临时消息
   Widget temporaryData() {
     //普通消息
-    if (widget.model.type == ChatTypeModel.MESSAGE_TYPE_TEXT) {
+    if (model.type == ChatTypeModel.MESSAGE_TYPE_TEXT) {
       //文字消息
-      return getTextMsg(text: widget.model.content);
-    } else if (widget.model.type == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
+      return getTextMsg(text: model.content);
+    } else if (model.type == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
       //图片消息
       return getImgVideoMsg(
           isTemporary: true,
           isImgOrVideo: true,
-          mediaFileModel: widget.model.mediaFileModel);
-    } else if (widget.model.type == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
+          mediaFileModel: model.mediaFileModel);
+    } else if (model.type == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
       //视频消息
       return getImgVideoMsg(
           isTemporary: true,
           isImgOrVideo: false,
-          mediaFileModel: widget.model.mediaFileModel);
-    } else if (widget.model.type == ChatTypeModel.MESSAGE_TYPE_VOICE) {
+          mediaFileModel: model.mediaFileModel);
+    } else if (model.type == ChatTypeModel.MESSAGE_TYPE_VOICE) {
       //语音消息
       // return new Text('语音消息');
-      return getVoiceMsgData(null, widget.model.chatVoiceModel.toJson(), true,
-          StringUtil.generateMd5(widget.model.chatVoiceModel.filePath));
-    } else if (widget.model.type == ChatTypeModel.MESSAGE_TYPE_SELECT) {
+      return getVoiceMsgData(null, model.chatVoiceModel.toJson(), true,
+          StringUtil.generateMd5(model.chatVoiceModel.filePath));
+    } else if (model.type == ChatTypeModel.MESSAGE_TYPE_SELECT) {
       //可选择的列表
-      return getSelectMsgData(widget.model.content);
+      return getSelectMsgData(model.content);
     } else {
       return new Text('未知消息');
     }
@@ -95,7 +90,7 @@ class _SendMessageViewState extends State<SendMessageView> {
 
   //显示正式消息
   Widget notTemporaryData() {
-    Message msg = widget.model.msg;
+    Message msg = model.msg;
     if (msg == null) {
       print(msg.toString() + "为空");
       return Container();
@@ -105,7 +100,7 @@ class _SendMessageViewState extends State<SendMessageView> {
     //todo 目前是使用的是 TextMessage 等以后有了自定义的 再改
     if (msgType == ChatTypeModel.MESSAGE_TYPE_TEXT) {
       TextMessage textMessage = ((msg.content) as TextMessage);
-      // return TextMsg(textMessage.content, widget.model);
+      // return TextMsg(textMessage.content, model);
       try {
         Map<String, dynamic> mapModel = json.decode(textMessage.content);
         if (mapModel["type"] == ChatTypeModel.MESSAGE_TYPE_TEXT) {
@@ -125,13 +120,13 @@ class _SendMessageViewState extends State<SendMessageView> {
               isTemporary: false,
               isImgOrVideo:
                   mapModel["type"] == ChatTypeModel.MESSAGE_TYPE_IMAGE,
-              mediaFileModel: widget.model.mediaFileModel,
+              mediaFileModel: model.mediaFileModel,
               sizeInfoMap: sizeInfoMap);
         } else if (mapModel["type"] == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE ||
             mapModel["type"] == ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE) {
           //直播和视频课程消息
           Map<String, dynamic> liveVideoModelMap =
-              json.decode(mapModel["content"]);
+          json.decode(mapModel["content"]);
           return getLiveVideoCourseMsg(liveVideoModelMap,
               mapModel["type"] == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE);
         } else if (mapModel["type"] == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME ||
@@ -157,7 +152,7 @@ class _SendMessageViewState extends State<SendMessageView> {
       // return new Text('提示消息');
       return getAlertMsg(
           recallNotificationMessage:
-              ((msg.content) as RecallNotificationMessage));
+          ((msg.content) as RecallNotificationMessage));
     }
     return new Text('未知消息');
   }
@@ -171,7 +166,7 @@ class _SendMessageViewState extends State<SendMessageView> {
     return getImgVideoMsg(
         isTemporary: false,
         isImgOrVideo: mapModel["type"] == mediaTypeKeyImage,
-        mediaFileModel: widget.model.mediaFileModel,
+        mediaFileModel: model.mediaFileModel,
         imageMessage: imageMessage);
   }
 
@@ -212,9 +207,9 @@ class _SendMessageViewState extends State<SendMessageView> {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
-        voidMessageClickCallBack: widget.voidMessageClickCallBack,
-        voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
-        position: widget.position,
+        voidMessageClickCallBack: voidMessageClickCallBack,
+        voidItemLongClickCallBack: voidItemLongClickCallBack,
+        position: position,
         status: status);
   }
 
@@ -226,9 +221,9 @@ class _SendMessageViewState extends State<SendMessageView> {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
-        voidMessageClickCallBack: widget.voidMessageClickCallBack,
-        voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
-        position: widget.position,
+        voidMessageClickCallBack: voidMessageClickCallBack,
+        voidItemLongClickCallBack: voidItemLongClickCallBack,
+        position: position,
         status: status);
   }
 
@@ -239,9 +234,9 @@ class _SendMessageViewState extends State<SendMessageView> {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
-        voidMessageClickCallBack: widget.voidMessageClickCallBack,
-        voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
-        position: widget.position,
+        voidMessageClickCallBack: voidMessageClickCallBack,
+        voidItemLongClickCallBack: voidItemLongClickCallBack,
+        position: position,
         status: status);
   }
 
@@ -260,9 +255,9 @@ class _SendMessageViewState extends State<SendMessageView> {
         isTemporary: isTemporary,
         userUrl: userUrl,
         name: name,
-        voidMessageClickCallBack: widget.voidMessageClickCallBack,
-        voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
-        position: widget.position,
+        voidMessageClickCallBack: voidMessageClickCallBack,
+        voidItemLongClickCallBack: voidItemLongClickCallBack,
+        position: position,
         status: status);
   }
 
@@ -276,9 +271,9 @@ class _SendMessageViewState extends State<SendMessageView> {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
-        voidMessageClickCallBack: widget.voidMessageClickCallBack,
-        voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
-        position: widget.position,
+        voidMessageClickCallBack: voidMessageClickCallBack,
+        voidItemLongClickCallBack: voidItemLongClickCallBack,
+        position: position,
         status: status);
   }
 
@@ -290,19 +285,18 @@ class _SendMessageViewState extends State<SendMessageView> {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
-        voidMessageClickCallBack: widget.voidMessageClickCallBack,
-        voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
-        position: widget.position,
+        voidMessageClickCallBack: voidMessageClickCallBack,
+        voidItemLongClickCallBack: voidItemLongClickCallBack,
+        position: position,
         status: status);
   }
 
   //获取图片和视频的模块
-  Widget getImgVideoMsg(
-      {bool isTemporary,
-      bool isImgOrVideo,
-      MediaFileModel mediaFileModel,
-      ImageMessage imageMessage,
-      Map<String, dynamic> sizeInfoMap}) {
+  Widget getImgVideoMsg({bool isTemporary,
+    bool isImgOrVideo,
+    MediaFileModel mediaFileModel,
+    ImageMessage imageMessage,
+    Map<String, dynamic> sizeInfoMap}) {
     return ImgVideoMsg(
       isMyself: isMyself,
       userUrl: userUrl,
@@ -313,9 +307,9 @@ class _SendMessageViewState extends State<SendMessageView> {
       mediaFileModel: mediaFileModel,
       imageMessage: imageMessage,
       sizeInfoMap: sizeInfoMap,
-      voidMessageClickCallBack: widget.voidMessageClickCallBack,
-      voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
-      position: widget.position,
+      voidMessageClickCallBack: voidMessageClickCallBack,
+      voidItemLongClickCallBack: voidItemLongClickCallBack,
+      position: position,
     );
   }
 
@@ -324,10 +318,10 @@ class _SendMessageViewState extends State<SendMessageView> {
   Widget getAlertMsg({Map<String,
       dynamic> map, RecallNotificationMessage recallNotificationMessage}) {
     return AlertMsg(
-      position: widget.position,
-      chatUserName: widget.chatUserName,
-      voidMessageClickCallBack: widget.voidMessageClickCallBack,
-      voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
+      position: position,
+      chatUserName: chatUserName,
+      voidMessageClickCallBack: voidMessageClickCallBack,
+      voidItemLongClickCallBack: voidItemLongClickCallBack,
       map: map,
       recallNotificationMessage: recallNotificationMessage,
     );
@@ -335,3 +329,5 @@ class _SendMessageViewState extends State<SendMessageView> {
 
 //***************************************获取每一个消息的模块-----end
 }
+
+

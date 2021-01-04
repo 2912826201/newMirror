@@ -39,22 +39,7 @@ class FeedMsg extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     init();
-    List<String> longClickStringList = getLongClickStringList(
-        isMySelf: isMyself, contentType: ChatTypeModel.MESSAGE_TYPE_FEED);
-    return LongClickPopupMenu(
-      onValueChanged: (int value) {
-        voidItemLongClickCallBack(
-            position: position,
-            settingType: longClickStringList[value],
-            contentType: ChatTypeModel.MESSAGE_TYPE_FEED);
-        // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
-      },
-      contentType: ChatTypeModel.MESSAGE_TYPE_FEED,
-      isMySelf: isMyself,
-      actions: longClickStringList,
-      contentWidth: 180.0,
-      child: getContentBoxItem(context),
-    );
+    return getContentBoxItem(context);
   }
 
   Widget getContentBoxItem(BuildContext context) {
@@ -99,14 +84,7 @@ class FeedMsg extends StatelessWidget {
       SizedBox(
         width: 7,
       ),
-      GestureDetector(
-        child: _getFeedUi(),
-        onTap: () {
-          voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_FEED,
-              map: homeFeedMode.toJson());
-          // ToastShow.show(msg: "点击了动态-改跳转", context: context);
-        },
-      ),
+      _getFeedUiLongClickUi(),
     ];
     if (isMyself) {
       body = body.reversed.toList();
@@ -114,6 +92,34 @@ class FeedMsg extends StatelessWidget {
       body = body;
     }
     return body;
+  }
+
+  //获取动态的长按事件
+  Widget _getFeedUiLongClickUi() {
+    List<String> longClickStringList = getLongClickStringList(
+        isMySelf: isMyself, contentType: ChatTypeModel.MESSAGE_TYPE_FEED);
+    return LongClickPopupMenu(
+      onValueChanged: (int value) {
+        voidItemLongClickCallBack(
+            position: position,
+            settingType: longClickStringList[value],
+            contentType: ChatTypeModel.MESSAGE_TYPE_FEED);
+        // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
+      },
+      contentType: ChatTypeModel.MESSAGE_TYPE_FEED,
+      isMySelf: isMyself,
+      actions: longClickStringList,
+      contentWidth: 180.0,
+      child: GestureDetector(
+        child: _getFeedUi(),
+        onTap: () {
+          voidMessageClickCallBack(
+              contentType: ChatTypeModel.MESSAGE_TYPE_FEED,
+              map: homeFeedMode.toJson());
+          // ToastShow.show(msg: "点击了动态-改跳转", context: context);
+        },
+      ),
+    );
   }
 
   //获取动态框

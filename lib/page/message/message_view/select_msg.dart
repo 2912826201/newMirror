@@ -55,25 +55,10 @@ class SelectMsg extends StatelessWidget {
 
 //选择难度的box
   Widget getMainBox(BuildContext context) {
-    List<String> longClickStringList = getLongClickStringList(
-        isMySelf: isMyself, contentType: ChatTypeModel.MESSAGE_TYPE_SELECT);
-    return LongClickPopupMenu(
-      onValueChanged: (int value) {
-        voidItemLongClickCallBack(
-            position: position,
-            settingType: longClickStringList[value],
-            contentType: ChatTypeModel.MESSAGE_TYPE_SELECT,
-            content: text);
-      },
-      contentType: ChatTypeModel.MESSAGE_TYPE_SELECT,
-      isMySelf: isMyself,
-      actions: longClickStringList,
-      contentWidth: getTextSize(text, textStyle, 10).width + 22.0,
-      child: Row(
-        mainAxisAlignment:
-            isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
-        children: getBody(context),
-      ),
+    return Row(
+      mainAxisAlignment:
+          isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
+      children: getBody(context),
     );
   }
 
@@ -158,7 +143,7 @@ class SelectMsg extends StatelessWidget {
   List<Widget> getSmallBody(BuildContext context) {
     var body = [
       getUserImage(userUrl, 38, 38),
-      textContentBox(context),
+      textContentBoxLongClick(context),
     ];
     if (isMyself) {
       body = body.reversed.toList();
@@ -167,6 +152,27 @@ class SelectMsg extends StatelessWidget {
     }
     return body;
   }
+
+  //长按事件
+  Widget textContentBoxLongClick(BuildContext context) {
+    List<String> longClickStringList = getLongClickStringList(
+        isMySelf: isMyself, contentType: ChatTypeModel.MESSAGE_TYPE_SELECT);
+    return LongClickPopupMenu(
+      onValueChanged: (int value) {
+        voidItemLongClickCallBack(
+            position: position,
+            settingType: longClickStringList[value],
+            contentType: ChatTypeModel.MESSAGE_TYPE_SELECT,
+            content: text);
+      },
+      contentType: ChatTypeModel.MESSAGE_TYPE_SELECT,
+      isMySelf: isMyself,
+      actions: longClickStringList,
+      contentWidth: getTextSize(text, textStyle, 10).width + 22.0,
+      child: textContentBox(context),
+    );
+  }
+
 
   //文字的框架
   Widget textContentBox(BuildContext context) {
