@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/media_file_model.dart';
@@ -14,6 +15,9 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+
+import 'more_page/group_more_page.dart';
+import 'more_page/private_more_page.dart';
 
 //融云每一秒支持发送5条消息
 int imPostSecondNumber = 5;
@@ -490,3 +494,37 @@ int getRCConversationType(int type) {
   }
 }
 
+
+//todo 之后改为路由跳转
+//判断去拿一个更多界面
+void judgeJumpPage(int chatTypeId, String chatUserId, int chatType,
+    BuildContext context) {
+  if (chatTypeId == RCConversationType.Private) {
+    _jumpPage(
+        PrivateMorePage(chatUserId: chatUserId, chatType: chatType,), false,
+        context);
+  } else {
+    _jumpPage(GroupMorePage(chatUserId: chatUserId, chatType: chatType), false,
+        context);
+  }
+}
+
+void _jumpPage(var page, bool isCloseNewPage, BuildContext context) {
+  if (isCloseNewPage) {
+    //跳转并关闭当前页面
+    Navigator.pushAndRemoveUntil(
+      context,
+      new MaterialPageRoute(builder: (context) => page),
+          (route) => route == null,
+    );
+  } else {
+    //跳转不关闭当前页面
+    Navigator.of(context).push(
+      new MaterialPageRoute(
+        builder: (context) {
+          return page;
+        },
+      ),
+    );
+  }
+}
