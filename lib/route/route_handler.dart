@@ -96,9 +96,6 @@ var handlerLoginPhone = Handler(handlerFunc: (BuildContext context, Map<String, 
 var handlerLike = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return Like();
 });
-var handlerScan = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return ScanCodePage();
-});
 var handlermineDetails = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return ProfileDetailPage(

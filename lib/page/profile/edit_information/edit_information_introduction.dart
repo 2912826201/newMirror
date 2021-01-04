@@ -73,8 +73,6 @@ class _IntroductionState extends State<EditInformationIntroduction> {
                     ),)
                 ),
               )),
-            ),
-          )
         ],
       ),
       body: Container(
