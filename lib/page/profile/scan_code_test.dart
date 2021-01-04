@@ -15,7 +15,6 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:scan/scan.dart';
 import 'package:toast/toast.dart';
 import 'package:provider/provider.dart';
@@ -128,13 +127,13 @@ class _scanCodeState extends State<ScanCodeTest> {
                     Expanded(child: SizedBox()),
                     Column(
                       children: [
-                          Center(
+                          /*Center(
                            child: QrImage(
                               data:"${context.watch<ProfileNotifier>().profile.uid}",
                               size: 40,
                               backgroundColor: AppColor.white,
                               version: QrVersions.auto,
-                            )),
+                            )),*/
                         SizedBox(height: 9,),
                         Text("我的二维码",style: TextStyle(fontSize: 12,color: AppColor.white),)
                       ],

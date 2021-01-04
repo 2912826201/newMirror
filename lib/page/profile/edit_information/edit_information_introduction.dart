@@ -67,26 +67,28 @@ class _IntroductionState extends State<EditInformationIntroduction>{
                       style: TextStyle(fontSize: 14, color: AppColor.white),
                     ),)
                 ),
-              ) ,)
-            ],
-          ),
-              body: Container(
-                color: AppColor.white,
-                height: height - ScreenUtil.instance.statusBarHeight,
-                width: width,
-                child: Column(
-                  children: [
-                    Container(
-                      width: width,
-                      height: 0.5,
-                      color: AppColor.bgWhite.withOpacity(0.65),
-                    ),
-                    SizedBox(height: 21,),
-                    _inputBox(width,height),
-                  ],
-                ),
-              ),
-            );
+              )),
+              ]
+            ),
+      body: Container(
+        color: AppColor.white,
+        height: height - ScreenUtil.instance.statusBarHeight,
+        width: width,
+        child: Column(
+          children: [
+            Container(
+              width: width,
+              height: 0.5,
+              color: AppColor.bgWhite.withOpacity(0.65),
+            ),
+            SizedBox(
+              height: 21,
+            ),
+            _inputBox(width, height),
+          ],
+        ),
+      ),
+    );
   }
 
 
