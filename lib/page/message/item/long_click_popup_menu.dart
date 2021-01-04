@@ -254,13 +254,15 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                     var marginLeftOrRightWidth =
                         (MediaQuery.of(context).size.width -
                             widget.leftAndRightWidth / 2 -
-                            widgetContentWidth);
+                            widgetContentWidth +
+                            20);
 
                     //如果内容的宽度小于长按框的宽度-则对齐用户头像位置
                     if (MediaQuery.of(context).size.width -
                             marginLeftOrRightWidth -
                             widget.leftAndRightWidth / 2 <
                         _curPageWidth) {
+                      print("如果内容的宽度小于长按框的宽度-则对齐用户头像位置");
                       marginLeftOrRightWidth = 0;
                       alignment = widget.isMySelf
                           ? Alignment.topRight
@@ -269,18 +271,16 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                     }
 
                     //长按框距离左右的值
-                    var marginMySelf = EdgeInsets.only(
-                        left: widget.leftAndRightWidth / 2,
-                        right: marginLeftOrRightWidth);
-                    var marginNoMySelf = EdgeInsets.only(
-                        right: widget.leftAndRightWidth / 2,
-                        left: marginLeftOrRightWidth);
+                    var marginNoMySelf =
+                        EdgeInsets.only(left: 0, right: marginLeftOrRightWidth);
+                    var marginMySelf =
+                        EdgeInsets.only(right: 0, left: marginLeftOrRightWidth);
 
                     return CustomSingleChildLayout(
                       // 这里计算偏移量
                       delegate: _PopupMenuRouteLayout(
                           position,
-                          menuHeight + 2,
+                          menuHeight + 13, //这里是间距的高度
                           Directionality.of(widget.btnContext),
                           widget._width,
                           menuWidth,
@@ -288,8 +288,9 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                       child: Container(
                         alignment: alignment,
                         height: menuHeight + _triangleHeight,
-                        margin: widget.isMySelf ? marginNoMySelf : marginMySelf,
+                        margin: widget.isMySelf ? marginMySelf : marginNoMySelf,
                         width: double.infinity,
+                        color: Colors.lightGreen,
                         child: UnconstrainedBox(
                           child: GestureDetector(
                             child: SizedBox(
@@ -447,8 +448,8 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                                                     screenWidth:
                                                     MediaQuery
                                                         .of(context)
-                                                            .size
-                                                            .width,
+                                                        .size
+                                                        .width,
                                                   ),
                                                 ),
                                               ),

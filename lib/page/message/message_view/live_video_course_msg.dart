@@ -36,26 +36,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> longClickStringList = getLongClickStringList(
-        isMySelf: isMyself,
-        contentType: isLiveOrVideo
-            ? ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE
-            : ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
-    return LongClickPopupMenu(
-      onValueChanged: (int value) {
-        Scaffold.of(context).showSnackBar(SnackBar(
-          content: Text(longClickStringList[value]),
-          duration: Duration(milliseconds: 500),
-        ));
-      },
-      contentType: isLiveOrVideo
-          ? ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE
-          : ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE,
-      isMySelf: isMyself,
-      actions: longClickStringList,
-      contentWidth: 180.0,
-      child: getContentBoxItem(context),
-    );
+    return getContentBoxItem(context);
   }
 
   Widget getContentBoxItem(BuildContext context) {
@@ -100,7 +81,37 @@ class LiveVideoCourseMsg extends StatelessWidget {
       SizedBox(
         width: 7,
       ),
-      GestureDetector(
+      _getLiveVideoCourseUiLongClick(context),
+    ];
+    if (isMyself) {
+      body = body.reversed.toList();
+    } else {
+      body = body;
+    }
+    return body;
+  }
+
+  //长按事件
+  Widget _getLiveVideoCourseUiLongClick(BuildContext context) {
+    List<String> longClickStringList = getLongClickStringList(
+        isMySelf: isMyself,
+        contentType: isLiveOrVideo
+            ? ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE
+            : ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
+    return LongClickPopupMenu(
+      onValueChanged: (int value) {
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text(longClickStringList[value]),
+          duration: Duration(milliseconds: 500),
+        ));
+      },
+      contentType: isLiveOrVideo
+          ? ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE
+          : ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE,
+      isMySelf: isMyself,
+      actions: longClickStringList,
+      contentWidth: 180.0,
+      child: GestureDetector(
         child: _getLiveVideoCourseUi(),
         onTap: () {
           if (isLiveOrVideo) {
@@ -116,13 +127,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
           }
         },
       ),
-    ];
-    if (isMyself) {
-      body = body.reversed.toList();
-    } else {
-      body = body;
-    }
-    return body;
+    );
   }
 
   //获取动态框

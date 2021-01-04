@@ -36,23 +36,7 @@ class TextMsg extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> longClickStringList = getLongClickStringList(
-        isMySelf: isMyself, contentType: ChatTypeModel.MESSAGE_TYPE_TEXT);
-    return LongClickPopupMenu(
-      onValueChanged: (int value) {
-        voidItemLongClickCallBack(
-            position: position,
-            settingType: longClickStringList[value],
-            contentType: ChatTypeModel.MESSAGE_TYPE_TEXT,
-            content: text);
-        // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
-      },
-      contentType: ChatTypeModel.MESSAGE_TYPE_TEXT,
-      isMySelf: isMyself,
-      actions: longClickStringList,
-      contentWidth: getTextSize(text, textStyle, 10).width + 22.0,
-      child: getContentBoxItem(context),
-    );
+    return getContentBoxItem(context);
   }
 
   Widget getContentBoxItem(BuildContext context) {
@@ -94,7 +78,7 @@ class TextMsg extends StatelessWidget {
   List<Widget> getSmallBody(BuildContext context) {
     var body = [
       getUserImage(userUrl, 38, 38),
-      textContentBox(context),
+      textContentBoxUiLongClick(context),
     ];
     if (isMyself) {
       body = body.reversed.toList();
@@ -102,6 +86,27 @@ class TextMsg extends StatelessWidget {
       body = body;
     }
     return body;
+  }
+
+  //获取长按事件
+  Widget textContentBoxUiLongClick(BuildContext context) {
+    List<String> longClickStringList = getLongClickStringList(
+        isMySelf: isMyself, contentType: ChatTypeModel.MESSAGE_TYPE_TEXT);
+    return LongClickPopupMenu(
+      onValueChanged: (int value) {
+        voidItemLongClickCallBack(
+            position: position,
+            settingType: longClickStringList[value],
+            contentType: ChatTypeModel.MESSAGE_TYPE_TEXT,
+            content: text);
+        // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
+      },
+      contentType: ChatTypeModel.MESSAGE_TYPE_TEXT,
+      isMySelf: isMyself,
+      actions: longClickStringList,
+      contentWidth: getTextSize(text, textStyle, 10).width + 22.0,
+      child: textContentBox(context),
+    );
   }
 
   //文字的框架

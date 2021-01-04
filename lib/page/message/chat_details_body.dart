@@ -17,12 +17,14 @@ class ChatDetailsBody extends StatelessWidget {
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
   final String chatUserName;
   final bool isPersonalButler;
+  final GestureTapCallback onTap;
 
   ChatDetailsBody(
       {this.scrollController,
       this.chatDataList,
       this.vsync,
       this.chatUserName,
+      this.onTap,
       this.isPersonalButler = false,
       this.voidMessageClickCallBack,
       this.voidItemLongClickCallBack});
@@ -40,11 +42,31 @@ class ChatDetailsBody extends StatelessWidget {
       chatData.insert(0, chatDataModel);
     }
 
-    return Expanded(
-        child: SizedBox(
-      child: Stack(
-        children: [
-          Positioned(
+    return Stack(
+      children: [
+        Positioned(
+
+          child: NotificationListener<ScrollNotification>(
+            onNotification: (ScrollNotification notification) {
+              // 注册通知回调
+              if (notification is ScrollStartNotification) {
+                // FocusScope.of(context).requestFocus(new FocusNode());
+                // if (onTap != null) {
+                //   onTap();
+                // }
+                // 滚动开始
+                // print('滚动开始');
+              } else if (notification is ScrollUpdateNotification) {
+                // 滚动位置更新
+                // print('滚动位置更新');
+                // 当前位置
+                // print("当前位置${metrics.pixels}");
+              } else if (notification is ScrollEndNotification) {
+                // 滚动结束
+                // print('滚动结束');
+              }
+              return false;
+            },
             child: ListView.builder(
               physics: BouncingScrollPhysics(),
               controller: scrollController,
@@ -57,18 +79,18 @@ class ChatDetailsBody extends StatelessWidget {
               dragStartBehavior: DragStartBehavior.down,
             ),
           ),
-          Positioned(
-            child: Offstage(
-              offstage: !isPersonalButler,
-              child: ChatSystemBottomBar(voidMessageClickCallBack),
-            ),
-            left: 0,
-            right: 0,
-            bottom: 0,
-          )
-        ],
-      ),
-    ));
+        ),
+        Positioned(
+          child: Offstage(
+            offstage: !isPersonalButler,
+            child: ChatSystemBottomBar(voidMessageClickCallBack),
+          ),
+          left: 0,
+          right: 0,
+          bottom: 0,
+        )
+      ],
+    );
   }
 
   //判断有没有动画
@@ -100,6 +122,8 @@ class ChatDetailsBody extends StatelessWidget {
       return Container(
         width: double.infinity, height: 48, color: AppColor.transparent,);
     }
+
+
     return SendMessageView(
         model, position, voidMessageClickCallBack, voidItemLongClickCallBack,
         chatUserName);
