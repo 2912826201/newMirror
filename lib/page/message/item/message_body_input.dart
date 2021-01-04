@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 //信息界面-输入聊天信息的界面
-class MessageInputBody extends StatefulWidget {
+class MessageInputBody extends StatelessWidget {
   MessageInputBody({
     this.child,
     this.color = const Color(0xfff4f4f4),
@@ -15,42 +15,39 @@ class MessageInputBody extends StatefulWidget {
   final GestureTapCallback onTap;
 
   @override
-  State<StatefulWidget> createState() => new MessageInputBodyState();
-}
-
-class MessageInputBodyState extends State<MessageInputBody> {
-  @override
   Widget build(BuildContext context) {
-    return widget.decoration != null
+    return decoration != null
         ? new Container(
-            decoration: widget.decoration,
+            decoration: decoration,
             height: double.infinity,
             width: double.infinity,
             child: new GestureDetector(
-              child: widget.child,
+              child: child,
               behavior: HitTestBehavior.translucent,
-              onTapDown: (details) {
+              onTap: () {
                 FocusScope.of(context).requestFocus(new FocusNode());
-                if (widget.onTap != null) {
-                  widget.onTap();
+                if (onTap != null) {
+                  onTap();
                 }
               },
             ),
           )
         : new Container(
-            color: widget.color,
-            height: double.infinity,
-            width: double.infinity,
-            child: new GestureDetector(
-              child: widget.child,
-              behavior: HitTestBehavior.translucent,
-              onTap: () {
-                FocusScope.of(context).requestFocus(new FocusNode());
-                if (widget.onTap != null) {
-                  widget.onTap();
-                }
-              },
-            ),
-          );
+      color: color,
+      height: double.infinity,
+      width: double.infinity,
+      child: new GestureDetector(
+        child: child,
+        behavior: HitTestBehavior.translucent,
+        onTap: () {
+          FocusScope.of(context).requestFocus(new FocusNode());
+          if (onTap != null) {
+            onTap();
+          }
+        },
+      ),
+    );
   }
+
 }
+

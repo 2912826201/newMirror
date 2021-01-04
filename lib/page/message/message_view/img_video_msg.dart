@@ -50,30 +50,8 @@ class ImgVideoMsg extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     intData();
-    List<String> longClickStringList = getLongClickStringList(
-        isMySelf: isMyself,
-        contentType: isImgOrVideo
-            ? ChatTypeModel.MESSAGE_TYPE_IMAGE
-            : ChatTypeModel.MESSAGE_TYPE_VIDEO);
-    return LongClickPopupMenu(
-      onValueChanged: (int value) {
-        voidItemLongClickCallBack(
-          position: position,
-          settingType: longClickStringList[value],
-          contentType: isImgOrVideo
-              ? ChatTypeModel.MESSAGE_TYPE_IMAGE
-              : ChatTypeModel.MESSAGE_TYPE_VIDEO,
-        );
-        // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
-      },
-      contentType: isImgOrVideo
-          ? ChatTypeModel.MESSAGE_TYPE_IMAGE
-          : ChatTypeModel.MESSAGE_TYPE_VIDEO,
-      isMySelf: isMyself,
-      actions: longClickStringList,
-      contentWidth: width,
-      child: getContentBoxItem(context),
-    );
+
+    return getContentBoxItem(context);
   }
 
   Widget getContentBoxItem(BuildContext context) {
@@ -117,12 +95,7 @@ class ImgVideoMsg extends StatelessWidget {
       SizedBox(
         width: 7,
       ),
-      GestureDetector(
-        child: imgVideoContentBox(context),
-        onTap: () {
-          onImgVideoContentBoxClick(context);
-        },
-      ),
+      imgVideoContentBoxLongClick(context),
     ];
     if (isMyself) {
       body = body.reversed.toList();
@@ -130,6 +103,38 @@ class ImgVideoMsg extends StatelessWidget {
       body = body;
     }
     return body;
+  }
+
+  Widget imgVideoContentBoxLongClick(BuildContext context) {
+    List<String> longClickStringList = getLongClickStringList(
+        isMySelf: isMyself,
+        contentType: isImgOrVideo
+            ? ChatTypeModel.MESSAGE_TYPE_IMAGE
+            : ChatTypeModel.MESSAGE_TYPE_VIDEO);
+    return LongClickPopupMenu(
+      onValueChanged: (int value) {
+        voidItemLongClickCallBack(
+          position: position,
+          settingType: longClickStringList[value],
+          contentType: isImgOrVideo
+              ? ChatTypeModel.MESSAGE_TYPE_IMAGE
+              : ChatTypeModel.MESSAGE_TYPE_VIDEO,
+        );
+        // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
+      },
+      contentType: isImgOrVideo
+          ? ChatTypeModel.MESSAGE_TYPE_IMAGE
+          : ChatTypeModel.MESSAGE_TYPE_VIDEO,
+      isMySelf: isMyself,
+      actions: longClickStringList,
+      contentWidth: width,
+      child: GestureDetector(
+        child: imgVideoContentBox(context),
+        onTap: () {
+          onImgVideoContentBoxClick(context);
+        },
+      ),
+    );
   }
 
   //图片视频的框架

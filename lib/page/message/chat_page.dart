@@ -9,6 +9,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
+import 'package:mirror/data/model/message/chat_enter_notifier.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/chat_voice_model.dart';
@@ -23,10 +24,12 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:text_span_field/range_style.dart';
+import 'package:text_span_field/text_span_field.dart';
 
 import 'chat_details_body.dart';
+import 'item/chat_at_user_name_list.dart';
 import 'item/chat_more_icon.dart';
-import 'item/chat_system_bottom_bar.dart';
 import 'item/emoji_manager.dart';
 import 'item/message_body_input.dart';
 import 'item/message_input_bar.dart';
@@ -104,12 +107,18 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   Timer _timer;
   int _timerCount = 0;
 
+  // 判断是否只是切换光标
+  bool isSwitchCursor = true;
+  ReleaseFeedInputFormatter _formatter;
+
   @override
   void initState() {
     super.initState();
     initData();
     initSetData();
     initTime();
+    initTextController();
+    initReleaseFeedInputFormatter();
   }
 
   @override
@@ -150,24 +159,22 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //获取显示的ui主体
   List<Widget> getBody() {
-    var body = [
-      (chatDataList != null && chatDataList.length > 0)
-          ? getChatDetailsBody()
-          : Expanded(
-          child: SizedBox(
-              child: Stack(
-                children: [
-                  Positioned(
-                    child: Offstage(
-                      offstage: !isPersonalButler,
-                      child: ChatSystemBottomBar(onMessageClickCallBack),
-                    ),
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                  )
-                ],
-              ))),
+    return [
+      Expanded(
+        child: SizedBox(
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              (chatDataList != null && chatDataList.length > 0)
+                  ? getChatDetailsBody()
+                  : Container(),
+              ChatAtUserList(
+                  isShow: context.watch<ChatEnterNotifier>().keyWord == "@",
+                  onItemClickListener: atListItemClick),
+            ],
+          ),
+        ),
+      ),
       getMessageInputBar(),
       bottomSettingBox(),
       Offstage(
@@ -175,7 +182,6 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         child: judgeReceiveMessages(),
       )
     ];
-    return body;
   }
 
   //获取列表内容
@@ -183,6 +189,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     return ChatDetailsBody(
       scrollController: _scrollController,
       chatDataList: chatDataList,
+      onTap: () => _messageInputBodyClick(),
       vsync: this,
       voidItemLongClickCallBack: onItemLongClickCallBack,
       voidMessageClickCallBack: onMessageClickCallBack,
@@ -207,6 +214,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
             icon: Icon(Icons.more_horiz),
             onPressed: () {
               print("-----------------------");
+              _focusNode.unfocus();
               ToastShow.show(msg: "点击了更多那妞", context: context);
               judgeJumpPage(
                   chatTypeId, this.chatUserId, widget.conversation.type,
@@ -242,35 +250,36 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //输入框bar内的edit
   Widget edit(context, size) {
-    return ChangeNotifierProvider(
-        create: (_) => ChatEnterNotifier(), builder: (context, _) {
-      return TextField(
-        controller: _textController,
-        focusNode: _focusNode,
-        // 多行展示
-        keyboardType: TextInputType.multiline,
-        maxLines: null,
-        //不限制行数
-        // 光标颜色
-        cursorColor: Color.fromRGBO(253, 137, 140, 1),
-        scrollPadding: EdgeInsets.all(0),
-        style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
-        //内容改变的回调
-        onChanged: _changTextLen,
-        // 装饰器修改外观
-        decoration: InputDecoration(
-          // 去除下滑线
-          border: InputBorder.none,
-          // 提示文本
-          hintText: "\uD83D\uDE02123\uD83D\uDE01",
-          // 提示文本样式
-          hintStyle: TextStyle(fontSize: 14, color: AppColor.textHint),
-          // 设置为true,contentPadding才会生效，TextField会有默认高度。
-          isCollapsed: true,
-          contentPadding: EdgeInsets.only(top: 8, bottom: 8, left: 16),
-        ),
-      );
-    }
+    return TextSpanField(
+      controller: _textController,
+      focusNode: _focusNode,
+      // 多行展示
+      keyboardType: TextInputType.multiline,
+      maxLines: null,
+      //不限制行数
+      // 光标颜色
+      cursorColor: Color.fromRGBO(253, 137, 140, 1),
+      scrollPadding: EdgeInsets.all(0),
+      inputFormatters: [_formatter],
+      style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
+      rangeStyles: getTextFieldStyle(Application.appContext
+          .read<ChatEnterNotifier>()
+          .rules),
+      //内容改变的回调
+      onChanged: _changTextLen,
+      // rangeStyles: getTextFieldStyle(rules),
+      // 装饰器修改外观
+      decoration: InputDecoration(
+        // 去除下滑线
+        border: InputBorder.none,
+        // 提示文本
+        hintText: "\uD83D\uDE02123\uD83D\uDE01",
+        // 提示文本样式
+        hintStyle: TextStyle(fontSize: 14, color: AppColor.textHint),
+        // 设置为true,contentPadding才会生效，TextField会有默认高度。
+        isCollapsed: true,
+        contentPadding: EdgeInsets.only(top: 8, bottom: 8, left: 16),
+      ),
     );
   }
 
@@ -307,19 +316,31 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     if (!_emojiState) {
       emojiHeight = 0.0;
     }
-    return AnimatedContainer(
+
+    return _emojiState ? AnimatedContainer(
       height: emojiHeight,
       duration: Duration(milliseconds: 300),
-      child: Offstage(
-        offstage: !_emojiState,
-        child: Container(
-          height: emojiHeight,
-          width: double.infinity,
-          color: Colors.white,
-          child: emojiList(),
-        ),
+      child: Container(
+        height: emojiHeight,
+        width: double.infinity,
+        color: Colors.white,
+        child: emojiList(),
       ),
-    );
+    ) : Container();
+    //
+    // return AnimatedContainer(
+    //   height: emojiHeight,
+    //   duration: Duration(milliseconds: 300),
+    //   child: Offstage(
+    //     offstage: !_emojiState,
+    //     child: Container(
+    //       height: emojiHeight,
+    //       width: double.infinity,
+    //       color: Colors.white,
+    //       child: emojiList(),
+    //     ),
+    //   ),
+    // );
   }
 
   //emoji具体是什么界面
@@ -461,6 +482,8 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //当改变了输入框内的文字个数
   _changTextLen(String text) {
+    // 存入最新的值
+    context.read<ChatEnterNotifier>().changeCallback(text);
     bool isReset = false;
     if (StringUtil.strNoEmpty(text)) {
       if (!isHaveTextLen) {
@@ -553,6 +576,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     chatDataModel.isTemporary = true;
     chatDataModel.isHaveAnimation = true;
     chatDataList.insert(0, chatDataModel);
+    animateTo();
     setState(() {
       _textController.text = "";
       isHaveTextLen = false;
@@ -577,6 +601,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       chatDataList.insert(0, chatDataModel);
       modelList.add(chatDataList[0]);
     }
+    animateTo();
     setState(() {});
     postImgOrVideo(
         modelList, widget.conversation.conversationId, selectedMediaFiles.type,
@@ -598,6 +623,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     chatDataModel.isTemporary = true;
     chatDataModel.isHaveAnimation = true;
     chatDataList.insert(0, chatDataModel);
+    animateTo();
     setState(() {});
     postVoice(chatDataList[0], widget.conversation.conversationId, chatTypeId,
         chatTypeId, () {
@@ -612,13 +638,13 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   _postSelectMessage(String text) async {
     text += "," + text;
     text += "," + text;
-    text += "," + text;
     ChatDataModel chatDataModel = new ChatDataModel();
     chatDataModel.type = ChatTypeModel.MESSAGE_TYPE_SELECT;
     chatDataModel.content = text;
     chatDataModel.isTemporary = true;
     chatDataModel.isHaveAnimation = true;
     chatDataList.insert(0, chatDataModel);
+    animateTo();
     setState(() {
       _textController.text = "";
       isHaveTextLen = false;
@@ -639,6 +665,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       chatDataList[position].msg.objectName =
           RecallNotificationMessage.objectName;
       chatDataList[position].msg.content = recallNotificationMessage;
+      animateTo();
       setState(() {});
     }
   }
@@ -658,6 +685,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           chatDataModel.isTemporary = false;
           chatDataModel.isHaveAnimation = true;
           chatDataList.insert(0, chatDataModel);
+          animateTo();
           if (isSetState) {
             setState(() {
 
@@ -733,6 +761,108 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   }
 
 
+  initTextController() {
+    _textController.addListener(() {
+      print("值改变了");
+      print("监听文字光标${_textController.selection}");
+      // 每次点击切换光标会进入此监听。需求邀请@和话题光标不可移入其中。
+      print("::::::$isSwitchCursor");
+      if (isSwitchCursor) {
+        List<Rule> rules = context
+            .read<ChatEnterNotifier>()
+            .rules;
+        int atIndex = context
+            .read<ChatEnterNotifier>()
+            .atCursorIndex;
+
+        // 获取光标位置
+        int cursorIndex = _textController.selection.baseOffset;
+        for (Rule rule in rules) {
+          // 是否光标点击到了@区域
+          if (cursorIndex >= rule.startIndex && cursorIndex <= rule.endIndex) {
+            // 获取中间值用此方法是因为当atRule.startIndex和atRule.endIndex为负数时不会溢出。
+            int median = rule.startIndex +
+                (rule.endIndex - rule.startIndex) ~/ 2;
+            TextSelection setCursor;
+            if (cursorIndex > median) {
+              setCursor = TextSelection(
+                baseOffset: rule.endIndex,
+                extentOffset: rule.endIndex,
+              );
+            }
+            if (cursorIndex <= median) {
+              setCursor = TextSelection(
+                baseOffset: rule.startIndex,
+                extentOffset: rule.startIndex,
+              );
+            }
+            // 设置光标
+            _textController.selection = setCursor;
+          }
+        }
+        // 唤起@#后切换光标关闭视图
+        if (cursorIndex != atIndex) {
+          context.read<ChatEnterNotifier>().openAtCallback("");
+        }
+      }
+      isSwitchCursor = true;
+    });
+  }
+
+  initReleaseFeedInputFormatter() {
+    _formatter = ReleaseFeedInputFormatter(
+      controller: _textController,
+      rules: context
+          .read<ChatEnterNotifier>()
+          .rules,
+      // @回调
+      // ignore: missing_return
+      triggerAtCallback: (String str) async {
+        if (chatTypeId == RCConversationType.Group) {
+          context.read<ChatEnterNotifier>().openAtCallback(str);
+        }
+      },
+      // 关闭@#视图回调
+      shutDownCallback: () async {
+        context.read<ChatEnterNotifier>().openAtCallback("");
+      },
+      valueChangedCallback:
+          (List<Rule> rules, String value, int atIndex, int topicIndex,
+          String atSearchStr, String topicSearchStr) {
+        rules = rules;
+        print("输入框值回调：$value");
+        print(rules);
+        isSwitchCursor = false;
+        if (atIndex > 0) {
+          context.read<ChatEnterNotifier>().getAtCursorIndex(atIndex);
+        }
+        context.read<ChatEnterNotifier>().setAtSearchStr(atSearchStr);
+        context.read<ChatEnterNotifier>().changeCallback(value);
+        // 实时搜索
+      },
+    );
+  }
+
+  /// 获得文本输入框样式
+  List<RangeStyle> getTextFieldStyle(List<Rule> rules) {
+    List<RangeStyle> result = [];
+    for (Rule rule in rules) {
+      result.add(
+        RangeStyle(
+          range: TextRange(start: rule.startIndex, end: rule.endIndex),
+          style: TextStyle(color: AppColor.mainBlue),
+        ),
+      );
+    }
+    return result.length == 0 ? null : result;
+  }
+
+  //滚动到底部
+  void animateTo() {
+    _scrollController.animateTo(
+        0.0, duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
+  }
+
   ///------------------------------------一些功能 方法  end-----------------------------------------------------------------------///
   ///------------------------------------各种点击事件  start-----------------------------------------------------------------------///
 
@@ -775,6 +905,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   //图片的点击事件
   onPicAndVideoBtnClick() {
     print("=====图片的点击事件");
+    _focusNode.unfocus();
     SelectedMediaFiles selectedMediaFiles = new SelectedMediaFiles();
     AppRouter.navigateToMediaPickerPage(
         context,
@@ -819,12 +950,111 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     setState(() {});
   }
 
+  //at 了那个用户
+  void atListItemClick(String content, int index) {
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++++" + content);
+    // At的文字长度
+    int AtLength = content.length;
+    // 获取输入框内的规则
+    var rules = context
+        .read<ChatEnterNotifier>()
+        .rules;
+    // 检测是否添加过
+    // if (rules.isNotEmpty) {
+    //   for (Rule rule in rules) {
+    //     if (rule.clickIndex == index && rule.isAt == true) {
+    //       print("已经添加过了");
+    //       return;
+    //     }
+    //   }
+    // }
+    // 获取@的光标
+    int atIndex = context
+        .read<ChatEnterNotifier>()
+        .atCursorIndex;
+    // 获取实时搜索文本
+    String searchStr = context
+        .read<ChatEnterNotifier>()
+        .atSearchStr;
+    // @前的文字
+    String atBeforeStr = _textController.text.substring(0, atIndex);
+    // @后的文字
+    String atRearStr = "";
+    print(searchStr);
+    print("controller.text:${_textController.text}");
+    print("atBeforeStr$atBeforeStr");
+    if (searchStr != "" || searchStr.isNotEmpty) {
+      print("atIndex:$atIndex");
+      print("searchStr:$searchStr");
+      print("controller.text:${_textController.text}");
+      atRearStr = _textController.text.substring(
+          atIndex + searchStr.length, _textController.text.length);
+      print("atRearStr:$atRearStr");
+    } else {
+      atRearStr =
+          _textController.text.substring(atIndex, _textController.text.length);
+    }
+
+    // 拼接修改输入框的值
+    _textController.text = atBeforeStr + content + atRearStr;
+    print("controller.text:${_textController.text}");
+    // 这是替换输入的文本修改后面输入的@的规则
+    if (searchStr != "" || searchStr.isNotEmpty) {
+      int oldLength = searchStr.length;
+      int newLength = content.length;
+      int oldStartIndex = atIndex;
+      int diffLength = newLength - oldLength;
+      for (int i = 0; i < rules.length; i++) {
+        if (rules[i].startIndex >= oldStartIndex) {
+          int newStartIndex = rules[i].startIndex + diffLength;
+          int newEndIndex = rules[i].endIndex + diffLength;
+          rules.replaceRange(
+              i, i + 1, <Rule>[rules[i].copy(newStartIndex, newEndIndex)]);
+        }
+      }
+    }
+    // 此时为了解决后输入的@切换光标到之前输入的@或者#前方，更新之前输入@和#的索引。
+    for (int i = 0; i < rules.length; i++) {
+      // 当最新输入框内的文本对应不上之前的值时。
+      if (rules[i].params != _textController.text.substring(
+          rules[i].startIndex, rules[i].endIndex)) {
+        print("进入");
+        print(rules[i]);
+        rules[i] = Rule(
+            rules[i].startIndex + AtLength, rules[i].endIndex + AtLength,
+            rules[i].params,
+            rules[i].clickIndex, rules[i].isAt);
+        print(rules[i]);
+      }
+    }
+    // 存储规则
+    context
+        .read<ChatEnterNotifier>()
+        .addRules(
+        Rule(atIndex - 1, atIndex + AtLength, "@" + content, index, true));
+    // 设置光标
+    var setCursor = TextSelection(
+      baseOffset: _textController.text.length,
+      extentOffset: _textController.text.length,
+    );
+    print("设置光标${setCursor}");
+    _textController.selection = setCursor;
+    context.read<ChatEnterNotifier>().setAtSearchStr("");
+    // 关闭视图
+    context.read<ChatEnterNotifier>().openAtCallback("");
+  }
+
+
   //所有的item长按事件
   void onItemLongClickCallBack({int position,
     String settingType,
     Map<String, dynamic> map,
     String contentType,
     String content}) {
+    if (isPersonalButler && position != null) {
+      position--;
+    }
+
     if (settingType == null || settingType.isEmpty || settingType.length < 1) {
       print("暂无此配置");
     } else if (settingType == "删除") {
@@ -845,6 +1075,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     } else {
       print("暂无此配置");
     }
+    print("position:${position}-----------------------------------------");
     // print("position：$position--$contentType---${content==null?map.toString():content}----${chatDataList[position].msg.toString()}");
   }
 
@@ -854,6 +1085,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     int position,
     Map<String, dynamic> map,
     bool isUrl}) {
+    if (isPersonalButler && position != null) {
+      position--;
+    }
+
     if (contentType == null || contentType.isEmpty || contentType.length < 1) {
       print("暂无此配置");
     }
@@ -900,49 +1135,3 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 ///------------------------------------各种点击事件  end-----------------------------------------------------------------------///
 }
 
-
-// 输入框输入文字的监听
-class ChatEnterNotifier extends ChangeNotifier {
-  ChatEnterNotifier({this.textFieldStr = ""});
-
-  // 输入框输入文字
-  String textFieldStr = "";
-
-  // 监听输入框输入的值是否为@切换视图的
-  String keyWord = "";
-
-  // 记录@唤醒页面时光标的位置
-  int atCursorIndex;
-
-  // 记录规则
-  List<Rule> rules = [];
-
-  // @后的实时搜索文本
-  String atSearchStr;
-
-  changeCallback(String str) {
-    this.textFieldStr = str;
-    notifyListeners();
-  }
-
-  // 是否开启@视图
-  openAtCallback(String str) {
-    this.keyWord = str;
-    notifyListeners();
-  }
-
-  getAtCursorIndex(int atIndex) {
-    this.atCursorIndex = atIndex;
-    notifyListeners();
-  }
-
-  addRules(Rule role) {
-    this.rules.add(role);
-    notifyListeners();
-  }
-
-  setAtSearchStr(String str) {
-    this.atSearchStr = str;
-    notifyListeners();
-  }
-}
