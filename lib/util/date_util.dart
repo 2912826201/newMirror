@@ -270,4 +270,24 @@ class DateUtil {
     }
     return format;
   }
+
+  //将毫秒秒数格式化为 分数:秒数 的格式 一位数前补0
+  static String formatMillisecondToMinuteAndSecond(int time) {
+    //这里其实可以用正则补0 先自己判断了
+    int minute = (time / 60000).floor();
+    int second = (time % 60000 / 1000).floor();
+    String minuteStr;
+    String secondStr;
+    if (minute < 10) {
+      minuteStr = "0$minute";
+    } else {
+      minuteStr = "$minute";
+    }
+    if (second < 10) {
+      secondStr = "0$second";
+    } else {
+      secondStr = "$second";
+    }
+    return "$minuteStr:$secondStr";
+  }
 }

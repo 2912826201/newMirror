@@ -3,13 +3,14 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:video_player/video_player.dart';
 
 /// video_course_play_page
 /// Created by yangjiayi on 2020/12/15.
 
-List<String> testVideoUrls = [
+final List<String> testVideoUrls = [
   "http://media.aimymusic.com/0145ebc4f595f4cb9c4e014db8196c6d.mp4",
   "http://media.aimymusic.com/0ed8e0430848f70646b09592ab86dc18.mp4",
   "http://media.aimymusic.com/100f9b2588e9f1b1311aea8c50222d6a.mp4",
@@ -25,6 +26,24 @@ class Part {
 
   Part(this.videoList, this.duration, this.name, this.type);
 }
+
+final List<Part> partList = [
+  Part([
+    // "videos/1.mp4",
+    // "videos/2.mp4",
+    testVideoUrls[0],
+    testVideoUrls[1],
+  ], 50, "第一段多视频结束不休息", 0),
+  Part([
+    // "videos/3.mp4",
+    testVideoUrls[2],
+  ], 55, "第二段单视频结束有休息", 0),
+  Part([], 30, "休息", 1),
+  Part([
+    // "videos/4.mp4",
+    testVideoUrls[3],
+  ], 182, "第三段单视频结束后完成", 0),
+];
 
 //单位毫秒
 int _buttonTapInterval = 500;
@@ -48,24 +67,6 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
   //   "http://devmedia.aimymusic.com/25e85ec9a9399023629d3fc15bcb8877.mp4",
   //   "http://devmedia.aimymusic.com/01e889ed5d0314abba48382d669b739b",
   // ];
-
-  final List<Part> partList = [
-    Part([
-      // "videos/1.mp4",
-      // "videos/2.mp4",
-      testVideoUrls[0],
-      testVideoUrls[1],
-    ], 50, "第一段多视频结束不休息", 0),
-    Part([
-      // "videos/3.mp4",
-      testVideoUrls[2],
-    ], 55, "第二段单视频结束有休息", 0),
-    Part([], 30, "休息", 1),
-    Part([
-      // "videos/4.mp4",
-      testVideoUrls[3],
-    ], 182, "第三段单视频结束后完成", 0),
-  ];
 
   Map<int, int> _indexMapWithoutRest = {};
   int _partAmountWithoutRest = 0;
@@ -111,8 +112,9 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
 
       //这个智障回调可能会同时回调多次一样的值 如果都setState则浪费资源降低性能
       //目前只用到了时长 播放进度位置 和播放状态3个值，如果这三个值并没有变化 则不做操作
-      if(_videoDuration == value.duration.inMilliseconds && _currentVideoPos == value.position.inMilliseconds &&
-          _isPlaying == value.isPlaying){
+      if (_videoDuration == value.duration.inMilliseconds &&
+          _currentVideoPos == value.position.inMilliseconds &&
+          _isPlaying == value.isPlaying) {
         return;
       }
 
@@ -191,7 +193,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                         height: 27,
                         alignment: Alignment.bottomLeft,
                         child: Text(
-                          _formatTrainingTime(_totalTrainingTime),
+                          DateUtil.formatMillisecondToMinuteAndSecond(_totalTrainingTime),
                           style: TextStyle(
                               color: AppColor.white.withOpacity(0.85), fontWeight: FontWeight.w500, fontSize: 18),
                         ),
@@ -392,7 +394,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
               child: Stack(children: [
                 Center(
                   child: SizedBox(
-                    //TODO 描边会出框 减掉进度条粗细的一半试试
+                      //TODO 描边会出框 减掉进度条粗细的一半试试
                       height: 46.5,
                       width: 46.5,
                       child: CircularProgressIndicator(
@@ -648,25 +650,5 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
     }
     secondStr = "$second\"";
     return hourStr + minuteStr + secondStr;
-  }
-
-  //将毫秒秒数格式化为 分数:秒数 的格式 一位数前补0
-  String _formatTrainingTime(int time) {
-    //这里其实可以用正则补0 先自己判断了
-    int minute = (time / 60000).floor();
-    int second = (time % 60000 / 1000).floor();
-    String minuteStr;
-    String secondStr;
-    if (minute < 10) {
-      minuteStr = "0$minute";
-    } else {
-      minuteStr = "$minute";
-    }
-    if (second < 10) {
-      secondStr = "0$second";
-    } else {
-      secondStr = "$second";
-    }
-    return "$minuteStr:$secondStr";
   }
 }
