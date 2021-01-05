@@ -1,5 +1,8 @@
-import 'package:mirror/page/profile/setting_page/feedback_page.dart';
-import 'package:mirror/page/profile/setting_page/notice_setting_page.dart';
+
+import 'package:mirror/page/profile/setting/blacklist_page.dart';
+import 'package:mirror/page/profile/setting/feedback_page.dart';
+import 'package:mirror/page/profile/setting/notice_setting_page.dart';
+import 'package:mirror/route/router.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,9 +20,12 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 ///设置主页
 class SettingHomePage extends StatefulWidget{
+  PanelController pcController;
+  SettingHomePage({this.pcController});
   @override
   State<StatefulWidget> createState() {
    return _settingHomePageState();
@@ -28,28 +34,42 @@ class SettingHomePage extends StatefulWidget{
 class _settingHomePageState extends State<SettingHomePage>{
   @override
   Widget build(BuildContext context) {
-    double width = ScreenUtil.instance.height;
-    double height = ScreenUtil.instance.screenWidthDp;
+    double width = ScreenUtil.instance.screenWidthDp;
+    double height = ScreenUtil.instance.width;
     return Scaffold(
       backgroundColor: AppColor.white,
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: AppColor.white,
         leading: InkWell(
-          child: Image.asset("images/test/back.png"),
+          child: Container(
+            margin: EdgeInsets.only(left: 16),
+            child: Image.asset("images/resource/2.0x/return2x.png"),),
           onTap: (){
             Navigator.pop(context);
           },
         ),
+        leadingWidth: 44,
         title: Text("设置",style: AppStyle.textMedium18,),
       ),
       body: Container(
-        height: height - ScreenUtil.instance.statusBarHeight,
+        height: height,
         width: width,
         child: Column(
           children: [
             SizedBox(height: 12,),
             _rowItem(width, "账户与安全"),
-            _rowItem(width, "黑名单"),
+            InkWell(
+              onTap: (){
+               /* AppRouter.navigateToSettingBlackList(context);*/
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                  return BlackListPage(
+                    pc: widget.pcController,
+                  );
+                }));
+              },
+              child:_rowItem(width, "黑名单"),
+            ),
             Container(
               height: 12,
               color: AppColor.bgWhite,
@@ -57,18 +77,14 @@ class _settingHomePageState extends State<SettingHomePage>{
             ),
             InkWell(
               onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return NoticeSettingPage();
-                }));
+                AppRouter.navigateToSettingNoticeSetting(context);
               },
               child: _rowItem(width, "通知设置"),
             ),
             _rowItem(width, "清除缓存"),
             InkWell(
               onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return FeedBackPage();
-                }));
+                AppRouter.navigateToSettingFeedBack(context);
               },
               child: _rowItem(width, "意见反馈"),
             ),

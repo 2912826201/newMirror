@@ -1,9 +1,7 @@
 import 'dart:collection';
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-import 'package:address_picker/address_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,18 +13,14 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/region_dto.dart';
-import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
-import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/page/media_picker/gallery_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:intl/intl.dart';
@@ -57,7 +51,6 @@ class _editInformationState extends State<EditInformation> {
   double latitude;
   String _introduction = "";
   String avataruri = "";
-
   //取图裁剪得到的图片数据
   Uint8List imageData;
   List<File> fileList = [];
@@ -75,7 +68,6 @@ class _editInformationState extends State<EditInformation> {
   List<RegionDto> cityDtoList = [];
   LinkedHashMap<int, RegionDto> provinceMap = Application.provinceMap;
   Map<int, List<RegionDto>> cityMap = Application.cityMap;
-
   @override
   void initState() {
     super.initState();
@@ -126,16 +118,12 @@ class _editInformationState extends State<EditInformation> {
       rightIndex = rightfixedExtentController.initialItem;
     }
     leftfixedExtentController.addListener(() {
-      setState(() {
         isFirst = false;
         leftIndex = leftfixedExtentController.selectedItem;
-      });
     });
     rightfixedExtentController.addListener(() {
-      setState(() {
         isFirst = false;
         rightIndex = rightfixedExtentController.selectedItem;
-      });
     });
   }
 
@@ -155,11 +143,14 @@ class _editInformationState extends State<EditInformation> {
           centerTitle: true,
           backgroundColor: AppColor.white,
           leading: InkWell(
-            onTap: () {
-              Navigator.pop(this.context);
+            child: Container(
+              margin: EdgeInsets.only(left: 16),
+              child: Image.asset("images/resource/2.0x/return2x.png"),),
+            onTap: (){
+              Navigator.pop(context);
             },
-            child: Image.asset("images/test/back.png"),
           ),
+          leadingWidth: 44,
           title: Text(
             "编辑资料",
             style: AppStyle.textMedium18,
@@ -571,7 +562,7 @@ class _editInformationState extends State<EditInformation> {
           ),
           Container(
             height: 0.5,
-            color: AppColor.frame,
+            color: AppColor.textHint,
             width: width,
           ),
           Stack(
@@ -612,7 +603,7 @@ class _editInformationState extends State<EditInformation> {
                   child: Container(
                     height: 0.5,
                     width: width / 2 * 0.7,
-                    color: AppColor.frame,
+                    color: AppColor.textHint,
                   )),
               Positioned(
                   left: width / 2 * 0.15,
@@ -620,7 +611,7 @@ class _editInformationState extends State<EditInformation> {
                   child: Container(
                     height: 0.5,
                     width: width / 2 * 0.7,
-                    color: AppColor.frame,
+                    color: AppColor.textHint,
                   )),
               Positioned(
                   right: width / 2 * 0.15,
@@ -628,7 +619,7 @@ class _editInformationState extends State<EditInformation> {
                   child: Container(
                     height: 0.5,
                     width: width / 2 * 0.7,
-                    color: AppColor.frame,
+                    color: AppColor.textHint,
                   )),
               Positioned(
                   right: width / 2 * 0.15,
@@ -636,7 +627,7 @@ class _editInformationState extends State<EditInformation> {
                   child: Container(
                     height: 0.5,
                     width: width / 2 * 0.7,
-                    color: AppColor.frame,
+                    color: AppColor.textHint,
                   )),
             ],
           )
@@ -746,7 +737,7 @@ class _editInformationState extends State<EditInformation> {
       context.read<ProfileNotifier>().setProfile(profile);
       Toast.show("资料修改成功",context,);
       Loading.hideLoading(context);
-      Navigator.pop(context, true);
+      Navigator.pop(context);
       print('更新过后的数据库用户头像${context.read<ProfileNotifier>().profile.avatarUri}');
     } else {
       print('=========================资料修改失败！=========================');

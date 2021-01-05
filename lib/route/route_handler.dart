@@ -13,11 +13,10 @@ import 'package:mirror/page/login/login_page.dart';
 import 'package:mirror/page/login/perfect_user_page.dart';
 import 'package:mirror/page/login/phone_login_page.dart';
 import 'package:mirror/page/main_page.dart';
-import 'package:mirror/page/media_picker/gallery_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/media_picker/preview_photo_page.dart';
 import 'package:mirror/page/message/chat_page.dart';
-import 'package:mirror/page/profile/Profile_add_remarks.dart';
+import 'package:mirror/page/profile/profile_add_remarks.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_introduction.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_name.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_page.dart';
@@ -25,15 +24,20 @@ import 'package:mirror/page/profile/login_test_page.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/profile_details_more.dart';
 import 'package:mirror/page/profile/scan_code_page.dart';
-import 'package:mirror/page/profile/setting_page/setting_home_page.dart';
+import 'package:mirror/page/profile/setting/blacklist_page.dart';
+import 'package:mirror/page/profile/setting/feedback_page.dart';
+import 'package:mirror/page/profile/setting/notice_setting_page.dart';
+import 'package:mirror/page/profile/setting/setting_home_page.dart';
 import 'package:mirror/page/rc_test_page.dart';
 import 'package:mirror/page/test_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_broadcast_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_detail_page.dart';
+import 'package:mirror/page/training/machine/connection_info_page.dart';
+import 'package:mirror/page/training/machine/machine_setting_page.dart';
+import 'package:mirror/page/training/machine/remote_controller_page.dart';
 import 'package:mirror/page/training/video_course/video_course_list_page.dart';
 import 'package:mirror/page/training/video_course/video_detail_page.dart';
 import 'package:mirror/route/router.dart';
-import 'package:photo_manager/photo_manager.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 /// route_handler
@@ -93,9 +97,6 @@ var handlerLoginPhone = Handler(handlerFunc: (BuildContext context, Map<String, 
 var handlerLike = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return Like();
 });
-var handlerScan = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  // return ScanCodePage();
-});
 var handlermineDetails = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return ProfileDetailPage(
@@ -114,27 +115,34 @@ var handlerProfileAddRemarks = Handler(handlerFunc: (BuildContext context, Map<S
   );
 });
 
-var handlerEditInformation = Handler(
-    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+var handlerEditInformation = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return EditInformation();
 });
 
-var handlerEditInformationName = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
-  Map<String, dynamic> data = json.decode(
-    params[AppRouter.paramData].first);
+var handlerEditInformationName = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return EditInformationName(
     userName: data["username"],
   );
 });
 
-var handlerEditInformationIntroduction = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+var handlerEditInformationIntroduction = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return EditInformationIntroduction(
     introduction: data["introduction"],
   );
 });
-var handlerSettingHomePage = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+var handlerSettingHomePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return SettingHomePage();
+});
+var handlerSettingBlackList = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return BlackListPage();
+});
+var handlerSettingNoticeSetting = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return NoticeSettingPage();
+});
+var handlerSettingFeedBack = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return FeedBackPage();
 });
 var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
@@ -183,11 +191,25 @@ var handlerPerfectUserPage = Handler(handlerFunc: (BuildContext context, Map<Str
   return PerfectUserPage();
 });
 
-var handlerChatPage = Handler(
-    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-      Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-      ConversationDto conversation = ConversationDto.fromMap(data["conversation"]);
-      Message shareMessage = Application.shareMessage;
-      Application.shareMessage = null;
-      return ChatPage(conversation: conversation, shareMessage: shareMessage);
-    });
+var handlerChatPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  ConversationDto conversation = ConversationDto.fromMap(data["conversation"]);
+  Message shareMessage = Application.shareMessage;
+  Application.shareMessage = null;
+  return ChatPage(conversation: conversation, shareMessage: shareMessage);
+});
+
+//机器遥控界面
+var handlerMachineRemoteController = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return RemoteControllerPage();
+});
+
+//机器连接信息页
+var handlerMachineConnectionInfo = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return ConnectionInfoPage();
+});
+
+//终端设置页
+var handlerMachineSetting = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return MachineSettingPage();
+});

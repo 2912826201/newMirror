@@ -38,43 +38,41 @@ class _IntroductionState extends State<EditInformationIntroduction> {
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColor.white,
-        leading: InkWell(
-          onTap: () {
-            Navigator.pop(this.context);
-          },
-          child: Image.asset("images/test/back.png"),
-        ),
-        title: Text(
-          "编辑昵称",
-          style: AppStyle.textMedium18,
-        ),
-        centerTitle: true,
-        actions: [
-          InkWell(
-            onTap: () {
-              Navigator.pop(this.context, editText);
-            },
-            child: Container(
-              width: 60,
-              margin: EdgeInsets.only(right: 16),
-              child: Center(
-                  child: Container(
-                decoration: BoxDecoration(
-                  color: AppColor.mainRed,
-                  borderRadius: BorderRadius.all(Radius.circular(14)),
-                ),
-                padding:
-                    EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 4),
-                child: Text(
-                  "确定",
-                  style: TextStyle(fontSize: 14, color: AppColor.white),
+          return Scaffold(
+            appBar: AppBar(
+            backgroundColor: AppColor.white,
+            leading:InkWell(
+              child: Container(
+                margin: EdgeInsets.only(left: 16),
+                child: Image.asset("images/resource/2.0x/return2x.png"),),
+              onTap: (){
+                Navigator.pop(context);
+              },
+            ),
+              leadingWidth: 44,
+            title: Text("编辑昵称",style: AppStyle.textMedium18,),
+            centerTitle: true,
+            actions: [
+              InkWell(
+                onTap: (){
+                  Navigator.pop(this.context,editText);
+                },
+                child: Container(
+                width: 60,
+                margin: EdgeInsets.only(right: 16),
+                child: Center(
+                  child:Container(
+                    decoration: BoxDecoration(
+                      color: AppColor.mainRed,
+                      borderRadius: BorderRadius.all(Radius.circular(14)),
+                    ),
+                    padding: EdgeInsets.only(left:16 ,right:16 ,top: 4,bottom:4 ),
+                    child: Text(
+                      "确定",
+                      style: TextStyle(fontSize: 14, color: AppColor.white),
+                    ),)
                 ),
               )),
-            ),
-          )
         ],
       ),
       body: Container(
@@ -106,7 +104,7 @@ class _IntroductionState extends State<EditInformationIntroduction> {
       padding: EdgeInsets.only(left: 16, right: 16, top: 8),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(8)),
-          border: Border.all(width: 0.5, color: AppColor.frame)),
+          border: Border.all(width: 0.5, color: AppColor.textHint)),
       child: Column(
         children: [
           TextField(

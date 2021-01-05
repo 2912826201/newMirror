@@ -32,22 +32,7 @@ class UserMsg extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> longClickStringList = getLongClickStringList(
-        isMySelf: isMyself, contentType: ChatTypeModel.MESSAGE_TYPE_USER);
-    return LongClickPopupMenu(
-      onValueChanged: (int value) {
-        voidItemLongClickCallBack(
-            position: position,
-            settingType: longClickStringList[value],
-            contentType: ChatTypeModel.MESSAGE_TYPE_USER);
-        // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
-      },
-      contentType: ChatTypeModel.MESSAGE_TYPE_USER,
-      isMySelf: isMyself,
-      actions: longClickStringList,
-      contentWidth: 180.0,
-      child: getContentBoxItem(context),
-    );
+    return getContentBoxItem(context);
   }
 
   Widget getContentBoxItem(BuildContext context) {
@@ -92,14 +77,7 @@ class UserMsg extends StatelessWidget {
       SizedBox(
         width: 7,
       ),
-      GestureDetector(
-        child: _getUserUi(),
-        onTap: () {
-          voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_USER,
-              map: userModel.toJson());
-          // ToastShow.show(msg: "点击了名片-该跳转", context: context);
-        },
-      ),
+      _getUserUiLongClick(),
     ];
     if (isMyself) {
       body = body.reversed.toList();
@@ -107,6 +85,34 @@ class UserMsg extends StatelessWidget {
       body = body;
     }
     return body;
+  }
+
+//长按事件
+  Widget _getUserUiLongClick() {
+    List<String> longClickStringList = getLongClickStringList(
+        isMySelf: isMyself, contentType: ChatTypeModel.MESSAGE_TYPE_USER);
+    return LongClickPopupMenu(
+      onValueChanged: (int value) {
+        voidItemLongClickCallBack(
+            position: position,
+            settingType: longClickStringList[value],
+            contentType: ChatTypeModel.MESSAGE_TYPE_USER);
+        // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
+      },
+      contentType: ChatTypeModel.MESSAGE_TYPE_USER,
+      isMySelf: isMyself,
+      actions: longClickStringList,
+      contentWidth: 180.0,
+      child: GestureDetector(
+        child: _getUserUi(),
+        onTap: () {
+          voidMessageClickCallBack(
+              contentType: ChatTypeModel.MESSAGE_TYPE_USER,
+              map: userModel.toJson());
+          // ToastShow.show(msg: "点击了名片-该跳转", context: context);
+        },
+      ),
+    );
   }
 
   //获取动态框

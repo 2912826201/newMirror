@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/media_file_model.dart';
@@ -9,15 +10,34 @@ import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
+import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
+import 'more_page/group_more_page.dart';
+import 'more_page/private_more_page.dart';
+
 //融云每一秒支持发送5条消息
 int imPostSecondNumber = 5;
 
 // typedef VoidCallback = void Function();
+
+//去对应的聊天界面
+//目前是从用户详情页的私聊过来的
+void jumpChatPageUser(
+  BuildContext context,
+  UserModel userModel,
+) {
+  ConversationDto conversation = new ConversationDto();
+  conversation.conversationId = userModel.uid.toString();
+  conversation.uid = Application.profile.uid;
+  conversation.name = userModel.nickName;
+  conversation.avatarUri = userModel.avatarUri;
+  conversation.type = PRIVATE_TYPE;
+  jumpChatPageConversationDto(context, conversation);
+}
 
 //分享跳转界面
 void jumpShareMessage(Map<String, dynamic> map, String chatType, String name,
@@ -90,34 +110,13 @@ void _jumpChatPage(
       context: context, conversation: conversation, shareMessage: shareMessage);
 }
 
-//
-// //todo 发送消息 不依赖于 chat_page界面
-// //发送消息
-// Future<Message> postMessageManager({Map<String, dynamic> map, String chatType, String name, BuildContext context})async{
-//
-//   Message message = await Application.rongCloud.sendPrivateMessage(controller.text, msg);
-//
-//
-//   //判断发送的是什么消息
-//   if(chatType==ChatTypeModel.USER_INFORMATION){
-//     print("名片信息");
-//   }else if(chatType==ChatTypeModel.FEED){
-//     print("动态信息");
-//   }else if(chatType==ChatTypeModel.COMMENT_TEXT){
-//     print("普通文字信息");
-//   }else{
-//     print("未知消息,不发送");
-//   }
-//   return true;
-// }
-
 //todo 目前没有自定义的所以差不多都是使用的是TextMessage 等有了自定义再改
 
 //发送文本消息
 Future<Message> postMessageManagerText(String targetId, String text,
     bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getUserInfo();
+  msg.sendUserInfo = getChatUserInfo();
   // msg.content = text;
   Map<String, dynamic> feedMap = Map();
   feedMap["type"] = ChatTypeModel.MESSAGE_TYPE_TEXT;
@@ -132,7 +131,7 @@ Future<Message> postMessageManagerText(String targetId, String text,
 Future<Message> postMessageManagerSelect(String targetId, String text,
     bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getUserInfo();
+  msg.sendUserInfo = getChatUserInfo();
   // msg.content = text;
   Map<String, dynamic> feedMap = Map();
   feedMap["type"] = ChatTypeModel.MESSAGE_TYPE_SELECT;
@@ -147,7 +146,7 @@ Future<Message> postMessageManagerSelect(String targetId, String text,
 Future<Message> postMessageManagerFeed(String targetId,
     Map<String, dynamic> map, bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getUserInfo();
+  msg.sendUserInfo = getChatUserInfo();
   Map<String, dynamic> feedMap = Map();
   feedMap["type"] = ChatTypeModel.MESSAGE_TYPE_FEED;
   feedMap["content"] = jsonEncode(map);
@@ -165,12 +164,12 @@ Future<Message> postMessageManagerImgOrVideo1(
     UploadResultModel uploadResultModel) async {
   ImageMessage msg = new ImageMessage();
   mediaFileModel.sizeInfo.type =
-      isImgOrVideo ? mediaTypeKeyImage : mediaTypeKeyVideo;
+  isImgOrVideo ? mediaTypeKeyImage : mediaTypeKeyVideo;
   msg.localPath = uploadResultModel.filePath;
   msg.extra = jsonEncode(mediaFileModel.sizeInfo.toJson());
   msg.imageUri = uploadResultModel.url;
   msg.mThumbUri = uploadResultModel.url;
-  msg.sendUserInfo = getUserInfo();
+  msg.sendUserInfo = getChatUserInfo();
   return await postPrivateMessageManager(targetId, msg);
 }
 
@@ -182,7 +181,7 @@ Future<Message> postMessageManagerImgOrVideo(String targetId, bool isImgOrVideo,
   isImgOrVideo ? mediaTypeKeyImage : mediaTypeKeyVideo;
   mediaFileModel.sizeInfo.showImageUrl = uploadResultModel.url;
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getUserInfo();
+  msg.sendUserInfo = getChatUserInfo();
   Map<String, dynamic> feedMap = Map();
   feedMap["type"] = isImgOrVideo
       ? ChatTypeModel.MESSAGE_TYPE_IMAGE
@@ -201,7 +200,7 @@ Future<Message> postMessageManagerVoice(String targetId,
   msg.localPath = chatVoiceModel.filePath;
   msg.extra = jsonEncode(chatVoiceModel.toJson());
   msg.duration = chatVoiceModel.longTime;
-  msg.sendUserInfo = getUserInfo();
+  msg.sendUserInfo = getChatUserInfo();
   Message message = new Message();
   message.conversationType = conversationType;
   message.senderUserId = Application.profile.uid.toString();
@@ -220,7 +219,7 @@ Future<Message> postMessageManagerVoice(String targetId,
 Future<Message> postMessageManagerUser(String targetId,
     Map<String, dynamic> map, bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getUserInfo();
+  msg.sendUserInfo = getChatUserInfo();
   Map<String, dynamic> feedMap = Map();
   feedMap["type"] = ChatTypeModel.MESSAGE_TYPE_USER;
   feedMap["content"] = jsonEncode(map);
@@ -234,7 +233,7 @@ Future<Message> postMessageManagerUser(String targetId,
 Future<Message> postMessageManagerLiveCourse(String targetId,
     Map<String, dynamic> map, bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getUserInfo();
+  msg.sendUserInfo = getChatUserInfo();
   Map<String, dynamic> feedMap = Map();
   feedMap["type"] = ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE;
   feedMap["content"] = jsonEncode(map);
@@ -248,7 +247,7 @@ Future<Message> postMessageManagerLiveCourse(String targetId,
 Future<Message> postMessageManagerVideoCourse(String targetId,
     Map<String, dynamic> map, bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getUserInfo();
+  msg.sendUserInfo = getChatUserInfo();
   Map<String, dynamic> feedMap = Map();
   feedMap["type"] = ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE;
   feedMap["content"] = jsonEncode(map);
@@ -278,7 +277,7 @@ void postMessageManagerAlertTime(String chatTypeModel,
     int conversationType,
     Function(Message msg, int code) finished, bool isPrivate) {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getUserInfo();
+  msg.sendUserInfo = getChatUserInfo();
   Map<String, dynamic> feedMap = Map();
   feedMap["type"] = chatTypeModel;
   feedMap["content"] = content;
@@ -288,7 +287,7 @@ void postMessageManagerAlertTime(String chatTypeModel,
 }
 
 //获取用户数据
-UserInfo getUserInfo() {
+UserInfo getChatUserInfo() {
   UserInfo userInfo = UserInfo();
   userInfo.userId = Application.profile.uid.toString();
   userInfo.name = Application.profile.nickName;
@@ -476,3 +475,37 @@ int getRCConversationType(int type) {
   }
 }
 
+
+//todo 之后改为路由跳转
+//判断去拿一个更多界面
+void judgeJumpPage(int chatTypeId, String chatUserId, int chatType,
+    BuildContext context) {
+  if (chatTypeId == RCConversationType.Private) {
+    _jumpPage(
+        PrivateMorePage(chatUserId: chatUserId, chatType: chatType,), false,
+        context);
+  } else {
+    _jumpPage(GroupMorePage(chatUserId: chatUserId, chatType: chatType), false,
+        context);
+  }
+}
+
+void _jumpPage(var page, bool isCloseNewPage, BuildContext context) {
+  if (isCloseNewPage) {
+    //跳转并关闭当前页面
+    Navigator.pushAndRemoveUntil(
+      context,
+      new MaterialPageRoute(builder: (context) => page),
+          (route) => route == null,
+    );
+  } else {
+    //跳转不关闭当前页面
+    Navigator.of(context).push(
+      new MaterialPageRoute(
+        builder: (context) {
+          return page;
+        },
+      ),
+    );
+  }
+}

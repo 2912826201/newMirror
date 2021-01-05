@@ -24,6 +24,7 @@ import 'config/config.dart';
 import 'config/shared_preferences.dart';
 import 'data/dto/profile_dto.dart';
 import 'data/dto/token_dto.dart';
+import 'data/model/message/chat_enter_notifier.dart';
 import 'data/model/message/chat_message_profile_notifier.dart';
 import 'data/model/message/chat_voice_setting.dart';
 import 'data/model/message/voice_alert_date_model.dart';
@@ -50,6 +51,7 @@ void main() {
             ChangeNotifierProvider(create: (_) => VoiceAlertData()),
             ChangeNotifierProvider(create: (_) => VoiceSettingNotifier()),
             ChangeNotifierProvider(create: (_) => ChatMessageProfileNotifier()),
+            ChangeNotifierProvider(create: (_) => ChatEnterNotifier()),
           ],
       child: MyApp(),
     ),

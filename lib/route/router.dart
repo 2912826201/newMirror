@@ -7,11 +7,8 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/live_model.dart';
-import 'package:mirror/data/model/media_file_model.dart';
-import 'package:mirror/page/main_page.dart';
 import 'package:mirror/route/route_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:photo_manager/photo_manager.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 /// router
@@ -47,6 +44,14 @@ class AppRouter {
   static String pathEditInformationIntroduction = "/profile/editinformation/introduction";
   static String pathChatPage = "/chatPage";
   static String pathSettingHomePage = "/profile/settinghomepage";
+  static String pathSettingFeedBack = "/profile/settingfeedback";
+  static String pathSettingBlackList = "/profile/settingblacklist";
+  static String pathSettingNoticeSetting = "/profile/settingnoticeSetting";
+  static String pathMachineRemoteController = "/machine/remotecontroller";
+  static String pathMachineConnectionInfo = "/machine/connectioninfo";
+  static String pathMachineSetting = "/machine/setting";
+
+
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(
         handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
@@ -69,7 +74,6 @@ class AppRouter {
     router.define(pathLiveBroadcast, handler: handlerLiveBroadcast);
     router.define(pathLiveDetail, handler: handlerLiveDetail);
     router.define(pathVideoDetail, handler: handlerVideoDetail);
-    router.define(pathProfileScanCode, handler: handlerScan);
     router.define(pathProfileDetails, handler: handlermineDetails);
     router.define(pathVideoCourseList, handler: handlerVideoCourseList);
     router.define(pathProfileDetailsMore, handler: handlerProfileDetailMore);
@@ -78,6 +82,12 @@ class AppRouter {
     router.define(pathEditInformationName, handler: handlerEditInformationName);
     router.define(pathEditInformationIntroduction, handler: handlerEditInformationIntroduction);
     router.define(pathSettingHomePage, handler: handlerSettingHomePage);
+    router.define(pathSettingFeedBack, handler: handlerSettingFeedBack);
+    router.define(pathSettingNoticeSetting, handler: handlerSettingNoticeSetting);
+    router.define(pathSettingBlackList, handler: handlerSettingBlackList);
+    router.define(pathMachineRemoteController, handler: handlerMachineRemoteController);
+    router.define(pathMachineConnectionInfo, handler: handlerMachineConnectionInfo);
+    router.define(pathMachineSetting, handler: handlerMachineSetting);
 
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
@@ -208,6 +218,18 @@ class AppRouter {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathSettingHomePage, map);
   }
+  static void navigateToSettingFeedBack(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathSettingFeedBack, map);
+  }
+  static void navigateToSettingNoticeSetting(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathSettingNoticeSetting, map);
+  }
+  static void navigateToSettingBlackList(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathSettingBlackList, map);
+  }
 
   static void navigateToLikePage(BuildContext context) {
     Map<String, dynamic> map = Map();
@@ -243,5 +265,17 @@ class AppRouter {
     Map<String, dynamic> map = Map();
     map["filePath"] = filePath;
     _navigateToPage(context, pathPreviewPhoto, map, callback: callback);
+  }
+
+  static void navigateToMachineRemoteController(BuildContext context) {
+    _navigateToPage(context, pathMachineRemoteController, {});
+  }
+
+  static void navigateToMachineConnectionInfo(BuildContext context) {
+    _navigateToPage(context, pathMachineConnectionInfo, {});
+  }
+
+  static void navigateToMachineSetting(BuildContext context) {
+    _navigateToPage(context, pathMachineSetting, {});
   }
 }

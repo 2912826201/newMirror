@@ -9,6 +9,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
+import 'package:mirror/data/model/message/chat_enter_notifier.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/chat_voice_model.dart';
@@ -20,19 +21,19 @@ import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:text_span_field/range_style.dart';
+import 'package:text_span_field/text_span_field.dart';
 
 import 'chat_details_body.dart';
+import 'item/chat_at_user_name_list.dart';
 import 'item/chat_more_icon.dart';
-import 'item/chat_system_bottom_bar.dart';
 import 'item/emoji_manager.dart';
 import 'item/message_body_input.dart';
 import 'item/message_input_bar.dart';
 import 'package:provider/provider.dart';
-
-import 'more_page/group_more_page.dart';
-import 'more_page/private_more_page.dart';
 
 ////////////////////////////////
 //
@@ -102,8 +103,13 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   ///是不是私人管家
   bool isPersonalButler;
 
+  ///计时
   Timer _timer;
   int _timerCount = 0;
+
+  // 判断是否只是切换光标
+  bool isSwitchCursor = true;
+  ReleaseFeedInputFormatter _formatter;
 
   @override
   void initState() {
@@ -111,6 +117,8 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     initData();
     initSetData();
     initTime();
+    initTextController();
+    initReleaseFeedInputFormatter();
   }
 
   @override
@@ -118,32 +126,6 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     if (chatUserName == null) {
       initData();
     }
-    var body = [
-      (chatDataList != null && chatDataList.length > 0)
-          ? getChatDetailsBody()
-          : Expanded(
-              child: SizedBox(
-                  child: Stack(
-              children: [
-                Positioned(
-                  child: Offstage(
-                    offstage: !isPersonalButler,
-                    child: ChatSystemBottomBar(onMessageClickCallBack),
-                  ),
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                )
-              ],
-                  ))),
-      getMessageInputBar(),
-      bottomSettingBox(),
-      Offstage(
-        offstage: true,
-        child: judgeReceiveMessages(),
-      )
-    ];
-
     return WillPopScope(
       child: Scaffold(
         resizeToAvoidBottomInset: isResizeToAvoidBottomInset,
@@ -151,11 +133,55 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         body: MessageInputBody(
           onTap: () => _messageInputBodyClick(),
           decoration: BoxDecoration(color: Color(0xffefefef)),
-          child: Column(children: body),
+          child: Column(children: getBody()),
         ),
       ),
       onWillPop: _requestPop,
     );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    if (Application.appContext != null) {
+      Application.appContext.read<VoiceSettingNotifier>().stop();
+      Application.appContext.read<ChatMessageProfileNotifier>().clear();
+    }
+    if (_timer != null) {
+      _timer.cancel();
+      _timer = null;
+    }
+    super.dispose();
+  }
+
+
+  ///----------------------------------------ui start---------------------------------------------///
+
+  //获取显示的ui主体
+  List<Widget> getBody() {
+    return [
+      Expanded(
+        child: SizedBox(
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              (chatDataList != null && chatDataList.length > 0)
+                  ? getChatDetailsBody()
+                  : Container(),
+              ChatAtUserList(
+                  isShow: context.watch<ChatEnterNotifier>().keyWord == "@",
+                  onItemClickListener: atListItemClick),
+            ],
+          ),
+        ),
+      ),
+      getMessageInputBar(),
+      bottomSettingBox(),
+      Offstage(
+        offstage: true,
+        child: judgeReceiveMessages(),
+      )
+    ];
   }
 
   //获取列表内容
@@ -163,6 +189,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     return ChatDetailsBody(
       scrollController: _scrollController,
       chatDataList: chatDataList,
+      onTap: () => _messageInputBodyClick(),
       vsync: this,
       voidItemLongClickCallBack: onItemLongClickCallBack,
       voidMessageClickCallBack: onMessageClickCallBack,
@@ -187,8 +214,11 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
             icon: Icon(Icons.more_horiz),
             onPressed: () {
               print("-----------------------");
+              _focusNode.unfocus();
               ToastShow.show(msg: "点击了更多那妞", context: context);
-              judgeJumpPage();
+              judgeJumpPage(
+                  chatTypeId, this.chatUserId, widget.conversation.type,
+                  context);
             },
           ),
         )
@@ -209,7 +239,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         value: _textController.text,
         onTap: () {
           print("231");
-          _handleSubmittedData();
+          _onSubmitClick();
         },
         moreTap: () => onPicAndVideoBtnClick(),
       ),
@@ -220,7 +250,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //输入框bar内的edit
   Widget edit(context, size) {
-    return TextField(
+    return TextSpanField(
       controller: _textController,
       focusNode: _focusNode,
       // 多行展示
@@ -230,9 +260,14 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       // 光标颜色
       cursorColor: Color.fromRGBO(253, 137, 140, 1),
       scrollPadding: EdgeInsets.all(0),
+      inputFormatters: [_formatter],
       style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
+      rangeStyles: getTextFieldStyle(Application.appContext
+          .read<ChatEnterNotifier>()
+          .rules),
       //内容改变的回调
       onChanged: _changTextLen,
+      // rangeStyles: getTextFieldStyle(rules),
       // 装饰器修改外观
       decoration: InputDecoration(
         // 去除下滑线
@@ -281,19 +316,31 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     if (!_emojiState) {
       emojiHeight = 0.0;
     }
-    return AnimatedContainer(
+
+    return _emojiState ? AnimatedContainer(
       height: emojiHeight,
       duration: Duration(milliseconds: 300),
-      child: Offstage(
-        offstage: !_emojiState,
-        child: Container(
-          height: emojiHeight,
-          width: double.infinity,
-          color: Colors.white,
-          child: emojiList(),
-        ),
+      child: Container(
+        height: emojiHeight,
+        width: double.infinity,
+        color: Colors.white,
+        child: emojiList(),
       ),
-    );
+    ) : Container();
+    //
+    // return AnimatedContainer(
+    //   height: emojiHeight,
+    //   duration: Duration(milliseconds: 300),
+    //   child: Offstage(
+    //     offstage: !_emojiState,
+    //     child: Container(
+    //       height: emojiHeight,
+    //       width: double.infinity,
+    //       color: Colors.white,
+    //       child: emojiList(),
+    //     ),
+    //   ),
+    // );
   }
 
   //emoji具体是什么界面
@@ -376,7 +423,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                     Icons.send,
                     size: 24,
                   ),
-                  onPressed: () => _handleSubmittedData(),
+                  onPressed: () => _onSubmitClick(),
                 ),
               ),
             ),
@@ -409,25 +456,16 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   }
 
 
-  //聊天内容的点击事件
-  _messageInputBodyClick() {
-    if (_emojiState || MediaQuery.of(context).viewInsets.bottom > 0) {
-      setState(() {
-        _emojiState = false;
-        isContentClickOrEmojiClick = true;
-      });
-      Future.delayed(Duration(milliseconds: 300), () {
-        setState(() {
-          isResizeToAvoidBottomInset = !_emojiState;
-        });
-      });
-    }
-  }
+  ///------------------------------------ui end--------------------------------------------------------------------------------///
+  ///------------------------------------数据初始化和各种回调   start--------------------------------------------------------------------------------///
 
 // 监听返回
   Future<bool> _requestPop() {
     bool b = false;
-    if (MediaQuery.of(context).viewInsets.bottom == 0 && !_emojiState) {
+    if (MediaQuery
+        .of(context)
+        .viewInsets
+        .bottom == 0 && !_emojiState) {
       b = true;
     } else {
       if (_emojiState) {
@@ -444,6 +482,8 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //当改变了输入框内的文字个数
   _changTextLen(String text) {
+    // 存入最新的值
+    context.read<ChatEnterNotifier>().changeCallback(text);
     bool isReset = false;
     if (StringUtil.strNoEmpty(text)) {
       if (!isHaveTextLen) {
@@ -519,57 +559,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     });
   }
 
-  //表情的点击事件
-  void onEmojioClick() {
-    if (MediaQuery
-        .of(context)
-        .viewInsets
-        .bottom > 0) {
-      _emojiState = false;
-    }
-    _emojiState = !_emojiState;
-    isResizeToAvoidBottomInset = !_emojiState;
-    if (_emojiState) {
-      FocusScope.of(context).requestFocus(new FocusNode());
-    }
-    isContentClickOrEmojiClick = false;
-    setState(() {});
-  }
 
-  //图片的点击事件
-  onPicAndVideoBtnClick() {
-    print("=====图片的点击事件");
-    SelectedMediaFiles selectedMediaFiles = new SelectedMediaFiles();
-    AppRouter.navigateToMediaPickerPage(
-        context,
-        9,
-        typeImageAndVideo,
-        false,
-        startPageGallery,
-        false,
-        false,
-            (result) async {
-          SelectedMediaFiles files = Application.selectedMediaFiles;
-          if (true != result || files == null) {
-            print("没有选择媒体文件");
-            return;
-          }
-          Application.selectedMediaFiles = null;
-          selectedMediaFiles.type = files.type;
-          selectedMediaFiles.list = files.list;
-          _handPicOrVideo(selectedMediaFiles);
-        });
-  }
+  ///------------------------------------数据初始化和各种回调   end--------------------------------------------------------------------------------///
 
-  //发送文字信息
-  _handleSubmittedData() {
-    String text = _textController.text;
-    if (text == null || text.isEmpty || text.length < 1) {
-      ToastShow.show(msg: "消息为空,请输入消息！", context: context);
-      return;
-    }
-    _postText(text);
-  }
+  ///------------------------------------发送消息  start-----------------------------------------------------------------------///
 
   //发送文字消息
   _postText(String text) {
@@ -583,6 +576,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     chatDataModel.isTemporary = true;
     chatDataModel.isHaveAnimation = true;
     chatDataList.insert(0, chatDataModel);
+    animateTo();
     setState(() {
       _textController.text = "";
       isHaveTextLen = false;
@@ -607,6 +601,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       chatDataList.insert(0, chatDataModel);
       modelList.add(chatDataList[0]);
     }
+    animateTo();
     setState(() {});
     postImgOrVideo(
         modelList, widget.conversation.conversationId, selectedMediaFiles.type,
@@ -614,17 +609,6 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
             () {
           delayedSetState();
         });
-  }
-
-  //录音按钮的点击事件
-  _voiceOnTapClick() async {
-    await [Permission.microphone].request();
-
-    _focusNode.unfocus();
-    _emojiState = false;
-    isContentClickOrEmojiClick = true;
-    _isVoiceState = !_isVoiceState;
-    setState(() {});
   }
 
   //发送录音
@@ -639,6 +623,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     chatDataModel.isTemporary = true;
     chatDataModel.isHaveAnimation = true;
     chatDataList.insert(0, chatDataModel);
+    animateTo();
     setState(() {});
     postVoice(chatDataList[0], widget.conversation.conversationId, chatTypeId,
         chatTypeId, () {
@@ -646,11 +631,421 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         });
   }
 
+
+
+
+  //发送可选择的信息
+  _postSelectMessage(String text) async {
+    text += "," + text;
+    text += "," + text;
+    ChatDataModel chatDataModel = new ChatDataModel();
+    chatDataModel.type = ChatTypeModel.MESSAGE_TYPE_SELECT;
+    chatDataModel.content = text;
+    chatDataModel.isTemporary = true;
+    chatDataModel.isHaveAnimation = true;
+    chatDataList.insert(0, chatDataModel);
+    animateTo();
+    setState(() {
+      _textController.text = "";
+      isHaveTextLen = false;
+    });
+    postSelectMessage(
+        chatDataList[0], widget.conversation.conversationId, chatTypeId, () {
+      delayedSetState();
+    });
+  }
+
+  //撤回消息
+  void recallMessage(Message message, int position) async {
+    RecallNotificationMessage recallNotificationMessage =
+    await RongCloud.init().recallMessage(message);
+    if (recallNotificationMessage == null) {
+      ToastShow.show(msg: "撤回失败", context: context);
+    } else {
+      chatDataList[position].msg.objectName =
+          RecallNotificationMessage.objectName;
+      chatDataList[position].msg.content = recallNotificationMessage;
+      animateTo();
+      setState(() {});
+    }
+  }
+
+  //发送间隔时间
+  void postTimeChatDataModel({bool isSetState = true}) {
+    if (chatDataList != null &&
+        chatDataList.length > 0 &&
+        chatDataList[0].msg != null &&
+        !getNewestIsAlertMessage()) {
+      getTimeChatDataModel(
+        targetId: widget.conversation.conversationId,
+        conversationType: chatTypeId,
+        finished: (Message msg, int code) {
+          ChatDataModel chatDataModel = new ChatDataModel();
+          chatDataModel.msg = msg;
+          chatDataModel.isTemporary = false;
+          chatDataModel.isHaveAnimation = true;
+          chatDataList.insert(0, chatDataModel);
+          animateTo();
+          if (isSetState) {
+            setState(() {
+
+            });
+          }
+        },
+      );
+    }
+  }
+
+
+  ///------------------------------------发送消息  end-----------------------------------------------------------------------///
+  ///------------------------------------一些功能 方法  start-----------------------------------------------------------------------///
+
+  //判断最后一个消息是不是时间提示
+  bool getNewestIsAlertMessage() {
+    try {
+      bool isTextMessage = chatDataList[0].msg.objectName ==
+          TextMessage.objectName;
+      if (isTextMessage) {
+        TextMessage textMessage = chatDataList[0].msg.content as TextMessage;
+        Map<String, dynamic> map = json.decode(textMessage.content);
+        bool isAlertTimeMessage = map["type"] ==
+            ChatTypeModel.MESSAGE_TYPE_ALERT_TIME;
+        if (isAlertTimeMessage) {
+          return true;
+        }
+      }
+    } catch (e) {}
+    return false;
+  }
+
+  //计时
+  initTime() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      _timerCount++;
+      // print(_timerCount.toString());
+      if (_timerCount >= 300) {
+        _timerCount = 0;
+        // print("-----"+_timerCount.toString());
+        postTimeChatDataModel();
+      }
+    });
+  }
+
+  //延迟更新
   void delayedSetState() {
     Future.delayed(Duration(milliseconds: 200), () {
       setState(() {});
     });
   }
+
+//判断接收消息
+  Widget judgeReceiveMessages() {
+    return Consumer<ChatMessageProfileNotifier>(
+      builder: (context, notifier, child) {
+        Message message = context.select((
+            ChatMessageProfileNotifier value) => value.message);
+        if (message == null || message.targetId != this.chatUserId &&
+            message.conversationType != chatTypeId) {
+          return Container();
+        } else {
+          Application.appContext.read<ChatMessageProfileNotifier>()
+              .clearMessage();
+        }
+        ChatDataModel chatDataModel = getMessage(
+            message, isHaveAnimation: true);
+        chatDataList.insert(0, chatDataModel);
+        delayedSetState();
+        return Container();
+      },
+    );
+  }
+
+
+  initTextController() {
+    _textController.addListener(() {
+      print("值改变了");
+      print("监听文字光标${_textController.selection}");
+      // 每次点击切换光标会进入此监听。需求邀请@和话题光标不可移入其中。
+      print("::::::$isSwitchCursor");
+      if (isSwitchCursor) {
+        List<Rule> rules = context
+            .read<ChatEnterNotifier>()
+            .rules;
+        int atIndex = context
+            .read<ChatEnterNotifier>()
+            .atCursorIndex;
+
+        // 获取光标位置
+        int cursorIndex = _textController.selection.baseOffset;
+        for (Rule rule in rules) {
+          // 是否光标点击到了@区域
+          if (cursorIndex >= rule.startIndex && cursorIndex <= rule.endIndex) {
+            // 获取中间值用此方法是因为当atRule.startIndex和atRule.endIndex为负数时不会溢出。
+            int median = rule.startIndex +
+                (rule.endIndex - rule.startIndex) ~/ 2;
+            TextSelection setCursor;
+            if (cursorIndex > median) {
+              setCursor = TextSelection(
+                baseOffset: rule.endIndex,
+                extentOffset: rule.endIndex,
+              );
+            }
+            if (cursorIndex <= median) {
+              setCursor = TextSelection(
+                baseOffset: rule.startIndex,
+                extentOffset: rule.startIndex,
+              );
+            }
+            // 设置光标
+            _textController.selection = setCursor;
+          }
+        }
+        // 唤起@#后切换光标关闭视图
+        if (cursorIndex != atIndex) {
+          context.read<ChatEnterNotifier>().openAtCallback("");
+        }
+      }
+      isSwitchCursor = true;
+    });
+  }
+
+  initReleaseFeedInputFormatter() {
+    _formatter = ReleaseFeedInputFormatter(
+      controller: _textController,
+      rules: context
+          .read<ChatEnterNotifier>()
+          .rules,
+      // @回调
+      // ignore: missing_return
+      triggerAtCallback: (String str) async {
+        if (chatTypeId == RCConversationType.Group) {
+          context.read<ChatEnterNotifier>().openAtCallback(str);
+        }
+      },
+      // 关闭@#视图回调
+      shutDownCallback: () async {
+        context.read<ChatEnterNotifier>().openAtCallback("");
+      },
+      valueChangedCallback:
+          (List<Rule> rules, String value, int atIndex, int topicIndex,
+          String atSearchStr, String topicSearchStr) {
+        rules = rules;
+        print("输入框值回调：$value");
+        print(rules);
+        isSwitchCursor = false;
+        if (atIndex > 0) {
+          context.read<ChatEnterNotifier>().getAtCursorIndex(atIndex);
+        }
+        context.read<ChatEnterNotifier>().setAtSearchStr(atSearchStr);
+        context.read<ChatEnterNotifier>().changeCallback(value);
+        // 实时搜索
+      },
+    );
+  }
+
+  /// 获得文本输入框样式
+  List<RangeStyle> getTextFieldStyle(List<Rule> rules) {
+    List<RangeStyle> result = [];
+    for (Rule rule in rules) {
+      result.add(
+        RangeStyle(
+          range: TextRange(start: rule.startIndex, end: rule.endIndex),
+          style: TextStyle(color: AppColor.mainBlue),
+        ),
+      );
+    }
+    return result.length == 0 ? null : result;
+  }
+
+  //滚动到底部
+  void animateTo() {
+    try {
+      _scrollController.animateTo(0.0,
+          duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
+    } catch (e) {}
+  }
+
+  ///------------------------------------一些功能 方法  end-----------------------------------------------------------------------///
+  ///------------------------------------各种点击事件  start-----------------------------------------------------------------------///
+
+
+  //聊天内容的点击事件
+  _messageInputBodyClick() {
+    if (_emojiState || MediaQuery
+        .of(context)
+        .viewInsets
+        .bottom > 0) {
+      setState(() {
+        _emojiState = false;
+        isContentClickOrEmojiClick = true;
+      });
+      Future.delayed(Duration(milliseconds: 300), () {
+        setState(() {
+          isResizeToAvoidBottomInset = !_emojiState;
+        });
+      });
+    }
+  }
+
+  //表情的点击事件
+  void onEmojioClick() {
+    if (MediaQuery
+        .of(context)
+        .viewInsets
+        .bottom > 0) {
+      _emojiState = false;
+    }
+    _emojiState = !_emojiState;
+    isResizeToAvoidBottomInset = !_emojiState;
+    if (_emojiState) {
+      FocusScope.of(context).requestFocus(new FocusNode());
+    }
+    isContentClickOrEmojiClick = false;
+    setState(() {});
+  }
+
+  //图片的点击事件
+  onPicAndVideoBtnClick() {
+    print("=====图片的点击事件");
+    _focusNode.unfocus();
+    SelectedMediaFiles selectedMediaFiles = new SelectedMediaFiles();
+    AppRouter.navigateToMediaPickerPage(
+        context,
+        9,
+        typeImageAndVideo,
+        false,
+        startPageGallery,
+        false,
+        false,
+            (result) async {
+          SelectedMediaFiles files = Application.selectedMediaFiles;
+          if (true != result || files == null) {
+            print("没有选择媒体文件");
+            return;
+          }
+          Application.selectedMediaFiles = null;
+          selectedMediaFiles.type = files.type;
+          selectedMediaFiles.list = files.list;
+          _handPicOrVideo(selectedMediaFiles);
+        });
+  }
+
+  //发送按钮点击事件
+  _onSubmitClick() {
+    String text = _textController.text;
+    if (text == null || text.isEmpty || text.length < 1) {
+      ToastShow.show(msg: "消息为空,请输入消息！", context: context);
+      return;
+    }
+    _postText(text);
+  }
+
+
+  //录音按钮的点击事件
+  _voiceOnTapClick() async {
+    await [Permission.microphone].request();
+
+    _focusNode.unfocus();
+    _emojiState = false;
+    isContentClickOrEmojiClick = true;
+    _isVoiceState = !_isVoiceState;
+    setState(() {});
+  }
+
+  //at 了那个用户
+  void atListItemClick(String content, int index) {
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++++" + content);
+    // At的文字长度
+    int atLength = content.length;
+    // 获取输入框内的规则
+    var rules = context
+        .read<ChatEnterNotifier>()
+        .rules;
+    // 检测是否添加过
+    // if (rules.isNotEmpty) {
+    //   for (Rule rule in rules) {
+    //     if (rule.clickIndex == index && rule.isAt == true) {
+    //       print("已经添加过了");
+    //       return;
+    //     }
+    //   }
+    // }
+    // 获取@的光标
+    int atIndex = context
+        .read<ChatEnterNotifier>()
+        .atCursorIndex;
+    // 获取实时搜索文本
+    String searchStr = context
+        .read<ChatEnterNotifier>()
+        .atSearchStr;
+    // @前的文字
+    String atBeforeStr = _textController.text.substring(0, atIndex);
+    // @后的文字
+    String atRearStr = "";
+    print(searchStr);
+    print("controller.text:${_textController.text}");
+    print("atBeforeStr$atBeforeStr");
+    if (searchStr != "" || searchStr.isNotEmpty) {
+      print("atIndex:$atIndex");
+      print("searchStr:$searchStr");
+      print("controller.text:${_textController.text}");
+      atRearStr = _textController.text.substring(
+          atIndex + searchStr.length, _textController.text.length);
+      print("atRearStr:$atRearStr");
+    } else {
+      atRearStr =
+          _textController.text.substring(atIndex, _textController.text.length);
+    }
+
+    // 拼接修改输入框的值
+    _textController.text = atBeforeStr + content + atRearStr;
+    print("controller.text:${_textController.text}");
+    // 这是替换输入的文本修改后面输入的@的规则
+    if (searchStr != "" || searchStr.isNotEmpty) {
+      int oldLength = searchStr.length;
+      int newLength = content.length;
+      int oldStartIndex = atIndex;
+      int diffLength = newLength - oldLength;
+      for (int i = 0; i < rules.length; i++) {
+        if (rules[i].startIndex >= oldStartIndex) {
+          int newStartIndex = rules[i].startIndex + diffLength;
+          int newEndIndex = rules[i].endIndex + diffLength;
+          rules.replaceRange(
+              i, i + 1, <Rule>[rules[i].copy(newStartIndex, newEndIndex)]);
+        }
+      }
+    }
+    // 此时为了解决后输入的@切换光标到之前输入的@或者#前方，更新之前输入@和#的索引。
+    for (int i = 0; i < rules.length; i++) {
+      // 当最新输入框内的文本对应不上之前的值时。
+      if (rules[i].params != _textController.text.substring(
+          rules[i].startIndex, rules[i].endIndex)) {
+        print("进入");
+        print(rules[i]);
+        rules[i] = Rule(
+            rules[i].startIndex + atLength, rules[i].endIndex + atLength,
+            rules[i].params,
+            rules[i].clickIndex, rules[i].isAt);
+        print(rules[i]);
+      }
+    }
+    // 存储规则
+    context
+        .read<ChatEnterNotifier>()
+        .addRules(
+        Rule(atIndex - 1, atIndex + atLength, "@" + content, index, true));
+    // 设置光标
+    var setCursor = TextSelection(
+      baseOffset: _textController.text.length,
+      extentOffset: _textController.text.length,
+    );
+    print("设置光标$setCursor");
+    _textController.selection = setCursor;
+    context.read<ChatEnterNotifier>().setAtSearchStr("");
+    // 关闭视图
+    context.read<ChatEnterNotifier>().openAtCallback("");
+  }
+
 
   //所有的item长按事件
   void onItemLongClickCallBack({int position,
@@ -658,6 +1053,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     Map<String, dynamic> map,
     String contentType,
     String content}) {
+    if (isPersonalButler && position != null) {
+      position--;
+    }
+
     if (settingType == null || settingType.isEmpty || settingType.length < 1) {
       print("暂无此配置");
     } else if (settingType == "删除") {
@@ -678,6 +1077,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     } else {
       print("暂无此配置");
     }
+    print("position:$position-----------------------------------------");
     // print("position：$position--$contentType---${content==null?map.toString():content}----${chatDataList[position].msg.toString()}");
   }
 
@@ -687,6 +1087,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     int position,
     Map<String, dynamic> map,
     bool isUrl}) {
+    if (isPersonalButler && position != null) {
+      position--;
+    }
+
     if (contentType == null || contentType.isEmpty || contentType.length < 1) {
       print("暂无此配置");
     }
@@ -730,168 +1134,6 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     }
   }
 
-
-  //发送可选择的信息
-  _postSelectMessage(String text) async {
-    text += "," + text;
-    text += "," + text;
-    text += "," + text;
-    ChatDataModel chatDataModel = new ChatDataModel();
-    chatDataModel.type = ChatTypeModel.MESSAGE_TYPE_SELECT;
-    chatDataModel.content = text;
-    chatDataModel.isTemporary = true;
-    chatDataModel.isHaveAnimation = true;
-    chatDataList.insert(0, chatDataModel);
-    setState(() {
-      _textController.text = "";
-      isHaveTextLen = false;
-    });
-    postSelectMessage(
-        chatDataList[0], widget.conversation.conversationId, chatTypeId, () {
-      delayedSetState();
-    });
-  }
-
-  //撤回消息
-  void recallMessage(Message message, int position) async {
-    RecallNotificationMessage recallNotificationMessage =
-    await RongCloud.init().recallMessage(message);
-    if (recallNotificationMessage == null) {
-      ToastShow.show(msg: "撤回失败", context: context);
-    } else {
-      chatDataList[position].msg.objectName =
-          RecallNotificationMessage.objectName;
-      chatDataList[position].msg.content = recallNotificationMessage;
-      setState(() {});
-    }
-  }
-
-  //发送间隔时间
-  void postTimeChatDataModel({bool isSetState = true}) {
-    if (chatDataList != null &&
-        chatDataList.length > 0 &&
-        chatDataList[0].msg != null &&
-        !getNewestIsAlertMessage()) {
-      getTimeChatDataModel(
-        targetId: widget.conversation.conversationId,
-        conversationType: chatTypeId,
-        finished: (Message msg, int code) {
-          ChatDataModel chatDataModel = new ChatDataModel();
-          chatDataModel.msg = msg;
-          chatDataModel.isTemporary = false;
-          chatDataModel.isHaveAnimation = true;
-          chatDataList.insert(0, chatDataModel);
-          if (isSetState) {
-            setState(() {
-
-            });
-          }
-        },
-      );
-    }
-  }
-
-  //判断最后一个消息是不是时间提示
-  bool getNewestIsAlertMessage() {
-    try {
-      bool isTextMessage = chatDataList[0].msg.objectName ==
-          TextMessage.objectName;
-      if (isTextMessage) {
-        TextMessage textMessage = chatDataList[0].msg.content as TextMessage;
-        Map<String, dynamic> map = json.decode(textMessage.content);
-        bool isAlertTimeMessage = map["type"] ==
-            ChatTypeModel.MESSAGE_TYPE_ALERT_TIME;
-        if (isAlertTimeMessage) {
-          return true;
-        }
-      }
-    } catch (e) {}
-    return false;
-  }
-
-  //计时
-  initTime() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      _timerCount++;
-      // print(_timerCount.toString());
-      if (_timerCount >= 300) {
-        _timerCount = 0;
-        // print("-----"+_timerCount.toString());
-        postTimeChatDataModel();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    if (Application.appContext != null) {
-      Application.appContext.read<VoiceSettingNotifier>().stop();
-      Application.appContext.read<ChatMessageProfileNotifier>().clear();
-    }
-    if (_timer != null) {
-      _timer.cancel();
-      _timer = null;
-    }
-    super.dispose();
-  }
-
-
-//判断接收消息
-  Widget judgeReceiveMessages() {
-    return Consumer<ChatMessageProfileNotifier>(
-      builder: (context, notifier, child) {
-        print("88888888888888888888888");
-        Message message = context.select((
-            ChatMessageProfileNotifier value) => value.message);
-        if (message == null || message.targetId != this.chatUserId &&
-            message.conversationType != chatTypeId) {
-          return Container();
-        } else {
-          Application.appContext.read<ChatMessageProfileNotifier>()
-              .clearMessage();
-        }
-        print("11111111111111111111111111");
-        ChatDataModel chatDataModel = getMessage(
-            message, isHaveAnimation: true);
-        chatDataList.insert(0, chatDataModel);
-        delayedSetState();
-        return Container();
-      },
-    );
-  }
-
-
-  //判断去拿一个更多界面
-  void judgeJumpPage() {
-    if (chatTypeId == RCConversationType.Private) {
-      _jumpPage(PrivateMorePage(
-        chatUserId: this.chatUserId, chatType: widget.conversation.type,),
-          false);
-    } else {
-      _jumpPage(GroupMorePage(
-          chatUserId: this.chatUserId, chatType: widget.conversation.type),
-          false);
-    }
-  }
-
-  void _jumpPage(var page, bool isCloseNewPage) {
-    if (isCloseNewPage) {
-      //跳转并关闭当前页面
-      Navigator.pushAndRemoveUntil(
-        context,
-        new MaterialPageRoute(builder: (context) => page),
-            (route) => route == null,
-      );
-    } else {
-      //跳转不关闭当前页面
-      Navigator.of(context).push(
-        new MaterialPageRoute(
-          builder: (context) {
-            return page;
-          },
-        ),
-      );
-    }
-  }
+///------------------------------------各种点击事件  end-----------------------------------------------------------------------///
 }
+

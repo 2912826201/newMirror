@@ -16,11 +16,14 @@ class AppStyle {
       TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
   static const textSecondaryRegular13 =
       TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
+
   // textSecondary
   static const textSecondaryRegular14 =
       TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
+  static const textSecondaryRegular16 =
+      TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
   static const textSecondaryMedium14 =
-  TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.textSecondary);
+      TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.textSecondary);
   static const textHintRegular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textHint);
   static const textHintRegular13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textHint);
   static const textHintRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.textHint);
@@ -40,7 +43,6 @@ class AppStyle {
   static const textRegularRed13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.mainRed);
   static const textMediumRed14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.mainRed);
 
-
   //不在规范内style
-  static const textButtonwhite = TextStyle(fontSize: 12,fontWeight:FontWeight.w400,color: AppColor.textButtonCenter );
+  static const whiteRegular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.white);
 }
