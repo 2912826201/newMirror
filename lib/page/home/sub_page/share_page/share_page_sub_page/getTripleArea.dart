@@ -28,6 +28,7 @@ class GetTripleArea extends StatefulWidget {
 class GetTripleAreaState extends State<GetTripleArea> {
   @override
   Widget build(BuildContext context) {
+    print("打印model的值￥${widget.model}");
     return Container(
         height: 48,
         child: Row(

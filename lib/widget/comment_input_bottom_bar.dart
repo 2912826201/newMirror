@@ -329,6 +329,13 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                             // 存入最新的值
                             context.read<CommentEnterNotifier>().changeCallback(text);
                           },
+                          onSubmitted: (text) {
+                            voidCallback(text,rules, context,);
+                            Navigator.of(context).pop(1);
+                          },
+                          // onEditingComplete:() {
+                          //   print("编辑完成");
+                          // },
                           // 装饰器修改外观
                           decoration: InputDecoration(
                             // 去除下滑线
@@ -342,18 +349,19 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                             contentPadding: EdgeInsets.only(top: 8, bottom: 8, left: 16),
                           ),
                           rangeStyles: getTextFieldStyle(rules),
+                          textInputAction: TextInputAction.send,
                           inputFormatters: inputFormatters == null ? [_formatter] : (inputFormatters..add(_formatter)),
                         ),
                       ),
-                      Positioned(
-                        bottom: 6,
-                        right: 44,
-                        child: Container(
-                          width: 24,
-                          height: 24,
-                          color: Colors.redAccent,
-                        ),
-                      ),
+                      // Positioned(
+                      //   bottom: 6,
+                      //   right: 44,
+                      //   child: Container(
+                      //     width: 24,
+                      //     height: 24,
+                      //     color: Colors.redAccent,
+                      //   ),
+                      // ),
                       Positioned(
                           right: 16,
                           bottom: 6,

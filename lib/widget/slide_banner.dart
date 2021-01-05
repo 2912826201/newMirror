@@ -4,6 +4,7 @@ import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sound_lite/flutter_sound.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -37,9 +38,10 @@ class _SlideBannerState extends State<SlideBanner> {
 
   // 指示器横向布局
   final scrollDirection = Axis.horizontal;
-
+  double photoHeight;
   @override
   void initState() {
+    photoHeight = setAspectRatio(widget.height);
     super.initState();
     controller = AutoScrollController(
         viewportBoundaryGetter: () => Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
@@ -157,15 +159,15 @@ class _SlideBannerState extends State<SlideBanner> {
   //   );
   // }
   // 轮播图图片设置
-  Container buildShowItemContainer(int index) {
+  Container buildShowItemContainer(int index,double height) {
     return Container(
       // child: Image.network(
       //   widget.model.picUrls[index].url,
       //   fit: BoxFit.cover,
       // ),
+      width: ScreenUtil.instance.width,
+        height:height ,
         child: CachedNetworkImage(
-          // height: setAspectRatio(1.0 *  widget.model.picUrls[0].height, 1.0 *  widget.model.picUrls[0].width),
-          // width: ((ScreenUtil.instance.screenWidthDp) / 2),
           fit: BoxFit.cover,
           placeholder: (context, url) => new Container(
               child: new Center(
@@ -179,7 +181,7 @@ class _SlideBannerState extends State<SlideBanner> {
 
   // 宽高比
   double setAspectRatio(double height) {
-    return (ScreenUtil.instance.screenWidthDp / widget.model.picUrls[0].width) * height;
+    return (ScreenUtil.instance.width / widget.model.picUrls[0].width) * height;
   }
 
   // 点赞
@@ -204,85 +206,89 @@ class _SlideBannerState extends State<SlideBanner> {
   @override
   Widget build(BuildContext context) {
     final width = ScreenUtil.instance.screenWidthDp;
-    return Column(
+    return Container(
+      child: Column(
+        children: [
+          Stack(
       children: [
-        Stack(
-          children: [
-            GestureDetector(
-              onDoubleTap: () {
-                // 获取是否点赞
-                int isLaud = widget.model.isLaud;
-                if (isLaud != 1) {
-                  setUpLuad();
-                }
-                // 动画
-              },
-              child: Container(
-                width: width,
-                height: setAspectRatio(widget.height),
-                child: Swiper(
-                  itemCount: widget.model.picUrls.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return buildShowItemContainer(index);
-                    // buildOpenContainerItem(index);
-                  },
-                  loop: false,
-                  onIndexChanged: (index) {
-                    autoPlay(index);
-                  },
-                  // onTap: (index) {
-                  //   print("点击了第$index个图片");
-                  // },
-                ),
-              ),
-            ),
-            Positioned(
-              top: 13,
-              right: 16,
-              child: Offstage(
-                offstage: widget.model.picUrls.length == 1,
+              GestureDetector(
+                onDoubleTap: () {
+                  // 获取是否点赞
+                  int isLaud = widget.model.isLaud;
+                  if (isLaud != 1) {
+                    setUpLuad();
+                  }
+                  // 动画
+                },
                 child: Container(
-                  padding: EdgeInsets.only(left: 6, top: 3, right: 6, bottom: 3),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(12)), color: AppColor.textPrimary1.withOpacity(0.5)),
-                  child: Text(
-                    "${zindex + 1}/${widget.model.picUrls.length}",
-                    style: TextStyle(color: AppColor.white, fontSize: 12),
+                  width: width,
+                  height: photoHeight
+                  // setAspectRatio(widget.height)
+                  ,
+                  child: Swiper(
+                    itemCount: widget.model.picUrls.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return buildShowItemContainer(index,photoHeight);
+                      // buildOpenContainerItem(index);
+                    },
+                    loop: false,
+                    onIndexChanged: (index) {
+                      autoPlay(index);
+                    },
+                    onTap: (index) {
+                      print("点击了第$index个图片");
+                    },
                   ),
                 ),
               ),
-              // child:
-            )
-          ],
-        ),
-        Offstage(
-          offstage: widget.model.picUrls.length == 1,
-          child: Container(
-            width: getWidth(),
-            height: 10,
-            margin: const EdgeInsets.only(top: 5),
-            // color: Colors.orange,
-            child: ListView.builder(
-                scrollDirection: scrollDirection,
-                controller: controller,
-                itemCount: widget.model.picUrls.length,
-                // 禁止手动滑动
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return AutoScrollTag(
-                      key: ValueKey(index),
-                      controller: controller,
-                      index: index,
-                      child: Container(
-                          width: elementSize(index),
-                          height: elementSize(index),
-                          margin: const EdgeInsets.only(right: 3),
-                          decoration: BoxDecoration(
-                              color: index == zindex ? Colors.black : Colors.grey, shape: BoxShape.circle)));
-                }),
+              Positioned(
+                top: 13,
+                right: 16,
+                child: Offstage(
+                  offstage: widget.model.picUrls.length == 1,
+                  child: Container(
+                    padding: EdgeInsets.only(left: 6, top: 3, right: 6, bottom: 3),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(12)), color: AppColor.textPrimary1.withOpacity(0.5)),
+                    child: Text(
+                      "${zindex + 1}/${widget.model.picUrls.length}",
+                      style: TextStyle(color: AppColor.white, fontSize: 12),
+                    ),
+                  ),
+                ),
+                // child:
+              )
+            ],
           ),
-        )
-      ],
+          Offstage(
+            offstage: widget.model.picUrls.length == 1,
+            child: Container(
+              width: getWidth(),
+              height: 10,
+              margin: const EdgeInsets.only(top: 5),
+              // color: Colors.orange,
+              child: ListView.builder(
+                  scrollDirection: scrollDirection,
+                  controller: controller,
+                  itemCount: widget.model.picUrls.length,
+                  // 禁止手动滑动
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return AutoScrollTag(
+                        key: ValueKey(index),
+                        controller: controller,
+                        index: index,
+                        child: Container(
+                            width: elementSize(index),
+                            height: elementSize(index),
+                            margin: const EdgeInsets.only(right: 3),
+                            decoration: BoxDecoration(
+                                color: index == zindex ? Colors.black : Colors.grey, shape: BoxShape.circle)));
+                  }),
+            ),
+          )
+        ],
+      ),
     );
   }
 }
@@ -292,46 +298,50 @@ class Item2Page extends StatefulWidget {
   String photoUrl;
   HomeFeedModel model;
   int index;
-  Item2Page({Key key, this.photoUrl,this.model,this.index}) : super(key: key);
+  bool isComplex;
+  Item2Page({Key key, this.photoUrl,this.model,this.index,this.isComplex}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _Item2PageState(model: model,index: index);
+    return _Item2PageState();
   }
 }
 
-class _Item2PageState extends XCState {
-  _Item2PageState({ this.model,this.index});
-  HomeFeedModel model;
-  int index;
+class _Item2PageState extends State<Item2Page> {
   @override
   Widget shouldBuild(BuildContext context) {
-    return  Scaffold(
-        backgroundColor: Colors.white,
-      body:
-      Column(
-      children: [
-        Container(
-          child: InkWell(
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-            child:Hero (
-              tag: "hero${model.id}",
-              child: Image.network(model.picUrls[0].url),
-              // SlideBanner(height: model.picUrls[0].height.toDouble(),model: model,),
-            ),
-            // ,
-          ),
-        ),
-        Container(
-          height: 50,
-          color: Colors.red,
-        )
-      ],
-      )
-    );
+
 
     ///页面二中的Hero
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    print("第${widget.index}个元素的动态ID：：：：${widget.model.id}");
+    return  Scaffold(
+        backgroundColor: Colors.white,
+        body:
+        Column(
+          children: [
+            Container(
+              child: InkWell(
+                onTap: () {
+                  Navigator.of(context).pop();
+                },
+                child:Hero (
+                  tag: widget.isComplex ? "complex${widget.model.id}" : "${widget.model.id}:${widget.index}",
+                  child: Image.network(widget.model.picUrls[0].url),
+                  // SlideBanner(height: model.picUrls[0].height.toDouble(),model: model,),
+                ),
+                // ,
+              ),
+            ),
+            Container(
+              height: 50,
+              color: Colors.red,
+            )
+          ],
+        )
+    );
   }
 }
