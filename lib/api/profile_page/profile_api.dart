@@ -234,11 +234,15 @@ Future<SearchUserModel> ProfileSearchUser(String key, int size, {String uids, in
 }
 
 ///关注列表
-Future<FollowLsitModel> GetFollowList({String uid})async{
+Future<FollowLsitModel> GetFollowList(int size,{String uid,int lastTime})async{
   Map<String,dynamic> map = Map();
   if(uid!=null){
     map["uid"] = uid;
   }
+  if(lastTime!=null){
+    map["lastTime"] = lastTime;
+  }
+  map["size"] = size;
   BaseResponseModel responseModel = await requestApi(FOLLOW_LIST, map);
   if (responseModel.isSuccess) {
     print('用户关注列表请求接口=============================');
@@ -276,9 +280,9 @@ Future<SearchUserModel> searchFollowUser(String key, int size, {String uids, int
 }
 
 ///粉丝列表
-Future<FansListModel> GetFansList(int page,int size,{int uid})async{
+Future<FansListModel> GetFansList(int LastTime,int size,{int uid})async{
   Map<String,dynamic> map = Map();
-  map["page"] = page;
+  map["LastTime"] = LastTime;
   map["size"] = size;
   if(uid!=null){
     map["uid"] = uid;
