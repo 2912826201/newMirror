@@ -24,7 +24,6 @@ import 'package:mirror/page/profile/edit_information/edit_information_page.dart'
 import 'package:mirror/page/profile/login_test_page.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/profile_details_more.dart';
-import 'package:mirror/page/profile/scan_code_page.dart';
 import 'package:mirror/page/profile/setting/blacklist_page.dart';
 import 'package:mirror/page/profile/setting/feedback_page.dart';
 import 'package:mirror/page/profile/setting/notice_setting_page.dart';

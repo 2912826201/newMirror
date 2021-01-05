@@ -45,7 +45,7 @@ class _IntroductionState extends State<EditInformationIntroduction>{
               },
             ),
               leadingWidth: 44,
-            title: Text("编辑昵称",style: AppStyle.textMedium18,),
+            title: Text("编辑简介",style: AppStyle.textMedium18,),
             centerTitle: true,
             actions: [
               InkWell(
@@ -91,7 +91,7 @@ class _IntroductionState extends State<EditInformationIntroduction>{
     );
   }
 
-
+  //输入框
   Widget _inputBox(double width,double height){
     return Container(
       height: 148,

@@ -15,7 +15,6 @@ import 'package:mirror/page/profile/query_list/query_follow_list.dart';
 import 'package:mirror/page/profile/scan_code_test.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'profile_detail_page.dart';
@@ -264,20 +263,17 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   Widget _getUserImage(double height,double width) {
     return Container(
         height: height*0.1,
-        child: Row(
+        child:Stack(
           children: [
-            Center(
+            Positioned(
+              left: 0,
               child: _ImgAvatar(height,width),
             ),
-            SizedBox(
-              width: width*0.16,
-            ),
-            Container(
-              ///把文字挤下去
-
-              child: Column(children: [
-                Expanded(child: SizedBox()),
-              Row(children: [
+              Positioned(
+                right: 24,
+                bottom: 0,
+                child: Row(
+                children: [
                 InkWell(
                   child:
                 _TextAndNumber("关注", followingCount),
@@ -287,7 +283,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                     }));
                   },
                 ),
-                SizedBox(width:width*0.13 ,),
+                SizedBox(width:width*0.12,),
                 InkWell(
                   onTap: (){
                     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
@@ -297,10 +293,9 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   child:
                 _TextAndNumber("粉丝", followerCount),
                 ),
-                SizedBox(width:width*0.13 ,),
+                SizedBox(width:width*0.12,),
                 _TextAndNumber("动态", feedCount)
-              ])],)
-            )
+              ]))
           ],
         ));
   }

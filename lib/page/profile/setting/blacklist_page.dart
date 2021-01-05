@@ -11,7 +11,7 @@ import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-
+//黑名单
 class BlackListPage extends StatefulWidget{
   PanelController pc;
   BlackListPage({this.pc});
@@ -33,6 +33,8 @@ class _blackListState extends State<BlackListPage>{
         print('黑名單頭像--------------------------${element.avatarUri}');
       });
     }
+    setState(() {
+    });
   }
   @override
   void initState() {
@@ -66,7 +68,8 @@ class _blackListState extends State<BlackListPage>{
         child: ListView.builder(
           itemCount: blackList.length,
           itemBuilder:(context,index){
-                  return Column(children: [
+                  return Column(
+                    children: [
                     SizedBox(height: 12,),
                     _item(width, index)
                   ],);
@@ -84,7 +87,6 @@ class _blackListState extends State<BlackListPage>{
           InkWell(
             onTap: (){
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                ///这里传type来告知详情页该怎么展示
                 return ProfileDetailPage(
                   userId: blackList[index].uid,pcController: widget.pc,
                 );

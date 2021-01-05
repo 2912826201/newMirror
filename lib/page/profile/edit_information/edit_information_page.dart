@@ -41,7 +41,7 @@ class EditInformation extends StatefulWidget {
 }
 
 class _editInformationState extends State<EditInformation> {
-  String userName = "这是一个十五个字的名字我我我我";
+  String userName = "";
   PanelController pcController = PanelController();
   int userSex;
   String userSexText = "";
@@ -190,10 +190,6 @@ class _editInformationState extends State<EditInformation> {
           ],
         ),
         body: SlidingUpPanel(
-            /*borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(isCity ? 0.0 : 10.0),
-              topRight: Radius.circular(isCity ? 0.0 : 10.0),
-            ),*/
             panel: isCity ? _addressPicler(height, width) : _bottomDialog(width),
             onPanelClosed: () {},
             maxHeight: isCity ? height * 0.35 : width * 0.5,
@@ -256,7 +252,6 @@ class _editInformationState extends State<EditInformation> {
                           });
                         },
                       )
-                      /*  context.read<InformationImageNotifier>();*/
                       ),
                   SizedBox(
                     height: 16,
@@ -265,7 +260,9 @@ class _editInformationState extends State<EditInformation> {
                     onTap: () {
                       AppRouter.navigationToEditInfomationName(context, userName, (result) {
                         setState(() {
-                          userName = result;
+                          if(result!=null){
+                            userName = result;
+                          }
                         });
                       });
                     },
@@ -324,7 +321,9 @@ class _editInformationState extends State<EditInformation> {
                     onTap: () {
                       AppRouter.navigationToEditInfomationIntroduction(context, _introduction, (result) {
                         setState(() {
-                          _introduction = result;
+                          if(result!=null){
+                            _introduction = result;
+                          }
                         });
                       });
                     },
@@ -340,42 +339,47 @@ class _editInformationState extends State<EditInformation> {
             )));
   }
 
+  //这是每项资料的item
   Widget _rowChose(double width, String title, String TextContent) {
     return Container(
-      height: 48,
+      height: title=="简介"?148:48,
       width: width,
       padding: EdgeInsets.only(left: 16, right: 16),
       child: Center(
         child: Row(
           children: [
-            Text(
+            Container(
+              alignment: title=="简介"?Alignment.topLeft:Alignment.centerLeft,
+              child: Text(
               title,
               style: AppStyle.textRegular16,
-            ),
+            ),),
             SizedBox(
               width: 28,
             ),
             Container(
-              height: 23,
+              height:title=="简介"?148:23,
               width: width * 0.67,
               child: Text(
                 TextContent != null ? TextContent : "----",
                 style: AppStyle.textRegular16,
-                maxLines: 1,
+                maxLines:5,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
             Expanded(child: SizedBox()),
-            Text(
+            Container(
+              alignment: title=="简介"?Alignment.topRight:Alignment.centerRight,
+              child: Text(
               ">",
               style: TextStyle(fontSize: 20, color: AppColor.textSecondary),
-            )
+            ),)
           ],
         ),
       ),
     );
   }
-
+    //选择头像
   Widget _avatar(BuildContext context, double height,double width) {
     return Container(
         height: 71,
@@ -495,9 +499,6 @@ class _editInformationState extends State<EditInformation> {
       },
       onCancel: () => print('onCancel'),
       onChange: (dateTime, List<int> index) {
-        setState(() {
-          _selectedDateTime = dateTime;
-        });
       },
       onConfirm: (dateTime, List<int> index) {
         setState(() {

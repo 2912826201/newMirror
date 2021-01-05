@@ -386,7 +386,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 )
               ],
               backgroundColor: AppColor.white,
-              expandedHeight: height * 0.40 - ScreenUtil.instance.statusBarHeight + textHeight,
+              expandedHeight: height * 0.41 - ScreenUtil.instance.statusBarHeight + textHeight,
 
               ///这里是资料展示页,写在这个里面相当于是appBar的背景板
               flexibleSpace: FlexibleSpaceBar(
@@ -438,7 +438,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///高斯模糊
   Widget mineHomeData(double height, double width) {
     return Container(
-      height: height * 0.40 + textHeight,
+      height: height * 0.41 + textHeight,
       color: AppColor.white,
       child: Stack(
         children: [
@@ -476,15 +476,14 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///资料展示
   Widget _MineDetailsData(double height, double width) {
     return Container(
-        height: height * 0.40 + textHeight,
+        height: height * 0.41 + textHeight,
         width: width,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: ScreenUtil.instance.statusBarHeight + height * 0.06,
+              height: ScreenUtil.instance.statusBarHeight + height * 0.07,
             ),
-
             ///头像和按钮
             Container(
               padding: EdgeInsets.only(left: 16, right: 16),
@@ -677,9 +676,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           if (isMselfId) {
             ///这里跳转到编辑资料页
             AppRouter.navigationToEditInfomation(context, (result) {
-              if (result) {
                 _getUserInfo();
-              }
             });
           } else {
             setState(() {
@@ -773,7 +770,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       return number.toString();
     } else {
       String db = "${(number / 10000).toString()}";
-      if (db.substring(db.indexOf("."), db.indexOf(".") + 2) != 0) {
+      if (db.substring(db.indexOf("."), db.indexOf(".") + 2) != "0") {
         String doubleText = db.substring(0, db.indexOf(".") + 2);
         return doubleText + "W";
       } else {
