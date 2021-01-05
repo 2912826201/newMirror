@@ -24,10 +24,10 @@ import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:text_span_field/range_style.dart';
 import 'package:text_span_field/text_span_field.dart';
-
 import 'chat_details_body.dart';
 import 'item/chat_at_user_name_list.dart';
 import 'item/chat_more_icon.dart';
@@ -111,6 +111,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   // 判断是否只是切换光标
   bool isSwitchCursor = true;
   ReleaseFeedInputFormatter _formatter;
+
+  //上拉加载数据
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
   @override
   void initState() {
@@ -196,6 +200,8 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       voidMessageClickCallBack: onMessageClickCallBack,
       chatUserName: chatUserName,
       isPersonalButler: isPersonalButler,
+      refreshController: _refreshController,
+      onRefresh: _onRefresh,
     );
   }
 
@@ -560,7 +566,6 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     });
   }
 
-
   ///------------------------------------数据初始化和各种回调   end--------------------------------------------------------------------------------///
 
   ///------------------------------------发送消息  start-----------------------------------------------------------------------///
@@ -866,6 +871,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     } catch (e) {}
   }
 
+
   ///------------------------------------一些功能 方法  end-----------------------------------------------------------------------///
   ///------------------------------------各种点击事件  start-----------------------------------------------------------------------///
 
@@ -1047,6 +1053,29 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     context.read<ChatEnterNotifier>().openAtCallback("");
   }
 
+
+  //刷新数据--加载更多以前的数据
+  _onRefresh() async {
+    List msgList = new List();
+    msgList = await RongCloud.init().getHistoryMessages(
+        widget.conversation.getType(),
+        widget.conversation.conversationId,
+        chatDataList[chatDataList.length - 1].msg.sentTime,
+        30,
+        0);
+    if (msgList != null && msgList.length > 0) {
+      for (int i = 1; i < msgList.length; i++) {
+        chatDataList
+            .add(getMessage((msgList[i] as Message), isHaveAnimation: false));
+      }
+    }
+    Future.delayed(Duration(milliseconds: 600), () {
+      _refreshController.loadComplete();
+      setState(() {
+
+      });
+    });
+  }
 
   //所有的item长按事件
   void onItemLongClickCallBack({int position,

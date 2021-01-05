@@ -152,8 +152,24 @@ class RongCloud {
   }
 
   //插入发送的消息
-  void updateMessage(Map expansionDic, String messageUId,
-      Function(int code) finished) {
+  void updateMessage(
+      Map expansionDic, String messageUId, Function(int code) finished) {
     RongIMClient.updateMessageExpansion(expansionDic, messageUId, finished);
+  }
+
+  //将制定用户加入黑名单
+  void addToBlackList(String userId, Function(int code) finished) {
+    RongIMClient.addToBlackList(userId, finished);
+  }
+
+  //将用户移除黑名单
+  void removeFromBlackList(String userId, Function(int code) finished) {
+    RongIMClient.removeFromBlackList(userId, finished);
+  }
+
+  //获取特定用户的黑名单状态
+  void getBlackListStatus(
+      String userId, Function(int blackListStatus, int code) finished) {
+    RongIMClient.getBlackListStatus(userId, finished);
   }
 }
