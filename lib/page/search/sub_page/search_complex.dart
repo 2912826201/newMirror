@@ -6,16 +6,15 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/search/search_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
-import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/widget/custom_button.dart';
-
+import 'package:provider/provider.dart';
 import 'search_topic.dart';
 
 class SearchComplex extends StatefulWidget {
@@ -107,6 +106,8 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
           feedList.add(HomeFeedModel.fromJson(v));
         });
       }
+      // 更新全局监听
+      context.read<FeedMapNotifier>().updateFeedMap(feedList);
       setState(() {});
     }).catchError((e) {
       print("报错了");
@@ -186,6 +187,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                             model: feedList[index],
                             index: index,
                             focusNode: widget.focusNode,
+                              isComplex:true
                           );
                         },
                         staggeredTileBuilder: (index) => StaggeredTile.fit(2),

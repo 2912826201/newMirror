@@ -6,6 +6,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/feed_laud_list.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/custom_button.dart';
@@ -151,7 +152,7 @@ class LikeListViewItem extends StatelessWidget {
         Container(
           width: ScreenUtil.instance.screenWidthDp - 32 - 38 - 38 - 12,
           child:Text(
-            "${model.laudTime}",
+            "${DateUtil.generateFormatDate(model.laudTime)}",
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
