@@ -25,6 +25,7 @@ int imPostSecondNumber = 5;
 // typedef VoidCallback = void Function();
 
 //去对应的聊天界面
+//目前是从用户详情页的私聊过来的
 void jumpChatPageUser(
   BuildContext context,
   UserModel userModel,
@@ -34,6 +35,7 @@ void jumpChatPageUser(
   conversation.uid = Application.profile.uid;
   conversation.name = userModel.nickName;
   conversation.avatarUri = userModel.avatarUri;
+  conversation.type = PRIVATE_TYPE;
   jumpChatPageConversationDto(context, conversation);
 }
 
@@ -107,27 +109,6 @@ void _jumpChatPage(
   AppRouter.navigateToChatPage(
       context: context, conversation: conversation, shareMessage: shareMessage);
 }
-
-//
-// //todo 发送消息 不依赖于 chat_page界面
-// //发送消息
-// Future<Message> postMessageManager({Map<String, dynamic> map, String chatType, String name, BuildContext context})async{
-//
-//   Message message = await Application.rongCloud.sendPrivateMessage(controller.text, msg);
-//
-//
-//   //判断发送的是什么消息
-//   if(chatType==ChatTypeModel.USER_INFORMATION){
-//     print("名片信息");
-//   }else if(chatType==ChatTypeModel.FEED){
-//     print("动态信息");
-//   }else if(chatType==ChatTypeModel.COMMENT_TEXT){
-//     print("普通文字信息");
-//   }else{
-//     print("未知消息,不发送");
-//   }
-//   return true;
-// }
 
 //todo 目前没有自定义的所以差不多都是使用的是TextMessage 等有了自定义再改
 

@@ -859,8 +859,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //滚动到底部
   void animateTo() {
-    _scrollController.animateTo(
-        0.0, duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
+    try {
+      _scrollController.animateTo(0.0,
+          duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
+    } catch (e) {}
   }
 
   ///------------------------------------一些功能 方法  end-----------------------------------------------------------------------///
@@ -954,7 +956,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   void atListItemClick(String content, int index) {
     print("+++++++++++++++++++++++++++++++++++++++++++++++++++" + content);
     // At的文字长度
-    int AtLength = content.length;
+    int atLength = content.length;
     // 获取输入框内的规则
     var rules = context
         .read<ChatEnterNotifier>()
@@ -1021,7 +1023,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         print("进入");
         print(rules[i]);
         rules[i] = Rule(
-            rules[i].startIndex + AtLength, rules[i].endIndex + AtLength,
+            rules[i].startIndex + atLength, rules[i].endIndex + atLength,
             rules[i].params,
             rules[i].clickIndex, rules[i].isAt);
         print(rules[i]);
@@ -1031,13 +1033,13 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     context
         .read<ChatEnterNotifier>()
         .addRules(
-        Rule(atIndex - 1, atIndex + AtLength, "@" + content, index, true));
+        Rule(atIndex - 1, atIndex + atLength, "@" + content, index, true));
     // 设置光标
     var setCursor = TextSelection(
       baseOffset: _textController.text.length,
       extentOffset: _textController.text.length,
     );
-    print("设置光标${setCursor}");
+    print("设置光标$setCursor");
     _textController.selection = setCursor;
     context.read<ChatEnterNotifier>().setAtSearchStr("");
     // 关闭视图
@@ -1075,7 +1077,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     } else {
       print("暂无此配置");
     }
-    print("position:${position}-----------------------------------------");
+    print("position:$position-----------------------------------------");
     // print("position：$position--$contentType---${content==null?map.toString():content}----${chatDataList[position].msg.toString()}");
   }
 
