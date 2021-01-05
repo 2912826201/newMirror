@@ -47,9 +47,6 @@ class AppRouter {
   static String pathSettingFeedBack = "/profile/settingfeedback";
   static String pathSettingBlackList = "/profile/settingblacklist";
   static String pathSettingNoticeSetting = "/profile/settingnoticeSetting";
-  static String pathSettingFeedBack = "/profile/settingfeedback";
-  static String pathSettingBlackList = "/profile/settingblacklist";
-  static String pathSettingNoticeSetting = "/profile/settingnoticeSetting";
   static String pathMachineRemoteController = "/machine/remotecontroller";
   static String pathMachineConnectionInfo = "/machine/connectioninfo";
   static String pathMachineSetting = "/machine/setting";

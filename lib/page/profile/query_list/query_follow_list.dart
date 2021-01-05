@@ -811,10 +811,10 @@ class _followItemState extends State<QueryFollowItem> {
                     decoration: BoxDecoration(
                       color: widget.type == 2
                           ? widget.fansList[widget.index].isFallow == 0
-                              ? AppColor.buttonBackground
+                              ? AppColor.white
                               : AppColor.transparent
                           : widget.followList[widget.index].isFallow == 0
-                              ? AppColor.buttonBackground
+                              ? AppColor.white
                               : AppColor.transparent,
                       borderRadius: BorderRadius.all(Radius.circular(14)),
                       border: Border.all(
@@ -843,10 +843,10 @@ class _followItemState extends State<QueryFollowItem> {
                                       : "已关注",
                           style: widget.type == 2
                               ? widget.fansList[widget.index].isFallow == 0
-                                  ? AppStyle.textButtonwhite
+                                  ? AppStyle.whiteRegular12
                                   : AppStyle.textSecondaryRegular12
                               : widget.followList[widget.index].isFallow == 0
-                                  ? AppStyle.textButtonwhite
+                                  ? AppStyle.whiteRegular12
                                   : AppStyle.textSecondaryRegular12),
                     ),
                   ))
