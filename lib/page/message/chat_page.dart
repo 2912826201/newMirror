@@ -18,6 +18,7 @@ import 'package:mirror/data/model/message/emoji_model.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -1103,7 +1104,8 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
       ToastShow.show(msg: "跳转放大图片页-$content", context: context);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_USER) {
-      ToastShow.show(msg: "跳转用户界面", context: context);
+      // ToastShow.show(msg: "跳转用户界面", context: context);
+      jumpPage(ProfileDetailPage(userId: map["uid"]), false, context);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
       ToastShow.show(msg: "跳转直播课详情界面", context: context);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE) {
