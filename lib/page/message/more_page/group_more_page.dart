@@ -5,6 +5,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/feed/feed_share_select_contact.dart';
 
 class GroupMorePage extends StatefulWidget {
   ///对话用户id
@@ -107,20 +108,29 @@ class GroupMorePageState extends State<GroupMorePage> {
   Widget getSeeAllUserBtn() {
     return SliverToBoxAdapter(
       child: Container(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "查看更多群成员",
-              style: TextStyle(color: AppColor.textSecondary, fontSize: 12),
-            ),
-            Icon(
-              Icons.chevron_right,
-              color: AppColor.textSecondary,
-              size: 12,
-            ),
-          ],
+        child: GestureDetector(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "查看更多群成员",
+                style: TextStyle(color: AppColor.textSecondary, fontSize: 12),
+              ),
+              Icon(
+                Icons.chevron_right,
+                color: AppColor.textSecondary,
+                size: 12,
+              ),
+            ],
+          ),
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (_) {
+              return FriendsPage(voidCallback: (name, context) {
+                print("点击了name：$name");
+              });
+            }));
+          },
         ),
       ),
     );
@@ -178,7 +188,7 @@ class GroupMorePageState extends State<GroupMorePage> {
           isOpen != null
               ? Container(
                   child: Transform.scale(
-                    scale: 0.8,
+                    scale: 0.75,
                     child: CupertinoSwitch(
                       activeColor: AppColor.mainRed,
                       value: isOpen,

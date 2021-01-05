@@ -108,7 +108,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
             Offstage(
               offstage: !isCupertinoSwitchShow,
               child: Transform.scale(
-                scale: 0.8,
+                scale: 0.75,
                 child: CupertinoSwitch(
                   activeColor: AppColor.mainRed,
                   value: isOpen,

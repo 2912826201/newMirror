@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lpinyin/lpinyin.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/util/string_util.dart';
 
 typedef VoidCallback = void Function(String content, BuildContext context);
 
@@ -21,8 +21,9 @@ class Friends {
 class IndexBar extends StatefulWidget {
   //创建索引条回调
   final void Function(String str) indexBarCallBack;
+  final bool isShow;
 
-  IndexBar({this.indexBarCallBack});
+  IndexBar({this.indexBarCallBack, this.isShow = true});
 
   @override
   _IndexBarState createState() => _IndexBarState();
@@ -102,100 +103,109 @@ class _IndexBarState extends State<IndexBar> {
       }
     }
 
-    return Positioned(
-      right: 15.0,
-      height: ScreenUtil.instance.height / 2,
-      top: ScreenUtil.instance.height / 6,
-      width: 120,
-      child: Row(
-        children: <Widget>[
-          Container(
-            alignment: Alignment(0, _indicatorY),
-            width: 100,
-            child: _indocatorHidden
-                ? null
-                : Stack(
-                    alignment: Alignment(-0.2, 0), //0, 0 是中心顶部是0，-1  左边中心是-1，0
-                    children: <Widget>[
-                      Image(
-                        image: AssetImage('images/resource/2.0x/share_index_bubble@2x.png'),
-                        width: 28,
-                        height: 28,
-                      ),
-                      _indicatorText == '🔍'
-                          ? Image.asset(
-                              "images/resource/2.0x/search_icon_gray@2x.png",
-                              width: 12,
-                              height: 12,
-                            )
-                          : Text(
-                              _indicatorText,
-                              style: TextStyle(fontSize: 12, color: Colors.white),
-                            ),
-                    ],
-                  ), //气泡
-          ),
-          GestureDetector(
-            child: Container(
-              width: 20,
-              // child: ListView.builder(
-              //   scrollDirection: Axis.vertical,
-              //     itemCount: _index_word.length,
-              //     itemBuilder: (context,)
-              // ),
-              child: Column(
-                children: words,
-              ),
+    return Visibility(
+      visible: widget.isShow,
+      child: Positioned(
+        right: 15.0,
+        height: ScreenUtil.instance.height / 2,
+        top: ScreenUtil.instance.height / 6,
+        width: 120,
+        child: Row(
+          children: <Widget>[
+            Container(
+              alignment: Alignment(0, _indicatorY),
+              width: 100,
+              child: _indocatorHidden
+                  ? null
+                  : Stack(
+                      alignment:
+                          Alignment(-0.2, 0), //0, 0 是中心顶部是0，-1  左边中心是-1，0
+                      children: <Widget>[
+                        Image(
+                          image: AssetImage(
+                              'images/resource/2.0x/share_index_bubble@2x.png'),
+                          width: 28,
+                          height: 28,
+                        ),
+                        _indicatorText == '🔍'
+                            ? Image.asset(
+                                "images/resource/2.0x/search_icon_gray@2x.png",
+                                width: 12,
+                                height: 12,
+                              )
+                            : Text(
+                                _indicatorText,
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.white),
+                              ),
+                      ],
+                    ), //气泡
             ),
-            onVerticalDragUpdate: (DragUpdateDetails details) {
-              int index = getIdex(context, details.globalPosition, _index_word);
-              setState(() {
-                _indicatorText = _index_word[index];
+            GestureDetector(
+              child: Container(
+                width: 20,
+                // child: ListView.builder(
+                //   scrollDirection: Axis.vertical,
+                //     itemCount: _index_word.length,
+                //     itemBuilder: (context,)
+                // ),
+                child: Column(
+                  children: words,
+                ),
+              ),
+              onVerticalDragUpdate: (DragUpdateDetails details) {
+                int index =
+                    getIdex(context, details.globalPosition, _index_word);
+                setState(() {
+                  _indicatorText = _index_word[index];
 
-                //   for (var i = 0; i < _index_color.length;i++) {
-                //     if (_index_word[index] == _indicatorText) {
-                //       _index_color[index] =  AppColor.bgBlack;
-                //   } else {
-                //       _index_color[index] =  AppColor.textSecondary;
-                //     }
-                // }
-                //根据我们索引条的Alignment的Y值进行运算的。从 -1.1 到 1.1
-                //整个的Y包含的值是2.2
+                  //   for (var i = 0; i < _index_color.length;i++) {
+                  //     if (_index_word[index] == _indicatorText) {
+                  //       _index_color[index] =  AppColor.bgBlack;
+                  //   } else {
+                  //       _index_color[index] =  AppColor.textSecondary;
+                  //     }
+                  // }
+                  //根据我们索引条的Alignment的Y值进行运算的。从 -1.1 到 1.1
+                  //整个的Y包含的值是2.2
+                  _indicatorY = 2.2 / _index_word.length * index - 1.1;
+                  _indocatorHidden = false;
+                });
+                widget.indexBarCallBack(_index_word[index]);
+              }, //按住屏幕移动手指实时更新触摸的位置坐标
+
+              onVerticalDragDown: (DragDownDetails details) {
+                //globalPosition 自身坐标系
+                int index =
+                    getIdex(context, details.globalPosition, _index_word);
+                _indicatorText = _index_word[index];
                 _indicatorY = 2.2 / _index_word.length * index - 1.1;
                 _indocatorHidden = false;
-              });
-              widget.indexBarCallBack(_index_word[index]);
-            }, //按住屏幕移动手指实时更新触摸的位置坐标
+                widget.indexBarCallBack(_index_word[index]);
+                print('现在点击的位置是${details.globalPosition}');
+                setState(() {
+                  // if (_index_word[index] == _indicatorText) {
+                  //   _index_color[index] =  AppColor.bgBlack;
+                  // }
+                });
+              }, //触摸开始
 
-            onVerticalDragDown: (DragDownDetails details) {
-              //globalPosition 自身坐标系
-              int index = getIdex(context, details.globalPosition, _index_word);
-              _indicatorText = _index_word[index];
-              _indicatorY = 2.2 / _index_word.length * index - 1.1;
-              _indocatorHidden = false;
-              widget.indexBarCallBack(_index_word[index]);
-              print('现在点击的位置是${details.globalPosition}');
-              setState(() {
-                // if (_index_word[index] == _indicatorText) {
-                //   _index_color[index] =  AppColor.bgBlack;
-                // }
-              });
-            }, //触摸开始
-
-            onVerticalDragEnd: (DragEndDetails details) {
-              setState(() {
-                _indocatorHidden = true;
-                // _index_color.clear();
-                // for(var i = 0; i < _index_word.length;i++) {
-                //   _index_color.add(AppColor.textSecondary);
-                // }
-                // _textColor =  AppColor.textSecondary;
-              }); //触摸结束
-            },
-          ) //这个是索引条
-        ],
+              onVerticalDragEnd: (DragEndDetails details) {
+                setState(() {
+                  _indocatorHidden = true;
+                  // _index_color.clear();
+                  // for(var i = 0; i < _index_word.length;i++) {
+                  //   _index_color.add(AppColor.textSecondary);
+                  // }
+                  // _textColor =  AppColor.textSecondary;
+                }); //触摸结束
+              },
+            ) //这个是索引条
+          ],
+        ),
       ),
     );
+
   }
 }
 
@@ -249,6 +259,8 @@ class _FriendsPageState extends State<FriendsPage> {
     INDEX_WORDS[0]: 0.0,
     INDEX_WORDS[1]: 0.0,
   };
+
+  bool isHaveTextLen = false;
   List<String> names = [
     'Lina',
     '菲儿',
@@ -318,10 +330,12 @@ class _FriendsPageState extends State<FriendsPage> {
   // 非字母#数组
   final List<Friends> nonLetterlistDatas = [];
 
+
+  final textController = TextEditingController();
+
   @override
   void initState() {
     //初始化，只调用一次
-    // TODO: implement initState
     super.initState();
     // 测试到时替换为model
     for (String name in names) {
@@ -374,16 +388,26 @@ class _FriendsPageState extends State<FriendsPage> {
     _scrollController = ScrollController();
   }
 
-  Widget itemForRow(BuildContext context, int index, int noBottomIndex) {
+
+  @override
+  void dispose() {
+    super.dispose();
+    textController.text = "";
+  }
+
+  Widget itemForRow(BuildContext context, int index, int noBottomIndex,
+      List<Friends> friends) {
     //显示剩下的cell
     //如果当前和上一个cell的indexLetter一样，就不显示
-    bool _hideIndexLetter = (index > 0 && _listDatas[index].indexLetter == _listDatas[index - 1].indexLetter);
+    bool _hideIndexLetter = (index > 0 &&
+        friends[index].indexLetter == friends[index - 1].indexLetter);
     return _FriendsCell(
-      imageUrl: _listDatas[index].imageUrl,
-      name: _listDatas[index].name,
-      groupTitle: _hideIndexLetter ? null : _listDatas[index].indexLetter,
+      imageUrl: friends[index].imageUrl,
+      name: friends[index].name,
+      groupTitle: _hideIndexLetter ? null : friends[index].indexLetter,
       noBottomIndex: noBottomIndex,
       voidCallback: widget.voidCallback,
+      isShowTitle: !isHaveTextLen,
     );
   }
 
@@ -421,78 +445,125 @@ class _FriendsPageState extends State<FriendsPage> {
       ),
       body: Stack(
         children: <Widget>[
-          Container(
-            margin: EdgeInsets.only(left: 16, right: 16, top: 18, bottom: 10),
-            height: 32,
-            color: AppColor.bgWhite.withOpacity(0.65),
-            width: ScreenUtil.instance.screenWidthDp,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 12,
-                ),
-                Image.asset(
-                  "images/resource/2.0x/search_icon_gray@2x.png",
-                  width: 21,
-                  height: 21,
-                ),
-                Expanded(
-                  child: Container(
-                    height: 32,
-                    alignment: Alignment.center,
-                    child: TextField(
-                      textInputAction: TextInputAction.search,
-                      decoration: new InputDecoration(
-                          isCollapsed: true,
-                          contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
-                          hintText: '搜索用户',
-                          hintStyle: TextStyle(color: AppColor.textSecondary),
-                          border: InputBorder.none),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-              color: AppColor.white,
-              margin: EdgeInsets.only(top: 60),
-              child: ListView.builder(
-                  controller: _scrollController,
-                  itemCount: _listDatas.length,
-                  itemBuilder: (context, index) {
-                    int noBottomIndex = 0;
-                    if (index < _listDatas.length - 1 &&
-                        _listDatas[index + 1].indexLetter != _listDatas[index].indexLetter) {
-                      noBottomIndex = index;
-                    }
-                    return itemForRow(context, index, noBottomIndex);
-                  })), //列表
-          IndexBar(
-            indexBarCallBack: (String str) {
-              if (_groupOffsetMap[str] != null) {
-                _scrollController.animateTo(_groupOffsetMap[str],
-                    duration: Duration(milliseconds: 1), curve: Curves.easeIn);
-              }
-            },
-          ), //悬浮检索控件
+          _getTopItemSearch(),
+          //列表
+          _getListView(),
+          //悬浮检索控件
+          getIndexBar(),
         ],
       ),
     );
   }
+
+  //搜索框
+  Widget _getTopItemSearch() {
+    return Container(
+      margin: EdgeInsets.only(left: 16, right: 16, top: 18, bottom: 10),
+      height: 32,
+      color: AppColor.bgWhite.withOpacity(0.65),
+      width: ScreenUtil.instance.screenWidthDp,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 12,
+          ),
+          Image.asset(
+            "images/resource/2.0x/search_icon_gray@2x.png",
+            width: 21,
+            height: 21,
+          ),
+          Expanded(
+            child: Container(
+              height: 32,
+              alignment: Alignment.center,
+              child: TextField(
+                textInputAction: TextInputAction.search,
+                controller: textController,
+                onChanged: (text) {
+                  if (StringUtil.strNoEmpty(text)) {
+                    isHaveTextLen = true;
+                  } else {
+                    isHaveTextLen = false;
+                  }
+                  setState(() {});
+                },
+                decoration: new InputDecoration(
+                    isCollapsed: true,
+                    contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
+                    hintText: '搜索用户',
+                    hintStyle: TextStyle(color: AppColor.textSecondary),
+                    border: InputBorder.none),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  //用户列表
+  Widget _getListView() {
+    // 排序字母数组
+    List<Friends> _listUserDataList = [];
+    if (!isHaveTextLen) {
+      _listUserDataList.addAll(_listDatas);
+    } else {
+      for (int i = 0; i < _listDatas.length; i++) {
+        if (_listDatas[i].name.toLowerCase().contains(
+            textController.text.toLowerCase())) {
+          print("_listDatas[i].name:${_listDatas[i]
+              .name}---textController.text:${textController.text}");
+          _listUserDataList.add(_listDatas[i]);
+        }
+      }
+    }
+
+    return Container(
+        color: AppColor.white,
+        margin: EdgeInsets.only(top: 60),
+        child: ListView.builder(
+            controller: _scrollController,
+            itemCount: _listUserDataList.length,
+            itemBuilder: (context, index) {
+              int noBottomIndex = 0;
+              if (index < _listUserDataList.length - 1 &&
+                  _listUserDataList[index + 1].indexLetter !=
+                      _listUserDataList[index].indexLetter) {
+                noBottomIndex = index;
+              }
+              return itemForRow(
+                  context, index, noBottomIndex, _listUserDataList);
+            }));
+  }
+
+  //悬浮检索控件
+  Widget getIndexBar() {
+    return IndexBar(
+      indexBarCallBack: (String str) {
+        if (_groupOffsetMap[str] != null) {
+          _scrollController.animateTo(_groupOffsetMap[str],
+              duration: Duration(milliseconds: 1), curve: Curves.easeIn);
+        }
+      },
+      isShow: !isHaveTextLen,
+    );
+  }
+
 }
 
+// ignore: must_be_immutable
 class _FriendsCell extends StatelessWidget {
   final String imageUrl;
   final String name;
   final String groupTitle;
   final String imageAssets;
   final VoidCallback voidCallback;
+  final bool isShowTitle;
   int noBottomIndex = 0;
 
   _FriendsCell(
-      {this.imageUrl, this.name, this.imageAssets, this.groupTitle, this.noBottomIndex = 0, this.voidCallback}); //首字母大写
+      {this.imageUrl, this.name, this.imageAssets, this.groupTitle, this.noBottomIndex = 0, this.voidCallback, this.isShowTitle = true}); //首字母大写
 
   @override
   Widget build(BuildContext context) {
@@ -512,17 +583,20 @@ class _FriendsCell extends StatelessWidget {
   Widget _buildUi() {
     return Column(
       children: <Widget>[
-        Container(
-          alignment: Alignment.centerLeft,
-          padding: EdgeInsets.only(left: 16),
-          height: groupTitle != null ? 28.5 : 0,
-          color: AppColor.bgWhite,
-          child: groupTitle != null
-              ? Text(
-                  groupTitle,
-                  style: TextStyle(fontSize: 14, color: AppColor.textPrimary3),
-                )
-              : null,
+        Visibility(
+          visible: isShowTitle,
+          child: Container(
+            alignment: Alignment.centerLeft,
+            padding: EdgeInsets.only(left: 16),
+            height: groupTitle != null ? 28.5 : 0,
+            color: AppColor.bgWhite,
+            child: groupTitle != null
+                ? Text(
+              groupTitle,
+              style: TextStyle(fontSize: 14, color: AppColor.textPrimary3),
+            )
+                : null,
+          ),
         ), //组头
         Container(
           color: Colors.white,
