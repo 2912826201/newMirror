@@ -58,7 +58,13 @@ class _settingHomePageState extends State<SettingHomePage>{
         child: Column(
           children: [
             SizedBox(height: 12,),
+            InkWell(
+              child:
             _rowItem(width, "账户与安全"),
+              onTap: (){
+                AppRouter.navigateToSettingAccountSecurity(context);
+              },
+            ),
             InkWell(
               onTap: (){
                /* AppRouter.navigateToSettingBlackList(context);*/
@@ -88,7 +94,12 @@ class _settingHomePageState extends State<SettingHomePage>{
               },
               child: _rowItem(width, "意见反馈"),
             ),
-            _rowItem(width, "关于"),
+            InkWell(
+              child: _rowItem(width, "关于"),
+              onTap: (){
+                AppRouter.navigateToSettingAbout(context);
+              },
+            ),
             Container(
               height: 12,
               color: AppColor.bgWhite,

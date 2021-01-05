@@ -49,10 +49,14 @@ const String SEARCH_USER = "/appuser/web/user/searchUser";
 
 ///关注列表
 const String FOLLOW_LIST = "/appuser/web/user/follow/QueryFollowingList";
+///搜索关注用户
+const String SEARCH_FOLLOW_USER = "/appuser/web/user/searchFollowUser";
 ///粉丝列表
 const String  FANS_LIST = "/appuser/web/user/follow/queryFansList";
 ///话题列表
 const String TOPIC_LIST = "/appuser/web/topic/queryFollowTopicList";
+///搜索关注话题
+const String SEARCH_FOLLOW_TOPIC = "/appuser/web/topic/searchFollowTopic";
 //关注
 Future<int> ProfileAddFollow(int id) async {
   BaseResponseModel responseModel = await requestApi(ATTENTION, {"targetId": id});
@@ -246,6 +250,30 @@ Future<FollowLsitModel> GetFollowList({String uid})async{
     return null;
   }
 }
+///搜索关注用户
+Future<SearchUserModel> searchFollowUser(String key, int size, {String uids, int lastTime}) async {
+  Map<String, dynamic> map = Map();
+  if (uids != null) {
+    map["uids"] = uids;
+  }
+  if (lastTime != null) {
+    map["lastTime"] = lastTime;
+  }
+  map["key"] = key;
+  map["size"] = size;
+  BaseResponseModel responseModel = await requestApi(SEARCH_FOLLOW_USER, map);
+  if (responseModel.isSuccess) {
+    print('搜索关注用户接口请求成功=============================');
+    SearchUserModel model;
+    if (responseModel.data != null) {
+      model = SearchUserModel.fromJson(responseModel.data);
+    }
+    return model;
+  } else {
+    print('搜索关注用户接口请求失败============================================');
+    return null;
+  }
+}
 
 ///粉丝列表
 Future<FansListModel> GetFansList(int page,int size,{int uid})async{
@@ -273,12 +301,33 @@ Future<TopicListModel> GetTopicList(int page,int size)async{
   map["size"] = size;
   BaseResponseModel responseModel = await requestApi(TOPIC_LIST,map);
   if(responseModel.isSuccess){
-    print('用户关注话题列表请求接口=============================');
+    print('用户关注话题列表请求接口成功=============================');
     TopicListModel model;
     model = TopicListModel.fromJson(responseModel.data);
     return model;
   }else{
     print('用户关注话题列表请求接口失败============================================');
+    return null;
+  }
+}
+///搜索关注话题
+Future<TopicListModel> searchTopicUser(String key, int size, {int lastScore}) async {
+  Map<String, dynamic> map = Map();
+  if (lastScore != null) {
+    map["lastTime"] = lastScore;
+  }
+  map["key"] = key;
+  map["size"] = size;
+  BaseResponseModel responseModel = await requestApi(SEARCH_FOLLOW_TOPIC, map);
+  if (responseModel.isSuccess) {
+    print('搜索话题接口请求成功=============================');
+    TopicListModel model;
+    if (responseModel.data != null) {
+      model = TopicListModel.fromJson(responseModel.data);
+    }
+    return model;
+  } else {
+    print('搜索话题接口请求失败============================================');
     return null;
   }
 }

@@ -24,6 +24,8 @@ import 'package:mirror/page/profile/edit_information/edit_information_page.dart'
 import 'package:mirror/page/profile/login_test_page.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/profile_details_more.dart';
+import 'package:mirror/page/profile/setting/about_page.dart';
+import 'package:mirror/page/profile/setting/account_security_page.dart';
 import 'package:mirror/page/profile/setting/blacklist_page.dart';
 import 'package:mirror/page/profile/setting/feedback_page.dart';
 import 'package:mirror/page/profile/setting/notice_setting_page.dart';
@@ -150,6 +152,12 @@ var handlerSettingNoticeSetting = Handler(handlerFunc: (BuildContext context,Map
 });
 var handlerSettingFeedBack = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
   return FeedBackPage();
+});
+var handlerSettingAbout = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+  return AboutPage();
+});
+var handlerSettingAccountSecurity = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+  return AccountSecurityPage();
 });
 var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);

@@ -240,8 +240,9 @@ class _noticeSettingState extends State<NoticeSettingPage> {
               style: AppStyle.textRegular16,
             ),
             Expanded(child: SizedBox()),
-            CupertinoSwitch(
-
+            Transform.scale(
+              scale: 0.8,
+              child: CupertinoSwitch(
               activeColor: AppColor.mainRed,
               value: isOpen,
               onChanged: (bool value) {
@@ -262,6 +263,7 @@ class _noticeSettingState extends State<NoticeSettingPage> {
                   }
                 });
               },
+            ),
             ),
           ],
         ),

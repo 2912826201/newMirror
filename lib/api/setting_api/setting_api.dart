@@ -45,9 +45,8 @@ Future<UserNoticeModel> getUserNotice()async{
     return null;
   }
 }
-Future<bool> putFeedBack(dynamic body)async{
-  print('body============================${body.toString()}');
-  BaseResponseModel responseModel = await requestApi(FEED_BACK,{"body":body});
+Future<bool> putFeedBack(String content,String picUrls)async{
+  BaseResponseModel responseModel = await requestApi(FEED_BACK,{"content":content,"picUrls":picUrls});
   if(responseModel.isSuccess){
     print("==================这是借口请求成功的输出");
     return true;

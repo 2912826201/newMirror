@@ -50,7 +50,8 @@ class AppRouter {
   static String pathMachineRemoteController = "/machine/remotecontroller";
   static String pathMachineConnectionInfo = "/machine/connectioninfo";
   static String pathMachineSetting = "/machine/setting";
-
+  static String pathSettingAbout = "/profile/settingabout";
+  static String pathSettingAccountSecurity = "/profile/settingaccountsecurity";
 
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(
@@ -92,6 +93,8 @@ class AppRouter {
     router.define(pathSettingFeedBack, handler: handlerSettingFeedBack);
     router.define(pathSettingNoticeSetting, handler: handlerSettingNoticeSetting);
     router.define(pathSettingBlackList, handler: handlerSettingBlackList);
+    router.define(pathSettingAbout, handler: handlerSettingAbout);
+    router.define(pathSettingAccountSecurity, handler: handlerSettingAccountSecurity);
 
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
@@ -233,6 +236,14 @@ class AppRouter {
   static void navigateToSettingBlackList(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathSettingBlackList, map);
+  }
+  static void navigateToSettingAbout(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathSettingAbout, map);
+  }
+  static void navigateToSettingAccountSecurity(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathSettingAccountSecurity, map);
   }
   static void navigateToLikePage(BuildContext context) {
     Map<String, dynamic> map = Map();

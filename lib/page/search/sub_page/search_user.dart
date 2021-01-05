@@ -310,20 +310,18 @@ class searchState extends State<SearchUserItem> {
                       )),
                   ),
                   //签名
-                  Expanded(
-                    flex: widget.modelList[widget.index].description == null ? 0 : 1,
+                  widget.modelList[widget.index].description != null?Expanded(
+                    flex: 1,
                     child: Container(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        widget.modelList[widget.index].description != null
-                          ? widget.modelList[widget.index].description
-                          : "",
+                        widget.modelList[widget.index].description,
                         style: AppStyle.textSecondaryRegular12,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                  )
+                  ):Container(height: 0,)
                 ],
               ),
             ),
@@ -342,7 +340,7 @@ class searchState extends State<SearchUserItem> {
               height: 24,
               alignment: Alignment.centerRight,
               decoration: BoxDecoration(
-                color: !isFollow ? AppColor.white : AppColor.transparent,
+                color: !isFollow ? AppColor.textPrimary1 : AppColor.transparent,
                 borderRadius: BorderRadius.all(Radius.circular(14)),
                 border: Border.all(width: !isFollow ? 0.5 : 0.0, color: AppColor.black),
               ),

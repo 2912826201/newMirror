@@ -11,7 +11,6 @@ import 'package:mirror/api/setting_api/setting_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/data/model/feedback_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
@@ -32,9 +31,7 @@ class _feedBackPage extends State<FeedBackPage>{
   String editText;
   List<Uint8List> imageDataList = [];
   List<File> fileList = [];
-  FeedBackModel feedModel = FeedBackModel();
   double upLoadProgress;
-  List<String> resultString = [];
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -112,6 +109,7 @@ Widget _inputBox(double width){
       child: TextField(
             cursorColor:AppColor.black,
             style: AppStyle.textRegular16,
+            maxLines: 10,
             decoration: InputDecoration(
               counterText: '',
               hintText: "请告诉我们您的宝贵意见,我们会认真对待~",
@@ -253,9 +251,7 @@ Widget _addImageItem(){
   }
 
   _uploadImage()async{
-      feedModel.content = editText;
       List<String> list = [];
-      String jsonString = "";
       if(fileList!=null){
             var result = await FileUtil().uploadPics(fileList,
                 (percent) {
@@ -264,32 +260,16 @@ Widget _addImageItem(){
             if(result.resultMap.values!=null){
               result.resultMap.values.forEach((element) {
                 print('上传成功的图片===========================${element.url}');
-                print('model===========================${feedModel.toString()}');
                 list.add(element.url);
-                feedModel.picList = list;
-                print('model图片========================${feedModel.picList.first}');
               });
             }
-        print('=============================${feedModel.content}');
-        for(int i=0;i<jsonEncode(feedModel).length;i++){
-          resultString.add(jsonEncode(feedModel)[i]);
-         }
-        for(int i=0;i<resultString.length;i++){
-          if(resultString[i]=="\\"&&resultString[i+1]=="\""){
-            print('i===========================$i');
-          resultString.removeAt(i);
-          resultString.removeAt(i);
-          }
-        }
-        for(int i=0;i<resultString.length;i++){
-          jsonString+=resultString[i];
-        }
-      print('result=============================$jsonString');
-      bool model = await putFeedBack(jsonString);
+      bool model = await putFeedBack(editText,jsonEncode(list));
       if(model){
         Toast.show("反馈成功",context);
-      }else{
+        Navigator.pop(context);
       }
+      }else{
+        Toast.show("请添加图片",context);
       }
   }
 }

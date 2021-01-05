@@ -73,7 +73,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   int _dynmic;
 
   ///会改变的button里的内容
-  String _buttonText = "";
+  String _buttonText = "+ 关注";
   TabController _mController;
 
   ///动态model
