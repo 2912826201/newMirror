@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/page/training/video_course/video_course_play_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/date_util.dart';
 import 'package:mirror/widget/seekbar.dart';
+import 'package:mirror/widget/video_course_circle_progressbar.dart';
 
 /// remote_controller_page
 /// Created by yangjiayi on 2020/12/31.
@@ -17,9 +20,55 @@ class RemoteControllerPage extends StatefulWidget {
 
 class _RemoteControllerState extends State<RemoteControllerPage> {
   String _title = "终端遥控";
+
+  //这些都是测试用变量 需要之后规范处理
   int _volumeValue = 50;
   int _lightnessValue = 50;
   bool _machineConnected = true;
+
+  int _totalDuration = 0;
+  double _currentPosition = 0;
+  int _currentPartIndex = 0;
+  int _remainingPartTime = 0;
+  double _partProgress = 0;
+  Map<int, int> _indexMapWithoutRest = {};
+  int _partAmountWithoutRest = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _parsePartList();
+    _updateInfoByPosition();
+  }
+
+  _parsePartList() {
+    _indexMapWithoutRest.clear();
+    _partAmountWithoutRest = 0;
+    for (int i = 0; i < partList.length; i++) {
+      //序号以除去休息的段落数量为基准计算 如果为是休息则序号不加 如果不是休息序号加1
+      if (partList[i].type == 1) {
+        _indexMapWithoutRest[i] = _partAmountWithoutRest - 1;
+      } else {
+        _indexMapWithoutRest[i] = _partAmountWithoutRest;
+        _partAmountWithoutRest++;
+      }
+      _totalDuration += partList[i].duration;
+    }
+  }
+
+  _updateInfoByPosition(){
+    int time = _currentPosition.toInt();
+    for(int i=0; i<partList.length; i++){
+      _currentPartIndex = i;
+      if(time <= partList[i].duration){
+        _remainingPartTime = partList[i].duration - time;
+        _partProgress = time / partList[i].duration;
+        return;
+      }else{
+        time -= partList[i].duration;
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +128,8 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   }
 
   Widget _buildScreen(BuildContext context) {
-    return _buildMachinePic();
+    // return _buildMachinePic();
+    return _buildVideoCourse();
   }
 
   Widget _buildMachinePic() {
@@ -93,7 +143,33 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   }
 
   Widget _buildVideoCourse() {
-    return Container();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          height: 214.5,
+          width: 214.5,
+          child: Stack(
+            children: [
+              Center(
+                child: VideoCourseCircleProgressBar(partList, _currentPartIndex, _partProgress),
+              ),
+              Center(
+                  child: Text(
+                DateUtil.formatMillisecondToMinuteAndSecond(_remainingPartTime * 1000),
+                style: TextStyle(color: AppColor.textPrimary1, fontSize: 32, fontWeight: FontWeight.w500),
+              )),
+            ],
+          ),
+        ),
+        Text(
+          partList[_currentPartIndex].type == 1
+              ? "休息"
+              : "${partList[_currentPartIndex].name} ${_indexMapWithoutRest[_currentPartIndex] + 1}/$_partAmountWithoutRest",
+          style: TextStyle(color: AppColor.textPrimary2, fontSize: 16),
+        )
+      ],
+    );
   }
 
   Widget _buildPanel() {
@@ -278,7 +354,18 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                 ),
               ],
             ),
-          )
+          ),
+          SizedBox(height: 16,),
+          Slider(
+              max: _totalDuration.toDouble(),
+              min: 0,
+              value: _currentPosition,
+              onChanged: (position) {
+                _currentPosition = position;
+                setState(() {
+                  _updateInfoByPosition();
+                });
+              })
         ],
       ),
     );

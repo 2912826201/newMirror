@@ -5,8 +5,6 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 
-import '../test_page.dart';
-
 class TrainingPage extends StatefulWidget {
   @override
   _TrainingState createState() => _TrainingState();
@@ -30,31 +28,46 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-        appBar: AppBar(
-            leading: null,
-            backgroundColor: AppColor.white,
-            brightness: Brightness.light,
-            title: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "训练",
-                  style: AppStyle.textMedium18,
-                ),
-              ],
-            )),
-        body: ScrollConfiguration(
-            behavior: NoBlueEffectBehavior(),
-            child: ListView.builder(
-                itemCount: _courseList.length + 1,
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return _buildTopView();
-                  } else {
-                    return _buildCourseItem(index);
-                  }
-                })));
+      appBar: AppBar(
+          leading: null,
+          backgroundColor: AppColor.white,
+          brightness: Brightness.light,
+          title: Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "训练",
+                style: AppStyle.textMedium18,
+              ),
+            ],
+          )),
+      body: Stack(
+        children: [
+          ScrollConfiguration(
+              behavior: NoBlueEffectBehavior(),
+              child: ListView.builder(
+                  //有个头部 有个尾部
+                  itemCount: _courseList.length + 2,
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return _buildTopView();
+                    } else if (index == _courseList.length + 1) {
+                      return SizedBox(
+                        height: 40,
+                      );
+                    } else {
+                      return _buildCourseItem(index);
+                    }
+                  })),
+          Positioned(
+              left: 0,
+              bottom: 0,
+              child: _buildInfoBar(),
+          ),
+        ],
+      ),
+    );
   }
 
   //我的课程列表上方的所有部分
@@ -147,12 +160,12 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
           ),
           //TODO 暂时先做个样式 实际可能有多个设备
           GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: () {
               AppRouter.navigateToMachineRemoteController(context);
             },
             child: Container(
               margin: const EdgeInsets.only(top: 12),
-              color: AppColor.transparent,
               height: 64,
               child: Row(
                 children: [
@@ -366,6 +379,50 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
       child: Container(
         height: 90,
         color: Colors.tealAccent,
+      ),
+    );
+  }
+
+  Widget _buildInfoBar() {
+    return Container(
+      alignment: Alignment.center,
+      height: 40,
+      width: ScreenUtil.instance.screenWidthDp,
+      color: AppColor.textPrimary1,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: (){print("关闭信息条");},
+            child: Container(
+              alignment: Alignment.center,
+              height: 36,
+              width: 36,
+              child: Icon(
+                Icons.highlight_off,
+                color: AppColor.white,
+                size: 16,
+              ),
+            ),
+          ),
+          Expanded(child: Text(
+            "继续播放：普拉提产后恢复系列高速燃脂普拉提产后恢复系列高速燃脂",
+            softWrap: false,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: AppColor.white, fontSize: 14),
+          )),
+          Container(
+            alignment: Alignment.center,
+            height: 36,
+            width: 36,
+            child: Icon(
+              Icons.play_circle_fill,
+              color: AppColor.white,
+              size: 16,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -4,6 +4,9 @@ import 'package:mirror/data/model/base_response_model.dart';
 
 // 根据日期获取直播课程列表
 const String GETLIVECOURSES = "/sport/course/getLiveCourses";
+// 根据日期获取直播课程列表
+const String GETLIVECOURSESBYDATE =
+    "/sport/web/liveCourse/getLiveCoursesByDate";
 // 获取今日可回放直播课程
 const String GETTODAYPLAYBACKCOURSE = "/sport/course/getTodayPlaybackCourse";
 // 直播课程详情
@@ -31,12 +34,31 @@ Future<Map> getLiveCourses({@required String date}) async {
   }
 }
 
+///根据日期获取直播课程列表
+///请求参数
+///date:2020-12-10
+///type:0-待直播/正在直播，1-可回放
+Future<Map> getLiveCoursesByDate(
+    {@required String date, @required int type}) async {
+  Map<String, dynamic> params = {};
+  params["date"] = date;
+  params["type"] = type;
+  BaseResponseModel responseModel = await requestApi(
+      GETLIVECOURSESBYDATE, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
+
+
 ///获取今日可回放直播课程
 ///请求参数
 Future<Map> getTodayPlaybackCourse() async {
   Map<String, dynamic> params = {};
   BaseResponseModel responseModel =
-      await requestApi(GETTODAYPLAYBACKCOURSE, params);
+  await requestApi(GETTODAYPLAYBACKCOURSE, params);
   if (responseModel.isSuccess) {
     return responseModel.data;
   } else {
