@@ -34,7 +34,6 @@ class _scanCodeState extends State<ScanCodeTest> {
   @override
   void initState() {
     super.initState();
-   /* initPlatformState();*/
   }
 
 

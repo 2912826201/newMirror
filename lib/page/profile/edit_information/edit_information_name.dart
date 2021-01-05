@@ -2,10 +2,12 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:toast/toast.dart';
 
 ///编辑昵称
 class EditInformationName extends StatefulWidget{
@@ -19,9 +21,9 @@ class EditInformationName extends StatefulWidget{
 }
 class _editInformationNameState extends State<EditInformationName>{
   int textLength = 0;
-  String _EditText = "";
+  String _EditText;
   int _reciprocal = 15;
-  int nowLength = 0;
+  int beforeLength = 0;
 
   @override
   void initState() {
@@ -29,8 +31,9 @@ class _editInformationNameState extends State<EditInformationName>{
     if(widget.userName!=null){
       _EditText = widget.userName;
       textLength = widget.userName.length;
-      _reciprocal+= nowLength - textLength;
-      nowLength = textLength;
+      _reciprocal += beforeLength - textLength;
+      beforeLength = textLength;
+      widget.userName = null;
     }
   }
   @override
@@ -55,6 +58,10 @@ class _editInformationNameState extends State<EditInformationName>{
             actions: [
               InkWell(
                 onTap: (){
+                  if(_EditText.isEmpty){
+                    Toast.show("昵称不能为空", context);
+                    return;
+                  }
                   Navigator.pop(this.context,_EditText);
                 },
                 child:Container(
@@ -105,7 +112,7 @@ class _editInformationNameState extends State<EditInformationName>{
           ),
         );
   }
-
+  //底部提示字数文字
   Widget _bottomText(double width){
     return Container(
       width: width,
@@ -125,8 +132,8 @@ class _editInformationNameState extends State<EditInformationName>{
       controller: TextEditingController.fromValue(TextEditingValue(
         text: _EditText,
         selection: TextSelection.fromPosition(TextPosition(
-        affinity: TextAffinity.downstream,
-        offset: _EditText.length))
+          affinity: TextAffinity.downstream,
+          offset: _EditText.length))
       )),
       cursorColor:AppColor.black,
       style: AppStyle.textRegular16,
@@ -136,12 +143,11 @@ class _editInformationNameState extends State<EditInformationName>{
         hintStyle:TextStyle(fontSize: 16,color: AppColor.textHint),
         border: InputBorder.none,),
         onChanged: (value){
-
         setState(() {
           _EditText = value;
           textLength = value.length;
-          _reciprocal+= nowLength - textLength;
-          nowLength = textLength;
+          _reciprocal += beforeLength - textLength;
+          beforeLength = textLength;
         });
 
       },
