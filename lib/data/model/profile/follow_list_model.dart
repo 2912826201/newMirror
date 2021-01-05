@@ -1,5 +1,6 @@
 
 class FollowLsitModel{
+  int lastTime;//": 1606125125965,
   List<FollowModel> list;
 
   FollowLsitModel({this.list});
@@ -11,6 +12,7 @@ class FollowLsitModel{
         list.add(FollowModel.fromJson(v));
       });
     }
+    lastTime = json["lastTime"];
   }
 
   Map<String, dynamic> toJson() {
@@ -18,6 +20,7 @@ class FollowLsitModel{
     if (list != null) {
       map["list"] = list.map((v) => v.toJson()).toList();
     }
+    map["lastTime"] = lastTime;
     return map;
   }
 }
