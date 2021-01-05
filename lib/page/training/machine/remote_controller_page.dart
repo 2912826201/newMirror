@@ -56,15 +56,15 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     }
   }
 
-  _updateInfoByPosition(){
+  _updateInfoByPosition() {
     int time = _currentPosition.toInt();
-    for(int i=0; i<partList.length; i++){
+    for (int i = 0; i < partList.length; i++) {
       _currentPartIndex = i;
-      if(time <= partList[i].duration){
+      if (time <= partList[i].duration) {
         _remainingPartTime = partList[i].duration - time;
         _partProgress = time / partList[i].duration;
         return;
-      }else{
+      } else {
         time -= partList[i].duration;
       }
     }
@@ -337,25 +337,55 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Icon(
-                  Icons.skip_previous,
-                  color: AppColor.white,
-                  size: 32,
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    print("上一段");
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Icon(
+                      Icons.skip_previous,
+                      color: AppColor.white,
+                      size: 32,
+                    ),
+                  ),
                 ),
-                Icon(
-                  Icons.pause,
-                  color: AppColor.white,
-                  size: 32,
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    print("暂停");
+                    _showPauseDialog();
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Icon(
+                      Icons.pause,
+                      color: AppColor.white,
+                      size: 32,
+                    ),
+                  ),
                 ),
-                Icon(
-                  Icons.skip_next,
-                  color: AppColor.white,
-                  size: 32,
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    print("下一段");
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Icon(
+                      Icons.skip_next,
+                      color: AppColor.white,
+                      size: 32,
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
-          SizedBox(height: 16,),
+          SizedBox(
+            height: 16,
+          ),
           Slider(
               max: _totalDuration.toDouble(),
               min: 0,
@@ -369,5 +399,84 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
         ],
       ),
     );
+  }
+
+  _showPauseDialog() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return WillPopScope(
+            onWillPop: () async => false,
+            child: Dialog(
+              backgroundColor: AppColor.transparent,
+              elevation: 0,
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              height: 74,
+                              width: 74,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColor.textPrimary1,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 16,
+                            ),
+                            Text(
+                              "退出训练",
+                              style: TextStyle(color: AppColor.white, fontSize: 14),
+                            )
+                          ],
+                        )),
+                    SizedBox(
+                      width: 53,
+                    ),
+                    GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              height: 74,
+                              width: 74,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColor.white,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 16,
+                            ),
+                            Text(
+                              "继续训练",
+                              style: TextStyle(color: AppColor.white, fontSize: 14),
+                            )
+                          ],
+                        )),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
   }
 }
