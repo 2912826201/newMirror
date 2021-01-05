@@ -342,7 +342,7 @@ class searchState extends State<SearchUserItem> {
               height: 24,
               alignment: Alignment.centerRight,
               decoration: BoxDecoration(
-                color: !isFollow ? AppColor.textPrimary1 : AppColor.transparent,
+                color: !isFollow ? AppColor.white : AppColor.transparent,
                 borderRadius: BorderRadius.all(Radius.circular(14)),
                 border: Border.all(width: !isFollow ? 0.5 : 0.0, color: AppColor.black),
               ),

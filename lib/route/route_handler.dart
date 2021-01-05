@@ -13,6 +13,7 @@ import 'package:mirror/page/login/login_page.dart';
 import 'package:mirror/page/login/perfect_user_page.dart';
 import 'package:mirror/page/login/phone_login_page.dart';
 import 'package:mirror/page/main_page.dart';
+import 'package:mirror/page/media_picker/gallery_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/media_picker/preview_photo_page.dart';
 import 'package:mirror/page/message/chat_page.dart';
@@ -23,6 +24,10 @@ import 'package:mirror/page/profile/edit_information/edit_information_page.dart'
 import 'package:mirror/page/profile/login_test_page.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/profile_details_more.dart';
+import 'package:mirror/page/profile/setting/blacklist_page.dart';
+import 'package:mirror/page/profile/setting/feedback_page.dart';
+import 'package:mirror/page/profile/setting/notice_setting_page.dart';
+import 'package:mirror/page/profile/setting/setting_home_page.dart';
 import 'package:mirror/page/profile/scan_code_page.dart';
 import 'package:mirror/page/profile/setting/blacklist_page.dart';
 import 'package:mirror/page/profile/setting/feedback_page.dart';
@@ -38,6 +43,7 @@ import 'package:mirror/page/training/machine/remote_controller_page.dart';
 import 'package:mirror/page/training/video_course/video_course_list_page.dart';
 import 'package:mirror/page/training/video_course/video_detail_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:photo_manager/photo_manager.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 /// route_handler
@@ -115,7 +121,8 @@ var handlerProfileAddRemarks = Handler(handlerFunc: (BuildContext context, Map<S
   );
 });
 
-var handlerEditInformation = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+var handlerEditInformation = Handler(
+    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return EditInformation();
 });
 
@@ -135,13 +142,13 @@ var handlerEditInformationIntroduction = Handler(handlerFunc: (BuildContext cont
 var handlerSettingHomePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return SettingHomePage();
 });
-var handlerSettingBlackList = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+var handlerSettingBlackList = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
   return BlackListPage();
 });
-var handlerSettingNoticeSetting = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+var handlerSettingNoticeSetting = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
   return NoticeSettingPage();
 });
-var handlerSettingFeedBack = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+var handlerSettingFeedBack = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
   return FeedBackPage();
 });
 var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {

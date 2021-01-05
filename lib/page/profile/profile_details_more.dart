@@ -249,6 +249,8 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
         }else{
           isBlack = false;
         }
+        setState(() {
+        });
     }
   }
   ///举报

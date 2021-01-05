@@ -74,6 +74,7 @@ class AppRouter {
     router.define(pathLiveBroadcast, handler: handlerLiveBroadcast);
     router.define(pathLiveDetail, handler: handlerLiveDetail);
     router.define(pathVideoDetail, handler: handlerVideoDetail);
+/*    router.define(pathProfileScanCode, handler: handlerScan);*/
     router.define(pathProfileDetails, handler: handlermineDetails);
     router.define(pathVideoCourseList, handler: handlerVideoCourseList);
     router.define(pathProfileDetailsMore, handler: handlerProfileDetailMore);
@@ -88,6 +89,9 @@ class AppRouter {
     router.define(pathMachineRemoteController, handler: handlerMachineRemoteController);
     router.define(pathMachineConnectionInfo, handler: handlerMachineConnectionInfo);
     router.define(pathMachineSetting, handler: handlerMachineSetting);
+    router.define(pathSettingFeedBack, handler: handlerSettingFeedBack);
+    router.define(pathSettingNoticeSetting, handler: handlerSettingNoticeSetting);
+    router.define(pathSettingBlackList, handler: handlerSettingBlackList);
 
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
@@ -230,7 +234,6 @@ class AppRouter {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathSettingBlackList, map);
   }
-
   static void navigateToLikePage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathLike, map);

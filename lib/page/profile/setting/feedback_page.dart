@@ -1,19 +1,24 @@
 
 
 
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/setting_api/setting_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/feedback_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
+import 'package:toast/toast.dart';
 
 ///意见反馈
 class FeedBackPage extends StatefulWidget{
@@ -27,6 +32,9 @@ class _feedBackPage extends State<FeedBackPage>{
   String editText;
   List<Uint8List> imageDataList = [];
   List<File> fileList = [];
+  FeedBackModel feedModel = FeedBackModel();
+  double upLoadProgress;
+  List<String> resultString = [];
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -47,7 +55,8 @@ class _feedBackPage extends State<FeedBackPage>{
             ),
             leadingWidth: 44,
             actions: [
-              Container(
+              InkWell(
+                child: Container(
                 width: 60,
                 margin: EdgeInsets.only(right: 16),
                 child: Center(
@@ -62,6 +71,10 @@ class _feedBackPage extends State<FeedBackPage>{
                       style: TextStyle(fontSize: 14, color: AppColor.white),
                     ),)
                 ),
+              ),
+              onTap: (){
+                  _uploadImage();
+              },
               )
             ],
           ),
@@ -95,7 +108,7 @@ Widget _inputBox(double width){
       padding: EdgeInsets.only(left: 16,right: 16,top: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(8)),
-        border: Border.all(width: 0.5, color: AppColor.textHint)),
+        border: Border.all(width: 0.5, color: AppColor.bgWhite)),
       child: TextField(
             cursorColor:AppColor.black,
             style: AppStyle.textRegular16,
@@ -200,6 +213,7 @@ Widget _addImageItem(){
     ),):Container();
 }
 
+    //从相册获取照片
   _getImage(){
     AppRouter.navigateToMediaPickerPage(
       context, 9, typeImage, true, startPageGallery, true, false, (result) {
@@ -236,5 +250,46 @@ Widget _addImageItem(){
 
     });
     });
+  }
+
+  _uploadImage()async{
+      feedModel.content = editText;
+      List<String> list = [];
+      String jsonString = "";
+      if(fileList!=null){
+            var result = await FileUtil().uploadPics(fileList,
+                (percent) {
+              print('===========================正在上传%%$percent');
+            });
+            if(result.resultMap.values!=null){
+              result.resultMap.values.forEach((element) {
+                print('上传成功的图片===========================${element.url}');
+                print('model===========================${feedModel.toString()}');
+                list.add(element.url);
+                feedModel.picList = list;
+                print('model图片========================${feedModel.picList.first}');
+              });
+            }
+        print('=============================${feedModel.content}');
+        for(int i=0;i<jsonEncode(feedModel).length;i++){
+          resultString.add(jsonEncode(feedModel)[i]);
+         }
+        for(int i=0;i<resultString.length;i++){
+          if(resultString[i]=="\\"&&resultString[i+1]=="\""){
+            print('i===========================$i');
+          resultString.removeAt(i);
+          resultString.removeAt(i);
+          }
+        }
+        for(int i=0;i<resultString.length;i++){
+          jsonString+=resultString[i];
+        }
+      print('result=============================$jsonString');
+      bool model = await putFeedBack(jsonString);
+      if(model){
+        Toast.show("反馈成功",context);
+      }else{
+      }
+      }
   }
 }

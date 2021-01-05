@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -63,14 +64,11 @@ class _queryFollowState extends State<QueryFollowList> {
 
   bool isMySelf = true;
 
-  bool isCanOnclick = true;
-
-  bool isFollow = false;
+  //判断到当前在搜索用户则直接本地用户搜索
   bool isSearch = false;
   int _lastTime;
   int searchHashNext;
   int dataPage = 1;
-  bool noData = false;
   bool refreshOver = false;
   String lastString = "";
 
@@ -336,50 +334,56 @@ class _queryFollowState extends State<QueryFollowList> {
         padding: EdgeInsets.only(left: 16, right: 16),
         child: Column(
           children: [
-            SizedBox(
-              height: 12,
-            ),
-            isMySelf?Container(
-              height: 32,
-              width: width,
-              color: AppColor.bgWhite,
-              padding: EdgeInsets.only(left: 12),
-              child: Center(
-                child: Row(
-                  children: [
-                    Container(
-                      height: 21,
-                      width: 21,
-                      child: Image.asset("images/resource/Nav_search_icon.png"),
-                    ),
-                    SizedBox(
-                      width: 12,
-                    ),
-                    Expanded(
-                      child: TextField(
-                        cursorColor: AppColor.black,
-                        style: AppStyle.textRegular16,
-                        controller: controller,
-                        decoration: InputDecoration(
-                          contentPadding: EdgeInsets.only(bottom: 12),
-                          counterText: '',
-                          hintText: widget.type == 1
-                              ? "搜索用户"
-                              : widget.type == 2
-                                  ? "搜索用户"
-                                  : "搜索",
-                          hintStyle: TextStyle(fontSize: 16, color: AppColor.textHint),
-                          border: InputBorder.none,
-                        ),
-                      ),
-                    ),
-                  ],
+            //需要显隐的搜索框
+            isMySelf&&widget.type!=2?Column(
+              children: [
+                SizedBox(
+                  height: 12,
                 ),
-              ),
+                Container(
+                  height: 32,
+                  width: width,
+                  color: AppColor.bgWhite,
+                  padding: EdgeInsets.only(left: 12),
+                  child: Center(
+                    child: Row(
+                      children: [
+                        Container(
+                          height: 21,
+                          width: 21,
+                          child: Image.asset("images/resource/Nav_search_icon.png"),
+                        ),
+                        SizedBox(
+                          width: 12,
+                        ),
+                        Expanded(
+                          child: TextField(
+                            cursorColor: AppColor.black,
+                            style: AppStyle.textRegular16,
+                            controller: controller,
+                            decoration: InputDecoration(
+                              contentPadding: EdgeInsets.only(bottom: 12),
+                              counterText: '',
+                              hintText: widget.type == 1
+                                ? "搜索用户"
+                                : widget.type == 2
+                                ? "搜索用户"
+                                : "搜索",
+                              hintStyle: TextStyle(fontSize: 16, color: AppColor.textHint),
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+              ],
             ):Container(height: 0,),
-            SizedBox(
-              height: 12,
-            ),
+
             Expanded(
               child: SmartRefresher(
                   controller: _refreshController,
@@ -807,10 +811,10 @@ class _followItemState extends State<QueryFollowItem> {
                     decoration: BoxDecoration(
                       color: widget.type == 2
                           ? widget.fansList[widget.index].isFallow == 0
-                              ? AppColor.textPrimary1
+                              ? AppColor.white
                               : AppColor.transparent
                           : widget.followList[widget.index].isFallow == 0
-                              ? AppColor.textPrimary1
+                              ? AppColor.white
                               : AppColor.transparent,
                       borderRadius: BorderRadius.all(Radius.circular(14)),
                       border: Border.all(
