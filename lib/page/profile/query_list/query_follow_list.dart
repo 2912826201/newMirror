@@ -66,6 +66,7 @@ class _queryFollowState extends State<QueryFollowList> {
   //判断到当前在搜索用户则直接本地用户搜索
   bool isSearch = false;
   int _lastTime;
+  double _lastScore;
   int searchHashNext;
   bool refreshOver = true;
   String lastString = "";
@@ -227,6 +228,7 @@ class _queryFollowState extends State<QueryFollowList> {
         if (model != null) {
           hasNext = model.hasNext;
           model.list.forEach((element) {
+            print('话题名称============================${element.name}');
             topicList.add(element);
           });
           _refreshController.refreshCompleted();
@@ -248,37 +250,39 @@ class _queryFollowState extends State<QueryFollowList> {
   }
   //搜索关注话题
   _getSearchTopic(String text) async {
-    if (listPage > 1 && _lastTime == null) {
+    if (listPage > 1 && hasNext == 0) {
       print('=============================退出请求');
       _refreshController.loadNoData();
       return;
     }
     refreshOver = false;
-    print('====开始请求搜索用户接口============================');
-    TopicListModel model = await searchTopicUser(text, 15, lastScore: _lastTime);
+    print('====开始请求搜索用户关注话题接口============================');
+    TopicListModel model = await searchTopicUser(text, 15, lastScore: _lastScore);
     setState(() {
-      if (listPage == 1&&_lastTime==null) {
+      if (listPage == 1) {
         _refreshController.loadComplete();
         _refreshController.isRefresh;
         if (model.list.isNotEmpty) {
             topicList.clear();
+            hasNext = model.hasNext;
             print('===================== =============model有值');
             model.list.forEach((element) {
               print('model================ ${element.id}');
               topicList.add(element);
             });
-            _lastTime = model.lastScore;
+            _lastScore = model.lastScore;
           _refreshController.refreshCompleted();
         }else{
           topicList.clear();
         }
-      } else if (listPage > 1 && _lastTime !=null) {
+      } else if (listPage > 1 && hasNext != 0) {
         _refreshController.isLoading;
         if (model.list != null) {
+          hasNext = model.hasNext;
           model.list.forEach((element) {
             topicList.add(element);
           });
-          _lastTime = model.lastScore;
+          _lastScore = model.lastScore;
           _refreshController.loadComplete();
         } else {
           _refreshController.loadNoData();
@@ -344,8 +348,6 @@ class _queryFollowState extends State<QueryFollowList> {
           print('text===============改变值');
           if(refreshOver){
             print('text===============刷新完成');
-                listPage = 1;
-              _lastTime = null;
             if (widget.type == 1) {
               _getSearchUser(controller.text);
             }else{
