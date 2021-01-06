@@ -205,16 +205,25 @@ class AppRouter {
     map["userId"] = userId;
     _navigateToPage(context, pathProfileAddRemarks,map);
   }
-  static void navigationToEditInfomation(BuildContext context,Function(dynamic result) callback) {
-    _navigateToPage(context, pathEditInformation, {},callback: callback);
+  static void navigationToEditInfomation(
+      BuildContext context, Function(dynamic result) callback) {
+    _navigateToPage(context, pathEditInformation, {}, callback: callback);
   }
-  static void navigationToEditInfomationName(BuildContext context,String username,Function(dynamic result) callback) {
-    Map<String,dynamic> map = Map();
+
+  static void navigationToEditInfomationName(
+      BuildContext context, String username, Function(dynamic result) callback,
+      {String title}) {
+    Map<String, dynamic> map = Map();
     map["username"] = username;
-    _navigateToPage(context, pathEditInformationName, map,callback: callback);
+    if (title != null) {
+      map["title"] = title;
+    }
+    _navigateToPage(context, pathEditInformationName, map, callback: callback);
   }
-  static void navigationToEditInfomationIntroduction(BuildContext context,String introduction,Function(dynamic result) callback) {
-    Map<String,dynamic> map = Map();
+
+  static void navigationToEditInfomationIntroduction(BuildContext context,
+      String introduction, Function(dynamic result) callback) {
+    Map<String, dynamic> map = Map();
     map["introduction"] = introduction;
     _navigateToPage(context, pathEditInformationIntroduction, map,callback: callback);
   }

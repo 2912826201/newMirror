@@ -41,6 +41,10 @@ class ChatEnterNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  clearRules() {
+    this.rules.clear();
+  }
+
   setAtSearchStr(String str) {
     this.atSearchStr = str;
     notifyListeners();
