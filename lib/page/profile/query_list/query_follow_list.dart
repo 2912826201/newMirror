@@ -622,7 +622,7 @@ class _followItemState extends State<QueryFollowItem> {
   bool haveRemarks = false;
 
   //判断是否有简介
-  bool haveIntroduction = false;
+  bool haveIntroduction = true;
 
   bool isFollow = false;
 
@@ -719,7 +719,7 @@ class _followItemState extends State<QueryFollowItem> {
         haveIntroduction = false;
       }
     }//粉丝列表
-    else {
+    else if(widget.type ==2) {
       if (widget.fansList[widget.index].description != null) {
         haveIntroduction = true;
       } else {
@@ -741,6 +741,9 @@ class _followItemState extends State<QueryFollowItem> {
       } else {
         isFollow = true;
       }
+    }else{
+      isCanOnclick = false;
+      haveRemarks = false;
     }
     return Container(
       height: haveRemarks ? 78 : 58,
@@ -762,11 +765,15 @@ class _followItemState extends State<QueryFollowItem> {
                   })).then((value) {
                     ///这里每次回来都去请求一遍用户关系,改变按钮状态
                     if (widget.type == 1) {
-                      _getUserInfo(id: widget.followList[widget.index].uid);
+                      if(isCanOnclick){
+                        _getUserInfo(id: widget.followList[widget.index].uid);
+                      }
                     } else {
                       _getUserInfo(id: widget.fansList[widget.index].uid);
                     }
                   });
+                }else{
+                  ///这里处理话题跳转
                 }
               },
               child: widget.type == 3
@@ -802,6 +809,9 @@ class _followItemState extends State<QueryFollowItem> {
                         alignment: Alignment.centerLeft,
                         child: InkWell(
                           onTap: () {
+                            if(widget.type==3){
+                              ///这里处理话题的跳转
+                            }else{
                             Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                               return ProfileDetailPage(
                                 userId: widget.type == 1
@@ -817,13 +827,16 @@ class _followItemState extends State<QueryFollowItem> {
                                 _getUserInfo(id: widget.fansList[widget.index].uid);
                               }
                             });
+                            }
                           },
                           child: Text(
                             haveRemarks
                                 ? widget.fansList[widget.index].remarkName
                                 : widget.type == 1
                                     ? widget.followList[widget.index].nickName
-                                    : widget.fansList[widget.index].nickName,
+                                    : widget.type==2
+                                    ?widget.fansList[widget.index].nickName
+                                    :"#${widget.topicList[widget.index].name}",
                             style: AppStyle.textMedium15,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -851,7 +864,7 @@ class _followItemState extends State<QueryFollowItem> {
                                   ? widget.followList[widget.index].description
                                   : widget.type == 2
                                       ? widget.fansList[widget.index].description
-                                      : " ",
+                                      : "这是话题的签名",
                               style: AppStyle.textSecondaryRegular12,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,

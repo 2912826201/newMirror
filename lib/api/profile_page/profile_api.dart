@@ -2,6 +2,7 @@ import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/profile/add_remarks_model.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/model/profile/fans_list_model.dart';
+import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/data/model/profile/follow_list_model.dart';
 import 'package:mirror/data/model/profile/profile_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
@@ -57,6 +58,8 @@ const String  FANS_LIST = "/appuser/web/user/follow/queryFansList";
 const String TOPIC_LIST = "/appuser/web/topic/queryFollowTopicList";
 ///搜索关注话题
 const String SEARCH_FOLLOW_TOPIC = "/appuser/web/topic/searchFollowTopic";
+///健身信息录入
+const String FITNESS_ENTRY = "/appuser/web/user/saveBasicFitnessInfo";
 //关注
 Future<int> ProfileAddFollow(int id) async {
   BaseResponseModel responseModel = await requestApi(ATTENTION, {"targetId": id});
@@ -332,6 +335,21 @@ Future<TopicListModel> searchTopicUser(String key, int size, {int lastScore}) as
     return model;
   } else {
     print('搜索话题接口请求失败============================================');
+    return null;
+  }
+}
+///健身信息录入
+Future<FitnessEntryModel> userFitnessEntry(dynamic body) async {
+  BaseResponseModel responseModel = await requestApi(FITNESS_ENTRY, {"body":body});
+  if (responseModel.isSuccess) {
+    print('健身信息录入接口请求成功=============================');
+    FitnessEntryModel model;
+    if (responseModel.data != null) {
+      model = FitnessEntryModel.fromJson(responseModel.data);
+    }
+    return model;
+  } else {
+    print('健身信息录入接口请求失败============================================');
     return null;
   }
 }

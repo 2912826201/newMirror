@@ -380,10 +380,10 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                           height: 24,
                         ),
                       )
-                    : Container(),
-                SizedBox(
+                    : Container(width: 0,),
+                !isMselfId?SizedBox(
                   width: 15.5,
-                )
+                ):Container()
               ],
               backgroundColor: AppColor.white,
               expandedHeight: height * 0.41 - ScreenUtil.instance.statusBarHeight + textHeight,
@@ -462,7 +462,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               child: Container(
                 width: width,
                 height: height * 0.33,
-                color: AppColor.white.withOpacity(0.7),
+                color: AppColor.white.withOpacity(0.6),
               )),
           BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
