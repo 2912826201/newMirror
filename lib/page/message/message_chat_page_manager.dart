@@ -469,6 +469,24 @@ Future<List<UploadResultModel>> onPostImgOrVideo(
   return uploadResultModelList;
 }
 
+//获取at人的名字
+String gteAtUserName(List<String> userIdList) {
+  String string = "";
+  if (userIdList != null && userIdList.length > 0) {
+    for (int i = 0; i < userIdList.length; i++) {
+      for (int j = 0; j < Application.chatGroupUserModelList.length; j++) {
+        if (userIdList[i] == Application.chatGroupUserModelList[j].uid.toString()) {
+          string += Application.chatGroupUserModelList[j].nickName + ",";
+          break;
+        }
+      }
+    }
+    return string;
+  } else {
+    return string;
+  }
+}
+
 int getRCConversationType(int type) {
   switch (type) {
     case 100:

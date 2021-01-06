@@ -62,7 +62,7 @@ class SendMessageView extends StatelessWidget {
     //普通消息
     if (model.type == ChatTypeModel.MESSAGE_TYPE_TEXT) {
       //文字消息
-      return getTextMsg(text: model.content);
+      return getTextMsg(text: model.content, mentionedInfo: model.mentionedInfo);
     } else if (model.type == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
       //图片消息
       return getImgVideoMsg(
@@ -105,7 +105,7 @@ class SendMessageView extends StatelessWidget {
         Map<String, dynamic> mapModel = json.decode(textMessage.content);
         if (mapModel["type"] == ChatTypeModel.MESSAGE_TYPE_TEXT) {
           //文字消息
-          return getTextMsg(text: mapModel["content"]);
+          return getTextMsg(text: mapModel["content"], mentionedInfo: msg.content.mentionedInfo);
         } else if (mapModel["type"] == ChatTypeModel.MESSAGE_TYPE_FEED) {
           //动态消息
           return getFeedMsgData(json.decode(mapModel["content"]));
@@ -140,7 +140,7 @@ class SendMessageView extends StatelessWidget {
           return getSelectMsgData(mapModel["content"]);
         }
       } catch (e) {
-        return getTextMsg(text: textMessage.content);
+        return getTextMsg(text: textMessage.content, mentionedInfo: msg.content.mentionedInfo);
       }
     } else if (msgType == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
       //图片--视频消息
@@ -201,12 +201,13 @@ class SendMessageView extends StatelessWidget {
   //***************************************获取每一个消息的模块-----start
 
   //获取普通文本模块
-  Widget getTextMsg({String text}) {
+  Widget getTextMsg({String text, MentionedInfo mentionedInfo}) {
     return TextMsg(
         text: text,
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        mentionedInfo: mentionedInfo,
         voidMessageClickCallBack: voidMessageClickCallBack,
         voidItemLongClickCallBack: voidItemLongClickCallBack,
         position: position,

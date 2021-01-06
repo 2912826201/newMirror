@@ -6,6 +6,7 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import 'currency_msg.dart';
 
@@ -17,6 +18,7 @@ class TextMsg extends StatelessWidget {
   final String name;
   final int status;
   final int position;
+  final MentionedInfo mentionedInfo;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
 
@@ -26,6 +28,7 @@ class TextMsg extends StatelessWidget {
       this.userUrl,
       this.name,
       this.status,
+      this.mentionedInfo,
       this.position,
       this.voidMessageClickCallBack,
       this.voidItemLongClickCallBack});
@@ -34,8 +37,13 @@ class TextMsg extends StatelessWidget {
     fontSize: 15,
   );
 
+  //at了那些人
+  List<String> atUserNameList = <String>[];
+
   @override
   Widget build(BuildContext context) {
+    initAtUser();
+
     return getContentBoxItem(context);
   }
 
@@ -181,19 +189,20 @@ class TextMsg extends StatelessWidget {
   List<TextSpan> getTextSpanArray(String content, bool isMyself) {
     var textSpanArray = <TextSpan>[];
     if (!StringUtil.strNoEmpty(content)) {
-      textSpanArray.add(getNullContent("消息为空", isMyself, 0));
+      textSpanArray.addAll(judgeIsAtUser("消息为空", isMyself, 0));
     } else {
       var contentArray = content.split(" ");
       for (int i = 0; i < contentArray.length; i++) {
-        textSpanArray.add(getNullContent(contentArray[i], isMyself, i,
-            isUrl: StringUtil.isURL(contentArray[i])));
+        if (contentArray[i] != null && contentArray[i].length > 0) {
+          textSpanArray.addAll(judgeIsAtUser(contentArray[i], isMyself, i,
+              isUrl: StringUtil.isURL(contentArray[i])));
+        }
       }
     }
     return textSpanArray;
   }
 
-  TextSpan getNullContent(String content, bool isMyself, int index,
-      {bool isUrl = false}) {
+  TextSpan getNullContent(String content, bool isMyself, int index, bool isUrl, {bool isUrlColor = false}) {
     return TextSpan(
         text: ("${index > 0 ? " " : ""}$content"),
         recognizer: new TapGestureRecognizer()
@@ -204,9 +213,59 @@ class TextMsg extends StatelessWidget {
                 isUrl: isUrl);
           },
         style: TextStyle(
-          color: !isUrl
-              ? (!isMyself ? AppColor.textPrimary2 : AppColor.white)
-              : AppColor.urlText,
+          color: isUrlColor ? AppColor.urlText :
+          !isUrl ? (!isMyself ? AppColor.textPrimary2 : AppColor.white) : AppColor.urlText,
         ));
   }
+
+
+//判断at用户的颜色
+  List<TextSpan> judgeIsAtUser(String content, bool isMyself, int index, {bool isUrl = false}) {
+    var textSpanArray = <TextSpan>[];
+    if (atUserNameList == null || atUserNameList.length < 1) {
+      textSpanArray.add(getNullContent(content, isMyself, index, isUrl));
+    } else {
+      int index = isHaveAtName(content);
+      // print("有at的人-----------index:$index---content:$content");
+      if (index < 0) {
+        textSpanArray.add(getNullContent(content, isMyself, index, isUrl));
+      } else if ("@" + atUserNameList[index] == content) {
+        textSpanArray.add(getNullContent(content, isMyself, index, false, isUrlColor: true));
+      } else {
+        textSpanArray.add(getNullContent(
+            content.replaceAll("@" + atUserNameList[index], ""), isMyself, index, false, isUrlColor: false));
+        textSpanArray.add(getNullContent("@" + atUserNameList[index], isMyself, index, false, isUrlColor: true));
+      }
+    }
+    return textSpanArray;
+  }
+
+
+  //判断要绘制的字符串 里面有没有 at的人名
+  int isHaveAtName(String content) {
+    for (int i = 0; i < atUserNameList.length; i++) {
+      String userName = "@" + atUserNameList[i];
+      if (content.contains(userName)) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+
+  //初始化那些人是at了
+  void initAtUser() {
+    atUserNameList.clear();
+    if (mentionedInfo == null || mentionedInfo.userIdList.length < 1) {
+      // print("---------------没有at人");
+    } else if (mentionedInfo.mentionedContent == null || mentionedInfo.mentionedContent.length < 1) {
+      // print("---------------at人了-但是没有名字-不处理");
+    } else {
+      // print("---------------at了：id:${mentionedInfo.userIdList.toString()}:---name:${mentionedInfo.mentionedContent}");
+      atUserNameList = mentionedInfo.mentionedContent.split(",");
+      atUserNameList.removeAt(atUserNameList.length - 1);
+    }
+  }
+
+
 }
