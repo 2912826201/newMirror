@@ -432,6 +432,11 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                                 shape: BoxShape.circle,
                                 color: AppColor.textPrimary1,
                               ),
+                              child: Icon(
+                                Icons.stop,
+                                size: 48,
+                                color: AppColor.textHint,
+                              ),
                             ),
                             SizedBox(
                               height: 16,
@@ -461,6 +466,11 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: AppColor.white,
+                              ),
+                              child: Icon(
+                                Icons.play_arrow,
+                                size: 48,
+                                color: AppColor.textHint,
                               ),
                             ),
                             SizedBox(

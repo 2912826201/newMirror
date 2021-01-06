@@ -25,13 +25,10 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
 
 class CommentBottomSheet extends StatefulWidget {
-  CommentBottomSheet({Key key, this.pc, this.feedId}) : super(key: key);
+  CommentBottomSheet({Key key, this.feedId}) : super(key: key);
 
   // 动态id
   int feedId;
-
-  // 抽屉控制器
-  PanelController pc;
 
   CommentBottomSheetState createState() => CommentBottomSheetState();
 }
@@ -206,7 +203,7 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
                     child: GestureDetector(
                       child: Image.asset("images/resource/2.0x/ic_big_nav_closepage@2x.png", width: 18, height: 18),
                       onTap: () {
-                        widget.pc.close();
+                        SingletonForWholePages.singleton().closePanelController();
                       },
                     ))
               ],
@@ -347,7 +344,7 @@ class CommentBottomListView extends StatelessWidget {
               openInputBottomSheet(
                 context: context,
                 hintText: "回复 ${model.name}",
-                voidCallback: (String text,List<Rule> rules, BuildContext context) {
+                voidCallback: (String text, List<Rule> rules, BuildContext context) {
                   List<AtUsersModel> atListModel = [];
                   for (Rule rule in rules) {
                     AtUsersModel atModel;
@@ -477,8 +474,6 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
     setState(() {});
   }
 
-
-
   // 切换按钮
   toggleButton() {
     // 是否显示隐藏按钮
@@ -501,8 +496,6 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -524,7 +517,13 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
                     shrinkWrap: true,
                     itemCount: widget.replys.length,
                     itemBuilder: (context, index) {
-                      return BottomListViewSubCommentListItem(model:widget.replys[index],subIndex: index,mainIndex: widget.listIndex,feedId:widget.feedId,commentDtoModel: widget.commentDtoModel,);
+                      return BottomListViewSubCommentListItem(
+                        model: widget.replys[index],
+                        subIndex: index,
+                        mainIndex: widget.listIndex,
+                        feedId: widget.feedId,
+                        commentDtoModel: widget.commentDtoModel,
+                      );
                     })),
             // 查看按钮和隐藏按钮的切换
             Offstage(
@@ -536,32 +535,29 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
               height: 12,
             )
           ],
-        )
-    );
+        ));
   }
 }
-
-
-
-
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 评论抽屉内的评论列表的子评论列表item %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥
 //￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥
-class  BottomListViewSubCommentListItem extends StatelessWidget {
-  BottomListViewSubCommentListItem({this.model,this.subIndex,this.mainIndex,this.feedId,this.commentDtoModel});
+class BottomListViewSubCommentListItem extends StatelessWidget {
+  BottomListViewSubCommentListItem({this.model, this.subIndex, this.mainIndex, this.feedId, this.commentDtoModel});
+
   CommentDtoModel model;
   int subIndex;
   int mainIndex;
   int feedId;
   CommentDtoModel commentDtoModel;
+
   @override
   // 点赞
-  setUpLuad(BuildContext context,int subIndex,CommentDtoModel models) async {
+  setUpLuad(BuildContext context, int subIndex, CommentDtoModel models) async {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     print("是否点赞了￥${context.read<FeedMapNotifier>().feedMap[feedId].comments[mainIndex].replys[subIndex].isLaud}");
     if (isLoggedIn) {
-      Map<String, dynamic> model = await laudComment(commentId:models.id , laud: models.isLaud == 0 ? 1 : 0);
+      Map<String, dynamic> model = await laudComment(commentId: models.id, laud: models.isLaud == 0 ? 1 : 0);
       // 点赞/取消赞成功
       print("state:${model["state"]}");
       if (model["state"]) {
@@ -575,6 +571,7 @@ class  BottomListViewSubCommentListItem extends StatelessWidget {
       AppRouter.navigateToLoginPage(context);
     }
   }
+
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -582,7 +579,7 @@ class  BottomListViewSubCommentListItem extends StatelessWidget {
         openInputBottomSheet(
           context: context,
           hintText: "回复 ${model.name}",
-          voidCallback: (String text,List<Rule> rules, BuildContext context) {
+          voidCallback: (String text, List<Rule> rules, BuildContext context) {
             List<AtUsersModel> atListModel = [];
             for (Rule rule in rules) {
               AtUsersModel atModel;
@@ -631,21 +628,21 @@ class  BottomListViewSubCommentListItem extends StatelessWidget {
                   children: <Widget>[
                     MyRichTextWidget(
                       Text(
-                        model.replyName != null ? model.name + " 回复 " + model.replyName +" " +model.content:
-                        model.name + " " + model.content,
+                        model.replyName != null
+                            ? model.name + " 回复 " + model.replyName + " " + model.content
+                            : model.name + " " + model.content,
                         overflow: TextOverflow.visible,
                         style: TextStyle(fontSize: 14, color: AppColor.textPrimary1, fontWeight: FontWeight.w400),
                       ),
                       maxLines: 2,
                       textOverflow: TextOverflow.ellipsis,
-                      richTexts:
-                        setBaseRichText(model),
+                      richTexts: setBaseRichText(model),
                     ),
                     Container(height: 6),
                     Container(
                       margin: EdgeInsets.only(bottom: 12),
                       child: Text(
-                        "${DateUtil.generateFormatDate( model.createTime)} 回复",
+                        "${DateUtil.generateFormatDate(model.createTime)} 回复",
                         style: TextStyle(
                           fontSize: 12,
                           color: AppColor.textSecondary,
@@ -658,7 +655,7 @@ class  BottomListViewSubCommentListItem extends StatelessWidget {
           // 点赞
           GestureDetector(
             onTap: () {
-              setUpLuad(context,subIndex,model);
+              setUpLuad(context, subIndex, model);
             },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -666,21 +663,21 @@ class  BottomListViewSubCommentListItem extends StatelessWidget {
                 Icon(
                   Icons.favorite,
                   color:
-                  context.watch<FeedMapNotifier>().feedMap[feedId].comments[mainIndex].replys[subIndex].isLaud == 0
-                      ?
-                  Colors.grey
-                  : Colors.red,
+                      context.watch<FeedMapNotifier>().feedMap[feedId].comments[mainIndex].replys[subIndex].isLaud == 0
+                          ? Colors.grey
+                          : Colors.red,
                 ),
                 Container(
                   height: 4,
                 ),
                 Offstage(
-                  offstage: context.watch<FeedMapNotifier>().feedMap[feedId].comments[mainIndex].replys[subIndex].laudCount == 0,
-                  child:
-                Text(
-                  "${StringUtil.getNumber(context.select((FeedMapNotifier value) => value.feedMap[feedId].comments[mainIndex].replys[subIndex].laudCount))}",
-                  style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
-                ),
+                  offstage:
+                      context.watch<FeedMapNotifier>().feedMap[feedId].comments[mainIndex].replys[subIndex].laudCount ==
+                          0,
+                  child: Text(
+                    "${StringUtil.getNumber(context.select((FeedMapNotifier value) => value.feedMap[feedId].comments[mainIndex].replys[subIndex].laudCount))}",
+                    style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                  ),
                 ),
               ],
             ),
@@ -690,6 +687,7 @@ class  BottomListViewSubCommentListItem extends StatelessWidget {
       // ),
     );
   }
+
   setBaseRichText(CommentDtoModel model) {
     List<BaseRichText> richTexts = [];
     String contextText;

@@ -7,7 +7,7 @@ import 'package:mirror/page/training/video_course/video_course_play_page.dart';
 /// video_course_circle_progressbar
 /// Created by yangjiayi on 2021/1/5.
 
-double _radianBetweenPart = pi * 5 / 180; //每段间隔的角度 5°
+double _radianBetweenPart = pi * 6 / 180; //每段间隔的角度 6°
 
 //尺寸颜色暂时写死
 class VideoCourseCircleProgressBar extends StatelessWidget {
