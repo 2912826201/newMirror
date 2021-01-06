@@ -1,35 +1,49 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/data/model/message/chat_group_user_model.dart';
+import 'package:mirror/page/message/message_view/currency_msg.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/feed_share_select_contact.dart';
+import 'package:mirror/api/message_page_api.dart';
 
 class GroupMorePage extends StatefulWidget {
-  ///对话用户id
-  final String chatUserId;
+  ///群id
+  final String chatGroupId;
+
+  ///群名字
+  final String groupName;
 
   ///这个是什么类型的对话--中文
   ///[chatType] 会话类型，参见类型 [OFFICIAL_TYPE]
   final int chatType;
 
-  GroupMorePage({this.chatUserId, this.chatType});
+  GroupMorePage({this.chatGroupId, this.chatType, this.groupName});
 
   @override
   createState() => GroupMorePageState();
 }
 
 class GroupMorePageState extends State<GroupMorePage> {
-  var wordPairList = <WordPair>[];
   bool disturbTheNews = false;
   bool topChat = false;
+  String groupMeName = "还未取名";
+  Map<String, dynamic> groupInformationMap;
+  String groupName;
+
+  @override
+  void initState() {
+    super.initState();
+    getGroupInformation();
+  }
 
   @override
   Widget build(BuildContext context) {
-    wordPairList.clear();
-    wordPairList.addAll(generateWordPairs().take(20));
     return Scaffold(
       appBar: AppBar(
         title: Text("群聊消息"),
@@ -64,10 +78,12 @@ class GroupMorePageState extends State<GroupMorePage> {
             ),
           ),
           getContainer(),
-          getListItem(text: "群聊名称", subtitle: "还未取名"),
+          getListItem(text: "群聊名称", subtitle: groupName ?? widget.groupName),
           getListItem(text: "群聊二维码", isRightIcon: true),
           getContainer(height: 12, horizontal: 0),
-          getListItem(text: "群昵称", subtitle: "还未取名"),
+          getListItem(
+              text: "群昵称",
+              subtitle: groupMeName == "还未取名" ? getGroupMeName() : groupMeName),
           getContainer(),
           getListItem(text: "消息免打扰", isOpen: disturbTheNews, index: 1),
           getListItem(text: "置顶聊天", isOpen: topChat, index: 2),
@@ -81,24 +97,24 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //获取头部群用户的头像
   Widget getTopAllUserImage() {
-    var wordPairs = <WordPair>[];
-    if (wordPairList.length > 13) {
-      wordPairs.addAll(wordPairList.sublist(0, 13));
+    List<ChatGroupUserModel> groupUserList = <ChatGroupUserModel>[];
+    if (Application.chatGroupUserModelList.length > 13) {
+      groupUserList.addAll(Application.chatGroupUserModelList.sublist(0, 13));
     } else {
-      wordPairs.addAll(wordPairList);
+      groupUserList.addAll(Application.chatGroupUserModelList);
     }
-    wordPairs.add(new WordPair.random());
-    wordPairs.add(new WordPair.random());
+    groupUserList.add(new ChatGroupUserModel());
+    groupUserList.add(new ChatGroupUserModel());
     return SliverGrid.count(
       crossAxisCount: 5,
       childAspectRatio: 1.0,
       mainAxisSpacing: 1,
       crossAxisSpacing: 1,
-      children: List.generate(wordPairs.length, (index) {
-        if (index >= 13) {
-          return getTopItemAddOrSubUserUi(index == 13);
+      children: List.generate(groupUserList.length, (index) {
+        if (index >= groupUserList.length - 2) {
+          return getTopItemAddOrSubUserUi(index == groupUserList.length - 2);
         } else {
-          return getItemUserImage(index, wordPairs[index]);
+          return getItemUserImage(index, groupUserList[index]);
         }
       }).toList(),
     );
@@ -153,7 +169,10 @@ class GroupMorePageState extends State<GroupMorePage> {
                   text, subtitle, isOpen, isRightIcon, textColor, index),
               splashColor: AppColor.textHint,
               onTap: () {
-                onClickItemList(text: text, isOpen: isOpen, index: index);
+                onClickItemList(title: text,
+                    subtitle: subtitle,
+                    isOpen: isOpen,
+                    index: index);
               },
             )));
   }
@@ -175,7 +194,8 @@ class GroupMorePageState extends State<GroupMorePage> {
                   fontWeight: FontWeight.w500)),
           Expanded(child: SizedBox()),
           subtitle != null
-              ? Text(subtitle, style: AppStyle.textSecondaryMedium14)
+              ? Text(getMaxLengthString(subtitle),
+            style: AppStyle.textSecondaryMedium14,)
               : Container(),
           subtitle != null ? SizedBox(width: 12) : Container(),
           isRightIcon != null || subtitle != null
@@ -194,7 +214,7 @@ class GroupMorePageState extends State<GroupMorePage> {
                       value: isOpen,
                       onChanged: (bool value) {
                         onClickItemList(
-                            text: text, isOpen: isOpen, index: index);
+                            title: text, isOpen: isOpen, index: index);
                       },
                     ),
                   ),
@@ -218,26 +238,18 @@ class GroupMorePageState extends State<GroupMorePage> {
   }
 
   //获取每一个用户的头像显示
-  Widget getItemUserImage(int index, WordPair wordPair) {
+  Widget getItemUserImage(int index, ChatGroupUserModel userModel) {
     return Container(
       child: Column(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(47 / 2.0),
-            child: Image.asset(
-              "images/test/bg.png",
-              fit: BoxFit.cover,
-              width: 47,
-              height: 47,
-            ),
-          ),
+          getUserImage(userModel.avatarUri, 47, 47),
           SizedBox(
             height: 6,
           ),
           SizedBox(
             width: 47,
             child: Text(
-              wordPair.asPascalCase * 3,
+              userModel.nickName ?? "",
               style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -272,20 +284,123 @@ class GroupMorePageState extends State<GroupMorePage> {
     );
   }
 
+  //获取我的群昵称
+  String getGroupMeName() {
+    String name = "还未取名";
+    for (int i = 1; i < Application.chatGroupUserModelList.length; i++) {
+      if (Application.chatGroupUserModelList[i].uid ==
+          Application.profile.uid) {
+        groupMeName = Application.chatGroupUserModelList[i].groupNickName;
+        return Application.chatGroupUserModelList[i].groupNickName;
+      }
+    }
+    return name;
+  }
+
+
+  //获取群信息
+  void getGroupInformation() async {
+    try {
+      Map<String, dynamic> model = await getGroupChatByIds(
+          id: int.parse(widget.chatGroupId));
+      if (model != null && model["list"] != null) {
+        model["list"].forEach((v) {
+          groupInformationMap = v;
+          groupName = groupInformationMap["name"];
+        });
+        setState(() {
+
+        });
+      }
+    } catch (e) {
+
+    }
+  }
+
+  //修改群名
+  void modifyPr(String newName) async {
+    try {
+      Map<String, dynamic> model = await modify(
+          groupChatId: int.parse(widget.chatGroupId), newName: newName);
+      if (model != null && model["state"] != null && model["state"]) {
+        groupName = newName;
+        setState(() {
+
+        });
+      } else {
+        ToastShow.show(msg: "修改失败", context: context);
+      }
+    } catch (e) {
+      ToastShow.show(msg: "修改失败", context: context);
+    }
+  }
+
+  //修改群昵称
+  void modifyNickNamePr(String newName) async {
+    try {
+      Map<String, dynamic> model = await modifyNickName(
+          groupChatId: int.parse(widget.chatGroupId), newName: newName);
+      print(model == null ? "" : model.toString());
+      if (model != null && model["uid"] != null) {
+        groupMeName = newName;
+        setState(() {
+
+        });
+      } else {
+        ToastShow.show(msg: "修改失败", context: context);
+      }
+    } catch (e) {
+      ToastShow.show(msg: "修改失败", context: context);
+    }
+  }
+
+  //限制字符串的长度
+  String getMaxLengthString(String text) {
+    if (text == null) {
+      return "";
+    }
+    if (text.length > 10) {
+      return text.substring(0, 10) + "...";
+    } else {
+      return text;
+    }
+  }
+
+
   //点击事件
-  void onClickItemList({String text, bool isOpen, int index}) {
+  void onClickItemList(
+      {String title, String subtitle, bool isOpen, int index,}) {
     if (isOpen != null) {
       if (index == 1) {
         disturbTheNews = !disturbTheNews;
       } else {
         topChat = !topChat;
       }
-      ToastShow.show(msg: "${!isOpen ? "打开" : "关闭"}$text", context: context);
+      ToastShow.show(msg: "${!isOpen ? "打开" : "关闭"}$title", context: context);
       setState(() {});
+    } else if (title == "群聊名称") {
+      AppRouter.navigationToEditInfomationName(context, subtitle, (result) {
+        setState(() {
+          if (result != null && groupName != result) {
+            modifyPr(result);
+          }
+        });
+      }, title: "修改群聊名称");
+      ToastShow.show(msg: subtitle, context: context);
+    } else if (title == "群昵称") {
+      AppRouter.navigationToEditInfomationName(context, subtitle, (result) {
+        setState(() {
+          if (result != null && groupMeName != result) {
+            modifyNickNamePr(result);
+          }
+        });
+      }, title: "修改群昵称");
+      ToastShow.show(msg: subtitle, context: context);
     } else {
-      ToastShow.show(msg: "点击了：$text", context: context);
+      ToastShow.show(msg: "点击了：$title", context: context);
     }
   }
+
 }
 
 

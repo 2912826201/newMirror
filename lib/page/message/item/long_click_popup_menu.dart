@@ -45,12 +45,16 @@ class _LongClickPopupMenuState extends State<LongClickPopupMenu> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((call) {
-      width = context.size.width;
-      height = context.size.height;
-      button = context.findRenderObject();
-      overlay = Overlay.of(context).context.findRenderObject();
-    });
+    try {
+      WidgetsBinding.instance.addPostFrameCallback((call) {
+        if (context != null) {
+          width = context?.size?.width;
+          height = context?.size?.height;
+          button = context.findRenderObject();
+          overlay = Overlay.of(context).context?.findRenderObject();
+        }
+      });
+    } catch (e) {}
   }
 
   @override
@@ -290,7 +294,6 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                         height: menuHeight + _triangleHeight,
                         margin: widget.isMySelf ? marginMySelf : marginNoMySelf,
                         width: double.infinity,
-                        color: Colors.lightGreen,
                         child: UnconstrainedBox(
                           child: GestureDetector(
                             child: SizedBox(
@@ -432,21 +435,21 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                                     isInverted
                                         ? Container()
                                         : Container(
-                                            width: menuWidth,
-                                            alignment: alignment,
-                                            child: UnconstrainedBox(
-                                              child: Container(
-                                                width: customPaintWidth - 2,
-                                                child: CustomPaint(
-                                                  size: Size(_curPageWidth,
-                                                      _triangleHeight),
-                                                  painter: TrianglePainter(
-                                                    color:
-                                                    widget.backgroundColor,
-                                                    position: position,
-                                                    size: widget.button.size,
-                                                    screenWidth:
-                                                    MediaQuery
+                                        width: menuWidth - 2,
+                                        alignment: alignment,
+                                        child: UnconstrainedBox(
+                                          child: Container(
+                                            width: menuWidth - 2,
+                                            child: CustomPaint(
+                                              size: Size(_curPageWidth,
+                                                  _triangleHeight),
+                                              painter: TrianglePainter(
+                                                color:
+                                                widget.backgroundColor,
+                                                position: position,
+                                                size: widget.button.size,
+                                                screenWidth:
+                                                MediaQuery
                                                         .of(context)
                                                         .size
                                                         .width,

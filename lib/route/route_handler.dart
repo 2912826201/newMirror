@@ -129,9 +129,14 @@ var handlerEditInformation = Handler(
 
 var handlerEditInformationName = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return EditInformationName(
-    userName: data["username"],
-  );
+  if (data["title"] != null) {
+    return EditInformationName(
+        userName: data["username"], title: data["title"]);
+  } else {
+    return EditInformationName(
+      userName: data["username"],
+    );
+  }
 });
 
 var handlerEditInformationIntroduction = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {

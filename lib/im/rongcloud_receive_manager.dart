@@ -33,6 +33,7 @@ class RongCloudReceiveManager {
     }
 
     MessageManager.updateConversationByMessage(_context, msg);
+    MessageManager.judgeIsHaveAtUserMes(msg);
 
     switch (offline) {
       case true:

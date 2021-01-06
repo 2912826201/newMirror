@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:camera/camera.dart';
 import 'package:fluro/fluro.dart';
@@ -9,6 +11,7 @@ import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/database/region_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/dto/region_dto.dart';
+import 'package:mirror/data/model/message/at_mes_group_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
@@ -41,18 +44,18 @@ void main() {
   _initApp().then((value) => runApp(
     MultiProvider(
       providers: [
-            ChangeNotifierProvider(
-                create: (_) => TokenNotifier(Application.token)),
-            ChangeNotifierProvider(
-                create: (_) => ProfileNotifier(Application.profile)),
-            ChangeNotifierProvider(create: (_) => FeedMapNotifier(feedMap: {})),
-            ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
-            ChangeNotifierProvider(create: (_) => ConversationNotifier()),
-            ChangeNotifierProvider(create: (_) => VoiceAlertData()),
-            ChangeNotifierProvider(create: (_) => VoiceSettingNotifier()),
-            ChangeNotifierProvider(create: (_) => ChatMessageProfileNotifier()),
-            ChangeNotifierProvider(create: (_) => ChatEnterNotifier()),
-          ],
+        ChangeNotifierProvider(
+            create: (_) => TokenNotifier(Application.token)),
+        ChangeNotifierProvider(
+            create: (_) => ProfileNotifier(Application.profile)),
+        ChangeNotifierProvider(create: (_) => FeedMapNotifier(feedMap: {})),
+        ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
+        ChangeNotifierProvider(create: (_) => ConversationNotifier()),
+        ChangeNotifierProvider(create: (_) => VoiceAlertData()),
+        ChangeNotifierProvider(create: (_) => VoiceSettingNotifier()),
+        ChangeNotifierProvider(create: (_) => ChatMessageProfileNotifier()),
+        ChangeNotifierProvider(create: (_) => ChatEnterNotifier()),
+      ],
       child: MyApp(),
     ),
   ));
@@ -63,8 +66,15 @@ Future _initApp() async {
   //要先执行该方法 不然插件无法加载调用
   WidgetsFlutterBinding.ensureInitialized();
 
+  Application.platform = Platform.isAndroid
+      ? 0
+      : Platform.isIOS
+          ? 1
+          : -1;
+
   // 强制竖屏
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
   //初始化SharedPreferences
   AppPrefs.init();
@@ -171,7 +181,7 @@ class MyAppState extends State<MyApp> {
     context.read<VoiceSettingNotifier>().onPlayerCompletion();
     context.read<VoiceSettingNotifier>().onPlayerError();
     context.read<VoiceSettingNotifier>().onAudioPositionChanged();
-
+    initAtMesGroupModel();
     //如果已登录
     if (context
         .read<TokenNotifier>()

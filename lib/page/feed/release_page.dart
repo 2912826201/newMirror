@@ -239,14 +239,15 @@ class KeyboardInputState extends State<KeyboardInput> {
   @override
   void initState() {
     widget.controller.addListener(() {
-      print("值改变了");
-      print("监听文字光标${widget.controller.selection}");
-      // 每次点击切换光标会进入此监听。需求邀请@和话题光标不可移入其中。
-      print("::::::$isSwitchCursor");
+      // print("值改变了");
+      // print("监听文字光标${widget.controller.selection}");
+      // // 每次点击切换光标会进入此监听。需求邀请@和话题光标不可移入其中。
+      // print("::::::$isSwitchCursor");
       if (isSwitchCursor) {
         List<Rule> rules = context.read<ReleaseFeedInputNotifier>().rules;
         int atIndex = context.read<ReleaseFeedInputNotifier>().atCursorIndex;
-        int topicIndex = context.read<ReleaseFeedInputNotifier>().topicCursorIndex;
+        int topicIndex =
+            context.read<ReleaseFeedInputNotifier>().topicCursorIndex;
         // 获取光标位置
         int cursorIndex = widget.controller.selection.baseOffset;
         for (Rule rule in rules) {
@@ -296,19 +297,23 @@ class KeyboardInputState extends State<KeyboardInput> {
       },
       valueChangedCallback:
           (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr, String topicSearchStr) {
-        rules = rules;
-        print("输入框值回调：$value");
-        print(rules);
-        isSwitchCursor = false;
-        if (atIndex > 0) {
-          context.read<ReleaseFeedInputNotifier>().getAtCursorIndex(atIndex);
-        }
-        if (topicIndex > 0) {
-          context.read<ReleaseFeedInputNotifier>().getTopicCursorIndex(topicIndex);
-        }
-        context.read<ReleaseFeedInputNotifier>().setAtSearchStr(atSearchStr);
-        context.read<ReleaseFeedInputNotifier>().setTopicSearchStr(topicSearchStr);
-        context.read<ReleaseFeedInputNotifier>().getInputText(value);
+            rules = rules;
+            // print("输入框值回调：$value");
+            // print(rules);
+            isSwitchCursor = false;
+            if (atIndex > 0) {
+              context.read<ReleaseFeedInputNotifier>().getAtCursorIndex(
+                  atIndex);
+            }
+            if (topicIndex > 0) {
+              context.read<ReleaseFeedInputNotifier>().getTopicCursorIndex(
+                  topicIndex);
+            }
+            context.read<ReleaseFeedInputNotifier>().setAtSearchStr(
+                atSearchStr);
+            context.read<ReleaseFeedInputNotifier>().setTopicSearchStr(
+                topicSearchStr);
+            context.read<ReleaseFeedInputNotifier>().getInputText(value);
         // 实时搜索
       },
     );
