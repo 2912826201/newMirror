@@ -151,7 +151,6 @@ class SingletonForWholePages {
       case 0:
         return context.watch<FeedMapNotifier>().feedId != null
             ? CommentBottomSheet(
-                pc: SingletonForWholePages.singleton().panelController(),
                 feedId: context.select((FeedMapNotifier value) => value.feedId),
               )
             : Container();

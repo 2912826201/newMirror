@@ -20,7 +20,6 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 // 搜索页
 class SearchPage extends StatelessWidget {

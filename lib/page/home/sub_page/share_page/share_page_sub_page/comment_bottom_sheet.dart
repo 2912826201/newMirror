@@ -25,14 +25,10 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
 
 class CommentBottomSheet extends StatefulWidget {
-  CommentBottomSheet({Key key, this.pc, this.feedId}) : super(key: key);
+  CommentBottomSheet({Key key, this.feedId}) : super(key: key);
 
   // 动态id
   int feedId;
-
-  // 抽屉控制器
-  PanelController pc;
-
   CommentBottomSheetState createState() => CommentBottomSheetState();
 }
 
@@ -206,7 +202,7 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
                     child: GestureDetector(
                       child: Image.asset("images/resource/2.0x/ic_big_nav_closepage@2x.png", width: 18, height: 18),
                       onTap: () {
-                        widget.pc.close();
+                        SingletonForWholePages.singleton().panelController().close();
                       },
                     ))
               ],
