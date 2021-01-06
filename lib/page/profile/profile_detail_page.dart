@@ -639,10 +639,11 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     ///这里当model为null或者刚进来接口还没获取到的时候放一张图片
     switch (state) {
       case StateResult.RESULTNULL:
-        return Container(
+        return Expanded(
+          child:Container(
             padding: EdgeInsets.only(top: 12),
             color: AppColor.white,
-            child: Column(
+            child: ListView(
               children: [
                 Center(
                   child: Container(
@@ -661,7 +662,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                   ),
                 )
               ],
-            ));
+            )));
         break;
       case StateResult.HAVARESULT:
         return _ListData;
