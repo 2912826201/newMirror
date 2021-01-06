@@ -35,7 +35,7 @@ class _settingHomePageState extends State<SettingHomePage>{
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
-    double height = ScreenUtil.instance.width;
+    double height = ScreenUtil.instance.height;
     return Scaffold(
       backgroundColor: AppColor.white,
       appBar: AppBar(
@@ -53,7 +53,7 @@ class _settingHomePageState extends State<SettingHomePage>{
         title: Text("设置",style: AppStyle.textMedium18,),
       ),
       body: Container(
-        height: height,
+        height: height - ScreenUtil.instance.statusBarHeight,
         width: width,
         child: Column(
           children: [
