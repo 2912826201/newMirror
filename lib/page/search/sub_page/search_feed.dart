@@ -360,21 +360,6 @@ class SearchFeeditemState extends State<SearchFeeditem> {
     }
     return (((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) / width) * height;
   }
-
-  // 请求动态详情页数据
-  getFeedDetail() async {
-    feedModel = await feedDetail(id: model.id);
-    print("等待了吗");
-    Navigator.push(
-      context,
-      new MaterialPageRoute(builder: (context) => FeedDetailPage(model:feedModel,isComplex: isComplex,)
-        // Item2Page(model: model, index: index,isComplex: isComplex,)
-      ),
-    );
-    // setState(() {
-    // });
-  }
-
   // @override
   Widget build(BuildContext context) {
     print("你也要搞事情!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");

@@ -17,9 +17,9 @@ import 'package:provider/provider.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 
 class CommentInputBox extends StatefulWidget {
-  CommentInputBox({Key key, this.isUnderline = false, this.feedModel}) : super(key: key);
+  CommentInputBox({Key key, this.isUnderline = false, this.feedModel,this.isFeedDetail = false}) : super(key: key);
   bool isUnderline;
-
+  bool isFeedDetail;
   // 动态model
   HomeFeedModel feedModel;
 
@@ -44,23 +44,22 @@ class CommentInputBoxState extends State<CommentInputBox> {
     return Offstage(
       offstage: false,
       child: Container(
-        // color: Colors.limeAccent,
-        height: 48,
-        width: ScreenUtil.instance.screenWidthDp,
+        height: widget.isFeedDetail ? 48 + ScreenUtil.instance.bottomBarHeight : 48,
+        width: ScreenUtil.instance.width,
         decoration: BoxDecoration(
-          // border: Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
+          color: AppColor.white,
           border: Border(top: BorderSide(width: widget.isUnderline ? 0.5 : 0.000000001, color: Color(0xffe5e5e5))),
         ),
-        child: Center(
+        // child: Center(
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: widget.isFeedDetail ? CrossAxisAlignment.start : CrossAxisAlignment.center,
             children: [
               InkWell(
                 onTap: (){
 
                 },
                 child: Container(
-                margin: EdgeInsets.only(left: 16),
+                margin: EdgeInsets.only(left: 16,top: widget.isFeedDetail ? 10 : 0),
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
@@ -76,7 +75,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
                 child: Container(
                   width: ScreenUtil.instance.screenWidthDp - 32 - 40,
                   height: 28,
-                  margin: EdgeInsets.only(left: 12),
+                  margin: EdgeInsets.only(left: 12,top: widget.isFeedDetail ? 10 : 0),
                   padding: EdgeInsets.only(left: 16),
                   alignment: Alignment(-1, 0),
                   decoration: BoxDecoration(
@@ -121,7 +120,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
               ),
             ],
           ),
-        ),
+        // ),
       ),
     );
   }
