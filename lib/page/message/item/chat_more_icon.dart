@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:mirror/util/string_util.dart';
 
@@ -19,7 +21,7 @@ class ChatMoreIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StringUtil.strNoEmpty(value)
+    return (StringUtil.strNoEmpty(value) && !Platform.isIOS)
         ? new ComMomButton(
             text: '发送',
             height: 25,
@@ -31,22 +33,22 @@ class ChatMoreIcon extends StatelessWidget {
               if (onTap != null) {
                 onTap();
               }
-            },
-          )
+      },
+    )
         : new InkWell(
-            child: new Container(
-              width: 23,
-              margin: EdgeInsets.only(left: 6.0, right: 16),
-              child: Icon(
-                Icons.photo_size_select_actual_outlined,
-                size: 25,
-              ),
-            ),
-            onTap: () {
-              if (moreTap != null) {
-                moreTap();
-              }
-            },
-          );
+      child: new Container(
+        width: 23,
+        margin: EdgeInsets.only(left: 6.0, right: 16),
+        child: Icon(
+          Icons.photo_size_select_actual_outlined,
+          size: 25,
+        ),
+      ),
+      onTap: () {
+        if (moreTap != null) {
+          moreTap();
+        }
+      },
+    );
   }
 }

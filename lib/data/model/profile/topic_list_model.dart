@@ -4,7 +4,7 @@ class TopicListModel{
   int lastTime;
   int lastId;
   int lastScore;
-  List list;
+  List<topicModel> list;
   TopicListModel({this.hasNext,this.lastTime,this.lastId,this.lastScore,this.list});
   TopicListModel.fromJson(dynamic json) {
     hasNext = json["hasNext"];

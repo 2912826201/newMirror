@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/page/message/send_message_view.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'item/chat_system_bottom_bar.dart';
 import 'message_view/currency_msg.dart';
@@ -18,6 +19,8 @@ class ChatDetailsBody extends StatelessWidget {
   final String chatUserName;
   final bool isPersonalButler;
   final GestureTapCallback onTap;
+  final VoidCallback onRefresh;
+  final RefreshController refreshController;
 
   ChatDetailsBody(
       {this.scrollController,
@@ -27,9 +30,12 @@ class ChatDetailsBody extends StatelessWidget {
       this.onTap,
       this.isPersonalButler = false,
       this.voidMessageClickCallBack,
+      this.onRefresh,
+      this.refreshController,
       this.voidItemLongClickCallBack});
 
   List<ChatDataModel> chatData = <ChatDataModel>[];
+
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +51,6 @@ class ChatDetailsBody extends StatelessWidget {
     return Stack(
       children: [
         Positioned(
-
           child: NotificationListener<ScrollNotification>(
             onNotification: (ScrollNotification notification) {
               // 注册通知回调
@@ -67,19 +72,53 @@ class ChatDetailsBody extends StatelessWidget {
               }
               return false;
             },
-            child: ListView.builder(
-              physics: BouncingScrollPhysics(),
-              controller: scrollController,
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              reverse: true,
-              itemBuilder: (context, int index) {
-                return judgeStartAnimation(chatData[index], index);
-              },
-              itemCount: chatData.length,
-              dragStartBehavior: DragStartBehavior.down,
+            child: SmartRefresher(
+              enablePullDown: false,
+              enablePullUp: true,
+              footer: CustomFooter(
+                builder: (BuildContext context, LoadStatus mode) {
+                  Widget body;
+                  if (mode == LoadStatus.loading) {
+                    body = Container(
+                      height: 50,
+                      child: UnconstrainedBox(
+                        child: Transform.scale(
+                          scale: 0.6,
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                    );
+                  } else if (mode == LoadStatus.noMore) {
+                    body = Text("没有更多了");
+                  } else if (mode == LoadStatus.failed) {
+                    body = Text("加载错误,请重试");
+                  } else {
+                    body = Text("");
+                  }
+                  return Container(
+                    child: Center(
+                      child: body,
+                    ),
+                  );
+                },
+              ),
+              controller: refreshController,
+              onLoading: onRefresh,
+              child: ListView.builder(
+                physics: BouncingScrollPhysics(),
+                controller: scrollController,
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                reverse: true,
+                itemBuilder: (context, int index) {
+                  return judgeStartAnimation(chatData[index], index);
+                },
+                itemCount: chatData.length,
+                dragStartBehavior: DragStartBehavior.down,
+              ),
             ),
           ),
         ),
+
         Positioned(
           child: Offstage(
             offstage: !isPersonalButler,

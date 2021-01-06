@@ -19,7 +19,6 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_bottom_sheet.dart';
-import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_details_more.dart';
 import 'package:mirror/page/profile/query_list/query_follow_list.dart';
 import 'package:mirror/page/profile/sticky_tabBar.dart';
@@ -75,7 +74,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   int _dynmic;
 
   ///会改变的button里的内容
-  String _buttonText = "";
+  String _buttonText = "+ 关注";
   TabController _mController;
 
   ///动态model
@@ -388,7 +387,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 )
               ],
               backgroundColor: AppColor.white,
-              expandedHeight: height * 0.40 - ScreenUtil.instance.statusBarHeight + textHeight,
+              expandedHeight: height * 0.41 - ScreenUtil.instance.statusBarHeight + textHeight,
 
               ///这里是资料展示页,写在这个里面相当于是appBar的背景板
               flexibleSpace: FlexibleSpaceBar(
@@ -440,7 +439,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///高斯模糊
   Widget mineHomeData(double height, double width) {
     return Container(
-      height: height * 0.40 + textHeight,
+      height: height * 0.41 + textHeight,
       color: AppColor.white,
       child: Stack(
         children: [
@@ -478,15 +477,14 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///资料展示
   Widget _MineDetailsData(double height, double width) {
     return Container(
-        height: height * 0.40 + textHeight,
+        height: height * 0.41 + textHeight,
         width: width,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: ScreenUtil.instance.statusBarHeight + height * 0.06,
+              height: ScreenUtil.instance.statusBarHeight + height * 0.07,
             ),
-
             ///头像和按钮
             Container(
               padding: EdgeInsets.only(left: 16, right: 16),
@@ -642,10 +640,11 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     ///这里当model为null或者刚进来接口还没获取到的时候放一张图片
     switch (state) {
       case StateResult.RESULTNULL:
-        return Container(
+        return Expanded(
+          child:Container(
             padding: EdgeInsets.only(top: 12),
             color: AppColor.white,
-            child: Column(
+            child: ListView(
               children: [
                 Center(
                   child: Container(
@@ -664,7 +663,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                   ),
                 )
               ],
-            ));
+            )));
         break;
       case StateResult.HAVARESULT:
         return _ListData;
@@ -679,9 +678,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           if (isMselfId) {
             ///这里跳转到编辑资料页
             AppRouter.navigationToEditInfomation(context, (result) {
-              if (result) {
                 _getUserInfo();
-              }
             });
           } else {
             setState(() {
@@ -692,7 +689,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 _getAttention(false);
               } else {
                 ///这里跳转到私聊界面
-                jumpChatPageUser(context, userModel);
               }
             });
           }
@@ -776,7 +772,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       return number.toString();
     } else {
       String db = "${(number / 10000).toString()}";
-      if (db.substring(db.indexOf("."), db.indexOf(".") + 2) != 0) {
+      if (db.substring(db.indexOf("."), db.indexOf(".") + 2) != "0") {
         String doubleText = db.substring(0, db.indexOf(".") + 2);
         return doubleText + "W";
       } else {

@@ -50,7 +50,8 @@ class AppRouter {
   static String pathMachineRemoteController = "/machine/remotecontroller";
   static String pathMachineConnectionInfo = "/machine/connectioninfo";
   static String pathMachineSetting = "/machine/setting";
-
+  static String pathSettingAbout = "/profile/settingabout";
+  static String pathSettingAccountSecurity = "/profile/settingaccountsecurity";
 
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(
@@ -74,6 +75,7 @@ class AppRouter {
     router.define(pathLiveBroadcast, handler: handlerLiveBroadcast);
     router.define(pathLiveDetail, handler: handlerLiveDetail);
     router.define(pathVideoDetail, handler: handlerVideoDetail);
+/*    router.define(pathProfileScanCode, handler: handlerScan);*/
     router.define(pathProfileDetails, handler: handlermineDetails);
     router.define(pathVideoCourseList, handler: handlerVideoCourseList);
     router.define(pathProfileDetailsMore, handler: handlerProfileDetailMore);
@@ -88,6 +90,11 @@ class AppRouter {
     router.define(pathMachineRemoteController, handler: handlerMachineRemoteController);
     router.define(pathMachineConnectionInfo, handler: handlerMachineConnectionInfo);
     router.define(pathMachineSetting, handler: handlerMachineSetting);
+    router.define(pathSettingFeedBack, handler: handlerSettingFeedBack);
+    router.define(pathSettingNoticeSetting, handler: handlerSettingNoticeSetting);
+    router.define(pathSettingBlackList, handler: handlerSettingBlackList);
+    router.define(pathSettingAbout, handler: handlerSettingAbout);
+    router.define(pathSettingAccountSecurity, handler: handlerSettingAccountSecurity);
 
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
@@ -230,7 +237,14 @@ class AppRouter {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathSettingBlackList, map);
   }
-
+  static void navigateToSettingAbout(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathSettingAbout, map);
+  }
+  static void navigateToSettingAccountSecurity(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathSettingAccountSecurity, map);
+  }
   static void navigateToLikePage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathLike, map);

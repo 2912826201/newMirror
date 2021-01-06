@@ -35,7 +35,7 @@ class _settingHomePageState extends State<SettingHomePage>{
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
-    double height = ScreenUtil.instance.width;
+    double height = ScreenUtil.instance.height;
     return Scaffold(
       backgroundColor: AppColor.white,
       appBar: AppBar(
@@ -53,12 +53,18 @@ class _settingHomePageState extends State<SettingHomePage>{
         title: Text("设置",style: AppStyle.textMedium18,),
       ),
       body: Container(
-        height: height,
+        height: height - ScreenUtil.instance.statusBarHeight,
         width: width,
         child: Column(
           children: [
             SizedBox(height: 12,),
+            InkWell(
+              child:
             _rowItem(width, "账户与安全"),
+              onTap: (){
+                AppRouter.navigateToSettingAccountSecurity(context);
+              },
+            ),
             InkWell(
               onTap: (){
                /* AppRouter.navigateToSettingBlackList(context);*/
@@ -88,7 +94,12 @@ class _settingHomePageState extends State<SettingHomePage>{
               },
               child: _rowItem(width, "意见反馈"),
             ),
-            _rowItem(width, "关于"),
+            InkWell(
+              child: _rowItem(width, "关于"),
+              onTap: (){
+                AppRouter.navigateToSettingAbout(context);
+              },
+            ),
             Container(
               height: 12,
               color: AppColor.bgWhite,

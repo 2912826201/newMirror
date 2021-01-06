@@ -50,30 +50,30 @@ void jumpShareMessage(Map<String, dynamic> map, String chatType, String name,
     conversation.conversationId = "1018240";
   }
   conversation.uid = Application.profile.uid;
+
   //todo 目前这里是私聊--写死
-  conversation.type = RCConversationType.Private;
+  conversation.type = PRIVATE_TYPE;
 
   Message message;
   if (chatType == ChatTypeModel.MESSAGE_TYPE_FEED) {
-    ToastShow.show(msg: "给$name分享了动态", context: context);
+    print("给$name分享了动态");
     message = await postMessageManagerFeed(conversation.conversationId, map,
-        conversation.type == RCConversationType.Private);
+        conversation.getType() == RCConversationType.Private);
   } else if (chatType == ChatTypeModel.MESSAGE_TYPE_USER) {
-    ToastShow.show(msg: "给$name分享了名片", context: context);
+    print("给$name分享了名片");
     message = await postMessageManagerUser(conversation.conversationId, map,
-        conversation.type == RCConversationType.Private);
+        conversation.getType() == RCConversationType.Private);
   } else if (chatType == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
-    ToastShow.show(msg: "给$name分享了直播课程", context: context);
+    print("给$name分享了直播课程");
     message = await postMessageManagerLiveCourse(conversation.conversationId,
-        map, conversation.type == RCConversationType.Private);
+        map, conversation.getType() == RCConversationType.Private);
   } else if (chatType == ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE) {
-    ToastShow.show(msg: "给$name分享了视频课程", context: context);
-    message =
-    await postMessageManagerVideoCourse(conversation.conversationId, map,
-        conversation.type == RCConversationType.Private);
+    print("给$name分享了视频课程");
+    message = await postMessageManagerVideoCourse(conversation.conversationId,
+        map, conversation.getType() == RCConversationType.Private);
   } else {
     chatType = ChatTypeModel.NULL_COMMENT;
-    ToastShow.show(msg: "给$name分享了未知消息", context: context);
+    print("给$name分享了未知消息");
   }
   if (chatType == ChatTypeModel.NULL_COMMENT) {
     return;
@@ -481,16 +481,16 @@ int getRCConversationType(int type) {
 void judgeJumpPage(int chatTypeId, String chatUserId, int chatType,
     BuildContext context) {
   if (chatTypeId == RCConversationType.Private) {
-    _jumpPage(
+    jumpPage(
         PrivateMorePage(chatUserId: chatUserId, chatType: chatType,), false,
         context);
   } else {
-    _jumpPage(GroupMorePage(chatUserId: chatUserId, chatType: chatType), false,
+    jumpPage(GroupMorePage(chatUserId: chatUserId, chatType: chatType), false,
         context);
   }
 }
 
-void _jumpPage(var page, bool isCloseNewPage, BuildContext context) {
+void jumpPage(var page, bool isCloseNewPage, BuildContext context) {
   if (isCloseNewPage) {
     //跳转并关闭当前页面
     Navigator.pushAndRemoveUntil(
