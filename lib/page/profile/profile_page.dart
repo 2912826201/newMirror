@@ -12,7 +12,6 @@ import 'package:mirror/data/model/user_extrainfo_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/page/profile/query_list/query_follow_list.dart';
-import 'package:mirror/page/profile/scan_code_test.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
@@ -190,12 +189,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         children: [
           InkWell(
               onTap: () async {
-                setState(() {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                      return ScanCodeTest();
-                    ///通过then将扫码界面返回的信息接到，吐司出来
-                  }));
-                });
+                AppRouter.navigateToScanCodePage(context);
               },
               child: Container(
                 height: 20,
