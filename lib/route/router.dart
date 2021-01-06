@@ -212,9 +212,13 @@ class AppRouter {
     _navigateToPage(context, pathEditInformation, {}, callback: callback);
   }
 
-  static void navigateToEditInfomationName(BuildContext context, String username, Function(dynamic result) callback) {
+  static void navigateToEditInfomationName(BuildContext context, String username, Function(dynamic result) callback,
+      {String title}) {
     Map<String, dynamic> map = Map();
     map["username"] = username;
+    if (title != null) {
+      map["title"] = title;
+    }
     _navigateToPage(context, pathEditInformationName, map, callback: callback);
   }
 

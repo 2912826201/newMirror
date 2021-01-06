@@ -318,7 +318,7 @@ Future<TopicListModel> GetTopicList(int page,int size)async{
   }
 }
 ///搜索关注话题
-Future<TopicListModel> searchTopicUser(String key, int size, {int lastScore}) async {
+Future<TopicListModel> searchTopicUser(String key, int size, {double lastScore}) async {
   Map<String, dynamic> map = Map();
   if (lastScore != null) {
     map["lastTime"] = lastScore;

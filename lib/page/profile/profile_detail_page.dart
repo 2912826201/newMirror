@@ -291,7 +291,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     followlastTime = model.lastTime;
     context.read<FeedMapNotifier>().updateFeedMap(followModel);
   }
-
+@override
+  void dispose() {
+    super.dispose();
+    SingletonForWholePages.singleton().panelController().close();
+    _mController.dispose();
+    _refreshController.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     print('=======================================个人主页build');

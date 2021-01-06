@@ -84,10 +84,10 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       FocusScope.of(context).requestFocus(commentFocus);
     });
     _textEditingController.addListener(() {
-      print("值改变了");
-      print("监听文字光标${_textEditingController.selection}");
-      // 每次点击切换光标会进入此监听。需求邀请@和话题光标不可移入其中。
-      print("::::::$isSwitchCursor");
+      // print("值改变了");
+      // print("监听文字光标${_textEditingController.selection}");
+      // // 每次点击切换光标会进入此监听。需求邀请@和话题光标不可移入其中。
+      // print("::::::$isSwitchCursor");
       if (isSwitchCursor) {
         List<Rule> rules = context.read<CommentEnterNotifier>().rules;
         int atIndex = context.read<CommentEnterNotifier>().atCursorIndex;
@@ -136,15 +136,15 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       },
       valueChangedCallback:
           (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr, String topicSearchStr) {
-        rules = rules;
-        print("输入框值回调：$value");
-        print(rules);
-        isSwitchCursor = false;
-        if (atIndex > 0) {
-          context.read<CommentEnterNotifier>().getAtCursorIndex(atIndex);
-        }
-        context.read<CommentEnterNotifier>().setAtSearchStr(atSearchStr);
-        context.read<CommentEnterNotifier>().changeCallback(value);
+            rules = rules;
+            // print("输入框值回调：$value");
+            // print(rules);
+            isSwitchCursor = false;
+            if (atIndex > 0) {
+              context.read<CommentEnterNotifier>().getAtCursorIndex(atIndex);
+            }
+            context.read<CommentEnterNotifier>().setAtSearchStr(atSearchStr);
+            context.read<CommentEnterNotifier>().changeCallback(value);
         // 实时搜索
       },
     );

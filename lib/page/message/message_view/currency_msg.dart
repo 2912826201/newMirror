@@ -22,8 +22,10 @@ typedef VoidItemLongClickCallBack = void Function(
 
 //获取用户的头像
 Widget getUserImage(String imageUrl, double height, double width) {
-  imageUrl =
-      "http://pic.netbian.com/uploads/allimg/201220/220540-16084731404798.jpg";
+  if (imageUrl == null || imageUrl == "") {
+    imageUrl =
+        "http://pic.netbian.com/uploads/allimg/201220/220540-16084731404798.jpg";
+  }
   return ClipRRect(
     borderRadius: BorderRadius.circular(height / 2),
     child: CachedNetworkImage(
@@ -32,11 +34,11 @@ Widget getUserImage(String imageUrl, double height, double width) {
       imageUrl: imageUrl == null ? "" : imageUrl,
       fit: BoxFit.cover,
       placeholder: (context, url) => Image.asset(
-        "images/test.png",
+        "images/test/bg.png",
         fit: BoxFit.cover,
       ),
       errorWidget: (context, url, error) => Image.asset(
-        "images/test.png",
+        "images/test/bg.png",
         fit: BoxFit.cover,
       ),
     ),

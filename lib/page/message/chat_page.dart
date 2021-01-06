@@ -1,15 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mirror/api/message_page_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/model/message/at_mes_group_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/chat_enter_notifier.dart';
+import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/chat_voice_model.dart';
@@ -20,6 +24,7 @@ import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
@@ -43,7 +48,7 @@ import 'package:provider/provider.dart';
 ///////////////////////////////
 
 class ChatPage extends StatefulWidget {
-  final _ChatPageState _state = _ChatPageState();
+  final ChatPageState state = ChatPageState();
   final ConversationDto conversation;
   final Message shareMessage;
 
@@ -52,11 +57,11 @@ class ChatPage extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _state;
+    return state;
   }
 }
 
-class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
+class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   ///所有的会话消息
   List<ChatDataModel> chatDataList = <ChatDataModel>[];
 
@@ -116,6 +121,23 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
+  //at用户的信息
+  MentionedInfo mentionedInfo = new MentionedInfo();
+  List<String> atUserIdList = <String>[];
+
+  //有没有at我的消息
+  bool isHaveAtMeMsg = false;
+  bool isHaveAtMeMsgPr = false;
+
+  //at我的消息的信息
+  AtMsg atMeMsg;
+
+  //进入聊天界面时，at的消息在列表的第几个位置
+  int isHaveAtMeMsgIndex = -1;
+
+  //上一次的最大高度
+  double oldMaxScrollExtent = 0;
+
   @override
   void initState() {
     super.initState();
@@ -148,9 +170,12 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   @override
   void dispose() {
     _scrollController.dispose();
+    Application.chatGroupUserModelList.clear();
     if (Application.appContext != null) {
       Application.appContext.read<VoiceSettingNotifier>().stop();
       Application.appContext.read<ChatMessageProfileNotifier>().clear();
+      _textController.text = "";
+      Application.appContext.read<ChatEnterNotifier>().clearRules();
     }
     if (_timer != null) {
       _timer.cancel();
@@ -201,17 +226,32 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       chatUserName: chatUserName,
       isPersonalButler: isPersonalButler,
       refreshController: _refreshController,
+      isHaveAtMeMsg: isHaveAtMeMsg,
+      isHaveAtMeMsgIndex: isHaveAtMeMsgIndex,
       onRefresh: _onRefresh,
+      onAtUiClickListener: onAtUiClickListener,
+      firstEndCallback: (int firstIndex, int lastIndex) {
+        firstEndCallbackListView(firstIndex, lastIndex);
+      },
     );
   }
 
   //获取appbar
   Widget getAppBar() {
     return AppBar(
-      title: Text(
-        chatUserName + "-" + chatType,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+      title: GestureDetector(
+        child: Text(
+          chatUserName + "-" + chatType,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        onTap: () {
+          Message msg = chatDataList[chatDataList.length - 2].msg;
+          AtMsg atMsg = new AtMsg(groupId: int.parse(msg.targetId),
+              sendTime: msg.sentTime,
+              messageUId: msg.messageUId);
+          Application.atMesGroupModel.add(atMsg);
+        },
       ),
       centerTitle: true,
       actions: [
@@ -220,12 +260,12 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           child: IconButton(
             icon: Icon(Icons.more_horiz),
             onPressed: () {
-              print("-----------------------");
+              //print("-----------------------");
               _focusNode.unfocus();
               ToastShow.show(msg: "点击了更多那妞", context: context);
               judgeJumpPage(
                   chatTypeId, this.chatUserId, widget.conversation.type,
-                  context);
+                  context, chatUserName);
             },
           ),
         )
@@ -243,9 +283,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       edit: edit,
       value: _textController.text,
       more: ChatMoreIcon(
-        value: _textController.text,
+        isComMomButton: StringUtil.strNoEmpty(_textController.text) &&
+            Application.platform == 0,
         onTap: () {
-          print("231");
+          //print("231");
           _onSubmitClick();
         },
         moreTap: () => onPicAndVideoBtnClick(),
@@ -324,55 +365,59 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       emojiHeight = 0.0;
     }
 
-    return _emojiState ? AnimatedContainer(
-      height: emojiHeight,
-      duration: Duration(milliseconds: 300),
-      child: Container(
-        height: emojiHeight,
-        width: double.infinity,
-        color: Colors.white,
-        child: emojiList(),
-      ),
-    ) : Container();
-    //
-    // return AnimatedContainer(
+    // return _emojiState ? AnimatedContainer(
     //   height: emojiHeight,
     //   duration: Duration(milliseconds: 300),
-    //   child: Offstage(
-    //     offstage: !_emojiState,
-    //     child: Container(
-    //       height: emojiHeight,
-    //       width: double.infinity,
-    //       color: Colors.white,
-    //       child: emojiList(),
-    //     ),
+    //   child: Container(
+    //     height: emojiHeight,
+    //     width: double.infinity,
+    //     color: Colors.white,
+    //     child: emojiList(),
     //   ),
-    // );
+    // ) : Container();
+    //
+    return AnimatedContainer(
+      height: emojiHeight,
+      duration: Duration(milliseconds: 300),
+      child: Offstage(
+        offstage: !_emojiState,
+        child: Container(
+          height: emojiHeight,
+          width: double.infinity,
+          color: Colors.white,
+          child: emojiList(),
+        ),
+      ),
+    );
   }
 
   //emoji具体是什么界面
   Widget emojiList() {
-    if (emojiModelList == null || emojiModelList.length < 1) {
-      return Center(
-        child: Text("暂无表情"),
-      );
-    } else {
-      return GestureDetector(
-        child: Container(
-          width: double.infinity,
-          color: AppColor.transparent,
-          child: Column(
-            children: [
-              Expanded(
-                  child: SizedBox(
-                    child: _emojiGridTop(),
-                  )),
-              _emojiBottomBox(),
-            ],
+    if (_emojiState) {
+      if (emojiModelList == null || emojiModelList.length < 1) {
+        return Center(
+          child: Text("暂无表情"),
+        );
+      } else {
+        return GestureDetector(
+          child: Container(
+            width: double.infinity,
+            color: AppColor.transparent,
+            child: Column(
+              children: [
+                Expanded(
+                    child: SizedBox(
+                      child: _emojiGridTop(),
+                    )),
+                _emojiBottomBox(),
+              ],
+            ),
           ),
-        ),
-        onTap: () {},
-      );
+          onTap: () {},
+        );
+      }
+    } else {
+      return Container();
     }
   }
 
@@ -489,6 +534,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //当改变了输入框内的文字个数
   _changTextLen(String text) {
+    //print("------------------------------------------------");
     // 存入最新的值
     context.read<ChatEnterNotifier>().changeCallback(text);
     bool isReset = false;
@@ -498,12 +544,15 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         isHaveTextLen = true;
       }
     } else {
+      _textController.text = "";
+      Application.appContext.read<ChatEnterNotifier>().clearRules();
       if (isHaveTextLen) {
         isReset = true;
         isHaveTextLen = false;
       }
     }
     if (isReset) {
+      //print("111111111111111111111111111111");
       setState(() {});
     }
   }
@@ -517,8 +566,9 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     chatTypeId = RCConversationType.Private;
     isPersonalButler = false;
     if (widget.conversation == null) {
-      print("未知信息");
+      //print("未知信息");
     } else {
+      // //print("-*----------------------"+widget.conversation.toMap().toString());
       chatUserName = widget.conversation.name;
       chatUserId = widget.conversation.conversationId;
       chatType = getMessageType(widget.conversation, context);
@@ -529,6 +579,9 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       }
     }
     context.read<ChatMessageProfileNotifier>().setData(chatTypeId, chatUserId);
+    if (chatTypeId == RCConversationType.Group) {
+      getChatGroupUserModelList();
+    }
   }
 
 
@@ -539,7 +592,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         widget.conversation.getType(),
         widget.conversation.conversationId,
         new DateTime.now().millisecondsSinceEpoch,
-        30,
+        20,
         0);
     if (msgList != null && msgList.length > 0) {
       for (int i = 0; i < msgList.length; i++) {
@@ -559,11 +612,173 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     //判断是不是加入时间提示
     // postTimeChatDataModel(isSetState: false);
 
+    //获取有没有at我的消息
+    judgeIsHaveAtMeMsg();
+
     //获取表情的数据
     emojiModelList = await EmojiManager.getEmojiModelList();
     Future.delayed(Duration(milliseconds: 200), () {
       setState(() {});
     });
+  }
+
+  //获取群成员信息
+  void getChatGroupUserModelList() async {
+    Application.chatGroupUserModelList.clear();
+    Map<String, dynamic> model = await getMembers(
+        groupChatId: int.parse(chatUserId));
+    if (model != null && model["list"] != null) {
+      model["list"].forEach((v) {
+        Application.chatGroupUserModelList.add(ChatGroupUserModel.fromJson(v));
+      });
+    }
+  }
+
+  //判断有没有at我的消息
+  void judgeIsHaveAtMeMsg() {
+    if (Application.atMesGroupModel == null ||
+        Application.atMesGroupModel.atMes == null ||
+        Application.atMesGroupModel.atMes.length < 1) {
+      isHaveAtMeMsg = false;
+      isHaveAtMeMsgPr = false;
+    } else {
+      for (int i = 0; i < Application.atMesGroupModel.atMes.length; i++) {
+        if (Application.atMesGroupModel.atMes[i].groupId.toString() ==
+            chatUserId) {
+          //print("dasdasdasddddddddddddddddddddddddddddddddddddddddddddddd");
+          atMeMsg = Application.atMesGroupModel.atMes[i];
+          isHaveAtMeMsg = false;
+          isHaveAtMeMsgPr = true;
+          judgeNewChatIsHaveAt();
+          break;
+        }
+      }
+    }
+  }
+
+  //判断当前屏幕内有没有at我的消息
+  void judgeNewChatIsHaveAt() {
+    isHaveAtMeMsgIndex = -1;
+    if (chatDataList == null || chatDataList.length < 1) {
+      isHaveAtMeMsg = false;
+      isHaveAtMeMsgPr = false;
+      Application.atMesGroupModel.remove(atMeMsg);
+    } else {
+      for (int i = 0; i < chatDataList.length; i++) {
+        if (chatDataList[i].msg.messageUId == atMeMsg.messageUId) {
+          //print("能找到id");
+          isHaveAtMeMsgIndex = i;
+          break;
+        } else if (chatDataList[i].msg.sentTime < atMeMsg.sendTime) {
+          //print("找不到id--匹配时间");
+          isHaveAtMeMsg = false;
+          isHaveAtMeMsgPr = false;
+          Application.atMesGroupModel.remove(atMeMsg);
+          break;
+        }
+      }
+    }
+  }
+
+
+  //listview 当前显示的是第几个 回调
+  void firstEndCallbackListView(int firstIndex, int lastIndex) {
+    if (ClickUtil.isFastClick(time: 200)) {
+      return;
+    }
+    //print('0chatPage----firstIndex: $firstIndex, lastIndex: $lastIndex, isHaveAtMeMsgIndex:$isHaveAtMeMsgIndex，isHaveAtMeMsgPr:$isHaveAtMeMsgPr,isHaveAtMeMsg:$isHaveAtMeMsg');
+    if (isHaveAtMeMsgPr) {
+      if (isHaveAtMeMsgIndex < 0) {
+        if (!isHaveAtMeMsg) {
+          isHaveAtMeMsg = true;
+          delayedSetState();
+          //print('1--------------------------显示标识at');
+        }
+        isHaveAtMeMsg = true;
+        isHaveAtMeMsgPr = true;
+      } else if (isHaveAtMeMsgIndex <= lastIndex) {
+        if (isHaveAtMeMsg) {
+          isHaveAtMeMsg = false;
+          //print('2--------------------------关闭标识at');
+          delayedSetState();
+        }
+        //print('2--------------------------已经是关闭--关闭标识at');
+        isHaveAtMeMsgPr = false;
+        isHaveAtMeMsgIndex = -1;
+        Application.atMesGroupModel.remove(atMeMsg);
+      } else {
+        if (!isHaveAtMeMsg) {
+          isHaveAtMeMsg = true;
+          delayedSetState();
+          //print('3--------------------------显示标识at');
+        }
+        isHaveAtMeMsg = true;
+        isHaveAtMeMsgPr = true;
+      }
+    }
+  }
+
+  //点击了at标识
+  void onAtUiClickListener() async {
+    //print("点击了at标识1");
+    if (isHaveAtMeMsg && isHaveAtMeMsgIndex > 0) {
+      //print("滚动到第$isHaveAtMeMsgIndex个item位置");
+    } else {
+      //print("加载更多的item");
+      while (isHaveAtMeMsg && isHaveAtMeMsgIndex < 0) {
+        //print("chatDataList.len:${chatDataList.length}");
+        List msgList = new List();
+        msgList = await RongCloud.init().getHistoryMessages(
+            widget.conversation.getType(),
+            widget.conversation.conversationId,
+            chatDataList[chatDataList.length - 1].msg.sentTime,
+            20,
+            0);
+        if (msgList != null && msgList.length > 0) {
+          for (int i = 1; i < msgList.length; i++) {
+            chatDataList.add(
+                getMessage((msgList[i] as Message), isHaveAnimation: false));
+          }
+          judgeNewChatIsHaveAt();
+        } else {
+          isHaveAtMeMsgIndex = -1;
+          isHaveAtMeMsg = false;
+          isHaveAtMeMsgPr = false;
+          Application.atMesGroupModel.remove(atMeMsg);
+          break;
+        }
+
+        setState(() {
+
+        });
+        await Future.delayed(Duration(milliseconds: 100), () {
+          try {
+            animateToTop();
+          } catch (e) {
+
+          }
+        });
+        if (isHaveAtMeMsgIndex > 0) {
+          //print("1滚动到第$isHaveAtMeMsgIndex个item位置");
+          break;
+        }
+      }
+    }
+    if (isHaveAtMeMsg && isHaveAtMeMsgIndex > 0) {
+      //print("滚动滚动滚动滚动滚动滚动滚动滚动滚动");
+      int count = 0;
+      //开启无限滚动直到滚动到那个位置
+      while (isHaveAtMeMsg && isHaveAtMeMsgIndex > 0) {
+        await Future.delayed(Duration(milliseconds: 50), () {
+          //print("滚动次数+count：${count++}");
+          try {
+            animateToTop(milliseconds: 100);
+          } catch (e) {
+            //print("滚动报错了e:$e");
+          }
+        });
+      }
+    }
   }
 
   ///------------------------------------数据初始化和各种回调   end--------------------------------------------------------------------------------///
@@ -582,15 +797,29 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     chatDataModel.isTemporary = true;
     chatDataModel.isHaveAnimation = true;
     chatDataList.insert(0, chatDataModel);
-    animateTo();
+    animateToBottom();
     setState(() {
       _textController.text = "";
       isHaveTextLen = false;
     });
-    postText(
-        chatDataList[0], widget.conversation.conversationId, chatTypeId, () {
-      delayedSetState();
-    });
+
+    mentionedInfo.type = RCMentionedType.Users;
+    atUserIdList.clear();
+    // 获取输入框内的规则
+    var rules = context
+        .read<ChatEnterNotifier>()
+        .rules;
+    for (int i = 0; i < rules.length; i++) {
+      if (!atUserIdList.contains(rules[i].clickIndex.toString())) {
+        atUserIdList.add(rules[i].clickIndex.toString());
+      }
+    }
+    mentionedInfo.userIdList = atUserIdList;
+    postText(chatDataList[0], widget.conversation.conversationId, chatTypeId,
+        mentionedInfo, () {
+          context.read<ChatEnterNotifier>().clearRules();
+          delayedSetState();
+        });
   }
 
   //发送视频以及图片
@@ -607,7 +836,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       chatDataList.insert(0, chatDataModel);
       modelList.add(chatDataList[0]);
     }
-    animateTo();
+    animateToBottom();
     setState(() {});
     postImgOrVideo(
         modelList, widget.conversation.conversationId, selectedMediaFiles.type,
@@ -629,7 +858,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     chatDataModel.isTemporary = true;
     chatDataModel.isHaveAnimation = true;
     chatDataList.insert(0, chatDataModel);
-    animateTo();
+    animateToBottom();
     setState(() {});
     postVoice(chatDataList[0], widget.conversation.conversationId, chatTypeId,
         chatTypeId, () {
@@ -650,7 +879,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     chatDataModel.isTemporary = true;
     chatDataModel.isHaveAnimation = true;
     chatDataList.insert(0, chatDataModel);
-    animateTo();
+    animateToBottom();
     setState(() {
       _textController.text = "";
       isHaveTextLen = false;
@@ -671,7 +900,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       chatDataList[position].msg.objectName =
           RecallNotificationMessage.objectName;
       chatDataList[position].msg.content = recallNotificationMessage;
-      animateTo();
+      animateToBottom();
       setState(() {});
     }
   }
@@ -691,7 +920,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           chatDataModel.isTemporary = false;
           chatDataModel.isHaveAnimation = true;
           chatDataList.insert(0, chatDataModel);
-          animateTo();
+          animateToBottom();
           if (isSetState) {
             setState(() {
 
@@ -728,10 +957,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   initTime() {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       _timerCount++;
-      // print(_timerCount.toString());
+      // //print(_timerCount.toString());
       if (_timerCount >= 300) {
         _timerCount = 0;
-        // print("-----"+_timerCount.toString());
+        // //print("-----"+_timerCount.toString());
         postTimeChatDataModel();
       }
     });
@@ -740,6 +969,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   //延迟更新
   void delayedSetState() {
     Future.delayed(Duration(milliseconds: 200), () {
+      //print("setState--delayedSetState");
       setState(() {});
     });
   }
@@ -769,10 +999,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   initTextController() {
     _textController.addListener(() {
-      print("值改变了");
-      print("监听文字光标${_textController.selection}");
-      // 每次点击切换光标会进入此监听。需求邀请@和话题光标不可移入其中。
-      print("::::::$isSwitchCursor");
+      // //print("值改变了");
+      // //print("监听文字光标${_textController.selection}");
+      // // 每次点击切换光标会进入此监听。需求邀请@和话题光标不可移入其中。
+      // //print("::::::$isSwitchCursor");
       if (isSwitchCursor) {
         List<Rule> rules = context
             .read<ChatEnterNotifier>()
@@ -835,15 +1065,15 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       valueChangedCallback:
           (List<Rule> rules, String value, int atIndex, int topicIndex,
           String atSearchStr, String topicSearchStr) {
-        rules = rules;
-        print("输入框值回调：$value");
-        print(rules);
-        isSwitchCursor = false;
-        if (atIndex > 0) {
-          context.read<ChatEnterNotifier>().getAtCursorIndex(atIndex);
-        }
-        context.read<ChatEnterNotifier>().setAtSearchStr(atSearchStr);
-        context.read<ChatEnterNotifier>().changeCallback(value);
+            rules = rules;
+            // //print("输入框值回调：$value");
+            // //print(rules);
+            isSwitchCursor = false;
+            if (atIndex > 0) {
+              context.read<ChatEnterNotifier>().getAtCursorIndex(atIndex);
+            }
+            context.read<ChatEnterNotifier>().setAtSearchStr(atSearchStr);
+            context.read<ChatEnterNotifier>().changeCallback(value);
         // 实时搜索
       },
     );
@@ -864,13 +1094,24 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   }
 
   //滚动到底部
-  void animateTo() {
+  void animateToBottom() {
     try {
       _scrollController.animateTo(0.0,
           duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
     } catch (e) {}
   }
 
+  //向上滚动
+  void animateToTop({int milliseconds = 200}) {
+    if (isHaveAtMeMsgIndex < 0) {
+      oldMaxScrollExtent = _scrollController.position.maxScrollExtent;
+    } else {
+      oldMaxScrollExtent += 50.0;
+    }
+    _scrollController.animateTo(oldMaxScrollExtent,
+        duration: Duration(milliseconds: milliseconds),
+        curve: Curves.easeInOut);
+  }
 
   ///------------------------------------一些功能 方法  end-----------------------------------------------------------------------///
   ///------------------------------------各种点击事件  start-----------------------------------------------------------------------///
@@ -913,7 +1154,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //图片的点击事件
   onPicAndVideoBtnClick() {
-    print("=====图片的点击事件");
+    //print("=====图片的点击事件");
     _focusNode.unfocus();
     SelectedMediaFiles selectedMediaFiles = new SelectedMediaFiles();
     AppRouter.navigateToMediaPickerPage(
@@ -927,7 +1168,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
             (result) async {
           SelectedMediaFiles files = Application.selectedMediaFiles;
           if (true != result || files == null) {
-            print("没有选择媒体文件");
+            //print("没有选择媒体文件");
             return;
           }
           Application.selectedMediaFiles = null;
@@ -960,10 +1201,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   }
 
   //at 了那个用户
-  void atListItemClick(String content, int index) {
-    print("+++++++++++++++++++++++++++++++++++++++++++++++++++" + content);
+  void atListItemClick(ChatGroupUserModel userModel, int index) {
+    // //print("+++++++++++++++++++++++++++++++++++++++++++++++++++" + content);
     // At的文字长度
-    int atLength = content.length;
+    int atLength = userModel.nickName.length + 1;
     // 获取输入框内的规则
     var rules = context
         .read<ChatEnterNotifier>()
@@ -972,7 +1213,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     // if (rules.isNotEmpty) {
     //   for (Rule rule in rules) {
     //     if (rule.clickIndex == index && rule.isAt == true) {
-    //       print("已经添加过了");
+    //       //print("已经添加过了");
     //       return;
     //     }
     //   }
@@ -986,31 +1227,36 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         .read<ChatEnterNotifier>()
         .atSearchStr;
     // @前的文字
-    String atBeforeStr = _textController.text.substring(0, atIndex);
+    String atBeforeStr;
+    try {
+      atBeforeStr = _textController.text.substring(0, atIndex);
+    } catch (e) {
+      atBeforeStr = "";
+    }
     // @后的文字
     String atRearStr = "";
-    print(searchStr);
-    print("controller.text:${_textController.text}");
-    print("atBeforeStr$atBeforeStr");
+    //print(searchStr);
+    //print("controller.text:${_textController.text}");
+    //print("atBeforeStr$atBeforeStr");
     if (searchStr != "" || searchStr.isNotEmpty) {
-      print("atIndex:$atIndex");
-      print("searchStr:$searchStr");
-      print("controller.text:${_textController.text}");
+      //print("atIndex:$atIndex");
+      //print("searchStr:$searchStr");
+      //print("controller.text:${_textController.text}");
       atRearStr = _textController.text.substring(
           atIndex + searchStr.length, _textController.text.length);
-      print("atRearStr:$atRearStr");
+      //print("atRearStr:$atRearStr");
     } else {
       atRearStr =
           _textController.text.substring(atIndex, _textController.text.length);
     }
 
     // 拼接修改输入框的值
-    _textController.text = atBeforeStr + content + atRearStr;
-    print("controller.text:${_textController.text}");
+    _textController.text = atBeforeStr + userModel.nickName + " " + atRearStr;
+    //print("controller.text:${_textController.text}");
     // 这是替换输入的文本修改后面输入的@的规则
     if (searchStr != "" || searchStr.isNotEmpty) {
       int oldLength = searchStr.length;
-      int newLength = content.length;
+      int newLength = userModel.nickName.length + 1;
       int oldStartIndex = atIndex;
       int diffLength = newLength - oldLength;
       for (int i = 0; i < rules.length; i++) {
@@ -1027,26 +1273,27 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       // 当最新输入框内的文本对应不上之前的值时。
       if (rules[i].params != _textController.text.substring(
           rules[i].startIndex, rules[i].endIndex)) {
-        print("进入");
-        print(rules[i]);
+        //print("进入");
+        //print(rules[i]);
         rules[i] = Rule(
             rules[i].startIndex + atLength, rules[i].endIndex + atLength,
             rules[i].params,
             rules[i].clickIndex, rules[i].isAt);
-        print(rules[i]);
+        //print(rules[i]);
       }
     }
     // 存储规则
     context
         .read<ChatEnterNotifier>()
         .addRules(
-        Rule(atIndex - 1, atIndex + atLength, "@" + content, index, true));
+        Rule(atIndex - 1, atIndex + atLength, "@" + userModel.nickName + " ",
+            userModel.uid, true));
     // 设置光标
     var setCursor = TextSelection(
       baseOffset: _textController.text.length,
       extentOffset: _textController.text.length,
     );
-    print("设置光标$setCursor");
+    //print("设置光标$setCursor");
     _textController.selection = setCursor;
     context.read<ChatEnterNotifier>().setAtSearchStr("");
     // 关闭视图
@@ -1068,8 +1315,12 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         chatDataList
             .add(getMessage((msgList[i] as Message), isHaveAnimation: false));
       }
+      //判断有没有艾特我的消息
+      if (isHaveAtMeMsg || isHaveAtMeMsgPr) {
+        judgeNewChatIsHaveAt();
+      }
     }
-    Future.delayed(Duration(milliseconds: 600), () {
+    Future.delayed(Duration(milliseconds: 500), () {
       _refreshController.loadComplete();
       setState(() {
 
@@ -1088,10 +1339,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     }
 
     if (settingType == null || settingType.isEmpty || settingType.length < 1) {
-      print("暂无此配置");
+      //print("暂无此配置");
     } else if (settingType == "删除") {
       RongCloud.init().deleteMessageById(chatDataList[position].msg, (code) {
-        print("====" + code.toString());
+        //print("====" + code.toString());
         setState(() {
           chatDataList.removeAt(position);
         });
@@ -1105,10 +1356,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         ToastShow.show(msg: "复制成功", context: context);
       }
     } else {
-      print("暂无此配置");
+      //print("暂无此配置");
     }
-    print("position:$position-----------------------------------------");
-    // print("position：$position--$contentType---${content==null?map.toString():content}----${chatDataList[position].msg.toString()}");
+    //print("position:$position-----------------------------------------");
+    // //print("position：$position--$contentType---${content==null?map.toString():content}----${chatDataList[position].msg.toString()}");
   }
 
   //所有的item点击事件
@@ -1122,7 +1373,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     }
 
     if (contentType == null || contentType.isEmpty || contentType.length < 1) {
-      print("暂无此配置");
+      //print("暂无此配置");
     }
     if (contentType == ChatTypeModel.MESSAGE_TYPE_TEXT && isUrl) {
       ToastShow.show(msg: "跳转网页地址: $content", context: context);
@@ -1161,7 +1412,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       // _textController.text=content;
       _postText(content);
     } else {
-      print("暂无此类型");
+      //print("暂无此类型");
     }
   }
 

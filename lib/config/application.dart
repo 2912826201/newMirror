@@ -8,6 +8,8 @@ import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/region_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/model/message/at_mes_group_model.dart';
+import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/token_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
@@ -87,4 +89,14 @@ class Application {
 
   //main的上下文
   static BuildContext appContext;
+
+  //群成员信息
+  static List<ChatGroupUserModel> chatGroupUserModelList =
+      <ChatGroupUserModel>[];
+
+  //群组at的列表
+  static AtMesGroupModel atMesGroupModel = new AtMesGroupModel();
+
+  //系统平台 0-android 1-ios
+  static int platform;
 }
