@@ -88,7 +88,7 @@ class _blackListState extends State<BlackListPage>{
             onTap: (){
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                 return ProfileDetailPage(
-                  userId: blackList[index].uid,pcController: widget.pc,
+                  userId: blackList[index].uid,
                 );
               }));
             },

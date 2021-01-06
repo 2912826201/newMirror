@@ -760,7 +760,6 @@ class _followItemState extends State<QueryFollowItem> {
                     return ProfileDetailPage(
                       userId:
                           widget.type == 1 ? widget.followList[widget.index].uid : widget.fansList[widget.index].uid,
-                      pcController: widget.pc,
                     );
                   })).then((value) {
                     ///这里每次回来都去请求一遍用户关系,改变按钮状态
@@ -817,7 +816,6 @@ class _followItemState extends State<QueryFollowItem> {
                                 userId: widget.type == 1
                                     ? widget.followList[widget.index].uid
                                     : widget.fansList[widget.index].uid,
-                                pcController: widget.pc,
                               );
                             })).then((value) {
                               ///这里每次回来都去请求一遍用户关系,改变按钮状态

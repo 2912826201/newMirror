@@ -303,7 +303,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           panel: Container(
             child: context.watch<FeedMapNotifier>().feedId != null
                 ? CommentBottomSheet(
-                    pc: SingletonForWholePages.singleton().panelController(),
+                    /*pc: SingletonForWholePages.singleton().panelController(),*/
                     feedId: context.select((FeedMapNotifier value) => value.feedId),
                   )
                 : Container(),
@@ -320,7 +320,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             topLeft: Radius.circular(10.0),
             topRight: Radius.circular(10.0),
           ),
-          controller: widget.pcController,
+          controller:  SingletonForWholePages.singleton().panelController(),
           minHeight: 0,
           body: _minehomeBody(width, height)),
     );
@@ -540,7 +540,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                         return QueryFollowList(
                           type: 1,
-                          pc: widget.pcController,
                           userId: _id,
                         );
                       }));
@@ -554,7 +553,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                         return QueryFollowList(
                           type: 2,
-                          pc: widget.pcController,
                           userId: _id,
                         );
                       }));
@@ -628,7 +626,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               } else {
                 return DynamicListLayout(
                     index: index,
-                    pc: widget.pcController,
                     isShowRecommendUser: false,
                     model: model,
                     key: GlobalObjectKey("attention$index"));
