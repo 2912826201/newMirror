@@ -49,7 +49,7 @@ class _editInformationState extends State<EditInformation> {
   String _provinceCity = "未设置";
   double longitude;
   double latitude;
-  String _introduction = "";
+  String _introduction;
   String avataruri = "";
   //取图裁剪得到的图片数据
   Uint8List imageData;
