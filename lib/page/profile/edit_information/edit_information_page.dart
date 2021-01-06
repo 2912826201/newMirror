@@ -253,7 +253,7 @@ class _editInformationState extends State<EditInformation> {
                   ),
                   InkWell(
                     onTap: () {
-                      AppRouter.navigationToEditInfomationName(context, userName, (result) {
+                      AppRouter.navigateToEditInfomationName(context, userName, (result) {
                         setState(() {
                           if(result!=null){
                             userName = result;
@@ -314,7 +314,7 @@ class _editInformationState extends State<EditInformation> {
                   InkWell(
                     child: _rowChose(width, "简介", _introduction != null ? _introduction : "去编辑"),
                     onTap: () {
-                      AppRouter.navigationToEditInfomationIntroduction(context, _introduction, (result) {
+                      AppRouter.navigateToEditInfomationIntroduction(context, _introduction, (result) {
                         setState(() {
                           if(result!=null){
                             _introduction = result;

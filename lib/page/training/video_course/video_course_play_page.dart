@@ -279,63 +279,57 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                 ),
               ),
               Container(
-                height: 60,
+                height: 60 + ScreenUtil.instance.bottomBarHeight,
                 color: AppColor.black,
-                child: Stack(
-                  children: [
-                    Container(
-                      width: ScreenUtil.instance.screenWidthDp,
-                      height: 60,
-                      color: AppColor.white.withOpacity(0.12),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                        GestureDetector(
-                          onTap: () {
-                            int currentTime = DateTime.now().millisecondsSinceEpoch;
-                            if (currentTime - _buttonTapTime < _buttonTapInterval) {
-                              return;
-                            } else {
-                              _buttonTapTime = currentTime;
-                              _returnToPreviousPart(_currentPartIndex);
-                            }
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            height: 60,
-                            width: 60,
-                            child: Icon(
-                              Icons.skip_previous,
-                              color: AppColor.white,
-                              size: 24,
-                            ),
-                          ),
+                child: Container(
+                  padding: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
+                  width: ScreenUtil.instance.screenWidthDp,
+                  height: 60 + ScreenUtil.instance.bottomBarHeight,
+                  color: AppColor.white.withOpacity(0.12),
+                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+                    GestureDetector(
+                      onTap: () {
+                        int currentTime = DateTime.now().millisecondsSinceEpoch;
+                        if (currentTime - _buttonTapTime < _buttonTapInterval) {
+                          return;
+                        } else {
+                          _buttonTapTime = currentTime;
+                          _returnToPreviousPart(_currentPartIndex);
+                        }
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: 60,
+                        width: 60,
+                        child: Icon(
+                          Icons.skip_previous,
+                          color: AppColor.white,
+                          size: 24,
                         ),
-                        SizedBox(
-                          width: 65,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        int currentTime = DateTime.now().millisecondsSinceEpoch;
+                        if (currentTime - _buttonTapTime < _buttonTapInterval) {
+                          return;
+                        } else {
+                          _buttonTapTime = currentTime;
+                          _skipToNextPart(_currentPartIndex);
+                        }
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: 60,
+                        width: 60,
+                        child: Icon(
+                          Icons.skip_next,
+                          color: AppColor.white,
+                          size: 24,
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            int currentTime = DateTime.now().millisecondsSinceEpoch;
-                            if (currentTime - _buttonTapTime < _buttonTapInterval) {
-                              return;
-                            } else {
-                              _buttonTapTime = currentTime;
-                              _skipToNextPart(_currentPartIndex);
-                            }
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            height: 60,
-                            width: 60,
-                            child: Icon(
-                              Icons.skip_next,
-                              color: AppColor.white,
-                              size: 24,
-                            ),
-                          ),
-                        ),
-                      ]),
-                    )
-                  ],
+                      ),
+                    ),
+                  ]),
                 ),
               )
             ],
@@ -519,6 +513,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
   _playNextPart() {
     if (_currentPartIndex >= partList.length - 1) {
       //TODO 已经最后一段落 处理结束的操作
+      Navigator.pop(context);
       return;
     }
 

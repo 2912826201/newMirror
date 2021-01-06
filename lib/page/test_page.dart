@@ -13,6 +13,7 @@ import 'package:mirror/page/qiniu_test_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
@@ -39,6 +40,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     print("测试页");
     print("build");
+    print("底部条高度：${ScreenUtil.instance.bottomBarHeight}");
     return Scaffold(
       appBar: AppBar(
         title: Text("测试页"),

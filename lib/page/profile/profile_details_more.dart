@@ -189,7 +189,7 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
       padding: EdgeInsets.only(left: 16,right: 16),
       child: InkWell(
         onTap: (){
-          AppRouter.navigationToProfileAddRemarks(context,widget.userName,widget.userId);
+          AppRouter.navigateToProfileAddRemarks(context,widget.userName,widget.userId);
         },
         child: Row(
         children: [
