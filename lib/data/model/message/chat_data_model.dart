@@ -12,4 +12,5 @@ class ChatDataModel {
   int status = RCSentStatus.Sent;
   MediaFileModel mediaFileModel;
   ChatVoiceModel chatVoiceModel;
+  MentionedInfo mentionedInfo;
 }

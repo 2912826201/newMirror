@@ -229,6 +229,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       isHaveAtMeMsg: isHaveAtMeMsg,
       isHaveAtMeMsgIndex: isHaveAtMeMsgIndex,
       onRefresh: _onRefresh,
+      isShowChatUserName: widget.conversation.getType() == RCConversationType.Group,
       onAtUiClickListener: onAtUiClickListener,
       firstEndCallback: (int firstIndex, int lastIndex) {
         firstEndCallbackListView(firstIndex, lastIndex);
@@ -625,12 +626,20 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   //获取群成员信息
   void getChatGroupUserModelList() async {
     Application.chatGroupUserModelList.clear();
-    Map<String, dynamic> model = await getMembers(
-        groupChatId: int.parse(chatUserId));
+    Map<String, dynamic> model = await getMembers(groupChatId: int.parse(chatUserId));
     if (model != null && model["list"] != null) {
       model["list"].forEach((v) {
         Application.chatGroupUserModelList.add(ChatGroupUserModel.fromJson(v));
       });
+      initChatGroupUserModelMap();
+    }
+  }
+
+  //获取群成员的信息 map id对应昵称
+  void initChatGroupUserModelMap() {
+    Application.chatGroupUserModelMap.clear();
+    for (ChatGroupUserModel userModel in Application.chatGroupUserModelList) {
+      Application.chatGroupUserModelMap[userModel.uid.toString()] = userModel.groupNickName;
     }
   }
 
@@ -796,6 +805,20 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     chatDataModel.content = text;
     chatDataModel.isTemporary = true;
     chatDataModel.isHaveAnimation = true;
+
+    mentionedInfo.type = RCMentionedType.Users;
+    atUserIdList.clear();
+    // 获取输入框内的规则
+    var rules = context.read<ChatEnterNotifier>().rules;
+    for (int i = 0; i < rules.length; i++) {
+      if (!atUserIdList.contains(rules[i].clickIndex.toString())) {
+        atUserIdList.add(rules[i].clickIndex.toString());
+      }
+    }
+    mentionedInfo.userIdList = atUserIdList;
+    mentionedInfo.mentionedContent = gteAtUserName(atUserIdList);
+    chatDataModel.mentionedInfo = mentionedInfo;
+
     chatDataList.insert(0, chatDataModel);
     animateToBottom();
     setState(() {
@@ -803,21 +826,8 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       isHaveTextLen = false;
     });
 
-    mentionedInfo.type = RCMentionedType.Users;
-    atUserIdList.clear();
-    // 获取输入框内的规则
-    var rules = context
-        .read<ChatEnterNotifier>()
-        .rules;
-    for (int i = 0; i < rules.length; i++) {
-      if (!atUserIdList.contains(rules[i].clickIndex.toString())) {
-        atUserIdList.add(rules[i].clickIndex.toString());
-      }
-    }
-    mentionedInfo.userIdList = atUserIdList;
-    postText(chatDataList[0], widget.conversation.conversationId, chatTypeId,
-        mentionedInfo, () {
-          context.read<ChatEnterNotifier>().clearRules();
+    postText(chatDataList[0], widget.conversation.conversationId, chatTypeId, mentionedInfo, () {
+      context.read<ChatEnterNotifier>().clearRules();
           delayedSetState();
         });
   }

@@ -16,6 +16,8 @@ class UserMsg extends StatelessWidget {
   final bool isMyself;
   final UserModel userModel;
   final int status;
+  final String sendChatUserId;
+  final bool isShowChatUserName;
   final int position;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
@@ -26,6 +28,8 @@ class UserMsg extends StatelessWidget {
       this.userUrl,
       this.name,
       this.status,
+      this.isShowChatUserName = false,
+      this.sendChatUserId,
       this.position,
       this.voidMessageClickCallBack,
       this.voidItemLongClickCallBack});
@@ -55,11 +59,14 @@ class UserMsg extends StatelessWidget {
     var body = [
       Row(
         mainAxisAlignment:
-            isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
+        isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: getSmallBody(context),
       ),
-      getMessageState(status),
+      Container(
+        margin: isShowChatUserName ? const EdgeInsets.only(top: 16) : null,
+        child: getMessageState(status),
+      ),
       Spacer(),
     ];
     if (isMyself) {
@@ -103,14 +110,33 @@ class UserMsg extends StatelessWidget {
       isMySelf: isMyself,
       actions: longClickStringList,
       contentWidth: 180.0,
-      child: GestureDetector(
-        child: _getUserUi(),
-        onTap: () {
-          voidMessageClickCallBack(
-              contentType: ChatTypeModel.MESSAGE_TYPE_USER,
-              map: userModel.toJson());
-          // ToastShow.show(msg: "点击了名片-该跳转", context: context);
-        },
+      child: getNameAndContentUi(),
+    );
+  }
+
+  Widget getNameAndContentUi() {
+    return Container(
+      child: Column(
+        crossAxisAlignment: isMyself ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Visibility(
+            visible: isShowChatUserName,
+            child: Container(
+              margin: isMyself ? const EdgeInsets.only(right: 10, bottom: 4) : const EdgeInsets.only(
+                  left: 10, bottom: 4),
+              child: Text(name, style: TextStyle(fontSize: 12, color: AppColor.textSecondary),),
+            ),
+          ),
+          GestureDetector(
+            child: _getUserUi(),
+            onTap: () {
+              voidMessageClickCallBack(
+                  contentType: ChatTypeModel.MESSAGE_TYPE_USER,
+                  map: userModel.toJson());
+              // ToastShow.show(msg: "点击了名片-该跳转", context: context);
+            },
+          ),
+        ],
       ),
     );
   }

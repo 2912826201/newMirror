@@ -22,6 +22,8 @@ class ImgVideoMsg extends StatelessWidget {
   final bool isImgOrVideo;
   final MediaFileModel mediaFileModel;
   final String userUrl;
+  final String sendChatUserId;
+  final bool isShowChatUserName;
   final String name;
   final int status;
   final int position;
@@ -34,6 +36,8 @@ class ImgVideoMsg extends StatelessWidget {
       {this.isMyself,
       this.isTemporary,
       this.isImgOrVideo,
+      this.isShowChatUserName = false,
+      this.sendChatUserId,
       this.mediaFileModel,
       this.userUrl,
       this.name,
@@ -74,11 +78,14 @@ class ImgVideoMsg extends StatelessWidget {
     var body = [
       Row(
         mainAxisAlignment:
-            isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
+        isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: getSmallBody(context),
       ),
-      getMessageState(status),
+      Container(
+        margin: isShowChatUserName ? const EdgeInsets.only(top: 16) : null,
+        child: getMessageState(status),
+      ),
     ];
     if (isMyself) {
       body = body.reversed.toList();
@@ -128,14 +135,34 @@ class ImgVideoMsg extends StatelessWidget {
       isMySelf: isMyself,
       actions: longClickStringList,
       contentWidth: width,
-      child: GestureDetector(
-        child: imgVideoContentBox(context),
-        onTap: () {
-          onImgVideoContentBoxClick(context);
-        },
+      child: getNameAndContentUi(context),
+    );
+  }
+
+  Widget getNameAndContentUi(BuildContext context) {
+    return Container(
+      child: Column(
+        crossAxisAlignment: isMyself ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Visibility(
+            visible: isShowChatUserName,
+            child: Container(
+              margin: isMyself ? const EdgeInsets.only(right: 10, bottom: 4) : const EdgeInsets.only(
+                  left: 10, bottom: 4),
+              child: Text(name, style: TextStyle(fontSize: 12, color: AppColor.textSecondary),),
+            ),
+          ),
+          GestureDetector(
+            child: imgVideoContentBox(context),
+            onTap: () {
+              onImgVideoContentBoxClick(context);
+            },
+          )
+        ],
       ),
     );
   }
+
 
   //图片视频的框架
   Widget imgVideoContentBox(BuildContext context) {

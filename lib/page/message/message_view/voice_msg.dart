@@ -19,6 +19,8 @@ class VoiceMsg extends StatefulWidget {
   final String name;
   final String messageUId;
   final bool isMyself;
+  final String sendChatUserId;
+  final bool isShowChatUserName;
   final bool isTemporary;
   final ChatVoiceModel chatVoiceModel;
   final int status;
@@ -30,6 +32,8 @@ class VoiceMsg extends StatefulWidget {
       {this.chatVoiceModel,
       this.isMyself,
       this.messageUId,
+      this.isShowChatUserName = false,
+      this.sendChatUserId,
       this.isTemporary,
       this.userUrl,
       this.name,
@@ -90,12 +94,15 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
     var body = [
       Row(
         mainAxisAlignment:
-            widget.isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
+        widget.isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: getSmallBody(context),
       ),
-      getMessageState(widget.status,
-          isRead: widget.chatVoiceModel.read != 0, isMyself: widget.isMyself),
+      Container(
+        margin: widget.isShowChatUserName ? const EdgeInsets.only(top: 16) : null,
+        child: getMessageState(widget.status,
+            isRead: widget.chatVoiceModel.read != 0, isMyself: widget.isMyself),
+      ),
       Spacer(),
     ];
     if (widget.isMyself) {
@@ -139,7 +146,26 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
       isMySelf: widget.isMyself,
       actions: longClickStringList,
       contentWidth: getNowWidth(context, widget.chatVoiceModel.longTime),
-      child: _getVoiceUi(context),
+      child: getNameAndContentUi(context),
+    );
+  }
+
+  Widget getNameAndContentUi(BuildContext context) {
+    return Container(
+      child: Column(
+        crossAxisAlignment: widget.isMyself ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Visibility(
+            visible: widget.isShowChatUserName,
+            child: Container(
+              margin: widget.isMyself ? const EdgeInsets.only(right: 10, bottom: 4) : const EdgeInsets.only(
+                  left: 10, bottom: 4),
+              child: Text(widget.name, style: TextStyle(fontSize: 12, color: AppColor.textSecondary),),
+            ),
+          ),
+          _getVoiceUi(context),
+        ],
+      ),
     );
   }
 

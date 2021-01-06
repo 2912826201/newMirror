@@ -18,6 +18,8 @@ class LiveVideoCourseMsg extends StatelessWidget {
   final bool isMyself;
   final LiveModel liveVideoModel;
   final bool isLiveOrVideo;
+  final String sendChatUserId;
+  final bool isShowChatUserName;
   final int status;
   final int position;
   final VoidMessageClickCallBack voidMessageClickCallBack;
@@ -29,6 +31,8 @@ class LiveVideoCourseMsg extends StatelessWidget {
       this.userUrl,
       this.name,
       this.status,
+      this.isShowChatUserName = false,
+      this.sendChatUserId,
       this.position,
       this.isLiveOrVideo,
       this.voidMessageClickCallBack,
@@ -59,11 +63,14 @@ class LiveVideoCourseMsg extends StatelessWidget {
     var body = [
       Row(
         mainAxisAlignment:
-            isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
+        isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: getSmallBody(context),
       ),
-      getMessageState(status),
+      Container(
+        margin: isShowChatUserName ? const EdgeInsets.only(top: 16) : null,
+        child: getMessageState(status),
+      ),
       Spacer(),
     ];
     if (isMyself) {
@@ -111,24 +118,45 @@ class LiveVideoCourseMsg extends StatelessWidget {
       isMySelf: isMyself,
       actions: longClickStringList,
       contentWidth: 180.0,
-      child: GestureDetector(
-        child: _getLiveVideoCourseUi(),
-        onTap: () {
-          if (isLiveOrVideo) {
-            // ToastShow.show(msg: "点击了直播课-该跳转", context: context);
-            voidMessageClickCallBack(
-                contentType: ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE,
-                map: liveVideoModel.toJson());
-          } else {
-            voidMessageClickCallBack(
-                contentType: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE,
-                map: liveVideoModel.toJson());
-            // ToastShow.show(msg: "点击了视频课-该跳转", context: context);
-          }
-        },
+      child: getNameAndContentUi(context),
+    );
+  }
+
+
+  Widget getNameAndContentUi(BuildContext context) {
+    return Container(
+      child: Column(
+        crossAxisAlignment: isMyself ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Visibility(
+            visible: isShowChatUserName,
+            child: Container(
+              margin: isMyself ? const EdgeInsets.only(right: 10, bottom: 4) : const EdgeInsets.only(
+                  left: 10, bottom: 4),
+              child: Text(name, style: TextStyle(fontSize: 12, color: AppColor.textSecondary),),
+            ),
+          ),
+          GestureDetector(
+            child: _getLiveVideoCourseUi(),
+            onTap: () {
+              if (isLiveOrVideo) {
+                // ToastShow.show(msg: "点击了直播课-该跳转", context: context);
+                voidMessageClickCallBack(
+                    contentType: ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE,
+                    map: liveVideoModel.toJson());
+              } else {
+                voidMessageClickCallBack(
+                    contentType: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE,
+                    map: liveVideoModel.toJson());
+                // ToastShow.show(msg: "点击了视频课-该跳转", context: context);
+              }
+            },
+          )
+        ],
       ),
     );
   }
+
 
   //获取动态框
   Widget _getLiveVideoCourseUi() {

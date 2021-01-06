@@ -30,14 +30,16 @@ class SendMessageView extends StatelessWidget {
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
   final int position;
   final String chatUserName;
+  final bool isShowChatUserName;
 
-  SendMessageView(this.model, this.position, this.voidMessageClickCallBack,
-      this.voidItemLongClickCallBack, this.chatUserName);
+  SendMessageView(this.model, this.position, this.voidMessageClickCallBack, this.voidItemLongClickCallBack,
+      this.chatUserName, this.isShowChatUserName);
 
   bool isMyself;
   String userUrl;
   String name;
   int status;
+  String sendChatUserId;
 
   @override
   Widget build(BuildContext context) {
@@ -45,14 +47,16 @@ class SendMessageView extends StatelessWidget {
       print("临时的");
       isMyself = true;
       userUrl = Application.profile.avatarUri;
-      name = Application.profile.nickName;
       status = RCSentStatus.Sending;
+      sendChatUserId = Application.profile.uid.toString();
+      name = getChatUserName(sendChatUserId, Application.profile.nickName);
       return temporaryData();
     } else {
       isMyself = Application.profile.uid.toString() == model.msg.senderUserId;
       userUrl = model.msg.content.sendUserInfo.portraitUri;
-      name = model.msg.content.sendUserInfo.name;
       status = model.status;
+      sendChatUserId = model.msg.senderUserId;
+      name = getChatUserName(sendChatUserId, model.msg.content.sendUserInfo.name);
       return notTemporaryData();
     }
   }
@@ -62,7 +66,7 @@ class SendMessageView extends StatelessWidget {
     //普通消息
     if (model.type == ChatTypeModel.MESSAGE_TYPE_TEXT) {
       //文字消息
-      return getTextMsg(text: model.content);
+      return getTextMsg(text: model.content, mentionedInfo: model.mentionedInfo);
     } else if (model.type == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
       //图片消息
       return getImgVideoMsg(
@@ -105,7 +109,7 @@ class SendMessageView extends StatelessWidget {
         Map<String, dynamic> mapModel = json.decode(textMessage.content);
         if (mapModel["type"] == ChatTypeModel.MESSAGE_TYPE_TEXT) {
           //文字消息
-          return getTextMsg(text: mapModel["content"]);
+          return getTextMsg(text: mapModel["content"], mentionedInfo: msg.content.mentionedInfo);
         } else if (mapModel["type"] == ChatTypeModel.MESSAGE_TYPE_FEED) {
           //动态消息
           return getFeedMsgData(json.decode(mapModel["content"]));
@@ -140,7 +144,7 @@ class SendMessageView extends StatelessWidget {
           return getSelectMsgData(mapModel["content"]);
         }
       } catch (e) {
-        return getTextMsg(text: textMessage.content);
+        return getTextMsg(text: textMessage.content, mentionedInfo: msg.content.mentionedInfo);
       }
     } else if (msgType == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
       //图片--视频消息
@@ -187,26 +191,36 @@ class SendMessageView extends StatelessWidget {
       mapModel["pathUrl"] = voiceMessage.remoteUrl;
     }
     print("mapModel[read]" + mapModel["read"].toString());
-    return getVoiceMsgData(
-        msg.messageUId,
-        mapModel,
-        false,
-        StringUtil.generateMd5(voiceMessage.remoteUrl != null
-            ? voiceMessage.remoteUrl
-            : mapModel["filePath"]));
+    return getVoiceMsgData(msg.messageUId, mapModel, false,
+        StringUtil.generateMd5(voiceMessage.remoteUrl != null ? voiceMessage.remoteUrl : mapModel["filePath"]));
   }
 
   //************************获取消息模块的方法 ----end
 
+  String getChatUserName(String uId, String name) {
+    if (isShowChatUserName) {
+      // print("uId:$uId---Application.chatGroupUserModelMap:${Application.chatGroupUserModelMap.toString()}");
+      String userName = Application.chatGroupUserModelMap[uId];
+      if (userName == null) {
+        return name;
+      } else {
+        return userName;
+      }
+    }
+    return name;
+  }
+
   //***************************************获取每一个消息的模块-----start
 
   //获取普通文本模块
-  Widget getTextMsg({String text}) {
+  Widget getTextMsg({String text, MentionedInfo mentionedInfo}) {
     return TextMsg(
         text: text,
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        isShowChatUserName: isShowChatUserName,
+        mentionedInfo: mentionedInfo,
         voidMessageClickCallBack: voidMessageClickCallBack,
         voidItemLongClickCallBack: voidItemLongClickCallBack,
         position: position,
@@ -221,6 +235,7 @@ class SendMessageView extends StatelessWidget {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        isShowChatUserName: isShowChatUserName,
         voidMessageClickCallBack: voidMessageClickCallBack,
         voidItemLongClickCallBack: voidItemLongClickCallBack,
         position: position,
@@ -234,6 +249,7 @@ class SendMessageView extends StatelessWidget {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        isShowChatUserName: isShowChatUserName,
         voidMessageClickCallBack: voidMessageClickCallBack,
         voidItemLongClickCallBack: voidItemLongClickCallBack,
         position: position,
@@ -255,6 +271,7 @@ class SendMessageView extends StatelessWidget {
         isTemporary: isTemporary,
         userUrl: userUrl,
         name: name,
+        isShowChatUserName: isShowChatUserName,
         voidMessageClickCallBack: voidMessageClickCallBack,
         voidItemLongClickCallBack: voidItemLongClickCallBack,
         position: position,
@@ -271,6 +288,7 @@ class SendMessageView extends StatelessWidget {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        isShowChatUserName: isShowChatUserName,
         voidMessageClickCallBack: voidMessageClickCallBack,
         voidItemLongClickCallBack: voidItemLongClickCallBack,
         position: position,
@@ -285,6 +303,7 @@ class SendMessageView extends StatelessWidget {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        isShowChatUserName: isShowChatUserName,
         voidMessageClickCallBack: voidMessageClickCallBack,
         voidItemLongClickCallBack: voidItemLongClickCallBack,
         position: position,
@@ -307,6 +326,7 @@ class SendMessageView extends StatelessWidget {
       mediaFileModel: mediaFileModel,
       imageMessage: imageMessage,
       sizeInfoMap: sizeInfoMap,
+      isShowChatUserName: isShowChatUserName,
       voidMessageClickCallBack: voidMessageClickCallBack,
       voidItemLongClickCallBack: voidItemLongClickCallBack,
       position: position,
@@ -320,6 +340,7 @@ class SendMessageView extends StatelessWidget {
     return AlertMsg(
       position: position,
       chatUserName: chatUserName,
+      isShowChatUserName: isShowChatUserName,
       voidMessageClickCallBack: voidMessageClickCallBack,
       voidItemLongClickCallBack: voidItemLongClickCallBack,
       map: map,

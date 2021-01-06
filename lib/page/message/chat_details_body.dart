@@ -18,6 +18,7 @@ class ChatDetailsBody extends StatelessWidget {
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
   final String chatUserName;
+  final bool isShowChatUserName;
   final bool isPersonalButler;
   final GestureTapCallback onTap;
   final VoidCallback onRefresh;
@@ -30,6 +31,7 @@ class ChatDetailsBody extends StatelessWidget {
   ChatDetailsBody(
       {this.scrollController,
       this.chatDataList,
+      this.isShowChatUserName,
       this.isHaveAtMeMsgIndex,
       this.isHaveAtMeMsg,
       this.firstEndCallback,
@@ -218,7 +220,7 @@ class ChatDetailsBody extends StatelessWidget {
 
     return SendMessageView(
         model, position, voidMessageClickCallBack, voidItemLongClickCallBack,
-        chatUserName);
+        chatUserName, isShowChatUserName);
   }
 
   bool judgePersonalButler(ChatDataModel model) {

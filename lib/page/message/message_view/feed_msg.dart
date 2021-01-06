@@ -19,12 +19,16 @@ class FeedMsg extends StatelessWidget {
   final HomeFeedModel homeFeedMode;
   final int status;
   final int position;
+  final String sendChatUserId;
+  final bool isShowChatUserName;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
 
   FeedMsg({
     this.userUrl,
     this.name,
+    this.isShowChatUserName = false,
+    this.sendChatUserId,
     this.isMyself,
     this.homeFeedMode,
     this.status,
@@ -61,12 +65,14 @@ class FeedMsg extends StatelessWidget {
   List<Widget> getBody(BuildContext context) {
     var body = [
       Row(
-        mainAxisAlignment:
-            isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: getSmallBody(context),
       ),
-      getMessageState(status),
+      Container(
+        margin: isShowChatUserName ? const EdgeInsets.only(top: 16) : null,
+        child: getMessageState(status),
+      ),
       Spacer(),
     ];
     if (isMyself) {
@@ -110,17 +116,38 @@ class FeedMsg extends StatelessWidget {
       isMySelf: isMyself,
       actions: longClickStringList,
       contentWidth: 180.0,
-      child: GestureDetector(
-        child: _getFeedUi(),
-        onTap: () {
-          voidMessageClickCallBack(
-              contentType: ChatTypeModel.MESSAGE_TYPE_FEED,
-              map: homeFeedMode.toJson());
-          // ToastShow.show(msg: "点击了动态-改跳转", context: context);
-        },
+      child: getNameAndContentUi(),
+    );
+  }
+
+
+  Widget getNameAndContentUi() {
+    return Container(
+      child: Column(
+        crossAxisAlignment: isMyself ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Visibility(
+            visible: isShowChatUserName,
+            child: Container(
+              margin: isMyself ? const EdgeInsets.only(right: 10, bottom: 4) : const EdgeInsets.only(
+                  left: 10, bottom: 4),
+              child: Text(name, style: TextStyle(fontSize: 12, color: AppColor.textSecondary),),
+            ),
+          ),
+          GestureDetector(
+            child: _getFeedUi(),
+            onTap: () {
+              voidMessageClickCallBack(
+                  contentType: ChatTypeModel.MESSAGE_TYPE_FEED,
+                  map: homeFeedMode.toJson());
+              // ToastShow.show(msg: "点击了动态-改跳转", context: context);
+            },
+          )
+        ],
       ),
     );
   }
+
 
   //获取动态框
   Widget _getFeedUi() {
