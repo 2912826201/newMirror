@@ -17,6 +17,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
+import 'package:mirror/widget/volume_popup.dart';
 import 'package:provider/provider.dart';
 
 import 'message/message_chat_page_manager.dart';
@@ -313,6 +314,12 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                     );
                   },
                   child: Text("提示框3"),
+                ),
+                RaisedButton(
+                  onPressed: () {
+                    showVolumePopup(context);
+                  },
+                  child: Text("音量"),
                 ),
               ]),
             ],

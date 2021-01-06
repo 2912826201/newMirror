@@ -386,48 +386,46 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
   }
 
   Widget _buildInfoBar() {
-    return Container(
-      alignment: Alignment.center,
-      height: 40,
-      width: ScreenUtil.instance.screenWidthDp,
-      color: AppColor.textPrimary1,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () {
-              print("关闭信息条");
-            },
-            child: Container(
-              alignment: Alignment.center,
-              height: 36,
-              width: 36,
-              child: Icon(
-                Icons.highlight_off,
-                color: AppColor.white,
-                size: 16,
+    return GestureDetector(
+      onTap: () {
+        print("进入遥控页");
+      },
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+        height: 40,
+        width: ScreenUtil.instance.screenWidthDp - 32,
+        color: AppColor.textPrimary1,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                print("关闭信息条");
+              },
+              child: Container(
+                alignment: Alignment.center,
+                height: 36,
+                width: 36,
+                child: Icon(
+                  Icons.highlight_off,
+                  color: AppColor.white,
+                  size: 16,
+                ),
               ),
             ),
-          ),
-          Expanded(
-              child: Text(
-            "继续播放：普拉提产后恢复系列高速燃脂普拉提产后恢复系列高速燃脂",
-            softWrap: false,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: AppColor.white, fontSize: 14),
-          )),
-          Container(
-            alignment: Alignment.center,
-            height: 36,
-            width: 36,
-            child: Icon(
-              Icons.play_circle_fill,
-              color: AppColor.white,
-              size: 16,
+            Expanded(
+                child: Text(
+              "继续播放：普拉提产后恢复系列高速燃脂普拉提产后恢复系列高速燃脂",
+              softWrap: false,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: AppColor.white, fontSize: 14),
+            )),
+            SizedBox(
+              width: 12,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
