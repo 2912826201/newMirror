@@ -169,4 +169,12 @@ class SingletonForWholePages {
   PanelController panelController() {
     return ifPagePc;
   }
+  // 打开
+  openPanelController() {
+    ifPagePc.open();
+  }
+  // 关闭
+  closePanelController() {
+    ifPagePc.close();
+  }
 }
