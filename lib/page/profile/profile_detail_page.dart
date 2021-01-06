@@ -31,14 +31,15 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
+import '../if_page.dart';
+
 enum StateResult { HAVARESULT, RESULTNULL }
 
 ///判断lastTime，控件的controller冲突
 class ProfileDetailPage extends StatefulWidget {
   int userId;
-  PanelController pcController = PanelController();
 
-  ProfileDetailPage({this.userId, this.pcController});
+  ProfileDetailPage({this.userId});
 
   @override
   _ProfileDetailState createState() {
@@ -302,7 +303,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           panel: Container(
             child: context.watch<FeedMapNotifier>().feedId != null
                 ? CommentBottomSheet(
-                    pc: widget.pcController,
+                    /*pc: SingletonForWholePages.singleton().panelController(),*/
                     feedId: context.select((FeedMapNotifier value) => value.feedId),
                   )
                 : Container(),
@@ -319,7 +320,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             topLeft: Radius.circular(10.0),
             topRight: Radius.circular(10.0),
           ),
-          controller: widget.pcController,
+          controller:  SingletonForWholePages.singleton().panelController(),
           minHeight: 0,
           body: _minehomeBody(width, height)),
     );
@@ -380,10 +381,10 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                           height: 24,
                         ),
                       )
-                    : Container(),
-                SizedBox(
+                    : Container(width: 0,),
+                !isMselfId?SizedBox(
                   width: 15.5,
-                )
+                ):Container()
               ],
               backgroundColor: AppColor.white,
               expandedHeight: height * 0.41 - ScreenUtil.instance.statusBarHeight + textHeight,
@@ -462,7 +463,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               child: Container(
                 width: width,
                 height: height * 0.33,
-                color: AppColor.white.withOpacity(0.7),
+                color: AppColor.white.withOpacity(0.6),
               )),
           BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
@@ -539,7 +540,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                         return QueryFollowList(
                           type: 1,
-                          pc: widget.pcController,
                           userId: _id,
                         );
                       }));
@@ -553,7 +553,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                         return QueryFollowList(
                           type: 2,
-                          pc: widget.pcController,
                           userId: _id,
                         );
                       }));
@@ -627,7 +626,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               } else {
                 return DynamicListLayout(
                     index: index,
-                    pc: widget.pcController,
                     isShowRecommendUser: false,
                     model: model,
                     key: GlobalObjectKey("attention$index"));
@@ -639,10 +637,11 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     ///这里当model为null或者刚进来接口还没获取到的时候放一张图片
     switch (state) {
       case StateResult.RESULTNULL:
-        return Container(
+        return Expanded(
+          child:Container(
             padding: EdgeInsets.only(top: 12),
             color: AppColor.white,
-            child: Column(
+            child: ListView(
               children: [
                 Center(
                   child: Container(
@@ -661,7 +660,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                   ),
                 )
               ],
-            ));
+            )));
         break;
       case StateResult.HAVARESULT:
         return _ListData;

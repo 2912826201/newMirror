@@ -18,9 +18,8 @@ class SearchUser extends StatefulWidget {
   String text;
   double width;
   TextEditingController textController;
-  PanelController pc;
 
-  SearchUser({this.text, this.width, this.textController, this.pc});
+  SearchUser({this.text, this.width, this.textController});
 
   @override
   State<StatefulWidget> createState() {
@@ -159,7 +158,7 @@ class searchUserState extends State<SearchUser> {
         child: ListView.builder(
           itemCount: modelList.length,
           itemBuilder: (context, index) {
-            return SearchUserItem(modelList: modelList, index: index, pc: widget.pc, width: widget.width,);
+            return SearchUserItem(modelList: modelList, index: index, width: widget.width,);
           }),
       ))
       : Expanded(
@@ -188,10 +187,9 @@ class searchUserState extends State<SearchUser> {
 class SearchUserItem extends StatefulWidget {
   List<UserModel> modelList;
   int index;
-  PanelController pc;
   double width;
 
-  SearchUserItem({this.modelList, this.index, this.pc, this.width});
+  SearchUserItem({this.modelList, this.index, this.width});
 
   @override
   State<StatefulWidget> createState() {
@@ -251,7 +249,6 @@ class searchState extends State<SearchUserItem> {
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                   return ProfileDetailPage(
                     userId: widget.modelList[widget.index].uid,
-                    pcController: widget.pc,
                   );
                 })).then((value) {
                   //每次从个人主页退回时去请求用户的接口对比当前的关系
@@ -292,7 +289,6 @@ class searchState extends State<SearchUserItem> {
                           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                             return ProfileDetailPage(
                               userId: widget.modelList[widget.index].uid,
-                              pcController: widget.pc,
                             );
                           })).then((value){
                             _getUserInfo(id: widget.modelList[widget.index].uid);

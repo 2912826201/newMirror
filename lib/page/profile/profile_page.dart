@@ -310,7 +310,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             Navigator.of(context).push(MaterialPageRoute(builder: (context) {
               ///这里传type来告知详情页该怎么展示
               return ProfileDetailPage(
-                userId: uid,pcController: widget.panelController,
+                userId: uid,
               );
             }));
           },
@@ -423,12 +423,16 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             child: Stack(
               children: [
                 Container(
-                  height: height*0.15,
-                  width: height*0.15,
+                  height: width*0.27,
+                  width: width*0.27,
                   child: Image.network("https://scpic.chinaz.net/files/pic/pic9/201911/zzpic21124.jpg"),
                 ),
-                Center(
-                  child: Column(
+               Container(
+                 height: width*0.27,
+                 width: width*0.27,
+                 padding: EdgeInsets.only(top: 20),
+                 child: Center(
+                   child: Column(
                     children: [
                       Icon(icon),
                       SizedBox(
@@ -439,7 +443,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                         style: AppStyle.textRegular14,
                       )
                     ],
-                  ),
+                  ),),
                 )
               ],
             ))

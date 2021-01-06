@@ -9,11 +9,12 @@ import 'package:mirror/widget/rich_text_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
+import '../../../../if_page.dart';
+
 // 类容评论排版
 class CommentLayout extends StatelessWidget {
-  CommentLayout({Key key, this.model, this.pc}) : super(key: key);
+  CommentLayout({Key key, this.model,}) : super(key: key);
   final HomeFeedModel model;
-  PanelController pc;
 
   setBaseRichText(CommentDtoModel model) {
     List<BaseRichText> richTexts = [];
@@ -90,7 +91,7 @@ class CommentLayout extends StatelessWidget {
             child: Selector<FeedMapNotifier, int>(builder: (context, commentCount, child) {
               return GestureDetector(
                 onTap: () {
-                  pc.open();
+                  SingletonForWholePages.singleton().openPanelController();
                   context.read<FeedMapNotifier>().changeFeeId(model.id);
                 },
                 child: Text("共${StringUtil.getNumber(commentCount)}条评论", style: AppStyle.textHintRegular12),
@@ -102,7 +103,7 @@ class CommentLayout extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () {
-              pc.open();
+              SingletonForWholePages.singleton().openPanelController();
               context.read<FeedMapNotifier>().changeFeeId(model.id);
             },
               child: Container(
@@ -123,7 +124,7 @@ class CommentLayout extends StatelessWidget {
           )),
           GestureDetector(
               onTap: () {
-                pc.open();
+                SingletonForWholePages.singleton().openPanelController();
                 context.read<FeedMapNotifier>().changeFeeId(model.id);
               },
               child: Container(

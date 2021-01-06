@@ -20,13 +20,11 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 // 搜索页
 class SearchPage extends StatelessWidget {
-  PanelController pcContrller;
 
-  SearchPage({this.pcContrller});
+  SearchPage({Key key});
 
   // 输入框焦点控制器
   FocusNode focusNode = new FocusNode();
@@ -50,7 +48,6 @@ class SearchPage extends StatelessWidget {
                       context.watch<SearchEnterNotifier>().enterText.length > 0
                           ? SearchTabBarView(
                               focusNode: focusNode,
-                              pcController: pcContrller,
                             )
                           : SearchMiddleView(),
                     ],
@@ -336,6 +333,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
         return Container(
           height: 48,
           width: (ScreenUtil.instance.width - 48) / 2,
+          padding: EdgeInsets.only(top: 5,bottom: 5),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -345,7 +343,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
               ),
               Spacer(),
               Container(
-                height: 38,
+                // height: 38,
                 width: ((ScreenUtil.instance.width - 48) / 2) - 40,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -424,22 +422,21 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
               ),
               Container(
                 margin: EdgeInsets.only(top: 9),
-                height: 39,
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      margin: EdgeInsets.only(left: 10),
+                      margin: EdgeInsets.only(left: 10,top: 3),
                       child: Icon(
                         Icons.import_contacts_sharp,
                         size: 32,
                       ),
-                      // width: 32,
-                      // height: 32,
-                      // color: Colors.green,
+                      width: 32,
+                      height: 32,
                     ),
-                    Expanded(
-                        child: Container(
+                    // Expanded(
+                    //     child:
+                        Container(
                       margin: EdgeInsets.only(left: 12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -448,14 +445,15 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                             "#${topicList[index].name}",
                             style: AppStyle.textRegular15,
                           ),
-                          Spacer(),
+                         SizedBox(height: 2,),
                           Text(
                             "${topicList[index].feedCount}条动态",
                             style: AppStyle.textSecondaryRegular12,
                           ),
                         ],
                       ),
-                    )),
+                    // )
+                    ),
                     SizedBox(
                       width: 28,
                     )
@@ -494,9 +492,8 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
 
 // 搜索页TabBarView
 class SearchTabBarView extends StatefulWidget {
-  SearchTabBarView({Key key, this.focusNode, this.pcController}) : super(key: key);
+  SearchTabBarView({Key key, this.focusNode}) : super(key: key);
   FocusNode focusNode;
-  PanelController pcController;
 
   @override
   SearchTabBarViewState createState() => SearchTabBarViewState();
@@ -562,7 +559,6 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
                   textController: context.watch<SearchEnterNotifier>().textController),
               // ),
               SearchUser(
-                  pc: widget.pcController,
                   text: context.watch<SearchEnterNotifier>().enterText,
                   width: ScreenUtil.instance.screenWidthDp,
                   textController: context.watch<SearchEnterNotifier>().textController),

@@ -95,7 +95,6 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin, WidgetsBi
     //四个常规业务tabBar
     tabContent.add(MediaPickerPage(9, typeImageAndVideo, true, startPagePhoto, false, true));
     tabContent.add(MainPage(
-      pc: SingletonForWholePages.singleton().panelController(),
     ));
     return tabContent;
   }
@@ -152,7 +151,6 @@ class SingletonForWholePages {
       case 0:
         return context.watch<FeedMapNotifier>().feedId != null
             ? CommentBottomSheet(
-                pc: SingletonForWholePages.singleton().panelController(),
                 feedId: context.select((FeedMapNotifier value) => value.feedId),
               )
             : Container();
@@ -170,5 +168,13 @@ class SingletonForWholePages {
 
   PanelController panelController() {
     return ifPagePc;
+  }
+  // 打开
+  openPanelController() {
+    ifPagePc.open();
+  }
+  // 关闭
+  closePanelController() {
+    ifPagePc.close();
   }
 }

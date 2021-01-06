@@ -67,30 +67,49 @@ class _queryFollowState extends State<QueryFollowList> {
   bool isSearch = false;
   int _lastTime;
   int searchHashNext;
-  int searchPage = 1;
   bool refreshOver = true;
   String lastString = "";
 
   ///获取关注列表
   _getFollowList() async {
+    if (listPage > 1 && _lastTime == null) {
+      print('=============================退出请求');
+      _refreshController.loadNoData();
+      return;
+    }
     print('====================关注页请求接口');
-    FollowLsitModel model = await GetFollowList(uid: widget.userId.toString());
-    followList.clear();
-    if (model != null) {
+    FollowLsitModel model = await GetFollowList(15,uid: widget.userId.toString(),lastTime: _lastTime);
+    if(listPage==1&&_lastTime==null){
+      _refreshController.loadComplete();
+      followList.clear();
+      if (model != null) {
+        _lastTime = model.lastTime;
         model.list.forEach((element) {
           followList.add(element);
         });
-      _refreshController.refreshCompleted();
-    } else {
-      _refreshController.resetNoData();
+        _refreshController.refreshCompleted();
+      } else {
+        _refreshController.resetNoData();
+      }
+      //这是插入的作为话题入口的假数据
+      followList.insert(0, FollowModel());
+    }else if(listPage>1&&_lastTime!=null){
+      if(model != null){
+        _lastTime = model.lastTime;
+        model.list.forEach((element) {
+          followList.add(element);
+        });
+        _refreshController.loadComplete();
+      }else{
+        _refreshController.loadNoData();
+      }
     }
-    //这是插入的作为话题入口的假数据
-    followList.insert(0, FollowModel());
-    setState(() {});
+    setState(() {
+    });
   }
   ///搜索关注用户
   _getSearchUser(String text) async {
-    if (searchPage > 1 && searchHashNext == 0) {
+    if (listPage > 1 && _lastTime == null) {
       print('=============================退出请求');
       _refreshController.loadNoData();
       return;
@@ -99,11 +118,10 @@ class _queryFollowState extends State<QueryFollowList> {
     print('====开始请求搜索用户接口============================');
     SearchUserModel model = await searchFollowUser(text, 6, uids:widget.userId.toString(),lastTime: _lastTime);
     setState(() {
-      if (searchPage == 1) {
+      if (listPage == 1) {
         _refreshController.loadComplete();
         if (model.list.isNotEmpty) {
             print('===================== =============model有值');
-            searchHashNext = model.hasNext;
             followList.clear();
             //这是插入的作为话题入口的假数据
             followList.insert(0, FollowModel());
@@ -128,7 +146,7 @@ class _queryFollowState extends State<QueryFollowList> {
           followList.clear();
           followList.insert(0, FollowModel());
         }
-      } else if (searchPage > 1 && searchHashNext == 1) {
+      } else if (listPage > 1 && _lastTime !=null) {
         if (model.list != null) {
           model.list.forEach((element) {
             searchModel.clear();
@@ -144,7 +162,6 @@ class _queryFollowState extends State<QueryFollowList> {
             }
             followList.add(searchModel.first);
           });
-          searchHashNext = model.hasNext;
           _lastTime = model.lastTime;
           _refreshController.loadComplete();
         } else {
@@ -157,19 +174,20 @@ class _queryFollowState extends State<QueryFollowList> {
 
   ///获取粉丝列表
   _getFansList() async {
-    if (listPage > 1 && hasNext == 0) {
+    if (listPage > 1 && _lastTime ==null) {
       print('===========================接口退回');
       _refreshController.loadNoData();
       return;
     }
     print('====================粉丝页请求接口');
-    FansListModel model = await GetFansList(listPage, 15, uid: widget.userId);
+    FansListModel model = await GetFansList(_lastTime, 15, uid: widget.userId);
     setState(() {
-      if (listPage == 1) {
+      if (listPage == 1&&_lastTime==null) {
         _refreshController.loadComplete();
         fansList.clear();
-        if (model != null) {
+        if (model.list != null) {
           hasNext = model.hasNext;
+          _lastTime = model.lastTime;
           print('粉丝数=====================================${model.list.length}');
           model.list.forEach((element) {
             fansList.add(element);
@@ -179,9 +197,10 @@ class _queryFollowState extends State<QueryFollowList> {
         } else {
           _refreshController.resetNoData();
         }
-      } else if (listPage > 1 && hasNext != 0) {
-        if (model != null) {
-          hasNext = model.hasNext;
+      } else if (listPage > 1 && _lastTime != null) {
+        print('lastTime================================$_lastTime');
+        if (model.list != null) {
+          _lastTime = model.lastTime;
           model.list.forEach((element) {
             fansList.add(element);
           });
@@ -229,7 +248,7 @@ class _queryFollowState extends State<QueryFollowList> {
   }
   //搜索关注话题
   _getSearchTopic(String text) async {
-    if (searchPage > 1 && searchHashNext == 0) {
+    if (listPage > 1 && _lastTime == null) {
       print('=============================退出请求');
       _refreshController.loadNoData();
       return;
@@ -238,13 +257,12 @@ class _queryFollowState extends State<QueryFollowList> {
     print('====开始请求搜索用户接口============================');
     TopicListModel model = await searchTopicUser(text, 15, lastScore: _lastTime);
     setState(() {
-      if (searchPage == 1) {
+      if (listPage == 1&&_lastTime==null) {
         _refreshController.loadComplete();
         _refreshController.isRefresh;
         if (model.list.isNotEmpty) {
             topicList.clear();
             print('===================== =============model有值');
-            searchHashNext = model.hasNext;
             model.list.forEach((element) {
               print('model================ ${element.id}');
               topicList.add(element);
@@ -254,13 +272,12 @@ class _queryFollowState extends State<QueryFollowList> {
         }else{
           topicList.clear();
         }
-      } else if (searchPage > 1 && searchHashNext == 1) {
+      } else if (listPage > 1 && _lastTime !=null) {
         _refreshController.isLoading;
         if (model.list != null) {
           model.list.forEach((element) {
             topicList.add(element);
           });
-          searchHashNext = model.hasNext;
           _lastTime = model.lastScore;
           _refreshController.loadComplete();
         } else {
@@ -272,11 +289,8 @@ class _queryFollowState extends State<QueryFollowList> {
   }
   //刷新
   __onRefresh() {
-    setState(() {
       listPage = 1;
-      searchPage=1;
       _lastTime = null;
-    });
     if (widget.type == 1) {
       if(controller.text.isNotEmpty){
         _getSearchUser(controller.text);
@@ -296,15 +310,12 @@ class _queryFollowState extends State<QueryFollowList> {
 
   //加载
   _onLoading() {
-    setState(() {
       listPage += 1;
-      searchPage+=1;
-    });
     if(widget.type==1){
       if(controller.text.isNotEmpty){
         _getSearchUser(controller.text);
       }else{
-
+        _getFollowList();
       }
     }else if (widget.type == 2) {
         _getFansList();
@@ -333,10 +344,8 @@ class _queryFollowState extends State<QueryFollowList> {
           print('text===============改变值');
           if(refreshOver){
             print('text===============刷新完成');
-            setState(() {
-              searchPage = 1;
+                listPage = 1;
               _lastTime = null;
-            });
             if (widget.type == 1) {
               _getSearchUser(controller.text);
             }else{
@@ -345,6 +354,8 @@ class _queryFollowState extends State<QueryFollowList> {
           }
         }
       } else {
+          listPage = 1;
+          _lastTime = null;
        if(widget.type == 1){
            _getFollowList();
        }else{
@@ -611,7 +622,7 @@ class _followItemState extends State<QueryFollowItem> {
   bool haveRemarks = false;
 
   //判断是否有简介
-  bool haveIntroduction = false;
+  bool haveIntroduction = true;
 
   bool isFollow = false;
 
@@ -708,7 +719,7 @@ class _followItemState extends State<QueryFollowItem> {
         haveIntroduction = false;
       }
     }//粉丝列表
-    else {
+    else if(widget.type ==2) {
       if (widget.fansList[widget.index].description != null) {
         haveIntroduction = true;
       } else {
@@ -730,6 +741,9 @@ class _followItemState extends State<QueryFollowItem> {
       } else {
         isFollow = true;
       }
+    }else{
+      isCanOnclick = false;
+      haveRemarks = false;
     }
     return Container(
       height: haveRemarks ? 78 : 58,
@@ -746,16 +760,19 @@ class _followItemState extends State<QueryFollowItem> {
                     return ProfileDetailPage(
                       userId:
                           widget.type == 1 ? widget.followList[widget.index].uid : widget.fansList[widget.index].uid,
-                      pcController: widget.pc,
                     );
                   })).then((value) {
                     ///这里每次回来都去请求一遍用户关系,改变按钮状态
                     if (widget.type == 1) {
-                      _getUserInfo(id: widget.followList[widget.index].uid);
+                      if(isCanOnclick){
+                        _getUserInfo(id: widget.followList[widget.index].uid);
+                      }
                     } else {
                       _getUserInfo(id: widget.fansList[widget.index].uid);
                     }
                   });
+                }else{
+                  ///这里处理话题跳转
                 }
               },
               child: widget.type == 3
@@ -791,12 +808,14 @@ class _followItemState extends State<QueryFollowItem> {
                         alignment: Alignment.centerLeft,
                         child: InkWell(
                           onTap: () {
+                            if(widget.type==3){
+                              ///这里处理话题的跳转
+                            }else{
                             Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                               return ProfileDetailPage(
                                 userId: widget.type == 1
                                     ? widget.followList[widget.index].uid
                                     : widget.fansList[widget.index].uid,
-                                pcController: widget.pc,
                               );
                             })).then((value) {
                               ///这里每次回来都去请求一遍用户关系,改变按钮状态
@@ -806,13 +825,16 @@ class _followItemState extends State<QueryFollowItem> {
                                 _getUserInfo(id: widget.fansList[widget.index].uid);
                               }
                             });
+                            }
                           },
                           child: Text(
                             haveRemarks
                                 ? widget.fansList[widget.index].remarkName
                                 : widget.type == 1
                                     ? widget.followList[widget.index].nickName
-                                    : widget.fansList[widget.index].nickName,
+                                    : widget.type==2
+                                    ?widget.fansList[widget.index].nickName
+                                    :"#${widget.topicList[widget.index].name}",
                             style: AppStyle.textMedium15,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -840,7 +862,7 @@ class _followItemState extends State<QueryFollowItem> {
                                   ? widget.followList[widget.index].description
                                   : widget.type == 2
                                       ? widget.fansList[widget.index].description
-                                      : " ",
+                                      : "这是话题的签名",
                               style: AppStyle.textSecondaryRegular12,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,

@@ -13,10 +13,8 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 class HomePage extends StatefulWidget {
   HomePage({
     Key key,
-    this.pc,
     this.controller
   }) : super(key: key);
-  PanelController pc = new PanelController();
   TabController controller;
 
   HomePageState createState() => HomePageState(controller: controller);
@@ -61,7 +59,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                       height: 44,
                       width: ScreenUtil.instance.screenWidthDp,
                       child: Container(
-                        child: HomeTopTab(controller: controller,pcController: widget.pc,),
+                        child: HomeTopTab(controller: controller,),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           border: Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
@@ -77,10 +75,8 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                           children: [
                               AttentionPage(
                                 postFeedModel: context.watch<FeedMapNotifier>().postFeedModel,
-                              pc: widget.pc,
                             ),
                             RecommendPage(
-                              pc: widget.pc,
                             )
                             // RecommendPage()
                           ],
