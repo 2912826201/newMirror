@@ -52,65 +52,60 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         context.watch<ConversationNotifier>().topListLength + context.watch<ConversationNotifier>().commonListLength;
     return Scaffold(
         appBar: AppBar(
-            leading: null,
-            backgroundColor: AppColor.white,
-            title: Row(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 28,
+          leading: null,
+          backgroundColor: AppColor.white,
+          brightness: Brightness.light,
+          title: Row(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 48,
+              ),
+              Text(
+                "消息（${context.watch<RongCloudStatusNotifier>().status}）",
+                style: AppStyle.textMedium18,
+              ),
+            ],
+          ),
+          actions: [
+            IconButton(
+                icon: Icon(
+                  Icons.group_add,
+                  color: AppColor.black,
                 ),
-                Expanded(
-                    child: Center(
-                  child: Text(
-                    "消息（${context.watch<RongCloudStatusNotifier>().status}）",
-                    style: AppStyle.textMedium18,
-                  ),
-                )),
-                GestureDetector(
-                  onTap: () async {
-                    //临时测试用的 创建群聊方法
-                    List<String> testGroupMemberList = [
-                      "1018240",
-                      "1005740",
-                      "1007890",
-                      "1004317",
-                      "1009100"];
+                onPressed: () async {
+                  //临时测试用的 创建群聊方法
+                  List<String> testGroupMemberList = ["1018240", "1005740", "1007890", "1004317", "1009100"];
 
-                    GroupChatModel model = await createGroupChat(testGroupMemberList);
+                  GroupChatModel model = await createGroupChat(testGroupMemberList);
 
-                    if(model == null){
-                      return;
+                  if (model == null) {
+                    return;
+                  }
+
+                  ConversationDto cdto = ConversationDto.fromGroupChat(model);
+
+                  bool result = await ConversationDBHelper().insertConversation(cdto);
+                  if (result) {
+                    if (cdto.isTop == 0) {
+                      context.read<ConversationNotifier>().insertCommonList([cdto]);
+                    } else {
+                      context.read<ConversationNotifier>().insertTopList([cdto]);
                     }
+                  }
 
-                    ConversationDto cdto = ConversationDto.fromGroupChat(model);
-
-                    bool result = await ConversationDBHelper().insertConversation(cdto);
-                    if (result) {
-                      if (cdto.isTop == 0) {
-                        context.read<ConversationNotifier>().insertCommonList([cdto]);
-                      } else {
-                        context.read<ConversationNotifier>().insertTopList([cdto]);
-                      }
-                    }
-
-                    //TODO 正国之前写的方法 需要仔细研究下
-                    // PanelController expectedPc = SingletonForWholePages.singleton().panelController();
-                    // if (expectedPc.isPanelClosed() == true) {
-                    //   SingletonForWholePages.singleton().panelController().open();
-                    // } else {
-                    //   SingletonForWholePages.singleton().panelController().close();
-                    // }
-                  },
-                  child: Container(
-                    width: 28,
-                    height: 28,
-                    color: AppColor.mainBlue,
-                  ),
-                ),
-              ],
-            )),
+                  //TODO 正国之前写的方法 需要仔细研究下
+                  // PanelController expectedPc = SingletonForWholePages.singleton().panelController();
+                  // if (expectedPc.isPanelClosed() == true) {
+                  //   SingletonForWholePages.singleton().panelController().open();
+                  // } else {
+                  //   SingletonForWholePages.singleton().panelController().close();
+                  // }
+                }),
+          ],
+        ),
         body: ScrollConfiguration(
             behavior: NoBlueEffectBehavior(),
             child: ListView.builder(
@@ -289,8 +284,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     MessageContent msgContent = MessageContent();
     msgContent.decode(conversation.content);
     bool isMentioned = msgContent.mentionedInfo != null &&
-        msgContent.mentionedInfo.userIdList
-            .contains(Application.profile.uid.toString());
+        msgContent.mentionedInfo.userIdList.contains(Application.profile.uid.toString());
     return Container(
       height: 69,
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -320,16 +314,16 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                   ),
                 ),
                 conversation.type == OFFICIAL_TYPE ||
-                    conversation.type == LIVE_TYPE ||
-                    conversation.type == TRAINING_TYPE
+                        conversation.type == LIVE_TYPE ||
+                        conversation.type == TRAINING_TYPE
                     ? Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: Container(
-                      height: 16,
-                      width: 16,
-                      color: AppColor.bgBlack,
-                    ))
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          height: 16,
+                          width: 16,
+                          color: AppColor.bgBlack,
+                        ))
                     : Container()
               ],
             ),
@@ -345,15 +339,13 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                   children: [
                     Expanded(
                         child: Text(
-                          "${conversation.name}",
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: false,
-                          style: AppStyle.textRegular14,
-                        )),
+                      "${conversation.name}",
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: false,
+                      style: AppStyle.textRegular14,
+                    )),
                     Text(
-                      DateUtil.formatDateTimeString(
-                          DateTime.fromMillisecondsSinceEpoch(
-                              conversation.updateTime)),
+                      DateUtil.formatDateTimeString(DateTime.fromMillisecondsSinceEpoch(conversation.updateTime)),
                       style: AppStyle.textHintRegular12,
                     )
                   ],
@@ -364,17 +356,17 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                   children: [
                     isMentioned
                         ? Text(
-                      "[有人@你]",
-                      style: AppStyle.textRegularRed13,
-                    )
+                            "[有人@你]",
+                            style: AppStyle.textRegularRed13,
+                          )
                         : Container(),
                     Expanded(
                         child: Text(
-                          "${conversation.content}",
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: false,
-                          style: AppStyle.textSecondaryRegular13,
-                        )),
+                      "${conversation.content}",
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: false,
+                      style: AppStyle.textSecondaryRegular13,
+                    )),
                     SizedBox(
                       width: 12,
                     ),

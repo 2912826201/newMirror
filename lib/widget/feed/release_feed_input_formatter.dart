@@ -92,19 +92,24 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
       }
       // 跟随@后面输入的实时搜索值
       if (atIndex > 0 && newValue.selection.start >= atIndex) {
-        atSearchStr = newValue.text.substring(atIndex,newValue.selection.start);
+        atSearchStr =
+            newValue.text.substring(atIndex, newValue.selection.start);
         print(atSearchStr);
       }
       if (topicIndex > 0 && newValue.selection.start >= topicIndex) {
-        topicSearchStr = newValue.text.substring(topicIndex,newValue.selection.start);
+        topicSearchStr =
+            newValue.text.substring(topicIndex, newValue.selection.start);
       }
-      // 在删除操作中删除了rules中的数据，使用了provide后， 回调后会再次进入重走逻辑。在此阻止。
-      if (delRules.isNotEmpty) {
-        if (oldValue.text == newValue.text.substring(0,delRules[0].startIndex)) {
-          delRules = [];
-          return oldValue;
-        }
-      }
+
+      // print("_textController.text:${controller.text}");
+      // // 在删除操作中删除了rules中的数据，使用了provide后， 回调后会再次进入重走逻辑。在此阻止。
+      // if (delRules.isNotEmpty&&oldValue.text.length!=0) {
+      //   if (oldValue.text == newValue.text.substring(0,delRules[0].startIndex)) {
+      //     delRules = [];
+      //     print("删除");
+      //     return oldValue;
+      //   }
+      // }
     } else {
       /// 删除或替换内容 （含直接delete、选中后输入别的字符替换）
       if (!oldValue.composing.isValid || oldValue.selection.start != oldValue.selection.end) {

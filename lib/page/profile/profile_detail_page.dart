@@ -21,7 +21,7 @@ import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_bottom_sheet.dart';
 import 'package:mirror/page/profile/profile_details_more.dart';
 import 'package:mirror/page/profile/query_list/query_follow_list.dart';
-import 'package:mirror/page/profile/sticky_tabBar.dart';
+import 'package:mirror/page/profile/sticky_tabbar.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -291,7 +291,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     followlastTime = model.lastTime;
     context.read<FeedMapNotifier>().updateFeedMap(followModel);
   }
-
+@override
+  void dispose() {
+    super.dispose();
+    SingletonForWholePages.singleton().panelController().close();
+    _mController.dispose();
+    _refreshController.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     print('=======================================个人主页build');
@@ -674,7 +680,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         onTap: () {
           if (isMselfId) {
             ///这里跳转到编辑资料页
-            AppRouter.navigationToEditInfomation(context, (result) {
+            AppRouter.navigateToEditInfomation(context, (result) {
                 _getUserInfo();
             });
           } else {

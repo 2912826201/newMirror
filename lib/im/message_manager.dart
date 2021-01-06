@@ -5,6 +5,7 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:mirror/data/model/message/at_mes_group_model.dart';
 
 /// message_manager
 /// Created by yangjiayi on 2020/12/21.
@@ -127,5 +128,26 @@ class MessageManager {
     dto.unreadCount = msg.receivedStatus == RCReceivedStatus.Unread ? 1 : 0;
 
     return dto;
+  }
+
+  //判断有没有at我的消息
+  static void judgeIsHaveAtUserMes(Message msg) {
+    if (msg != null &&
+        msg.content != null &&
+        msg.content.mentionedInfo != null &&
+        msg.content.mentionedInfo.userIdList != null &&
+        msg.content.mentionedInfo.userIdList.length > 0) {
+      for (int i = 0; i < msg.content.mentionedInfo.userIdList.length; i++) {
+        if (msg.content.mentionedInfo.userIdList[i] ==
+            Application.profile.uid.toString()) {
+          AtMsg atMsg = new AtMsg(
+              groupId: int.parse(msg.targetId),
+              sendTime: msg.sentTime,
+              messageUId: msg.messageUId);
+          Application.atMesGroupModel.add(atMsg);
+          break;
+        }
+      }
+    }
   }
 }

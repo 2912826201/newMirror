@@ -13,7 +13,6 @@ import 'package:mirror/page/login/login_page.dart';
 import 'package:mirror/page/login/perfect_user_page.dart';
 import 'package:mirror/page/login/phone_login_page.dart';
 import 'package:mirror/page/main_page.dart';
-import 'package:mirror/page/media_picker/gallery_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/media_picker/preview_photo_page.dart';
 import 'package:mirror/page/message/chat_page.dart';
@@ -30,7 +29,7 @@ import 'package:mirror/page/profile/setting/blacklist_page.dart';
 import 'package:mirror/page/profile/setting/feedback_page.dart';
 import 'package:mirror/page/profile/setting/notice_setting_page.dart';
 import 'package:mirror/page/profile/setting/setting_home_page.dart';
-import 'package:mirror/page/profile/scan_code_page.dart';
+import 'package:mirror/page/scan_code_page.dart';
 import 'package:mirror/page/profile/setting/blacklist_page.dart';
 import 'package:mirror/page/profile/setting/feedback_page.dart';
 import 'package:mirror/page/profile/setting/notice_setting_page.dart';
@@ -122,16 +121,20 @@ var handlerProfileAddRemarks = Handler(handlerFunc: (BuildContext context, Map<S
   );
 });
 
-var handlerEditInformation = Handler(
-    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+var handlerEditInformation = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return EditInformation();
 });
 
 var handlerEditInformationName = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return EditInformationName(
-    userName: data["username"],
-  );
+  if (data["title"] != null) {
+    return EditInformationName(
+        userName: data["username"], title: data["title"]);
+  } else {
+    return EditInformationName(
+      userName: data["username"],
+    );
+  }
 });
 
 var handlerEditInformationIntroduction = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
@@ -143,19 +146,19 @@ var handlerEditInformationIntroduction = Handler(handlerFunc: (BuildContext cont
 var handlerSettingHomePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return SettingHomePage();
 });
-var handlerSettingBlackList = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+var handlerSettingBlackList = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return BlackListPage();
 });
-var handlerSettingNoticeSetting = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+var handlerSettingNoticeSetting = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return NoticeSettingPage();
 });
-var handlerSettingFeedBack = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+var handlerSettingFeedBack = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return FeedBackPage();
 });
-var handlerSettingAbout = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+var handlerSettingAbout = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return AboutPage();
 });
-var handlerSettingAccountSecurity = Handler(handlerFunc: (BuildContext context,Map<String,List<String>> params){
+var handlerSettingAccountSecurity = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return AccountSecurityPage();
 });
 var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
@@ -226,4 +229,9 @@ var handlerMachineConnectionInfo = Handler(handlerFunc: (BuildContext context, M
 //终端设置页
 var handlerMachineSetting = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return MachineSettingPage();
+});
+
+//扫描二维码页
+var handlerScanCode = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return ScanCodePage();
 });

@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/message/chat_group_user_model.dart';
+import 'package:mirror/page/message/chat_page.dart';
 import 'package:mirror/page/message/message_view/currency_msg.dart';
 import 'package:mirror/util/toast_util.dart';
 
-typedef StringCallback = void Function(String content, int index);
+typedef StringCallback = void Function(ChatGroupUserModel userModel, int index);
 
 class ChatAtUserList extends StatefulWidget {
   final bool isShow;
@@ -18,18 +21,6 @@ class ChatAtUserList extends StatefulWidget {
 }
 
 class _ChatAtUserListState extends State<ChatAtUserList> {
-  List<String> stings = [
-    "换行 ",
-    "是撒 ",
-    "阿斯达 ",
-    "奥术大师 ",
-    "奥术大师多 ",
-    "胜多负少 ",
-    "豆腐干豆腐 ",
-    "爽肤水 ",
-    "出现橙 ",
-    "阿斯达 "
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -86,15 +77,15 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
   Widget listViewUi() {
     return ListView.builder(
       physics: BouncingScrollPhysics(),
-      itemCount: stings.length,
+      itemCount: Application.chatGroupUserModelList.length,
       itemBuilder: (context, index) {
-        return item(stings[index], index);
+        return item(Application.chatGroupUserModelList[index], index);
       },
     );
   }
 
   //每一个item
-  Widget item(String sting, int index) {
+  Widget item(ChatGroupUserModel groupUserModel, int index) {
     return Material(
         color: AppColor.white,
         child: new InkWell(
@@ -104,10 +95,10 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                getUserImage("", 36, 36),
+                getUserImage(groupUserModel.avatarUri, 36, 36),
                 SizedBox(width: 12),
                 Text(
-                  sting,
+                  groupUserModel.groupNickName,
                   style: AppStyle.textRegular16,
                 )
               ],
@@ -116,7 +107,7 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
           splashColor: AppColor.textHint,
           onTap: () {
             if (widget.onItemClickListener != null) {
-              widget.onItemClickListener(sting, index);
+              widget.onItemClickListener(groupUserModel, index);
             }
           },
         ));

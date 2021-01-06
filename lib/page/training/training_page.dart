@@ -61,9 +61,9 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
                     }
                   })),
           Positioned(
-              left: 0,
-              bottom: 0,
-              child: _buildInfoBar(),
+            left: 0,
+            bottom: 0,
+            child: _buildInfoBar(),
           ),
         ],
       ),
@@ -110,7 +110,9 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
             ],
           ),
           GestureDetector(
-              onTap: () {},
+              onTap: () {
+                AppRouter.navigateToScanCodePage(context);
+              },
               child: Container(
                 margin: const EdgeInsets.only(top: 12),
                 height: 36,
@@ -394,7 +396,9 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
         children: [
           GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap: (){print("关闭信息条");},
+            onTap: () {
+              print("关闭信息条");
+            },
             child: Container(
               alignment: Alignment.center,
               height: 36,
@@ -406,7 +410,8 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
               ),
             ),
           ),
-          Expanded(child: Text(
+          Expanded(
+              child: Text(
             "继续播放：普拉提产后恢复系列高速燃脂普拉提产后恢复系列高速燃脂",
             softWrap: false,
             overflow: TextOverflow.ellipsis,

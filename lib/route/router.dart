@@ -35,7 +35,6 @@ class AppRouter {
   static String pathVideoCourseList = "/videocourselist";
   static String pathScanCode = "/scancode";
   static String pathMineDetails = "/minedetails";
-  static String pathProfileScanCode = "/profile/scancode";
   static String pathProfileDetails = "/profile/details";
   static String pathProfileDetailsMore = "/profile/details/more";
   static String pathProfileAddRemarks = "/profile/addremarks";
@@ -54,8 +53,7 @@ class AppRouter {
   static String pathSettingAccountSecurity = "/profile/settingaccountsecurity";
 
   static void configureRouter(FluroRouter router) {
-    router.notFoundHandler = Handler(
-        handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
+    router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
       print("ROUTE WAS NOT FOUND !!!");
     });
 
@@ -75,7 +73,7 @@ class AppRouter {
     router.define(pathLiveBroadcast, handler: handlerLiveBroadcast);
     router.define(pathLiveDetail, handler: handlerLiveDetail);
     router.define(pathVideoDetail, handler: handlerVideoDetail);
-/*    router.define(pathProfileScanCode, handler: handlerScan);*/
+    router.define(pathScanCode, handler: handlerScanCode);
     router.define(pathProfileDetails, handler: handlermineDetails);
     router.define(pathVideoCourseList, handler: handlerVideoCourseList);
     router.define(pathProfileDetailsMore, handler: handlerProfileDetailMore);
@@ -112,15 +110,15 @@ class AppRouter {
     }
   }
 
-  static void popToBeforeLogin(BuildContext context){
-    if(Application.loginPopRouteName != null) {
+  static void popToBeforeLogin(BuildContext context) {
+    if (Application.loginPopRouteName != null) {
       Navigator.of(context).popUntil(ModalRoute.withName(Application.loginPopRouteName));
-    }else{
+    } else {
       Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
     }
   }
 
-  static void navigateToPerfectUserPage(BuildContext context){
+  static void navigateToPerfectUserPage(BuildContext context) {
     _navigateToPage(context, pathPerfectUserPage, {});
   }
 
@@ -140,9 +138,8 @@ class AppRouter {
     _navigateToPage(context, pathLoginTest, map);
   }
 
-  static void navigateToMediaPickerPage(
-      BuildContext context, int maxImageAmount, int mediaType, bool needCrop, int startPage,
-      bool cropOnlySquare, bool isGoToPublish, Function(dynamic result) callback) {
+  static void navigateToMediaPickerPage(BuildContext context, int maxImageAmount, int mediaType, bool needCrop,
+      int startPage, bool cropOnlySquare, bool isGoToPublish, Function(dynamic result) callback) {
     Map<String, dynamic> map = Map();
     map["maxImageAmount"] = maxImageAmount;
     map["mediaType"] = mediaType;
@@ -176,8 +173,8 @@ class AppRouter {
     _navigateToPage(context, pathVideoCourseList, {});
   }
 
-  static void navigateToLiveDetail(BuildContext context, String heroTag,
-      int liveCourseId, int courseId, LiveModel liveModel) {
+  static void navigateToLiveDetail(
+      BuildContext context, String heroTag, int liveCourseId, int courseId, LiveModel liveModel) {
     Map<String, dynamic> map = Map();
     map["heroTag"] = heroTag;
     map["liveCourseId"] = liveCourseId;
@@ -186,8 +183,8 @@ class AppRouter {
     _navigateToPage(context, pathLiveDetail, map);
   }
 
-  static void navigateToVideoDetail(BuildContext context, String heroTag,
-      int liveCourseId, int courseId, LiveModel videoModel) {
+  static void navigateToVideoDetail(
+      BuildContext context, String heroTag, int liveCourseId, int courseId, LiveModel videoModel) {
     Map<String, dynamic> map = Map();
     map["heroTag"] = heroTag;
     map["liveCourseId"] = liveCourseId;
@@ -196,61 +193,78 @@ class AppRouter {
     _navigateToPage(context, pathVideoDetail, map);
   }
 
-  static void navigationToScanCodePage(BuildContext context) {
-    _navigateToPage(context, pathProfileScanCode, {});
+  static void navigateToScanCodePage(BuildContext context) {
+    _navigateToPage(context, pathScanCode, {});
   }
-  static void navigationToProfiileDetailMore(BuildContext context) {
+
+  static void navigateToProfileDetailMore(BuildContext context) {
     _navigateToPage(context, pathProfileDetailsMore, {});
   }
-  static void navigationToProfileAddRemarks(BuildContext context,String username,int userId){
-    Map<String,dynamic> map = Map();
+
+  static void navigateToProfileAddRemarks(BuildContext context, String username, int userId) {
+    Map<String, dynamic> map = Map();
     map["username"] = username;
     map["userId"] = userId;
-    _navigateToPage(context, pathProfileAddRemarks,map);
+    _navigateToPage(context, pathProfileAddRemarks, map);
   }
-  static void navigationToEditInfomation(BuildContext context,Function(dynamic result) callback) {
-    _navigateToPage(context, pathEditInformation, {},callback: callback);
+
+  static void navigateToEditInfomation(BuildContext context, Function(dynamic result) callback) {
+    _navigateToPage(context, pathEditInformation, {}, callback: callback);
   }
-  static void navigationToEditInfomationName(BuildContext context,String username,Function(dynamic result) callback) {
-    Map<String,dynamic> map = Map();
+
+  static void navigateToEditInfomationName(BuildContext context, String username, Function(dynamic result) callback,
+      {String title}) {
+    Map<String, dynamic> map = Map();
     map["username"] = username;
-    _navigateToPage(context, pathEditInformationName, map,callback: callback);
+    if (title != null) {
+      map["title"] = title;
+    }
+    _navigateToPage(context, pathEditInformationName, map, callback: callback);
   }
-  static void navigationToEditInfomationIntroduction(BuildContext context,String introduction,Function(dynamic result) callback) {
-    Map<String,dynamic> map = Map();
+
+  static void navigateToEditInfomationIntroduction(
+      BuildContext context, String introduction, Function(dynamic result) callback) {
+    Map<String, dynamic> map = Map();
     map["introduction"] = introduction;
-    _navigateToPage(context, pathEditInformationIntroduction, map,callback: callback);
+    _navigateToPage(context, pathEditInformationIntroduction, map, callback: callback);
   }
+
   static void navigateToSettingHomePage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathSettingHomePage, map);
   }
+
   static void navigateToSettingFeedBack(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathSettingFeedBack, map);
   }
+
   static void navigateToSettingNoticeSetting(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathSettingNoticeSetting, map);
   }
+
   static void navigateToSettingBlackList(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathSettingBlackList, map);
   }
+
   static void navigateToSettingAbout(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathSettingAbout, map);
   }
+
   static void navigateToSettingAccountSecurity(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathSettingAccountSecurity, map);
   }
+
   static void navigateToLikePage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathLike, map);
   }
 
-  static void navigateToMineDetail(BuildContext context,int uId,PanelController pcController) {
+  static void navigateToMineDetail(BuildContext context, int uId, PanelController pcController) {
     Map<String, dynamic> map = Map();
     map["userId"] = uId;
     map["pcController"] = pcController;
@@ -263,9 +277,7 @@ class AppRouter {
   }
 
   static void navigateToChatPage(
-      {@required BuildContext context,
-      @required ConversationDto conversation,
-      Message shareMessage}) {
+      {@required BuildContext context, @required ConversationDto conversation, Message shareMessage}) {
     Map<String, dynamic> map = Map();
     if (conversation != null) {
       map["conversation"] = conversation.toMap();
@@ -274,8 +286,7 @@ class AppRouter {
     _navigateToPage(context, pathChatPage, map);
   }
 
-  static void navigateToPreviewPhotoPage(BuildContext context, String filePath,
-      Function(dynamic result) callback) {
+  static void navigateToPreviewPhotoPage(BuildContext context, String filePath, Function(dynamic result) callback) {
     Map<String, dynamic> map = Map();
     map["filePath"] = filePath;
     _navigateToPage(context, pathPreviewPhoto, map, callback: callback);

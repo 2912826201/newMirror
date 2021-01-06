@@ -78,9 +78,9 @@ widget/     可复用的界面组件。
   
 ## UI界面开发指南
 一、状态栏字符颜色
-  用以下代码包裹Scaffold来实现控制状态栏字符颜色
+  1.没有用AppBar：用以下代码包裹Scaffold来实现控制状态栏字符颜色
   AnnotatedRegion<SystemUiOverlayStyle>(
     value: SystemUiOverlayStyle.dark, //黑色是dark 白色是light
     child: Scaffold()
   )
-  如果Scaffold中使用了AppBar，则还需在AppBar中设置brightness: Brightness.light //light是黑字，dark是白字
+  2.用了AppBar：在AppBar中设置brightness: Brightness.light //light是黑字，dark是白字

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/page/message/send_message_view.dart';
+import 'package:mirror/widget/first_end_item_children_delegate.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'item/chat_system_bottom_bar.dart';
@@ -17,14 +18,23 @@ class ChatDetailsBody extends StatelessWidget {
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
   final String chatUserName;
+  final bool isShowChatUserName;
   final bool isPersonalButler;
   final GestureTapCallback onTap;
   final VoidCallback onRefresh;
+  final VoidCallback onAtUiClickListener;
   final RefreshController refreshController;
+  final FirstEndCallback firstEndCallback;
+  final int isHaveAtMeMsgIndex;
+  final bool isHaveAtMeMsg;
 
   ChatDetailsBody(
       {this.scrollController,
       this.chatDataList,
+      this.isShowChatUserName,
+      this.isHaveAtMeMsgIndex,
+      this.isHaveAtMeMsg,
+      this.firstEndCallback,
       this.vsync,
       this.chatUserName,
       this.onTap,
@@ -32,6 +42,7 @@ class ChatDetailsBody extends StatelessWidget {
       this.voidMessageClickCallBack,
       this.onRefresh,
       this.refreshController,
+      this.onAtUiClickListener,
       this.voidItemLongClickCallBack});
 
   List<ChatDataModel> chatData = <ChatDataModel>[];
@@ -104,15 +115,20 @@ class ChatDetailsBody extends StatelessWidget {
               ),
               controller: refreshController,
               onLoading: onRefresh,
-              child: ListView.builder(
+              child: ListView.custom(
+                cacheExtent: 0.0,
                 physics: BouncingScrollPhysics(),
                 controller: scrollController,
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 reverse: true,
-                itemBuilder: (context, int index) {
+                childrenDelegate: FirstEndItemChildrenDelegate((
+                    BuildContext context, int index) {
                   return judgeStartAnimation(chatData[index], index);
                 },
-                itemCount: chatData.length,
+                  firstEndCallback: firstEndCallback,
+                  childCount: chatData.length,
+
+                ),
                 dragStartBehavior: DragStartBehavior.down,
               ),
             ),
@@ -127,8 +143,47 @@ class ChatDetailsBody extends StatelessWidget {
           left: 0,
           right: 0,
           bottom: 0,
-        )
+        ),
+        Positioned(
+          child: Visibility(
+            visible: isHaveAtMeMsg,
+            child: Container(
+              child: getAtUi(),
+            ),
+          ),
+          top: 24,
+          right: 0,
+        ),
       ],
+    );
+  }
+
+  //获取at的视图
+  Widget getAtUi() {
+    return GestureDetector(
+      onTap: () {
+        if (onAtUiClickListener != null) {
+          onAtUiClickListener();
+        }
+      },
+      child: Container(
+        height: 44,
+        width: 114,
+        decoration: BoxDecoration(
+          color: AppColor.white,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(22), bottomLeft: Radius.circular(22)),
+        ),
+        child: Row(
+          children: [
+            SizedBox(width: 8,),
+            getUserImage("", 28, 28),
+            SizedBox(width: 11,),
+            Text("有人@你",
+              style: TextStyle(fontSize: 14, color: AppColor.mainBlue),),
+          ],
+        ),
+      ),
     );
   }
 
@@ -165,7 +220,7 @@ class ChatDetailsBody extends StatelessWidget {
 
     return SendMessageView(
         model, position, voidMessageClickCallBack, voidItemLongClickCallBack,
-        chatUserName);
+        chatUserName, isShowChatUserName);
   }
 
   bool judgePersonalButler(ChatDataModel model) {

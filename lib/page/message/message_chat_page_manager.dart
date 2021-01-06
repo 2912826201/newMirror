@@ -80,8 +80,8 @@ void jumpShareMessage(Map<String, dynamic> map, String chatType, String name,
   }
   if (message == null) {
     message = await postMessageManagerText(
-        conversation.conversationId, map.toString(),
-        conversation.type == RCConversationType.Private);
+        conversation.conversationId,
+        map.toString(), null, conversation.type == RCConversationType.Private);
   }
   print(message.toString());
   _jumpChatPage(
@@ -114,9 +114,14 @@ void _jumpChatPage(
 
 //发送文本消息
 Future<Message> postMessageManagerText(String targetId, String text,
-    bool isPrivate) async {
+    MentionedInfo mentionedInfo, bool isPrivate) async {
   TextMessage msg = TextMessage();
   msg.sendUserInfo = getChatUserInfo();
+  if (mentionedInfo != null &&
+      mentionedInfo.userIdList != null &&
+      mentionedInfo.userIdList.length > 0) {
+    msg.mentionedInfo = mentionedInfo;
+  }
   // msg.content = text;
   Map<String, dynamic> feedMap = Map();
   feedMap["type"] = ChatTypeModel.MESSAGE_TYPE_TEXT;
@@ -332,9 +337,10 @@ ConversationDto getConversationDto() {
 
 //发送字符串的model
 void postText(ChatDataModel chatDataModel, String targetId, int chatTypeId,
+    MentionedInfo mentionedInfo,
     VoidCallback voidCallback) async {
   chatDataModel.msg = await postMessageManagerText(
-      targetId, chatDataModel.content,
+      targetId, chatDataModel.content, mentionedInfo,
       chatTypeId == RCConversationType.Private);
   chatDataModel.isTemporary = false;
   // print(chatDataModel.msg.toString());
@@ -463,6 +469,24 @@ Future<List<UploadResultModel>> onPostImgOrVideo(
   return uploadResultModelList;
 }
 
+//获取at人的名字
+String gteAtUserName(List<String> userIdList) {
+  String string = "";
+  if (userIdList != null && userIdList.length > 0) {
+    for (int i = 0; i < userIdList.length; i++) {
+      for (int j = 0; j < Application.chatGroupUserModelList.length; j++) {
+        if (userIdList[i] == Application.chatGroupUserModelList[j].uid.toString()) {
+          string += Application.chatGroupUserModelList[j].nickName + ",";
+          break;
+        }
+      }
+    }
+    return string;
+  } else {
+    return string;
+  }
+}
+
 int getRCConversationType(int type) {
   switch (type) {
     case 100:
@@ -479,13 +503,14 @@ int getRCConversationType(int type) {
 //todo 之后改为路由跳转
 //判断去拿一个更多界面
 void judgeJumpPage(int chatTypeId, String chatUserId, int chatType,
-    BuildContext context) {
+    BuildContext context, String name) {
   if (chatTypeId == RCConversationType.Private) {
     jumpPage(
         PrivateMorePage(chatUserId: chatUserId, chatType: chatType,), false,
         context);
   } else {
-    jumpPage(GroupMorePage(chatUserId: chatUserId, chatType: chatType), false,
+    jumpPage(GroupMorePage(
+        chatGroupId: chatUserId, chatType: chatType, groupName: name), false,
         context);
   }
 }
