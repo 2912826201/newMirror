@@ -336,6 +336,7 @@ class CommentBottomListView extends StatelessWidget {
 
     return Container(
       margin: EdgeInsets.only(left: 16, right: 16, top: 12),
+      // color: AppColor.mainRed,
       child: Column(
         children: [
           GestureDetector(
@@ -500,6 +501,7 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
   Widget build(BuildContext context) {
     return Container(
         margin: EdgeInsets.only(top: 12, left: 57),
+        // color: Colors.green,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -512,7 +514,8 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
             MediaQuery.removePadding(
                 removeTop: true,
                 context: context,
-                child: ListView.builder(
+                child:
+        ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     itemCount: widget.replys.length,
@@ -524,7 +527,10 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
                         feedId: widget.feedId,
                         commentDtoModel: widget.commentDtoModel,
                       );
-                    })),
+                    }
+                    )
+    ),
+
             // 查看按钮和隐藏按钮的切换
             Offstage(
               offstage: widget.commentDtoModel.isShowInteractiveButton == false,
