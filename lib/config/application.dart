@@ -91,8 +91,10 @@ class Application {
   static BuildContext appContext;
 
   //群成员信息
-  static List<ChatGroupUserModel> chatGroupUserModelList =
-      <ChatGroupUserModel>[];
+  static List<ChatGroupUserModel> chatGroupUserModelList = <ChatGroupUserModel>[];
+
+  //群成员的id--群昵称
+  static Map<String, String> chatGroupUserModelMap = Map();
 
   //群组at的列表
   static AtMesGroupModel atMesGroupModel = new AtMesGroupModel();

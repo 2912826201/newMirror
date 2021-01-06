@@ -19,6 +19,8 @@ class TextMsg extends StatelessWidget {
   final int status;
   final int position;
   final MentionedInfo mentionedInfo;
+  final String sendChatUserId;
+  final bool isShowChatUserName;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
 
@@ -26,6 +28,8 @@ class TextMsg extends StatelessWidget {
       {this.text,
       this.isMyself,
       this.userUrl,
+      this.isShowChatUserName = false,
+      this.sendChatUserId,
       this.name,
       this.status,
       this.mentionedInfo,
@@ -68,11 +72,14 @@ class TextMsg extends StatelessWidget {
     var body = [
       Row(
         mainAxisAlignment:
-            isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
+        isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: getSmallBody(context),
       ),
-      getMessageState(status),
+      Container(
+        margin: isShowChatUserName ? const EdgeInsets.only(top: 16) : null,
+        child: getMessageState(status),
+      ),
     ];
     if (isMyself) {
       body = body.reversed.toList();
@@ -113,9 +120,30 @@ class TextMsg extends StatelessWidget {
       isMySelf: isMyself,
       actions: longClickStringList,
       contentWidth: getTextSize(text, textStyle, 10).width + 22.0,
-      child: textContentBox(context),
+      child: getNameAndContentUi(context),
     );
   }
+
+
+  Widget getNameAndContentUi(BuildContext context) {
+    return Container(
+      child: Column(
+        crossAxisAlignment: isMyself ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Visibility(
+            visible: isShowChatUserName,
+            child: Container(
+              margin: isMyself ? const EdgeInsets.only(right: 10, bottom: 4) : const EdgeInsets.only(
+                  left: 10, bottom: 4),
+              child: Text(name, style: TextStyle(fontSize: 12, color: AppColor.textSecondary),),
+            ),
+          ),
+          textContentBox(context),
+        ],
+      ),
+    );
+  }
+
 
   //文字的框架
   Widget textContentBox(BuildContext context) {

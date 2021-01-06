@@ -19,10 +19,14 @@ class AlertMsg extends StatelessWidget {
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
   final Map<String, dynamic> map;
   final String chatUserName;
+  final String sendChatUserId;
+  final bool isShowChatUserName;
 
   AlertMsg({
     this.recallNotificationMessage,
     this.position,
+    this.isShowChatUserName = false,
+    this.sendChatUserId,
     this.voidMessageClickCallBack,
     this.voidItemLongClickCallBack,
     this.map,

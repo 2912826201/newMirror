@@ -98,7 +98,7 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
                 getUserImage(groupUserModel.avatarUri, 36, 36),
                 SizedBox(width: 12),
                 Text(
-                  groupUserModel.nickName,
+                  groupUserModel.groupNickName,
                   style: AppStyle.textRegular16,
                 )
               ],
