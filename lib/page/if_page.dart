@@ -95,7 +95,6 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin, WidgetsBi
     //四个常规业务tabBar
     tabContent.add(MediaPickerPage(9, typeImageAndVideo, true, startPagePhoto, false, true));
     tabContent.add(MainPage(
-      pc: SingletonForWholePages.singleton().panelController(),
     ));
     return tabContent;
   }

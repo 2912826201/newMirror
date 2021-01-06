@@ -39,8 +39,7 @@ enum PostStatus {
 
 // 关注
 class AttentionPage extends StatefulWidget {
-  AttentionPage({Key key, this.pc, this.postFeedModel}) : super(key: key);
-  PanelController pc = new PanelController();
+  AttentionPage({Key key, this.postFeedModel}) : super(key: key);
 
   // 发布动态需要的数据
   PostFeedModel postFeedModel;
@@ -280,7 +279,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     } else {
       return DynamicListLayout(
         index: index,
-        pc: widget.pc,
         isShowRecommendUser: true,
         model: feedmodel,
         // 可选参数 子Item的个数

@@ -20,16 +20,16 @@ class DynamicListLayout extends StatelessWidget {
   DynamicListLayout(
       {Key key,
       this.index,
-      this.pc,
       this.isShowRecommendUser,
       this.model,
+      this.isComplex = false,
       this.deleteFeedChanged,
       this.removeFollowChanged})
       : super(key: key);
   final index;
-  PanelController pc;
   bool isShowRecommendUser;
   HomeFeedModel model;
+  bool isComplex;
 
   // 删除动态
   ValueChanged<int> deleteFeedChanged;
@@ -48,64 +48,69 @@ class DynamicListLayout extends StatelessWidget {
     // print("我要看model的值");
     //  print(model.toString());
     return Column(
-        children: [
-          // 头部头像时间
-          HeadView(pc: pc,model: model,isDetail:false,deleteFeedChanged: (id) {
-            deleteFeedChanged(id);
-          }, removeFollowChanged: (m) {
-            removeFollowChanged(m);
-          }),
-          // 图片区域
-          model.picUrls.isNotEmpty
-              ? SlideBanner(
-            height: model.picUrls[0].height.toDouble(),
+      children: [
+        // 头部头像时间
+        HeadView(
             model: model,
-          )
-              : Container(),
-          // 视频区域
-          model.videos.isNotEmpty ? getVideo() : Container(),
-          // 点赞，转发，评论三连区域 getTripleArea
-          GetTripleArea(pc: pc, model: model, index: index),
-          // 课程信息和地址
-          Offstage(
-            offstage: (model.address == null && model.courseDto == null),
-            child: Container(
-              margin: EdgeInsets.only(left: 16, right: 16),
-              // color: Colors.orange,
-              width: ScreenUtil.instance.width,
-              child: getCourseInfo(model),
-            ),
-          ),
-
-          // 文本文案
-          Offstage(
-            offstage: model.content.length == 0,
-            child: Container(
-              margin: EdgeInsets.only(left: 16, right: 16, top: 12),
-              width: ScreenUtil.instance.screenWidthDp,
-              child: ExpandableText(
-                text: model.content,
+            isDetail: false,
+            deleteFeedChanged: (id) {
+              deleteFeedChanged(id);
+            },
+            removeFollowChanged: (m) {
+              removeFollowChanged(m);
+            }),
+        // 图片区域
+        model.picUrls.isNotEmpty
+            ? SlideBanner(
+                height: model.picUrls[0].height.toDouble(),
                 model: model,
-                maxLines: 2,
-                style: TextStyle(fontSize: 14, color: AppColor.textPrimary1),
-              ),
+                isComplex: isComplex,
+              )
+            : Container(),
+        // 视频区域
+        model.videos.isNotEmpty ? getVideo() : Container(),
+        // 点赞，转发，评论三连区域 getTripleArea
+        GetTripleArea( model: model, index: index),
+        // 课程信息和地址
+        Offstage(
+          offstage: (model.address == null && model.courseDto == null),
+          child: Container(
+            margin: EdgeInsets.only(left: 16, right: 16),
+            // color: Colors.orange,
+            width: ScreenUtil.instance.width,
+            child: getCourseInfo(model),
+          ),
+        ),
+
+        // 文本文案
+        Offstage(
+          offstage: model.content.length == 0,
+          child: Container(
+            margin: EdgeInsets.only(left: 16, right: 16, top: 12),
+            width: ScreenUtil.instance.screenWidthDp,
+            child: ExpandableText(
+              text: model.content,
+              model: model,
+              maxLines: 2,
+              style: TextStyle(fontSize: 14, color: AppColor.textPrimary1),
             ),
           ),
+        ),
 
-          // 评论文本
-          context.watch<FeedMapNotifier>().feedMap[model.id].comments.length != 0
-              ? CommentLayout(model: model, pc: pc)
-              : Container(),
-          // 输入框
-          CommentInputBox(feedModel: model),
-          // 推荐用户
-          getAttention(this.index, this.isShowRecommendUser),
-          // 分割块
-          Container(
-            height: 18,
-            color: AppColor.white,
-          )
-        ],
+        // 评论文本
+        context.watch<FeedMapNotifier>().feedMap[model.id].comments.length != 0
+            ? CommentLayout(model: model)
+            : Container(),
+        // 输入框
+        CommentInputBox(feedModel: model),
+        // 推荐用户
+        getAttention(this.index, this.isShowRecommendUser),
+        // 分割块
+        Container(
+          height: 18,
+          color: AppColor.white,
+        )
+      ],
     );
     //     }
     // );
