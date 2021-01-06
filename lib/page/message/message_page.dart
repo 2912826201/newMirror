@@ -54,6 +54,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         appBar: AppBar(
             leading: null,
             backgroundColor: AppColor.white,
+            brightness: Brightness.light,
             title: Row(
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.center,

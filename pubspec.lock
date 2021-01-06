@@ -275,21 +275,21 @@ packages:
       name: flutter_sound_lite
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "7.4.13+3"
+    version: "7.4.9+3"
   flutter_sound_platform_interface:
     dependency: transitive
     description:
       name: flutter_sound_platform_interface
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "7.4.13+3"
+    version: "7.4.9+3"
   flutter_sound_web:
     dependency: transitive
     description:
       name: flutter_sound_web
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "7.4.13+3"
+    version: "7.4.9+3"
   flutter_spinkit:
     dependency: transitive
     description:
