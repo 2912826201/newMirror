@@ -379,7 +379,7 @@ class GroupMorePageState extends State<GroupMorePage> {
       ToastShow.show(msg: "${!isOpen ? "打开" : "关闭"}$title", context: context);
       setState(() {});
     } else if (title == "群聊名称") {
-      AppRouter.navigationToEditInfomationName(context, subtitle, (result) {
+      AppRouter.navigateToEditInfomationName(context, subtitle, (result) {
         setState(() {
           if (result != null && groupName != result) {
             modifyPr(result);
@@ -388,7 +388,7 @@ class GroupMorePageState extends State<GroupMorePage> {
       }, title: "修改群聊名称");
       ToastShow.show(msg: subtitle, context: context);
     } else if (title == "群昵称") {
-      AppRouter.navigationToEditInfomationName(context, subtitle, (result) {
+      AppRouter.navigateToEditInfomationName(context, subtitle, (result) {
         setState(() {
           if (result != null && groupMeName != result) {
             modifyNickNamePr(result);
