@@ -227,10 +227,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                 if (recommendModelList.isNotEmpty) {
                   recommendIdList.clear();
                 }
-
-                if (recommendModelList.isNotEmpty) {
-                  recommendModelList.clear();
-                }
                 if (courseList.isNotEmpty) {
                   courseList.clear();
                 }
@@ -287,7 +283,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                       } else {
                         return DynamicListLayout(
                             index: index,
-                            pc: widget.pc,
                             model: model,
                             // 可选参数 子Item的个数
                             key: GlobalObjectKey("recommend$index"),

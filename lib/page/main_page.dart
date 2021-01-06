@@ -13,8 +13,7 @@ import 'profile/profile_page.dart';
 import 'training/training_page.dart';
 
 class MainPage extends StatefulWidget {
-  MainPage({Key key, this.pc}) : super(key: key);
-  PanelController pc = new PanelController();
+  MainPage({Key key}) : super(key: key);
 
   //此key用于向messagePage传输数据
   GlobalKey messagePageKey = GlobalKey();
@@ -83,7 +82,6 @@ class MainPageState extends State<MainPage> {
           new Offstage(
             offstage: currentIndex != 0, //这里控制
             child: HomePage(
-              pc: widget.pc,
             ),
           ),
           new Offstage(
@@ -98,7 +96,6 @@ class MainPageState extends State<MainPage> {
             offstage: currentIndex != 3, //这里控制
             child: context.watch<TokenNotifier>().isLoggedIn
                 ? ProfilePage(
-                    panelController: widget.pc,
                   )
                 : Container(),
           ),

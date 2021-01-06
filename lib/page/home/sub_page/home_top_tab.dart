@@ -9,9 +9,8 @@ import 'package:mirror/route/router.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class HomeTopTab extends StatefulWidget {
-  HomeTopTab({Key key, this.callBack, this.controller,this.pcController}) : super(key: key);
+  HomeTopTab({Key key, this.callBack, this.controller}) : super(key: key);
   TabController controller;
-  PanelController pcController;
   final callBack;
 
   _TopTabState createState() => _TopTabState();
@@ -67,7 +66,7 @@ class _TopTabState extends State<HomeTopTab> {
             child: Image.asset("images/resource/2.0x/Nav_search_icon @2x.png", width: 28, height: 28),
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return SearchPage(pcContrller: widget.pcController,);
+                return SearchPage();
               }));
               print("点击了搜索");
               // widget.callBack("sssss");

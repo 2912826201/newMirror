@@ -109,7 +109,6 @@ var handlermineDetails = Handler(handlerFunc: (BuildContext context, Map<String,
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return ProfileDetailPage(
     userId: data["userId"],
-    pcController: data["pcController"],
   );
 });
 var handlerProfileDetailMore = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {

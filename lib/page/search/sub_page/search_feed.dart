@@ -1,4 +1,5 @@
 import 'dart:async';
+// import 'dart:html';
 import 'dart:ui';
 
 import 'package:animations/animations.dart';
@@ -13,8 +14,10 @@ import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/feed/feed_detail_page.dart';
+import 'package:mirror/page/feed/feed_flow.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/route/router.dart';
@@ -180,6 +183,14 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
                     crossAxisSpacing: 8.0,
                     controller:_scrollController ,
                     itemBuilder: (context, index) {
+                      // 获取动态id
+                      int id;
+                      // 获取动态id指定model
+                      HomeFeedModel model;
+                      if (index < feedList.length) {
+                        id = feedList[index].id;
+                        model = context.read<FeedMapNotifier>().feedMap[id];
+                      }
                       // if (feedList.isNotEmpty) {
                       if (index == feedList.length) {
                         return LoadingView(
@@ -190,7 +201,8 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
                         return Container();
                       } else {
                         return SearchFeeditem(
-                          model: feedList[index],
+                          model: model,
+                          list:feedList,
                           index: index,
                           focusNode: widget.focusNode,
                           isComplex: false,
@@ -229,12 +241,13 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
 class SearchFeeditem extends StatefulWidget {
   FocusNode focusNode;
   HomeFeedModel model;
+  List<HomeFeedModel> list;
   int index;
   bool isComplex;
-  SearchFeeditem({this.model, this.index, this.focusNode,this.isComplex});
+  SearchFeeditem({this.model, this.list,this.index, this.focusNode,this.isComplex});
 
   @override
-  SearchFeeditemState createState() => SearchFeeditemState(model: model, index: index, focusNode: focusNode,isComplex:  isComplex);
+  SearchFeeditemState createState() => SearchFeeditemState(model: model,list:list, index: index, focusNode: focusNode,isComplex:  isComplex);
 // [index] 列表条目对应的索引
 // buildOpenContainerItem() {
 // return OpenContainer(
@@ -282,17 +295,14 @@ class SearchFeeditem extends StatefulWidget {
 
 }
 
-class SearchFeeditemState extends XCState {
-  SearchFeeditemState({this.focusNode, this.model, this.index,this.isComplex});
+class SearchFeeditemState extends State<SearchFeeditem> {
+  SearchFeeditemState({this.focusNode, this.model,this.list, this.index,this.isComplex});
   bool isComplex;
   FocusNode focusNode;
+  List<HomeFeedModel> list;
   HomeFeedModel model;
   int index;
-
-  @override
-  bool useSubstance() {
-    return true;
-  }
+  HomeFeedModel feedModel;
 
   // [index] 列表条目对应的索引
   buildOpenContainerItem() {
@@ -351,215 +361,121 @@ class SearchFeeditemState extends XCState {
     return (((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) / width) * height;
   }
 
-  @override
-  Widget shouldBuild(BuildContext context) {
+  // 请求动态详情页数据
+  getFeedDetail() async {
+    feedModel = await feedDetail(id: model.id);
+    print("等待了吗");
+    Navigator.push(
+      context,
+      new MaterialPageRoute(builder: (context) => FeedDetailPage(model:feedModel,isComplex: isComplex,)
+        // Item2Page(model: model, index: index,isComplex: isComplex,)
+      ),
+    );
+    // setState(() {
+    // });
+  }
+
+  // @override
+  Widget build(BuildContext context) {
     print("你也要搞事情!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     print(model.picUrls.toString());
     return Container(
         child: Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        model.picUrls.isNotEmpty
-            ? InkWell(
-                onTap: () {
-                  ///失去输入框焦点
-                  focusNode.unfocus();
-                  print("我还每点击");
-                  // Navigator.of(context).push(
-                  // PageRouteBuilder(pageBuilder: (context, animation, secondaryAnimation) {
-                  //   return FadeTransition(
-                  //     opacity: animation,
-                  //     child: Item2Page(model: widget.model,index:widget.index),
-                  //   );
-                  // }),
-                  // );
-                  print("打开前&&&&&&&&&&&&&&&&**&&&：：hero$index");
-                  Navigator.push(
-                    context,
-                    new MaterialPageRoute(builder: (context) => FeedDetailPage(model:model,isComplex: isComplex,)
-                        // Item2Page(model: model, index: index,isComplex: isComplex,)
-                    ),
-                  );
-                },
-                child: Hero(
-                  tag: isComplex ? "complex${model.id}" : "${model.id}:$index",
-                  child: buildShowItemContainer(),
-                ),
-              )
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            model.picUrls.isNotEmpty
+                ? InkWell(
+              onTap: () {
+                ///失去输入框焦点
+                focusNode.unfocus();
+                for(feedModel in list) {
+                  feedModel = context.read<FeedMapNotifier>().feedMap[feedModel.id];
+                  if (model.id == feedModel.id) {
+                    list.remove(feedModel);
+                    list.insert(0, model);
+                  }
+                }
+                print("打开前&&&&&&&&&&&&&&&&**&&&：：hero$index");
+                Navigator.push(
+                  context,
+                  new MaterialPageRoute(builder: (context) => FeedFlow(feedList: list,isComplex: widget.isComplex,)),
+                );
+              },
+              child: Hero(
+                tag: isComplex ? "complex${model.id}" : "${model.id}",
+                child: buildShowItemContainer(),
+              ),
+            )
             // buildOpenContainerItem()
-            : model.videos.isNotEmpty
+                : model.videos.isNotEmpty
                 ? ClipRRect(
-                    //圆角图片
-                    borderRadius: BorderRadius.circular(2),
-                    child: CachedNetworkImage(
-                      height: setAspectRatio(1.0 * model.videos[0].height, 1.0 * model.videos[0].width),
-                      width: ((ScreenUtil.instance.screenWidthDp) / 2),
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => new Container(
-                          child: new Center(
-                        child: new CircularProgressIndicator(),
-                      )),
-                      imageUrl: model.videos[0].coverUrl,
-                      errorWidget: (context, url, error) => new Image.asset("images/test.png"),
-                    ),
-                  )
+              //圆角图片
+              borderRadius: BorderRadius.circular(2),
+              child: CachedNetworkImage(
+                height: setAspectRatio(1.0 * model.videos[0].height, 1.0 * model.videos[0].width),
+                width: ((ScreenUtil.instance.screenWidthDp) / 2),
+                fit: BoxFit.cover,
+                placeholder: (context, url) => new Container(
+                    child: new Center(
+                      child: new CircularProgressIndicator(),
+                    )),
+                imageUrl: model.videos[0].coverUrl,
+                errorWidget: (context, url, error) => new Image.asset("images/test.png"),
+              ),
+            )
                 : Container(),
-        Container(
-          width: ((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) - 16,
-          margin: EdgeInsets.only(top: 8),
-          child: Text(
-            '${model.content}',
-            style: TextStyle(
-              fontSize: 13,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        Container(
-          width: ((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) - 16,
-          // height: 16,
-          padding: EdgeInsets.only(
-            bottom: 8,
-            top: 6,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              CircleAvatar(
-                backgroundImage: NetworkImage(model.avatarUrl),
-                radius: 8,
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 4),
-                width: 81,
-                child: Text(
-                  model.name,
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: AppColor.textSecondary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+            Container(
+              width: ((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) - 16,
+              margin: EdgeInsets.only(top: 8),
+              child: Text(
+                '${model.content}',
+                style: TextStyle(
+                  fontSize: 13,
                 ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-              Spacer(),
-              Expanded(
-                child: LaudItem(model: model,),
+            ),
+            Container(
+              width: ((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) - 16,
+              // height: 16,
+              padding: EdgeInsets.only(
+                bottom: 8,
+                top: 6,
               ),
-              // SizedBox(width: 1,)
-            ],
-          ),
-        )
-      ],
-    ));
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  CircleAvatar(
+                    backgroundImage: NetworkImage(model.avatarUrl),
+                    radius: 8,
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 4),
+                    width: 81,
+                    child: Text(
+                      model.name,
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: AppColor.textSecondary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Spacer(),
+                  Expanded(
+                    child: LaudItem(model: model,),
+                  ),
+                  // SizedBox(width: 1,)
+                ],
+              ),
+            )
+          ],
+        ));
   }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   print("你也要搞事情!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-  //   print(model.picUrls.toString());
-  //   return Container(
-  //       child: Column(
-  //         crossAxisAlignment: CrossAxisAlignment.center,
-  //         mainAxisAlignment: MainAxisAlignment.center,
-  //         children: <Widget>[
-  //           model.picUrls.isNotEmpty
-  //               ? InkWell(
-  //             onTap: () {
-  //               ///失去输入框焦点
-  //               focusNode.unfocus();
-  //               print("我还每点击");
-  //               // Navigator.of(context).push(
-  //               // PageRouteBuilder(pageBuilder: (context, animation, secondaryAnimation) {
-  //               //   return FadeTransition(
-  //               //     opacity: animation,
-  //               //     child: Item2Page(model: widget.model,index:widget.index),
-  //               //   );
-  //               // }),
-  //               // );
-  //               print("打开前&&&&&&&&&&&&&&&&**&&&：：hero$index");
-  //               Navigator.push(
-  //                 context,
-  //                 new MaterialPageRoute(builder: (context) => Item2Page(model: model, index: index)),
-  //               );
-  //             },
-  //             child: Hero(
-  //               tag: "hero$index",
-  //               child: buildShowItemContainer(),
-  //             ),
-  //           )
-  //           // buildOpenContainerItem()
-  //               : model.videos.isNotEmpty
-  //               ? ClipRRect(
-  //             //圆角图片
-  //             borderRadius: BorderRadius.circular(2),
-  //             child: CachedNetworkImage(
-  //               height: setAspectRatio(1.0 * model.videos[0].height, 1.0 * model.videos[0].width),
-  //               width: ((ScreenUtil.instance.screenWidthDp) / 2),
-  //               fit: BoxFit.cover,
-  //               placeholder: (context, url) => new Container(
-  //                   child: new Center(
-  //                     child: new CircularProgressIndicator(),
-  //                   )),
-  //               imageUrl: model.videos[0].coverUrl,
-  //               errorWidget: (context, url, error) => new Image.asset("images/test.png"),
-  //             ),
-  //           )
-  //               : Container(),
-  //           Container(
-  //             width: ((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) - 16,
-  //             margin: EdgeInsets.only(top: 8),
-  //             child: Text(
-  //               '${model.content}',
-  //               style: TextStyle(
-  //                 fontSize: 13,
-  //               ),
-  //               maxLines: 2,
-  //               overflow: TextOverflow.ellipsis,
-  //             ),
-  //           ),
-  //           Container(
-  //             width: ((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) - 16,
-  //             // height: 16,
-  //             padding: EdgeInsets.only(
-  //               bottom: 8,
-  //               top: 6,
-  //             ),
-  //             child: Row(
-  //               mainAxisAlignment: MainAxisAlignment.start,
-  //               crossAxisAlignment: CrossAxisAlignment.center,
-  //               children: <Widget>[
-  //                 CircleAvatar(
-  //                   backgroundImage: NetworkImage(model.avatarUrl),
-  //                   radius: 8,
-  //                 ),
-  //                 Container(
-  //                   margin: EdgeInsets.only(left: 4),
-  //                   width: 81,
-  //                   child: Text(
-  //                     model.name,
-  //                     style: TextStyle(
-  //                       fontSize: 10,
-  //                       color: AppColor.textSecondary,
-  //                     ),
-  //                     maxLines: 1,
-  //                     overflow: TextOverflow.ellipsis,
-  //                   ),
-  //                 ),
-  //                 Spacer(),
-  //                 Expanded(
-  //                   child: LaudItem(model: model,),
-  //                 ),
-  //                 // SizedBox(width: 1,)
-  //               ],
-  //             ),
-  //           )
-  //         ],
-  //       ));
-  // }
 }
 
 class LaudItem extends StatefulWidget {
@@ -578,15 +494,7 @@ class LaudItemState extends State<LaudItem> {
       Map<String, dynamic> model = await laud(id: widget.model.id, laud:widget.model.isLaud == 0 ? 1 : 0);
       // 点赞/取消赞成功
       if (model["state"]) {
-        setState(() {
-          if (widget.model.isLaud == 1) {
-            widget.model.isLaud = 0;
-            widget.model.laudCount -= 1;
-          } else {
-            widget.model.isLaud = 1;
-            widget.model.laudCount += 1;
-          }
-        });
+        context.read<FeedMapNotifier>().setLaud(widget.model.isLaud,context.read<ProfileNotifier>().profile.avatarUri,widget.model.id);
       } else { // 失败
         print("shib ");
       }
@@ -605,23 +513,19 @@ class LaudItemState extends State<LaudItem> {
           },
           child: Icon(
             Icons.favorite,
-            color: widget.model.isLaud == 1 ? Colors.red : Colors.grey,
+            color:   context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 1 ? Colors.red : Colors.grey,
             size: 16,
           ),
         ),
         Offstage(
-          offstage: widget.model.laudCount == 0,
-          child: Container(
-            margin: EdgeInsets.only(left: 2),
-            child: Text(
-              "${StringUtil.getNumber(widget.model.laudCount)}",
-              style: TextStyle(
-                fontSize: 10,
-                color: AppColor.textSecondary,
-              ),
-            ),
-          ),
-        )
+          offstage: context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].laudCount) == 0,
+          child: //用Selector的方式监听数据
+          Selector<FeedMapNotifier, int>(builder: (context,laudCount , child) {
+            return Text("${StringUtil.getNumber(laudCount)}",style: TextStyle(fontSize: 10,color: AppColor.textSecondary,),);
+          }, selector: (context, notifier) {
+            return notifier.feedMap[widget.model.id].laudCount;
+          }),
+        ),
       ],
     );
   }

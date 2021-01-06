@@ -31,14 +31,15 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
+import '../if_page.dart';
+
 enum StateResult { HAVARESULT, RESULTNULL }
 
 ///判断lastTime，控件的controller冲突
 class ProfileDetailPage extends StatefulWidget {
   int userId;
-  PanelController pcController = PanelController();
 
-  ProfileDetailPage({this.userId, this.pcController});
+  ProfileDetailPage({this.userId});
 
   @override
   _ProfileDetailState createState() {
@@ -302,7 +303,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           panel: Container(
             child: context.watch<FeedMapNotifier>().feedId != null
                 ? CommentBottomSheet(
-                    pc: widget.pcController,
+                    pc: SingletonForWholePages.singleton().panelController(),
                     feedId: context.select((FeedMapNotifier value) => value.feedId),
                   )
                 : Container(),

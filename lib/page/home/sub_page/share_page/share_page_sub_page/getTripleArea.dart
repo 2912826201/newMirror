@@ -18,9 +18,8 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
 class GetTripleArea extends StatefulWidget {
   HomeFeedModel model;
-  PanelController pc;
   int index;
-  GetTripleArea({Key key, this.model, this.pc,this.index}) : super(key: key);
+  GetTripleArea({Key key, this.model,this.index}) : super(key: key);
 
   GetTripleAreaState createState() => GetTripleAreaState();
 }
@@ -206,7 +205,7 @@ class GetTripleAreaState extends State<GetTripleArea> {
                   height: 24,
                 ),
                 onTap: () {
-                  widget.pc.open();
+                  SingletonForWholePages.singleton().panelController().open();
                   context.read<FeedMapNotifier>().changeFeeId(widget.model.id);
                 }))
       ],

@@ -21,9 +21,10 @@ import 'package:provider/provider.dart';
 
 // 轮播图
 class SlideBanner extends StatefulWidget {
-  SlideBanner({Key key, this.height, this.model}) : super(key: key);
+  SlideBanner({Key key, this.height, this.model,this.isComplex}) : super(key: key);
   HomeFeedModel model;
   double height;
+  bool isComplex;
 
   @override
   _SlideBannerState createState() => _SlideBannerState();
@@ -228,7 +229,10 @@ class _SlideBannerState extends State<SlideBanner> {
                   child: Swiper(
                     itemCount: widget.model.picUrls.length,
                     itemBuilder: (BuildContext context, int index) {
-                      return buildShowItemContainer(index,photoHeight);
+                      return Hero(
+                          tag: widget.isComplex ? "complex${widget.model.id}" : "${widget.model.id}",
+                          child:
+                          buildShowItemContainer(index,photoHeight));
                       // buildOpenContainerItem(index);
                     },
                     loop: false,

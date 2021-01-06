@@ -13,10 +13,9 @@ import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
 class HeadView extends StatelessWidget {
-  HeadView({Key key ,this.model,this.pc, this.deleteFeedChanged,
+  HeadView({Key key ,this.model, this.deleteFeedChanged,
     this.removeFollowChanged,this.isDetail = true});
   HomeFeedModel model;
-  PanelController pc;
   bool isDetail;
   // 删除动态
   ValueChanged<int> deleteFeedChanged;
@@ -105,7 +104,6 @@ class HeadView extends StatelessWidget {
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                   return ProfileDetailPage(
                     userId: model.pushId,
-                    pcController: pc,
                   );
                 }));
               },

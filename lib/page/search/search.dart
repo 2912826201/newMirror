@@ -24,9 +24,8 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 // 搜索页
 class SearchPage extends StatelessWidget {
-  PanelController pcContrller;
 
-  SearchPage({this.pcContrller});
+  SearchPage({Key key});
 
   // 输入框焦点控制器
   FocusNode focusNode = new FocusNode();
@@ -50,7 +49,6 @@ class SearchPage extends StatelessWidget {
                       context.watch<SearchEnterNotifier>().enterText.length > 0
                           ? SearchTabBarView(
                               focusNode: focusNode,
-                              pcController: pcContrller,
                             )
                           : SearchMiddleView(),
                     ],
@@ -494,9 +492,8 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
 
 // 搜索页TabBarView
 class SearchTabBarView extends StatefulWidget {
-  SearchTabBarView({Key key, this.focusNode, this.pcController}) : super(key: key);
+  SearchTabBarView({Key key, this.focusNode}) : super(key: key);
   FocusNode focusNode;
-  PanelController pcController;
 
   @override
   SearchTabBarViewState createState() => SearchTabBarViewState();
@@ -562,7 +559,6 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
                   textController: context.watch<SearchEnterNotifier>().textController),
               // ),
               SearchUser(
-                  pc: widget.pcController,
                   text: context.watch<SearchEnterNotifier>().enterText,
                   width: ScreenUtil.instance.screenWidthDp,
                   textController: context.watch<SearchEnterNotifier>().textController),

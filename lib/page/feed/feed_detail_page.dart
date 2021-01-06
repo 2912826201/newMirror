@@ -14,10 +14,9 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 // 动态详情页
 class FeedDetailPage extends StatefulWidget {
-  FeedDetailPage({Key key, this.model, this.pc, this.isComplex, this.index});
+  FeedDetailPage({Key key, this.model, this.isComplex, this.index});
 
   HomeFeedModel model;
-  PanelController pc;
   int index;
   bool isComplex;
 
@@ -26,59 +25,55 @@ class FeedDetailPage extends StatefulWidget {
 }
 
 class FeedDetailPageState extends State<FeedDetailPage> {
-  HomeFeedModel feedModel;
   @override
   void initState() {
-    getFeedDetail();
+    // getFeedDetail();
   }
-  getFeedDetail() async {
-    feedModel = await feedDetail(id: widget.model.id);
-    setState(() {
-    });
-  }
+
+  // getFeedDetail() async {
+  //   feedModel = await feedDetail(id: widget.model.id);
+  //   setState(() {
+  //   });
+  // }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-          title: Text(
-            "动态详情页",
-            style: TextStyle(color: AppColor.textPrimary1, fontSize: 18, fontWeight: FontWeight.w500),
-          ),
-          centerTitle: true,
-          backgroundColor: AppColor.white,
-          leading: GestureDetector(
-              onTap: () {
-                Navigator.of(context).pop(true);
-              },
-              child: Container(
-                margin: EdgeInsets.only(left: 16),
-                child: Image.asset(
-                  "images/resource/2.0x/return2x.png",
-                ),
-              )),
-          leadingWidth: 44.0,
-          elevation: 0.5),
-      body:
-      SingleChildScrollView(
-        //滑动的方向 Axis.vertical为垂直方向滑动，Axis.horizontal 为水平方向
-        scrollDirection: Axis.vertical,
-        //true 滑动到底部
-        reverse: false,
-        padding: EdgeInsets.all(0.0),
-        // 滑动到底部回弹效果
-        physics: BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+            title: Text(
+              "动态详情页",
+              style: TextStyle(color: AppColor.textPrimary1, fontSize: 18, fontWeight: FontWeight.w500),
+            ),
+            centerTitle: true,
+            backgroundColor: AppColor.white,
+            leading: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pop(true);
+                },
+                child: Container(
+                  margin: EdgeInsets.only(left: 16),
+                  child: Image.asset(
+                    "images/resource/2.0x/return2x.png",
+                  ),
+                )),
+            leadingWidth: 44.0,
+            elevation: 0.5),
+        body: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              SliverAppBar(
+                title: Text('老孟'),
+              )
+            ];
+          },
+          body: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
             // 顶部间距
             SizedBox(
               height: 14,
             ),
             // 头部布局
             HeadView(
-                pc: widget.pc,
-                model:  widget.model,
+                model: widget.model,
                 deleteFeedChanged: (id) {
                   // deleteFeedChanged(id);
                 },
@@ -88,10 +83,10 @@ class FeedDetailPageState extends State<FeedDetailPage> {
             // 图片区域
             widget.model.picUrls.isNotEmpty
                 ? Hero(
-                    tag: widget.isComplex ? "complex${  widget.model.id}" : "${  widget.model.id}:${widget.index}",
+                    tag: widget.isComplex ? "complex${widget.model.id}" : "${widget.model.id}:${widget.index}",
                     child: SlideBanner(
-                      height:   widget.model.picUrls[0].height.toDouble(),
-                      model:  widget.model,
+                      height: widget.model.picUrls[0].height.toDouble(),
+                      model: widget.model,
                     )
                     // SlideBanner(height: model.picUrls[0].height.toDouble(),model: model,),
                     )
@@ -100,17 +95,16 @@ class FeedDetailPageState extends State<FeedDetailPage> {
             widget.model.videos.isNotEmpty ? Container() : Container(),
             // 点赞，转发，评论三连区域 getTripleArea
             GetTripleArea(
-              pc: widget.pc,
-              model:widget.model,
+              model: widget.model,
             ),
             // 课程信息和地址
             Offstage(
-              offstage: ( widget.model.address == null),
+              offstage: (widget.model.address == null),
               child: Container(
                 margin: EdgeInsets.only(left: 16, right: 16),
                 // color: Colors.orange,
                 width: ScreenUtil.instance.width,
-                child: getCourseInfo( widget.model),
+                child: getCourseInfo(widget.model),
               ),
             ),
             // // 文本文案
@@ -120,21 +114,19 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                 margin: EdgeInsets.only(left: 16, right: 16, top: 12),
                 width: ScreenUtil.instance.width,
                 child: ExpandableText(
-                  text:  widget.model.content,
-                  model:  widget.model,
+                  text: widget.model.content,
+                  model: widget.model,
                   maxLines: 2,
                   style: TextStyle(fontSize: 14, color: AppColor.textPrimary1),
                 ),
               ),
             ),
-            widget.model.comments.isNotEmpty ?  CommentBottomSheet(feedId: widget.model.id,) : Container(),
-          ],
-        ),
-      ),
-      // Container(
-      //   color: AppColor.white,
-      //   child:,
-    );
+            Expanded(
+                child: CommentBottomSheet(
+              feedId: widget.model.id,
+            )),
+          ]),
+        ));
   }
 
   // 课程信息和地址
