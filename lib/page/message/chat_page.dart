@@ -11,6 +11,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
@@ -21,6 +22,7 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/page/feed/feed_detail_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
@@ -139,6 +141,12 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   //上一次的最大高度
   double oldMaxScrollExtent = 0;
 
+  // 加载中默认文字
+  String loadText = "加载中...";
+
+  // 加载状态
+  LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
+
   @override
   void initState() {
     super.initState();
@@ -147,6 +155,19 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     initTime();
     initTextController();
     initReleaseFeedInputFormatter();
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+        if (loadStatus == LoadingStatus.STATUS_IDEL) {
+          // 先设置状态，防止下拉就直接加载
+          setState(() {
+            loadText = "加载中...";
+            loadStatus = LoadingStatus.STATUS_LOADING;
+          });
+          _onRefresh();
+        }
+      }
+    });
   }
 
   @override
@@ -226,6 +247,8 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       isHaveAtMeMsg: isHaveAtMeMsg,
       isHaveAtMeMsgIndex: isHaveAtMeMsgIndex,
       onRefresh: _onRefresh,
+      loadText: loadText,
+      loadStatus: loadStatus,
       isShowChatUserName: widget.conversation.getType() == RCConversationType.Group,
       onAtUiClickListener: onAtUiClickListener,
       firstEndCallback: (int firstIndex, int lastIndex) {
@@ -259,7 +282,13 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
               //print("-----------------------");
               _focusNode.unfocus();
               ToastShow.show(msg: "点击了更多那妞", context: context);
-              judgeJumpPage(chatTypeId, this.chatUserId, widget.conversation.type, context, chatUserName);
+              judgeJumpPage(chatTypeId, this.chatUserId, widget.conversation.type, context, chatUserName, () {
+                Application.chatGroupUserModelMap.clear();
+                for (ChatGroupUserModel userModel in Application.chatGroupUserModelList) {
+                  Application.chatGroupUserModelMap[userModel.uid.toString()] = userModel.groupNickName;
+                }
+                delayedSetState();
+              });
             },
           ),
         )
@@ -563,7 +592,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     }
     context.read<ChatMessageProfileNotifier>().setData(chatTypeId, chatUserId);
     if (chatTypeId == RCConversationType.Group) {
-      getChatGroupUserModelList();
+      getChatGroupUserModelList(chatUserId);
     }
   }
 
@@ -598,26 +627,6 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     Future.delayed(Duration(milliseconds: 200), () {
       setState(() {});
     });
-  }
-
-  //获取群成员信息
-  void getChatGroupUserModelList() async {
-    Application.chatGroupUserModelList.clear();
-    Map<String, dynamic> model = await getMembers(groupChatId: int.parse(chatUserId));
-    if (model != null && model["list"] != null) {
-      model["list"].forEach((v) {
-        Application.chatGroupUserModelList.add(ChatGroupUserModel.fromJson(v));
-      });
-      initChatGroupUserModelMap();
-    }
-  }
-
-  //获取群成员的信息 map id对应昵称
-  void initChatGroupUserModelMap() {
-    Application.chatGroupUserModelMap.clear();
-    for (ChatGroupUserModel userModel in Application.chatGroupUserModelList) {
-      Application.chatGroupUserModelMap[userModel.uid.toString()] = userModel.groupNickName;
-    }
   }
 
   //判断有没有at我的消息
@@ -1227,6 +1236,12 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       if (isHaveAtMeMsg || isHaveAtMeMsgPr) {
         judgeNewChatIsHaveAt();
       }
+      loadStatus = LoadingStatus.STATUS_IDEL;
+      loadText = "加载中...";
+    } else {
+      // 加载完毕
+      loadText = "已加载全部动态";
+      loadStatus = LoadingStatus.STATUS_COMPLETED;
     }
     Future.delayed(Duration(milliseconds: 500), () {
       _refreshController.loadComplete();
@@ -1268,6 +1283,10 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   // 请求动态详情页数据
   getFeedDetail(int feedId) async {
     HomeFeedModel feedModel = await feedDetail(id: feedId);
+    List<HomeFeedModel> list = [];
+    list.add(feedModel);
+    context.read<FeedMapNotifier>().updateFeedMap(list);
+    // print("----------feedModel:${feedModel.toJson().toString()}");
     // 跳转动态详情页
     Navigator.push(
       context,

@@ -4,6 +4,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/feed_share_select_contact.dart';
 
 // import '../bottom_sheet.dart';
@@ -73,8 +74,12 @@ class FeedSharePopups extends StatelessWidget {
                       Navigator.of(context).pop(1);
                       if(feedViewModel[index].name == "站内好友") {
                         Navigator.push(context, MaterialPageRoute(builder: (_) {
-                          return FriendsPage(voidCallback: (name, context) {
-                            jumpShareMessage(map, chatTypeModel, name, context);
+                          return FriendsPage(voidCallback: (name, userId, context) async {
+                            if (await jumpShareMessage(map, chatTypeModel, name, userId, context)) {
+                              ToastShow.show(msg: "分享成功", context: context);
+                            } else {
+                              ToastShow.show(msg: "分享失败", context: context);
+                            }
                           });
                         }));
                       }

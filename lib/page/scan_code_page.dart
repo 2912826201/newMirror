@@ -164,7 +164,7 @@ class _ScanCodeState extends State<ScanCodePage> {
   }
 
   _getImagePicker() {
-    AppRouter.navigateToMediaPickerPage(context, 1, typeImage, true, startPageGallery, true, false, (result) async {
+    AppRouter.navigateToMediaPickerPage(context, 1, typeImage, false, startPageGallery, false, false, (result) async {
       SelectedMediaFiles files = Application.selectedMediaFiles;
       if (result != true || files == null) {
         print('===============================值为空退回');

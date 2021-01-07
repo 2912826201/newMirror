@@ -139,7 +139,8 @@ class AppRouter {
   }
 
   static void navigateToMediaPickerPage(BuildContext context, int maxImageAmount, int mediaType, bool needCrop,
-      int startPage, bool cropOnlySquare, bool isGoToPublish, Function(dynamic result) callback) {
+      int startPage, bool cropOnlySquare, bool isGoToPublish, Function(dynamic result) callback,
+      {int fixedWidth, int fixedHeight}) {
     Map<String, dynamic> map = Map();
     map["maxImageAmount"] = maxImageAmount;
     map["mediaType"] = mediaType;
@@ -147,6 +148,8 @@ class AppRouter {
     map["startPage"] = startPage;
     map["cropOnlySquare"] = cropOnlySquare;
     map["isGoToPublish"] = isGoToPublish;
+    map["fixedWidth"] = fixedWidth;
+    map["fixedHeight"] = fixedHeight;
     _navigateToPage(context, pathMediaPicker, map, callback: callback);
   }
 
@@ -286,9 +289,12 @@ class AppRouter {
     _navigateToPage(context, pathChatPage, map);
   }
 
-  static void navigateToPreviewPhotoPage(BuildContext context, String filePath, Function(dynamic result) callback) {
+  static void navigateToPreviewPhotoPage(BuildContext context, String filePath, Function(dynamic result) callback,
+      {int fixedWidth, int fixedHeight}) {
     Map<String, dynamic> map = Map();
     map["filePath"] = filePath;
+    map["fixedWidth"] = fixedWidth;
+    map["fixedHeight"] = fixedHeight;
     _navigateToPage(context, pathPreviewPhoto, map, callback: callback);
   }
 

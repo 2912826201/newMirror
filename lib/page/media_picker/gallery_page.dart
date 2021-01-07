@@ -22,8 +22,8 @@ final double _itemMargin = 0;
 final int _galleryPageSize = 100;
 
 //1.9:1 和 4:5
-final double maxVideoRatio = 1.9;
-final double minVideoRatio = 0.8;
+final double maxRatio = 1.9;
+final double minRatio = 0.8;
 
 // 相册的选择GridView视图 需要能够区分选择图片或视频 选择图片数量 是否裁剪 裁剪是否只是正方形
 //TODO 目前没有做响应实时相册变化时的处理 完善时可以考虑实现
@@ -34,7 +34,9 @@ class GalleryPage extends StatefulWidget {
       this.requestType = RequestType.common,
       this.needCrop = false,
       this.cropOnlySquare = false,
-      this.isGoToPublish = false})
+      this.isGoToPublish = false,
+      this.fixedWidth,
+      this.fixedHeight})
       : super(key: key);
 
   final int maxImageAmount;
@@ -42,6 +44,8 @@ class GalleryPage extends StatefulWidget {
   final bool needCrop;
   final bool cropOnlySquare;
   final bool isGoToPublish;
+  final int fixedWidth;
+  final int fixedHeight;
 
   // image是图片 common是图片和视频 目前需求只会用到这两种
   final RequestType requestType;
@@ -77,6 +81,14 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
   @override
   void initState() {
     super.initState();
+
+    //如果固定尺寸不为空 则赋值到notifier
+    if (widget.fixedWidth != null && widget.fixedHeight != null) {
+      context
+          .read<SelectedMapNotifier>()
+          .setFixedImageSize(Size(widget.fixedWidth.toDouble(), widget.fixedHeight.toDouble()));
+    }
+
     //初始化时立刻获取一次数据
     _fetchGalleryData(true);
   }
@@ -171,20 +183,62 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                               builder: (context) {
                                 AssetEntity entity =
                                     context.select((SelectedMapNotifier notifier) => notifier.currentEntity);
+                                Size selectedSize =
+                                    context.select((SelectedMapNotifier notifier) => notifier.selectedImageSize);
                                 return entity == null
                                     ? Container()
                                     : entity.type == AssetType.video
-                                        ? VideoPreviewArea(_fileMap[entity.id], _screenWidth)
+                                        ? VideoPreviewArea(_fileMap[entity.id], _screenWidth,
+                                            context.select((SelectedMapNotifier notifier) => notifier.useOriginalRatio))
                                         : entity.type == AssetType.image
                                             ? CropperImage(
                                                 FileImage(_fileMap[entity.id]),
                                                 round: 0,
+                                                maskPadding: 0,
+                                                outHeight: (selectedSize == null
+                                                        ? _getImageOutSize(
+                                                            entity,
+                                                            context.select((SelectedMapNotifier notifier) =>
+                                                                notifier.useOriginalRatio))
+                                                        : selectedSize)
+                                                    .height,
+                                                outWidth: (selectedSize == null
+                                                        ? _getImageOutSize(
+                                                            entity,
+                                                            context.select((SelectedMapNotifier notifier) =>
+                                                                notifier.useOriginalRatio))
+                                                        : selectedSize)
+                                                    .width,
                                                 key: _cropperKey,
                                               )
                                             : Container();
                               },
                             ),
                           ))
+                      : Container(),
+                  widget.needCrop &&
+                          !widget.cropOnlySquare &&
+                          context.select((SelectedMapNotifier notifier) => notifier.selectedImageSize == null)
+                      ? Positioned(
+                          top: context.watch<_PreviewHeightNotifier>().previewHeight - 36,
+                          left: 12,
+                          child: GestureDetector(
+                            onTap: _changeCurrentRatio,
+                            child: Container(
+                              height: 24,
+                              width: 24,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColor.textPrimary2.withOpacity(0.65),
+                              ),
+                              child: Icon(
+                                Icons.fullscreen,
+                                color: AppColor.white,
+                                size: 24,
+                              ),
+                            ),
+                          ),
+                        )
                       : Container(),
                 ],
               );
@@ -523,6 +577,10 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
     // print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
     context.read<SelectedMapNotifier>().addImage(id, image);
   }
+
+  _changeCurrentRatio() {
+    context.read<SelectedMapNotifier>().changeUseOriginalRatio();
+  }
 }
 
 // 用来记录排序
@@ -551,6 +609,10 @@ class SelectedMapNotifier with ChangeNotifier {
 
   AssetEntity get currentEntity => _currentEntity;
 
+  bool _useOriginalRatio = false;
+
+  bool get useOriginalRatio => _useOriginalRatio;
+
   // 所选类型只能有一种
   AssetType _selectedType;
 
@@ -570,6 +632,13 @@ class SelectedMapNotifier with ChangeNotifier {
 
   Map<String, ui.Image> get imageMap => _imageMap;
 
+  // 记录已选的图片裁剪尺寸
+  Size _selectedImageSize;
+
+  Size _fixedImageSize;
+
+  Size get selectedImageSize => _fixedImageSize == null ? _selectedImageSize : _fixedImageSize;
+
   _removeFromSelectedMap(AssetEntity entity) {
     //删掉目标entity还要将排序重新整理
     _OrderedAssetEntity orderedEntity = _selectedMap[entity.id];
@@ -583,6 +652,8 @@ class SelectedMapNotifier with ChangeNotifier {
     if (_selectedMap.isEmpty) {
       // 如果已选列表为空时 清空已选类型
       _selectedType = null;
+      // 清空已选图片尺寸
+      _selectedImageSize = null;
     }
   }
 
@@ -590,6 +661,10 @@ class SelectedMapNotifier with ChangeNotifier {
     if (_selectedMap.isEmpty) {
       // 如果是第一条数据 则设置已选类型
       _selectedType = entity.type;
+      // 如果所选的是图片 要记录它的尺寸 之后的图片都要沿用
+      if (entity.type == AssetType.image) {
+        _selectedImageSize = _getImageOutSize(entity, _useOriginalRatio);
+      }
     }
     //在添加数据时 排序为已选数量+1
     _OrderedAssetEntity orderedEntity = _OrderedAssetEntity(_selectedMap.length + 1, entity);
@@ -636,6 +711,15 @@ class SelectedMapNotifier with ChangeNotifier {
       _currentEntity = entity;
       notifyListeners();
     }
+  }
+
+  changeUseOriginalRatio() {
+    _useOriginalRatio = !_useOriginalRatio;
+    notifyListeners();
+  }
+
+  setFixedImageSize(Size size) {
+    _fixedImageSize = size;
   }
 
   addImage(String id, ui.Image image) {
@@ -730,10 +814,11 @@ class _PreviewHeaderDelegate extends SliverPersistentHeaderDelegate {
 }
 
 class VideoPreviewArea extends StatefulWidget {
-  VideoPreviewArea(this.file, this.previewWidth, {Key key}) : super(key: key);
+  VideoPreviewArea(this.file, this.previewWidth, this.useOriginalRatio, {Key key}) : super(key: key);
 
   final File file;
   final double previewWidth;
+  final bool useOriginalRatio;
 
   @override
   VideoPreviewState createState() => VideoPreviewState();
@@ -782,9 +867,10 @@ class VideoPreviewState extends State<VideoPreviewArea> {
           if (snapshot.connectionState == ConnectionState.done) {
             print("aspectRatio:${_controller.value.aspectRatio}");
             if (!_controller.value.isPlaying) {
-              // _controller.play();
+              _controller.play();
             }
-            Size _previewSize = _getVideoPreviewSize(_controller.value.aspectRatio, widget.previewWidth);
+            Size _previewSize =
+                _getVideoPreviewSize(_controller.value.aspectRatio, widget.previewWidth, widget.useOriginalRatio);
             //初始位置就是(0，0)所以暂不做初始偏移值的处理
             return ScrollConfiguration(
               behavior: NoBlueEffectBehavior(),
@@ -838,31 +924,74 @@ class VideoPreviewState extends State<VideoPreviewArea> {
   }
 }
 
+// 获取图片裁剪输出尺寸
+Size _getImageOutSize(AssetEntity entity, bool useOriginalRatio) {
+  double _outWidth;
+  double _outHeight;
+
+  if (useOriginalRatio) {
+    double ratio = entity.width / entity.height;
+    // 因为最终图片宽度会填满屏幕宽度展示 所以图片始终保证宽度为固定标准
+    // ratio的double类型计算可能会增加误差 所以不重新赋值ratio时 用宽高计算
+    _outWidth = baseOutSize;
+    if (ratio < minRatio) {
+      ratio = minRatio;
+      _outHeight = _outWidth / ratio;
+    } else if (ratio > maxRatio) {
+      ratio = maxRatio;
+      _outHeight = _outWidth / ratio;
+    } else {
+      _outHeight = _outWidth * entity.height / entity.width;
+    }
+  } else {
+    _outWidth = baseOutSize;
+    _outHeight = baseOutSize;
+  }
+
+  return Size(_outWidth, _outHeight);
+}
+
 // 获取视频预览区域宽高
-Size _getVideoPreviewSize(double ratio, double _previewWidth) {
+Size _getVideoPreviewSize(double ratio, double _previewWidth, bool useOriginalRatio) {
   double _videoWidth;
   double _videoHeight;
 
-  if (ratio < minVideoRatio) {
-    //细高的情况 先限定最宽的宽度 再根据ratio算出高度
-    _videoWidth = _previewWidth * minVideoRatio;
-    _videoHeight = _previewWidth * minVideoRatio / ratio;
-  } else if (ratio < 1) {
-    //填满高度
-    _videoHeight = _previewWidth;
-    _videoWidth = _previewWidth * ratio;
-  } else if (ratio > maxVideoRatio) {
-    //扁长的情况 先限定最高的高度 再根据ratio算出宽度
-    _videoHeight = _previewWidth / maxVideoRatio;
-    _videoWidth = _previewWidth * ratio / maxVideoRatio;
-  } else if (ratio > 1) {
-    //填满宽度
-    _videoHeight = _previewWidth / ratio;
-    _videoWidth = _previewWidth;
+  if (useOriginalRatio) {
+    if (ratio < minRatio) {
+      //细高的情况 先限定最宽的宽度 再根据ratio算出高度
+      _videoWidth = _previewWidth * minRatio;
+      _videoHeight = _previewWidth * minRatio / ratio;
+    } else if (ratio < 1) {
+      //填满高度
+      _videoHeight = _previewWidth;
+      _videoWidth = _previewWidth * ratio;
+    } else if (ratio > maxRatio) {
+      //扁长的情况 先限定最高的高度 再根据ratio算出宽度
+      _videoHeight = _previewWidth / maxRatio;
+      _videoWidth = _previewWidth * ratio / maxRatio;
+    } else if (ratio > 1) {
+      //填满宽度
+      _videoHeight = _previewWidth / ratio;
+      _videoWidth = _previewWidth;
+    } else {
+      //剩余的就是ratio == 1的情况
+      _videoHeight = _previewWidth;
+      _videoWidth = _previewWidth;
+    }
   } else {
-    //剩余的就是ratio == 1的情况
-    _videoHeight = _previewWidth;
-    _videoWidth = _previewWidth;
+    if (ratio < 1) {
+      //填满宽度
+      _videoHeight = _previewWidth / ratio;
+      _videoWidth = _previewWidth;
+    } else if (ratio > 1) {
+      //填满高度
+      _videoHeight = _previewWidth;
+      _videoWidth = _previewWidth * ratio;
+    } else {
+      //剩余的就是ratio == 1的情况
+      _videoHeight = _previewWidth;
+      _videoWidth = _previewWidth;
+    }
   }
   return Size(_videoWidth, _videoHeight);
 }

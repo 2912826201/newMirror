@@ -90,6 +90,8 @@ var handlerMediaPicker = Handler(handlerFunc: (BuildContext context, Map<String,
     data["startPage"],
     data["cropOnlySquare"],
     data["isGoToPublish"],
+    fixedWidth: data["fixedWidth"],
+    fixedHeight: data["fixedHeight"],
   );
 });
 
@@ -200,6 +202,8 @@ var handlerPreviewPhoto = Handler(handlerFunc: (BuildContext context, Map<String
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return PreviewPhotoPage(
     filePath: data["filePath"],
+    fixedWidth: data["fixedWidth"],
+    fixedHeight: data["fixedHeight"],
   );
 });
 

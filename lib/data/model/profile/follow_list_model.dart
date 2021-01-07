@@ -1,11 +1,11 @@
 
-class FollowLsitModel{
-  int lastTime;//": 1606125125965,
+class FollowListModel {
+  int lastTime; //": 1606125125965,
   List<FollowModel> list;
 
-  FollowLsitModel({this.list});
+  FollowListModel({this.list});
 
-  FollowLsitModel.fromJson(dynamic json) {
+  FollowListModel.fromJson(dynamic json) {
     if (json["list"] != null) {
       list = [];
       json["list"].forEach((v) {

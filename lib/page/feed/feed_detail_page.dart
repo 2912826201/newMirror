@@ -131,7 +131,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   // }
   @override
   Widget build(BuildContext context) {
-    print("动态详情页");
+    print("动态详情页--${feedModel}");
     return Scaffold(
         backgroundColor: AppColor.white,
         appBar: AppBar(
@@ -174,7 +174,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                   // 图片区域
                   feedModel.picUrls.isNotEmpty
                       ? SlideBanner(
-                          height: feedModel.picUrls[0].height.toDouble(),
+                          height: feedModel?.picUrls[0]?.height?.toDouble(),
                           model: feedModel,
                           isComplex: true,
                         )

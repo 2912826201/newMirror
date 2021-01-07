@@ -6,6 +6,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/dialog.dart';
+import 'package:mirror/widget/volume_popup.dart';
 import 'package:video_player/video_player.dart';
 
 /// video_course_play_page
@@ -262,7 +263,9 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                         right: 16,
                         top: 128,
                         child: GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            showVolumePopup(context);
+                          },
                           child: Container(
                             alignment: Alignment.center,
                             height: 32,
