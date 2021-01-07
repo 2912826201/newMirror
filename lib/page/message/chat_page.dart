@@ -22,6 +22,7 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/page/feed/feed_detail_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
@@ -1282,6 +1283,10 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   // 请求动态详情页数据
   getFeedDetail(int feedId) async {
     HomeFeedModel feedModel = await feedDetail(id: feedId);
+    List<HomeFeedModel> list = [];
+    list.add(feedModel);
+    context.read<FeedMapNotifier>().updateFeedMap(list);
+    // print("----------feedModel:${feedModel.toJson().toString()}");
     // 跳转动态详情页
     Navigator.push(
       context,

@@ -71,6 +71,7 @@ Future<bool> jumpShareMessage(
   } else {
     chatType = ChatTypeModel.NULL_COMMENT;
     print("给$name分享了未知消息");
+    return false;
   }
   if (chatType == ChatTypeModel.NULL_COMMENT) {
     return false;
