@@ -123,7 +123,14 @@ class GroupMorePageState extends State<GroupMorePage> {
       crossAxisSpacing: 1,
       children: List.generate(groupUserList.length, (index) {
         if (index >= groupUserList.length - 2) {
-          return getTopItemAddOrSubUserUi(index == groupUserList.length - 2);
+          bool isVisibility;
+          try {
+            isVisibility = index == groupUserList.length - 2 ||
+                Application.chatGroupUserModelList[0].uid == Application.profile.uid;
+          } catch (e) {
+            isVisibility = false;
+          }
+          return getTopItemAddOrSubUserUi(index == groupUserList.length - 2, isVisibility);
         } else {
           return getItemUserImage(index, groupUserList[index]);
         }
@@ -268,9 +275,9 @@ class GroupMorePageState extends State<GroupMorePage> {
   }
 
   //显示加减群成员
-  Widget getTopItemAddOrSubUserUi(bool isAdd) {
+  Widget getTopItemAddOrSubUserUi(bool isAdd, bool isVisibility) {
     return Visibility(
-      visible: isAdd || Application.chatGroupUserModelList[0].uid == Application.profile.uid,
+      visible: isVisibility,
       child: Container(
         child: Column(
           children: [
@@ -437,9 +444,12 @@ class GroupMorePageState extends State<GroupMorePage> {
   //查看更多群成员
   void seeMoreGroupUser() {
     Navigator.push(context, MaterialPageRoute(builder: (_) {
-      return FriendsPage(type: 1, voidCallback: (name, context) {
-        print("查看了name：$name");
-      });
+      return FriendsPage(
+          type: 1,
+          groupChatId: int.parse(widget.chatGroupId),
+          voidCallback: (name, userId, context) {
+            print("查看了name：$name");
+          });
     }));
   }
 
@@ -448,8 +458,12 @@ class GroupMorePageState extends State<GroupMorePage> {
     print("添加群成员");
 
     Navigator.push(context, MaterialPageRoute(builder: (_) {
-      return FriendsPage(type: 3, voidCallback: (name, context) {
+      return FriendsPage(type: 3, groupChatId: int.parse(widget.chatGroupId), voidCallback: (name, userId, context) {
         print("添加用户：$name进群");
+
+        setState(() {
+
+        });
       });
     }));
   }
@@ -458,8 +472,12 @@ class GroupMorePageState extends State<GroupMorePage> {
   void deleteGroupUser() {
     print("删除群成员");
     Navigator.push(context, MaterialPageRoute(builder: (_) {
-      return FriendsPage(type: 2, voidCallback: (name, context) {
+      return FriendsPage(type: 2, groupChatId: int.parse(widget.chatGroupId), voidCallback: (name, userId, context) {
         print("移除这个用户：$name");
+
+        setState(() {
+
+        });
       });
     }));
   }

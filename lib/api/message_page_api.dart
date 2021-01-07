@@ -154,8 +154,10 @@ Future<Map> getGroupChatList() async {
 ///请求参数
 ///groupChatId:群id
 ///uid:用户id
-Future<Map> kickedGroupChat({int groupChatId, int uid}) async {
+Future<Map> kickedGroupChat({int groupChatId, String uids}) async {
   Map<String, dynamic> params = {};
+  params["uids"] = uids;
+  params["groupChatId"] = groupChatId;
   BaseResponseModel responseModel = await requestApi(KICKEDGROUPCHAT, params);
   if (responseModel.isSuccess) {
     return responseModel.data;
@@ -170,6 +172,8 @@ Future<Map> kickedGroupChat({int groupChatId, int uid}) async {
 ///uids:1000000,1013036用户id字符串，以逗号隔开
 Future<Map> inviteJoin({int groupChatId, String uids}) async {
   Map<String, dynamic> params = {};
+  params["uids"] = uids;
+  params["groupChatId"] = groupChatId;
   BaseResponseModel responseModel = await requestApi(INVITEJOIN, params);
   if (responseModel.isSuccess) {
     return responseModel.data;

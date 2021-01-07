@@ -3,10 +3,12 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/message_page_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
+import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
@@ -40,25 +42,20 @@ void jumpChatPageUser(
 }
 
 //分享跳转界面
-void jumpShareMessage(Map<String, dynamic> map, String chatType, String name,
-    BuildContext context) async {
+Future<bool> jumpShareMessage(
+    Map<String, dynamic> map, String chatType, String name, int userId, BuildContext context) async {
   ConversationDto conversation = new ConversationDto();
   conversation.name = name;
-  if (Application.profile.uid.toString() == "1018240") {
-    conversation.conversationId = "1019293";
-  } else {
-    conversation.conversationId = "1018240";
-  }
+  conversation.conversationId = userId.toString();
   conversation.uid = Application.profile.uid;
-
   //todo 目前这里是私聊--写死
   conversation.type = PRIVATE_TYPE;
 
   Message message;
   if (chatType == ChatTypeModel.MESSAGE_TYPE_FEED) {
     print("给$name分享了动态");
-    message = await postMessageManagerFeed(conversation.conversationId, map,
-        conversation.getType() == RCConversationType.Private);
+    message = await postMessageManagerFeed(
+        conversation.conversationId, map, conversation.getType() == RCConversationType.Private);
   } else if (chatType == ChatTypeModel.MESSAGE_TYPE_USER) {
     print("给$name分享了名片");
     message = await postMessageManagerUser(conversation.conversationId, map,
@@ -76,7 +73,7 @@ void jumpShareMessage(Map<String, dynamic> map, String chatType, String name,
     print("给$name分享了未知消息");
   }
   if (chatType == ChatTypeModel.NULL_COMMENT) {
-    return;
+    return false;
   }
   if (message == null) {
     message = await postMessageManagerText(
@@ -84,8 +81,8 @@ void jumpShareMessage(Map<String, dynamic> map, String chatType, String name,
         map.toString(), null, conversation.type == RCConversationType.Private);
   }
   print(message.toString());
-  _jumpChatPage(
-      context: context, conversation: conversation, shareMessage: message);
+  return true;
+  // _jumpChatPage(context: context, conversation: conversation, shareMessage: message);
 }
 
 //去聊天界面
@@ -496,6 +493,39 @@ int getRCConversationType(int type) {
       return RCConversationType.Group;
     default:
       return RCConversationType.System;
+  }
+}
+
+
+//获取群成员信息
+Future<void> getChatGroupUserModelList(String groupChatId) async {
+  Application.chatGroupUserModelList.clear();
+  Map<String, dynamic> model = await getMembers(groupChatId: int.parse(groupChatId));
+  print("------model:${model.toString()}");
+  if (model != null && model["list"] != null) {
+    model["list"].forEach((v) {
+      Application.chatGroupUserModelList.add(ChatGroupUserModel.fromJson(v));
+    });
+    initChatGroupUserModelMap();
+  }
+
+  print("------len:${Application.chatGroupUserModelList.length}");
+}
+
+//获取群成员的信息 map id对应昵称
+void initChatGroupUserModelMap() {
+  if (!Application.chatGroupUserModelList[0].isGroupLeader()) {
+    for (int i = 0; i < Application.chatGroupUserModelList.length; i++) {
+      if (Application.chatGroupUserModelList[i].isGroupLeader()) {
+        Application.chatGroupUserModelList.insert(0, Application.chatGroupUserModelList[i]);
+        Application.chatGroupUserModelList.removeAt(i + 1);
+        break;
+      }
+    }
+  }
+  Application.chatGroupUserModelMap.clear();
+  for (ChatGroupUserModel userModel in Application.chatGroupUserModelList) {
+    Application.chatGroupUserModelMap[userModel.uid.toString()] = userModel.groupNickName;
   }
 }
 

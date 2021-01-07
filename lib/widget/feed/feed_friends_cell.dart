@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 
-typedef VoidCallback = void Function(String content, BuildContext context);
+typedef VoidCallback = void Function(String name, int userId, BuildContext context);
 
 // ignore: must_be_immutable
 class FriendsCell extends StatelessWidget {
@@ -10,7 +10,7 @@ class FriendsCell extends StatelessWidget {
   final String name;
   final String groupTitle;
   final String imageAssets;
-  final String userId;
+  final int userId;
   final VoidCallback voidCallback;
   final bool isShowTitle;
   final bool isShowSingleChoice;
@@ -36,14 +36,8 @@ class FriendsCell extends StatelessWidget {
         child: _buildUi(),
       ),
       onTap: () {
-        String returnText;
-        if (isShowSingleChoice) {
-          returnText = userId;
-        } else {
-          returnText = name;
-        }
         if (voidCallback != null) {
-          voidCallback(returnText, context);
+          voidCallback(name, userId, context);
         }
       },
     );

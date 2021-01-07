@@ -591,7 +591,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     }
     context.read<ChatMessageProfileNotifier>().setData(chatTypeId, chatUserId);
     if (chatTypeId == RCConversationType.Group) {
-      getChatGroupUserModelList();
+      getChatGroupUserModelList(chatUserId);
     }
   }
 
@@ -626,35 +626,6 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     Future.delayed(Duration(milliseconds: 200), () {
       setState(() {});
     });
-  }
-
-  //获取群成员信息
-  void getChatGroupUserModelList() async {
-    Application.chatGroupUserModelList.clear();
-    Map<String, dynamic> model = await getMembers(groupChatId: int.parse(chatUserId));
-    if (model != null && model["list"] != null) {
-      model["list"].forEach((v) {
-        Application.chatGroupUserModelList.add(ChatGroupUserModel.fromJson(v));
-      });
-      initChatGroupUserModelMap();
-    }
-  }
-
-  //获取群成员的信息 map id对应昵称
-  void initChatGroupUserModelMap() {
-    if (!Application.chatGroupUserModelList[0].isGroupLeader()) {
-      for (int i = 0; i < Application.chatGroupUserModelList.length; i++) {
-        if (Application.chatGroupUserModelList[i].isGroupLeader()) {
-          Application.chatGroupUserModelList.insert(0, Application.chatGroupUserModelList[i]);
-          Application.chatGroupUserModelList.removeAt(i + 1);
-          break;
-        }
-      }
-    }
-    Application.chatGroupUserModelMap.clear();
-    for (ChatGroupUserModel userModel in Application.chatGroupUserModelList) {
-      Application.chatGroupUserModelMap[userModel.uid.toString()] = userModel.groupNickName;
-    }
   }
 
   //判断有没有at我的消息
