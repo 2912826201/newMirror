@@ -21,6 +21,7 @@ final int _horizontalCount = 4;
 final double _itemMargin = 0;
 final int _galleryPageSize = 100;
 
+final double defaultRatio = 1.0;
 //1.9:1 和 4:5
 final double maxVideoRatio = 1.9;
 final double minVideoRatio = 0.8;
@@ -185,6 +186,28 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                               },
                             ),
                           ))
+                      : Container(),
+                  widget.needCrop && !widget.cropOnlySquare
+                      ? Positioned(
+                          top: context.watch<_PreviewHeightNotifier>().previewHeight - 36,
+                          left: 12,
+                          child: GestureDetector(
+                            onTap: _changeCurrentRatio,
+                            child: Container(
+                              height: 24,
+                              width: 24,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColor.textPrimary2.withOpacity(0.65),
+                              ),
+                              child: Icon(
+                                Icons.fullscreen,
+                                color: AppColor.white,
+                                size: 24,
+                              ),
+                            ),
+                          ),
+                        )
                       : Container(),
                 ],
               );
@@ -522,6 +545,9 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
     // Uint8List picBytes = byteData.buffer.asUint8List();
     // print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
     context.read<SelectedMapNotifier>().addImage(id, image);
+  }
+
+  _changeCurrentRatio() {
   }
 }
 
