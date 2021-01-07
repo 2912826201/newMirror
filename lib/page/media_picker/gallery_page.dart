@@ -171,6 +171,8 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                               builder: (context) {
                                 AssetEntity entity =
                                     context.select((SelectedMapNotifier notifier) => notifier.currentEntity);
+                                Size selectedSize =
+                                    context.select((SelectedMapNotifier notifier) => notifier.selectedImageSize);
                                 return entity == null
                                     ? Container()
                                     : entity.type == AssetType.video
@@ -181,14 +183,20 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                                                 FileImage(_fileMap[entity.id]),
                                                 round: 0,
                                                 maskPadding: 0,
-                                                outHeight: _getImageOutSize(
-                                                    entity,
-                                                    context.select((SelectedMapNotifier notifier) =>
-                                                        notifier.useOriginalRatio)).height,
-                                                outWidth: _getImageOutSize(
-                                                    entity,
-                                                    context.select((SelectedMapNotifier notifier) =>
-                                                        notifier.useOriginalRatio)).width,
+                                                outHeight: (selectedSize == null
+                                                        ? _getImageOutSize(
+                                                            entity,
+                                                            context.select((SelectedMapNotifier notifier) =>
+                                                                notifier.useOriginalRatio))
+                                                        : selectedSize)
+                                                    .height,
+                                                outWidth: (selectedSize == null
+                                                        ? _getImageOutSize(
+                                                            entity,
+                                                            context.select((SelectedMapNotifier notifier) =>
+                                                                notifier.useOriginalRatio))
+                                                        : selectedSize)
+                                                    .width,
                                                 key: _cropperKey,
                                               )
                                             : Container();
@@ -196,7 +204,9 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                             ),
                           ))
                       : Container(),
-                  widget.needCrop && !widget.cropOnlySquare
+                  widget.needCrop &&
+                          !widget.cropOnlySquare &&
+                          context.select((SelectedMapNotifier notifier) => notifier.selectedMap.length == 0)
                       ? Positioned(
                           top: context.watch<_PreviewHeightNotifier>().previewHeight - 36,
                           left: 12,
@@ -610,6 +620,11 @@ class SelectedMapNotifier with ChangeNotifier {
 
   Map<String, ui.Image> get imageMap => _imageMap;
 
+  // 记录已选的图片裁剪尺寸
+  Size _selectedImageSize;
+
+  Size get selectedImageSize => _selectedImageSize;
+
   _removeFromSelectedMap(AssetEntity entity) {
     //删掉目标entity还要将排序重新整理
     _OrderedAssetEntity orderedEntity = _selectedMap[entity.id];
@@ -623,6 +638,8 @@ class SelectedMapNotifier with ChangeNotifier {
     if (_selectedMap.isEmpty) {
       // 如果已选列表为空时 清空已选类型
       _selectedType = null;
+      // 清空已选图片尺寸
+      _selectedImageSize = null;
     }
   }
 
@@ -630,6 +647,10 @@ class SelectedMapNotifier with ChangeNotifier {
     if (_selectedMap.isEmpty) {
       // 如果是第一条数据 则设置已选类型
       _selectedType = entity.type;
+      // 如果所选的是图片 要记录它的尺寸 之后的图片都要沿用
+      if (entity.type == AssetType.image) {
+        _selectedImageSize = _getImageOutSize(entity, _useOriginalRatio);
+      }
     }
     //在添加数据时 排序为已选数量+1
     _OrderedAssetEntity orderedEntity = _OrderedAssetEntity(_selectedMap.length + 1, entity);
@@ -674,7 +695,6 @@ class SelectedMapNotifier with ChangeNotifier {
     // 判断是否真的变化 如果一方为null时 统一视为变化
     if (_currentEntity == null || entity == null || _currentEntity.id != entity.id) {
       _currentEntity = entity;
-      _useOriginalRatio = false;
       notifyListeners();
     }
   }
