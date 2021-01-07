@@ -175,7 +175,8 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                                 return entity == null
                                     ? Container()
                                     : entity.type == AssetType.video
-                                        ? VideoPreviewArea(_fileMap[entity.id], _screenWidth)
+                                        ? VideoPreviewArea(_fileMap[entity.id], _screenWidth,
+                                            context.select((SelectedMapNotifier notifier) => notifier.useOriginalRatio))
                                         : entity.type == AssetType.image
                                             ? CropperImage(
                                                 FileImage(_fileMap[entity.id]),
@@ -548,6 +549,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
   }
 
   _changeCurrentRatio() {
+    context.read<SelectedMapNotifier>().changeUseOriginalRatio();
   }
 }
 
@@ -576,6 +578,10 @@ class SelectedMapNotifier with ChangeNotifier {
   AssetEntity _currentEntity;
 
   AssetEntity get currentEntity => _currentEntity;
+
+  bool _useOriginalRatio = false;
+
+  bool get useOriginalRatio => _useOriginalRatio;
 
   // 所选类型只能有一种
   AssetType _selectedType;
@@ -660,8 +666,14 @@ class SelectedMapNotifier with ChangeNotifier {
     // 判断是否真的变化 如果一方为null时 统一视为变化
     if (_currentEntity == null || entity == null || _currentEntity.id != entity.id) {
       _currentEntity = entity;
+      _useOriginalRatio = false;
       notifyListeners();
     }
+  }
+
+  changeUseOriginalRatio() {
+    _useOriginalRatio = !_useOriginalRatio;
+    notifyListeners();
   }
 
   addImage(String id, ui.Image image) {
@@ -756,10 +768,11 @@ class _PreviewHeaderDelegate extends SliverPersistentHeaderDelegate {
 }
 
 class VideoPreviewArea extends StatefulWidget {
-  VideoPreviewArea(this.file, this.previewWidth, {Key key}) : super(key: key);
+  VideoPreviewArea(this.file, this.previewWidth, this.useOriginalRatio, {Key key}) : super(key: key);
 
   final File file;
   final double previewWidth;
+  final bool useOriginalRatio;
 
   @override
   VideoPreviewState createState() => VideoPreviewState();
@@ -808,9 +821,10 @@ class VideoPreviewState extends State<VideoPreviewArea> {
           if (snapshot.connectionState == ConnectionState.done) {
             print("aspectRatio:${_controller.value.aspectRatio}");
             if (!_controller.value.isPlaying) {
-              // _controller.play();
+              _controller.play();
             }
-            Size _previewSize = _getVideoPreviewSize(_controller.value.aspectRatio, widget.previewWidth);
+            Size _previewSize =
+                _getVideoPreviewSize(_controller.value.aspectRatio, widget.previewWidth, widget.useOriginalRatio);
             //初始位置就是(0，0)所以暂不做初始偏移值的处理
             return ScrollConfiguration(
               behavior: NoBlueEffectBehavior(),
@@ -865,30 +879,46 @@ class VideoPreviewState extends State<VideoPreviewArea> {
 }
 
 // 获取视频预览区域宽高
-Size _getVideoPreviewSize(double ratio, double _previewWidth) {
+Size _getVideoPreviewSize(double ratio, double _previewWidth, bool useOriginalRatio) {
   double _videoWidth;
   double _videoHeight;
 
-  if (ratio < minVideoRatio) {
-    //细高的情况 先限定最宽的宽度 再根据ratio算出高度
-    _videoWidth = _previewWidth * minVideoRatio;
-    _videoHeight = _previewWidth * minVideoRatio / ratio;
-  } else if (ratio < 1) {
-    //填满高度
-    _videoHeight = _previewWidth;
-    _videoWidth = _previewWidth * ratio;
-  } else if (ratio > maxVideoRatio) {
-    //扁长的情况 先限定最高的高度 再根据ratio算出宽度
-    _videoHeight = _previewWidth / maxVideoRatio;
-    _videoWidth = _previewWidth * ratio / maxVideoRatio;
-  } else if (ratio > 1) {
-    //填满宽度
-    _videoHeight = _previewWidth / ratio;
-    _videoWidth = _previewWidth;
+  if (useOriginalRatio) {
+    if (ratio < 1) {
+      //填满宽度
+      _videoHeight = _previewWidth / ratio;
+      _videoWidth = _previewWidth;
+    } else if (ratio > 1) {
+      //填满高度
+      _videoHeight = _previewWidth;
+      _videoWidth = _previewWidth * ratio;
+    } else {
+      //剩余的就是ratio == 1的情况
+      _videoHeight = _previewWidth;
+      _videoWidth = _previewWidth;
+    }
   } else {
-    //剩余的就是ratio == 1的情况
-    _videoHeight = _previewWidth;
-    _videoWidth = _previewWidth;
+    if (ratio < minVideoRatio) {
+      //细高的情况 先限定最宽的宽度 再根据ratio算出高度
+      _videoWidth = _previewWidth * minVideoRatio;
+      _videoHeight = _previewWidth * minVideoRatio / ratio;
+    } else if (ratio < 1) {
+      //填满高度
+      _videoHeight = _previewWidth;
+      _videoWidth = _previewWidth * ratio;
+    } else if (ratio > maxVideoRatio) {
+      //扁长的情况 先限定最高的高度 再根据ratio算出宽度
+      _videoHeight = _previewWidth / maxVideoRatio;
+      _videoWidth = _previewWidth * ratio / maxVideoRatio;
+    } else if (ratio > 1) {
+      //填满宽度
+      _videoHeight = _previewWidth / ratio;
+      _videoWidth = _previewWidth;
+    } else {
+      //剩余的就是ratio == 1的情况
+      _videoHeight = _previewWidth;
+      _videoWidth = _previewWidth;
+    }
   }
   return Size(_videoWidth, _videoHeight);
 }
