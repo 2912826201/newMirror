@@ -206,7 +206,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                       : Container(),
                   widget.needCrop &&
                           !widget.cropOnlySquare &&
-                          context.select((SelectedMapNotifier notifier) => notifier.selectedMap.length == 0)
+                          context.select((SelectedMapNotifier notifier) => notifier.selectedImageSize == null)
                       ? Positioned(
                           top: context.watch<_PreviewHeightNotifier>().previewHeight - 36,
                           left: 12,
