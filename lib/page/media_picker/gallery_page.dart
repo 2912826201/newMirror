@@ -884,20 +884,6 @@ Size _getVideoPreviewSize(double ratio, double _previewWidth, bool useOriginalRa
   double _videoHeight;
 
   if (useOriginalRatio) {
-    if (ratio < 1) {
-      //填满宽度
-      _videoHeight = _previewWidth / ratio;
-      _videoWidth = _previewWidth;
-    } else if (ratio > 1) {
-      //填满高度
-      _videoHeight = _previewWidth;
-      _videoWidth = _previewWidth * ratio;
-    } else {
-      //剩余的就是ratio == 1的情况
-      _videoHeight = _previewWidth;
-      _videoWidth = _previewWidth;
-    }
-  } else {
     if (ratio < minVideoRatio) {
       //细高的情况 先限定最宽的宽度 再根据ratio算出高度
       _videoWidth = _previewWidth * minVideoRatio;
@@ -914,6 +900,20 @@ Size _getVideoPreviewSize(double ratio, double _previewWidth, bool useOriginalRa
       //填满宽度
       _videoHeight = _previewWidth / ratio;
       _videoWidth = _previewWidth;
+    } else {
+      //剩余的就是ratio == 1的情况
+      _videoHeight = _previewWidth;
+      _videoWidth = _previewWidth;
+    }
+  } else {
+    if (ratio < 1) {
+      //填满宽度
+      _videoHeight = _previewWidth / ratio;
+      _videoWidth = _previewWidth;
+    } else if (ratio > 1) {
+      //填满高度
+      _videoHeight = _previewWidth;
+      _videoWidth = _previewWidth * ratio;
     } else {
       //剩余的就是ratio == 1的情况
       _videoHeight = _previewWidth;
