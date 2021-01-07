@@ -9,6 +9,7 @@ import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
+import 'package:mirror/page/topic/topic_detail.dart';
 import 'package:mirror/util/screen_util.dart';
 
 class SearchTopic extends StatefulWidget {
@@ -211,26 +212,36 @@ class SearchTopiciItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: ScreenUtil.instance.width,
-      margin: EdgeInsets.only(left: 16, right: 16),
-      height: 54,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 6),
-          Text(
-            "#${model.name}",
-            style: AppStyle.textRegular16,
-          ),
-          SizedBox(height: 2),
-          Text(
-            "${model.feedCount}篇动态",
-            style: AppStyle.textHintRegular12,
-          ),
-          SizedBox(height: 6),
-        ],
+    return  GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          new MaterialPageRoute(builder: (context) => TopicDetail(topicId: model.id,)),
+        );
+      },
+      child: Container(
+        color: AppColor.mainRed,
+        width: ScreenUtil.instance.width,
+        margin: EdgeInsets.only(left: 16, right: 16),
+        padding: EdgeInsets.only(top: 6,bottom: 6),
+        // height: 54,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // SizedBox(height: 6),
+            Text(
+              "#${model.name}",
+              style: AppStyle.textRegular16,
+            ),
+            SizedBox(height: 2),
+            Text(
+              "${model.feedCount}篇动态",
+              style: AppStyle.textHintRegular12,
+            ),
+            // SizedBox(height: 6),
+          ],
+        ),
       ),
     );
   }

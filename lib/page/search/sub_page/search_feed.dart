@@ -373,7 +373,9 @@ class SearchFeeditemState extends State<SearchFeeditem> {
                 ? InkWell(
               onTap: () {
                 ///失去输入框焦点
-                focusNode.unfocus();
+                if (focusNode != null ) {
+                  focusNode.unfocus();
+                }
                 for(feedModel in list) {
                   feedModel = context.read<FeedMapNotifier>().feedMap[feedModel.id];
                   if (model.id == feedModel.id) {
@@ -511,6 +513,7 @@ class LaudItemState extends State<LaudItem> {
             return notifier.feedMap[widget.model.id].laudCount;
           }),
         ),
+        SizedBox(width: 2,)
       ],
     );
   }

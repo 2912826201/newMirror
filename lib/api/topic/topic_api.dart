@@ -3,12 +3,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/profile/topic_list_model.dart';
+import 'package:mirror/page/feed/release_page.dart';
 
 import '../api.dart';
 //获取搜索话题列表
 const String SEARCHTOPIC = "/appuser/web/topic/searchTopic";
 //获取推荐话题列表
 const String GETRECOMMENDTOPIC = "/appuser/web/topic/getRecommendTopic";
+// 话题详情
+const String GETTOPICINFO = "/appuser/web/topic/getTopicInfo";
+// 关注话题
+const String FOLLOWTOPIC = "/appuser/web/topic/follow";
 //获取搜索话题列表
 Future<DataResponseModel> searchTopic({@required String key, @required int size, double lastScore}) async {
   Map<String, dynamic> params = {};
@@ -43,6 +49,36 @@ Future<List> getRecommendTopic({@required int size}) async {
       }
     }
     return topicModelList;
+  } else {
+    return null;
+  }
+}
+// 获取话题详情 GETTOPICINFO
+Future<topicModel> getTopicInfo({@required int topicId}) async {
+  Map<String, dynamic> params = {};
+  params["topicId"] = topicId;
+  BaseResponseModel responseModel = await requestApi(GETTOPICINFO, params);
+  if (responseModel.isSuccess) {
+    topicModel model;
+    if (responseModel.data != null ) {
+      model = topicModel.fromJson(responseModel.data);
+    }
+    return model;
+  } else {
+    return null;
+  }
+}
+// 关注话题 FOLLOWTOPIC
+Future<DataResponseModel> followTopic({@required int topicId}) async {
+  Map<String, dynamic> params = {};
+  params["topicId"] = topicId;
+  BaseResponseModel responseModel = await requestApi(FOLLOWTOPIC, params);
+  if (responseModel.isSuccess) {
+    DataResponseModel dataResponseModel;
+    if (responseModel.data != null) {
+      dataResponseModel = DataResponseModel.fromJson(responseModel.data);
+    }
+    return dataResponseModel;
   } else {
     return null;
   }

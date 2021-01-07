@@ -31,6 +31,8 @@ class AppStyle {
   // Regular 灰色
   static const textPrimary3Regular14 =
       TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.textPrimary3);
+  static const textPrimary3Regular12 =
+  TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textPrimary3);
 
   // Medium主体文字黑色
   static const textMedium18 = TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);

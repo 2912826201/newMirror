@@ -44,6 +44,9 @@ class topicModel{
   int createTime;
   int updateTime;
   int isFollow;
+  String pics;
+  String description;
+  String avatarUrl;
   topicModel({
     this.id,
     this.name,
@@ -58,6 +61,9 @@ class topicModel{
     this.createTime,
     this.updateTime,
     this.isFollow,
+    this.pics,
+    this.description,
+    this.avatarUrl,
   });
 
   topicModel.fromJson(Map<String, dynamic> json) {
@@ -74,8 +80,9 @@ class topicModel{
     createTime = json["createTime"];
     updateTime = json["updateTime"];
     isFollow = json["isFollow"];
-
-
+    pics = json["pics"];
+    description = json["description"];
+    avatarUrl = json["avatarUrl"];
   }
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
@@ -92,6 +99,13 @@ class topicModel{
     map["createTime"] = createTime;
     map["updateTime"] = updateTime;
     map["isFollow"] = isFollow;
+    map["pics"] = pics;
+    map["description"] = description;
+    map["avatarUrl"] = avatarUrl;
     return map;
+  }
+  @override
+  String toString() {
+    toString().toString();
   }
 }

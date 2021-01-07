@@ -333,7 +333,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
         return Container(
           height: 48,
           width: (ScreenUtil.instance.width - 48) / 2,
-          padding: EdgeInsets.only(top: 5,bottom: 5),
+          padding: EdgeInsets.only(top: 5,bottom: 4),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
