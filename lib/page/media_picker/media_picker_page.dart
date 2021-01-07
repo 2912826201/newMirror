@@ -26,7 +26,7 @@ int startPagePhoto = _photoIndex;
 class MediaPickerPage extends StatefulWidget {
   MediaPickerPage(
       this.maxImageAmount, this.mediaType, this.needCrop, this.startPage, this.cropOnlySquare, this.isGoToPublish,
-      {Key key})
+      {Key key, this.fixedWidth, this.fixedHeight})
       : super(key: key);
 
   final int maxImageAmount;
@@ -35,6 +35,8 @@ class MediaPickerPage extends StatefulWidget {
   final int startPage;
   final bool cropOnlySquare;
   final bool isGoToPublish;
+  final int fixedWidth;
+  final int fixedHeight;
 
   @override
   _MediaPickerState createState() => _MediaPickerState();
@@ -62,10 +64,14 @@ class _MediaPickerState extends State<MediaPickerPage> {
               needCrop: widget.needCrop,
               cropOnlySquare: widget.cropOnlySquare,
               isGoToPublish: widget.isGoToPublish,
+              fixedHeight: widget.fixedHeight,
+              fixedWidth: widget.fixedWidth,
             )));
     _tabList.add(_buildButton(_galleryIndex, "相册", _onGallerySelected));
     _pageList.add(CameraPhotoPage(
       isGoToPublish: widget.isGoToPublish,
+      fixedHeight: widget.fixedHeight,
+      fixedWidth: widget.fixedWidth,
     ));
     _tabList.add(_buildButton(_photoIndex, "拍照", _onPhotoSelected));
     if (widget.mediaType == typeImageAndVideo) {

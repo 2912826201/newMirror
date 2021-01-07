@@ -34,7 +34,9 @@ class GalleryPage extends StatefulWidget {
       this.requestType = RequestType.common,
       this.needCrop = false,
       this.cropOnlySquare = false,
-      this.isGoToPublish = false})
+      this.isGoToPublish = false,
+      this.fixedWidth,
+      this.fixedHeight})
       : super(key: key);
 
   final int maxImageAmount;
@@ -42,6 +44,8 @@ class GalleryPage extends StatefulWidget {
   final bool needCrop;
   final bool cropOnlySquare;
   final bool isGoToPublish;
+  final int fixedWidth;
+  final int fixedHeight;
 
   // image是图片 common是图片和视频 目前需求只会用到这两种
   final RequestType requestType;
@@ -77,6 +81,14 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
   @override
   void initState() {
     super.initState();
+
+    //如果固定尺寸不为空 则赋值到notifier
+    if (widget.fixedWidth != null && widget.fixedHeight != null) {
+      context
+          .read<SelectedMapNotifier>()
+          .setFixedImageSize(Size(widget.fixedWidth.toDouble(), widget.fixedHeight.toDouble()));
+    }
+
     //初始化时立刻获取一次数据
     _fetchGalleryData(true);
   }
@@ -623,7 +635,9 @@ class SelectedMapNotifier with ChangeNotifier {
   // 记录已选的图片裁剪尺寸
   Size _selectedImageSize;
 
-  Size get selectedImageSize => _selectedImageSize;
+  Size _fixedImageSize;
+
+  Size get selectedImageSize => _fixedImageSize == null ? _selectedImageSize : _fixedImageSize;
 
   _removeFromSelectedMap(AssetEntity entity) {
     //删掉目标entity还要将排序重新整理
@@ -702,6 +716,10 @@ class SelectedMapNotifier with ChangeNotifier {
   changeUseOriginalRatio() {
     _useOriginalRatio = !_useOriginalRatio;
     notifyListeners();
+  }
+
+  setFixedImageSize(Size size) {
+    _fixedImageSize = size;
   }
 
   addImage(String id, ui.Image image) {

@@ -12,9 +12,11 @@ import 'package:mirror/widget/image_cropper.dart';
 /// Created by yangjiayi on 2020/12/4.
 
 class PreviewPhotoPage extends StatefulWidget {
-  const PreviewPhotoPage({Key key, this.filePath}) : super(key: key);
+  const PreviewPhotoPage({Key key, this.filePath, this.fixedWidth, this.fixedHeight}) : super(key: key);
 
   final filePath;
+  final int fixedWidth;
+  final int fixedHeight;
 
   @override
   _PreviewPhotoState createState() => _PreviewPhotoState();
@@ -79,6 +81,8 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
                 FileImage(_file),
                 round: 0,
                 maskPadding: 0,
+                outWidth: widget.fixedWidth == null ? baseOutSize : widget.fixedWidth.toDouble(),
+                outHeight: widget.fixedHeight == null ? baseOutSize : widget.fixedHeight.toDouble(),
                 key: _cropperKey,
               ),
             ),

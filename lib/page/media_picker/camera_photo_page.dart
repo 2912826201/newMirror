@@ -12,9 +12,11 @@ import 'package:permission_handler/permission_handler.dart';
 
 //相机拍照页
 class CameraPhotoPage extends StatefulWidget {
-  CameraPhotoPage({Key key, this.isGoToPublish = false}) : super(key: key);
+  CameraPhotoPage({Key key, this.isGoToPublish = false, this.fixedWidth, this.fixedHeight}) : super(key: key);
 
   final bool isGoToPublish;
+  final int fixedWidth;
+  final int fixedHeight;
 
   @override
   CameraPhotoState createState() => CameraPhotoState();
@@ -122,7 +124,7 @@ class CameraPhotoState extends State<CameraPhotoPage> with WidgetsBindingObserve
                               AppRouter.navigateToReleasePage(context);
                             }
                           }
-                        });
+                        }, fixedWidth: widget.fixedWidth, fixedHeight: widget.fixedHeight);
                       }
                     },
                     child: Container(
