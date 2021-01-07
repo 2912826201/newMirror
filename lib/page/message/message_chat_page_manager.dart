@@ -502,15 +502,17 @@ int getRCConversationType(int type) {
 
 //todo 之后改为路由跳转
 //判断去拿一个更多界面
-void judgeJumpPage(int chatTypeId, String chatUserId, int chatType,
-    BuildContext context, String name) {
+void judgeJumpPage(int chatTypeId, String chatUserId, int chatType, BuildContext context, String name, listener) {
   if (chatTypeId == RCConversationType.Private) {
     jumpPage(
-        PrivateMorePage(chatUserId: chatUserId, chatType: chatType,), false,
+        PrivateMorePage(
+          chatUserId: chatUserId,
+          chatType: chatType,
+        ),
+        false,
         context);
   } else {
-    jumpPage(GroupMorePage(
-        chatGroupId: chatUserId, chatType: chatType, groupName: name), false,
+    jumpPage(GroupMorePage(chatGroupId: chatUserId, chatType: chatType, groupName: name, listener: listener), false,
         context);
   }
 }

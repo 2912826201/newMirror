@@ -281,7 +281,13 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
               //print("-----------------------");
               _focusNode.unfocus();
               ToastShow.show(msg: "点击了更多那妞", context: context);
-              judgeJumpPage(chatTypeId, this.chatUserId, widget.conversation.type, context, chatUserName);
+              judgeJumpPage(chatTypeId, this.chatUserId, widget.conversation.type, context, chatUserName, () {
+                Application.chatGroupUserModelMap.clear();
+                for (ChatGroupUserModel userModel in Application.chatGroupUserModelList) {
+                  Application.chatGroupUserModelMap[userModel.uid.toString()] = userModel.groupNickName;
+                }
+                delayedSetState();
+              });
             },
           ),
         )
@@ -636,6 +642,15 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //获取群成员的信息 map id对应昵称
   void initChatGroupUserModelMap() {
+    if (!Application.chatGroupUserModelList[0].isGroupLeader()) {
+      for (int i = 0; i < Application.chatGroupUserModelList.length; i++) {
+        if (Application.chatGroupUserModelList[i].isGroupLeader()) {
+          Application.chatGroupUserModelList.insert(0, Application.chatGroupUserModelList[i]);
+          Application.chatGroupUserModelList.removeAt(i + 1);
+          break;
+        }
+      }
+    }
     Application.chatGroupUserModelMap.clear();
     for (ChatGroupUserModel userModel in Application.chatGroupUserModelList) {
       Application.chatGroupUserModelMap[userModel.uid.toString()] = userModel.groupNickName;

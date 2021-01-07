@@ -66,7 +66,7 @@ class ChatDetailsBody extends StatelessWidget {
     }
 
     ChatDataModel chatDataModel = new ChatDataModel();
-    chatDataModel.content = "私人管家";
+    chatDataModel.content = "加载动画";
     chatData.add(chatDataModel);
     return Stack(
       children: [
@@ -176,7 +176,7 @@ class ChatDetailsBody extends StatelessWidget {
 
   //判断有没有动画
   Widget judgeStartAnimation(ChatDataModel model, int position) {
-    if (model.isHaveAnimation) {
+    if (model.isHaveAnimation && chatData.length > 10) {
       AnimationController animationController = AnimationController(
         duration: new Duration(milliseconds: 200),
         vsync: vsync,
@@ -186,8 +186,7 @@ class ChatDetailsBody extends StatelessWidget {
       });
       model.isHaveAnimation = false;
       return SizeTransition(
-          sizeFactor: CurvedAnimation(
-              parent: animationController, curve: Curves.easeOut),
+          sizeFactor: CurvedAnimation(parent: animationController, curve: Curves.easeOut),
           axisAlignment: 0.0,
           child: Container(
             child: getBodyItem(model, position),

@@ -15,6 +15,14 @@ const String GETGROUPCHATBYIDS = "/appuser/web/groupChat/getGroupChatByIds";
 const String MODIFY = "/appuser/web/groupChat/modify";
 //修改群昵称
 const String MODIFYNICKNAME = "/appuser/web/groupChat/member/modifyNickName";
+//退出群聊
+const String EXITGROUPCHAT = "/appuser/web/groupChat/exitGroupChat";
+//群聊列表
+const String GETGROUPCHATLIST = "/appuser/web/groupChat/getGroupChatList";
+//踢出群聊
+const String KICKEDGROUPCHAT = "/appuser/web/groupChat/kickedGroupChat";
+//邀请加入
+const String INVITEJOIN = "/appuser/web/groupChat/inviteJoin";
 
 Future<Unreads> getUnReads() async {
   BaseResponseModel responseModel = await requestApi(GET_UNREAD_COUNT, {});
@@ -101,12 +109,68 @@ Future<Map> modify(
 ///请求参数
 ///groupChatId:群id
 ///newName:新群昵称
-Future<Map> modifyNickName(
-    {@required int groupChatId, @required String newName}) async {
+Future<Map> modifyNickName({@required int groupChatId, @required String newName}) async {
   Map<String, dynamic> params = {};
   params["groupChatId"] = groupChatId;
   params["newName"] = newName;
   BaseResponseModel responseModel = await requestApi(MODIFYNICKNAME, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
+
+///退出群聊
+///请求参数
+///groupChatId:群id
+///newName:新群昵称
+Future<Map> exitGroupChat({@required int groupChatId}) async {
+  Map<String, dynamic> params = {};
+  params["groupChatId"] = groupChatId;
+  BaseResponseModel responseModel = await requestApi(EXITGROUPCHAT, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
+
+///获取群聊列表
+///请求参数
+///groupChatId:群id
+///newName:新群昵称
+Future<Map> getGroupChatList() async {
+  Map<String, dynamic> params = {};
+  BaseResponseModel responseModel = await requestApi(GETGROUPCHATLIST, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
+
+///踢出群聊--只有群主能踢人
+///请求参数
+///groupChatId:群id
+///uid:用户id
+Future<Map> kickedGroupChat({int groupChatId, int uid}) async {
+  Map<String, dynamic> params = {};
+  BaseResponseModel responseModel = await requestApi(KICKEDGROUPCHAT, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
+
+///邀请加入群聊
+///请求参数
+///groupChatId:群id
+///uids:1000000,1013036用户id字符串，以逗号隔开
+Future<Map> inviteJoin({int groupChatId, String uids}) async {
+  Map<String, dynamic> params = {};
+  BaseResponseModel responseModel = await requestApi(INVITEJOIN, params);
   if (responseModel.isSuccess) {
     return responseModel.data;
   } else {

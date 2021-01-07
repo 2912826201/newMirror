@@ -7,57 +7,45 @@
 /// role : null
 
 class ChatGroupUserModel {
-  int _uid;
-  String _nickName;
-  String _groupNickName;
-  String _avatarUri;
-  dynamic _roleString;
-  dynamic _role;
+  int uid;
+  String nickName;
+  String groupNickName;
+  String avatarUri;
+  String roleString; // 0-成员 1-群主
+  dynamic role;
 
-  int get uid => _uid;
-
-  String get nickName => _nickName;
-
-  String get groupNickName => _groupNickName;
-
-  String get avatarUri => _avatarUri;
-
-  dynamic get roleString => _roleString;
-
-  dynamic get role => _role;
+  //获取是不是群主
+  bool isGroupLeader() {
+    return roleString != null && roleString == "1";
+  }
 
   ChatGroupUserModel(
-      {int uid,
-      String nickName,
-      String groupNickName,
-      String avatarUri,
-      dynamic roleString,
-      dynamic role}) {
-    _uid = uid;
-    _nickName = nickName;
-    _groupNickName = groupNickName;
-    _avatarUri = avatarUri;
-    _roleString = roleString;
-    _role = role;
+      {int uid, String nickName, String groupNickName, String avatarUri, String roleString, dynamic role}) {
+    uid = uid;
+    nickName = nickName;
+    groupNickName = groupNickName;
+    avatarUri = avatarUri;
+    roleString = roleString;
+    role = role;
   }
 
   ChatGroupUserModel.fromJson(dynamic json) {
-    _uid = json["uid"];
-    _nickName = json["nickName"];
-    _groupNickName = json["groupNickName"];
-    _avatarUri = json["avatarUri"];
-    _roleString = json["roleString"];
-    _role = json["role"];
+    uid = json["uid"];
+    nickName = json["nickName"];
+    groupNickName = json["groupNickName"];
+    avatarUri = json["avatarUri"];
+    roleString = json["roleString"];
+    role = json["role"];
   }
 
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
-    map["uid"] = _uid;
-    map["nickName"] = _nickName;
-    map["groupNickName"] = _groupNickName;
-    map["avatarUri"] = _avatarUri;
-    map["roleString"] = _roleString;
-    map["role"] = _role;
+    map["uid"] = uid;
+    map["nickName"] = nickName;
+    map["groupNickName"] = groupNickName;
+    map["avatarUri"] = avatarUri;
+    map["roleString"] = roleString;
+    map["role"] = role;
     return map;
   }
 }
