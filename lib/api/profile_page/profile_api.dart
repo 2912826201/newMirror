@@ -50,14 +50,22 @@ const String SEARCH_USER = "/appuser/web/user/searchUser";
 
 ///关注列表
 const String FOLLOW_LIST = "/appuser/web/user/follow/QueryFollowingList";
+
+///好友列表--互相关注列表
+const String FOLLOW_BOTH_LIST = "/appuser/web/user/follow/queryBothFollowList";
+
 ///搜索关注用户
 const String SEARCH_FOLLOW_USER = "/appuser/web/user/searchFollowUser";
+
 ///粉丝列表
-const String  FANS_LIST = "/appuser/web/user/follow/queryFansList";
+const String FANS_LIST = "/appuser/web/user/follow/queryFansList";
+
 ///话题列表
 const String TOPIC_LIST = "/appuser/web/topic/queryFollowTopicList";
+
 ///搜索关注话题
 const String SEARCH_FOLLOW_TOPIC = "/appuser/web/topic/searchFollowTopic";
+
 ///健身信息录入
 const String FITNESS_ENTRY = "/appuser/web/user/saveBasicFitnessInfo";
 //关注
@@ -237,26 +245,49 @@ Future<SearchUserModel> ProfileSearchUser(String key, int size, {String uids, in
 }
 
 ///关注列表
-Future<FollowLsitModel> GetFollowList(int size,{String uid,int lastTime})async{
-  Map<String,dynamic> map = Map();
-  if(uid!=null){
+Future<FollowListModel> GetFollowList(int size, {String uid, int lastTime}) async {
+  Map<String, dynamic> map = Map();
+  if (uid != null) {
     map["uid"] = uid;
   }
-  if(lastTime!=null){
+  if (lastTime != null) {
     map["lastTime"] = lastTime;
   }
   map["size"] = size;
   BaseResponseModel responseModel = await requestApi(FOLLOW_LIST, map);
   if (responseModel.isSuccess) {
     print('用户关注列表请求接口=============================');
-    FollowLsitModel model;
-    model = FollowLsitModel.fromJson(responseModel.data);
+    FollowListModel model;
+    model = FollowListModel.fromJson(responseModel.data);
     return model;
   } else {
     print('用户关注列表请求接口失败============================================');
     return null;
   }
 }
+
+///好友列表--互相关注列表
+Future<FollowListModel> GetFollowBothList(int size, {String uid, int lastTime}) async {
+  Map<String, dynamic> map = Map();
+  if (uid != null) {
+    map["uid"] = uid;
+  }
+  if (lastTime != null) {
+    map["lastTime"] = lastTime;
+  }
+  map["size"] = size;
+  BaseResponseModel responseModel = await requestApi(FOLLOW_BOTH_LIST, map);
+  if (responseModel.isSuccess) {
+    print('用户关注列表请求接口=============================');
+    FollowListModel model;
+    model = FollowListModel.fromJson(responseModel.data);
+    return model;
+  } else {
+    print('用户关注列表请求接口失败============================================');
+    return null;
+  }
+}
+
 ///搜索关注用户
 Future<SearchUserModel> searchFollowUser(String key, int size, {String uids, int lastTime}) async {
   Map<String, dynamic> map = Map();

@@ -4,10 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/toast_util.dart';
+
+import 'package:provider/provider.dart';
 
 import 'currency_msg.dart';
 
@@ -42,7 +45,7 @@ class FeedMsg extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    init();
+    init(context);
     return getContentBoxItem(context);
   }
 
@@ -342,11 +345,10 @@ class FeedMsg extends StatelessWidget {
   }
 
   //初始化数据
-  void init() {
+  void init(BuildContext context) {
     if (homeFeedMode.picUrls != null && homeFeedMode.picUrls.length > 0) {
       isPicOrVideo = 0;
-    } else if (homeFeedMode.videos != null &&
-        homeFeedMode.videos.length > 0) {
+    } else if (homeFeedMode.videos != null && homeFeedMode.videos.length > 0) {
       isPicOrVideo = 1;
     } else {
       isPicOrVideo = -1;

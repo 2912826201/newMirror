@@ -79,8 +79,8 @@ class _queryFollowState extends State<QueryFollowList> {
       return;
     }
     print('====================关注页请求接口');
-    FollowLsitModel model = await GetFollowList(15,uid: widget.userId.toString(),lastTime: _lastTime);
-    if(listPage==1&&_lastTime==null){
+    FollowListModel model = await GetFollowList(15, uid: widget.userId.toString(), lastTime: _lastTime);
+    if (listPage == 1 && _lastTime == null) {
       _refreshController.loadComplete();
       followList.clear();
       if (model != null) {

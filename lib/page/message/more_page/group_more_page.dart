@@ -1,4 +1,3 @@
-import 'package:english_words/english_words.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
@@ -12,9 +11,13 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/feed_share_select_contact.dart';
 import 'package:mirror/api/message_page_api.dart';
 
+typedef VoidCallback = void Function();
+
 class GroupMorePage extends StatefulWidget {
   ///群id
   final String chatGroupId;
+
+  final VoidCallback listener;
 
   ///群名字
   final String groupName;
@@ -23,7 +26,7 @@ class GroupMorePage extends StatefulWidget {
   ///[chatType] 会话类型，参见类型 [OFFICIAL_TYPE]
   final int chatType;
 
-  GroupMorePage({this.chatGroupId, this.chatType, this.groupName});
+  GroupMorePage({this.chatGroupId, this.chatType, this.groupName, this.listener});
 
   @override
   createState() => GroupMorePageState();
@@ -33,6 +36,7 @@ class GroupMorePageState extends State<GroupMorePage> {
   bool disturbTheNews = false;
   bool topChat = false;
   String groupMeName = "还未取名";
+  bool isUpdateGroupMeName = false;
   Map<String, dynamic> groupInformationMap;
   String groupName;
 
@@ -40,6 +44,13 @@ class GroupMorePageState extends State<GroupMorePage> {
   void initState() {
     super.initState();
     getGroupInformation();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    updateUserName();
+    isUpdateGroupMeName = false;
   }
 
   @override
@@ -112,7 +123,14 @@ class GroupMorePageState extends State<GroupMorePage> {
       crossAxisSpacing: 1,
       children: List.generate(groupUserList.length, (index) {
         if (index >= groupUserList.length - 2) {
-          return getTopItemAddOrSubUserUi(index == groupUserList.length - 2);
+          bool isVisibility;
+          try {
+            isVisibility = index == groupUserList.length - 2 ||
+                Application.chatGroupUserModelList[0].uid == Application.profile.uid;
+          } catch (e) {
+            isVisibility = false;
+          }
+          return getTopItemAddOrSubUserUi(index == groupUserList.length - 2, isVisibility);
         } else {
           return getItemUserImage(index, groupUserList[index]);
         }
@@ -141,11 +159,7 @@ class GroupMorePageState extends State<GroupMorePage> {
             ],
           ),
           onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) {
-              return FriendsPage(voidCallback: (name, context) {
-                print("点击了name：$name");
-              });
-            }));
+            seeMoreGroupUser();
           },
         ),
       ),
@@ -248,8 +262,8 @@ class GroupMorePageState extends State<GroupMorePage> {
           ),
           SizedBox(
             width: 47,
-            child: Text(
-              userModel.nickName ?? "",
+            child: Text(userModel.uid == Application.profile.uid ? groupMeName ?? userModel.groupNickName ?? "" :
+            userModel.groupNickName ?? "",
               style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -261,25 +275,37 @@ class GroupMorePageState extends State<GroupMorePage> {
   }
 
   //显示加减群成员
-  Widget getTopItemAddOrSubUserUi(bool isAdd) {
-    return Container(
-      child: Column(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(47 / 2.0),
-            child: Container(
-              color: AppColor.bgWhite,
-              width: 47,
-              height: 47,
-              child: Center(
-                child: Text(
-                  isAdd ? "+" : "-",
-                  style: TextStyle(fontSize: 20, color: AppColor.textPrimary1),
+  Widget getTopItemAddOrSubUserUi(bool isAdd, bool isVisibility) {
+    return Visibility(
+      visible: isVisibility,
+      child: Container(
+        child: Column(
+          children: [
+            GestureDetector(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(47 / 2.0),
+                child: Container(
+                  color: AppColor.bgWhite,
+                  width: 47,
+                  height: 47,
+                  child: Center(
+                    child: Text(
+                      isAdd ? "+" : "-",
+                      style: TextStyle(fontSize: 20, color: AppColor.textPrimary1),
+                    ),
+                  ),
                 ),
               ),
+              onTap: () {
+                if (isAdd) {
+                  addGroupUser();
+                } else {
+                  deleteGroupUser();
+                }
+              },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -343,6 +369,7 @@ class GroupMorePageState extends State<GroupMorePage> {
       print(model == null ? "" : model.toString());
       if (model != null && model["uid"] != null) {
         groupMeName = newName;
+        isUpdateGroupMeName = true;
         setState(() {
 
         });
@@ -367,9 +394,21 @@ class GroupMorePageState extends State<GroupMorePage> {
   }
 
 
+  void updateUserName() {
+    if (isUpdateGroupMeName) {
+      for (int i = 0; i < Application.chatGroupUserModelList.length; i++) {
+        if (Application.chatGroupUserModelList[i].uid == Application.profile.uid) {
+          Application.chatGroupUserModelList[i].groupNickName = groupMeName;
+          if (widget.listener != null) {
+            widget.listener();
+          }
+        }
+      }
+    }
+  }
+
   //点击事件
-  void onClickItemList(
-      {String title, String subtitle, bool isOpen, int index,}) {
+  void onClickItemList({String title, String subtitle, bool isOpen, int index,}) {
     if (isOpen != null) {
       if (index == 1) {
         disturbTheNews = !disturbTheNews;
@@ -399,6 +438,48 @@ class GroupMorePageState extends State<GroupMorePage> {
     } else {
       ToastShow.show(msg: "点击了：$title", context: context);
     }
+  }
+
+
+  //查看更多群成员
+  void seeMoreGroupUser() {
+    Navigator.push(context, MaterialPageRoute(builder: (_) {
+      return FriendsPage(
+          type: 1,
+          groupChatId: int.parse(widget.chatGroupId),
+          voidCallback: (name, userId, context) {
+            print("查看了name：$name");
+          });
+    }));
+  }
+
+  //添加用户按钮
+  void addGroupUser() {
+    print("添加群成员");
+
+    Navigator.push(context, MaterialPageRoute(builder: (_) {
+      return FriendsPage(type: 3, groupChatId: int.parse(widget.chatGroupId), voidCallback: (name, userId, context) {
+        print("添加用户：$name进群");
+
+        setState(() {
+
+        });
+      });
+    }));
+  }
+
+  //删除用户按钮
+  void deleteGroupUser() {
+    print("删除群成员");
+    Navigator.push(context, MaterialPageRoute(builder: (_) {
+      return FriendsPage(type: 2, groupChatId: int.parse(widget.chatGroupId), voidCallback: (name, userId, context) {
+        print("移除这个用户：$name");
+
+        setState(() {
+
+        });
+      });
+    }));
   }
 
 }

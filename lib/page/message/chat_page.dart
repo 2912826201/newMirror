@@ -22,6 +22,7 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/page/feed/feed_detail_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
@@ -281,7 +282,13 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
               //print("-----------------------");
               _focusNode.unfocus();
               ToastShow.show(msg: "点击了更多那妞", context: context);
-              judgeJumpPage(chatTypeId, this.chatUserId, widget.conversation.type, context, chatUserName);
+              judgeJumpPage(chatTypeId, this.chatUserId, widget.conversation.type, context, chatUserName, () {
+                Application.chatGroupUserModelMap.clear();
+                for (ChatGroupUserModel userModel in Application.chatGroupUserModelList) {
+                  Application.chatGroupUserModelMap[userModel.uid.toString()] = userModel.groupNickName;
+                }
+                delayedSetState();
+              });
             },
           ),
         )
@@ -585,7 +592,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     }
     context.read<ChatMessageProfileNotifier>().setData(chatTypeId, chatUserId);
     if (chatTypeId == RCConversationType.Group) {
-      getChatGroupUserModelList();
+      getChatGroupUserModelList(chatUserId);
     }
   }
 
@@ -620,26 +627,6 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     Future.delayed(Duration(milliseconds: 200), () {
       setState(() {});
     });
-  }
-
-  //获取群成员信息
-  void getChatGroupUserModelList() async {
-    Application.chatGroupUserModelList.clear();
-    Map<String, dynamic> model = await getMembers(groupChatId: int.parse(chatUserId));
-    if (model != null && model["list"] != null) {
-      model["list"].forEach((v) {
-        Application.chatGroupUserModelList.add(ChatGroupUserModel.fromJson(v));
-      });
-      initChatGroupUserModelMap();
-    }
-  }
-
-  //获取群成员的信息 map id对应昵称
-  void initChatGroupUserModelMap() {
-    Application.chatGroupUserModelMap.clear();
-    for (ChatGroupUserModel userModel in Application.chatGroupUserModelList) {
-      Application.chatGroupUserModelMap[userModel.uid.toString()] = userModel.groupNickName;
-    }
   }
 
   //判断有没有at我的消息
@@ -1296,6 +1283,10 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   // 请求动态详情页数据
   getFeedDetail(int feedId) async {
     HomeFeedModel feedModel = await feedDetail(id: feedId);
+    List<HomeFeedModel> list = [];
+    list.add(feedModel);
+    context.read<FeedMapNotifier>().updateFeedMap(list);
+    // print("----------feedModel:${feedModel.toJson().toString()}");
     // 跳转动态详情页
     Navigator.push(
       context,
