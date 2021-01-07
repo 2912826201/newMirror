@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
+import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/message/send_message_view.dart';
 import 'package:mirror/widget/first_end_item_children_delegate.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -27,10 +29,14 @@ class ChatDetailsBody extends StatelessWidget {
   final FirstEndCallback firstEndCallback;
   final int isHaveAtMeMsgIndex;
   final bool isHaveAtMeMsg;
+  final String loadText;
+  final LoadingStatus loadStatus;
 
   ChatDetailsBody(
       {this.scrollController,
       this.chatDataList,
+      this.loadText,
+      this.loadStatus,
       this.isShowChatUserName,
       this.isHaveAtMeMsgIndex,
       this.isHaveAtMeMsg,
@@ -59,6 +65,9 @@ class ChatDetailsBody extends StatelessWidget {
       chatData.insert(0, chatDataModel);
     }
 
+    ChatDataModel chatDataModel = new ChatDataModel();
+    chatDataModel.content = "私人管家";
+    chatData.add(chatDataModel);
     return Stack(
       children: [
         Positioned(
@@ -83,54 +92,32 @@ class ChatDetailsBody extends StatelessWidget {
               }
               return false;
             },
-            child: SmartRefresher(
-              enablePullDown: false,
-              enablePullUp: true,
-              footer: CustomFooter(
-                builder: (BuildContext context, LoadStatus mode) {
-                  Widget body;
-                  if (mode == LoadStatus.loading) {
-                    body = Container(
-                      height: 50,
-                      child: UnconstrainedBox(
-                        child: Transform.scale(
-                          scale: 0.6,
-                          child: CircularProgressIndicator(),
-                        ),
-                      ),
-                    );
-                  } else if (mode == LoadStatus.noMore) {
-                    body = Text("没有更多了");
-                  } else if (mode == LoadStatus.failed) {
-                    body = Text("加载错误,请重试");
-                  } else {
-                    body = Text("");
-                  }
+            child: ListView.custom(
+              cacheExtent: 0.0,
+              physics: BouncingScrollPhysics(),
+              controller: scrollController,
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              reverse: true,
+              shrinkWrap: chatData.length < 10,
+              childrenDelegate: FirstEndItemChildrenDelegate((BuildContext context, int index) {
+                if (index == chatData.length - 1) {
+                  print("------------");
                   return Container(
-                    child: Center(
-                      child: body,
+                    margin: const EdgeInsets.only(top: 10),
+                    child: LoadingView(
+                      loadText: "",
+                      loadStatus: loadStatus,
                     ),
                   );
-                },
-              ),
-              controller: refreshController,
-              onLoading: onRefresh,
-              child: ListView.custom(
-                cacheExtent: 0.0,
-                physics: BouncingScrollPhysics(),
-                controller: scrollController,
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                reverse: true,
-                childrenDelegate: FirstEndItemChildrenDelegate((
-                    BuildContext context, int index) {
+                } else {
                   return judgeStartAnimation(chatData[index], index);
-                },
-                  firstEndCallback: firstEndCallback,
-                  childCount: chatData.length,
+                }
+              },
+                firstEndCallback: firstEndCallback,
+                childCount: chatData.length,
 
-                ),
-                dragStartBehavior: DragStartBehavior.down,
               ),
+              dragStartBehavior: DragStartBehavior.down,
             ),
           ),
         ),
