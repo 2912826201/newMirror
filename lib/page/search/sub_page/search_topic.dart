@@ -220,7 +220,6 @@ class SearchTopiciItem extends StatelessWidget {
         );
       },
       child: Container(
-        color: AppColor.mainRed,
         width: ScreenUtil.instance.width,
         margin: EdgeInsets.only(left: 16, right: 16),
         padding: EdgeInsets.only(top: 6,bottom: 6),

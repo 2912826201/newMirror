@@ -452,7 +452,7 @@ class SearchFeeditemState extends State<SearchFeeditem> {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  Spacer(),
+                  SizedBox(width: 8,),
                   Expanded(
                     child: LaudItem(model: model,),
                   ),
@@ -504,6 +504,7 @@ class LaudItemState extends State<LaudItem> {
             size: 16,
           ),
         ),
+        SizedBox(width: 2,),
         Offstage(
           offstage: context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].laudCount) == 0,
           child: //用Selector的方式监听数据
@@ -513,7 +514,7 @@ class LaudItemState extends State<LaudItem> {
             return notifier.feedMap[widget.model.id].laudCount;
           }),
         ),
-        SizedBox(width: 2,)
+        // SizedBox(width: 2,)
       ],
     );
   }
