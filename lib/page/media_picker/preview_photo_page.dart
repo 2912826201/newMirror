@@ -78,6 +78,7 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
                 //需要处理成不能操作
                 FileImage(_file),
                 round: 0,
+                maskPadding: 0,
                 key: _cropperKey,
               ),
             ),

@@ -21,10 +21,9 @@ final int _horizontalCount = 4;
 final double _itemMargin = 0;
 final int _galleryPageSize = 100;
 
-final double defaultRatio = 1.0;
 //1.9:1 和 4:5
-final double maxVideoRatio = 1.9;
-final double minVideoRatio = 0.8;
+final double maxRatio = 1.9;
+final double minRatio = 0.8;
 
 // 相册的选择GridView视图 需要能够区分选择图片或视频 选择图片数量 是否裁剪 裁剪是否只是正方形
 //TODO 目前没有做响应实时相册变化时的处理 完善时可以考虑实现
@@ -181,6 +180,15 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                                             ? CropperImage(
                                                 FileImage(_fileMap[entity.id]),
                                                 round: 0,
+                                                maskPadding: 0,
+                                                outHeight: _getImageOutSize(
+                                                    entity,
+                                                    context.select((SelectedMapNotifier notifier) =>
+                                                        notifier.useOriginalRatio)).height,
+                                                outWidth: _getImageOutSize(
+                                                    entity,
+                                                    context.select((SelectedMapNotifier notifier) =>
+                                                        notifier.useOriginalRatio)).width,
                                                 key: _cropperKey,
                                               )
                                             : Container();
@@ -878,24 +886,51 @@ class VideoPreviewState extends State<VideoPreviewArea> {
   }
 }
 
+// 获取图片裁剪输出尺寸
+Size _getImageOutSize(AssetEntity entity, bool useOriginalRatio) {
+  double _outWidth;
+  double _outHeight;
+
+  if (useOriginalRatio) {
+    double ratio = entity.width / entity.height;
+    // 因为最终图片宽度会填满屏幕宽度展示 所以图片始终保证宽度为固定标准
+    // ratio的double类型计算可能会增加误差 所以不重新赋值ratio时 用宽高计算
+    _outWidth = baseOutSize;
+    if (ratio < minRatio) {
+      ratio = minRatio;
+      _outHeight = _outWidth / ratio;
+    } else if (ratio > maxRatio) {
+      ratio = maxRatio;
+      _outHeight = _outWidth / ratio;
+    } else {
+      _outHeight = _outWidth * entity.height / entity.width;
+    }
+  } else {
+    _outWidth = baseOutSize;
+    _outHeight = baseOutSize;
+  }
+
+  return Size(_outWidth, _outHeight);
+}
+
 // 获取视频预览区域宽高
 Size _getVideoPreviewSize(double ratio, double _previewWidth, bool useOriginalRatio) {
   double _videoWidth;
   double _videoHeight;
 
   if (useOriginalRatio) {
-    if (ratio < minVideoRatio) {
+    if (ratio < minRatio) {
       //细高的情况 先限定最宽的宽度 再根据ratio算出高度
-      _videoWidth = _previewWidth * minVideoRatio;
-      _videoHeight = _previewWidth * minVideoRatio / ratio;
+      _videoWidth = _previewWidth * minRatio;
+      _videoHeight = _previewWidth * minRatio / ratio;
     } else if (ratio < 1) {
       //填满高度
       _videoHeight = _previewWidth;
       _videoWidth = _previewWidth * ratio;
-    } else if (ratio > maxVideoRatio) {
+    } else if (ratio > maxRatio) {
       //扁长的情况 先限定最高的高度 再根据ratio算出宽度
-      _videoHeight = _previewWidth / maxVideoRatio;
-      _videoWidth = _previewWidth * ratio / maxVideoRatio;
+      _videoHeight = _previewWidth / maxRatio;
+      _videoWidth = _previewWidth * ratio / maxRatio;
     } else if (ratio > 1) {
       //填满宽度
       _videoHeight = _previewWidth / ratio;
