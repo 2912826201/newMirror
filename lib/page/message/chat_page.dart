@@ -11,6 +11,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
@@ -139,6 +140,12 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   //上一次的最大高度
   double oldMaxScrollExtent = 0;
 
+  // 加载中默认文字
+  String loadText = "加载中...";
+
+  // 加载状态
+  LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
+
   @override
   void initState() {
     super.initState();
@@ -147,6 +154,19 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     initTime();
     initTextController();
     initReleaseFeedInputFormatter();
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+        if (loadStatus == LoadingStatus.STATUS_IDEL) {
+          // 先设置状态，防止下拉就直接加载
+          setState(() {
+            loadText = "加载中...";
+            loadStatus = LoadingStatus.STATUS_LOADING;
+          });
+          _onRefresh();
+        }
+      }
+    });
   }
 
   @override
@@ -226,6 +246,8 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       isHaveAtMeMsg: isHaveAtMeMsg,
       isHaveAtMeMsgIndex: isHaveAtMeMsgIndex,
       onRefresh: _onRefresh,
+      loadText: loadText,
+      loadStatus: loadStatus,
       isShowChatUserName: widget.conversation.getType() == RCConversationType.Group,
       onAtUiClickListener: onAtUiClickListener,
       firstEndCallback: (int firstIndex, int lastIndex) {
@@ -1227,6 +1249,12 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       if (isHaveAtMeMsg || isHaveAtMeMsgPr) {
         judgeNewChatIsHaveAt();
       }
+      loadStatus = LoadingStatus.STATUS_IDEL;
+      loadText = "加载中...";
+    } else {
+      // 加载完毕
+      loadText = "已加载全部动态";
+      loadStatus = LoadingStatus.STATUS_COMPLETED;
     }
     Future.delayed(Duration(milliseconds: 500), () {
       _refreshController.loadComplete();
