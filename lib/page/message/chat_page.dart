@@ -288,6 +288,8 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                   Application.chatGroupUserModelMap[userModel.uid.toString()] = userModel.groupNickName;
                 }
                 delayedSetState();
+              }, () {
+                Navigator.of(context).pop();
               });
             },
           ),

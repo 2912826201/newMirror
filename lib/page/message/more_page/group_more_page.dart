@@ -18,6 +18,7 @@ class GroupMorePage extends StatefulWidget {
   final String chatGroupId;
 
   final VoidCallback listener;
+  final VoidCallback exitGroupListener;
 
   ///群名字
   final String groupName;
@@ -26,7 +27,7 @@ class GroupMorePage extends StatefulWidget {
   ///[chatType] 会话类型，参见类型 [OFFICIAL_TYPE]
   final int chatType;
 
-  GroupMorePage({this.chatGroupId, this.chatType, this.groupName, this.listener});
+  GroupMorePage({this.chatGroupId, this.chatType, this.groupName, this.listener, this.exitGroupListener});
 
   @override
   createState() => GroupMorePageState();
@@ -435,6 +436,9 @@ class GroupMorePageState extends State<GroupMorePage> {
         });
       }, title: "修改群昵称");
       ToastShow.show(msg: subtitle, context: context);
+    } else if (title == "删除并退出") {
+      exitGroupChatPr();
+      // ToastShow.show(msg: "点击了：$title", context: context);
     } else {
       ToastShow.show(msg: "点击了：$title", context: context);
     }
@@ -472,16 +476,30 @@ class GroupMorePageState extends State<GroupMorePage> {
   void deleteGroupUser() {
     print("删除群成员");
     Navigator.push(context, MaterialPageRoute(builder: (_) {
-      return FriendsPage(type: 2, groupChatId: int.parse(widget.chatGroupId), voidCallback: (name, userId, context) {
-        print("移除这个用户：$name");
+      return FriendsPage(
+          type: 2,
+          groupChatId: int.parse(widget.chatGroupId),
+          voidCallback: (name, userId, context) {
+            print("移除这个用户：$name");
 
-        setState(() {
-
-        });
-      });
+            setState(() {});
+          });
     }));
   }
 
+  //删除用户按钮
+  void exitGroupChatPr() async {
+    Map<String, dynamic> model = await exitGroupChat(groupChatId: int.parse(widget.chatGroupId));
+    if (model != null && model["state"] != null && model["state"]) {
+      if (widget.exitGroupListener != null) {
+        widget.exitGroupListener();
+      }
+      ToastShow.show(msg: "退出成功", context: context);
+      Navigator.of(context).pop();
+    } else {
+      ToastShow.show(msg: "退出失败", context: context);
+    }
+  }
 }
 
 
