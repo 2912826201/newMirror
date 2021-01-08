@@ -25,6 +25,7 @@ class PrivateMorePage extends StatefulWidget {
 
 class PrivateMorePageState extends State<PrivateMorePage> {
   bool disturbTheNews = false;
+  bool disturbTheNewsOld = false;
   bool topChat = false;
   bool isBlackList = false;
 
@@ -149,25 +150,54 @@ class PrivateMorePageState extends State<PrivateMorePage> {
 
   void initData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    disturbTheNews = (prefs.getBool(
-            "${widget.chatUserId}_${RCConversationType.Private}_${Application.profile.uid.toString()}_disturbTheNews") ??
-        false);
+    // disturbTheNews = (prefs.getBool(
+    //         "${widget.chatUserId}_${RCConversationType.Private}_${Application.profile.uid.toString()}_disturbTheNews") ??
+    //     false);
     topChat = (prefs.getBool(
             "${widget.chatUserId}_${RCConversationType.Private}_${Application.profile.uid.toString()}_topChat") ??
         false);
-    setState(() {});
   }
 
   void setData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(
-        "${widget.chatUserId}_${RCConversationType.Private}_${Application
-            .profile.uid.toString()}_disturbTheNews",
-        disturbTheNews);
+    // prefs.setBool(
+    //     "${widget.chatUserId}_${RCConversationType.Private}_${Application
+    //         .profile.uid.toString()}_disturbTheNews",
+    //     disturbTheNews);
     prefs.setBool(
         "${widget.chatUserId}_${RCConversationType.Private}_${Application
             .profile.uid.toString()}_topChat",
         topChat);
+    setConversationNotificationStatus();
+  }
+
+
+  //设置消息免打扰
+  void setConversationNotificationStatus() {
+    if (disturbTheNewsOld != disturbTheNews) {
+      Application.rongCloud.setConversationNotificationStatus(
+          RCConversationType.Private, widget.chatUserId,
+          disturbTheNews, (int status, int code) {
+        print(status);
+      });
+    }
+  }
+
+  //获取消息是否免打扰
+  void getConversationNotificationStatus() {
+    print("getConversationNotificationStatus");
+    Application.rongCloud.getConversationNotificationStatus(
+        RCConversationType.Private, widget.chatUserId,
+            (int status, int code) {
+          print("status:$status---code:$code");
+          if (code == 0) {
+            disturbTheNews = status == RCConversationNotificationStatus.DoNotDisturb;
+            disturbTheNewsOld = disturbTheNews;
+          }
+          setState(() {
+
+          });
+        });
   }
 
 
@@ -177,10 +207,8 @@ class PrivateMorePageState extends State<PrivateMorePage> {
         widget.chatUserId, (int blackListStatus, int code) {
       if (code == 0) {
         isBlackList = blackListStatus == 0;
-        setState(() {
-
-        });
       }
+      getConversationNotificationStatus();
     });
   }
 

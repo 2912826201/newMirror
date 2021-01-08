@@ -10,6 +10,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/feed_share_select_contact.dart';
 import 'package:mirror/api/message_page_api.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 typedef VoidCallback = void Function();
 
@@ -35,6 +36,7 @@ class GroupMorePage extends StatefulWidget {
 
 class GroupMorePageState extends State<GroupMorePage> {
   bool disturbTheNews = false;
+  bool disturbTheNewsOld = false;
   bool topChat = false;
   String groupMeName = "还未取名";
   bool isUpdateGroupMeName = false;
@@ -44,6 +46,7 @@ class GroupMorePageState extends State<GroupMorePage> {
   @override
   void initState() {
     super.initState();
+    disturbTheNewsOld = disturbTheNews;
     getGroupInformation();
   }
 
@@ -52,6 +55,7 @@ class GroupMorePageState extends State<GroupMorePage> {
     super.dispose();
     updateUserName();
     isUpdateGroupMeName = false;
+    setData();
   }
 
   @override
@@ -327,20 +331,18 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //获取群信息
   void getGroupInformation() async {
+    print("getGroupInformation");
     try {
-      Map<String, dynamic> model = await getGroupChatByIds(
-          id: int.parse(widget.chatGroupId));
+      Map<String, dynamic> model = await getGroupChatByIds(id: int.parse(widget.chatGroupId));
       if (model != null && model["list"] != null) {
         model["list"].forEach((v) {
           groupInformationMap = v;
           groupName = groupInformationMap["name"];
         });
-        setState(() {
-
-        });
+        getConversationNotificationStatus();
       }
     } catch (e) {
-
+      getConversationNotificationStatus();
     }
   }
 
@@ -500,6 +502,40 @@ class GroupMorePageState extends State<GroupMorePage> {
       ToastShow.show(msg: "退出失败", context: context);
     }
   }
+
+  //设置消息
+  void setData() {
+    setConversationNotificationStatus();
+  }
+
+  //设置消息免打扰
+  void setConversationNotificationStatus() {
+    if (disturbTheNewsOld != disturbTheNews) {
+      Application.rongCloud.setConversationNotificationStatus(
+          RCConversationType.Group, widget.chatGroupId,
+          disturbTheNews, (int status, int code) {
+        print(status);
+      });
+    }
+  }
+
+  //获取消息是否免打扰
+  void getConversationNotificationStatus() {
+    print("getConversationNotificationStatus");
+    Application.rongCloud.getConversationNotificationStatus(
+        RCConversationType.Group, widget.chatGroupId,
+            (int status, int code) {
+          print("status:$status---code:$code");
+          if (code == 0) {
+            disturbTheNews = status == RCConversationNotificationStatus.DoNotDisturb;
+            disturbTheNewsOld = disturbTheNews;
+          }
+          setState(() {
+
+          });
+        });
+  }
+
 }
 
 
