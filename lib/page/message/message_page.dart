@@ -13,6 +13,7 @@ import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/count_badge.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
@@ -283,12 +284,14 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   Widget _conversationItem(int index, ConversationDto conversation) {
     MessageContent msgContent = MessageContent();
     msgContent.decode(conversation.content);
+    //FIXME 是否有人at我 不能只看最新一条 要从map中查
     bool isMentioned = msgContent.mentionedInfo != null &&
         msgContent.mentionedInfo.userIdList.contains(Application.profile.uid.toString());
+    List<String> avatarList = conversation.avatarUri.split(",");
     return Container(
       height: 69,
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      color: AppColor.transparent,
+      color: conversation.isTop == 1 ? AppColor.textHint : AppColor.white,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -297,22 +300,72 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
             width: 45,
             child: Stack(
               children: [
-                ClipOval(
-                  child: CachedNetworkImage(
-                    height: 45,
-                    width: 45,
-                    imageUrl: conversation.avatarUri,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Image.asset(
-                      "images/test.png",
-                      fit: BoxFit.cover,
-                    ),
-                    errorWidget: (context, url, error) => Image.asset(
-                      "images/test.png",
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
+                avatarList.length == 1
+                    ? ClipOval(
+                        child: CachedNetworkImage(
+                          height: 45,
+                          width: 45,
+                          imageUrl: avatarList.first,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Image.asset(
+                            "images/test.png",
+                            fit: BoxFit.cover,
+                          ),
+                          errorWidget: (context, url, error) => Image.asset(
+                            "images/test.png",
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      )
+                    : avatarList.length > 1
+                        ? Positioned(
+                            top: 0,
+                            right: 0,
+                            child: ClipOval(
+                              child: CachedNetworkImage(
+                                height: 28,
+                                width: 28,
+                                imageUrl: avatarList.first,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) => Image.asset(
+                                  "images/test.png",
+                                  fit: BoxFit.cover,
+                                ),
+                                errorWidget: (context, url, error) => Image.asset(
+                                  "images/test.png",
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ))
+                        : Container(),
+                avatarList.length > 1
+                    ? Positioned(
+                        bottom: 0,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              //这里的边框颜色需要随背景变化
+                              border: Border.all(
+                                  width: 3, color: conversation.isTop == 1 ? AppColor.textHint : AppColor.white)),
+                          child: ClipOval(
+                            child: CachedNetworkImage(
+                              height: 28,
+                              width: 28,
+                              imageUrl: avatarList[1],
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => Image.asset(
+                                "images/test.png",
+                                fit: BoxFit.cover,
+                              ),
+                              errorWidget: (context, url, error) => Image.asset(
+                                "images/test.png",
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    : Container(),
                 conversation.type == OFFICIAL_TYPE ||
                         conversation.type == LIVE_TYPE ||
                         conversation.type == TRAINING_TYPE
@@ -339,7 +392,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                   children: [
                     Expanded(
                         child: Text(
-                      "${conversation.name}",
+                      StringUtil.strNoEmpty(conversation.name) ? conversation.name : conversation.conversationId,
                       overflow: TextOverflow.ellipsis,
                       softWrap: false,
                       style: AppStyle.textRegular14,

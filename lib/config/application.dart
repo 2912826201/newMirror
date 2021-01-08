@@ -19,6 +19,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 /// application
 /// Created by yangjiayi on 2020/11/14.
 
+//FIXME 需要整理出哪些是和用户相关的 在切换账号或登出时要清掉
 class Application {
   //融云
   static RongCloud rongCloud;

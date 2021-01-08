@@ -97,8 +97,7 @@ class MessageManager {
         }
         break;
       case RCConversationType.Group:
-        dto.type = GROUP_TYPE;;
-        dto.name = msg.targetId;
+        dto.type = GROUP_TYPE;
         break;
       case RCConversationType.System:
         if (msg.senderUserId == "1") {
