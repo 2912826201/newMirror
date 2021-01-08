@@ -48,6 +48,9 @@ class RongCloudReceiveManager {
   onMessageSend(int messageId, int status, int code) {
     //将发送的消息插入记录
     print("messageId:${messageId},status:${status},code:${code}");
+    Application.appContext
+        .read<ChatMessageProfileNotifier>()
+        .setIsSettingStatus(isSettingStatus: true, messageId: messageId, status: status);
 
 //   RCSentStatus
 //   static const int Sending = 10; //发送中

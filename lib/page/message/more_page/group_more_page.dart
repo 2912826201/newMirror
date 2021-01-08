@@ -8,6 +8,7 @@ import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/page/message/message_view/currency_msg.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_share_select_contact.dart';
 import 'package:mirror/api/message_page_api.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -439,7 +440,17 @@ class GroupMorePageState extends State<GroupMorePage> {
       }, title: "修改群昵称");
       ToastShow.show(msg: subtitle, context: context);
     } else if (title == "删除并退出") {
-      exitGroupChatPr();
+      showAppDialog(context,
+          title: "退出群聊",
+          info: "你确定退出当前群聊吗?",
+          cancel: AppDialogButton("取消", () {
+            // print("点了取消");
+            return true;
+          }),
+          confirm: AppDialogButton("确定", () {
+            exitGroupChatPr();
+            return true;
+          }));
       // ToastShow.show(msg: "点击了：$title", context: context);
     } else {
       ToastShow.show(msg: "点击了：$title", context: context);
