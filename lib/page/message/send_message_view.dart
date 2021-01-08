@@ -53,7 +53,7 @@ class SendMessageView extends StatelessWidget {
       return temporaryData();
     } else {
       isMyself = Application.profile.uid.toString() == model.msg.senderUserId;
-      userUrl = model.msg.content.sendUserInfo.portraitUri;
+      userUrl = isMyself ? Application.profile.avatarUri : model.msg.content.sendUserInfo.portraitUri;
       status = model.msg.sentStatus;
       sendChatUserId = model.msg.senderUserId;
       name = getChatUserName(sendChatUserId, model.msg.content.sendUserInfo.name);
