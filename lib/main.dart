@@ -21,6 +21,7 @@ import 'package:mirror/im/rongcloud.dart';
 import 'package:provider/provider.dart';
 
 import 'api/live_broadcast/live_api.dart';
+import 'api/message_page_api.dart';
 import 'api/user_api.dart';
 import 'config/application.dart';
 import 'config/config.dart';
@@ -30,6 +31,7 @@ import 'data/dto/token_dto.dart';
 import 'data/model/message/chat_enter_notifier.dart';
 import 'data/model/message/chat_message_profile_notifier.dart';
 import 'data/model/message/chat_voice_setting.dart';
+import 'data/model/message/top_chat_model.dart';
 import 'data/model/message/voice_alert_date_model.dart';
 import 'data/model/token_model.dart';
 import 'data/notifier/token_notifier.dart';
@@ -139,6 +141,16 @@ Future _initApp() async {
   try {
     Map<String, dynamic> videoCourseTagMap = await getAllTags();
     Application.videoTagModel = VideoTagModel.fromJson(videoCourseTagMap);
+  } catch (e) {}
+
+  //获取有哪些消息是置顶的消息
+  try {
+    Map<String, dynamic> topChatModelMap = await getTopChatList();
+    if (topChatModelMap != null && topChatModelMap["list"] != null) {
+      topChatModelMap["list"].forEach((v) {
+        Application.topChatModelList.add(TopChatModel.fromJson(v));
+      });
+    }
   } catch (e) {}
 
   //全局的音频播放器

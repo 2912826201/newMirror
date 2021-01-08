@@ -23,6 +23,12 @@ const String GETGROUPCHATLIST = "/appuser/web/groupChat/getGroupChatList";
 const String KICKEDGROUPCHAT = "/appuser/web/groupChat/kickedGroupChat";
 //邀请加入
 const String INVITEJOIN = "/appuser/web/groupChat/inviteJoin";
+//置顶聊天
+const String STICKCHAT = "/appuser/web/groupChat/stickChat";
+//获取置顶聊天列表
+const String GETTOPCHATLIST = "/appuser/web/groupChat/getTopChatList";
+//取消置顶
+const String CANCELTOPCHAT = "/appuser/web/groupChat/cancelTopChat";
 
 Future<Unreads> getUnReads() async {
   BaseResponseModel responseModel = await requestApi(GET_UNREAD_COUNT, {});
@@ -175,6 +181,50 @@ Future<Map> inviteJoin({int groupChatId, String uids}) async {
   params["uids"] = uids;
   params["groupChatId"] = groupChatId;
   BaseResponseModel responseModel = await requestApi(INVITEJOIN, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
+
+///置顶聊天
+///请求参数
+///targetId:群聊id/私聊id
+///type:0-私聊 1-群聊
+Future<Map> stickChat({int targetId, int type}) async {
+  Map<String, dynamic> params = {};
+  params["targetId"] = targetId;
+  params["type"] = type;
+  BaseResponseModel responseModel = await requestApi(STICKCHAT, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
+
+///获取置顶聊天列表
+///请求参数
+Future<Map> getTopChatList() async {
+  Map<String, dynamic> params = {};
+  BaseResponseModel responseModel = await requestApi(GETTOPCHATLIST, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
+
+///取消置顶
+///请求参数
+///targetId:群聊id/私聊id
+///type:0-私聊 1-群聊
+Future<Map> cancelTopChat({int targetId, int type}) async {
+  Map<String, dynamic> params = {};
+  params["targetId"] = targetId;
+  params["type"] = type;
+  BaseResponseModel responseModel = await requestApi(CANCELTOPCHAT, params);
   if (responseModel.isSuccess) {
     return responseModel.data;
   } else {
