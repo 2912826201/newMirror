@@ -33,6 +33,12 @@ class ConversationDBHelper {
     return list;
   }
 
+  //移除指定会话
+  Future<void> removeConversation(String id) async {
+    await DBHelper.instance.db.delete(TABLE_NAME_CONVERSATION, where: "$COLUMN_NAME_CONVERSATION_ID = '$id'");
+  }
+
+  //清除所有会话
   Future<void> clearConversation(int uid) async {
     // Database db = await DBHelper().openDB();
     await DBHelper.instance.db.delete(TABLE_NAME_CONVERSATION, where: "$COLUMN_NAME_CONVERSATION_UID = $uid");
