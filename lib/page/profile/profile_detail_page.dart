@@ -19,6 +19,7 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_bottom_sheet.dart';
+import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_details_more.dart';
 import 'package:mirror/page/profile/query_list/query_follow_list.dart';
 import 'package:mirror/page/profile/sticky_tabbar.dart';
@@ -692,6 +693,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 _getAttention(false);
               } else {
                 ///这里跳转到私聊界面
+                jumpChatPageUser(context, userModel);
               }
             });
           }
