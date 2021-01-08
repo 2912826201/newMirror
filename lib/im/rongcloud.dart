@@ -168,8 +168,19 @@ class RongCloud {
   }
 
   //获取特定用户的黑名单状态
-  void getBlackListStatus(
-      String userId, Function(int blackListStatus, int code) finished) {
+  void getBlackListStatus(String userId, Function(int blackListStatus, int code) finished) {
     RongIMClient.getBlackListStatus(userId, finished);
+  }
+
+  //设置用户免打扰
+  void setConversationNotificationStatus(
+      int conversationType, String targetId, bool isBlocked, Function(int status, int code) finished) {
+    RongIMClient.setConversationNotificationStatus(conversationType, targetId, isBlocked, finished);
+  }
+
+  //获取用户是否免打扰
+  void getConversationNotificationStatus(
+      int conversationType, String targetId, Function(int status, int code) finished) {
+    RongIMClient.getConversationNotificationStatus(conversationType, targetId, finished);
   }
 }
