@@ -952,7 +952,24 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         bool isSettingStatus = context.select((ChatMessageProfileNotifier value) => value.isSettingStatus);
         if (message == null || message.targetId != this.chatUserId && message.conversationType != chatTypeId) {
           if (isSettingStatus) {
-            return judgeResetStatus();
+            Application.appContext.read<ChatMessageProfileNotifier>().setSettingStatus(false);
+            int messageId = context.select((ChatMessageProfileNotifier value) => value.messageId);
+            int status = context.select((ChatMessageProfileNotifier value) => value.status);
+            if (messageId == null || status == null || chatDataList == null || chatDataList.length < 1) {
+              return Container();
+            } else {
+              for (ChatDataModel dataModel in chatDataList) {
+                if (dataModel.msg?.messageId == messageId) {
+                  if (dataModel.msg?.sentStatus == status) {
+                    return Container();
+                  } else {
+                    dataModel.msg?.sentStatus = status;
+                    delayedSetState();
+                    return Container();
+                  }
+                }
+              }
+            }
           }
           return Container();
         } else {
@@ -966,27 +983,6 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     );
   }
 
-  //判断有没有刷新消息的状态
-  Widget judgeResetStatus() {
-    Application.appContext.read<ChatMessageProfileNotifier>().setSettingStatus(false);
-    int messageId = context.select((ChatMessageProfileNotifier value) => value.messageId);
-    int status = context.select((ChatMessageProfileNotifier value) => value.status);
-    if (messageId == null || status == null || chatDataList == null || chatDataList.length < 1) {
-      return Container();
-    } else {
-      for (ChatDataModel dataModel in chatDataList) {
-        if (dataModel.msg?.messageId == messageId) {
-          if (dataModel.msg?.sentStatus == status) {
-            return Container();
-          } else {
-            dataModel.msg?.sentStatus = status;
-            delayedSetState();
-            return Container();
-          }
-        }
-      }
-    }
-  }
 
   initTextController() {
     _textController.addListener(() {
