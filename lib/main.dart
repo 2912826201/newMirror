@@ -143,7 +143,7 @@ Future _initApp() async {
     Application.videoTagModel = VideoTagModel.fromJson(videoCourseTagMap);
   } catch (e) {}
 
-  //获取有哪些消息是置顶的消息
+  //todo 获取有哪些消息是置顶的消息
   try {
     Map<String, dynamic> topChatModelMap = await getTopChatList();
     if (topChatModelMap != null && topChatModelMap["list"] != null) {
