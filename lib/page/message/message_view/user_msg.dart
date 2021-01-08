@@ -84,7 +84,7 @@ class UserMsg extends StatelessWidget {
       SizedBox(
         width: 7,
       ),
-      _getUserUiLongClick(),
+      getNameAndContentUi(),
     ];
     if (isMyself) {
       body = body.reversed.toList();
@@ -94,26 +94,8 @@ class UserMsg extends StatelessWidget {
     return body;
   }
 
-//长按事件
-  Widget _getUserUiLongClick() {
-    List<String> longClickStringList = getLongClickStringList(
-        isMySelf: isMyself, contentType: ChatTypeModel.MESSAGE_TYPE_USER);
-    return LongClickPopupMenu(
-      onValueChanged: (int value) {
-        voidItemLongClickCallBack(
-            position: position,
-            settingType: longClickStringList[value],
-            contentType: ChatTypeModel.MESSAGE_TYPE_USER);
-        // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
-      },
-      contentType: ChatTypeModel.MESSAGE_TYPE_USER,
-      isMySelf: isMyself,
-      actions: longClickStringList,
-      contentWidth: 180.0,
-      child: getNameAndContentUi(),
-    );
-  }
 
+  //判断有没有名字
   Widget getNameAndContentUi() {
     return Container(
       child: Column(
@@ -122,21 +104,40 @@ class UserMsg extends StatelessWidget {
           Visibility(
             visible: isShowChatUserName,
             child: Container(
-              margin: isMyself ? const EdgeInsets.only(right: 10, bottom: 4) : const EdgeInsets.only(
-                  left: 10, bottom: 4),
-              child: Text(name, style: TextStyle(fontSize: 12, color: AppColor.textSecondary),),
+              margin:
+                  isMyself ? const EdgeInsets.only(right: 10, bottom: 4) : const EdgeInsets.only(left: 10, bottom: 4),
+              child: Text(
+                name,
+                style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+              ),
             ),
           ),
-          GestureDetector(
-            child: _getUserUi(),
-            onTap: () {
-              voidMessageClickCallBack(
-                  contentType: ChatTypeModel.MESSAGE_TYPE_USER,
-                  map: userModel.toJson());
-              // ToastShow.show(msg: "点击了名片-该跳转", context: context);
-            },
-          ),
+          _getUserUiLongClick(),
         ],
+      ),
+    );
+  }
+
+//长按事件
+  Widget _getUserUiLongClick() {
+    List<String> longClickStringList =
+        getLongClickStringList(isMySelf: isMyself, contentType: ChatTypeModel.MESSAGE_TYPE_USER);
+    return LongClickPopupMenu(
+      onValueChanged: (int value) {
+        voidItemLongClickCallBack(
+            position: position, settingType: longClickStringList[value], contentType: ChatTypeModel.MESSAGE_TYPE_USER);
+        // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
+      },
+      contentType: ChatTypeModel.MESSAGE_TYPE_USER,
+      isMySelf: isMyself,
+      actions: longClickStringList,
+      contentWidth: 180.0,
+      child: GestureDetector(
+        child: _getUserUi(),
+        onTap: () {
+          voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_USER, map: userModel.toJson());
+          // ToastShow.show(msg: "点击了名片-该跳转", context: context);
+        },
       ),
     );
   }
