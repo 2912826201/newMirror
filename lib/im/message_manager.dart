@@ -153,11 +153,11 @@ class MessageManager {
 
   //移除指定一条会话信息 type是ConversationDto的type 不是Message的
   static removeConversation(BuildContext context, String conversationId, int uid, int type) async {
-    await ConversationDBHelper().removeConversation(conversationId, uid, type);
     ConversationDto dto = ConversationDto();
     dto.conversationId = conversationId;
     dto.uid = uid;
     dto.type = type;
+    await ConversationDBHelper().removeConversation(dto.id);
     context.read<ConversationNotifier>().removeConversation([dto]);
   }
 }
