@@ -5,7 +5,6 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_bottom_sheet.dart';
 import 'package:mirror/page/main_page.dart';
-import 'package:mirror/page/message/message_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:union_tabs/union_tabs.dart';
 import 'package:provider/provider.dart';
@@ -158,8 +157,6 @@ class SingletonForWholePages {
       case 1:
         break;
       case 2:
-        // return Container(child: CreateGroupChatWidget());
-        return Container();
         break;
       case 3:
         break;

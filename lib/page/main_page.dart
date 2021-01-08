@@ -14,9 +14,6 @@ import 'training/training_page.dart';
 class MainPage extends StatefulWidget {
   MainPage({Key key}) : super(key: key);
 
-  //此key用于向messagePage传输数据
-  GlobalKey messagePageKey = GlobalKey();
-
   MainPageState createState() => MainPageState();
 }
 
@@ -43,7 +40,6 @@ class MainPageState extends State<MainPage> {
   void initState() {
     super.initState();
     currentIndex = 0;
-    SingletonForWholePages.singleton().messagePageKey = widget.messagePageKey;
   }
 
   @override
