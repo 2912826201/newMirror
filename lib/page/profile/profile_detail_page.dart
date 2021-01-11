@@ -27,6 +27,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
+import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -294,9 +295,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 @override
   void dispose() {
     super.dispose();
-    SingletonForWholePages.singleton().panelController().close();
-    _mController.dispose();
-    _refreshController.dispose();
+    print('=======================================个人主页dispose');
+    SingletonForWholePages.singleton().closePanelController();
   }
   @override
   Widget build(BuildContext context) {
@@ -340,7 +340,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             ///这里使用NestedScrollView的AppBar，设置pinned: true,表示不会跟随滚动消失
             SliverAppBar(
               pinned: true,
-              leading: InkWell(
+              forceElevated:false,
+            leading: InkWell(
                 onTap: () {
                   Navigator.pop(this.context,_isFllow);
                 },
@@ -394,14 +395,15 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               ],
               backgroundColor: AppColor.white,
               expandedHeight: height * 0.41 - ScreenUtil.instance.statusBarHeight + textHeight,
-
               ///这里是资料展示页,写在这个里面相当于是appBar的背景板
               flexibleSpace: FlexibleSpaceBar(
                   background: Container(
                 child: mineHomeData(height, width),
               )),
             ),
-
+          /*  SliverToBoxAdapter(
+              child:mineHomeData(height, width),
+            ),*/
             ///根据布尔值返回视图
             isMselfId
                 ? SliverPersistentHeader(
@@ -417,6 +419,14 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                         indicatorColor: AppColor.black,
                         controller: _mController,
                         indicatorSize: TabBarIndicatorSize.label,
+                        indicator: RoundUnderlineTabIndicator(
+                          insets: EdgeInsets.only(bottom: 0),
+                          wantWidth: 20,
+                          borderSide: BorderSide(
+                            width: 2,
+                            color: AppColor.black,
+                          )
+                        ),
                         tabs: <Widget>[
                           Tab(text: '动态'),
                           Tab(text: '喜欢'),
@@ -471,9 +481,11 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 height: height * 0.33,
                 color: AppColor.white.withOpacity(0.6),
               )),
-          BackdropFilter(
+          ClipRect(
+            child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
             child: _MineDetailsData(height, width),
+          ),
           ),
         ],
       ),

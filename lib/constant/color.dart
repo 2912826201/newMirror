@@ -51,4 +51,5 @@ class AppColor {
   static const textVipPrimary1 = Color.fromRGBO(0x8F, 0x58, 0x08, 1.0);
   static const textHint1 = Color.fromRGBO(0xE8, 0xE8, 0xE8, 1.0);
   static const lightGreen = Color.fromRGBO(0x76, 0xEF, 0x7B, 1.0);
+  static const bgaims = Color.fromRGBO(0x40,0x40,0x40 ,1.0);
 }

@@ -24,7 +24,7 @@ class _editInformationNameState extends State<EditInformationName>{
   String _EditText;
   int _reciprocal = 15;
   int beforeLength = 0;
-
+  FocusNode blankNode = FocusNode();
   @override
   void initState() {
     super.initState();
@@ -49,6 +49,7 @@ class _editInformationNameState extends State<EditInformationName>{
                 margin: EdgeInsets.only(left: 16),
                 child: Image.asset("images/resource/2.0x/return2x.png"),),
               onTap: (){
+                FocusScope.of(context).requestFocus(blankNode);
                 Navigator.pop(context);
               },
             ),
@@ -62,6 +63,7 @@ class _editInformationNameState extends State<EditInformationName>{
                     Toast.show("昵称不能为空", context);
                     return;
                   }
+                  FocusScope.of(context).requestFocus(blankNode);
                   Navigator.pop(this.context,_EditText);
                 },
                 child:Container(

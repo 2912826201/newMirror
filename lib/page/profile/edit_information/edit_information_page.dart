@@ -21,6 +21,8 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/address_Picker.dart';
+import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:intl/intl.dart';
@@ -36,44 +38,26 @@ class EditInformation extends StatefulWidget {
 }
 
 class _editInformationState extends State<EditInformation> {
-  String userName = "";
-  PanelController pcController = PanelController();
+  String userName = "--";
   int userSex;
-  String userSexText = "";
+  String userSexText = "--";
   DateTime _selectedDateTime = DateTime.now();
-  String userBirthday = "2000-07-08";
-  bool isCity = true;
-  String _provinceText = "";
-  String _cityText = "未设置";
-  String cityCode = "";
-  String _provinceCity = "未设置";
-  double longitude;
-  double latitude;
-  String _introduction;
+  String userBirthday = "--";
+  String _introduction = "去编辑";
   String avataruri = "";
   //取图裁剪得到的图片数据
   Uint8List imageData;
   List<File> fileList = [];
   int textSize = 20;
   Color textColor = AppColor.black;
-  int leftIndex = 0;
-  int rightIndex = 0;
-  FixedExtentScrollController leftfixedExtentController = FixedExtentScrollController(initialItem: 0);
-  FixedExtentScrollController rightfixedExtentController = FixedExtentScrollController(initialItem: 0);
-  bool isFirst = true;
-  bool cityNotChange = false;
-  List<String> provinceNameList = [];
-  List<String> cityNameList = [];
-  List<int> provinceIdList = [];
-  List<RegionDto> cityDtoList = [];
   LinkedHashMap<int, RegionDto> provinceMap = Application.provinceMap;
   Map<int, List<RegionDto>> cityMap = Application.cityMap;
+  OnItemClickListener onItemClickListener;
+
   @override
   void initState() {
     super.initState();
     _setUserData();
-    _ExtentControllerAddListener();
-    _getAddressData();
   }
 
   _setUserData() {
@@ -83,25 +67,22 @@ class _editInformationState extends State<EditInformation> {
     userSex = context.read<ProfileNotifier>().profile.sex;
     userBirthday = context.read<ProfileNotifier>().profile.birthday;
     _introduction = context.read<ProfileNotifier>().profile.description;
-    cityCode = context.read<ProfileNotifier>().profile.cityCode;
-    if (context.read<ProfileNotifier>().profile.cityCode != null) {
+    if (context.read<ProfileNotifier>().profile.cityCode != null){
       provinceMap.forEach((key, value) {
-        if (cityCode == value.regionCode) {
-          _cityText = value.regionName;
-          _provinceText = value.regionName;
-          _provinceCity = "$_provinceText $_cityText";
-          longitude = value.longitude;
-          latitude = value.latitude;
+        if (context.read<ProfileNotifier>().profile.cityCode == value.regionCode) {
+          print('初始化城市=======================================cityCode=====${value.regionCode}');
+          print('初始化城市=======================================cityName=====${value.regionName}');
+          context.read<AddressPickerNotifier>().changeCityText(value.regionName, " ");
+          context.read<AddressPickerNotifier>().changeCityCode(value.regionCode, value.longitude, value.latitude);
         }
       });
       cityMap.forEach((key, value) {
         value.forEach((element) {
-          if (cityCode == element.regionCode) {
-            _cityText = element.regionName;
-            _provinceText = provinceMap[element.parentId].regionName;
-            longitude = element.longitude;
-            latitude = element.latitude;
-            _provinceCity = "$_provinceText $_cityText";
+          if (context.read<ProfileNotifier>().profile.cityCode == element.regionCode) {
+            print('初始化城市=======================================cityCode=====${element.regionCode}');
+            print('初始化城市=======================================cityName=====${element.regionName}');
+            context.read<AddressPickerNotifier>().changeCityText(element.regionName,provinceMap[element.parentId].regionName);
+            context.read<AddressPickerNotifier>().changeCityCode(element.regionCode, element.longitude, element.latitude);
           }
         });
       });
@@ -111,22 +92,6 @@ class _editInformationState extends State<EditInformation> {
     print('_introduction==========================================$_introduction');
     print('=====================================赋值完成');
   }
-
-  _ExtentControllerAddListener() {
-    if (isFirst = true) {
-      leftIndex = leftfixedExtentController.initialItem;
-      rightIndex = rightfixedExtentController.initialItem;
-    }
-    leftfixedExtentController.addListener(() {
-        isFirst = false;
-        leftIndex = leftfixedExtentController.selectedItem;
-    });
-    rightfixedExtentController.addListener(() {
-        isFirst = false;
-        rightIndex = rightfixedExtentController.selectedItem;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     if (userSex == 1) {
@@ -147,6 +112,7 @@ class _editInformationState extends State<EditInformation> {
               margin: EdgeInsets.only(left: 16),
               child: Image.asset("images/resource/2.0x/return2x.png"),),
             onTap: (){
+              context.read<AddressPickerNotifier>().cleanCityData();
               Navigator.pop(context);
             },
           ),
@@ -184,14 +150,7 @@ class _editInformationState extends State<EditInformation> {
             )
           ],
         ),
-        body: SlidingUpPanel(
-            panel: isCity ? _addressPicler(height, width) : _bottomDialog(width),
-            onPanelClosed: () {},
-            maxHeight: isCity ? height * 0.35 : width * 0.5,
-            backdropEnabled: true,
-            controller: pcController,
-            minHeight: 0,
-            body: Container(
+        body: Container(
               color: AppColor.white,
               height: height - ScreenUtil.instance.statusBarHeight,
               width: width,
@@ -271,10 +230,22 @@ class _editInformationState extends State<EditInformation> {
                   ),
                   InkWell(
                     onTap: () {
-                      setState(() {
-                        isCity = false;
-                      });
-                      pcController.open();
+                      List<String> list = ["男","女"];
+                     openMoreBottomSheet(
+                       context: context,
+                       onItemClickListener:(index){
+                         if(list[index]=="男"){
+                           setState(() {
+                            userSex = 1;
+                           });
+                         }else if(list[index] =="女"){
+                           setState(() {
+                             userSex = 2;
+                           });
+                         }
+                       },
+                       lists:list);
+
                     },
                     child: _rowChose(width, "性别", userSexText),
                   ),
@@ -297,12 +268,9 @@ class _editInformationState extends State<EditInformation> {
                     color: AppColor.bgWhite,
                   ),
                   InkWell(
-                    child: _rowChose(width, "地区", _provinceCity),
+                    child: _rowChose(width, "地区",context.watch<AddressPickerNotifier>().provinceCity),
                     onTap: () {
-                      setState(() {
-                        isCity = true;
-                      });
-                      pcController.open();
+                      openaddressPickerBottomSheet(context:context, provinceMap: provinceMap, cityMap: cityMap);
                     },
                   ),
                   Container(
@@ -312,13 +280,11 @@ class _editInformationState extends State<EditInformation> {
                     color: AppColor.bgWhite,
                   ),
                   InkWell(
-                    child: _rowChose(width, "简介", _introduction != null ? _introduction : "去编辑"),
+                    child: _rowChose(width, "简介", _introduction),
                     onTap: () {
                       AppRouter.navigationToEditInfomationIntroduction(context, _introduction, (result) {
                         setState(() {
-                          if(result!=null){
                             _introduction = result;
-                          }
                         });
                       });
                     },
@@ -331,7 +297,8 @@ class _editInformationState extends State<EditInformation> {
                   ),
                 ],
               ),
-            )));
+            )
+            );
   }
 
   //这是每项资料的item
@@ -356,7 +323,7 @@ class _editInformationState extends State<EditInformation> {
               height:title=="简介"?148:23,
               width: width * 0.67,
               child: Text(
-                TextContent != null ? TextContent : "----",
+                TextContent != "" ? TextContent : "去编辑",
                 style: AppStyle.textRegular16,
                 maxLines:5,
                 overflow: TextOverflow.ellipsis,
@@ -418,56 +385,6 @@ class _editInformationState extends State<EditInformation> {
         ));
   }
 
-  ///性别选择dialog
-  Widget _bottomDialog(double width) {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            height: width * 0.13,
-            child: InkWell(
-                onTap: () {
-                  setState(() {
-                    userSex = 2;
-                  });
-                  pcController.close();
-                },
-                child: Center(
-                  child: Text("女", style: AppStyle.textRegular16),
-                )),
-          ),
-          InkWell(
-              onTap: () {
-                setState(() {
-                  userSex = 1;
-                });
-                pcController.close();
-              },
-              child: Container(
-                  height: width * 0.13,
-                  child: Center(
-                    child: Text("男", style: AppStyle.textRegular16),
-                  ))),
-          Container(
-            color: AppColor.bgWhite,
-            height: 12,
-          ),
-          InkWell(
-              onTap: () {
-                pcController.close();
-              },
-              child: Container(
-                  height: width * 0.13,
-                  child: Center(
-                      child: Text(
-                    "取消",
-                    style: AppStyle.textRegular16,
-                  ))))
-        ],
-      ),
-    );
-  }
-
   ///时间选择器
   void _showDatePicker() {
     DatePicker.showDatePicker(
@@ -487,240 +404,19 @@ class _editInformationState extends State<EditInformation> {
       //时间格式
       locale: DateTimePickerLocale.zh_cn,
       //国际化配置
-      onClose: () {
-        setState(() {
-          userBirthday = DateFormat("yyyy-MM-dd").format(_selectedDateTime);
-        });
-      },
+      onClose: () {},
       onCancel: () => print('onCancel'),
       onChange: (dateTime, List<int> index) {
       },
       onConfirm: (dateTime, List<int> index) {
         setState(() {
-          _selectedDateTime = dateTime;
+          userBirthday = DateFormat("yyyy-MM-dd").format(dateTime);
         });
       },
     );
-  }
-
-  ///这里是给城市List赋值
-  _getAddressData() {
-    provinceMap.forEach((provincekey, provinceDto) {
-      provinceNameList.add(provinceDto.regionName);
-      provinceIdList.add(provinceDto.id);
-    });
-    if (isFirst) {
-      cityNameList.clear();
-      cityDtoList.clear();
-      if (cityMap[provinceIdList[leftfixedExtentController.initialItem]] == null) {
-        cityDtoList.add(provinceMap[provinceIdList[leftfixedExtentController.initialItem]]);
-        cityNameList.add(provinceMap[provinceIdList[leftfixedExtentController.initialItem]].regionName);
-      } else {
-        cityMap[provinceIdList[leftfixedExtentController.initialItem]].forEach((element) {
-          cityDtoList.add(element);
-          cityNameList.add(element.regionName);
-        });
-      }
-    }
-  }
-
-  Widget _addressPicler(double height, double width) {
-    print('=====================================builder');
-    return Container(
-      height: height * 0.33,
-      width: width,
-      child: Column(
-        children: [
-          Container(
-            height: height*0.05,
-            padding: EdgeInsets.only(left: 16, right: 16),
-            child: Row(
-              children: [
-                InkWell(
-                  child: Text(
-                    "取消",
-                    style: AppStyle.textHintRegular16,
-                  ),
-                  onTap: () {
-                    pcController.close();
-                  },
-                ),
-                Expanded(child: SizedBox()),
-                InkWell(
-                  onTap: () {
-                    setState(() {
-                      ///点击确定才更改城市码，否则就是初始
-                      cityNotChange = true;
-                      _cityText = cityNameList[rightfixedExtentController.selectedItem];
-                      _provinceText = provinceNameList[leftfixedExtentController.selectedItem];
-                      _provinceCity = "$_provinceText $_cityText";
-                    });
-                    pcController.close();
-                  },
-                  child: Text(
-                    "完成",
-                    style: AppStyle.textRegularRed16,
-                  ),
-                )
-              ],
-            ),
-          ),
-          Container(
-            height: 0.5,
-            color: AppColor.textHint,
-            width: width,
-          ),
-          Stack(
-            children: [
-              Container(
-                height: height * 0.32 - height*0.05,
-                width: width,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: _listScrollWheel(height, width, provinceNameList, leftfixedExtentController, 1),
-                      flex: 1,
-                    ),
-                    Expanded(
-                      child: _listScrollWheel(height, width, cityNameList, rightfixedExtentController, 2),
-                      flex: 1,
-                    )
-                  ],
-                ),
-              ),
-              Positioned(
-                  top: 0,
-                  child: Container(
-                    width: width,
-                    height: (height * 0.32 - height*0.05) / 2 - 15,
-                    color: AppColor.white.withOpacity(0.5),
-                  )),
-              Positioned(
-                  bottom: 0,
-                  child: Container(
-                    width: width,
-                    height: (height * 0.32 - height*0.05) / 2 - 15,
-                    color: AppColor.white.withOpacity(0.6),
-                  )),
-              Positioned(
-                  left: width / 2 * 0.15,
-                  top: (height * 0.32 - height*0.05) / 2 - 15,
-                  child: Container(
-                    height: 0.5,
-                    width: width / 2 * 0.7,
-                    color: AppColor.textHint,
-                  )),
-              Positioned(
-                  left: width / 2 * 0.15,
-                  bottom:(height * 0.32 - height*0.05) / 2 - 15,
-                  child: Container(
-                    height: 0.5,
-                    width: width / 2 * 0.7,
-                    color: AppColor.textHint,
-                  )),
-              Positioned(
-                  right: width / 2 * 0.15,
-                  top: (height * 0.32 - height*0.05) / 2 - 15,
-                  child: Container(
-                    height: 0.5,
-                    width: width / 2 * 0.7,
-                    color: AppColor.textHint,
-                  )),
-              Positioned(
-                  right: width / 2 * 0.15,
-                  bottom: (height * 0.32 - height*0.05) / 2 - 15,
-                  child: Container(
-                    height: 0.5,
-                    width: width / 2 * 0.7,
-                    color: AppColor.textHint,
-                  )),
-            ],
-          )
-        ],
-      ),
-    );
-  }
-
-  ///自定义底部滚轮组件
-  Widget _listScrollWheel(
-      double height, double width, List textContext, FixedExtentScrollController controller, int type) {
-    print('=====================================右边视图');
-    /*print('===================================${textContext.first}');*/
-    return ListWheelScrollView.useDelegate(
-      controller: controller,
-      diameterRatio: 1,
-      useMagnifier: true,
-      magnification: 1.1,
-      physics: FixedExtentScrollPhysics(),
-      itemExtent: 25,
-      childDelegate: ListWheelChildBuilderDelegate(
-          childCount: textContext.length,
-          builder: (context, index) {
-            return Container(
-              child: Center(child: _listItem(textContext, index, type)),
-            );
-          }),
-
-      ///这里是滚动滑动后的判断
-      onSelectedItemChanged: (index) {
-        if (type == 1) {
-          cityNameList.clear();
-          cityDtoList.clear();
-          if (cityMap[provinceIdList[index]] == null) {
-            cityDtoList.add(provinceMap[provinceIdList[index]]);
-            cityNameList.add(provinceMap[provinceIdList[index]].regionName);
-            print('cityName======================================${provinceMap[provinceIdList[index]].regionName}');
-          } else {
-            cityMap[provinceIdList[index]].forEach((element) {
-              cityDtoList.add(element);
-              cityNameList.add(element.regionName);
-            });
-          }
-          setState(() {});
-        }
-      },
-    );
-  }
-
-  ///这里是滚轮的item，通过type来改变选中颜色和大小
-  Widget _listItem(List textContext, int index, int type) {
-    print('adress========%%%%%%%%%%%%%%%%%=================${provinceIdList[index]}');
-    return Column(
-      children: [
-        Container(
-          child: Center(
-            child: Text("${textContext[index]}",
-                style: AppStyle.textRegular15
-
-                ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  ///这里将选择的城市转成cityCode
-  _getCityCode() {
-    print('===================================================转成cityCode');
-    if (cityNotChange) {
-      ///这个判断是为了防止原来的CityCode被清零，只有在按下doalog的确定按钮才会被设置成true，默认是false
-      if (cityMap[provinceIdList[leftfixedExtentController.selectedItem]] == null) {
-        print('============================================这里是直辖市,拿的是省级code');
-        cityCode = provinceMap[leftfixedExtentController.selectedItem].regionCode;
-        longitude = provinceMap[leftfixedExtentController.selectedItem].longitude;
-        latitude = provinceMap[leftfixedExtentController.selectedItem].latitude;
-      } else {
-        print('============================================这里是省市，拿的是市级code');
-        cityCode = cityDtoList[rightfixedExtentController.selectedItem].regionCode;
-        longitude = cityDtoList[rightfixedExtentController.selectedItem].longitude;
-        latitude = cityDtoList[rightfixedExtentController.selectedItem].latitude;
-      }
-      setState(() {});
-    } else {}
   }
 
   _upDataUserInfo() async {
-    _getCityCode();
     if (fileList.isNotEmpty) {
       print('avataruri   1=====================================$avataruri');
       print('=============================开始上传图片');
@@ -731,15 +427,15 @@ class _editInformationState extends State<EditInformation> {
     }
     print('avataruri   2=====================================$avataruri');
     print('================================开始请求接口');
-    print('城市码：==================================$cityCode');
     UserModel model = await ProfileUpdataUserInfo(userName, avataruri,
-        description: _introduction, sex: userSex, birthday: userBirthday, cityCode: cityCode);
+        description: _introduction, sex: userSex, birthday: userBirthday, cityCode:context.read<AddressPickerNotifier>().cityCode);
     print('model==============================================${model.uid}');
     if (model != null) {
       print('=========================资料修改成功！=========================');
       var profile = ProfileDto.fromUserModel(model);
       await ProfileDBHelper().insertProfile(profile);
       context.read<ProfileNotifier>().setProfile(profile);
+      context.read<AddressPickerNotifier>().cleanCityData();
       Toast.show("资料修改成功",context,);
       Loading.hideLoading(context);
       Navigator.pop(context);

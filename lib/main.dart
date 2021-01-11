@@ -15,6 +15,8 @@ import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/rongcloud.dart';
+import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
+import 'package:mirror/widget/address_Picker.dart';
 import 'package:provider/provider.dart';
 
 import 'api/live_broadcast/live_api.dart';
@@ -52,6 +54,8 @@ void main() {
             ChangeNotifierProvider(create: (_) => VoiceSettingNotifier()),
             ChangeNotifierProvider(create: (_) => ChatMessageProfileNotifier()),
             ChangeNotifierProvider(create: (_) => ChatEnterNotifier()),
+            ChangeNotifierProvider(create: (_) => AddressPickerNotifier()),
+            ChangeNotifierProvider(create: (_) => FitnessInformationNotifier())
           ],
       child: MyApp(),
     ),

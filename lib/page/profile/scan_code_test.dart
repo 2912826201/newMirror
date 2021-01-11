@@ -51,7 +51,11 @@ class _scanCodeState extends State<ScanCodeTest> {
       _platformVersion = platformVersion;
     });
   }
-
+@override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -75,7 +79,6 @@ class _scanCodeState extends State<ScanCodeTest> {
             InkWell(
               onTap: (){
                 _getImagePicker();
-                /*getImage();*/
               },
               child: Center(child:Container(
                   padding: EdgeInsets.only(right: 17,top: 12,bottom: 12),
@@ -90,7 +93,7 @@ class _scanCodeState extends State<ScanCodeTest> {
               height: height,
               child: ScanView(
                 controller: controller,
-                scanAreaScale: .7,
+                scanAreaScale: 0.7,
                 scanLineColor:AppColor.white,
                 onCapture: (data) {
                   setState(() {
@@ -99,8 +102,8 @@ class _scanCodeState extends State<ScanCodeTest> {
                       print('$data');
                       }else{
                       print('===========================这是扫码得到的结果$data');
+                      Toast.show("这是扫码得到的结果=============$data", context);
                     }
-                    Toast.show("这是扫码得到的结果=============$data", context);
                   });
                 },
               ),
@@ -130,7 +133,7 @@ class _scanCodeState extends State<ScanCodeTest> {
                           Center(
                            child: QrImage(
                               data:"${context.watch<ProfileNotifier>().profile.uid}",
-                              size: 40,
+                              size: 60,
                               backgroundColor: AppColor.white,
                               version: QrVersions.auto,
                             )),
