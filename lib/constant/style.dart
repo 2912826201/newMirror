@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/util/screen_util.dart';
 
 class AppStyle {
   // 注：fontWeight的默认值为 w400-Regular
@@ -47,4 +48,19 @@ class AppStyle {
 
   //不在规范内style
   static const whiteRegular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.white);
+  static const whiteRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.white);
+  static const textBlackMedium23 = TextStyle(fontSize: 23,fontWeight: FontWeight.w500,color: AppColor.textPrimary1);
+  static const textBold21 = TextStyle(fontSize: 21,fontWeight: FontWeight.w700,color: AppColor.black);
+  static const textMedium29 =
+  TextStyle(fontSize:29, fontWeight: FontWeight.w500, color: AppColor.textPrimary3);
+  static const textMedium21 =
+  TextStyle(fontSize: 21, fontWeight: FontWeight.w500, color: AppColor.textPrimary3);
+  static const textblackMedium29 =
+  TextStyle(fontSize:29, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
+  static const textblackMedium21 =
+  TextStyle(fontSize: 21, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
+  static const textPrimary3Medium16 =
+  TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColor.textPrimary3);
+  static const textPrimary3Medium23 = TextStyle(fontSize: 23,fontWeight: FontWeight.w500,color: AppColor.textPrimary3);
+
 }

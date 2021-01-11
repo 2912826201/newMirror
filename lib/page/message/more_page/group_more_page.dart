@@ -5,11 +5,14 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
+import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/page/message/message_view/currency_msg.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_share_select_contact.dart';
 import 'package:mirror/api/message_page_api.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 typedef VoidCallback = void Function();
 
@@ -18,6 +21,7 @@ class GroupMorePage extends StatefulWidget {
   final String chatGroupId;
 
   final VoidCallback listener;
+  final VoidCallback exitGroupListener;
 
   ///群名字
   final String groupName;
@@ -26,7 +30,7 @@ class GroupMorePage extends StatefulWidget {
   ///[chatType] 会话类型，参见类型 [OFFICIAL_TYPE]
   final int chatType;
 
-  GroupMorePage({this.chatGroupId, this.chatType, this.groupName, this.listener});
+  GroupMorePage({this.chatGroupId, this.chatType, this.groupName, this.listener, this.exitGroupListener});
 
   @override
   createState() => GroupMorePageState();
@@ -34,7 +38,9 @@ class GroupMorePage extends StatefulWidget {
 
 class GroupMorePageState extends State<GroupMorePage> {
   bool disturbTheNews = false;
+  bool disturbTheNewsOld = false;
   bool topChat = false;
+  bool topChatOld = false;
   String groupMeName = "还未取名";
   bool isUpdateGroupMeName = false;
   Map<String, dynamic> groupInformationMap;
@@ -43,6 +49,7 @@ class GroupMorePageState extends State<GroupMorePage> {
   @override
   void initState() {
     super.initState();
+    disturbTheNewsOld = disturbTheNews;
     getGroupInformation();
   }
 
@@ -51,6 +58,7 @@ class GroupMorePageState extends State<GroupMorePage> {
     super.dispose();
     updateUserName();
     isUpdateGroupMeName = false;
+    setData();
   }
 
   @override
@@ -326,20 +334,18 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //获取群信息
   void getGroupInformation() async {
+    print("getGroupInformation");
     try {
-      Map<String, dynamic> model = await getGroupChatByIds(
-          id: int.parse(widget.chatGroupId));
+      Map<String, dynamic> model = await getGroupChatByIds(id: int.parse(widget.chatGroupId));
       if (model != null && model["list"] != null) {
         model["list"].forEach((v) {
           groupInformationMap = v;
           groupName = groupInformationMap["name"];
         });
-        setState(() {
-
-        });
+        getConversationNotificationStatus();
       }
     } catch (e) {
-
+      getConversationNotificationStatus();
     }
   }
 
@@ -407,39 +413,6 @@ class GroupMorePageState extends State<GroupMorePage> {
     }
   }
 
-  //点击事件
-  void onClickItemList({String title, String subtitle, bool isOpen, int index,}) {
-    if (isOpen != null) {
-      if (index == 1) {
-        disturbTheNews = !disturbTheNews;
-      } else {
-        topChat = !topChat;
-      }
-      ToastShow.show(msg: "${!isOpen ? "打开" : "关闭"}$title", context: context);
-      setState(() {});
-    } else if (title == "群聊名称") {
-      AppRouter.navigateToEditInfomationName(context, subtitle, (result) {
-        setState(() {
-          if (result != null && groupName != result) {
-            modifyPr(result);
-          }
-        });
-      }, title: "修改群聊名称");
-      ToastShow.show(msg: subtitle, context: context);
-    } else if (title == "群昵称") {
-      AppRouter.navigateToEditInfomationName(context, subtitle, (result) {
-        setState(() {
-          if (result != null && groupMeName != result) {
-            modifyNickNamePr(result);
-          }
-        });
-      }, title: "修改群昵称");
-      ToastShow.show(msg: subtitle, context: context);
-    } else {
-      ToastShow.show(msg: "点击了：$title", context: context);
-    }
-  }
-
 
   //查看更多群成员
   void seeMoreGroupUser() {
@@ -472,14 +445,139 @@ class GroupMorePageState extends State<GroupMorePage> {
   void deleteGroupUser() {
     print("删除群成员");
     Navigator.push(context, MaterialPageRoute(builder: (_) {
-      return FriendsPage(type: 2, groupChatId: int.parse(widget.chatGroupId), voidCallback: (name, userId, context) {
-        print("移除这个用户：$name");
+      return FriendsPage(
+          type: 2,
+          groupChatId: int.parse(widget.chatGroupId),
+          voidCallback: (name, userId, context) {
+            print("移除这个用户：$name");
 
-        setState(() {
-
-        });
-      });
+            setState(() {});
+          });
     }));
+  }
+
+  //删除用户按钮
+  void exitGroupChatPr() async {
+    Map<String, dynamic> model = await exitGroupChat(groupChatId: int.parse(widget.chatGroupId));
+    if (model != null && model["state"] != null && model["state"]) {
+      if (widget.exitGroupListener != null) {
+        widget.exitGroupListener();
+      }
+      ToastShow.show(msg: "退出成功", context: context);
+      Navigator.of(context).pop();
+    } else {
+      ToastShow.show(msg: "退出失败", context: context);
+    }
+  }
+
+  //设置消息
+  void setData() {
+    setTopChatApi();
+    setConversationNotificationStatus();
+  }
+
+  //设置消息是否置顶
+  void setTopChatApi() async {
+    if (topChatOld != topChat) {
+      Map<String, dynamic> map =
+          await (topChat ? stickChat : cancelTopChat)(targetId: int.parse(widget.chatGroupId), type: 1);
+      if (map != null && map["state"] != null && map["state"]) {
+        TopChatModel topChatModel = new TopChatModel(type: 1, chatId: int.parse(widget.chatGroupId));
+        if (Application.topChatModelList.contains(topChatModel)) {
+          Application.topChatModelList.remove(topChatModel);
+        } else {
+          Application.topChatModelList.add(topChatModel);
+        }
+      }
+    }
+  }
+
+  //设置消息免打扰
+  void setConversationNotificationStatus() {
+    if (disturbTheNewsOld != disturbTheNews) {
+      Application.rongCloud.setConversationNotificationStatus(
+          RCConversationType.Group, widget.chatGroupId, disturbTheNews, (int status, int code) {
+        print(status);
+      });
+    }
+  }
+
+  //获取消息是否免打扰
+  void getConversationNotificationStatus() {
+    print("getConversationNotificationStatus");
+
+
+    if (Application.topChatModelList == null || Application.topChatModelList.length < 1) {
+      topChat = false;
+      topChatOld = false;
+    } else {
+      for (TopChatModel topChatModel in Application.topChatModelList) {
+        if (topChatModel.type == 1 && topChatModel.chatId.toString() == widget.chatGroupId) {
+          topChat = true;
+          topChatOld = true;
+          break;
+        }
+      }
+    }
+
+    Application.rongCloud.getConversationNotificationStatus(
+        RCConversationType.Group, widget.chatGroupId,
+            (int status, int code) {
+          print("status:$status---code:$code");
+          if (code == 0) {
+            disturbTheNews = status == RCConversationNotificationStatus.DoNotDisturb;
+            disturbTheNewsOld = disturbTheNews;
+          }
+          setState(() {
+
+          });
+        });
+  }
+
+  //点击事件
+  void onClickItemList({String title, String subtitle, bool isOpen, int index,}) {
+    if (isOpen != null) {
+      if (index == 1) {
+        disturbTheNews = !disturbTheNews;
+      } else {
+        topChat = !topChat;
+      }
+      ToastShow.show(msg: "${!isOpen ? "打开" : "关闭"}$title", context: context);
+      setState(() {});
+    } else if (title == "群聊名称") {
+      AppRouter.navigateToEditInfomationName(context, subtitle, (result) {
+        setState(() {
+          if (result != null && groupName != result) {
+            modifyPr(result);
+          }
+        });
+      }, title: "修改群聊名称");
+      ToastShow.show(msg: subtitle, context: context);
+    } else if (title == "群昵称") {
+      AppRouter.navigateToEditInfomationName(context, subtitle, (result) {
+        setState(() {
+          if (result != null && groupMeName != result) {
+            modifyNickNamePr(result);
+          }
+        });
+      }, title: "修改群昵称");
+      ToastShow.show(msg: subtitle, context: context);
+    } else if (title == "删除并退出") {
+      showAppDialog(context,
+          title: "退出群聊",
+          info: "你确定退出当前群聊吗?",
+          cancel: AppDialogButton("取消", () {
+            // print("点了取消");
+            return true;
+          }),
+          confirm: AppDialogButton("确定", () {
+            exitGroupChatPr();
+            return true;
+          }));
+      // ToastShow.show(msg: "点击了：$title", context: context);
+    } else {
+      ToastShow.show(msg: "点击了：$title", context: context);
+    }
   }
 
 }

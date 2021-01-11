@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/message_page_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
@@ -25,13 +27,15 @@ class PrivateMorePage extends StatefulWidget {
 
 class PrivateMorePageState extends State<PrivateMorePage> {
   bool disturbTheNews = false;
+  bool disturbTheNewsOld = false;
   bool topChat = false;
+  bool topChatOld = false;
   bool isBlackList = false;
 
   @override
   void initState() {
     super.initState();
-    initData();
+    // initData();
     getBlackListStatus();
   }
 
@@ -149,25 +153,83 @@ class PrivateMorePageState extends State<PrivateMorePage> {
 
   void initData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    disturbTheNews = (prefs.getBool(
-            "${widget.chatUserId}_${RCConversationType.Private}_${Application.profile.uid.toString()}_disturbTheNews") ??
-        false);
-    topChat = (prefs.getBool(
-            "${widget.chatUserId}_${RCConversationType.Private}_${Application.profile.uid.toString()}_topChat") ??
-        false);
-    setState(() {});
+    // disturbTheNews = (prefs.getBool(
+    //         "${widget.chatUserId}_${RCConversationType.Private}_${Application.profile.uid.toString()}_disturbTheNews") ??
+    //     false);
+    // topChat = (prefs.getBool(
+    //         "${widget.chatUserId}_${RCConversationType.Private}_${Application.profile.uid.toString()}_topChat") ??
+    //     false);
   }
 
   void setData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(
-        "${widget.chatUserId}_${RCConversationType.Private}_${Application
-            .profile.uid.toString()}_disturbTheNews",
-        disturbTheNews);
-    prefs.setBool(
-        "${widget.chatUserId}_${RCConversationType.Private}_${Application
-            .profile.uid.toString()}_topChat",
-        topChat);
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // prefs.setBool(
+    //     "${widget.chatUserId}_${RCConversationType.Private}_${Application
+    //         .profile.uid.toString()}_disturbTheNews",
+    //     disturbTheNews);
+    // prefs.setBool(
+    //     "${widget.chatUserId}_${RCConversationType.Private}_${Application
+    //         .profile.uid.toString()}_topChat",
+    //     topChat);
+    setTopChatApi();
+    setConversationNotificationStatus();
+  }
+
+  //设置消息是否置顶
+  void setTopChatApi() async {
+    if (topChatOld != topChat) {
+      Map<String, dynamic> map =
+          await (topChat ? stickChat : cancelTopChat)(targetId: int.parse(widget.chatUserId), type: 0);
+      if (map != null && map["state"] != null && map["state"]) {
+        TopChatModel topChatModel = new TopChatModel(type: 0, chatId: int.parse(widget.chatUserId));
+        if (Application.topChatModelList.contains(topChatModel)) {
+          Application.topChatModelList.remove(topChatModel);
+        } else {
+          Application.topChatModelList.add(topChatModel);
+        }
+      }
+    }
+  }
+
+  //设置消息免打扰
+  void setConversationNotificationStatus() {
+    if (disturbTheNewsOld != disturbTheNews) {
+      Application.rongCloud.setConversationNotificationStatus(
+          RCConversationType.Private, widget.chatUserId, disturbTheNews, (int status, int code) {
+        print(status);
+      });
+    }
+  }
+
+  //获取消息是否免打扰
+  void getConversationNotificationStatus() {
+    print("getConversationNotificationStatus");
+
+    if (Application.topChatModelList == null || Application.topChatModelList.length < 1) {
+      topChat = false;
+      topChatOld = false;
+    } else {
+      for (TopChatModel topChatModel in Application.topChatModelList) {
+        if (topChatModel.type == 0 && topChatModel.chatId.toString() == widget.chatUserId) {
+          topChat = true;
+          topChatOld = true;
+          break;
+        }
+      }
+    }
+
+    Application.rongCloud.getConversationNotificationStatus(
+        RCConversationType.Private, widget.chatUserId,
+            (int status, int code) {
+          print("status:$status---code:$code");
+          if (code == 0) {
+            disturbTheNews = status == RCConversationNotificationStatus.DoNotDisturb;
+            disturbTheNewsOld = disturbTheNews;
+          }
+          setState(() {
+
+          });
+        });
   }
 
 
@@ -177,10 +239,8 @@ class PrivateMorePageState extends State<PrivateMorePage> {
         widget.chatUserId, (int blackListStatus, int code) {
       if (code == 0) {
         isBlackList = blackListStatus == 0;
-        setState(() {
-
-        });
       }
+      getConversationNotificationStatus();
     });
   }
 

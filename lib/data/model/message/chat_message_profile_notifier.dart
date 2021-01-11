@@ -16,6 +16,29 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
   ///消息
   Message message;
 
+  //消息的id
+  int messageId;
+
+  //消息状态
+  int status;
+
+  //是否设置消息状态
+  bool isSettingStatus = false;
+
+  //设置消息发送的状态
+  setIsSettingStatus({bool isSettingStatus, int messageId, int status}) {
+    this.isSettingStatus = isSettingStatus;
+    this.messageId = messageId;
+    this.status = status;
+    this.message = null;
+    notifyListeners();
+  }
+
+  //设置消息发送的状态
+  setSettingStatus(isSettingStatus) {
+    this.isSettingStatus = isSettingStatus;
+  }
+
   //设置数据
   setData(int chatTypeId, String chatUserId) {
     this.chatTypeId = chatTypeId;
@@ -35,7 +58,7 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
     if (message.targetId == this.chatUserId &&
         message.conversationType == chatTypeId) {
       this.message = message;
-      print("0000000000000000000000000");
+      this.isSettingStatus = false;
       notifyListeners();
     }
   }

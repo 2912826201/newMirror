@@ -32,5 +32,31 @@ class StickyTabBarDelegate extends SliverPersistentHeaderDelegate {
   }
 
 }
+class StickyAppBarDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+  double width;
+  double height;
+  Color color;
+  StickyAppBarDelegate({@required this.child,this.width,this.height,this.color});
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: this.color,
+      child: this.child,);
+  }
+
+  @override
+  double get maxExtent => this.height;
+
+  @override
+  double get minExtent => this.height;
+
+  @override
+  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
+    return true;
+  }
+
+}
 
 

@@ -23,6 +23,7 @@ import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/page/feed/feed_detail_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
@@ -288,6 +289,11 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                   Application.chatGroupUserModelMap[userModel.uid.toString()] = userModel.groupNickName;
                 }
                 delayedSetState();
+              }, () {
+                //退出群聊
+                MessageManager.removeConversation(
+                    context, chatUserId, Application.profile.uid, widget.conversation.type);
+                Navigator.of(context).pop();
               });
             },
           ),
@@ -631,21 +637,18 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //判断有没有at我的消息
   void judgeIsHaveAtMeMsg() {
-    if (Application.atMesGroupModel == null ||
-        Application.atMesGroupModel.atMes == null ||
-        Application.atMesGroupModel.atMes.length < 1) {
+    if (Application.atMesGroupModel == null || Application.atMesGroupModel.atMsgMap == null) {
       isHaveAtMeMsg = false;
       isHaveAtMeMsgPr = false;
     } else {
-      for (int i = 0; i < Application.atMesGroupModel.atMes.length; i++) {
-        if (Application.atMesGroupModel.atMes[i].groupId.toString() == chatUserId) {
-          //print("dasdasdasddddddddddddddddddddddddddddddddddddddddddddddd");
-          atMeMsg = Application.atMesGroupModel.atMes[i];
-          isHaveAtMeMsg = false;
-          isHaveAtMeMsgPr = true;
-          judgeNewChatIsHaveAt();
-          break;
-        }
+      atMeMsg = Application.atMesGroupModel.getAtMsg(chatUserId);
+      if (atMeMsg == null) {
+        isHaveAtMeMsg = false;
+        isHaveAtMeMsgPr = false;
+      } else {
+        isHaveAtMeMsg = false;
+        isHaveAtMeMsgPr = true;
+        judgeNewChatIsHaveAt();
       }
     }
   }
@@ -946,7 +949,28 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     return Consumer<ChatMessageProfileNotifier>(
       builder: (context, notifier, child) {
         Message message = context.select((ChatMessageProfileNotifier value) => value.message);
+        bool isSettingStatus = context.select((ChatMessageProfileNotifier value) => value.isSettingStatus);
         if (message == null || message.targetId != this.chatUserId && message.conversationType != chatTypeId) {
+          if (isSettingStatus) {
+            Application.appContext.read<ChatMessageProfileNotifier>().setSettingStatus(false);
+            int messageId = context.select((ChatMessageProfileNotifier value) => value.messageId);
+            int status = context.select((ChatMessageProfileNotifier value) => value.status);
+            if (messageId == null || status == null || chatDataList == null || chatDataList.length < 1) {
+              return Container();
+            } else {
+              for (ChatDataModel dataModel in chatDataList) {
+                if (dataModel.msg?.messageId == messageId) {
+                  if (dataModel.msg?.sentStatus == status) {
+                    return Container();
+                  } else {
+                    dataModel.msg?.sentStatus = status;
+                    delayedSetState();
+                    return Container();
+                  }
+                }
+              }
+            }
+          }
           return Container();
         } else {
           Application.appContext.read<ChatMessageProfileNotifier>().clearMessage();
@@ -959,6 +983,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     );
   }
 
+
   initTextController() {
     _textController.addListener(() {
       // //print("值改变了");
@@ -966,8 +991,12 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       // // 每次点击切换光标会进入此监听。需求邀请@和话题光标不可移入其中。
       // //print("::::::$isSwitchCursor");
       if (isSwitchCursor) {
-        List<Rule> rules = context.read<ChatEnterNotifier>().rules;
-        int atIndex = context.read<ChatEnterNotifier>().atCursorIndex;
+        List<Rule> rules = context
+            .read<ChatEnterNotifier>()
+            .rules;
+        int atIndex = context
+            .read<ChatEnterNotifier>()
+            .atCursorIndex;
 
         // 获取光标位置
         int cursorIndex = _textController.selection.baseOffset;

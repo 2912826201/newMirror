@@ -18,6 +18,7 @@ class _IntroductionState extends State<EditInformationIntroduction>{
   //底部的提示int
   int textLength = 0;
   double textHeight;
+  FocusNode blankNode = FocusNode();
   @override
   void initState() {
     super.initState();
@@ -41,6 +42,7 @@ class _IntroductionState extends State<EditInformationIntroduction>{
                 margin: EdgeInsets.only(left: 16),
                 child: Image.asset("images/resource/2.0x/return2x.png"),),
               onTap: (){
+                FocusScope.of(context).requestFocus(blankNode);
                 Navigator.pop(context);
               },
             ),
@@ -50,6 +52,7 @@ class _IntroductionState extends State<EditInformationIntroduction>{
             actions: [
               InkWell(
                 onTap: (){
+                  FocusScope.of(context).requestFocus(blankNode);
                   Navigator.pop(this.context,editText);
                 },
                 child: Container(

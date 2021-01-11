@@ -88,7 +88,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
       SizedBox(
         width: 7,
       ),
-      _getLiveVideoCourseUiLongClick(context),
+      getNameAndContentUi(context),
     ];
     if (isMyself) {
       body = body.reversed.toList();
@@ -98,31 +98,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
     return body;
   }
 
-  //长按事件
-  Widget _getLiveVideoCourseUiLongClick(BuildContext context) {
-    List<String> longClickStringList = getLongClickStringList(
-        isMySelf: isMyself,
-        contentType: isLiveOrVideo
-            ? ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE
-            : ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
-    return LongClickPopupMenu(
-      onValueChanged: (int value) {
-        Scaffold.of(context).showSnackBar(SnackBar(
-          content: Text(longClickStringList[value]),
-          duration: Duration(milliseconds: 500),
-        ));
-      },
-      contentType: isLiveOrVideo
-          ? ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE
-          : ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE,
-      isMySelf: isMyself,
-      actions: longClickStringList,
-      contentWidth: 180.0,
-      child: getNameAndContentUi(context),
-    );
-  }
-
-
+  //判断有没有名字
   Widget getNameAndContentUi(BuildContext context) {
     return Container(
       child: Column(
@@ -131,32 +107,51 @@ class LiveVideoCourseMsg extends StatelessWidget {
           Visibility(
             visible: isShowChatUserName,
             child: Container(
-              margin: isMyself ? const EdgeInsets.only(right: 10, bottom: 4) : const EdgeInsets.only(
-                  left: 10, bottom: 4),
-              child: Text(name, style: TextStyle(fontSize: 12, color: AppColor.textSecondary),),
+              margin:
+                  isMyself ? const EdgeInsets.only(right: 10, bottom: 4) : const EdgeInsets.only(left: 10, bottom: 4),
+              child: Text(
+                name,
+                style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+              ),
             ),
           ),
-          GestureDetector(
-            child: _getLiveVideoCourseUi(),
-            onTap: () {
-              if (isLiveOrVideo) {
-                // ToastShow.show(msg: "点击了直播课-该跳转", context: context);
-                voidMessageClickCallBack(
-                    contentType: ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE,
-                    map: liveVideoModel.toJson());
-              } else {
-                voidMessageClickCallBack(
-                    contentType: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE,
-                    map: liveVideoModel.toJson());
-                // ToastShow.show(msg: "点击了视频课-该跳转", context: context);
-              }
-            },
-          )
+          _getLiveVideoCourseUiLongClick(context),
         ],
       ),
     );
   }
 
+  //长按事件
+  Widget _getLiveVideoCourseUiLongClick(BuildContext context) {
+    List<String> longClickStringList = getLongClickStringList(
+        isMySelf: isMyself,
+        contentType: isLiveOrVideo ? ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE : ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
+    return LongClickPopupMenu(
+      onValueChanged: (int value) {
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text(longClickStringList[value]),
+          duration: Duration(milliseconds: 500),
+        ));
+      },
+      contentType: isLiveOrVideo ? ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE : ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE,
+      isMySelf: isMyself,
+      actions: longClickStringList,
+      contentWidth: 180.0,
+      child: GestureDetector(
+        child: _getLiveVideoCourseUi(),
+        onTap: () {
+          if (isLiveOrVideo) {
+            // ToastShow.show(msg: "点击了直播课-该跳转", context: context);
+            voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE, map: liveVideoModel.toJson());
+          } else {
+            voidMessageClickCallBack(
+                contentType: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE, map: liveVideoModel.toJson());
+            // ToastShow.show(msg: "点击了视频课-该跳转", context: context);
+          }
+        },
+      ),
+    );
+  }
 
   //获取动态框
   Widget _getLiveVideoCourseUi() {

@@ -120,7 +120,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
       SizedBox(
         width: 7,
       ),
-      _getVoiceUiLongClick(),
+      getNameAndContentUi(context),
     ];
     if (widget.isMyself) {
       body = body.reversed.toList();
@@ -130,10 +130,34 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
     return body;
   }
 
+  //判断有没有名字
+  Widget getNameAndContentUi(BuildContext context) {
+    return Container(
+      child: Column(
+        crossAxisAlignment: widget.isMyself ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Visibility(
+            visible: widget.isShowChatUserName,
+            child: Container(
+              margin: widget.isMyself
+                  ? const EdgeInsets.only(right: 10, bottom: 4)
+                  : const EdgeInsets.only(left: 10, bottom: 4),
+              child: Text(
+                widget.name,
+                style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+              ),
+            ),
+          ),
+          _getVoiceUiLongClick(),
+        ],
+      ),
+    );
+  }
+
+  //长按事件
   Widget _getVoiceUiLongClick() {
-    List<String> longClickStringList = getLongClickStringList(
-        isMySelf: widget.isMyself,
-        contentType: ChatTypeModel.MESSAGE_TYPE_VOICE);
+    List<String> longClickStringList =
+        getLongClickStringList(isMySelf: widget.isMyself, contentType: ChatTypeModel.MESSAGE_TYPE_VOICE);
     return LongClickPopupMenu(
       onValueChanged: (int value) {
         widget.voidItemLongClickCallBack(
@@ -146,26 +170,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
       isMySelf: widget.isMyself,
       actions: longClickStringList,
       contentWidth: getNowWidth(context, widget.chatVoiceModel.longTime),
-      child: getNameAndContentUi(context),
-    );
-  }
-
-  Widget getNameAndContentUi(BuildContext context) {
-    return Container(
-      child: Column(
-        crossAxisAlignment: widget.isMyself ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: [
-          Visibility(
-            visible: widget.isShowChatUserName,
-            child: Container(
-              margin: widget.isMyself ? const EdgeInsets.only(right: 10, bottom: 4) : const EdgeInsets.only(
-                  left: 10, bottom: 4),
-              child: Text(widget.name, style: TextStyle(fontSize: 12, color: AppColor.textSecondary),),
-            ),
-          ),
-          _getVoiceUi(context),
-        ],
-      ),
+      child: _getVoiceUi(context),
     );
   }
 
@@ -176,9 +181,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
       stateImg = "images/test/icon_black_message_bugle.png";
     }
     return Container(
-      margin: widget.isMyself
-          ? const EdgeInsets.only(right: 2.0)
-          : const EdgeInsets.only(left: 2.0),
+      margin: widget.isMyself ? const EdgeInsets.only(right: 2.0) : const EdgeInsets.only(left: 2.0),
       child: Stack(
         alignment: widget.isMyself
             ? AlignmentDirectional.topEnd
