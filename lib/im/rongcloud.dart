@@ -145,13 +145,18 @@ class RongCloud {
   }
 
   //插入发送的消息
-  void insertOutgoingMessage(int conversationType, String targetId,
-      MessageContent content, Function(Message msg, int code) finished) {
-    RongIMClient.insertOutgoingMessage(conversationType, targetId, 30, content,
-        new DateTime.now().millisecondsSinceEpoch, finished);
+  void insertOutgoingMessage(
+      int conversationType, String targetId, MessageContent content, Function(Message msg, int code) finished,
+      {int sendTime = -1}) {
+    if (sendTime < 0) {
+      RongIMClient.insertOutgoingMessage(
+          conversationType, targetId, 30, content, new DateTime.now().millisecondsSinceEpoch, finished);
+    } else {
+      RongIMClient.insertOutgoingMessage(conversationType, targetId, 30, content, sendTime, finished);
+    }
   }
 
-  //插入发送的消息
+  //更新消息
   void updateMessage(
       Map expansionDic, String messageUId, Function(int code) finished) {
     RongIMClient.updateMessageExpansion(expansionDic, messageUId, finished);

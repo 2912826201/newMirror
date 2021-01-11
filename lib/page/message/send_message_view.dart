@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
@@ -30,10 +31,11 @@ class SendMessageView extends StatelessWidget {
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
   final int position;
   final String chatUserName;
+  final int conversationDtoType;
   final bool isShowChatUserName;
 
   SendMessageView(this.model, this.position, this.voidMessageClickCallBack, this.voidItemLongClickCallBack,
-      this.chatUserName, this.isShowChatUserName);
+      this.chatUserName, this.isShowChatUserName, this.conversationDtoType);
 
   bool isMyself;
   String userUrl;
@@ -43,30 +45,35 @@ class SendMessageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    userUrl = Application.profile.avatarUri;
+    sendChatUserId = Application.profile.uid.toString();
+    name = getChatUserName(sendChatUserId, Application.profile.nickName);
+
     if (model.isTemporary) {
       print("临时的");
       isMyself = true;
-      userUrl = Application.profile.avatarUri;
       status = RCSentStatus.Sending;
-      sendChatUserId = Application.profile.uid.toString();
-      name = getChatUserName(sendChatUserId, Application.profile.nickName);
       return temporaryData();
+    } else if (Application.profile.uid.toString() == model.msg.senderUserId) {
+      isMyself = true;
+      status = model.msg.sentStatus;
+      return notTemporaryData();
     } else {
-      isMyself = Application.profile.uid.toString() == model.msg.senderUserId;
-      // print(model.msg.content.sendUserInfo.portraitUri);
-      if (model.msg.content.sendUserInfo == null || model.msg.content.sendUserInfo.portraitUri == null) {
-        userUrl = Application.profile.avatarUri;
-      } else {
-        userUrl = isMyself ? Application.profile.avatarUri : model.msg.content.sendUserInfo?.portraitUri;
-      }
+      isMyself = false;
       status = model.msg.sentStatus;
       sendChatUserId = model.msg.senderUserId;
-
-      if (model.msg.content.sendUserInfo == null || model.msg.content.sendUserInfo.name == null) {
+      if (conversationDtoType == OFFICIAL_TYPE) {
+        userUrl = "http://devpic.aimymusic.com/app/system_message_avatar.png";
         name = "系统消息";
+      } else if (conversationDtoType == LIVE_TYPE) {
+        userUrl = "http://devpic.aimymusic.com/app/group_notification_avatar.png";
+        name = "官方直播";
+      } else if (conversationDtoType == TRAINING_TYPE) {
+        userUrl = "http://devpic.aimymusic.com/app/stranger_message_avatar.png";
+        name = "运动数据";
       } else {
-        name = getChatUserName(
-            sendChatUserId, isMyself ? Application.profile.nickName : model.msg.content.sendUserInfo?.name);
+        userUrl = model.msg.content.sendUserInfo?.portraitUri;
+        name = getChatUserName(sendChatUserId, model.msg.content.sendUserInfo?.name);
       }
       return notTemporaryData();
     }
@@ -118,7 +125,6 @@ class SendMessageView extends StatelessWidget {
       // return TextMsg(textMessage.content, model);
       try {
         Map<String, dynamic> mapModel = json.decode(textMessage.content);
-        print("----" + mapModel.toString());
         if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_TEXT) {
           //文字消息
           return getTextMsg(text: mapModel["data"], mentionedInfo: msg.content.mentionedInfo);
@@ -148,21 +154,20 @@ class SendMessageView extends StatelessWidget {
         } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME ||
             mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_INVITE ||
             mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_NEW ||
+            mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT ||
             mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_REMOVE) {
           // return new Text('提示消息');
           return getAlertMsg(map: mapModel);
         } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_SELECT) {
           // return new Text('可选择的列表');
           return getSelectMsgData(mapModel["data"]);
+        } else if (mapModel["name"] != null) {
+          //版本过低
+          return getTextMsg(text: mapModel["name"], mentionedInfo: msg.content.mentionedInfo);
         }
       } catch (e) {
-        print(e.toString());
-        //todo 未知消息
-        return getTextMsg(text: textMessage.content, mentionedInfo: msg.content.mentionedInfo);
+        return getTextMsg(text: "版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo);
       }
-    } else if (msgType == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
-      //图片--视频消息
-      return getImageMessage(msg);
     } else if (msgType == VoiceMessage.objectName) {
       // return new Text('语音消息');
       return getVoiceMessage(msg);
@@ -172,22 +177,11 @@ class SendMessageView extends StatelessWidget {
           recallNotificationMessage:
           ((msg.content) as RecallNotificationMessage));
     }
-    //todo 未知消息
-    return new Text('未知消息1');
+    return getTextMsg(text: "版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo);
   }
 
   //************************获取消息模块的方法 ----start
 
-  //图片--视频消息
-  Widget getImageMessage(Message msg) {
-    ImageMessage imageMessage = ((msg.content) as ImageMessage);
-    Map<String, dynamic> mapModel = json.decode(imageMessage.extra);
-    return getImgVideoMsg(
-        isTemporary: false,
-        isImgOrVideo: mapModel["type"] == mediaTypeKeyImage,
-        mediaFileModel: model.mediaFileModel,
-        imageMessage: imageMessage);
-  }
 
   //语音信息
   Widget getVoiceMessage(Message msg) {
@@ -210,8 +204,6 @@ class SendMessageView extends StatelessWidget {
         StringUtil.generateMd5(voiceMessage.remoteUrl != null ? voiceMessage.remoteUrl : mapModel["filePath"]));
   }
 
-  //************************获取消息模块的方法 ----end
-
   String getChatUserName(String uId, String name) {
     if (isShowChatUserName) {
       // print("uId:$uId---Application.chatGroupUserModelMap:${Application.chatGroupUserModelMap.toString()}");
@@ -224,6 +216,8 @@ class SendMessageView extends StatelessWidget {
     }
     return name;
   }
+
+  //************************获取消息模块的方法 ----end
 
   //***************************************获取每一个消息的模块-----start
 

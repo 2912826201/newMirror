@@ -42,31 +42,31 @@ class ChatTypeModel {
   static const String MESSAGE_TYPE_RECALL_MSG_NAME = "撤回消息，该版本较低请升级版本再行查看";
 
   //自定义消息类型：提示信息
-  static const String MESSAGE_TYPE_ALERT = "MD:AlertMessage";
+  static const String MESSAGE_TYPE_ALERT = "IF:AlertMessage";
   static const String MESSAGE_TYPE_ALERT_NAME = "提示消息，该版本较低请升级版本再行查看";
 
   //自定义消息类型：提示信息-时间提示
-  static const String MESSAGE_TYPE_ALERT_TIME = "MD:AlertTimeMessage";
+  static const String MESSAGE_TYPE_ALERT_TIME = "IF:AlertTimeMessage";
   static const String MESSAGE_TYPE_ALERT_TIME_NAME = "时间提示消息，该版本较低请升级版本再行查看";
 
   //自定义消息类型：提示信息-邀请
-  static const String MESSAGE_TYPE_ALERT_INVITE = "MD:AlertInviteMessage";
+  static const String MESSAGE_TYPE_ALERT_INVITE = "IF:AlertInviteMessage";
   static const String MESSAGE_TYPE_ALERT_INVITE_NAME = "邀请消息，该版本较低请升级版本再行查看";
 
   //自定义消息类型：提示信息-移除
-  static const String MESSAGE_TYPE_ALERT_REMOVE = "MD:AlertRemoveMessage";
+  static const String MESSAGE_TYPE_ALERT_REMOVE = "IF:AlertRemoveMessage";
   static const String MESSAGE_TYPE_ALERT_REMOVE_NAME = "移除消息，该版本较低请升级版本再行查看";
 
   //自定义消息类型：提示信息-新的消息
-  static const String MESSAGE_TYPE_ALERT_NEW = "MD:AlertNewMessage";
+  static const String MESSAGE_TYPE_ALERT_NEW = "IF:AlertNewMessage";
   static const String MESSAGE_TYPE_ALERT_NEW_NAME = "有新消息，该版本较低请升级版本再行查看";
 
   //管家聊天界面：底部-可操作列表
-  static const String CHAT_SYSTEM_BOTTOM_BAR = "MD:chat_system_bottom_bar";
+  static const String CHAT_SYSTEM_BOTTOM_BAR = "IF:ChatSystemBottomBar";
   static const String CHAT_SYSTEM_BOTTOM_BAR_NAME = "底部列表消息，该版本较低请升级版本再行查看";
 
   //管家聊天界面：可选择的列表
-  static const String MESSAGE_TYPE_SELECT = "MD:SelectMessage";
+  static const String MESSAGE_TYPE_SELECT = "IF:SelectMessage";
   static const String MESSAGE_TYPE_SELECT_NAME = "列表消息，该版本较低请升级版本再行查看";
 
   //判断这个消息是不是提示消息
