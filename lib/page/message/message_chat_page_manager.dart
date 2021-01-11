@@ -535,15 +535,7 @@ void initChatGroupUserModelMap() {
 //判断去拿一个更多界面
 void judgeJumpPage(
     int chatTypeId, String chatUserId, int chatType, BuildContext context, String name, listener, exitGroupListener) {
-  if (chatTypeId == RCConversationType.Private) {
-    jumpPage(
-        PrivateMorePage(
-          chatUserId: chatUserId,
-          chatType: chatType,
-        ),
-        false,
-        context);
-  } else {
+  if (chatTypeId == RCConversationType.Group) {
     jumpPage(
         GroupMorePage(
             chatGroupId: chatUserId,
@@ -551,6 +543,14 @@ void judgeJumpPage(
             groupName: name,
             listener: listener,
             exitGroupListener: exitGroupListener),
+        false,
+        context);
+  } else {
+    jumpPage(
+        PrivateMorePage(
+          chatUserId: chatUserId,
+          chatType: chatType,
+        ),
         false,
         context);
   }
