@@ -74,6 +74,7 @@ class SelectedMediaFiles {
 class SizeInfo {
   int height = 0;
   int width = 0;
+  double videoCroppedRatio; // 当视频不需要裁剪时 此值为null
   double offsetRatioX = 0.0;
   double offsetRatioY = 0.0;
   int duration = 0; //时长，只有音视频有用，图片此值为0，单位秒
