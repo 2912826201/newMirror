@@ -28,6 +28,7 @@ class ChatDetailsBody extends StatelessWidget {
   final RefreshController refreshController;
   final FirstEndCallback firstEndCallback;
   final int isHaveAtMeMsgIndex;
+  final int conversationDtoType;
   final bool isHaveAtMeMsg;
   final String loadText;
   final LoadingStatus loadStatus;
@@ -35,6 +36,7 @@ class ChatDetailsBody extends StatelessWidget {
   ChatDetailsBody(
       {this.scrollController,
       this.chatDataList,
+      this.conversationDtoType,
       this.loadText,
       this.loadStatus,
       this.isShowChatUserName,
@@ -205,8 +207,13 @@ class ChatDetailsBody extends StatelessWidget {
 
 
     return SendMessageView(
-        model, position, voidMessageClickCallBack, voidItemLongClickCallBack,
-        chatUserName, isShowChatUserName);
+        model,
+        position,
+        voidMessageClickCallBack,
+        voidItemLongClickCallBack,
+        chatUserName,
+        isShowChatUserName,
+        conversationDtoType);
   }
 
   bool judgePersonalButler(ChatDataModel model) {
