@@ -12,7 +12,8 @@ import 'package:toast/toast.dart';
 ///编辑昵称
 class EditInformationName extends StatefulWidget{
   String userName;
-  EditInformationName({this.userName});
+  String title;
+  EditInformationName({this.userName,this.title});
   @override
   State<StatefulWidget> createState() {
    return _editInformationNameState();
@@ -64,8 +65,6 @@ class _editInformationNameState extends State<EditInformationName>{
                     return;
                   }
                   Navigator.pop(this.context, _EditText);
-                  FocusScope.of(context).requestFocus(blankNode);
-                  Navigator.pop(this.context,_EditText);
                 },
                 child:Container(
                 width: 60,
