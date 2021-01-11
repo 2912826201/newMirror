@@ -166,8 +166,6 @@ Future<Message> postMessageManagerImgOrVideo1(
     MediaFileModel mediaFileModel,
     UploadResultModel uploadResultModel) async {
   ImageMessage msg = new ImageMessage();
-  mediaFileModel.sizeInfo.type =
-  isImgOrVideo ? mediaTypeKeyImage : mediaTypeKeyVideo;
   msg.localPath = uploadResultModel.filePath;
   msg.extra = jsonEncode(mediaFileModel.sizeInfo.toJson());
   msg.imageUri = uploadResultModel.url;
@@ -180,8 +178,6 @@ Future<Message> postMessageManagerImgOrVideo1(
 Future<Message> postMessageManagerImgOrVideo(String targetId, bool isImgOrVideo,
     MediaFileModel mediaFileModel, UploadResultModel uploadResultModel,
     bool isPrivate) async {
-  mediaFileModel.sizeInfo.type =
-  isImgOrVideo ? mediaTypeKeyImage : mediaTypeKeyVideo;
   mediaFileModel.sizeInfo.showImageUrl = uploadResultModel.url;
   TextMessage msg = TextMessage();
   msg.sendUserInfo = getChatUserInfo();

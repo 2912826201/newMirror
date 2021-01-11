@@ -503,6 +503,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
               for (_OrderedAssetEntity orderedEntity in selectedMap.values) {
                 // order要减1才是index
                 MediaFileModel mediaFileModel = mediaFileList[orderedEntity.order - 1];
+                mediaFileModel.type = type;
                 // 根据类型处理文件信息及尺寸信息
                 if (widget.needCrop) {
                   switch (notifier.selectedType) {
