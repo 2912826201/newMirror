@@ -265,7 +265,7 @@ class FeedMsg extends StatelessWidget {
                 children: [
                   ClipRRect(
                     child: Image.network(
-                      homeFeedMode.avatarUrl,
+                      homeFeedMode.avatarUrl ?? "",
                       fit: BoxFit.cover,
                       width: 20,
                       height: 20,
@@ -280,10 +280,8 @@ class FeedMsg extends StatelessWidget {
                     child: Row(
                       children: [
                         Container(
-                          child: Text(homeFeedMode.name,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: textStyle),
+                          child: Text(homeFeedMode.name ?? "",
+                              maxLines: 1, overflow: TextOverflow.ellipsis, style: textStyle),
                           constraints: BoxConstraints(
                             maxWidth: 180 - 12 - 4 - 12 - 6 - 80.0,
                           ),
