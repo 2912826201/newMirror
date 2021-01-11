@@ -43,7 +43,7 @@ class _IntroductionState extends State<EditInformationIntroduction>{
                 child: Image.asset("images/resource/2.0x/return2x.png"),),
               onTap: (){
                 FocusScope.of(context).requestFocus(blankNode);
-                Navigator.pop(context);
+                Navigator.pop(context,widget.introduction);
               },
             ),
               leadingWidth: 44,

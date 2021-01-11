@@ -49,7 +49,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("${widget.chatType == MANAGER_TYPE ? "系统官方消息" : "私人消息"}"),
+        title: Text("${widget.chatType == PRIVATE_TYPE ? "私人消息" : "系统官方消息"}"),
         centerTitle: true,
       ),
       body: Container(
@@ -60,12 +60,11 @@ class PrivateMorePageState extends State<PrivateMorePage> {
             item(2, topChat, "置顶聊天"),
             getContainer(),
             Offstage(
-              offstage: widget.chatType == MANAGER_TYPE,
-              child: item(3, topChat, isBlackList ? "解除拉黑" : "拉黑",
-                  isCupertinoSwitchShow: false),
+              offstage: widget.chatType != PRIVATE_TYPE,
+              child: item(3, topChat, isBlackList ? "解除拉黑" : "拉黑", isCupertinoSwitchShow: false),
             ),
             Offstage(
-              offstage: widget.chatType == MANAGER_TYPE,
+              offstage: widget.chatType != PRIVATE_TYPE,
               child: getContainer(),
             ),
           ],

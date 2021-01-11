@@ -21,6 +21,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/address_Picker.dart';
 import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:provider/provider.dart';
@@ -53,7 +54,7 @@ class _editInformationState extends State<EditInformation> {
   LinkedHashMap<int, RegionDto> provinceMap = Application.provinceMap;
   Map<int, List<RegionDto>> cityMap = Application.cityMap;
   OnItemClickListener onItemClickListener;
-
+  double textHeight;
   @override
   void initState() {
     super.initState();
@@ -94,6 +95,8 @@ class _editInformationState extends State<EditInformation> {
   }
   @override
   Widget build(BuildContext context) {
+    double width = ScreenUtil.instance.screenWidthDp;
+    double height = ScreenUtil.instance.height;
     if (userSex == 1) {
       userSexText = "男";
     } else if (userSex == 2) {
@@ -101,8 +104,12 @@ class _editInformationState extends State<EditInformation> {
     } else {
       userSexText = " ";
     }
-    double width = ScreenUtil.instance.screenWidthDp;
-    double height = ScreenUtil.instance.height;
+    if (_introduction != "") {
+      ///判断文字的高度，动态改变
+      TextPainter testSize = calculateTextWidth(_introduction, AppStyle.textRegular16, width-36, 5);
+      textHeight = testSize.height;
+      print('textHeight==============================$textHeight');
+    }
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -304,11 +311,10 @@ class _editInformationState extends State<EditInformation> {
   //这是每项资料的item
   Widget _rowChose(double width, String title, String TextContent) {
     return Container(
-      height: title=="简介"?148:48,
+      height: title=="简介"?textHeight+25:48,
       width: width,
-      padding: EdgeInsets.only(left: 16, right: 16),
-      child: Center(
-        child: Row(
+      padding: title=="简介"?EdgeInsets.only(top: 13,left: 16, right: 16):EdgeInsets.only(left: 16, right: 16),
+      child: Row(
           children: [
             Container(
               alignment: title=="简介"?Alignment.topLeft:Alignment.centerLeft,
@@ -320,10 +326,11 @@ class _editInformationState extends State<EditInformation> {
               width: 28,
             ),
             Container(
+              alignment: title!="简介"?Alignment.centerLeft:Alignment.topLeft,
               height:title=="简介"?148:23,
               width: width * 0.67,
               child: Text(
-                TextContent != "" ? TextContent : "去编辑",
+                TextContent != null ? TextContent : "去编辑",
                 style: AppStyle.textRegular16,
                 maxLines:5,
                 overflow: TextOverflow.ellipsis,
@@ -338,7 +345,6 @@ class _editInformationState extends State<EditInformation> {
             ),)
           ],
         ),
-      ),
     );
   }
     //选择头像

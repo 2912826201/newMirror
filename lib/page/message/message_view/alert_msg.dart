@@ -54,10 +54,22 @@ class AlertMsg extends StatelessWidget {
     if (recallNotificationMessage != null) {
       //获取撤回消息
       return getRecallNotificationMessageBox();
-    } else if (map["type"] == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME) {
+    } else if (map["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME) {
       return getTimeAlertUi();
+    } else if (map["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT) {
+      return alertText(map["data"]);
     }
     return Container();
+  }
+
+  //获取撤回消息
+  Widget alertText(String text) {
+    return Container(
+      child: Text(
+        text,
+        style: TextStyle(fontSize: 16, color: AppColor.textSecondary),
+      ),
+    );
   }
 
   //获取消息提示
@@ -65,7 +77,7 @@ class AlertMsg extends StatelessWidget {
     try {
       return Container(
         child: Text(
-          DateUtil.formatMessageAlertTime(map["content"]),
+          DateUtil.formatMessageAlertTime(map["data"]),
           style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
         ),
       );
@@ -95,28 +107,15 @@ class AlertMsg extends StatelessWidget {
       );
       listTextSpan.add(textSpan1);
       // print("recallNotificationMessage.mOriginalObjectName:${recallNotificationMessage.mOriginalObjectName}-----TextMessage.objectName:${TextMessage.objectName}");
-
       try {
-        if (json.decode(recallNotificationMessage.recallContent)["type"] ==
-            TextMessage.objectName) {
+        if (json.decode(recallNotificationMessage.recallContent)["subObjectName"] == TextMessage.objectName) {
           listTextSpan.add(getTextSpan());
         }
       } catch (e) {
-        if (recallNotificationMessage.mOriginalObjectName ==
-            TextMessage.objectName) {
+        if (recallNotificationMessage.mOriginalObjectName == TextMessage.objectName) {
           listTextSpan.add(getTextSpan());
         }
       }
-      // if (recallNotificationMessage.mOriginalObjectName == TextMessage.objectName) {
-      //   listTextSpan.add(getTextSpan());
-      // } else {
-      //   try {
-      //     if (json.decode(recallNotificationMessage.recallContent)["content"] ==
-      //         TextMessage.objectName) {
-      //       listTextSpan.add(getTextSpan());
-      //     }
-      //   } catch (e) {}
-      // }
     } else {
       TextSpan textSpan1 = TextSpan(
         text: "“$chatUserName”撤回了一条消息",
@@ -136,7 +135,7 @@ class AlertMsg extends StatelessWidget {
           map["type"] = recallNotificationMessage.mOriginalObjectName;
           map["content"] = recallNotificationMessage.recallContent;
           voidMessageClickCallBack(
-              contentType: RecallNotificationMessage.objectName, map: map);
+              contentType: RecallNotificationMessage.objectName, map: map, position: position);
         },
       style: TextStyle(
         color: AppColor.urlText,
