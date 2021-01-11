@@ -171,10 +171,12 @@ class SingletonForWholePages {
   }
   // 打开
   openPanelController() {
-    ifPagePc.open();
+   /* ifPagePc.open();*/
+    ifPagePc.isPanelOpen();
   }
   // 关闭
   closePanelController() {
-    ifPagePc.close();
+    /*ifPagePc.close();*/
+    ifPagePc.isPanelClosed();
   }
 }
