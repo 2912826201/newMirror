@@ -333,9 +333,9 @@ Future<FansListModel> GetFansList(int LastTime,int size,{int uid})async{
   }
 }
 ///话题列表
-Future<TopicListModel> GetTopicList(int page,int size)async{
+Future<TopicListModel> GetTopicList(int lastTime,int size)async{
   Map<String,dynamic> map = Map();
-  map["page"] = page;
+  map["lastTime"] = lastTime;
   map["size"] = size;
   BaseResponseModel responseModel = await requestApi(TOPIC_LIST,map);
   if(responseModel.isSuccess){
@@ -351,11 +351,11 @@ Future<TopicListModel> GetTopicList(int page,int size)async{
 ///搜索关注话题
 Future<TopicListModel> searchTopicUser(String key, int size, {double lastScore}) async {
   Map<String, dynamic> map = Map();
-  if (lastScore != null) {
-    map["lastTime"] = lastScore;
+  if(lastScore!=null){
+    map["lastScore"] = lastScore;
   }
-  map["key"] = key;
-  map["size"] = size;
+    map["key"] = key;
+    map["size"] = size;
   BaseResponseModel responseModel = await requestApi(SEARCH_FOLLOW_TOPIC, map);
   if (responseModel.isSuccess) {
     print('搜索话题接口请求成功=============================');
@@ -370,8 +370,16 @@ Future<TopicListModel> searchTopicUser(String key, int size, {double lastScore})
   }
 }
 ///健身信息录入
-Future<FitnessEntryModel> userFitnessEntry(dynamic body) async {
-  BaseResponseModel responseModel = await requestApi(FITNESS_ENTRY, {"body":body});
+Future<FitnessEntryModel> userFitnessEntry({int height,int weight,int bodyType,int target,int level,List<int> keyPartList,int timesOfWeek}) async {
+  Map<String,dynamic> map = Map();
+  map["height"] =height;
+  map["weight"] = weight;
+  map["bodyType"] =bodyType ;
+  map["target"] = target;
+  map["level"] = level;
+  map["keyPartList"] =keyPartList;
+  map["timesOfWeek"] =timesOfWeek;
+  BaseResponseModel responseModel = await requestApi(FITNESS_ENTRY, map);
   if (responseModel.isSuccess) {
     print('健身信息录入接口请求成功=============================');
     FitnessEntryModel model;

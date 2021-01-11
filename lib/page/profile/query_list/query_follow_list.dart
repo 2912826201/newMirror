@@ -215,18 +215,18 @@ class _queryFollowState extends State<QueryFollowList> {
 
   ///获取关注话题列表
   _getTopicList() async {
-    if (listPage > 1 && hasNext == 0) {
+    if (listPage > 1 && _lastTime == null) {
       _refreshController.loadNoData();
       return;
     }
     print('====================话题页请求接口');
-    TopicListModel model = await GetTopicList(listPage, 20);
+    TopicListModel model = await GetTopicList(_lastTime, 20);
     setState(() {
       if (listPage == 1) {
         _refreshController.loadComplete();
         topicList.clear();
         if (model != null) {
-          hasNext = model.hasNext;
+          _lastTime = model.lastTime;
           model.list.forEach((element) {
             print('话题名称============================${element.name}');
             topicList.add(element);
@@ -235,9 +235,9 @@ class _queryFollowState extends State<QueryFollowList> {
         } else {
           _refreshController.resetNoData();
         }
-      } else if (listPage > 1 && hasNext != 0) {
+      } else if (listPage > 1 && _lastTime != null) {
         if (model != null) {
-          hasNext = model.hasNext;
+          _lastTime = model.lastTime;
           model.list.forEach((element) {
             topicList.add(element);
           });
@@ -250,7 +250,7 @@ class _queryFollowState extends State<QueryFollowList> {
   }
   //搜索关注话题
   _getSearchTopic(String text) async {
-    if (listPage > 1 && hasNext == 0) {
+    if (listPage > 1 && _lastScore == null) {
       print('=============================退出请求');
       _refreshController.loadNoData();
       return;
@@ -264,7 +264,6 @@ class _queryFollowState extends State<QueryFollowList> {
         _refreshController.isRefresh;
         if (model.list.isNotEmpty) {
             topicList.clear();
-            hasNext = model.hasNext;
             print('===================== =============model有值');
             model.list.forEach((element) {
               print('model================ ${element.id}');
@@ -275,10 +274,9 @@ class _queryFollowState extends State<QueryFollowList> {
         }else{
           topicList.clear();
         }
-      } else if (listPage > 1 && hasNext != 0) {
+      } else if (listPage > 1 && _lastScore != null) {
         _refreshController.isLoading;
         if (model.list != null) {
-          hasNext = model.hasNext;
           model.list.forEach((element) {
             topicList.add(element);
           });
@@ -341,23 +339,26 @@ class _queryFollowState extends State<QueryFollowList> {
       isMySelf = false;
     }
     __onRefresh();
+
+
     controller.addListener(() {
+      _lastTime = null;
+      _lastScore = null;
+      listPage = 1;
       if (controller.text.isNotEmpty) {
         print('text===============不为空');
-        if (lastString!=controller.text){
+        if (lastString!=controller.text) {
           print('text===============改变值');
-          if(refreshOver){
+          if (refreshOver) {
             print('text===============刷新完成');
             if (widget.type == 1) {
               _getSearchUser(controller.text);
-            }else{
+            } else {
               _getSearchTopic(controller.text);
             }
           }
         }
       } else {
-          listPage = 1;
-          _lastTime = null;
        if(widget.type == 1){
            _getFollowList();
        }else{
