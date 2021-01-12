@@ -7,6 +7,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/page/feed_video_test_page.dart';
+import 'package:mirror/page/feed_video_test_page2.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -62,7 +63,15 @@ class _MediaTestState extends State<MediaTestPage> {
                     return FeedVideoTestPage();
                   }));
                 },
-                child: Text("动态中的视频"),
+                child: Text("动态视频1"),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return FeedVideoTestPage2();
+                  }));
+                },
+                child: Text("动态视频2"),
               ),
               RaisedButton(
                 onPressed: () {

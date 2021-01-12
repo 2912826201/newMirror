@@ -1,9 +1,9 @@
+import 'package:better_player/better_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/constants.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/util/file_util.dart';
-import 'package:video_player/video_player.dart';
 
 /// feed_video_player
 /// Created by yangjiayi on 2021/1/11.
@@ -12,8 +12,9 @@ class FeedVideoPlayer extends StatefulWidget {
   final String url;
   final SizeInfo sizeInfo;
   final double width;
+  final bool isInListView;
 
-  FeedVideoPlayer(this.url, this.sizeInfo, this.width, {Key key}) : super(key: key);
+  FeedVideoPlayer(this.url, this.sizeInfo, this.width, {Key key, this.isInListView = false}) : super(key: key);
 
   @override
   _FeedVideoPlayerState createState() => _FeedVideoPlayerState();
@@ -25,24 +26,34 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
   double offsetX;
   double offsetY;
 
-  VideoPlayerController _controller;
+  BetterPlayerListVideoPlayerController listController;
+  BetterPlayerController controller;
 
   @override
   void initState() {
     _calculateSize();
     super.initState();
-    _controller = VideoPlayerController.network(widget.url)
-      ..initialize().then((_) {
-        setState(() {
-          _controller.play();
-        });
-      });
+    // controller = BetterPlayerController(BetterPlayerConfiguration(
+    //     autoPlay: !widget.isInListView,
+    //     looping: true,
+    //     fullScreenByDefault: false,
+    //     placeholder: CachedNetworkImage(
+    //       imageUrl: FileUtil.getVideoFirstPhoto(widget.url),
+    //       width: videoSize.width,
+    //       height: videoSize.height,
+    //     ),
+    //     controlsConfiguration: BetterPlayerControlsConfiguration(showControls: false)));
+
+    // if (widget.isInListView) {
+    //   listController = BetterPlayerListVideoPlayerController();
+    //   listController.setBetterPlayerController(controller);
+    //   listController.setVolume(0);
+    // } else {}
   }
 
   @override
   void dispose() {
     super.dispose();
-    _controller?.dispose();
   }
 
   @override
@@ -55,22 +66,39 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
           Positioned(
             left: offsetX,
             top: offsetY,
-            child: CachedNetworkImage(
-              imageUrl: FileUtil.getVideoFirstPhoto(widget.url),
+            child: SizedBox(
               width: videoSize.width,
               height: videoSize.height,
+              child: widget.isInListView
+                  ? BetterPlayerListVideoPlayer(
+                      BetterPlayerDataSource.network(widget.url),
+                      playFraction:
+                          0.95 * containerSize.width * containerSize.height / (videoSize.width * videoSize.height),
+                      // betterPlayerListVideoPlayerController: listController,
+                      configuration: BetterPlayerConfiguration(
+                          looping: true,
+                          fullScreenByDefault: false,
+                          placeholder: CachedNetworkImage(
+                            imageUrl: FileUtil.getVideoFirstPhoto(widget.url),
+                            width: videoSize.width,
+                            height: videoSize.height,
+                          ),
+                          controlsConfiguration: BetterPlayerControlsConfiguration(showControls: false)),
+                    )
+                  : BetterPlayer.network(
+                      widget.url,
+                      betterPlayerConfiguration: BetterPlayerConfiguration(
+                          autoPlay: true,
+                          looping: true,
+                          fullScreenByDefault: false,
+                          placeholder: CachedNetworkImage(
+                            imageUrl: FileUtil.getVideoFirstPhoto(widget.url),
+                            width: videoSize.width,
+                            height: videoSize.height,
+                          ),
+                          controlsConfiguration: BetterPlayerControlsConfiguration(showControls: false)),
+                    ),
             ),
-          ),
-          Positioned(
-            left: offsetX,
-            top: offsetY,
-            child: _controller != null && _controller.value.initialized
-                ? SizedBox(
-                    width: videoSize.width,
-                    height: videoSize.height,
-                    child: VideoPlayer(_controller),
-                  )
-                : Container(),
           ),
         ],
       ),

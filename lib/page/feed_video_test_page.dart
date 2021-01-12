@@ -30,17 +30,17 @@ class FeedVideoTestPage extends StatelessWidget {
                   ScreenUtil.instance.screenWidthDp * 1 / 3),
             ],
           ),
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: [
-          //     FeedVideoPlayer("http://media.aimymusic.com/023a5bbc5718283b68fc71b4a8dece4b.mp4", sizeInfo,
-          //         ScreenUtil.instance.screenWidthDp * 2 / 9),
-          //     FeedVideoPlayer("http://media.aimymusic.com/023a5bbc5718283b68fc71b4a8dece4b.mp4", sizeInfo,
-          //         ScreenUtil.instance.screenWidthDp * 2 / 9),
-          //     FeedVideoPlayer("http://media.aimymusic.com/023a5bbc5718283b68fc71b4a8dece4b.mp4", sizeInfo,
-          //         ScreenUtil.instance.screenWidthDp * 2 / 9),
-          //   ],
-          // ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FeedVideoPlayer("http://media.aimymusic.com/023a5bbc5718283b68fc71b4a8dece4b.mp4", sizeInfo,
+                  ScreenUtil.instance.screenWidthDp * 2 / 9),
+              FeedVideoPlayer("http://media.aimymusic.com/023a5bbc5718283b68fc71b4a8dece4b.mp4", sizeInfo,
+                  ScreenUtil.instance.screenWidthDp * 2 / 9),
+              FeedVideoPlayer("http://media.aimymusic.com/023a5bbc5718283b68fc71b4a8dece4b.mp4", sizeInfo,
+                  ScreenUtil.instance.screenWidthDp * 2 / 9),
+            ],
+          ),
         ],
       ),
     );
