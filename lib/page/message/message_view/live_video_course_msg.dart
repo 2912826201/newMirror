@@ -22,6 +22,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
   final bool isShowChatUserName;
   final int status;
   final int position;
+  final bool isCanLongClick;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
 
@@ -32,6 +33,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
       this.name,
       this.status,
       this.isShowChatUserName = false,
+      this.isCanLongClick = true,
       this.sendChatUserId,
       this.position,
       this.isLiveOrVideo,
@@ -133,6 +135,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
           duration: Duration(milliseconds: 500),
         ));
       },
+      isCanLongClick: isCanLongClick,
       contentType: isLiveOrVideo ? ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE : ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE,
       isMySelf: isMyself,
       actions: longClickStringList,

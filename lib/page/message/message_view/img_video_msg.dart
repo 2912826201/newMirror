@@ -28,6 +28,7 @@ class ImgVideoMsg extends StatelessWidget {
   final int status;
   final int position;
   final ImageMessage imageMessage;
+  final bool isCanLongClick;
   final Map<String, dynamic> sizeInfoMap;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
@@ -37,6 +38,7 @@ class ImgVideoMsg extends StatelessWidget {
       this.isTemporary,
       this.isImgOrVideo,
       this.isShowChatUserName = false,
+      this.isCanLongClick = true,
       this.sendChatUserId,
       this.mediaFileModel,
       this.userUrl,
@@ -149,6 +151,7 @@ class ImgVideoMsg extends StatelessWidget {
         );
         // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
       },
+      isCanLongClick: isCanLongClick,
       contentType: isImgOrVideo ? ChatTypeModel.MESSAGE_TYPE_IMAGE : ChatTypeModel.MESSAGE_TYPE_VIDEO,
       isMySelf: isMyself,
       actions: longClickStringList,

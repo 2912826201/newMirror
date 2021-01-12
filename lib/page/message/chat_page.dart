@@ -157,7 +157,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     initData();
     initSetData();
 
-    if (widget.conversation.type > 3) {
+    if (widget.conversation.getType() != RCConversationType.System) {
       initTime();
       initTextController();
       initReleaseFeedInputFormatter();
@@ -233,7 +233,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       ),
     ));
 
-    if (widget.conversation.type > 3) {
+    if (widget.conversation.getType() != RCConversationType.System) {
       bodyArray.add(getMessageInputBar());
       bodyArray.add(bottomSettingBox());
     }

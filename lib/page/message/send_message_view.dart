@@ -223,6 +223,12 @@ class SendMessageView extends StatelessWidget {
     return name;
   }
 
+  bool isCanLongClick() {
+    return conversationDtoType != LIVE_TYPE &&
+        conversationDtoType != OFFICIAL_TYPE &&
+        conversationDtoType != TRAINING_TYPE;
+  }
+
   //************************获取消息模块的方法 ----end
 
   //***************************************获取每一个消息的模块-----start
@@ -234,6 +240,7 @@ class SendMessageView extends StatelessWidget {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
         mentionedInfo: mentionedInfo,
         voidMessageClickCallBack: voidMessageClickCallBack,
@@ -250,6 +257,7 @@ class SendMessageView extends StatelessWidget {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
         voidMessageClickCallBack: voidMessageClickCallBack,
         voidItemLongClickCallBack: voidItemLongClickCallBack,
@@ -264,6 +272,7 @@ class SendMessageView extends StatelessWidget {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
         voidMessageClickCallBack: voidMessageClickCallBack,
         voidItemLongClickCallBack: voidItemLongClickCallBack,
@@ -286,6 +295,7 @@ class SendMessageView extends StatelessWidget {
         isTemporary: isTemporary,
         userUrl: userUrl,
         name: name,
+        isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
         voidMessageClickCallBack: voidMessageClickCallBack,
         voidItemLongClickCallBack: voidItemLongClickCallBack,
@@ -303,6 +313,7 @@ class SendMessageView extends StatelessWidget {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
         voidMessageClickCallBack: voidMessageClickCallBack,
         voidItemLongClickCallBack: voidItemLongClickCallBack,
@@ -318,6 +329,7 @@ class SendMessageView extends StatelessWidget {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
         voidMessageClickCallBack: voidMessageClickCallBack,
         voidItemLongClickCallBack: voidItemLongClickCallBack,
@@ -336,6 +348,7 @@ class SendMessageView extends StatelessWidget {
       userUrl: userUrl,
       name: name,
       status: status,
+      isCanLongClick: isCanLongClick(),
       isTemporary: isTemporary,
       isImgOrVideo: isImgOrVideo,
       mediaFileModel: mediaFileModel,

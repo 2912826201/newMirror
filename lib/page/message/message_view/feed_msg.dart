@@ -24,6 +24,7 @@ class FeedMsg extends StatelessWidget {
   final int position;
   final String sendChatUserId;
   final bool isShowChatUserName;
+  final bool isCanLongClick;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
 
@@ -31,6 +32,7 @@ class FeedMsg extends StatelessWidget {
     this.userUrl,
     this.name,
     this.isShowChatUserName = false,
+    this.isCanLongClick = true,
     this.sendChatUserId,
     this.isMyself,
     this.homeFeedMode,
@@ -136,6 +138,7 @@ class FeedMsg extends StatelessWidget {
             position: position, settingType: longClickStringList[value], contentType: ChatTypeModel.MESSAGE_TYPE_FEED);
         // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
       },
+      isCanLongClick: isCanLongClick,
       contentType: ChatTypeModel.MESSAGE_TYPE_FEED,
       isMySelf: isMyself,
       actions: longClickStringList,
