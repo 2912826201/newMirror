@@ -520,10 +520,9 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                         mediaFileModel.sizeInfo.offsetRatioX = sizeInfo.offsetRatioX;
                         mediaFileModel.sizeInfo.offsetRatioY = sizeInfo.offsetRatioY;
                       }
-                      Size previewSize = notifier.videoPreviewSizeMap[mediaFileModel.file.path];
-                      if (previewSize != null) {
-                        mediaFileModel.sizeInfo.videoCroppedRatio = previewSize.width / previewSize.height;
-                      }
+
+                      mediaFileModel.sizeInfo.videoCroppedRatio = notifier.videoCroppedRatioMap[mediaFileModel.file.path];
+
                       break;
                     default:
                       break;
@@ -629,10 +628,10 @@ class SelectedMapNotifier with ChangeNotifier {
 
   Map<String, SizeInfo> get offsetMap => _offsetMap;
 
-  // 记录视频的裁剪预览尺寸
-  Map<String, Size> _videoPreviewSizeMap = {};
+  // 记录视频的裁剪预览比例
+  Map<String, double> _videoCroppedRatioMap = {};
 
-  Map<String, Size> get videoPreviewSizeMap => _videoPreviewSizeMap;
+  Map<String, double> get videoCroppedRatioMap => _videoCroppedRatioMap;
 
   // 用来存放已经裁剪好的图像数据
   Map<String, ui.Image> _imageMap = {};
@@ -744,8 +743,8 @@ class SelectedMapNotifier with ChangeNotifier {
     _offsetMap[key] = sizeInfo;
   }
 
-  setVideoPreviewSize(String key, Size size) {
-    _videoPreviewSizeMap[key] = size;
+  setVideoCroppedRatio(String key, double ratio) {
+    _videoCroppedRatioMap[key] = ratio;
   }
 }
 
@@ -880,9 +879,9 @@ class VideoPreviewState extends State<VideoPreviewArea> {
             if (!_controller.value.isPlaying) {
               _controller.play();
             }
-            Size _previewSize =
+            _VideoPreviewSize _previewSize =
                 _getVideoPreviewSize(_controller.value.aspectRatio, widget.previewWidth, widget.useOriginalRatio);
-            context.watch<SelectedMapNotifier>().setVideoPreviewSize(_file.path, _previewSize);
+            context.watch<SelectedMapNotifier>().setVideoCroppedRatio(_file.path, _previewSize.videoCroppedRatio);
             //初始位置就是(0，0)所以暂不做初始偏移值的处理
             return ScrollConfiguration(
               behavior: NoBlueEffectBehavior(),
@@ -963,32 +962,44 @@ Size _getImageOutSize(AssetEntity entity, bool useOriginalRatio) {
   return Size(_outWidth, _outHeight);
 }
 
+class _VideoPreviewSize extends Size{
+  _VideoPreviewSize(double width, double height) : super(width, height);
+
+  double videoCroppedRatio;
+}
+
 // 获取视频预览区域宽高
-Size _getVideoPreviewSize(double ratio, double _previewWidth, bool useOriginalRatio) {
+_VideoPreviewSize _getVideoPreviewSize(double ratio, double _previewWidth, bool useOriginalRatio) {
   double _videoWidth;
   double _videoHeight;
+  double _videoCroppedRatio;
 
   if (useOriginalRatio) {
     if (ratio < minMediaRatio) {
       //细高的情况 先限定最宽的宽度 再根据ratio算出高度
       _videoWidth = _previewWidth * minMediaRatio;
       _videoHeight = _previewWidth * minMediaRatio / ratio;
+      _videoCroppedRatio = minMediaRatio;
     } else if (ratio < 1) {
       //填满高度
       _videoHeight = _previewWidth;
       _videoWidth = _previewWidth * ratio;
+      _videoCroppedRatio = ratio;
     } else if (ratio > maxMediaRatio) {
       //扁长的情况 先限定最高的高度 再根据ratio算出宽度
       _videoHeight = _previewWidth / maxMediaRatio;
       _videoWidth = _previewWidth * ratio / maxMediaRatio;
+      _videoCroppedRatio = maxMediaRatio;
     } else if (ratio > 1) {
       //填满宽度
       _videoHeight = _previewWidth / ratio;
       _videoWidth = _previewWidth;
+      _videoCroppedRatio = ratio;
     } else {
       //剩余的就是ratio == 1的情况
       _videoHeight = _previewWidth;
       _videoWidth = _previewWidth;
+      _videoCroppedRatio = 1;
     }
   } else {
     if (ratio < 1) {
@@ -1004,6 +1015,10 @@ Size _getVideoPreviewSize(double ratio, double _previewWidth, bool useOriginalRa
       _videoHeight = _previewWidth;
       _videoWidth = _previewWidth;
     }
+    _videoCroppedRatio = 1;
   }
-  return Size(_videoWidth, _videoHeight);
+
+  _VideoPreviewSize _previewSize = _VideoPreviewSize(_videoWidth, _videoHeight);
+  _previewSize.videoCroppedRatio = _videoCroppedRatio;
+  return _previewSize;
 }
