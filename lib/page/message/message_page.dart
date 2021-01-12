@@ -154,49 +154,55 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
       height: size,
       width: size,
       color: colors[type],
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Stack(
-            overflow: Overflow.visible,
-            children: [
-              Container(
-                height: 45,
-                width: 45,
-                color: AppColor.mainBlue,
-              ),
-              Positioned(
-                  left: 6.5,
-                  top: 6.5,
-                  child: Container(
-                    height: 32,
-                    width: 32,
-                    color: AppColor.bgBlack,
-                  )),
-              Positioned(
-                  left: 29.5,
-                  child: CountBadge(
-                      type == 0
-                          ? 100
-                          : type == 1
-                              ? 1
-                              : 28,
-                      false)),
-            ],
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Text(
-            type == 0
-                ? "评论"
-                : type == 1
-                    ? "@我"
-                    : "点赞",
-            style: AppStyle.textRegular16,
-          )
-        ],
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          print("点击了${type == 0 ? "评论" : type == 1 ? "@" : "点赞"}");
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Stack(
+              overflow: Overflow.visible,
+              children: [
+                Container(
+                  height: 45,
+                  width: 45,
+                  color: AppColor.mainBlue,
+                ),
+                Positioned(
+                    left: 6.5,
+                    top: 6.5,
+                    child: Container(
+                      height: 32,
+                      width: 32,
+                      color: AppColor.bgBlack,
+                    )),
+                Positioned(
+                    left: 29.5,
+                    child: CountBadge(
+                        type == 0
+                            ? 100
+                            : type == 1
+                                ? 1
+                                : 28,
+                        false)),
+              ],
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Text(
+              type == 0
+                  ? "评论"
+                  : type == 1
+                      ? "@我"
+                      : "点赞",
+              style: AppStyle.textRegular16,
+            )
+          ],
+        ),
       ),
     );
   }
