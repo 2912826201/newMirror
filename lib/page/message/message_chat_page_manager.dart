@@ -169,7 +169,6 @@ Future<Message> postMessageManagerFeed(String targetId,
 Future<Message> postMessageManagerImgOrVideo(String targetId, bool isImgOrVideo,
     MediaFileModel mediaFileModel, UploadResultModel uploadResultModel,
     bool isPrivate) async {
-  mediaFileModel.sizeInfo.showImageUrl = uploadResultModel.url;
   TextMessage msg = TextMessage();
   msg.sendUserInfo = getChatUserInfo();
   Map<String, dynamic> feedMap = Map();
@@ -177,7 +176,9 @@ Future<Message> postMessageManagerImgOrVideo(String targetId, bool isImgOrVideo,
   feedMap["toUserId"] = targetId;
   feedMap["subObjectName"] = isImgOrVideo ? ChatTypeModel.MESSAGE_TYPE_IMAGE : ChatTypeModel.MESSAGE_TYPE_VIDEO;
   feedMap["name"] = isImgOrVideo ? ChatTypeModel.MESSAGE_TYPE_IMAGE_NAME : ChatTypeModel.MESSAGE_TYPE_VIDEO_NAME;
-  feedMap["data"] = jsonEncode(mediaFileModel.sizeInfo.toJson());
+  Map sizeMap = mediaFileModel.sizeInfo.toJson();
+  sizeMap["showImageUrl"] = uploadResultModel.url;
+  feedMap["data"] = jsonEncode(sizeMap);
   msg.content = jsonEncode(feedMap);
   return await (isPrivate
       ? postPrivateMessageManager
