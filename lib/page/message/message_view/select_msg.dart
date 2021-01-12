@@ -149,7 +149,7 @@ class SelectMsg extends StatelessWidget {
   List<Widget> getSmallBody(BuildContext context) {
     var body = [
       getUserImage(userUrl, 38, 38),
-      textContentBoxLongClick(context),
+      getNameAndContentUi(context),
     ];
     if (isMyself) {
       body = body.reversed.toList();
@@ -159,10 +159,33 @@ class SelectMsg extends StatelessWidget {
     return body;
   }
 
+  //判断有没有名字
+  Widget getNameAndContentUi(BuildContext context) {
+    return Container(
+      child: Column(
+        crossAxisAlignment: isMyself ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Visibility(
+            visible: isShowChatUserName,
+            child: Container(
+              margin:
+                  isMyself ? const EdgeInsets.only(right: 10, bottom: 4) : const EdgeInsets.only(left: 10, bottom: 4),
+              child: Text(
+                name,
+                style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+              ),
+            ),
+          ),
+          textContentBoxLongClick(context),
+        ],
+      ),
+    );
+  }
+
   //长按事件
   Widget textContentBoxLongClick(BuildContext context) {
-    List<String> longClickStringList = getLongClickStringList(
-        isMySelf: isMyself, contentType: ChatTypeModel.MESSAGE_TYPE_SELECT);
+    List<String> longClickStringList =
+        getLongClickStringList(isMySelf: isMyself, contentType: ChatTypeModel.MESSAGE_TYPE_SELECT);
     return LongClickPopupMenu(
       onValueChanged: (int value) {
         voidItemLongClickCallBack(
@@ -175,30 +198,9 @@ class SelectMsg extends StatelessWidget {
       isMySelf: isMyself,
       actions: longClickStringList,
       contentWidth: getTextSize(text, textStyle, 10).width + 22.0,
-      child: getNameAndContentUi(context),
+      child: textContentBox(context),
     );
   }
-
-
-  Widget getNameAndContentUi(BuildContext context) {
-    return Container(
-      child: Column(
-        crossAxisAlignment: isMyself ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: [
-          Visibility(
-            visible: isShowChatUserName,
-            child: Container(
-              margin: isMyself ? const EdgeInsets.only(right: 10, bottom: 4) : const EdgeInsets.only(
-                  left: 10, bottom: 4),
-              child: Text(name, style: TextStyle(fontSize: 12, color: AppColor.textSecondary),),
-            ),
-          ),
-          textContentBox(context),
-        ],
-      ),
-    );
-  }
-
 
   //文字的框架
   Widget textContentBox(BuildContext context) {
@@ -207,8 +209,7 @@ class SelectMsg extends StatelessWidget {
       stateImg = "images/test/icon_black_message_bugle.png";
     }
     return Container(
-      margin: isMyself
-          ? const EdgeInsets.only(right: 2.0)
+      margin: isMyself ? const EdgeInsets.only(right: 2.0)
           : const EdgeInsets.only(left: 2.0),
       child: Stack(
         alignment: isMyself

@@ -18,9 +18,12 @@ import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/rongcloud.dart';
+import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
+import 'package:mirror/widget/address_Picker.dart';
 import 'package:provider/provider.dart';
 
 import 'api/live_broadcast/live_api.dart';
+import 'api/message_page_api.dart';
 import 'api/user_api.dart';
 import 'config/application.dart';
 import 'config/config.dart';
@@ -30,6 +33,7 @@ import 'data/dto/token_dto.dart';
 import 'data/model/message/chat_enter_notifier.dart';
 import 'data/model/message/chat_message_profile_notifier.dart';
 import 'data/model/message/chat_voice_setting.dart';
+import 'data/model/message/top_chat_model.dart';
 import 'data/model/message/voice_alert_date_model.dart';
 import 'data/model/token_model.dart';
 import 'data/notifier/token_notifier.dart';
@@ -44,18 +48,20 @@ void main() {
   _initApp().then((value) => runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-            create: (_) => TokenNotifier(Application.token)),
-        ChangeNotifierProvider(
-            create: (_) => ProfileNotifier(Application.profile)),
-        ChangeNotifierProvider(create: (_) => FeedMapNotifier(feedMap: {})),
-        ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
-        ChangeNotifierProvider(create: (_) => ConversationNotifier()),
-        ChangeNotifierProvider(create: (_) => VoiceAlertData()),
-        ChangeNotifierProvider(create: (_) => VoiceSettingNotifier()),
-        ChangeNotifierProvider(create: (_) => ChatMessageProfileNotifier()),
-        ChangeNotifierProvider(create: (_) => ChatEnterNotifier()),
-      ],
+            ChangeNotifierProvider(
+                create: (_) => TokenNotifier(Application.token)),
+            ChangeNotifierProvider(
+                create: (_) => ProfileNotifier(Application.profile)),
+            ChangeNotifierProvider(create: (_) => FeedMapNotifier(feedMap: {})),
+            ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
+            ChangeNotifierProvider(create: (_) => ConversationNotifier()),
+            ChangeNotifierProvider(create: (_) => VoiceAlertData()),
+            ChangeNotifierProvider(create: (_) => VoiceSettingNotifier()),
+            ChangeNotifierProvider(create: (_) => ChatMessageProfileNotifier()),
+            ChangeNotifierProvider(create: (_) => ChatEnterNotifier()),
+            ChangeNotifierProvider(create: (_) => AddressPickerNotifier()),
+            ChangeNotifierProvider(create: (_) => FitnessInformationNotifier())
+          ],
       child: MyApp(),
     ),
   ));
@@ -139,6 +145,16 @@ Future _initApp() async {
   try {
     Map<String, dynamic> videoCourseTagMap = await getAllTags();
     Application.videoTagModel = VideoTagModel.fromJson(videoCourseTagMap);
+  } catch (e) {}
+
+  //todo 获取有哪些消息是置顶的消息
+  try {
+    Map<String, dynamic> topChatModelMap = await getTopChatList();
+    if (topChatModelMap != null && topChatModelMap["list"] != null) {
+      topChatModelMap["list"].forEach((v) {
+        Application.topChatModelList.add(TopChatModel.fromJson(v));
+      });
+    }
   } catch (e) {}
 
   //全局的音频播放器

@@ -50,6 +50,7 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
                 onTap: () async {
                   MediaFileModel model = MediaFileModel();
                   model.croppedImage = await _getImage();
+                  model.type = mediaTypeKeyImage;
 
                   SelectedMediaFiles files = SelectedMediaFiles();
                   files.type = mediaTypeKeyImage;

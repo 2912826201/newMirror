@@ -9,9 +9,11 @@ import 'package:photo_manager/photo_manager.dart';
 
 const mediaTypeKeyImage = "image";
 const mediaTypeKeyVideo = "video";
+
 //选的图片视频等信息 根据开发进度不断完善
 class MediaFileModel {
   File file;
+  String type;
   Image croppedImage;
   Uint8List thumb;
   Uint8List croppedImageData;
@@ -27,13 +29,14 @@ class MediaFileModel {
   String filePath;
 
   MediaFileModel.fromJson(dynamic json) {
+    type = json["type"];
     filePath = json["filePath"];
-    sizeInfo =
-        json["sizeInfo"] != null ? SizeInfo.fromJson(json["sizeInfo"]) : null;
+    sizeInfo = json["sizeInfo"] != null ? SizeInfo.fromJson(json["sizeInfo"]) : null;
   }
 
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
+    map["type"] = type;
     map["filePath"] = file.path;
     if (sizeInfo != null) {
       map["sizeInfo"] = sizeInfo.toJson();
@@ -66,23 +69,20 @@ class SelectedMediaFiles {
     }
     return map;
   }
-
 }
 
 class SizeInfo {
   int height = 0;
   int width = 0;
+  double videoCroppedRatio; // 当视频不需要裁剪时 此值为null
   double offsetRatioX = 0.0;
   double offsetRatioY = 0.0;
   int duration = 0; //时长，只有音视频有用，图片此值为0，单位秒
-  String type;
-  String showImageUrl;
-
 
   SizeInfo();
 
   String toString() {
-    return "height:${height},width:${width},offsetRatioX:${offsetRatioX},offsetRatioY:${offsetRatioY},duration:${duration},";
+    return "height:${height},width:${width},offsetRatioX:${offsetRatioX},offsetRatioY:${offsetRatioY},duration:${duration},videoCroppedRatio:${videoCroppedRatio},";
   }
 
   SizeInfo.fromJson(dynamic json) {
@@ -91,8 +91,7 @@ class SizeInfo {
     offsetRatioX = json["offsetRatioX"];
     offsetRatioY = json["offsetRatioY"];
     duration = json["duration"];
-    type = json["type"];
-    showImageUrl = json["showImageUrl"];
+    videoCroppedRatio = json["videoCroppedRatio"];
   }
 
   Map<String, dynamic> toJson() {
@@ -102,9 +101,7 @@ class SizeInfo {
     map["offsetRatioX"] = offsetRatioX;
     map["offsetRatioY"] = offsetRatioY;
     map["duration"] = duration;
-    map["type"] = type;
-    map["showImageUrl"] = showImageUrl;
+    map["videoCroppedRatio"] = videoCroppedRatio;
     return map;
   }
-
 }

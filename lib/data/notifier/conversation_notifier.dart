@@ -62,4 +62,14 @@ class ConversationNotifier with ChangeNotifier {
 
     notifyListeners();
   }
+
+  removeConversation(List<ConversationDto> dtoList) {
+    for (ConversationDto dto in dtoList) {
+      _topIdList.remove(dto.id);
+      _commonIdList.remove(dto.id);
+      _conversationMap.remove(dto.id);
+    }
+
+    notifyListeners();
+  }
 }

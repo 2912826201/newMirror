@@ -202,8 +202,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       } else if (postModel.selectedMediaFiles.type == mediaTypeKeyVideo) {
         postModel.selectedMediaFiles.list.forEach((element) {
           fileList.add(element.file);
-          videos.add(VideosModel(
-              width: element.sizeInfo.width, height: element.sizeInfo.height, duration: element.sizeInfo.duration));
+          videos.add(VideosModel(width: element.sizeInfo.width, height: element.sizeInfo.height,
+              duration: element.sizeInfo.duration, videoCroppedRatio: element.sizeInfo.videoCroppedRatio,
+              offsetRatioX: element.sizeInfo.offsetRatioX, offsetRatioY: element.sizeInfo.offsetRatioY));
         });
         results = await FileUtil().uploadMedias(fileList, (percent) {
           context.read<FeedMapNotifier>().getPostPlannedSpeed(percent);
@@ -212,7 +213,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           print("打印一下视频索引值￥$i");
           UploadResultModel model = results.resultMap.values.elementAt(i);
           videos[i].url = model.url;
-          videos[i].coverUrl = model.url + "?vframe/jpg/offset/1";
+          videos[i].coverUrl = FileUtil.getVideoFirstPhoto(model.url);
         }
       }
       print("数据请求发不打印${postModel.content}");

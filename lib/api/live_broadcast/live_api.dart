@@ -14,7 +14,7 @@ const String LIVECOURSEDETAIL = "/sport/course/liveCourseDetail";
 // 预约直播课程
 const String BOOKLIVECOURSE = "/sport/course/bookLiveCourse";
 // 获取视频课程标签库
-const String GETALLTAGS = "/sport/course/getAllTags";
+const String GETALLTAGS = "/sport/web/tag/getAllTags";
 // 获取视频课程库列表
 const String GETVIDEOCOURSELIST = "/sport/course/getVideoCourseList";
 // TA们也完成该视频课程的接口
@@ -103,8 +103,10 @@ Future<Map> getAllTags() async {
   Map<String, dynamic> params = {};
   BaseResponseModel responseModel = await requestApi(GETALLTAGS, params);
   if (responseModel.isSuccess) {
+    print('====================标签请求成功');
     return responseModel.data;
   } else {
+    print('====================标签请求失败');
     return null;
   }
 }

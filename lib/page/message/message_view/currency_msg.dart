@@ -60,9 +60,8 @@ Widget getMessageState(int status, {bool isRead = true, bool isMyself}) {
       width: 28.0,
       height: 28.0,
       margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      child: Icon(
-        Icons.cloud_circle,
-        size: 28,
+      child: CupertinoActivityIndicator(
+        radius: 14,
       ),
     );
   } else if (status == RCSentStatus.Failed) {

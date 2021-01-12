@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
+import 'package:mirror/page/feed_video_test_page.dart';
+import 'package:mirror/page/feed_video_test_page2.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -52,33 +54,54 @@ class _MediaTestState extends State<MediaTestPage> {
               ),
             ],
           ),
-          RaisedButton(
-            onPressed: () {
-              AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, false, startPageGallery, false, false,
-                  (result) async {
-                SelectedMediaFiles files = Application.selectedMediaFiles;
-                if (true != result || files == null) {
-                  print("没有选择媒体文件");
-                  return;
-                }
-                Application.selectedMediaFiles = null;
-                print(files.type + ":" + files.list.toString());
-                type = files.type;
-                list = files.list;
-                for (MediaFileModel model in list) {
-                  if (model.croppedImage != null) {
-                    print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-                    ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
-                    print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-                    Uint8List picBytes = byteData.buffer.asUint8List();
-                    print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
-                    model.croppedImageData = picBytes;
-                  }
-                }
-                setState(() {});
-              });
-            },
-            child: Text("图片视频（不裁）"),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              RaisedButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return FeedVideoTestPage();
+                  }));
+                },
+                child: Text("动态视频1"),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return FeedVideoTestPage2();
+                  }));
+                },
+                child: Text("动态视频2"),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  AppRouter.navigateToMediaPickerPage(
+                      context, 9, typeImageAndVideo, false, startPageGallery, false, false, (result) async {
+                    SelectedMediaFiles files = Application.selectedMediaFiles;
+                    if (true != result || files == null) {
+                      print("没有选择媒体文件");
+                      return;
+                    }
+                    Application.selectedMediaFiles = null;
+                    print(files.type + ":" + files.list.toString());
+                    type = files.type;
+                    list = files.list;
+                    for (MediaFileModel model in list) {
+                      if (model.croppedImage != null) {
+                        print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                        ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
+                        print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                        Uint8List picBytes = byteData.buffer.asUint8List();
+                        print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
+                        model.croppedImageData = picBytes;
+                      }
+                    }
+                    setState(() {});
+                  });
+                },
+                child: Text("图片视频（不裁）"),
+              ),
+            ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

@@ -93,7 +93,7 @@ class FeedMsg extends StatelessWidget {
       SizedBox(
         width: 7,
       ),
-      _getFeedUiLongClickUi(),
+      getNameAndContentUi(),
     ];
     if (isMyself) {
       body = body.reversed.toList();
@@ -103,27 +103,7 @@ class FeedMsg extends StatelessWidget {
     return body;
   }
 
-  //获取动态的长按事件
-  Widget _getFeedUiLongClickUi() {
-    List<String> longClickStringList = getLongClickStringList(
-        isMySelf: isMyself, contentType: ChatTypeModel.MESSAGE_TYPE_FEED);
-    return LongClickPopupMenu(
-      onValueChanged: (int value) {
-        voidItemLongClickCallBack(
-            position: position,
-            settingType: longClickStringList[value],
-            contentType: ChatTypeModel.MESSAGE_TYPE_FEED);
-        // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
-      },
-      contentType: ChatTypeModel.MESSAGE_TYPE_FEED,
-      isMySelf: isMyself,
-      actions: longClickStringList,
-      contentWidth: 180.0,
-      child: getNameAndContentUi(),
-    );
-  }
-
-
+  //判断有没有名字
   Widget getNameAndContentUi() {
     return Container(
       child: Column(
@@ -132,25 +112,43 @@ class FeedMsg extends StatelessWidget {
           Visibility(
             visible: isShowChatUserName,
             child: Container(
-              margin: isMyself ? const EdgeInsets.only(right: 10, bottom: 4) : const EdgeInsets.only(
-                  left: 10, bottom: 4),
-              child: Text(name, style: TextStyle(fontSize: 12, color: AppColor.textSecondary),),
+              margin:
+                  isMyself ? const EdgeInsets.only(right: 10, bottom: 4) : const EdgeInsets.only(left: 10, bottom: 4),
+              child: Text(
+                name,
+                style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+              ),
             ),
           ),
-          GestureDetector(
-            child: _getFeedUi(),
-            onTap: () {
-              voidMessageClickCallBack(
-                  contentType: ChatTypeModel.MESSAGE_TYPE_FEED,
-                  map: homeFeedMode.toJson());
-              // ToastShow.show(msg: "点击了动态-改跳转", context: context);
-            },
-          )
+          _getFeedUiLongClickUi(),
         ],
       ),
     );
   }
 
+  //获取动态的长按事件
+  Widget _getFeedUiLongClickUi() {
+    List<String> longClickStringList =
+        getLongClickStringList(isMySelf: isMyself, contentType: ChatTypeModel.MESSAGE_TYPE_FEED);
+    return LongClickPopupMenu(
+      onValueChanged: (int value) {
+        voidItemLongClickCallBack(
+            position: position, settingType: longClickStringList[value], contentType: ChatTypeModel.MESSAGE_TYPE_FEED);
+        // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
+      },
+      contentType: ChatTypeModel.MESSAGE_TYPE_FEED,
+      isMySelf: isMyself,
+      actions: longClickStringList,
+      contentWidth: 180.0,
+      child: GestureDetector(
+        child: _getFeedUi(),
+        onTap: () {
+          voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_FEED, map: homeFeedMode.toJson());
+          // ToastShow.show(msg: "点击了动态-改跳转", context: context);
+        },
+      ),
+    );
+  }
 
   //获取动态框
   Widget _getFeedUi() {
@@ -267,7 +265,7 @@ class FeedMsg extends StatelessWidget {
                 children: [
                   ClipRRect(
                     child: Image.network(
-                      homeFeedMode.avatarUrl,
+                      homeFeedMode.avatarUrl ?? "",
                       fit: BoxFit.cover,
                       width: 20,
                       height: 20,
@@ -282,10 +280,8 @@ class FeedMsg extends StatelessWidget {
                     child: Row(
                       children: [
                         Container(
-                          child: Text(homeFeedMode.name,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: textStyle),
+                          child: Text(homeFeedMode.name ?? "",
+                              maxLines: 1, overflow: TextOverflow.ellipsis, style: textStyle),
                           constraints: BoxConstraints(
                             maxWidth: 180 - 12 - 4 - 12 - 6 - 80.0,
                           ),

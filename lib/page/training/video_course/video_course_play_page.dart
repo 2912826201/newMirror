@@ -154,7 +154,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
   }
 
   @override
-  dispose() async {
+  void dispose() {
     super.dispose();
     _timer?.cancel();
     _controller?.removeListener(_playerListener);

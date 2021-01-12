@@ -51,6 +51,7 @@ class AppRouter {
   static String pathMachineSetting = "/machine/setting";
   static String pathSettingAbout = "/profile/settingabout";
   static String pathSettingAccountSecurity = "/profile/settingaccountsecurity";
+  static String pathLoginSucess = "/profile/loginsucess";
 
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
@@ -68,6 +69,7 @@ class AppRouter {
     router.define(pathLike, handler: handlerLike);
     router.define(pathRelease, handler: handlerReleaseFeed);
     router.define(pathPerfectUserPage, handler: handlerPerfectUserPage);
+    router.define(pathLoginSucess, handler: handlerLoginSucessPagePage);
     router.define(pathChatPage, handler: handlerChatPage);
     router.define(pathPreviewPhoto, handler: handlerPreviewPhoto);
     router.define(pathLiveBroadcast, handler: handlerLiveBroadcast);
@@ -260,6 +262,10 @@ class AppRouter {
   static void navigateToSettingAccountSecurity(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathSettingAccountSecurity, map);
+  }
+  static void navigateToLoginSucess(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathLoginSucess, map);
   }
 
   static void navigateToLikePage(BuildContext context) {

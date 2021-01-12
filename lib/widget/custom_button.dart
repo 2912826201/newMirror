@@ -69,10 +69,12 @@ class ClickLineBtn extends StatelessWidget {
       this.width,
       this.backColor,
       this.height,
-      this.fontSize = 15.0})
+      this.fontSize = 15.0,
+      this.textColor})
       : super(key: key);
 
   Color color; //颜色
+  Color textColor;//字体颜色
   String title; //文字
   final onTap; //点击方法
   final circular; //弧度
@@ -93,7 +95,7 @@ class ClickLineBtn extends StatelessWidget {
           title,
           style: TextStyle(
             fontSize: fontSize,
-            color: color,
+            color: textColor,
           ),
         ),
         decoration: BoxDecoration(

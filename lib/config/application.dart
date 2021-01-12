@@ -10,6 +10,7 @@ import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
+import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/data/model/token_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
@@ -19,6 +20,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 /// application
 /// Created by yangjiayi on 2020/11/14.
 
+//FIXME 需要整理出哪些是和用户相关的 在切换账号或登出时要清掉
 class Application {
   //融云
   static RongCloud rongCloud;
@@ -101,4 +103,7 @@ class Application {
 
   //系统平台 0-android 1-ios
   static int platform;
+
+  //那些消息是置顶的
+  static List<TopChatModel> topChatModelList = [];
 }

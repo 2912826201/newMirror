@@ -13,20 +13,19 @@ import 'package:toast/toast.dart';
 class EditInformationName extends StatefulWidget{
   String userName;
   String title;
-
-  EditInformationName({this.userName, this.title});
-
+  EditInformationName({this.userName,this.title});
   @override
   State<StatefulWidget> createState() {
-    return _editInformationNameState();
+   return _editInformationNameState();
   }
+
 }
 class _editInformationNameState extends State<EditInformationName>{
   int textLength = 0;
   String _EditText;
   int _reciprocal = 15;
   int beforeLength = 0;
-
+  FocusNode blankNode = FocusNode();
   @override
   void initState() {
     super.initState();
@@ -46,16 +45,17 @@ class _editInformationNameState extends State<EditInformationName>{
           backgroundColor: AppColor.white,
           appBar: AppBar(
             backgroundColor: AppColor.white,
-            leading: InkWell(
+            leading:InkWell(
               child: Container(
                 margin: EdgeInsets.only(left: 16),
                 child: Image.asset("images/resource/2.0x/return2x.png"),),
-              onTap: () {
+              onTap: (){
+                FocusScope.of(context).requestFocus(blankNode);
                 Navigator.pop(context);
               },
             ),
             leadingWidth: 44,
-            title: Text(widget.title ?? "编辑昵称", style: AppStyle.textMedium18,),
+            title: Text("编辑昵称",style: AppStyle.textMedium18,),
             centerTitle: true,
             actions: [
               InkWell(

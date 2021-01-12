@@ -145,13 +145,18 @@ class RongCloud {
   }
 
   //插入发送的消息
-  void insertOutgoingMessage(int conversationType, String targetId,
-      MessageContent content, Function(Message msg, int code) finished) {
-    RongIMClient.insertOutgoingMessage(conversationType, targetId, 30, content,
-        new DateTime.now().millisecondsSinceEpoch, finished);
+  void insertOutgoingMessage(
+      int conversationType, String targetId, MessageContent content, Function(Message msg, int code) finished,
+      {int sendTime = -1}) {
+    if (sendTime < 0) {
+      RongIMClient.insertOutgoingMessage(
+          conversationType, targetId, 30, content, new DateTime.now().millisecondsSinceEpoch, finished);
+    } else {
+      RongIMClient.insertOutgoingMessage(conversationType, targetId, 30, content, sendTime, finished);
+    }
   }
 
-  //插入发送的消息
+  //更新消息
   void updateMessage(
       Map expansionDic, String messageUId, Function(int code) finished) {
     RongIMClient.updateMessageExpansion(expansionDic, messageUId, finished);
@@ -168,8 +173,19 @@ class RongCloud {
   }
 
   //获取特定用户的黑名单状态
-  void getBlackListStatus(
-      String userId, Function(int blackListStatus, int code) finished) {
+  void getBlackListStatus(String userId, Function(int blackListStatus, int code) finished) {
     RongIMClient.getBlackListStatus(userId, finished);
+  }
+
+  //设置用户免打扰
+  void setConversationNotificationStatus(
+      int conversationType, String targetId, bool isBlocked, Function(int status, int code) finished) {
+    RongIMClient.setConversationNotificationStatus(conversationType, targetId, isBlocked, finished);
+  }
+
+  //获取用户是否免打扰
+  void getConversationNotificationStatus(
+      int conversationType, String targetId, Function(int status, int code) finished) {
+    RongIMClient.getConversationNotificationStatus(conversationType, targetId, finished);
   }
 }

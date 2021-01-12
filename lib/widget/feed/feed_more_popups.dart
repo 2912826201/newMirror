@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/screen_util.dart';
-
-import '../bottom_popup.dart';
 import '../bottom_sheet.dart';
 
 typedef OnItemClickListener = void Function(int index);
