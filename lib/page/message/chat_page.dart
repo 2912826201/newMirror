@@ -156,7 +156,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     initSetData();
 
     if (widget.conversation.getType() != RCConversationType.System) {
-      // initTime();
+      initTime();
       initTextController();
       initReleaseFeedInputFormatter();
     }
@@ -166,6 +166,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         if (loadStatus == LoadingStatus.STATUS_IDEL) {
           // 先设置状态，防止下拉就直接加载
           setState(() {
+            _timerCount = 0;
             loadText = "加载中...";
             loadStatus = LoadingStatus.STATUS_LOADING;
           });
@@ -555,7 +556,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         _emojiState = false;
         isResizeToAvoidBottomInset = !_emojiState;
         b = false;
-        setState(() {});
+        setState(() {
+          _timerCount = 0;
+        });
       } else {
         b = true;
       }
@@ -584,7 +587,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     }
     if (isReset) {
       //print("111111111111111111111111111111");
-      setState(() {});
+      setState(() {
+        _timerCount = 0;
+      });
     }
   }
 
@@ -638,7 +643,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     //获取表情的数据
     emojiModelList = await EmojiManager.getEmojiModelList();
     Future.delayed(Duration(milliseconds: 200), () {
-      setState(() {});
+      setState(() {
+        _timerCount = 0;
+      });
     });
   }
 
@@ -668,6 +675,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     if (chatDataList.length > 0) {
       if (new DateTime.now().millisecondsSinceEpoch - chatDataList[0].msg.sentTime >= 5 * 60 * 1000) {
         chatDataList.insert(0, getTimeAlertModel(new DateTime.now().millisecondsSinceEpoch));
+        if (recallNotificationMessagePosition > 0) {
+          recallNotificationMessagePosition++;
+        }
       }
     }
   }
@@ -787,7 +797,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           break;
         }
 
-        setState(() {});
+        setState(() {
+          _timerCount = 0;
+        });
         await Future.delayed(Duration(milliseconds: 100), () {
           try {
             animateToTop();
@@ -848,7 +860,6 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     mentionedInfo.mentionedContent = gteAtUserName(atUserIdList);
     chatDataModel.mentionedInfo = mentionedInfo;
 
-
     judgeAddAlertTime();
     chatDataList.insert(0, chatDataModel);
     animateToBottom();
@@ -857,6 +868,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       _updateRecallNotificationMessage();
     } else {
       setState(() {
+        _timerCount = 0;
         _textController.text = "";
         isHaveTextLen = false;
       });
@@ -887,7 +899,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       chatDataList.insertAll(0, modelList);
     }
     animateToBottom();
-    setState(() {});
+    setState(() {
+      _timerCount = 0;
+    });
     postImgOrVideo(modelList, widget.conversation.conversationId, selectedMediaFiles.type, chatTypeId, () {
       delayedSetState();
     });
@@ -907,7 +921,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     judgeAddAlertTime();
     chatDataList.insert(0, chatDataModel);
     animateToBottom();
-    setState(() {});
+    setState(() {
+      _timerCount = 0;
+    });
     postVoice(chatDataList[0], widget.conversation.conversationId, chatTypeId, chatTypeId, () {
       delayedSetState();
     });
@@ -926,6 +942,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     chatDataList.insert(0, chatDataModel);
     animateToBottom();
     setState(() {
+      _timerCount = 0;
       _textController.text = "";
       isHaveTextLen = false;
     });
@@ -942,8 +959,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     } else {
       chatDataList[position].msg.objectName = RecallNotificationMessage.objectName;
       chatDataList[position].msg.content = recallNotificationMessage;
-      animateToBottom();
-      setState(() {});
+      setState(() {
+        _timerCount = 0;
+      });
     }
   }
 
@@ -963,6 +981,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         recallNotificationMessagePosition = -1;
 
         setState(() {
+          _timerCount = 0;
           _textController.text = "";
           isHaveTextLen = false;
         });
@@ -989,24 +1008,27 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   //   return false;
   // }
 
-  // //计时
-  // initTime() {
-  //   _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-  //     _timerCount++;
-  //     // print(_timerCount.toString());
-  //     if (_timerCount >= 300) {
-  //       _timerCount = 0;
-  //       // print("-----"+_timerCount.toString());
-  //       postTimeChatDataModel();
-  //     }
-  //   });
-  // }
+  //计时
+  initTime() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      _timerCount++;
+      // print(_timerCount.toString());
+      if (_timerCount >= 150) {
+        _timerCount = 0;
+        setState(() {
+
+        });
+      }
+    });
+  }
 
   //延迟更新
   void delayedSetState() {
     Future.delayed(Duration(milliseconds: 200), () {
       //print("setState--delayedSetState");
-      setState(() {});
+      setState(() {
+        _timerCount = 0;
+      });
     });
   }
 
@@ -1168,11 +1190,13 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   _messageInputBodyClick() {
     if (_emojiState || MediaQuery.of(context).viewInsets.bottom > 0) {
       setState(() {
+        _timerCount = 0;
         _emojiState = false;
         isContentClickOrEmojiClick = true;
       });
       Future.delayed(Duration(milliseconds: 300), () {
         setState(() {
+          _timerCount = 0;
           isResizeToAvoidBottomInset = !_emojiState;
         });
       });
@@ -1181,7 +1205,10 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //表情的点击事件
   void onEmojioClick() {
-    if (MediaQuery.of(context).viewInsets.bottom > 0) {
+    if (MediaQuery
+        .of(context)
+        .viewInsets
+        .bottom > 0) {
       _emojiState = false;
     }
     _emojiState = !_emojiState;
@@ -1190,7 +1217,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       FocusScope.of(context).requestFocus(new FocusNode());
     }
     isContentClickOrEmojiClick = false;
-    setState(() {});
+    setState(() {
+      _timerCount = 0;
+    });
   }
 
   //图片的点击事件
@@ -1230,7 +1259,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     _emojiState = false;
     isContentClickOrEmojiClick = true;
     _isVoiceState = !_isVoiceState;
-    setState(() {});
+    setState(() {
+      _timerCount = 0;
+    });
   }
 
   //at 了那个用户
@@ -1351,7 +1382,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     }
     Future.delayed(Duration(milliseconds: 500), () {
       _refreshController.loadComplete();
-      setState(() {});
+      setState(() {
+        _timerCount = 0;
+      });
     });
   }
 
@@ -1368,6 +1401,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       RongCloud.init().deleteMessageById(chatDataList[position].msg, (code) {
         //print("====" + code.toString());
         setState(() {
+          _timerCount = 0;
           chatDataList.removeAt(position);
         });
       });
@@ -1429,7 +1463,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VOICE) {
       ToastShow.show(msg: "播放录音", context: context);
       updateMessage(chatDataList[position], (code) {
-        setState(() {});
+        setState(() {
+          _timerCount = 0;
+        });
       });
     } else if (contentType == RecallNotificationMessage.objectName) {
       recallNotificationMessagePosition = position;
@@ -1442,7 +1478,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         extentOffset: _textController.text.length,
       );
       _textController.selection = setCursor;
-      setState(() {});
+      setState(() {
+        _timerCount = 0;
+      });
     } else if (contentType == ChatTypeModel.CHAT_SYSTEM_BOTTOM_BAR) {
       ToastShow.show(msg: "管家界面-底部点击了：$content", context: context);
       _postSelectMessage(content);

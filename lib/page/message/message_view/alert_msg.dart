@@ -67,15 +67,17 @@ class AlertMsg extends StatelessWidget {
       if (isMyself) {
         textArray.add("你撤回了一条消息 ");
         isChangColorArray.add(false);
-        try {
-          if (json.decode(recallNotificationMessage.recallContent)["subObjectName"] == TextMessage.objectName) {
-            textArray.add("重新编辑");
-            isChangColorArray.add(true);
-          }
-        } catch (e) {
-          if (recallNotificationMessage.mOriginalObjectName == TextMessage.objectName) {
-            textArray.add("重新编辑");
-            isChangColorArray.add(true);
+        if (new DateTime.now().millisecondsSinceEpoch - recallNotificationMessage.recallActionTime < 5 * 60 * 1000) {
+          try {
+            if (json.decode(recallNotificationMessage.recallContent)["subObjectName"] == TextMessage.objectName) {
+              textArray.add("重新编辑");
+              isChangColorArray.add(true);
+            }
+          } catch (e) {
+            if (recallNotificationMessage.mOriginalObjectName == TextMessage.objectName) {
+              textArray.add("重新编辑");
+              isChangColorArray.add(true);
+            }
           }
         }
       } else {
