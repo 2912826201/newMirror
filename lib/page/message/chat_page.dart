@@ -156,9 +156,12 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     super.initState();
     initData();
     initSetData();
-    initTime();
-    initTextController();
-    initReleaseFeedInputFormatter();
+
+    if (widget.conversation.type > 3) {
+      initTime();
+      initTextController();
+      initReleaseFeedInputFormatter();
+    }
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
@@ -214,26 +217,33 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //获取显示的ui主体
   List<Widget> getBody() {
-    return [
-      Expanded(
-        child: SizedBox(
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              (chatDataList != null && chatDataList.length > 0) ? getChatDetailsBody() : Container(),
-              ChatAtUserList(
-                  isShow: context.watch<ChatEnterNotifier>().keyWord == "@", onItemClickListener: atListItemClick),
-            ],
-          ),
+    List<Widget> bodyArray = [];
+
+    //添加主体聊天界面
+    bodyArray.add(Expanded(
+      child: SizedBox(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            (chatDataList != null && chatDataList.length > 0) ? getChatDetailsBody() : Container(),
+            ChatAtUserList(
+                isShow: context.watch<ChatEnterNotifier>().keyWord == "@", onItemClickListener: atListItemClick),
+          ],
         ),
       ),
-      getMessageInputBar(),
-      bottomSettingBox(),
-      Offstage(
-        offstage: true,
-        child: judgeReceiveMessages(),
-      )
-    ];
+    ));
+
+    if (widget.conversation.type > 3) {
+      bodyArray.add(getMessageInputBar());
+      bodyArray.add(bottomSettingBox());
+    }
+
+    bodyArray.add(Offstage(
+      offstage: true,
+      child: judgeReceiveMessages(),
+    ));
+
+    return bodyArray;
   }
 
   //获取列表内容

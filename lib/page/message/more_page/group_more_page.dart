@@ -9,9 +9,11 @@ import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/page/message/message_view/currency_msg.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/LoadingProgress.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_share_select_contact.dart';
 import 'package:mirror/api/message_page_api.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 typedef VoidCallback = void Function();
@@ -38,18 +40,18 @@ class GroupMorePage extends StatefulWidget {
 
 class GroupMorePageState extends State<GroupMorePage> {
   bool disturbTheNews = false;
-  bool disturbTheNewsOld = false;
   bool topChat = false;
-  bool topChatOld = false;
   String groupMeName = "还未取名";
   bool isUpdateGroupMeName = false;
   Map<String, dynamic> groupInformationMap;
   String groupName;
+  DialogLoadingController _dialogLoadingController;
+
+  LoadStatus loadStatus = LoadStatus.loading;
 
   @override
   void initState() {
     super.initState();
-    disturbTheNewsOld = disturbTheNews;
     getGroupInformation();
   }
 
@@ -58,7 +60,6 @@ class GroupMorePageState extends State<GroupMorePage> {
     super.dispose();
     updateUserName();
     isUpdateGroupMeName = false;
-    setData();
   }
 
   @override
@@ -342,10 +343,10 @@ class GroupMorePageState extends State<GroupMorePage> {
           groupInformationMap = v;
           groupName = groupInformationMap["name"];
         });
-        getConversationNotificationStatus();
+        await getConversationNotificationStatus();
       }
     } catch (e) {
-      getConversationNotificationStatus();
+      await getConversationNotificationStatus();
     }
   }
 
@@ -470,68 +471,74 @@ class GroupMorePageState extends State<GroupMorePage> {
     }
   }
 
-  //设置消息
-  void setData() {
-    setTopChatApi();
-    setConversationNotificationStatus();
-  }
 
   //设置消息是否置顶
   void setTopChatApi() async {
-    if (topChatOld != topChat) {
-      Map<String, dynamic> map =
-          await (topChat ? stickChat : cancelTopChat)(targetId: int.parse(widget.chatGroupId), type: 1);
-      if (map != null && map["state"] != null && map["state"]) {
-        TopChatModel topChatModel = new TopChatModel(type: 1, chatId: int.parse(widget.chatGroupId));
-        if (Application.topChatModelList.contains(topChatModel)) {
-          Application.topChatModelList.remove(topChatModel);
-        } else {
-          Application.topChatModelList.add(topChatModel);
-        }
+    showProgressDialog();
+    Map<String, dynamic> map =
+        await (topChat ? stickChat : cancelTopChat)(targetId: int.parse(widget.chatGroupId), type: 1);
+    if (map != null && map["state"] != null && map["state"]) {
+      TopChatModel topChatModel = new TopChatModel(type: 1, chatId: int.parse(widget.chatGroupId));
+      if (Application.topChatModelList.contains(topChatModel)) {
+        Application.topChatModelList.remove(topChatModel);
+      } else {
+        Application.topChatModelList.add(topChatModel);
       }
+    } else {
+      topChat = !topChat;
     }
+    setState(() {
+      dismissProgressDialog();
+    });
   }
 
   //设置消息免打扰
-  void setConversationNotificationStatus() {
-    if (disturbTheNewsOld != disturbTheNews) {
+  void setConversationNotificationStatus() async {
+    showProgressDialog();
+    //判断有没有免打扰
+    Map<String, dynamic> map =
+        await (disturbTheNews ? addNoPrompt : removeNoPrompt)(targetId: int.parse(widget.chatGroupId));
+    if (!(map != null && map["state"] != null && map["state"])) {
+      disturbTheNews = !disturbTheNews;
+    } else {
       Application.rongCloud.setConversationNotificationStatus(
           RCConversationType.Group, widget.chatGroupId, disturbTheNews, (int status, int code) {
         print(status);
       });
     }
+    setState(() {
+      dismissProgressDialog();
+    });
   }
 
   //获取消息是否免打扰
-  void getConversationNotificationStatus() {
-    print("getConversationNotificationStatus");
-
-
+  Future<void> getConversationNotificationStatus() async {
+    //判断有没有置顶
     if (Application.topChatModelList == null || Application.topChatModelList.length < 1) {
       topChat = false;
-      topChatOld = false;
     } else {
       for (TopChatModel topChatModel in Application.topChatModelList) {
         if (topChatModel.type == 1 && topChatModel.chatId.toString() == widget.chatGroupId) {
           topChat = true;
-          topChatOld = true;
           break;
         }
       }
     }
 
-    Application.rongCloud.getConversationNotificationStatus(
-        RCConversationType.Group, widget.chatGroupId,
-            (int status, int code) {
-          print("status:$status---code:$code");
-          if (code == 0) {
-            disturbTheNews = status == RCConversationNotificationStatus.DoNotDisturb;
-            disturbTheNewsOld = disturbTheNews;
-          }
-          setState(() {
+    //判断有没有免打扰
+    Map<String, dynamic> map = await queryIsNoPrompt(targetId: int.parse(widget.chatGroupId));
+    disturbTheNews = map != null && map["state"] != null && map["state"];
+    setState(() {});
 
-          });
-        });
+    //融云的--暂时没用
+    // Application.rongCloud.getConversationNotificationStatus(
+    //     RCConversationType.Group, widget.chatGroupId,
+    //         (int status, int code) {
+    //       print("status:$status---code:$code");
+    //       if (code == 0) {
+    //         disturbTheNews = status == RCConversationNotificationStatus.DoNotDisturb;
+    //       }
+    //     });
   }
 
   //点击事件
@@ -539,11 +546,12 @@ class GroupMorePageState extends State<GroupMorePage> {
     if (isOpen != null) {
       if (index == 1) {
         disturbTheNews = !disturbTheNews;
+        setConversationNotificationStatus();
       } else {
         topChat = !topChat;
+        setTopChatApi();
       }
-      ToastShow.show(msg: "${!isOpen ? "打开" : "关闭"}$title", context: context);
-      setState(() {});
+      // ToastShow.show(msg: "${!isOpen ? "打开" : "关闭"}$title", context: context);
     } else if (title == "群聊名称") {
       AppRouter.navigateToEditInfomationName(context, subtitle, (result) {
         setState(() {
@@ -552,7 +560,7 @@ class GroupMorePageState extends State<GroupMorePage> {
           }
         });
       }, title: "修改群聊名称");
-      ToastShow.show(msg: subtitle, context: context);
+      // ToastShow.show(msg: subtitle, context: context);
     } else if (title == "群昵称") {
       AppRouter.navigateToEditInfomationName(context, subtitle, (result) {
         setState(() {
@@ -561,7 +569,7 @@ class GroupMorePageState extends State<GroupMorePage> {
           }
         });
       }, title: "修改群昵称");
-      ToastShow.show(msg: subtitle, context: context);
+      // ToastShow.show(msg: subtitle, context: context);
     } else if (title == "删除并退出") {
       showAppDialog(context,
           title: "退出群聊",
@@ -580,6 +588,25 @@ class GroupMorePageState extends State<GroupMorePage> {
     }
   }
 
+
+  showProgressDialog({Widget progress,
+    Color bgColor,}) {
+    if (_dialogLoadingController == null) {
+      _dialogLoadingController = DialogLoadingController();
+      Navigator.of(context).push(PageRouteBuilder(
+          opaque: false,
+          pageBuilder: (ctx, animation, secondAnimation) {
+            return LoadingProgress(controller: _dialogLoadingController,
+              progress: progress, bgColor: bgColor,);
+          }
+      ));
+    }
+  }
+
+  dismissProgressDialog() {
+    _dialogLoadingController?.dismissDialog();
+    _dialogLoadingController = null;
+  }
 }
 
 
