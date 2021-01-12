@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/util/screen_util.dart';
 
 //获取文字size
-Size getTextSize(String text, TextStyle style,int maxLine) {
+Size getTextSize(String text, TextStyle style,int maxLine,[double width]) {
   final TextPainter textPainter =
   TextPainter(text: TextSpan(text: text, style: style), maxLines: maxLine, textDirection: TextDirection.ltr)
-    ..layout(minWidth: 0, maxWidth: double.infinity);
+    ..layout(minWidth: 0, maxWidth:  width != null ? width : double.infinity);
   return textPainter.size;
 }
 TextPainter calculateTextWidth(

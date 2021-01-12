@@ -183,6 +183,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.1.5"
+  extended_nested_scroll_view:
+    dependency: "direct main"
+    description:
+      name: extended_nested_scroll_view
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.0"
   fake_async:
     dependency: transitive
     description:
@@ -895,4 +902,4 @@ packages:
     version: "4.5.1"
 sdks:
   dart: ">=2.10.2 <2.11.0"
-  flutter: ">=1.22.2 <2.0.0"
+  flutter: ">=1.22.4 <2.0.0"
