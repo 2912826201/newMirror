@@ -28,27 +28,45 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
 
   BetterPlayerListVideoPlayerController listController;
   BetterPlayerController controller;
+  BetterPlayerDataSource dataSource;
+  BetterPlayerConfiguration configuration;
+  Function(BetterPlayerEvent) eventListener;
 
   @override
   void initState() {
     _calculateSize();
-    super.initState();
-    // controller = BetterPlayerController(BetterPlayerConfiguration(
-    //     autoPlay: !widget.isInListView,
-    //     looping: true,
-    //     fullScreenByDefault: false,
-    //     placeholder: CachedNetworkImage(
-    //       imageUrl: FileUtil.getVideoFirstPhoto(widget.url),
-    //       width: videoSize.width,
-    //       height: videoSize.height,
-    //     ),
-    //     controlsConfiguration: BetterPlayerControlsConfiguration(showControls: false)));
 
-    // if (widget.isInListView) {
-    //   listController = BetterPlayerListVideoPlayerController();
-    //   listController.setBetterPlayerController(controller);
-    //   listController.setVolume(0);
-    // } else {}
+    super.initState();
+
+    dataSource = BetterPlayerDataSource.network(widget.url);
+    eventListener = (BetterPlayerEvent event) {
+      print("event: ${event.betterPlayerEventType}, params: ${event.parameters}");
+      switch (event.betterPlayerEventType) {
+        case BetterPlayerEventType.initialized:
+          listController?.setVolume(0);
+          controller?.setVolume(0);
+          break;
+        default:
+          break;
+      }
+    };
+    configuration = BetterPlayerConfiguration(
+        eventListener: eventListener,
+        autoPlay: !widget.isInListView,
+        looping: true,
+        fullScreenByDefault: false,
+        placeholder: CachedNetworkImage(
+          imageUrl: FileUtil.getVideoFirstPhoto(widget.url),
+          width: videoSize.width,
+          height: videoSize.height,
+        ),
+        controlsConfiguration: BetterPlayerControlsConfiguration(showControls: false));
+
+    if (widget.isInListView) {
+      listController = BetterPlayerListVideoPlayerController();
+    } else {
+      controller = BetterPlayerController(configuration, betterPlayerDataSource: dataSource);
+    }
   }
 
   @override
@@ -71,32 +89,14 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
               height: videoSize.height,
               child: widget.isInListView
                   ? BetterPlayerListVideoPlayer(
-                      BetterPlayerDataSource.network(widget.url),
+                      dataSource,
+                      betterPlayerListVideoPlayerController: listController,
+                      configuration: configuration,
                       playFraction:
                           0.95 * containerSize.width * containerSize.height / (videoSize.width * videoSize.height),
-                      // betterPlayerListVideoPlayerController: listController,
-                      configuration: BetterPlayerConfiguration(
-                          looping: true,
-                          fullScreenByDefault: false,
-                          placeholder: CachedNetworkImage(
-                            imageUrl: FileUtil.getVideoFirstPhoto(widget.url),
-                            width: videoSize.width,
-                            height: videoSize.height,
-                          ),
-                          controlsConfiguration: BetterPlayerControlsConfiguration(showControls: false)),
                     )
-                  : BetterPlayer.network(
-                      widget.url,
-                      betterPlayerConfiguration: BetterPlayerConfiguration(
-                          autoPlay: true,
-                          looping: true,
-                          fullScreenByDefault: false,
-                          placeholder: CachedNetworkImage(
-                            imageUrl: FileUtil.getVideoFirstPhoto(widget.url),
-                            width: videoSize.width,
-                            height: videoSize.height,
-                          ),
-                          controlsConfiguration: BetterPlayerControlsConfiguration(showControls: false)),
+                  : BetterPlayer(
+                      controller: controller,
                     ),
             ),
           ),
