@@ -30,6 +30,15 @@ const String GETTOPCHATLIST = "/appuser/web/groupChat/getTopChatList";
 //取消置顶
 const String CANCELTOPCHAT = "/appuser/web/groupChat/cancelTopChat";
 
+//添加消息免打扰
+const String ADDNOPROMPT = "/appuser/web/black/addNoPrompt";
+//取消消息免打扰
+const String REMOVENOPROMPT = "/appuser/web/black/removeNoPrompt";
+//查询是否免打扰
+const String QUERYISNOPROMPT = "/appuser/web/black/queryIsNoPrompt";
+//查询免打扰列表
+const String QUERYNOPROMPTUIDLIST = "/appuser/web/black/queryNoPromptUidList";
+
 Future<Unreads> getUnReads() async {
   BaseResponseModel responseModel = await requestApi(GET_UNREAD_COUNT, {});
   if (responseModel.isSuccess) {
@@ -225,6 +234,61 @@ Future<Map> cancelTopChat({int targetId, int type}) async {
   params["targetId"] = targetId;
   params["type"] = type;
   BaseResponseModel responseModel = await requestApi(CANCELTOPCHAT, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
+
+///消息免打扰
+///请求参数
+///targetId:群聊id/私聊id
+Future<Map> addNoPrompt({int targetId}) async {
+  Map<String, dynamic> params = {};
+  params["targetId"] = targetId;
+  BaseResponseModel responseModel = await requestApi(ADDNOPROMPT, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
+
+///取消消息免打扰
+///请求参数
+///targetId:群聊id/私聊id
+Future<Map> removeNoPrompt({int targetId}) async {
+  Map<String, dynamic> params = {};
+  params["targetId"] = targetId;
+  BaseResponseModel responseModel = await requestApi(REMOVENOPROMPT, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
+
+///查询是否免打扰
+///请求参数
+///targetId:群聊id/私聊id
+Future<Map> queryIsNoPrompt({int targetId}) async {
+  Map<String, dynamic> params = {};
+  params["targetId"] = targetId;
+  BaseResponseModel responseModel = await requestApi(QUERYISNOPROMPT, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
+
+///查询免打扰列表
+///请求参数
+///targetId:群聊id/私聊id
+Future<Map> queryNoPromptUidList() async {
+  Map<String, dynamic> params = {};
+  BaseResponseModel responseModel = await requestApi(QUERYNOPROMPTUIDLIST, params);
   if (responseModel.isSuccess) {
     return responseModel.data;
   } else {

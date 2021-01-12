@@ -72,8 +72,12 @@ class SendMessageView extends StatelessWidget {
         userUrl = "http://devpic.aimymusic.com/app/stranger_message_avatar.png";
         name = "运动数据";
       } else {
-        userUrl = model.msg.content.sendUserInfo?.portraitUri;
-        name = getChatUserName(sendChatUserId, model.msg.content.sendUserInfo?.name);
+        try {
+          userUrl = model.msg.content.sendUserInfo?.portraitUri;
+          name = getChatUserName(sendChatUserId, model.msg.content.sendUserInfo?.name);
+        } catch (e) {
+          print(e);
+        }
       }
       return notTemporaryData();
     }
@@ -173,11 +177,13 @@ class SendMessageView extends StatelessWidget {
       return getVoiceMessage(msg);
     } else if (msgType == RecallNotificationMessage.objectName) {
       // return new Text('提示消息--撤回');
-      return getAlertMsg(
-          recallNotificationMessage:
-          ((msg.content) as RecallNotificationMessage));
+      return getAlertMsg(recallNotificationMessage: ((msg.content) as RecallNotificationMessage));
     }
-    return getTextMsg(text: "版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo);
+    if (msg.content == null || msg.content.mentionedInfo == null) {
+      return getTextMsg(text: "版本过低请升级版本!");
+    } else {
+      return getTextMsg(text: "版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo ?? null);
+    }
   }
 
   //************************获取消息模块的方法 ----start

@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/setting_api/setting_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/black_list_model.dart';
@@ -136,7 +137,8 @@ class _blackListState extends State<BlackListPage>{
     bool blackStatus = await ProfileCancelBlack(blackList[index].uid);
     print('取消拉黑是否成功====================================$blackStatus');
     if(blackStatus==true){
-        blackList.removeAt(index);
+      Application.rongCloud.removeFromBlackList(blackList[index].uid.toString(), (code) {});
+      blackList.removeAt(index);
     }
     setState(() {
     });
