@@ -354,13 +354,7 @@ ChatDataModel getMessage(Message message, {bool isHaveAnimation = true}) {
   return chatDataModel;
 }
 
-//获取时间间隔的消息
-void getTimeChatDataModel(
-    {String targetId, int conversationType, int chatTypeId, Function(Message msg, int code) finished}) async {
-  postMessageManagerAlertTime(ChatTypeModel.MESSAGE_TYPE_ALERT_TIME, ChatTypeModel.MESSAGE_TYPE_ALERT_TIME_NAME,
-      new DateTime.now().millisecondsSinceEpoch.toString(), targetId,
-      conversationType, finished);
-}
+
 //插入撤回消息
 void getReChatDataModel(
     {String targetId, int conversationType, int chatTypeId, int sendTime, Function(Message msg, int code) finished}) async {
@@ -368,6 +362,31 @@ void getReChatDataModel(
       "你撤回了一条消息", targetId,
       conversationType, finished, sendTime: sendTime);
 }
+
+//返回事件msg
+Message getAlertTimeMsg({int time, int sendTime, String targetId, int conversationType}) {
+  TextMessage msg = TextMessage();
+  msg.sendUserInfo = getChatUserInfo();
+  Map<String, dynamic> feedMap = Map();
+  feedMap["fromUserId"] = msg.sendUserInfo.userId.toString();
+  feedMap["toUserId"] = targetId;
+  feedMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_TIME;
+  feedMap["name"] = ChatTypeModel.MESSAGE_TYPE_ALERT_TIME_NAME;
+  feedMap["data"] = time.toString();
+  msg.content = jsonEncode(feedMap);
+  Message message = new Message();
+  message.content = msg;
+  message.senderUserId = msg.sendUserInfo.userId;
+  message.sentTime = sendTime;
+  message.messageId = -1;
+  message.messageUId = "-1";
+  message.conversationType = conversationType;
+  message.targetId = targetId;
+  message.objectName = TextMessage.objectName;
+  message.sentStatus = RCSentStatus.Sent;
+  return message;
+}
+
 
 //voice 的更新
 void updateMessage(ChatDataModel chatDataModel, Function(int code) finished) {

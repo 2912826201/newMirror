@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
-import 'package:mirror/api/message_page_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
@@ -158,7 +156,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     initSetData();
 
     if (widget.conversation.getType() != RCConversationType.System) {
-      initTime();
+      // initTime();
       initTextController();
       initReleaseFeedInputFormatter();
     }
@@ -629,15 +627,10 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     }
     if (widget.shareMessage != null) {
       chatDataList[0].isHaveAnimation = true;
-      // if(chatDataList[chatDataList.length-1].msg.messageId==widget.shareMessage?.messageId){
-      //   chatDataList[chatDataList.length-1].isHaveAnimation=true;
-      // }else{
-      //   chatDataList.insert(0, getMessage(widget.shareMessage));
-      // }
     }
 
-    //判断是不是加入时间提示
-    // postTimeChatDataModel(isSetState: false);
+    //加入时间提示
+    getTimeAlert(chatDataList);
 
     //获取有没有at我的消息
     judgeIsHaveAtMeMsg();
@@ -647,6 +640,36 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     Future.delayed(Duration(milliseconds: 200), () {
       setState(() {});
     });
+  }
+
+  //加入时间提示
+  void getTimeAlert(List<ChatDataModel> chatDataList) {
+    if (chatDataList != null && chatDataList.length > 0) {
+      for (int i = chatDataList.length - 1; i >= 0; i--) {
+        if (i == chatDataList.length - 1) {
+          chatDataList.add(getTimeAlertModel(chatDataList[i].msg.sentTime));
+        } else if (chatDataList[i].msg.sentTime - chatDataList[i + 1].msg.sentTime > 5 * 60 * 1000) {
+          chatDataList.insert(i + 1, getTimeAlertModel(chatDataList[i].msg.sentTime));
+        }
+      }
+    }
+  }
+
+  //获取时间戳
+  ChatDataModel getTimeAlertModel(int sentTime) {
+    ChatDataModel dataModel = new ChatDataModel();
+    dataModel.msg = getAlertTimeMsg(
+        time: sentTime, sendTime: sentTime, targetId: chatUserId, conversationType: RCConversationType.Private);
+    return dataModel;
+  }
+
+  //判断加不加时间提示
+  judgeAddAlertTime() {
+    if (chatDataList.length > 0) {
+      if (new DateTime.now().millisecondsSinceEpoch - chatDataList[0].msg.sentTime >= 5 * 60 * 1000) {
+        chatDataList.insert(0, getTimeAlertModel(new DateTime.now().millisecondsSinceEpoch));
+      }
+    }
   }
 
   //判断有没有at我的消息
@@ -740,10 +763,21 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         List msgList = new List();
         msgList = await RongCloud.init().getHistoryMessages(widget.conversation.getType(),
             widget.conversation.conversationId, chatDataList[chatDataList.length - 1].msg.sentTime, 20, 0);
+        List<ChatDataModel> dataList = <ChatDataModel>[];
         if (msgList != null && msgList.length > 0) {
           for (int i = 1; i < msgList.length; i++) {
-            chatDataList.add(getMessage((msgList[i] as Message), isHaveAnimation: false));
+            dataList.add(getMessage((msgList[i] as Message), isHaveAnimation: false));
           }
+
+          if (dataList != null && dataList.length > 0) {
+            getTimeAlert(dataList);
+            print("value:${chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime}-----------");
+            if (chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime < 5 * 60 * 1000) {
+              chatDataList.removeAt(chatDataList.length - 1);
+            }
+            chatDataList.addAll(dataList);
+          }
+
           judgeNewChatIsHaveAt();
         } else {
           isHaveAtMeMsgIndex = -1;
@@ -814,16 +848,15 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     mentionedInfo.mentionedContent = gteAtUserName(atUserIdList);
     chatDataModel.mentionedInfo = mentionedInfo;
 
-    print("444444444");
+
+    judgeAddAlertTime();
     chatDataList.insert(0, chatDataModel);
     animateToBottom();
 
     if (recallNotificationMessagePosition > 0) {
-      print("11111111");
       _updateRecallNotificationMessage();
     } else {
       setState(() {
-        print("5555555555555");
         _textController.text = "";
         isHaveTextLen = false;
       });
@@ -847,8 +880,11 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       chatDataModel.mediaFileModel = selectedMediaFiles.list[i];
       chatDataModel.isTemporary = true;
       chatDataModel.isHaveAnimation = true;
-      chatDataList.insert(0, chatDataModel);
-      modelList.add(chatDataList[0]);
+      modelList.add(chatDataModel);
+    }
+    if (modelList != null) {
+      judgeAddAlertTime();
+      chatDataList.insertAll(0, modelList);
     }
     animateToBottom();
     setState(() {});
@@ -868,6 +904,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     chatDataModel.chatVoiceModel = voiceModel;
     chatDataModel.isTemporary = true;
     chatDataModel.isHaveAnimation = true;
+    judgeAddAlertTime();
     chatDataList.insert(0, chatDataModel);
     animateToBottom();
     setState(() {});
@@ -885,6 +922,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     chatDataModel.content = text;
     chatDataModel.isTemporary = true;
     chatDataModel.isHaveAnimation = true;
+    judgeAddAlertTime();
     chatDataList.insert(0, chatDataModel);
     animateToBottom();
     setState(() {
@@ -906,32 +944,6 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       chatDataList[position].msg.content = recallNotificationMessage;
       animateToBottom();
       setState(() {});
-    }
-  }
-
-  //发送间隔时间
-  void postTimeChatDataModel({bool isSetState = true}) {
-    if (chatDataList != null && chatDataList.length > 0 && chatDataList[0].msg != null && !getNewestIsAlertMessage()) {
-      getTimeChatDataModel(
-        targetId: widget.conversation.conversationId,
-        conversationType: chatTypeId,
-        finished: (Message msg, int code) {
-          print("22222222222222222222222222222222222222222222222222222");
-          ChatDataModel chatDataModel = new ChatDataModel();
-          chatDataModel.msg = msg;
-          chatDataModel.isTemporary = false;
-          chatDataModel.isHaveAnimation = true;
-          chatDataList.insert(0, chatDataModel);
-          if (recallNotificationMessagePosition > 0) {
-            recallNotificationMessagePosition++;
-          }
-          animateToBottom();
-          if (isSetState) {
-            print("111111111111111");
-            setState(() {});
-          }
-        },
-      );
     }
   }
 
@@ -962,33 +974,33 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   ///------------------------------------一些功能 方法  start-----------------------------------------------------------------------///
 
   //判断最后一个消息是不是时间提示
-  bool getNewestIsAlertMessage() {
-    try {
-      bool isTextMessage = chatDataList[0].msg.objectName == TextMessage.objectName;
-      if (isTextMessage) {
-        TextMessage textMessage = chatDataList[0].msg.content as TextMessage;
-        Map<String, dynamic> map = json.decode(textMessage.content);
-        bool isAlertTimeMessage = map["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME;
-        if (isAlertTimeMessage) {
-          return true;
-        }
-      }
-    } catch (e) {}
-    return false;
-  }
+  // bool getNewestIsAlertMessage() {
+  //   try {
+  //     bool isTextMessage = chatDataList[0].msg.objectName == TextMessage.objectName;
+  //     if (isTextMessage) {
+  //       TextMessage textMessage = chatDataList[0].msg.content as TextMessage;
+  //       Map<String, dynamic> map = json.decode(textMessage.content);
+  //       bool isAlertTimeMessage = map["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME;
+  //       if (isAlertTimeMessage) {
+  //         return true;
+  //       }
+  //     }
+  //   } catch (e) {}
+  //   return false;
+  // }
 
-  //计时
-  initTime() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      _timerCount++;
-      // print(_timerCount.toString());
-      if (_timerCount >= 300) {
-        _timerCount = 0;
-        // print("-----"+_timerCount.toString());
-        postTimeChatDataModel();
-      }
-    });
-  }
+  // //计时
+  // initTime() {
+  //   _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+  //     _timerCount++;
+  //     // print(_timerCount.toString());
+  //     if (_timerCount >= 300) {
+  //       _timerCount = 0;
+  //       // print("-----"+_timerCount.toString());
+  //       postTimeChatDataModel();
+  //     }
+  //   });
+  // }
 
   //延迟更新
   void delayedSetState() {
@@ -1030,6 +1042,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           Application.appContext.read<ChatMessageProfileNotifier>().clearMessage();
         }
         ChatDataModel chatDataModel = getMessage(message, isHaveAnimation: true);
+        judgeAddAlertTime();
         chatDataList.insert(0, chatDataModel);
         delayedSetState();
         return Container();
@@ -1142,7 +1155,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     if (isHaveAtMeMsgIndex < 0) {
       oldMaxScrollExtent = _scrollController.position.maxScrollExtent;
     } else {
-      oldMaxScrollExtent += 50.0;
+      oldMaxScrollExtent += 100.0;
     }
     _scrollController.animateTo(oldMaxScrollExtent,
         duration: Duration(milliseconds: milliseconds), curve: Curves.easeInOut);
@@ -1311,9 +1324,19 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     List msgList = new List();
     msgList = await RongCloud.init().getHistoryMessages(widget.conversation.getType(),
         widget.conversation.conversationId, chatDataList[chatDataList.length - 1].msg.sentTime, 30, 0);
+    List<ChatDataModel> dataList = <ChatDataModel>[];
     if (msgList != null && msgList.length > 0) {
+      dataList.clear();
       for (int i = 1; i < msgList.length; i++) {
-        chatDataList.add(getMessage((msgList[i] as Message), isHaveAnimation: false));
+        dataList.add(getMessage((msgList[i] as Message), isHaveAnimation: false));
+      }
+      if (dataList != null && dataList.length > 0) {
+        getTimeAlert(dataList);
+        print("value:${chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime}-----------");
+        if (chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime < 5 * 60 * 1000) {
+          chatDataList.removeAt(chatDataList.length - 1);
+        }
+        chatDataList.addAll(dataList);
       }
       //判断有没有艾特我的消息
       if (isHaveAtMeMsg || isHaveAtMeMsgPr) {
@@ -1432,5 +1455,6 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     }
   }
 
-  ///------------------------------------各种点击事件  end-----------------------------------------------------------------------///
+
+///------------------------------------各种点击事件  end-----------------------------------------------------------------------///
 }

@@ -49,6 +49,10 @@ class ChatTypeModel {
   static const String MESSAGE_TYPE_ALERT_TIME = "IF:AlertTimeMessage";
   static const String MESSAGE_TYPE_ALERT_TIME_NAME = "时间提示消息，该版本较低请升级版本再行查看";
 
+  //自定义消息类型：群通知消息
+  static const String MESSAGE_TYPE_ALERT_GROUP = "IF:AlertInviteMessage";
+  static const String MESSAGE_TYPE_ALERT_GROUP_NAME = "群通知消息，该版本较低请升级版本再行查看";
+
   //自定义消息类型：提示信息-邀请
   static const String MESSAGE_TYPE_ALERT_INVITE = "IF:AlertInviteMessage";
   static const String MESSAGE_TYPE_ALERT_INVITE_NAME = "邀请消息，该版本较低请升级版本再行查看";
@@ -68,6 +72,10 @@ class ChatTypeModel {
   //管家聊天界面：可选择的列表
   static const String MESSAGE_TYPE_SELECT = "IF:SelectMessage";
   static const String MESSAGE_TYPE_SELECT_NAME = "列表消息，该版本较低请升级版本再行查看";
+
+  //群通知消息
+  static const String MESSAGE_TYPE_GRPNTF = "RC:GrpNtf";
+  static const String MESSAGE_TYPE_GRPNTF_NAME = "群通知消息，该版本较低请升级版本再行查看";
 
   //判断这个消息是不是提示消息
   static bool getIsAlertMessage(String chatTypeModel) {

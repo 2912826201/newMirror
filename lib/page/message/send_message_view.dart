@@ -178,6 +178,12 @@ class SendMessageView extends StatelessWidget {
     } else if (msgType == RecallNotificationMessage.objectName) {
       // return new Text('提示消息--撤回');
       return getAlertMsg(recallNotificationMessage: ((msg.content) as RecallNotificationMessage));
+    } else if (msgType == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
+      // return new Text('群通知');
+      Map<String, dynamic> map = Map();
+      map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
+      map["data"] = msg.originContentMap;
+      return getAlertMsg(map: map);
     }
     if (msg.content == null || msg.content.mentionedInfo == null) {
       return getTextMsg(text: "版本过低请升级版本!");
