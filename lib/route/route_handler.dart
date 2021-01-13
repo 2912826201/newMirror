@@ -6,6 +6,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/live_model.dart';
+import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/page/feed/like.dart';
 import 'package:mirror/page/feed/release_page.dart';
 import 'package:mirror/page/if_page.dart';
@@ -15,6 +16,7 @@ import 'package:mirror/page/login/phone_login_page.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/media_picker/preview_photo_page.dart';
+import 'package:mirror/page/media_picker/preview_video_page.dart';
 import 'package:mirror/page/message/chat_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/login_success_page.dart';
 import 'package:mirror/page/profile/profile_add_remarks.dart';
@@ -131,8 +133,7 @@ var handlerEditInformation = Handler(handlerFunc: (BuildContext context, Map<Str
 var handlerEditInformationName = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   if (data["title"] != null) {
-    return EditInformationName(
-        userName: data["username"], title: data["title"]);
+    return EditInformationName(userName: data["username"], title: data["title"]);
   } else {
     return EditInformationName(
       userName: data["username"],
@@ -206,6 +207,12 @@ var handlerPreviewPhoto = Handler(handlerFunc: (BuildContext context, Map<String
     fixedWidth: data["fixedWidth"],
     fixedHeight: data["fixedHeight"],
   );
+});
+
+var handlerPreviewVideo = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  SizeInfo sizeInfo = SizeInfo.fromJson(data["sizeInfo"]);
+  return PreviewVideoPage(filePath: data["filePath"], sizeInfo: sizeInfo);
 });
 
 //完善信息界面

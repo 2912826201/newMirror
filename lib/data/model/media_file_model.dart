@@ -28,7 +28,7 @@ class MediaFileModel {
 
   String filePath;
 
-  MediaFileModel.fromJson(dynamic json) {
+  MediaFileModel.fromJson(Map<String, dynamic> json) {
     type = json["type"];
     filePath = json["filePath"];
     sizeInfo = json["sizeInfo"] != null ? SizeInfo.fromJson(json["sizeInfo"]) : null;
@@ -51,7 +51,7 @@ class SelectedMediaFiles {
 
   SelectedMediaFiles();
 
-  SelectedMediaFiles.fromJson(dynamic json) {
+  SelectedMediaFiles.fromJson(Map<String, dynamic> json) {
     type = json["type"];
     if (json["list"] != null) {
       list = [];
@@ -85,7 +85,7 @@ class SizeInfo {
     return "height:${height},width:${width},offsetRatioX:${offsetRatioX},offsetRatioY:${offsetRatioY},duration:${duration},videoCroppedRatio:${videoCroppedRatio},";
   }
 
-  SizeInfo.fromJson(dynamic json) {
+  SizeInfo.fromJson(Map<String, dynamic> json) {
     height = json["height"];
     width = json["width"];
     offsetRatioX = json["offsetRatioX"];

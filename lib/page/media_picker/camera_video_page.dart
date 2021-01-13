@@ -1,24 +1,26 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/constants.dart';
+import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:photo_manager/photo_manager.dart';
 
 /// camera_video_page
 /// Created by yangjiayi on 2021/1/13.
 
 //相机录视频页
 class CameraVideoPage extends StatefulWidget {
-  CameraVideoPage({Key key, this.isGoToPublish = false, this.fixedWidth, this.fixedHeight}) : super(key: key);
+  CameraVideoPage({Key key, this.isGoToPublish = false}) : super(key: key);
 
   final bool isGoToPublish;
-  final int fixedWidth;
-  final int fixedHeight;
 
   @override
   CameraVideoState createState() => CameraVideoState();
@@ -34,6 +36,8 @@ class CameraVideoState extends State<CameraVideoPage> with WidgetsBindingObserve
   double _previewSize = 0;
 
   int _cameraIndex = 0;
+
+  Size _cameraSize;
 
   String _filePath;
 
@@ -138,6 +142,37 @@ class CameraVideoState extends State<CameraVideoPage> with WidgetsBindingObserve
                         onLongPressEnd: (longPressEndDetails) async {
                           print("结束录制！");
                           await stopRecordVideo();
+                          //检查时长 满足条件则跳转预览页
+                          if (_milliDuration > minRecordVideoDuration * 1000) {
+                            //设置尺寸信息
+                            SizeInfo sizeInfo = SizeInfo();
+                            sizeInfo.width = _cameraSize.width.toInt();
+                            sizeInfo.height = _cameraSize.height.toInt();
+                            sizeInfo.duration = _milliDuration ~/ 1000;
+                            sizeInfo.videoCroppedRatio = 1.0;
+                            if (sizeInfo.width > sizeInfo.height) {
+                              sizeInfo.offsetRatioX = (sizeInfo.height - sizeInfo.width) / 2 / sizeInfo.width;
+                            } else if (sizeInfo.width < sizeInfo.height) {
+                              sizeInfo.offsetRatioY = (sizeInfo.width - sizeInfo.height) / 2 / sizeInfo.height;
+                            }
+                            AppRouter.navigateToPreviewVideoPage(
+                              context,
+                              _filePath,
+                              sizeInfo,
+                              (result) {
+                                if (result != null) {
+                                  Navigator.pop(context, result);
+                                  if (widget.isGoToPublish) {
+                                    AppRouter.navigateToReleasePage(context);
+                                  }
+                                }
+                              },
+                            );
+                          } else {
+                            print("时长不够！");
+                          }
+                          _milliDuration = 0;
+                          _filePath = null;
                         },
                         child: Container(
                           width: 64,
@@ -171,6 +206,11 @@ class CameraVideoState extends State<CameraVideoPage> with WidgetsBindingObserve
     }
     //在切到后台或返回前台
     if (state == AppLifecycleState.inactive) {
+      _isRecording = false;
+      _milliDuration = 0;
+      if (_timer != null && _timer.isActive) {
+        _timer.cancel();
+      }
       print("Camera dispose");
       _controller?.dispose();
     } else if (state == AppLifecycleState.resumed) {
@@ -192,7 +232,11 @@ class CameraVideoState extends State<CameraVideoPage> with WidgetsBindingObserve
 
     // If the controller is updated then update the UI.
     _controller.addListener(() {
-      if (mounted) setState(() {});
+      print("controller.value : ${_controller.value}");
+      if (mounted)
+        setState(() {
+          _cameraSize = _controller.value.previewSize;
+        });
       if (_controller.value.hasError) {
         print("Camera error ${_controller.value.errorDescription}");
       }
@@ -211,22 +255,22 @@ class CameraVideoState extends State<CameraVideoPage> with WidgetsBindingObserve
 
   //TODO 需要注意iOS可能需要在开始录制前准备录制
   Future<void> startRecordVideo() async {
-    // if (!_controller.value.isInitialized) {
-    //   //没有完成相机初始化
-    //   print("Error: camera is not initialized.");
-    //   return null;
-    // }
-    // if (_controller.value.isRecordingVideo) {
-    //   //正在录制中
-    //   return null;
-    // }
-    // _filePath = "${AppConfig.getAppVideoDir()}/${DateTime.now().millisecondsSinceEpoch.toString()}.mp4";
-    // try {
-    //   await _controller.startVideoRecording(filePath);
-    // } on CameraException catch (e) {
-    //   print(e);
-    //   return null;
-    // }
+    if (!_controller.value.isInitialized) {
+      //没有完成相机初始化
+      print("Error: camera is not initialized.");
+      return null;
+    }
+    if (_controller.value.isRecordingVideo) {
+      //正在录制中
+      return null;
+    }
+    _filePath = "${AppConfig.getAppVideoDir()}/${DateTime.now().millisecondsSinceEpoch.toString()}.mp4";
+    try {
+      await _controller.startVideoRecording(_filePath);
+    } on CameraException catch (e) {
+      print(e);
+      return null;
+    }
 
     //更新状态
     setState(() {
@@ -241,16 +285,16 @@ class CameraVideoState extends State<CameraVideoPage> with WidgetsBindingObserve
   }
 
   Future<void> stopRecordVideo() async {
-    // if (!_controller.value.isRecordingVideo) {
-    //   //没有在录制中
-    //   return null;
-    // }
-    // try {
-    //   await _controller.stopVideoRecording();
-    // } on CameraException catch (e) {
-    //   print(e);
-    //   return null;
-    // }
+    if (!_controller.value.isRecordingVideo) {
+      //没有在录制中
+      return null;
+    }
+    try {
+      await _controller.stopVideoRecording();
+    } on CameraException catch (e) {
+      print(e);
+      return null;
+    }
     //更新状态
     setState(() {
       //结束计时

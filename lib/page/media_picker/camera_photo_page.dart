@@ -175,6 +175,7 @@ class CameraPhotoState extends State<CameraPhotoPage> with WidgetsBindingObserve
 
     // If the controller is updated then update the UI.
     _controller.addListener(() {
+      print("controller.value : ${_controller.value}");
       if (mounted) setState(() {});
       if (_controller.value.hasError) {
         print("Camera error ${_controller.value.errorDescription}");

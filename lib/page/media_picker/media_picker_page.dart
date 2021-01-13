@@ -75,8 +75,6 @@ class _MediaPickerState extends State<MediaPickerPage> {
     if (widget.mediaType == typeImageAndVideo) {
       _pageList.add(CameraVideoPage(
         isGoToPublish: widget.isGoToPublish,
-        fixedHeight: widget.fixedHeight,
-        fixedWidth: widget.fixedWidth,
       ));
     }
   }

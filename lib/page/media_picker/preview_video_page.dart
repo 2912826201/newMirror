@@ -6,24 +6,23 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/image_cropper.dart';
 
-/// preview_photo_page
-/// Created by yangjiayi on 2020/12/4.
+/// preview_video_page
+/// Created by yangjiayi on 2021/1/13.
 
-class PreviewPhotoPage extends StatefulWidget {
-  const PreviewPhotoPage({Key key, this.filePath, this.fixedWidth, this.fixedHeight}) : super(key: key);
+class PreviewVideoPage extends StatefulWidget {
+  const PreviewVideoPage({Key key, this.filePath, this.sizeInfo}) : super(key: key);
 
   final String filePath;
-  final int fixedWidth;
-  final int fixedHeight;
+  final SizeInfo sizeInfo;
 
   @override
-  _PreviewPhotoState createState() => _PreviewPhotoState();
+  _PreviewVideoState createState() => _PreviewVideoState();
 }
 
-class _PreviewPhotoState extends State<PreviewPhotoPage> {
-  var _cropperKey = GlobalKey<_PreviewPhotoState>();
+class _PreviewVideoState extends State<PreviewVideoPage> {
   File _file;
 
   double _previewSize = 0;
@@ -49,11 +48,11 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
               GestureDetector(
                 onTap: () async {
                   MediaFileModel model = MediaFileModel();
-                  model.croppedImage = await _getImage();
-                  model.type = mediaTypeKeyImage;
+                  // model.croppedImage = await _getImage();
+                  model.type = mediaTypeKeyVideo;
 
                   SelectedMediaFiles files = SelectedMediaFiles();
-                  files.type = mediaTypeKeyImage;
+                  files.type = mediaTypeKeyVideo;
                   files.list = [model];
 
                   Application.selectedMediaFiles = files;
@@ -77,15 +76,7 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
               color: AppColor.mainBlue,
               width: _previewSize,
               height: _previewSize,
-              child: CropperImage(
-                //需要处理成不能操作
-                FileImage(_file),
-                round: 0,
-                maskPadding: 0,
-                outWidth: widget.fixedWidth == null ? baseOutSize : widget.fixedWidth.toDouble(),
-                outHeight: widget.fixedHeight == null ? baseOutSize : widget.fixedHeight.toDouble(),
-                key: _cropperKey,
-              ),
+              child: FeedVideoPlayer(widget.filePath, widget.sizeInfo, _previewSize, isfile: true,),
             ),
             Expanded(
                 child: Container(
@@ -94,19 +85,5 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
             ))
           ],
         ));
-  }
-
-  Future<ui.Image> _getImage() async {
-    print("开始获取" + DateTime.now().millisecondsSinceEpoch.toString());
-
-    ui.Image image = await (_cropperKey.currentContext as CropperImageElement).outImage();
-
-    print("已获取到ui.Image" + DateTime.now().millisecondsSinceEpoch.toString());
-    print(image);
-    // ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-    // print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-    // Uint8List picBytes = byteData.buffer.asUint8List();
-    // print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
-    return image;
   }
 }
