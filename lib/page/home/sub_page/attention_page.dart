@@ -551,6 +551,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           attentionIdList.insert(0, -1);
         }
       }
+      // 回到顶部
+      _controller.jumpTo(0);
       pulishFeed();
     }
     return Container(

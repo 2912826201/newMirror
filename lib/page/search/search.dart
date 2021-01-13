@@ -284,9 +284,11 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                   decoration: BoxDecoration(
                       color: AppColor.textHint.withOpacity(0.24), borderRadius: BorderRadius.all(Radius.circular(3))),
                   margin: EdgeInsets.only(left: 16, right: historyRecordItemSpacing(searchHistoryList.length, index)),
-                  padding: EdgeInsets.only(left: 8, top: 3, right: 8, bottom: 3),
+                  padding: EdgeInsets.only(left: 8, right: 8,bottom: 1),
                   alignment: Alignment(0, 0),
-                  child: Text(searchHistoryList[index].word)),
+                  child: Center(
+                    child: Text(searchHistoryList[index].word)),
+                  ),
             );
           }),
     );
