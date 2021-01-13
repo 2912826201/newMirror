@@ -1028,9 +1028,10 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   void delayedSetState() {
     Future.delayed(Duration(milliseconds: 200), () {
       //print("setState--delayedSetState");
-      setState(() {
-        _timerCount = 0;
-      });
+      _timerCount = 0;
+      try {
+        setState(() {});
+      } catch (e) {}
     });
   }
 
