@@ -24,7 +24,7 @@ import 'package:text_span_field/range_style.dart';
 import 'package:text_span_field/text_span_field.dart';
 import 'package:toast/toast.dart';
 
-class ReleasePage extends StatefulWidget  {
+class ReleasePage extends StatefulWidget {
   @override
   ReleasePageState createState() => ReleasePageState();
 }
@@ -33,6 +33,7 @@ class ReleasePageState extends State<ReleasePage> {
   SelectedMediaFiles _selectedMediaFiles;
   TextEditingController _controller = TextEditingController();
   FocusNode feedFocus = FocusNode();
+
   // at的索引数组
   List<Rule> rules = [];
 
@@ -68,16 +69,14 @@ class ReleasePageState extends State<ReleasePage> {
                   children: [
                     // 头部布局
                     FeedHeader(selectedMediaFiles: _selectedMediaFiles),
+                    // 输入框
+                    KeyboardInput(controller: _controller),
                     // 中间主视图
                     Expanded(
                         child: Container(
                             margin: EdgeInsets.only(bottom: inputHeight),
                             child: CustomScrollView(
                               slivers: [
-                                // 输入框
-                                SliverToBoxAdapter(
-                                  child: KeyboardInput(controller: _controller),
-                                ),
                                 SliverList(
                                   delegate: SliverChildBuilderDelegate((content, index) {
                                     return str == "@"
@@ -93,8 +92,7 @@ class ReleasePageState extends State<ReleasePage> {
                                               : 1),
                                 )
                               ],
-                            )
-                        ))
+                            )))
                   ],
                 ),
               );
@@ -105,6 +103,7 @@ class ReleasePageState extends State<ReleasePage> {
 // 头部布局
 class FeedHeader extends StatelessWidget {
   FeedHeader({this.selectedMediaFiles});
+
   SelectedMediaFiles selectedMediaFiles;
 
   // 发布动态
@@ -130,7 +129,7 @@ class FeedHeader extends StatelessWidget {
           atModel.len = rule.endIndex;
           atModel.uid = 1008611;
           atUsersModel.add(atModel);
-        } else  {
+        } else {
           TopicDtoModel topicDtoModel = TopicDtoModel();
           topicDtoModel.index = rule.startIndex;
           topicDtoModel.len = rule.endIndex;
@@ -152,7 +151,7 @@ class FeedHeader extends StatelessWidget {
       Navigator.pop(context, true);
       print("打印结束");
     } else {
-      ToastShow.show(msg:"你发布的动态可能存在敏感内容",context: context,gravity: Toast.CENTER);
+      ToastShow.show(msg: "你发布的动态可能存在敏感内容", context: context, gravity: Toast.CENTER);
     }
   }
 
@@ -187,7 +186,7 @@ class FeedHeader extends StatelessWidget {
                 // 获取输入框内的规则
                 var rules = context.read<ReleaseFeedInputNotifier>().rules;
                 print("点击生效");
-                pulishFeed(inputText, rules,context);
+                pulishFeed(inputText, rules, context);
               },
               child: IgnorePointer(
                 // 监听输入框的值==""使外层点击不生效。非""手势生效。
@@ -246,8 +245,7 @@ class KeyboardInputState extends State<KeyboardInput> {
       if (isSwitchCursor) {
         List<Rule> rules = context.read<ReleaseFeedInputNotifier>().rules;
         int atIndex = context.read<ReleaseFeedInputNotifier>().atCursorIndex;
-        int topicIndex =
-            context.read<ReleaseFeedInputNotifier>().topicCursorIndex;
+        int topicIndex = context.read<ReleaseFeedInputNotifier>().topicCursorIndex;
         // 获取光标位置
         int cursorIndex = widget.controller.selection.baseOffset;
         for (Rule rule in rules) {
@@ -297,23 +295,19 @@ class KeyboardInputState extends State<KeyboardInput> {
       },
       valueChangedCallback:
           (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr, String topicSearchStr) {
-            rules = rules;
-            // print("输入框值回调：$value");
-            // print(rules);
-            isSwitchCursor = false;
-            if (atIndex > 0) {
-              context.read<ReleaseFeedInputNotifier>().getAtCursorIndex(
-                  atIndex);
-            }
-            if (topicIndex > 0) {
-              context.read<ReleaseFeedInputNotifier>().getTopicCursorIndex(
-                  topicIndex);
-            }
-            context.read<ReleaseFeedInputNotifier>().setAtSearchStr(
-                atSearchStr);
-            context.read<ReleaseFeedInputNotifier>().setTopicSearchStr(
-                topicSearchStr);
-            context.read<ReleaseFeedInputNotifier>().getInputText(value);
+        rules = rules;
+        // print("输入框值回调：$value");
+        // print(rules);
+        isSwitchCursor = false;
+        if (atIndex > 0) {
+          context.read<ReleaseFeedInputNotifier>().getAtCursorIndex(atIndex);
+        }
+        if (topicIndex > 0) {
+          context.read<ReleaseFeedInputNotifier>().getTopicCursorIndex(topicIndex);
+        }
+        context.read<ReleaseFeedInputNotifier>().setAtSearchStr(atSearchStr);
+        context.read<ReleaseFeedInputNotifier>().setTopicSearchStr(topicSearchStr);
+        context.read<ReleaseFeedInputNotifier>().getInputText(value);
         // 实时搜索
       },
     );
@@ -715,8 +709,9 @@ class ReleaseFeedMainView extends StatelessWidget {
       // height: 23,
       margin: EdgeInsets.only(left: index == 0 ? 16 : 12, right: index == addresss.length - 1 ? 16 : 0),
       padding: EdgeInsets.symmetric(horizontal: 5, vertical: 3),
-      alignment: Alignment(0,0),
-      decoration: BoxDecoration(color: AppColor.textHint.withOpacity(0.24), borderRadius: BorderRadius.all(Radius.circular(3))),
+      alignment: Alignment(0, 0),
+      decoration:
+          BoxDecoration(color: AppColor.textHint.withOpacity(0.24), borderRadius: BorderRadius.all(Radius.circular(3))),
       child: Text(
         address,
         style: TextStyle(fontSize: 12),
@@ -735,7 +730,7 @@ class ReleaseFeedMainView extends StatelessWidget {
                 selectedMediaFiles: selectedMediaFiles,
               )
             : Container(),
-        seletedAddress( context),
+        seletedAddress(context),
         recommendAddress()
       ],
     );
@@ -886,7 +881,7 @@ class SeletedPhotoState extends State<SeletedPhoto> {
                           print("关闭");
                           setState(() {
                             if (widget.selectedMediaFiles.list.length == 1) {
-                              ToastShow.show(msg: "最后一个了", context: context,gravity: Toast.CENTER);
+                              ToastShow.show(msg: "最后一个了", context: context, gravity: Toast.CENTER);
                               return;
                               // widget.selectedMediaFiles.type = null;
                             }

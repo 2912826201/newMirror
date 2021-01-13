@@ -94,7 +94,6 @@ class ScreenUtil {
   根据设计稿的设备高度适配
    */
   double setHeight(double height) => height * scaleHeight;
-
   ///字体大小适配方法
   ///@param fontSize 传入设计稿上字体的px ,
   ///@param allowFontScaling 控制字体是否要根据系统的“字体大小”辅助选项来进行缩放。默认值为false。

@@ -13,6 +13,7 @@ import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/if_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/widget/feed/feed_comment_popups.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
@@ -205,6 +206,7 @@ class GetTripleAreaState extends State<GetTripleArea> {
                   height: 24,
                 ),
                 onTap: () {
+                  // openFeedCommentBottomSheet(context: context, feedId: widget.model.id);
                   SingletonForWholePages.singleton().panelController().open();
                   context.read<FeedMapNotifier>().changeFeeId(widget.model.id);
                 }))
