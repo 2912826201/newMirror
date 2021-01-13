@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/constants.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -20,10 +21,6 @@ import 'package:video_player/video_player.dart';
 final int _horizontalCount = 4;
 final double _itemMargin = 0;
 final int _galleryPageSize = 100;
-
-//1.9:1 和 4:5
-final double maxRatio = 1.9;
-final double minRatio = 0.8;
 
 // 相册的选择GridView视图 需要能够区分选择图片或视频 选择图片数量 是否裁剪 裁剪是否只是正方形
 //TODO 目前没有做响应实时相册变化时的处理 完善时可以考虑实现
@@ -523,6 +520,9 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                         mediaFileModel.sizeInfo.offsetRatioX = sizeInfo.offsetRatioX;
                         mediaFileModel.sizeInfo.offsetRatioY = sizeInfo.offsetRatioY;
                       }
+
+                      mediaFileModel.sizeInfo.videoCroppedRatio = notifier.videoCroppedRatioMap[mediaFileModel.file.path];
+
                       break;
                     default:
                       break;
@@ -627,6 +627,11 @@ class SelectedMapNotifier with ChangeNotifier {
   Map<String, SizeInfo> _offsetMap = {};
 
   Map<String, SizeInfo> get offsetMap => _offsetMap;
+
+  // 记录视频的裁剪预览比例
+  Map<String, double> _videoCroppedRatioMap = {};
+
+  Map<String, double> get videoCroppedRatioMap => _videoCroppedRatioMap;
 
   // 用来存放已经裁剪好的图像数据
   Map<String, ui.Image> _imageMap = {};
@@ -736,6 +741,10 @@ class SelectedMapNotifier with ChangeNotifier {
     sizeInfo.offsetRatioX = offsetRatioX;
     sizeInfo.offsetRatioY = offsetRatioY;
     _offsetMap[key] = sizeInfo;
+  }
+
+  setVideoCroppedRatio(String key, double ratio) {
+    _videoCroppedRatioMap[key] = ratio;
   }
 }
 
@@ -870,8 +879,9 @@ class VideoPreviewState extends State<VideoPreviewArea> {
             if (!_controller.value.isPlaying) {
               _controller.play();
             }
-            Size _previewSize =
+            _VideoPreviewSize _previewSize =
                 _getVideoPreviewSize(_controller.value.aspectRatio, widget.previewWidth, widget.useOriginalRatio);
+            context.watch<SelectedMapNotifier>().setVideoCroppedRatio(_file.path, _previewSize.videoCroppedRatio);
             //初始位置就是(0，0)所以暂不做初始偏移值的处理
             return ScrollConfiguration(
               behavior: NoBlueEffectBehavior(),
@@ -935,11 +945,11 @@ Size _getImageOutSize(AssetEntity entity, bool useOriginalRatio) {
     // 因为最终图片宽度会填满屏幕宽度展示 所以图片始终保证宽度为固定标准
     // ratio的double类型计算可能会增加误差 所以不重新赋值ratio时 用宽高计算
     _outWidth = baseOutSize;
-    if (ratio < minRatio) {
-      ratio = minRatio;
+    if (ratio < minMediaRatio) {
+      ratio = minMediaRatio;
       _outHeight = _outWidth / ratio;
-    } else if (ratio > maxRatio) {
-      ratio = maxRatio;
+    } else if (ratio > maxMediaRatio) {
+      ratio = maxMediaRatio;
       _outHeight = _outWidth / ratio;
     } else {
       _outHeight = _outWidth * entity.height / entity.width;
@@ -952,32 +962,44 @@ Size _getImageOutSize(AssetEntity entity, bool useOriginalRatio) {
   return Size(_outWidth, _outHeight);
 }
 
+class _VideoPreviewSize extends Size{
+  _VideoPreviewSize(double width, double height) : super(width, height);
+
+  double videoCroppedRatio;
+}
+
 // 获取视频预览区域宽高
-Size _getVideoPreviewSize(double ratio, double _previewWidth, bool useOriginalRatio) {
+_VideoPreviewSize _getVideoPreviewSize(double ratio, double _previewWidth, bool useOriginalRatio) {
   double _videoWidth;
   double _videoHeight;
+  double _videoCroppedRatio;
 
   if (useOriginalRatio) {
-    if (ratio < minRatio) {
+    if (ratio < minMediaRatio) {
       //细高的情况 先限定最宽的宽度 再根据ratio算出高度
-      _videoWidth = _previewWidth * minRatio;
-      _videoHeight = _previewWidth * minRatio / ratio;
+      _videoWidth = _previewWidth * minMediaRatio;
+      _videoHeight = _previewWidth * minMediaRatio / ratio;
+      _videoCroppedRatio = minMediaRatio;
     } else if (ratio < 1) {
       //填满高度
       _videoHeight = _previewWidth;
       _videoWidth = _previewWidth * ratio;
-    } else if (ratio > maxRatio) {
+      _videoCroppedRatio = ratio;
+    } else if (ratio > maxMediaRatio) {
       //扁长的情况 先限定最高的高度 再根据ratio算出宽度
-      _videoHeight = _previewWidth / maxRatio;
-      _videoWidth = _previewWidth * ratio / maxRatio;
+      _videoHeight = _previewWidth / maxMediaRatio;
+      _videoWidth = _previewWidth * ratio / maxMediaRatio;
+      _videoCroppedRatio = maxMediaRatio;
     } else if (ratio > 1) {
       //填满宽度
       _videoHeight = _previewWidth / ratio;
       _videoWidth = _previewWidth;
+      _videoCroppedRatio = ratio;
     } else {
       //剩余的就是ratio == 1的情况
       _videoHeight = _previewWidth;
       _videoWidth = _previewWidth;
+      _videoCroppedRatio = 1;
     }
   } else {
     if (ratio < 1) {
@@ -993,6 +1015,10 @@ Size _getVideoPreviewSize(double ratio, double _previewWidth, bool useOriginalRa
       _videoHeight = _previewWidth;
       _videoWidth = _previewWidth;
     }
+    _videoCroppedRatio = 1;
   }
-  return Size(_videoWidth, _videoHeight);
+
+  _VideoPreviewSize _previewSize = _VideoPreviewSize(_videoWidth, _videoHeight);
+  _previewSize.videoCroppedRatio = _videoCroppedRatio;
+  return _previewSize;
 }

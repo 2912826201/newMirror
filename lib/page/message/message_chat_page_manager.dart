@@ -115,19 +115,18 @@ Future<Message> postMessageManagerText(String targetId, String text,
     MentionedInfo mentionedInfo, bool isPrivate) async {
   TextMessage msg = TextMessage();
   msg.sendUserInfo = getChatUserInfo();
-  if (mentionedInfo != null &&
-      mentionedInfo.userIdList != null &&
-      mentionedInfo.userIdList.length > 0) {
+  if (mentionedInfo != null && mentionedInfo.userIdList != null && mentionedInfo.userIdList.length > 0) {
     msg.mentionedInfo = mentionedInfo;
   }
   // msg.content = text;
   Map<String, dynamic> feedMap = Map();
-  feedMap["type"] = ChatTypeModel.MESSAGE_TYPE_TEXT;
-  feedMap["content"] = text;
+  feedMap["fromUserId"] = msg.sendUserInfo.userId.toString();
+  feedMap["toUserId"] = targetId;
+  feedMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_TEXT;
+  feedMap["name"] = ChatTypeModel.MESSAGE_TYPE_TEXT_NAME;
+  feedMap["data"] = text;
   msg.content = jsonEncode(feedMap);
-  return await (isPrivate
-      ? postPrivateMessageManager
-      : postGroupMessageManager)(targetId, msg);
+  return await (isPrivate ? postPrivateMessageManager : postGroupMessageManager)(targetId, msg);
 }
 
 //发送可选择的消息
@@ -137,8 +136,11 @@ Future<Message> postMessageManagerSelect(String targetId, String text,
   msg.sendUserInfo = getChatUserInfo();
   // msg.content = text;
   Map<String, dynamic> feedMap = Map();
-  feedMap["type"] = ChatTypeModel.MESSAGE_TYPE_SELECT;
-  feedMap["content"] = text;
+  feedMap["fromUserId"] = msg.sendUserInfo.userId.toString();
+  feedMap["toUserId"] = targetId;
+  feedMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_SELECT;
+  feedMap["name"] = ChatTypeModel.MESSAGE_TYPE_SELECT_NAME;
+  feedMap["data"] = text;
   msg.content = jsonEncode(feedMap);
   return await (isPrivate
       ? postPrivateMessageManager
@@ -151,41 +153,32 @@ Future<Message> postMessageManagerFeed(String targetId,
   TextMessage msg = TextMessage();
   msg.sendUserInfo = getChatUserInfo();
   Map<String, dynamic> feedMap = Map();
-  feedMap["type"] = ChatTypeModel.MESSAGE_TYPE_FEED;
-  feedMap["content"] = jsonEncode(map);
+  feedMap["fromUserId"] = msg.sendUserInfo.userId.toString();
+  feedMap["toUserId"] = targetId;
+  feedMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_FEED;
+  feedMap["name"] = ChatTypeModel.MESSAGE_TYPE_FEED_NAME;
+  feedMap["data"] = jsonEncode(map);
   msg.content = jsonEncode(feedMap);
   return await (isPrivate
       ? postPrivateMessageManager
       : postGroupMessageManager)(targetId, msg);
 }
 
-//发送图片视频---一般不用
-Future<Message> postMessageManagerImgOrVideo1(
-    String targetId,
-    bool isImgOrVideo,
-    MediaFileModel mediaFileModel,
-    UploadResultModel uploadResultModel) async {
-  ImageMessage msg = new ImageMessage();
-  msg.localPath = uploadResultModel.filePath;
-  msg.extra = jsonEncode(mediaFileModel.sizeInfo.toJson());
-  msg.imageUri = uploadResultModel.url;
-  msg.mThumbUri = uploadResultModel.url;
-  msg.sendUserInfo = getChatUserInfo();
-  return await postPrivateMessageManager(targetId, msg);
-}
 
-//发送图片视频--目前在使用这个--但是要更改
+//发送图片视频
 Future<Message> postMessageManagerImgOrVideo(String targetId, bool isImgOrVideo,
     MediaFileModel mediaFileModel, UploadResultModel uploadResultModel,
     bool isPrivate) async {
-  mediaFileModel.sizeInfo.showImageUrl = uploadResultModel.url;
   TextMessage msg = TextMessage();
   msg.sendUserInfo = getChatUserInfo();
   Map<String, dynamic> feedMap = Map();
-  feedMap["type"] = isImgOrVideo
-      ? ChatTypeModel.MESSAGE_TYPE_IMAGE
-      : ChatTypeModel.MESSAGE_TYPE_VIDEO;
-  feedMap["content"] = jsonEncode(mediaFileModel.sizeInfo.toJson());
+  feedMap["fromUserId"] = msg.sendUserInfo.userId.toString();
+  feedMap["toUserId"] = targetId;
+  feedMap["subObjectName"] = isImgOrVideo ? ChatTypeModel.MESSAGE_TYPE_IMAGE : ChatTypeModel.MESSAGE_TYPE_VIDEO;
+  feedMap["name"] = isImgOrVideo ? ChatTypeModel.MESSAGE_TYPE_IMAGE_NAME : ChatTypeModel.MESSAGE_TYPE_VIDEO_NAME;
+  Map sizeMap = mediaFileModel.sizeInfo.toJson();
+  sizeMap["showImageUrl"] = uploadResultModel.url;
+  feedMap["data"] = jsonEncode(sizeMap);
   msg.content = jsonEncode(feedMap);
   return await (isPrivate
       ? postPrivateMessageManager
@@ -220,8 +213,11 @@ Future<Message> postMessageManagerUser(String targetId,
   TextMessage msg = TextMessage();
   msg.sendUserInfo = getChatUserInfo();
   Map<String, dynamic> feedMap = Map();
-  feedMap["type"] = ChatTypeModel.MESSAGE_TYPE_USER;
-  feedMap["content"] = jsonEncode(map);
+  feedMap["fromUserId"] = msg.sendUserInfo.userId.toString();
+  feedMap["toUserId"] = targetId;
+  feedMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_USER;
+  feedMap["name"] = ChatTypeModel.MESSAGE_TYPE_USER_NAME;
+  feedMap["data"] = jsonEncode(map);
   msg.content = jsonEncode(feedMap);
   return await (isPrivate
       ? postPrivateMessageManager
@@ -234,8 +230,11 @@ Future<Message> postMessageManagerLiveCourse(String targetId,
   TextMessage msg = TextMessage();
   msg.sendUserInfo = getChatUserInfo();
   Map<String, dynamic> feedMap = Map();
-  feedMap["type"] = ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE;
-  feedMap["content"] = jsonEncode(map);
+  feedMap["fromUserId"] = msg.sendUserInfo.userId.toString();
+  feedMap["toUserId"] = targetId;
+  feedMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE;
+  feedMap["name"] = ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE_NAME;
+  feedMap["data"] = jsonEncode(map);
   msg.content = jsonEncode(feedMap);
   return await (isPrivate
       ? postPrivateMessageManager
@@ -248,8 +247,11 @@ Future<Message> postMessageManagerVideoCourse(String targetId,
   TextMessage msg = TextMessage();
   msg.sendUserInfo = getChatUserInfo();
   Map<String, dynamic> feedMap = Map();
-  feedMap["type"] = ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE;
-  feedMap["content"] = jsonEncode(map);
+  feedMap["fromUserId"] = msg.sendUserInfo.userId.toString();
+  feedMap["toUserId"] = targetId;
+  feedMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE;
+  feedMap["name"] = ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE_NAME;
+  feedMap["data"] = jsonEncode(map);
   msg.content = jsonEncode(feedMap);
   return await (isPrivate
       ? postPrivateMessageManager
@@ -271,18 +273,22 @@ Future<Message> postGroupMessageManager(String targetId,
 
 //发送消息提示间隔
 void postMessageManagerAlertTime(String chatTypeModel,
+    String chatTypeModelName,
     String content,
     String targetId,
     int conversationType,
-    Function(Message msg, int code) finished, bool isPrivate) {
+    Function(Message msg, int code) finished, {int sendTime = -1}) {
   TextMessage msg = TextMessage();
   msg.sendUserInfo = getChatUserInfo();
   Map<String, dynamic> feedMap = Map();
-  feedMap["type"] = chatTypeModel;
-  feedMap["content"] = content;
+  feedMap["fromUserId"] = msg.sendUserInfo.userId.toString();
+  feedMap["toUserId"] = targetId;
+  feedMap["subObjectName"] = chatTypeModel;
+  feedMap["name"] = chatTypeModelName;
+  feedMap["data"] = content;
   msg.content = jsonEncode(feedMap);
   Application.rongCloud
-      .insertOutgoingMessage(conversationType, targetId, msg, finished);
+      .insertOutgoingMessage(conversationType, targetId, msg, finished, sendTime: sendTime);
 }
 
 //获取用户数据
@@ -352,9 +358,16 @@ ChatDataModel getMessage(Message message, {bool isHaveAnimation = true}) {
 //获取时间间隔的消息
 void getTimeChatDataModel(
     {String targetId, int conversationType, int chatTypeId, Function(Message msg, int code) finished}) async {
-  postMessageManagerAlertTime(ChatTypeModel.MESSAGE_TYPE_ALERT_TIME,
+  postMessageManagerAlertTime(ChatTypeModel.MESSAGE_TYPE_ALERT_TIME, ChatTypeModel.MESSAGE_TYPE_ALERT_TIME_NAME,
       new DateTime.now().millisecondsSinceEpoch.toString(), targetId,
-      conversationType, finished, chatTypeId == RCConversationType.Private);
+      conversationType, finished);
+}
+//插入撤回消息
+void getReChatDataModel(
+    {String targetId, int conversationType, int chatTypeId, int sendTime, Function(Message msg, int code) finished}) async {
+  postMessageManagerAlertTime(ChatTypeModel.MESSAGE_TYPE_ALERT, ChatTypeModel.MESSAGE_TYPE_ALERT_NAME,
+      "你撤回了一条消息", targetId,
+      conversationType, finished, sendTime: sendTime);
 }
 
 //voice 的更新
@@ -531,15 +544,7 @@ void initChatGroupUserModelMap() {
 //判断去拿一个更多界面
 void judgeJumpPage(
     int chatTypeId, String chatUserId, int chatType, BuildContext context, String name, listener, exitGroupListener) {
-  if (chatTypeId == RCConversationType.Private) {
-    jumpPage(
-        PrivateMorePage(
-          chatUserId: chatUserId,
-          chatType: chatType,
-        ),
-        false,
-        context);
-  } else {
+  if (chatTypeId == RCConversationType.Group) {
     jumpPage(
         GroupMorePage(
             chatGroupId: chatUserId,
@@ -547,6 +552,14 @@ void judgeJumpPage(
             groupName: name,
             listener: listener,
             exitGroupListener: exitGroupListener),
+        false,
+        context);
+  } else {
+    jumpPage(
+        PrivateMorePage(
+          chatUserId: chatUserId,
+          chatType: chatType,
+        ),
         false,
         context);
   }

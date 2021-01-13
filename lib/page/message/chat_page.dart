@@ -148,14 +148,20 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   // 加载状态
   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
 
+  //重新编辑消息的位置
+  int recallNotificationMessagePosition = -1;
+
   @override
   void initState() {
     super.initState();
     initData();
     initSetData();
-    initTime();
-    initTextController();
-    initReleaseFeedInputFormatter();
+
+    if (widget.conversation.type > 3) {
+      initTime();
+      initTextController();
+      initReleaseFeedInputFormatter();
+    }
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
@@ -211,26 +217,33 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //获取显示的ui主体
   List<Widget> getBody() {
-    return [
-      Expanded(
-        child: SizedBox(
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              (chatDataList != null && chatDataList.length > 0) ? getChatDetailsBody() : Container(),
-              ChatAtUserList(
-                  isShow: context.watch<ChatEnterNotifier>().keyWord == "@", onItemClickListener: atListItemClick),
-            ],
-          ),
+    List<Widget> bodyArray = [];
+
+    //添加主体聊天界面
+    bodyArray.add(Expanded(
+      child: SizedBox(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            (chatDataList != null && chatDataList.length > 0) ? getChatDetailsBody() : Container(),
+            ChatAtUserList(
+                isShow: context.watch<ChatEnterNotifier>().keyWord == "@", onItemClickListener: atListItemClick),
+          ],
         ),
       ),
-      getMessageInputBar(),
-      bottomSettingBox(),
-      Offstage(
-        offstage: true,
-        child: judgeReceiveMessages(),
-      )
-    ];
+    ));
+
+    if (widget.conversation.type > 3) {
+      bodyArray.add(getMessageInputBar());
+      bodyArray.add(bottomSettingBox());
+    }
+
+    bodyArray.add(Offstage(
+      offstage: true,
+      child: judgeReceiveMessages(),
+    ));
+
+    return bodyArray;
   }
 
   //获取列表内容
@@ -243,6 +256,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       voidItemLongClickCallBack: onItemLongClickCallBack,
       voidMessageClickCallBack: onMessageClickCallBack,
       chatUserName: chatUserName,
+      conversationDtoType: widget.conversation.type,
       isPersonalButler: isPersonalButler,
       refreshController: _refreshController,
       isHaveAtMeMsg: isHaveAtMeMsg,
@@ -778,6 +792,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       ToastShow.show(msg: "消息为空,请输入消息！", context: context);
       return;
     }
+
     ChatDataModel chatDataModel = new ChatDataModel();
     chatDataModel.type = ChatTypeModel.MESSAGE_TYPE_TEXT;
     chatDataModel.content = text;
@@ -787,7 +802,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     mentionedInfo.type = RCMentionedType.Users;
     atUserIdList.clear();
     // 获取输入框内的规则
-    var rules = context.read<ChatEnterNotifier>().rules;
+    var rules = context
+        .read<ChatEnterNotifier>()
+        .rules;
     for (int i = 0; i < rules.length; i++) {
       if (!atUserIdList.contains(rules[i].clickIndex.toString())) {
         atUserIdList.add(rules[i].clickIndex.toString());
@@ -797,12 +814,21 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     mentionedInfo.mentionedContent = gteAtUserName(atUserIdList);
     chatDataModel.mentionedInfo = mentionedInfo;
 
+    print("444444444");
     chatDataList.insert(0, chatDataModel);
     animateToBottom();
-    setState(() {
-      _textController.text = "";
-      isHaveTextLen = false;
-    });
+
+    if (recallNotificationMessagePosition > 0) {
+      print("11111111");
+      _updateRecallNotificationMessage();
+    } else {
+      setState(() {
+        print("5555555555555");
+        _textController.text = "";
+        isHaveTextLen = false;
+      });
+    }
+
 
     postText(chatDataList[0], widget.conversation.conversationId, chatTypeId, mentionedInfo, () {
       context.read<ChatEnterNotifier>().clearRules();
@@ -890,18 +916,46 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         targetId: widget.conversation.conversationId,
         conversationType: chatTypeId,
         finished: (Message msg, int code) {
+          print("22222222222222222222222222222222222222222222222222222");
           ChatDataModel chatDataModel = new ChatDataModel();
           chatDataModel.msg = msg;
           chatDataModel.isTemporary = false;
           chatDataModel.isHaveAnimation = true;
           chatDataList.insert(0, chatDataModel);
+          if (recallNotificationMessagePosition > 0) {
+            recallNotificationMessagePosition++;
+          }
           animateToBottom();
           if (isSetState) {
+            print("111111111111111");
             setState(() {});
           }
         },
       );
     }
+  }
+
+  //修改撤回消息
+  _updateRecallNotificationMessage() {
+    getReChatDataModel(
+      targetId: widget.conversation.conversationId,
+      conversationType: chatTypeId,
+      sendTime: chatDataList[recallNotificationMessagePosition + 1].msg.sentTime,
+      finished: (Message msg, int code) {
+        ChatDataModel chatDataModel = new ChatDataModel();
+        chatDataModel.msg = msg;
+        chatDataModel.isTemporary = false;
+        chatDataModel.isHaveAnimation = false;
+        chatDataList.insert(recallNotificationMessagePosition + 1, chatDataModel);
+        chatDataList.removeAt(recallNotificationMessagePosition + 2);
+        recallNotificationMessagePosition = -1;
+
+        setState(() {
+          _textController.text = "";
+          isHaveTextLen = false;
+        });
+      },
+    );
   }
 
   ///------------------------------------发送消息  end-----------------------------------------------------------------------///
@@ -914,7 +968,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       if (isTextMessage) {
         TextMessage textMessage = chatDataList[0].msg.content as TextMessage;
         Map<String, dynamic> map = json.decode(textMessage.content);
-        bool isAlertTimeMessage = map["type"] == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME;
+        bool isAlertTimeMessage = map["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME;
         if (isAlertTimeMessage) {
           return true;
         }
@@ -927,10 +981,10 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   initTime() {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       _timerCount++;
-      // //print(_timerCount.toString());
+      // print(_timerCount.toString());
       if (_timerCount >= 300) {
         _timerCount = 0;
-        // //print("-----"+_timerCount.toString());
+        // print("-----"+_timerCount.toString());
         postTimeChatDataModel();
       }
     });
@@ -1355,9 +1409,16 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         setState(() {});
       });
     } else if (contentType == RecallNotificationMessage.objectName) {
+      recallNotificationMessagePosition = position;
+      print("position:${position}");
       ToastShow.show(msg: "重新编辑消息", context: context);
       // FocusScope.of(context).requestFocus(_focusNode);
-      _textController.text = json.decode(map["content"])["content"];
+      _textController.text = json.decode(map["content"])["data"];
+      var setCursor = TextSelection(
+        baseOffset: _textController.text.length,
+        extentOffset: _textController.text.length,
+      );
+      _textController.selection = setCursor;
       setState(() {});
     } else if (contentType == ChatTypeModel.CHAT_SYSTEM_BOTTOM_BAR) {
       ToastShow.show(msg: "管家界面-底部点击了：$content", context: context);

@@ -15,6 +15,8 @@ const String GETRECOMMENDTOPIC = "/appuser/web/topic/getRecommendTopic";
 const String GETTOPICINFO = "/appuser/web/topic/getTopicInfo";
 // 关注话题
 const String FOLLOWTOPIC = "/appuser/web/topic/follow";
+// 取消关注话题
+const String CANCELFOLLOWTOPIC = "/appuser/web/topic/cancelFollow";
 //获取搜索话题列表
 Future<DataResponseModel> searchTopic({@required String key, @required int size, double lastScore}) async {
   Map<String, dynamic> params = {};
@@ -69,16 +71,23 @@ Future<TopicDtoModel> getTopicInfo({@required int topicId}) async {
   }
 }
 // 关注话题 FOLLOWTOPIC
-Future<DataResponseModel> followTopic({@required int topicId}) async {
+Future<Map> followTopic({@required int topicId}) async {
   Map<String, dynamic> params = {};
   params["topicId"] = topicId;
   BaseResponseModel responseModel = await requestApi(FOLLOWTOPIC, params);
   if (responseModel.isSuccess) {
-    DataResponseModel dataResponseModel;
-    if (responseModel.data != null) {
-      dataResponseModel = DataResponseModel.fromJson(responseModel.data);
-    }
-    return dataResponseModel;
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
+// 取消关注话题 CANCELFOLLOWTOPIC
+Future<Map> cancelFollowTopic({@required int topicId}) async {
+  Map<String, dynamic> params = {};
+  params["topicId"] = topicId;
+  BaseResponseModel responseModel = await requestApi(CANCELFOLLOWTOPIC, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
   } else {
     return null;
   }

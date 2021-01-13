@@ -74,15 +74,15 @@ class SelectedMediaFiles {
 class SizeInfo {
   int height = 0;
   int width = 0;
+  double videoCroppedRatio; // 当视频不需要裁剪时 此值为null
   double offsetRatioX = 0.0;
   double offsetRatioY = 0.0;
   int duration = 0; //时长，只有音视频有用，图片此值为0，单位秒
-  String showImageUrl;
 
   SizeInfo();
 
   String toString() {
-    return "height:${height},width:${width},offsetRatioX:${offsetRatioX},offsetRatioY:${offsetRatioY},duration:${duration},";
+    return "height:${height},width:${width},offsetRatioX:${offsetRatioX},offsetRatioY:${offsetRatioY},duration:${duration},videoCroppedRatio:${videoCroppedRatio},";
   }
 
   SizeInfo.fromJson(dynamic json) {
@@ -91,7 +91,7 @@ class SizeInfo {
     offsetRatioX = json["offsetRatioX"];
     offsetRatioY = json["offsetRatioY"];
     duration = json["duration"];
-    showImageUrl = json["showImageUrl"];
+    videoCroppedRatio = json["videoCroppedRatio"];
   }
 
   Map<String, dynamic> toJson() {
@@ -101,7 +101,7 @@ class SizeInfo {
     map["offsetRatioX"] = offsetRatioX;
     map["offsetRatioY"] = offsetRatioY;
     map["duration"] = duration;
-    map["showImageUrl"] = showImageUrl;
+    map["videoCroppedRatio"] = videoCroppedRatio;
     return map;
   }
 }

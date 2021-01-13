@@ -192,8 +192,12 @@ class VideosModel {
   String coverUrl; //视频封面
   int width;
   int height;
+  double videoCroppedRatio; // 当视频不需要裁剪时 此值为null
+  double offsetRatioX = 0.0;
+  double offsetRatioY = 0.0;
 
-  VideosModel({this.url, this.hlsUrl, this.duration, this.coverUrl, this.height, this.width});
+  VideosModel({this.url, this.hlsUrl, this.duration, this.coverUrl, this.height, this.width, this.videoCroppedRatio,
+    this.offsetRatioX, this.offsetRatioY});
 
   VideosModel.fromJson(Map<String, dynamic> json) {
     url = json["url"];
@@ -202,6 +206,9 @@ class VideosModel {
     hlsUrl = json["hlsUrl"];
     duration = json["duration"];
     coverUrl = json["coverUrl"];
+    videoCroppedRatio = json["videoCroppedRatio"];
+    offsetRatioX = json["offsetRatioX"];
+    offsetRatioY = json["offsetRatioY"];
   }
 
   Map<String, dynamic> toJson() {
@@ -212,6 +219,9 @@ class VideosModel {
     map["hlsUrl"] = hlsUrl;
     map["duration"] = duration;
     map["coverUrl"] = coverUrl;
+    map["videoCroppedRatio"] = videoCroppedRatio;
+    map["offsetRatioX"] = offsetRatioX;
+    map["offsetRatioY"] = offsetRatioY;
     return map;
   }
 

@@ -335,7 +335,7 @@ class SearchFeeditemState extends State<SearchFeeditem> {
   }
 
   ClipRRect buildShowItemContainer() {
-    print("我在搞事情吗？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？");
+    // print("我在搞事情吗？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？");
     return ClipRRect(
       //圆角图片
       borderRadius: BorderRadius.circular(2),
@@ -362,8 +362,8 @@ class SearchFeeditemState extends State<SearchFeeditem> {
   }
   // @override
   Widget build(BuildContext context) {
-    print("你也要搞事情!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    print(model.picUrls.toString());
+    // print("你也要搞事情!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    // print(model.picUrls.toString());
     return Container(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,

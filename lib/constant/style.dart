@@ -33,14 +33,16 @@ class AppStyle {
   static const textPrimary3Regular14 =
       TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.textPrimary3);
   static const textPrimary3Regular12 =
-  TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textPrimary3);
+      TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textPrimary3);
 
   // Medium主体文字黑色
   static const textMedium18 = TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
   static const textMedium16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
   static const textMedium15 = TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
   static const textMedium14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
+  static const textMedium12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
   static const textMedium13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
+
   //红色
   static const textRegularRed16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.mainRed);
   static const textRegularRed13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.mainRed);
@@ -49,19 +51,16 @@ class AppStyle {
   //不在规范内style
   static const whiteRegular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.white);
   static const whiteRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.white);
-  static const textBlackMedium23 = TextStyle(fontSize: 23,fontWeight: FontWeight.w500,color: AppColor.textPrimary1);
-  static const textBold21 = TextStyle(fontSize: 21,fontWeight: FontWeight.w700,color: AppColor.black);
-  static const textMedium29 =
-  TextStyle(fontSize:29, fontWeight: FontWeight.w500, color: AppColor.textPrimary3);
-  static const textMedium21 =
-  TextStyle(fontSize: 21, fontWeight: FontWeight.w500, color: AppColor.textPrimary3);
-  static const textblackMedium29 =
-  TextStyle(fontSize:29, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
-  static const textblackMedium21 =
-  TextStyle(fontSize: 21, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
+  static const textBlackMedium23 = TextStyle(fontSize: 23, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
+  static const textBold21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w700, color: AppColor.black);
+  static const textMedium29 = TextStyle(fontSize: 29, fontWeight: FontWeight.w500, color: AppColor.textPrimary3);
+  static const textMedium21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w500, color: AppColor.textPrimary3);
+  static const textblackMedium29 = TextStyle(fontSize: 29, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
+  static const textblackMedium21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
   static const textPrimary3Medium16 =
-  TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColor.textPrimary3);
-  static const textPrimary3Medium23 = TextStyle(fontSize: 23,fontWeight: FontWeight.w500,color: AppColor.textPrimary3);
+      TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColor.textPrimary3);
+  static const textPrimary3Medium23 =
+      TextStyle(fontSize: 23, fontWeight: FontWeight.w500, color: AppColor.textPrimary3);
   static const textRegular13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textPrimary1);
   static const textMediumBlue13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.urlText);
   static const textHintRegular10 = TextStyle(fontSize: 10, fontWeight: FontWeight.w400, color: AppColor.textHint);
