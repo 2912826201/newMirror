@@ -7,6 +7,7 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
+import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/page/message/message_view/currency_msg.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
@@ -564,8 +565,8 @@ class GroupMorePageState extends State<GroupMorePage> {
   void setConversationNotificationStatus() async {
     showProgressDialog();
     //判断有没有免打扰
-    Map<String, dynamic> map =
-        await (disturbTheNews ? addNoPrompt : removeNoPrompt)(targetId: int.parse(widget.chatGroupId));
+    Map<String, dynamic> map = await (disturbTheNews ? addNoPrompt : removeNoPrompt)(
+        targetId: int.parse(widget.chatGroupId), type: GROUP_TYPE);
     if (!(map != null && map["state"] != null && map["state"])) {
       disturbTheNews = !disturbTheNews;
     } else {
@@ -594,19 +595,18 @@ class GroupMorePageState extends State<GroupMorePage> {
     }
 
     //判断有没有免打扰
-    Map<String, dynamic> map = await queryIsNoPrompt(targetId: int.parse(widget.chatGroupId));
-    disturbTheNews = map != null && map["state"] != null && map["state"];
-    setState(() {});
+    if (Application.queryNoPromptUidList == null || Application.queryNoPromptUidList.length < 1) {
+      disturbTheNews = false;
+    } else {
+      for (NoPromptUidModel noPromptUidModel in Application.queryNoPromptUidList) {
+        if (noPromptUidModel.type == GROUP_TYPE && noPromptUidModel.targetId.toString() == widget.chatGroupId) {
+          disturbTheNews = true;
+          break;
+        }
+      }
+    }
 
-    //融云的--暂时没用
-    // Application.rongCloud.getConversationNotificationStatus(
-    //     RCConversationType.Group, widget.chatGroupId,
-    //         (int status, int code) {
-    //       print("status:$status---code:$code");
-    //       if (code == 0) {
-    //         disturbTheNews = status == RCConversationNotificationStatus.DoNotDisturb;
-    //       }
-    //     });
+    setState(() {});
   }
 
   //点击事件
