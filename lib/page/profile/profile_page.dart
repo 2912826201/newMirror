@@ -192,7 +192,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
           ///这里是顶部appbar和头像关注
           child: Container(
-            height: height * 0.16 + 61,
+            height: height * 0.11 + 61 + ScreenUtil.instance.statusBarHeight,
             child: Column(
               children: [
                 SizedBox(

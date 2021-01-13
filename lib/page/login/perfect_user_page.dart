@@ -256,7 +256,6 @@ class _PerfectUserState extends LoginBasePageState {
       if(token != null){
         print("刷新用户token成功");
         await _afterLogin(token, context);
-        AppRouter.navigateToLoginSucess(context);
       }else{
         print("刷新用户token失败");
       }
@@ -283,6 +282,6 @@ class _PerfectUserState extends LoginBasePageState {
     Application.rongCloud.connect();
     //TODO 处理登录完成后的数据加载
     MessageManager.loadConversationListFromDatabase(context);
-
+    AppRouter.navigateToLoginSucess(context);
   }
 }

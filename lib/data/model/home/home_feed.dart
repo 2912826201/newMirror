@@ -271,7 +271,8 @@ class TopicDtoModel {
   int updateTime;
   int isFollow;
   List<String> pics = [];
-
+  String description;
+  String avatarUrl;
   TopicDtoModel(
       {this.id,
       this.uid,
@@ -289,7 +290,9 @@ class TopicDtoModel {
       this.createTime,
       this.updateTime,
       this.isFollow,
-      this.pics});
+      this.pics,
+      this.description,
+      this.avatarUrl});
 
   TopicDtoModel.fromJson(Map<String, dynamic> json) {
     id = json["id"];
@@ -308,6 +311,8 @@ class TopicDtoModel {
     createTime = json["createTime"];
     updateTime = json["updateTime"];
     isFollow = json["isFollow"];
+    description = json["description"];
+    avatarUrl = json["avatarUrl"];
     if (json["pics"] != null) {
       json["pics"].forEach((v) {
         pics.add(v);
@@ -334,6 +339,8 @@ class TopicDtoModel {
     map["updateTime"] = updateTime;
     map["isFollow"] = isFollow;
     map["pics"] = pics;
+    map["description"] = description;
+    map["avatarUrl"] = avatarUrl;
     return map;
   }
 

@@ -217,8 +217,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                     width: ScreenUtil.instance.width,
                     margin: EdgeInsets.only(left: 16, right: 16),
                     child: SearchUserItem(
-                      modelList: userList,
-                      index: index,
+                      model: userList[index],
                       width: ScreenUtil.instance.width,
                     )));
           }, childCount: userList.length)),
