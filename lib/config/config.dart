@@ -84,6 +84,7 @@ class AppConfig {
 
     await Directory(_appDir).create(recursive: true);
     await Directory(getAppPicDir()).create(recursive: true);
+    await Directory(getAppVideoDir()).create(recursive: true);
     await Directory(getAppVoiceDir()).create(recursive: true);
     await Directory(getAppDownloadDir()).create(recursive: true);
   }
@@ -91,6 +92,11 @@ class AppConfig {
   //获取图片文件的路径
   static String getAppPicDir() {
     return "$_appDir/pic";
+  }
+
+  //获取视频文件的路径
+  static String getAppVideoDir() {
+    return "$_appDir/video";
   }
 
   //获取语音文件的路径
