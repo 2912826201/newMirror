@@ -28,9 +28,6 @@ class VoiceDialog extends StatefulWidget {
 
 class _VoiceDialogState extends State<VoiceDialog> {
   String alertText = "手指上滑,取消发送";
-  Duration duration;
-  Timer timer;
-  int costTime = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -88,49 +85,4 @@ class _VoiceDialogState extends State<VoiceDialog> {
     );
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    duration = Duration(milliseconds: 800);
-    Timer.periodic(duration, (timer) {
-      //1s 回调一次
-      // print('定时任务时间：${DateTime.now().toString()}');
-      // 刷新页面
-      try {
-        context.read<VoiceAlertData>().changeCallback(
-              imageString: getVoiceImage(costTime++),
-            );
-      } catch (e) {
-        // 取消定时器
-        timer.cancel();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    // 取消定时器
-    if (timer != null) {
-      timer.cancel();
-    }
-  }
-
-  String getVoiceImage(int index) {
-    if (index % 7 == 0) {
-      return 'images/chat/voice_volume_1.webp';
-    } else if (index % 7 == 1) {
-      return 'images/chat/voice_volume_2.webp';
-    } else if (index % 7 == 2) {
-      return 'images/chat/voice_volume_3.webp';
-    } else if (index % 7 == 3) {
-      return 'images/chat/voice_volume_4.webp';
-    } else if (index % 7 == 4) {
-      return 'images/chat/voice_volume_5.webp';
-    } else if (index % 7 == 5) {
-      return 'images/chat/voice_volume_6.webp';
-    } else {
-      return 'images/chat/voice_volume_7.webp';
-    }
-  }
 }
