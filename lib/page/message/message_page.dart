@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/message_page_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/data/model/message/message_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
 import 'package:mirror/page/profile/Interactive_notification/interactive_notice_page.dart';
@@ -30,7 +32,8 @@ class MessagePage extends StatefulWidget {
 class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin {
   double _screenWidth = 0.0;
   int _listLength = 0;
-
+  UnreadInterCourses unReadMsg;
+  bool isFrist = true;
   @override
   bool get wantKeepAlive => true;
 
@@ -38,8 +41,22 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   void initState() {
     _screenWidth = ScreenUtil.instance.screenWidthDp;
     super.initState();
+    _getUnReadMagCount();
   }
+    _getUnReadMagCount()async{
+      Unreads model = await getUnReads();
+        if(model.interCourses!=null){
+          if(isFrist){
+            unReadMsg = model.interCourses;
+          }else{
+            setState(() {
+              unReadMsg = model.interCourses;
+            });
+          }
+        }
 
+
+    }
   @override
   Widget build(BuildContext context) {
     print("消息列表页build");
@@ -161,23 +178,13 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         children: [
           InkWell(
             onTap: (){
-              switch(type){
-                case 0:
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                    return InteractiveNoticePage(type: 0,);
-                  }));
-                  break;
-                case 1:
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                    return InteractiveNoticePage(type: 1,);
-                  }));
-                  break;
-                case 2:
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                    return InteractiveNoticePage(type: 2,);
-                  }));
-                  break;
-              }
+                    return InteractiveNoticePage(type: type,);
+                  })).then((value){
+                    isFrist = false;
+                    _getUnReadMagCount();
+                  });
+
             },
             child: Stack(
             overflow: Overflow.visible,
@@ -199,10 +206,10 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                   left: 29.5,
                   child: CountBadge(
                       type == 0
-                          ? 100
+                          ? unReadMsg.comment
                           : type == 1
-                              ? 1
-                              : 28,
+                              ? unReadMsg.at
+                              : unReadMsg.laud,
                       false)),
             ],
           ),),

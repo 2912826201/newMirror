@@ -29,7 +29,6 @@ const String STICKCHAT = "/appuser/web/groupChat/stickChat";
 const String GETTOPCHATLIST = "/appuser/web/groupChat/getTopChatList";
 //取消置顶
 const String CANCELTOPCHAT = "/appuser/web/groupChat/cancelTopChat";
-
 //添加消息免打扰
 const String ADDNOPROMPT = "/appuser/web/black/addNoPrompt";
 //取消消息免打扰
@@ -38,7 +37,8 @@ const String REMOVENOPROMPT = "/appuser/web/black/removeNoPrompt";
 const String QUERYISNOPROMPT = "/appuser/web/black/queryIsNoPrompt";
 //查询免打扰列表
 const String QUERYNOPROMPTUIDLIST = "/appuser/web/black/queryNoPromptUidList";
-
+//更新未读消息为已读
+const String REFREASHMSGUNREAD = "/appuser/web/message/updateUnreadMsgToRead";
 Future<Unreads> getUnReads() async {
   BaseResponseModel responseModel = await requestApi(GET_UNREAD_COUNT, {});
   if (responseModel.isSuccess) {
@@ -295,3 +295,20 @@ Future<Map> queryNoPromptUidList() async {
     return null;
   }
 }
+Future<bool> refreashUnReadMsg(int type,{int msgIds})async{
+  Map<String,dynamic> map = Map();
+  if(msgIds!=null){
+    map["msgIds"] = msgIds;
+  }
+  map["type"] = type;
+  BaseResponseModel responseModel = await requestApi(REFREASHMSGUNREAD, map);
+  Map<String, dynamic> result = responseModel.data;
+  bool state;
+  if(responseModel.isSuccess){
+    state = result["state"];
+    return state;
+  }else{
+    return null;
+  }
+}
+

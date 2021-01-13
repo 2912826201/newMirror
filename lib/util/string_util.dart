@@ -217,7 +217,9 @@ class StringUtil {
 
   无则不显示数字
 
-  小于10000，则显示具体数字；
+  小于1000直接显示
+
+  小于10000，大于1000则末尾单位显示k；
 
   大于10000，则显示为w，采取末位舍去法保留小数点后一位，如：60400显示为6w，63500显示为6.3w
    */
@@ -226,7 +228,18 @@ class StringUtil {
       return 0.toString();
     }
     if (number < 10000) {
-      return number.toString();
+      if(number<1000){
+        return number.toString();
+      }else{
+        String db = "${(number / 1000).toString()}";
+        if(int.parse(db.substring(db.indexOf(".")+1,db.indexOf(".")+2))!=0){
+          String doubleText = db.substring(0, db.indexOf(".")+2);
+          return doubleText + "k";
+        }else{
+          String intText = db.substring(0, db.indexOf("."));
+          return intText +"k";
+        }
+      }
     } else {
       String db = "${(number / 10000).toString()}";
       if(int.parse(db.substring(db.indexOf(".")+1,db.indexOf(".")+2))!=0){

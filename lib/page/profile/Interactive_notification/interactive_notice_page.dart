@@ -1,22 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/api/home/home_feed_api.dart';
+import 'package:mirror/api/message_page_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
-import 'package:mirror/api/user_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/query_msglist_model.dart';
-import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/rich_text_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
-
+///消息提醒列表
 class InteractiveNoticePage extends StatefulWidget {
   int type;
 
@@ -35,6 +31,7 @@ class _interactiveNoticeState extends State<InteractiveNoticePage> {
   List<QueryModel> msgList = [];
   bool haveData = true;
 
+  ///获取互动通知列表
   _getMsgList(int type) async {
     if (listPage > 1 && lastTime == null) {
       controller.loadNoData();
@@ -69,6 +66,17 @@ class _interactiveNoticeState extends State<InteractiveNoticePage> {
       }
     });
     print('msglist.length========================${msgList.length}');
+  }
+
+  _refreashUnReadMsg({int id})async{
+    var state = await refreashUnReadMsg(widget.type,msgIds:id);
+    if(state!=null){
+      if(state){
+        print('============================已读成功');
+      }else{
+        print('============================已读失败');
+      }
+    }
   }
 
   //刷新
@@ -109,6 +117,7 @@ class _interactiveNoticeState extends State<InteractiveNoticePage> {
             child: Image.asset("images/resource/2.0x/return2x.png"),
           ),
           onTap: () {
+            _refreashUnReadMsg();
             Navigator.pop(context);
           },
         ),
@@ -161,7 +170,11 @@ class _interactiveNoticeState extends State<InteractiveNoticePage> {
                     physics: AlwaysScrollableScrollPhysics(),
                     itemCount: msgList.length,
                     itemBuilder: (context, index) {
-                      return InteractiveNoticeItem(widget.type, msgList[index]);
+                      return InkWell(
+                        onTap: (){
+
+                        },
+                        child: InteractiveNoticeItem(widget.type, msgList[index]));
                     }),
               )
             : Center(
@@ -192,7 +205,7 @@ class _interactiveNoticeState extends State<InteractiveNoticePage> {
 }
 
 class InteractiveNoticeItem extends StatefulWidget {
-  int type;
+  int type = 1;
   QueryModel model;
 
   InteractiveNoticeItem(this.type, this.model);
@@ -231,7 +244,7 @@ class _interactiveNoticeItemState extends State<InteractiveNoticeItem> {
     senderAvatarUrl = msgModel.senderAvatarUrl;
     senderName = msgModel.senderName;
     commentModel = msgModel.commentData;
-    if(msgModel.mentionType==0){
+    if(widget.type==0){
       if(msgModel.refType==2){
         commentState = "回复了  ";
       }else{
@@ -253,6 +266,7 @@ class _interactiveNoticeItemState extends State<InteractiveNoticeItem> {
         } else  if(feedModel.picUrls.isNotEmpty) {
           coverImage = feedModel.picUrls.first.url;
           print('picUrl =============================${feedModel.picUrls.first.url}');
+          print('picUrl========================${feedModel.id}');
         }else{
           coverImage = null;
         }
@@ -359,6 +373,8 @@ class _interactiveNoticeItemState extends State<InteractiveNoticeItem> {
               children: [
                 Text(
                   "$senderName",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppStyle.textMedium15,
                 ),
                 SizedBox(

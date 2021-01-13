@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -221,7 +220,7 @@ class _queryFollowState extends State<QueryFollowList> {
       return;
     }
     print('====================话题页请求接口');
-    TopicListModel model = await GetTopicList(_lastTime, 20);
+    TopicListModel model = await GetTopicList(_lastTime, 20,uid: widget.userId);
     setState(() {
       if (listPage == 1) {
         _refreshController.loadComplete();
