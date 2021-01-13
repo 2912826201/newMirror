@@ -10,6 +10,7 @@ import 'package:mirror/data/dto/friends_cell_dto.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
+import 'package:mirror/page/profile/Interactive_notification/interactive_notice_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -190,7 +191,27 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Stack(
+          InkWell(
+            onTap: (){
+              switch(type){
+                case 0:
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                    return InteractiveNoticePage(type: 0,);
+                  }));
+                  break;
+                case 1:
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                    return InteractiveNoticePage(type: 1,);
+                  }));
+                  break;
+                case 2:
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                    return InteractiveNoticePage(type: 2,);
+                  }));
+                  break;
+              }
+            },
+            child: Stack(
             overflow: Overflow.visible,
             children: [
               Container(
@@ -216,7 +237,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                               : 28,
                       false)),
             ],
-          ),
+          ),),
           SizedBox(
             height: 5,
           ),

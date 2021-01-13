@@ -5,16 +5,21 @@ import 'package:flutter/gestures.dart';
 // RichTextWidget
 class MyRichTextWidget extends StatelessWidget {
   final Text defaultText;
+  final String  headText;
+  final TextStyle headStyle;
   final List<BaseRichText> richTexts;
   final List<TextSpan> _resultRichTexts = [];
   final int maxLines;
   final bool caseSensitive; //Whether to ignore case
   final TextOverflow textOverflow;
-  MyRichTextWidget(this.defaultText,
+  MyRichTextWidget(
+    this.defaultText,
       {this.richTexts = const [],
         this.caseSensitive = true,
         this.maxLines = 1,
-      this.textOverflow = TextOverflow.clip}) {
+      this.textOverflow = TextOverflow.clip,
+      this.headStyle,
+      this.headText}) {
     separateText();
   }
   //Split string
@@ -77,7 +82,7 @@ class MyRichTextWidget extends StatelessWidget {
     return RichText(
       maxLines: maxLines,
       overflow: textOverflow,
-      text: TextSpan(children: this._resultRichTexts),
+      text: TextSpan(text:headText,style:headStyle,children: this._resultRichTexts),
     );
   }
 }

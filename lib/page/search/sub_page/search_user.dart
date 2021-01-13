@@ -158,7 +158,7 @@ class searchUserState extends State<SearchUser> {
         child: ListView.builder(
           itemCount: modelList.length,
           itemBuilder: (context, index) {
-            return SearchUserItem(modelList: modelList, index: index, width: widget.width,);
+            return SearchUserItem(model: modelList[index],  width: widget.width,);
           }),
       ))
       : Expanded(
@@ -185,11 +185,10 @@ class searchUserState extends State<SearchUser> {
 }
 //搜索的item
 class SearchUserItem extends StatefulWidget {
-  List<UserModel> modelList;
-  int index;
+  UserModel model;
   double width;
 
-  SearchUserItem({this.modelList, this.index, this.width});
+  SearchUserItem({this.model, this.width});
 
   @override
   State<StatefulWidget> createState() {
@@ -208,12 +207,12 @@ class searchState extends State<SearchUserItem> {
         int relation = userModel.relation;
         if (relation == 0 || relation == 2) {
           setState(() {
-            widget.modelList[widget.index].relation = 0;
+            widget.model.relation = 0;
           });
 
         } else if (relation == 1 || relation == 3) {
            setState(() {
-             widget.modelList[widget.index].relation = 1;
+             widget.model.relation = 1;
            });
         }
       });
@@ -222,7 +221,7 @@ class searchState extends State<SearchUserItem> {
   @override
   void initState() {
     super.initState();
-    if(widget.modelList[widget.index].uid==context.read<ProfileNotifier>().profile.uid){
+    if(widget.model.uid==context.read<ProfileNotifier>().profile.uid){
         isMySelf = true;
     }else{
       isMySelf = false;
@@ -230,7 +229,7 @@ class searchState extends State<SearchUserItem> {
   }
   @override
   Widget build(BuildContext context) {
-    int relation = widget.modelList[widget.index].relation;
+    int relation = widget.model.relation;
       if (relation == 0 || relation == 2) {
         isFollow = false;
       } else if (relation == 1 || relation == 3) {
@@ -248,11 +247,11 @@ class searchState extends State<SearchUserItem> {
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                   return ProfileDetailPage(
-                    userId: widget.modelList[widget.index].uid,
+                    userId: widget.model.uid,
                   );
                 })).then((value) {
                   //每次从个人主页退回时去请求用户的接口对比当前的关系
-                  _getUserInfo(id: widget.modelList[widget.index].uid);
+                  _getUserInfo(id: widget.model.uid);
                 });
               },
               //头像
@@ -260,7 +259,7 @@ class searchState extends State<SearchUserItem> {
                 child: CachedNetworkImage(
                   height: 38,
                   width: 38,
-                  imageUrl: widget.modelList[widget.index].avatarUri,
+                  imageUrl: widget.model.avatarUri,
                   fit: BoxFit.cover,
                   placeholder: (context, url) =>
                     Image.asset(
@@ -288,16 +287,16 @@ class searchState extends State<SearchUserItem> {
                         onTap: () {
                           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                             return ProfileDetailPage(
-                              userId: widget.modelList[widget.index].uid,
+                              userId: widget.model.uid,
                             );
                           })).then((value){
-                            _getUserInfo(id: widget.modelList[widget.index].uid);
+                            _getUserInfo(id: widget.model.uid);
                           });
                         },
                         //昵称
                         child: Text(
-                          widget.modelList[widget.index].nickName != null
-                            ? widget.modelList[widget.index].nickName
+                          widget.model.nickName != null
+                            ? widget.model.nickName
                             : " ",
                           style: AppStyle.textMedium15,
                           maxLines: 1,
@@ -306,12 +305,12 @@ class searchState extends State<SearchUserItem> {
                       )),
                   ),
                   //签名
-                  widget.modelList[widget.index].description != null?Expanded(
+                  widget.model.description != null?Expanded(
                     flex: 1,
                     child: Container(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        widget.modelList[widget.index].description,
+                        widget.model.description,
                         style: AppStyle.textSecondaryRegular12,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -327,7 +326,7 @@ class searchState extends State<SearchUserItem> {
             onTap: () {
                 //只有在未关注时点击走方法
               if (!isFollow) {
-                _getAttention(widget.modelList[widget.index].uid);
+                _getAttention(widget.model.uid);
               }
             },
             ///按钮
@@ -356,7 +355,7 @@ class searchState extends State<SearchUserItem> {
     if (attntionResult == 1 || attntionResult == 3) {
       ToastShow.show(msg: "关注成功!", context: context);
       setState(() {
-        widget.modelList[widget.index].relation = 1;
+        widget.model.relation = 1;
       });
     }
   }

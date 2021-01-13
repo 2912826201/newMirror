@@ -106,7 +106,7 @@ class _editInformationState extends State<EditInformation> {
     }
     if (_introduction != "") {
       ///判断文字的高度，动态改变
-      TextPainter testSize = calculateTextWidth(_introduction, AppStyle.textRegular16, width-36, 5);
+      TextPainter testSize = calculateTextWidth(_introduction, AppStyle.textRegular16, width*0.66, 5);
       textHeight = testSize.height;
       print('textHeight==============================$textHeight');
     }
@@ -313,7 +313,7 @@ class _editInformationState extends State<EditInformation> {
     return Container(
       height: title=="简介"?textHeight+25:48,
       width: width,
-      padding: title=="简介"?EdgeInsets.only(top: 13,left: 16, right: 16):EdgeInsets.only(left: 16, right: 16),
+      padding: title=="简介"?EdgeInsets.only(top: 13,left: 16, right: 16,bottom: 12):EdgeInsets.only(left: 16, right: 16),
       child: Row(
           children: [
             Container(

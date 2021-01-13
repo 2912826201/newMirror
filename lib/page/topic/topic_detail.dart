@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/profile/topic_list_model.dart';
 import 'package:mirror/page/topic/topic_newest.dart';
 import 'package:mirror/page/topic/topic_recommend.dart';
@@ -20,7 +21,7 @@ class TopicDetail extends StatefulWidget {
 }
 
 class TopicDetailState extends State<TopicDetail> with SingleTickerProviderStateMixin {
-  topicModel model;
+  TopicDtoModel model;
 
   // taBar和TabBarView必要的
   TabController _tabController;
