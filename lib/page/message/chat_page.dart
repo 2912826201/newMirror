@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
-import 'package:mirror/api/message_page_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
@@ -815,7 +814,6 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     }
     if (isHaveAtMeMsg && isHaveAtMeMsgIndex > 0) {
       //print("滚动滚动滚动滚动滚动滚动滚动滚动滚动");
-      int count = 0;
       //开启无限滚动直到滚动到那个位置
       while (isHaveAtMeMsg && isHaveAtMeMsgIndex > 0) {
         await Future.delayed(Duration(milliseconds: 50), () {
@@ -1472,7 +1470,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       });
     } else if (contentType == RecallNotificationMessage.objectName) {
       recallNotificationMessagePosition = position;
-      print("position:${position}");
+      print("position:$position");
       ToastShow.show(msg: "重新编辑消息", context: context);
       // FocusScope.of(context).requestFocus(_focusNode);
       _textController.text = json.decode(map["content"])["data"];

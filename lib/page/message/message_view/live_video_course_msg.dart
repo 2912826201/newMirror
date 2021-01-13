@@ -7,7 +7,6 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
-import 'package:mirror/util/toast_util.dart';
 
 import 'currency_msg.dart';
 

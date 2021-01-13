@@ -6,10 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
-import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:provider/provider.dart';
 
 import 'currency_msg.dart';
 
@@ -104,7 +102,7 @@ class AlertMsg extends StatelessWidget {
     } else if (map["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP) {
       //群通知
       Map<String, dynamic> mapGroupModel = json.decode(map["data"]["data"]);
-      print("mapGroupModel:${map["data"].toString()}");
+      // print("mapGroupModel:${map["data"]["data"].toString()}");
       getGroupText(mapGroupModel, context);
     }
 
@@ -130,50 +128,48 @@ class AlertMsg extends StatelessWidget {
       return;
     }
 
-    bool isAdd = mapGroupModel["subType"] == 0;
-    if (isAdd && context
-        .watch<GroupUserProfileNotifier>()
-        .chatGroupUserModelList
-        .length > 0) {
-      if (context
-          .watch<GroupUserProfileNotifier>()
-          .chatGroupUserModelList[0].uid == Application.profile.uid) {
+    if (mapGroupModel["subType"] == 0) {
+      //邀请
+      if (mapGroupModel["operator"].toString() == Application.profile.uid.toString()) {
         textArray.add("你邀请了");
         isChangColorArray.add(false);
       } else {
-        textArray.add(context
-            .watch<GroupUserProfileNotifier>()
-            .chatGroupUserModelList[0].nickName + "邀请了");
+        textArray.add(mapGroupModel["operatorName"].toString() + "邀请了");
+        isChangColorArray.add(true);
+        userCount++;
+      }
+    } else if (mapGroupModel["subType"] == 2) {
+      //移除
+      if (mapGroupModel["operator"].toString() == Application.profile.uid.toString()) {
+        textArray.add("你将");
+        isChangColorArray.add(false);
+      } else {
+        textArray.add(mapGroupModel["operatorName"].toString() + "将");
         isChangColorArray.add(true);
         userCount++;
       }
     }
 
-    if (context
-        .watch<GroupUserProfileNotifier>()
-        .chatGroupUserModelList
-        .length > 0) {
-      for (dynamic d in users) {
-        print("dynamicdynamic" + d.toString());
-        String name = Application.chatGroupUserModelMap[d.toString()];
-        if (name != null) {
-          userCount++;
-          textArray.add("$name${userCount >= 3 ? "等" : "、"}");
-          isChangColorArray.add(true);
-        }
-        if (userCount >= 3) {
-          break;
-        }
+    for (dynamic d in users) {
+      if (d != null) {
+        userCount++;
+        textArray.add("${d["groupNickName"]}${userCount >= 3 ? "等" : "、"}");
+        isChangColorArray.add(true);
+      }
+      if (userCount >= 3) {
+        break;
       }
     }
     if (textArray.length > 0) {
       textArray[textArray.length - 1] = textArray[textArray.length - 1].trim().replaceAll("、", "");
     }
 
-    if (isAdd) {
+    if (mapGroupModel["subType"] == 0) {
       textArray.add("加入群聊");
-    } else {
+    } else if (mapGroupModel["subType"] == 1) {
       textArray.add("退出群聊");
+    } else {
+      textArray.add("移除了群聊");
     }
     isChangColorArray.add(false);
   }
