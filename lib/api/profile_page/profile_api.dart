@@ -337,8 +337,11 @@ Future<FansListModel> GetFansList(int LastTime,int size,{int uid})async{
   }
 }
 ///话题列表
-Future<TopicListModel> GetTopicList(int lastTime,int size)async{
+Future<TopicListModel> GetTopicList(int lastTime,int size,{int uid})async{
   Map<String,dynamic> map = Map();
+  if(uid!=null){
+    map["uid"] = uid;
+  }
   map["lastTime"] = lastTime;
   map["size"] = size;
   BaseResponseModel responseModel = await requestApi(TOPIC_LIST,map);

@@ -25,6 +25,7 @@ import 'package:mirror/page/profile/query_list/query_follow_list.dart';
 import 'package:mirror/page/profile/sticky_tabbar.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
@@ -75,6 +76,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///动态数
   int _dynmic;
 
+  ///获赞数
+  int _lauded;
+
   ///会改变的button里的内容
   String _buttonText = "+ 关注";
   TabController _mController;
@@ -110,12 +114,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
   StateResult fllowState = StateResult.RESULTNULL;
   RefreshController _refreshController = new RefreshController();
-  double textHeight = 10;
+  ScrollController scrollController = ScrollController();
+  double _signatureHeight = 10;
+  Color titleColor = AppColor.transparent;
   @override
   void initState() {
     super.initState();
     _mController = TabController(length: 2, vsync: this);
-
     ///判断是自己的页面还是别人的页面
     if (context.read<ProfileNotifier>().profile.uid == widget.userId) {
       isMselfId = true;
@@ -133,6 +138,15 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       _getFollowCount(id: widget.userId);
       _getDynamicData(3, id: widget.userId);
     }
+    scrollController.addListener(() {
+      /* if (scrollController.hasClients) {*/
+      if (scrollController.offset >= ScreenUtil.instance.height * 0.41+_signatureHeight-ScreenUtil.instance.statusBarHeight-16) {
+        context.read<ProfilePageNotifier>().changeTitleColor(AppColor.bgBlack);
+      } else {
+        context.read<ProfilePageNotifier>().changeTitleColor(AppColor.transparent);
+        /*  }*/
+      }
+    });
   }
 
   ///上拉加载
@@ -174,11 +188,12 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   _getFollowCount({int id}) async {
     ProfileModel attentionModel = await ProfileFollowCount(id: id);
     print(
-        'attentionModel========================${attentionModel.followingCount}${attentionModel.feedCount}${attentionModel.followerCount}${attentionModel.followingCount}');
+        'attentionModel========================${attentionModel.followingCount}${attentionModel.feedCount}${attentionModel.laudedCount}');
     setState(() {
       _attention = attentionModel.followingCount;
       _fans = attentionModel.followerCount;
       _dynmic = attentionModel.feedCount;
+      _lauded = attentionModel.laudedCount;
     });
   }
 
@@ -195,8 +210,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         if (_signature != null) {
           ///判断文字的高度，动态改变
           TextPainter testSize = calculateTextWidth(_signature, AppStyle.textRegular14, 255, 5);
-          textHeight = testSize.height;
-          print('textHeight==============================$textHeight');
+          _signatureHeight = testSize.height;
+          print('textHeight==============================$_signatureHeight');
         }
         _textName = userModel.nickName;
         relation = userModel.relation;
@@ -336,14 +351,18 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///这是个人页面，使用TabBarView
   Widget _minehomeBody(double width, double height) {
     return NestedScrollView(
+          controller:scrollController,
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
             ///这里使用NestedScrollView的AppBar，设置pinned: true,表示不会跟随滚动消失
             SliverAppBar(
               pinned: true,
               forceElevated:false,
+
+            title: Text("$_textName",style: TextStyle(fontWeight:FontWeight.w500,fontSize: 18,color: context.watch<ProfilePageNotifier>().titleColor),),
             leading: InkWell(
                 onTap: () {
+                  context.read<ProfilePageNotifier>().clearTitleColor();
                   Navigator.pop(this.context,_isFllow);
                 },
                 child: Image.asset(
@@ -395,7 +414,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 ):Container()
               ],
               backgroundColor: AppColor.white,
-              expandedHeight: height * 0.41 - ScreenUtil.instance.statusBarHeight + textHeight,
+              expandedHeight: height * 0.41 - ScreenUtil.instance.statusBarHeight + _signatureHeight,
               ///这里是资料展示页,写在这个里面相当于是appBar的背景板
               flexibleSpace: FlexibleSpaceBar(
                   background: Container(
@@ -456,7 +475,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///高斯模糊
   Widget mineHomeData(double height, double width) {
     return Container(
-      height: height * 0.41 + textHeight,
+      height: height * 0.41 + _signatureHeight,
       color: AppColor.white,
       child: Stack(
         children: [
@@ -496,7 +515,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///资料展示
   Widget _MineDetailsData(double height, double width) {
     return Container(
-        height: height * 0.41 + textHeight,
+        height: height * 0.41 + _signatureHeight,
         width: width,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -539,7 +558,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 
             ///签名
             Container(
-              height: textHeight,
+              height: _signatureHeight,
               padding: EdgeInsets.only(left: 16, right: 16),
               width: width * 0.7,
               child: Text(_signature != null ? _signature : "      ", softWrap: true, style: AppStyle.textRegular14),
@@ -554,7 +573,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               child: Row(
                 children: [
                   InkWell(
-                    child: _TextAndNumber("关注", _attention, height),
+                    child: _TextAndNumber("关注", StringUtil.getNumber(_attention), height),
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                         return QueryFollowList(
@@ -576,12 +595,12 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                         );
                       }));
                     },
-                    child: _TextAndNumber("粉丝", _fans, height),
+                    child: _TextAndNumber("粉丝", StringUtil.getNumber(_fans), height),
                   ),
                   SizedBox(
                     width: 61,
                   ),
-                  _TextAndNumber("动态", _dynmic, height),
+                  _TextAndNumber("获赞", StringUtil.getNumber(_lauded), height),
                 ],
               ),
             ),
@@ -780,32 +799,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     ));
   }
 
-  ///数值大小判断
-  String _getNumber(int number) {
-    if (number == 0 || number == null) {
-      return 0.toString();
-    }
-    if (number < 10000) {
-      return number.toString();
-    } else {
-      String db = "${(number / 10000).toString()}";
-      if (db.substring(db.indexOf("."), db.indexOf(".") + 2) != "0") {
-        String doubleText = db.substring(0, db.indexOf(".") + 2);
-        return doubleText + "W";
-      } else {
-        String intText = db.substring(0, db.indexOf("."));
-        return intText + "W";
-      }
-    }
-  }
-
   ///这是关注粉丝获赞
-  Widget _TextAndNumber(String text, int number, double height) {
+  Widget _TextAndNumber(String text, String number, double height) {
     return Container(
         child: Column(
       children: [
         Text(
-          "${_getNumber(number)}",
+          number,
           style: AppStyle.textMedium18,
         ),
         SizedBox(
@@ -848,5 +848,21 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     ///文字的宽度:painter.width
     print('painter.width==========================${painter.width}');
     print('painter.height==========================${painter.height}');
+  }
+}
+
+
+class ProfilePageNotifier extends ChangeNotifier{
+
+  Color titleColor = AppColor.transparent;
+
+  void changeTitleColor(Color color){
+    titleColor = color;
+    notifyListeners();
+  }
+
+  void clearTitleColor(){
+    titleColor = AppColor.transparent;
+    notifyListeners();
   }
 }
