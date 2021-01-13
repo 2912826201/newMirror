@@ -10,7 +10,6 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/util/Image_util.dart';
 import 'package:mirror/util/file_util.dart';
-import 'package:mirror/util/toast_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import 'currency_msg.dart';
@@ -28,6 +27,7 @@ class ImgVideoMsg extends StatelessWidget {
   final int status;
   final int position;
   final ImageMessage imageMessage;
+  final bool isCanLongClick;
   final Map<String, dynamic> sizeInfoMap;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
@@ -37,6 +37,7 @@ class ImgVideoMsg extends StatelessWidget {
       this.isTemporary,
       this.isImgOrVideo,
       this.isShowChatUserName = false,
+      this.isCanLongClick = true,
       this.sendChatUserId,
       this.mediaFileModel,
       this.userUrl,
@@ -149,6 +150,7 @@ class ImgVideoMsg extends StatelessWidget {
         );
         // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
       },
+      isCanLongClick: isCanLongClick,
       contentType: isImgOrVideo ? ChatTypeModel.MESSAGE_TYPE_IMAGE : ChatTypeModel.MESSAGE_TYPE_VIDEO,
       isMySelf: isMyself,
       actions: longClickStringList,
@@ -168,7 +170,7 @@ class ImgVideoMsg extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: Colors.greenAccent,
+        color: AppColor.transparent,
         borderRadius: BorderRadius.circular(3),
       ),
       child: ClipRRect(

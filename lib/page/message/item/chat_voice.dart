@@ -187,8 +187,8 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   Widget build(BuildContext context) {
     return new GestureDetector(
       onVerticalDragStart: (details) {
-        startY = details.globalPosition.dy;
-        showVoiceView();
+        // startY = details.globalPosition.dy;
+        // showVoiceView();
       },
       onVerticalDragDown: (details) {
         startY = details.globalPosition.dy;
@@ -240,11 +240,28 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     }
     costTime = 1;
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      context.read<VoiceAlertData>().changeCallback(
-          showDataTime: DateUtil.formatSecondToStringNum(costTime));
+      context.read<VoiceAlertData>().changeCallback(showDataTime: DateUtil.formatSecondToStringNum(costTime));
       setState(() {
         costTime++;
       });
     });
+  }
+
+  String getVoiceImage(int index) {
+    if (index % 7 == 0) {
+      return 'images/chat/voice_volume_1.webp';
+    } else if (index % 7 == 1) {
+      return 'images/chat/voice_volume_2.webp';
+    } else if (index % 7 == 2) {
+      return 'images/chat/voice_volume_3.webp';
+    } else if (index % 7 == 3) {
+      return 'images/chat/voice_volume_4.webp';
+    } else if (index % 7 == 4) {
+      return 'images/chat/voice_volume_5.webp';
+    } else if (index % 7 == 5) {
+      return 'images/chat/voice_volume_6.webp';
+    } else {
+      return 'images/chat/voice_volume_7.webp';
+    }
   }
 }

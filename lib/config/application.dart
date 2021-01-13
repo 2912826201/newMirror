@@ -10,6 +10,7 @@ import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
+import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/data/model/token_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -92,8 +93,6 @@ class Application {
   //main的上下文
   static BuildContext appContext;
 
-  //群成员信息
-  static List<ChatGroupUserModel> chatGroupUserModelList = <ChatGroupUserModel>[];
 
   //群成员的id--群昵称
   static Map<String, String> chatGroupUserModelMap = Map();
@@ -104,6 +103,9 @@ class Application {
   //系统平台 0-android 1-ios
   static int platform;
 
-  //那些消息是置顶的
+  //那些消息是置顶的no_prompt_uid_model
   static List<TopChatModel> topChatModelList = [];
+
+  //那些消息是免打扰的
+  static List<NoPromptUidModel> queryNoPromptUidList = [];
 }

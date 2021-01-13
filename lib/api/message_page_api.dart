@@ -244,9 +244,10 @@ Future<Map> cancelTopChat({int targetId, int type}) async {
 ///消息免打扰
 ///请求参数
 ///targetId:群聊id/私聊id
-Future<Map> addNoPrompt({int targetId}) async {
+Future<Map> addNoPrompt({int targetId, int type}) async {
   Map<String, dynamic> params = {};
   params["targetId"] = targetId;
+  params["type"] = type;
   BaseResponseModel responseModel = await requestApi(ADDNOPROMPT, params);
   if (responseModel.isSuccess) {
     return responseModel.data;
@@ -258,9 +259,10 @@ Future<Map> addNoPrompt({int targetId}) async {
 ///取消消息免打扰
 ///请求参数
 ///targetId:群聊id/私聊id
-Future<Map> removeNoPrompt({int targetId}) async {
+Future<Map> removeNoPrompt({int targetId, type}) async {
   Map<String, dynamic> params = {};
   params["targetId"] = targetId;
+  params["type"] = type;
   BaseResponseModel responseModel = await requestApi(REMOVENOPROMPT, params);
   if (responseModel.isSuccess) {
     return responseModel.data;
@@ -272,9 +274,10 @@ Future<Map> removeNoPrompt({int targetId}) async {
 ///查询是否免打扰
 ///请求参数
 ///targetId:群聊id/私聊id
-Future<Map> queryIsNoPrompt({int targetId}) async {
+Future<Map> queryIsNoPrompt({int targetId, int type}) async {
   Map<String, dynamic> params = {};
   params["targetId"] = targetId;
+  params["type"] = type;
   BaseResponseModel responseModel = await requestApi(QUERYISNOPROMPT, params);
   if (responseModel.isSuccess) {
     return responseModel.data;

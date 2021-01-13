@@ -7,11 +7,13 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
+import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/data/model/profile/follow_list_model.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:provider/provider.dart';
 
 import 'feed_friends_cell.dart';
 import 'feed_index_bar.dart';
@@ -304,15 +306,17 @@ class _FriendsPageState extends State<FriendsPage> {
       noBottomIndex: noBottomIndex,
       voidCallback: !(widget.type == 2 || widget.type == 3) ? widget.voidCallback :
           (String name, int userId, BuildContext context) {
-        if (selectUserUsIdList.contains(userId)) {
-          selectUserUsIdList.remove(userId);
-        } else {
-          selectUserUsIdList.add(userId);
-        }
-        setState(() {
-
-        });
-      },
+              if (widget.type == 2 &&
+                  userId == context.read<GroupUserProfileNotifier>().chatGroupUserModelList[0].uid) {
+                return;
+              }
+              if (selectUserUsIdList.contains(userId)) {
+                selectUserUsIdList.remove(userId);
+              } else {
+                selectUserUsIdList.add(userId);
+              }
+              setState(() {});
+            },
       isShowTitle: !isHaveTextLen,
       isShowSingleChoice: widget.type == 2 || widget.type == 3,
       isSelectSingleChoice: selectUserUsIdList.contains(userModel.uid),
@@ -337,9 +341,9 @@ class _FriendsPageState extends State<FriendsPage> {
   //初始化用户数据
   void initUserData() {
     if (widget.type == 1 || widget.type == 2) {
-      for (int i = 0; i < Application.chatGroupUserModelList.length; i++) {
-        addUserNameData(
-            Application.chatGroupUserModelList[i].groupNickName, i, userModel: Application.chatGroupUserModelList[i]);
+      List<ChatGroupUserModel> chatGroupUserModelList = context.read<GroupUserProfileNotifier>().chatGroupUserModelList;
+      for (int i = 0; i < chatGroupUserModelList.length; i++) {
+        addUserNameData(chatGroupUserModelList[i].groupNickName, i, userModel: chatGroupUserModelList[i]);
       }
     } else {
       for (int i = 0; i < followListModel.list.length; i++) {
@@ -489,7 +493,7 @@ class _FriendsPageState extends State<FriendsPage> {
     selectUserUsIdList.clear();
     if (model != null && model["state"]) {
       ToastShow.show(msg: "添加成功", context: context);
-      await getChatGroupUserModelList(widget.groupChatId.toString());
+      await getChatGroupUserModelList(widget.groupChatId.toString(), context);
       widget.voidCallback("添加成功", 0, context);
     } else {
       ToastShow.show(msg: "添加失败", context: context);
@@ -511,7 +515,7 @@ class _FriendsPageState extends State<FriendsPage> {
     selectUserUsIdList.clear();
     if (model != null && model["state"]) {
       ToastShow.show(msg: "删除成功", context: context);
-      await getChatGroupUserModelList(widget.groupChatId.toString());
+      await getChatGroupUserModelList(widget.groupChatId.toString(), context);
       widget.voidCallback("删除成功", 0, context);
     } else {
       ToastShow.show(msg: "删除失败", context: context);

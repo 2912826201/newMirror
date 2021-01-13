@@ -4,9 +4,13 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
+import 'package:mirror/data/model/message/group_user_model.dart';
+import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/page/message/message_view/currency_msg.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/LoadingProgress.dart';
@@ -15,6 +19,9 @@ import 'package:mirror/widget/feed/feed_share_select_contact.dart';
 import 'package:mirror/api/message_page_api.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:provider/provider.dart';
+
+import '../message_chat_page_manager.dart';
 
 typedef VoidCallback = void Function();
 
@@ -117,62 +124,92 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //获取头部群用户的头像
   Widget getTopAllUserImage() {
-    List<ChatGroupUserModel> groupUserList = <ChatGroupUserModel>[];
-    if (Application.chatGroupUserModelList.length > 13) {
-      groupUserList.addAll(Application.chatGroupUserModelList.sublist(0, 13));
-    } else {
-      groupUserList.addAll(Application.chatGroupUserModelList);
-    }
-    groupUserList.add(new ChatGroupUserModel());
-    groupUserList.add(new ChatGroupUserModel());
-    return SliverGrid.count(
-      crossAxisCount: 5,
-      childAspectRatio: 1.0,
-      mainAxisSpacing: 1,
-      crossAxisSpacing: 1,
-      children: List.generate(groupUserList.length, (index) {
-        if (index >= groupUserList.length - 2) {
-          bool isVisibility;
-          try {
-            isVisibility = index == groupUserList.length - 2 ||
-                Application.chatGroupUserModelList[0].uid == Application.profile.uid;
-          } catch (e) {
-            isVisibility = false;
+    return Consumer<GroupUserProfileNotifier>(
+      builder: (context, notifier, child) {
+        if (context.watch<GroupUserProfileNotifier>().loadingStatus == LoadingStatus.STATUS_COMPLETED) {
+          List<ChatGroupUserModel> groupUserList = <ChatGroupUserModel>[];
+          List<ChatGroupUserModel> chatGroupUserModelList =
+              context.watch<GroupUserProfileNotifier>().chatGroupUserModelList;
+          if (chatGroupUserModelList.length > 13) {
+            groupUserList.addAll(chatGroupUserModelList.sublist(0, 13));
+          } else {
+            groupUserList.addAll(chatGroupUserModelList);
           }
-          return getTopItemAddOrSubUserUi(index == groupUserList.length - 2, isVisibility);
+          groupUserList.add(new ChatGroupUserModel());
+          groupUserList.add(new ChatGroupUserModel());
+          return SliverGrid.count(
+            crossAxisCount: 5,
+            childAspectRatio: 1.0,
+            mainAxisSpacing: 1,
+            crossAxisSpacing: 1,
+            children: List.generate(groupUserList.length, (index) {
+              if (index >= groupUserList.length - 2) {
+                bool isVisibility;
+                try {
+                  isVisibility =
+                      index == groupUserList.length - 2 || chatGroupUserModelList[0].uid == Application.profile.uid;
+                } catch (e) {
+                  isVisibility = false;
+                }
+                return getTopItemAddOrSubUserUi(index == groupUserList.length - 2, isVisibility);
+              } else {
+                return getItemUserImage(index, groupUserList[index]);
+              }
+            }).toList(),
+          );
         } else {
-          return getItemUserImage(index, groupUserList[index]);
+          return SliverToBoxAdapter(
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: 100,
+              child: UnconstrainedBox(
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            ),
+          );
         }
-      }).toList(),
+      },
     );
   }
 
   //获取查看更多用户的按钮
   Widget getSeeAllUserBtn() {
-    return SliverToBoxAdapter(
-      child: Container(
-        child: GestureDetector(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "查看更多群成员",
-                style: TextStyle(color: AppColor.textSecondary, fontSize: 12),
-              ),
-              Icon(
-                Icons.chevron_right,
-                color: AppColor.textSecondary,
-                size: 12,
-              ),
-            ],
+    if (context
+        .watch<GroupUserProfileNotifier>()
+        .loadingStatus == LoadingStatus.STATUS_COMPLETED) {
+      return SliverToBoxAdapter(
+        child: Container(
+          child: GestureDetector(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "查看更多群成员",
+                  style: TextStyle(color: AppColor.textSecondary, fontSize: 12),
+                ),
+                Icon(
+                  Icons.chevron_right,
+                  color: AppColor.textSecondary,
+                  size: 12,
+                ),
+              ],
+            ),
+            onTap: () {
+              seeMoreGroupUser();
+            },
           ),
-          onTap: () {
-            seeMoreGroupUser();
-          },
         ),
-      ),
-    );
+      );
+    } else {
+      return SliverToBoxAdapter(
+        child: Container(
+
+        ),
+      );
+    }
   }
 
   //获取下面每一个listItem
@@ -262,6 +299,13 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //获取每一个用户的头像显示
   Widget getItemUserImage(int index, ChatGroupUserModel userModel) {
+    String userName;
+    if (userModel.uid == Application.profile.uid && groupMeName != null && groupMeName != "还未取名") {
+      userName = groupMeName;
+    } else {
+      userName = userModel.groupNickName ?? "";
+    }
+
     return Container(
       child: Column(
         children: [
@@ -271,8 +315,8 @@ class GroupMorePageState extends State<GroupMorePage> {
           ),
           SizedBox(
             width: 47,
-            child: Text(userModel.uid == Application.profile.uid ? groupMeName ?? userModel.groupNickName ?? "" :
-            userModel.groupNickName ?? "",
+            child: Text(
+              userName,
               style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -322,11 +366,24 @@ class GroupMorePageState extends State<GroupMorePage> {
   //获取我的群昵称
   String getGroupMeName() {
     String name = "还未取名";
-    for (int i = 1; i < Application.chatGroupUserModelList.length; i++) {
-      if (Application.chatGroupUserModelList[i].uid ==
-          Application.profile.uid) {
-        groupMeName = Application.chatGroupUserModelList[i].groupNickName;
-        return Application.chatGroupUserModelList[i].groupNickName;
+    if (context
+        .watch<GroupUserProfileNotifier>()
+        .loadingStatus == LoadingStatus.STATUS_COMPLETED) {
+      for (int i = 1; i < context
+          .watch<GroupUserProfileNotifier>()
+          .chatGroupUserModelList
+          .length; i++) {
+        if (context
+            .watch<GroupUserProfileNotifier>()
+            .chatGroupUserModelList[i].uid ==
+            Application.profile.uid) {
+          groupMeName = context
+              .watch<GroupUserProfileNotifier>()
+              .chatGroupUserModelList[i].groupNickName;
+          return context
+              .watch<GroupUserProfileNotifier>()
+              .chatGroupUserModelList[i].groupNickName;
+        }
       }
     }
     return name;
@@ -403,11 +460,22 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   void updateUserName() {
     if (isUpdateGroupMeName) {
-      for (int i = 0; i < Application.chatGroupUserModelList.length; i++) {
-        if (Application.chatGroupUserModelList[i].uid == Application.profile.uid) {
-          Application.chatGroupUserModelList[i].groupNickName = groupMeName;
-          if (widget.listener != null) {
-            widget.listener();
+      if (context
+          .watch<GroupUserProfileNotifier>()
+          .loadingStatus == LoadingStatus.STATUS_COMPLETED) {
+        for (int i = 0; i < context
+            .watch<GroupUserProfileNotifier>()
+            .chatGroupUserModelList
+            .length; i++) {
+          if (context
+              .watch<GroupUserProfileNotifier>()
+              .chatGroupUserModelList[i].uid == Application.profile.uid) {
+            context
+                .watch<GroupUserProfileNotifier>()
+                .chatGroupUserModelList[i].groupNickName = groupMeName;
+            if (widget.listener != null) {
+              widget.listener();
+            }
           }
         }
       }
@@ -422,7 +490,8 @@ class GroupMorePageState extends State<GroupMorePage> {
           type: 1,
           groupChatId: int.parse(widget.chatGroupId),
           voidCallback: (name, userId, context) {
-            print("查看了name：$name");
+            jumpPage(ProfileDetailPage(userId: userId), false, context);
+            // print("查看了name：$name");
           });
     }));
   }
@@ -457,7 +526,7 @@ class GroupMorePageState extends State<GroupMorePage> {
     }));
   }
 
-  //删除用户按钮
+  //退出按钮
   void exitGroupChatPr() async {
     Map<String, dynamic> model = await exitGroupChat(groupChatId: int.parse(widget.chatGroupId));
     if (model != null && model["state"] != null && model["state"]) {
@@ -496,8 +565,8 @@ class GroupMorePageState extends State<GroupMorePage> {
   void setConversationNotificationStatus() async {
     showProgressDialog();
     //判断有没有免打扰
-    Map<String, dynamic> map =
-        await (disturbTheNews ? addNoPrompt : removeNoPrompt)(targetId: int.parse(widget.chatGroupId));
+    Map<String, dynamic> map = await (disturbTheNews ? addNoPrompt : removeNoPrompt)(
+        targetId: int.parse(widget.chatGroupId), type: GROUP_TYPE);
     if (!(map != null && map["state"] != null && map["state"])) {
       disturbTheNews = !disturbTheNews;
     } else {
@@ -526,19 +595,18 @@ class GroupMorePageState extends State<GroupMorePage> {
     }
 
     //判断有没有免打扰
-    Map<String, dynamic> map = await queryIsNoPrompt(targetId: int.parse(widget.chatGroupId));
-    disturbTheNews = map != null && map["state"] != null && map["state"];
-    setState(() {});
+    if (Application.queryNoPromptUidList == null || Application.queryNoPromptUidList.length < 1) {
+      disturbTheNews = false;
+    } else {
+      for (NoPromptUidModel noPromptUidModel in Application.queryNoPromptUidList) {
+        if (noPromptUidModel.type == GROUP_TYPE && noPromptUidModel.targetId.toString() == widget.chatGroupId) {
+          disturbTheNews = true;
+          break;
+        }
+      }
+    }
 
-    //融云的--暂时没用
-    // Application.rongCloud.getConversationNotificationStatus(
-    //     RCConversationType.Group, widget.chatGroupId,
-    //         (int status, int code) {
-    //       print("status:$status---code:$code");
-    //       if (code == 0) {
-    //         disturbTheNews = status == RCConversationNotificationStatus.DoNotDisturb;
-    //       }
-    //     });
+    setState(() {});
   }
 
   //点击事件

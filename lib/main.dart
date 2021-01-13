@@ -33,6 +33,8 @@ import 'data/dto/token_dto.dart';
 import 'data/model/message/chat_enter_notifier.dart';
 import 'data/model/message/chat_message_profile_notifier.dart';
 import 'data/model/message/chat_voice_setting.dart';
+import 'data/model/message/group_user_model.dart';
+import 'data/model/message/no_prompt_uid_model.dart';
 import 'data/model/message/top_chat_model.dart';
 import 'data/model/message/voice_alert_date_model.dart';
 import 'data/model/token_model.dart';
@@ -50,8 +52,7 @@ void main() {
       providers: [
             ChangeNotifierProvider(
                 create: (_) => TokenNotifier(Application.token)),
-            ChangeNotifierProvider(
-                create: (_) => ProfileNotifier(Application.profile)),
+            ChangeNotifierProvider(create: (_) => ProfileNotifier(Application.profile)),
             ChangeNotifierProvider(create: (_) => FeedMapNotifier(feedMap: {})),
             ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
             ChangeNotifierProvider(create: (_) => ConversationNotifier()),
@@ -60,7 +61,8 @@ void main() {
             ChangeNotifierProvider(create: (_) => ChatMessageProfileNotifier()),
             ChangeNotifierProvider(create: (_) => ChatEnterNotifier()),
             ChangeNotifierProvider(create: (_) => AddressPickerNotifier()),
-            ChangeNotifierProvider(create: (_) => FitnessInformationNotifier())
+            ChangeNotifierProvider(create: (_) => FitnessInformationNotifier()),
+            ChangeNotifierProvider(create: (_) => GroupUserProfileNotifier())
           ],
       child: MyApp(),
     ),
@@ -149,10 +151,21 @@ Future _initApp() async {
 
   //todo 获取有哪些消息是置顶的消息
   try {
+    Application.topChatModelList.clear();
     Map<String, dynamic> topChatModelMap = await getTopChatList();
     if (topChatModelMap != null && topChatModelMap["list"] != null) {
       topChatModelMap["list"].forEach((v) {
         Application.topChatModelList.add(TopChatModel.fromJson(v));
+      });
+    }
+  } catch (e) {}
+  //todo 获取有哪些消息是免打扰的消息
+  try {
+    Application.queryNoPromptUidList.clear();
+    Map<String, dynamic> queryNoPromptUidListMap = await queryNoPromptUidList();
+    if (queryNoPromptUidListMap != null && queryNoPromptUidListMap["list"] != null) {
+      queryNoPromptUidListMap["list"].forEach((v) {
+        Application.queryNoPromptUidList.add(NoPromptUidModel.fromJson(v));
       });
     }
   } catch (e) {}

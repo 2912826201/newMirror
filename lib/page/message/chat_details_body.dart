@@ -62,9 +62,9 @@ class ChatDetailsBody extends StatelessWidget {
     chatData.addAll(chatDataList);
 
     if (isPersonalButler) {
-      ChatDataModel chatDataModel = new ChatDataModel();
-      chatDataModel.content = "私人管家";
-      chatData.insert(0, chatDataModel);
+      ChatDataModel model = new ChatDataModel();
+      model.content = "私人管家";
+      chatData.insert(0, model);
     }
 
     ChatDataModel chatDataModel = new ChatDataModel();
@@ -104,20 +104,26 @@ class ChatDetailsBody extends StatelessWidget {
               childrenDelegate: FirstEndItemChildrenDelegate((BuildContext context, int index) {
                 if (index == chatData.length - 1) {
                   print("------------");
+                    return Visibility(
+                      visible: loadStatus == LoadingStatus.STATUS_LOADING ? true : false,
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 10),
+                        child: LoadingView(
+                          loadText: "",
+                          loadStatus: loadStatus,
+                        ),
+                      ),
+                    );
+                  } else {
                   return Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: LoadingView(
-                      loadText: "",
-                      loadStatus: loadStatus,
-                    ),
+                    margin: index == 0 ? const EdgeInsets.only(bottom: 16) :
+                    (index == chatData.length - 2) ? const EdgeInsets.only(top: 8) : null,
+                    child: judgeStartAnimation(chatData[index], index),
                   );
-                } else {
-                  return judgeStartAnimation(chatData[index], index);
                 }
               },
                 firstEndCallback: firstEndCallback,
                 childCount: chatData.length,
-
               ),
               dragStartBehavior: DragStartBehavior.down,
             ),

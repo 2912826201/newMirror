@@ -15,6 +15,20 @@ class DateUtil {
     return old.year == now.year && old.month == now.month && old.day == now.day;
   }
 
+  /// 是否是前天.
+  static bool isTheDayBeforeYesterday(DateTime old) {
+    if (old == null) return false;
+    DateTime now = DateTime.now().add(Duration(days: -2));
+    return old.year == now.year && old.month == now.month && old.day == now.day;
+  }
+
+  /// 是否是今年.
+  static bool isToYear(DateTime old) {
+    if (old == null) return false;
+    DateTime now = DateTime.now();
+    return old.year == now.year;
+  }
+
   /// 返回这个日期是周几
   /// 从零开始的
   static String getStringWeekDayStartZero(int weekday) {
@@ -229,6 +243,10 @@ class DateUtil {
       alertString += "今天";
     } else if (isYesterday(dateTime)) {
       alertString += "昨天";
+    } else if (isTheDayBeforeYesterday(dateTime)) {
+      alertString += "前天";
+    } else if (isToYear(dateTime)) {
+      alertString += formatDateV(dateTime, format: "MM-dd");
     } else {
       alertString += formatDateV(dateTime, format: "yyyy-MM-dd");
     }
