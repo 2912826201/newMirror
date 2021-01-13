@@ -33,6 +33,7 @@ import 'data/dto/token_dto.dart';
 import 'data/model/message/chat_enter_notifier.dart';
 import 'data/model/message/chat_message_profile_notifier.dart';
 import 'data/model/message/chat_voice_setting.dart';
+import 'data/model/message/group_user_model.dart';
 import 'data/model/message/top_chat_model.dart';
 import 'data/model/message/voice_alert_date_model.dart';
 import 'data/model/token_model.dart';
@@ -50,8 +51,7 @@ void main() {
       providers: [
             ChangeNotifierProvider(
                 create: (_) => TokenNotifier(Application.token)),
-            ChangeNotifierProvider(
-                create: (_) => ProfileNotifier(Application.profile)),
+            ChangeNotifierProvider(create: (_) => ProfileNotifier(Application.profile)),
             ChangeNotifierProvider(create: (_) => FeedMapNotifier(feedMap: {})),
             ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
             ChangeNotifierProvider(create: (_) => ConversationNotifier()),
@@ -60,7 +60,8 @@ void main() {
             ChangeNotifierProvider(create: (_) => ChatMessageProfileNotifier()),
             ChangeNotifierProvider(create: (_) => ChatEnterNotifier()),
             ChangeNotifierProvider(create: (_) => AddressPickerNotifier()),
-            ChangeNotifierProvider(create: (_) => FitnessInformationNotifier())
+            ChangeNotifierProvider(create: (_) => FitnessInformationNotifier()),
+            ChangeNotifierProvider(create: (_) => GroupUserProfileNotifier())
           ],
       child: MyApp(),
     ),

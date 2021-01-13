@@ -11,12 +11,14 @@ import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/chat_voice_model.dart';
+import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:provider/provider.dart';
 
 import 'more_page/group_more_page.dart';
 import 'more_page/private_more_page.dart';
@@ -495,13 +497,13 @@ Future<List<UploadResultModel>> onPostImgOrVideo(
 }
 
 //获取at人的名字
-String gteAtUserName(List<String> userIdList) {
+String gteAtUserName(List<String> userIdList, List<ChatGroupUserModel> chatGroupUserModelList) {
   String string = "";
   if (userIdList != null && userIdList.length > 0) {
     for (int i = 0; i < userIdList.length; i++) {
-      for (int j = 0; j < Application.chatGroupUserModelList.length; j++) {
-        if (userIdList[i] == Application.chatGroupUserModelList[j].uid.toString()) {
-          string += Application.chatGroupUserModelList[j].nickName + ",";
+      for (int j = 0; j < chatGroupUserModelList.length; j++) {
+        if (userIdList[i] == chatGroupUserModelList[j].uid.toString()) {
+          string += chatGroupUserModelList[j].nickName + ",";
           break;
         }
       }
@@ -526,37 +528,38 @@ int getRCConversationType(int type) {
 
 
 //获取群成员信息
-Future<void> getChatGroupUserModelList(String groupChatId) async {
-  Application.chatGroupUserModelList.clear();
+Future<void> getChatGroupUserModelList(String groupChatId, BuildContext context) async {
+  context.read<GroupUserProfileNotifier>().clearAllUser();
+  List<ChatGroupUserModel> chatGroupUserModelList = [];
   Map<String, dynamic> model = await getMembers(groupChatId: int.parse(groupChatId));
   print("------model:${model.toString()}");
   if (model != null && model["list"] != null) {
     model["list"].forEach((v) {
-      Application.chatGroupUserModelList.add(ChatGroupUserModel.fromJson(v));
+      chatGroupUserModelList.add(ChatGroupUserModel.fromJson(v));
     });
-    initChatGroupUserModelMap();
+    context.read<GroupUserProfileNotifier>().addAll(chatGroupUserModelList);
+    initChatGroupUserModelMap(chatGroupUserModelList);
   }
 
-  print("------len:${Application.chatGroupUserModelList.length}");
+  print("------len:${chatGroupUserModelList.length}");
 }
 
 //获取群成员的信息 map id对应昵称
-void initChatGroupUserModelMap() {
-  if (!Application.chatGroupUserModelList[0].isGroupLeader()) {
-    for (int i = 0; i < Application.chatGroupUserModelList.length; i++) {
-      if (Application.chatGroupUserModelList[i].isGroupLeader()) {
-        Application.chatGroupUserModelList.insert(0, Application.chatGroupUserModelList[i]);
-        Application.chatGroupUserModelList.removeAt(i + 1);
+void initChatGroupUserModelMap(List<ChatGroupUserModel> chatGroupUserModelList) {
+  if (!chatGroupUserModelList[0].isGroupLeader()) {
+    for (int i = 0; i < chatGroupUserModelList.length; i++) {
+      if (chatGroupUserModelList[i].isGroupLeader()) {
+        chatGroupUserModelList.insert(0, chatGroupUserModelList[i]);
+        chatGroupUserModelList.removeAt(i + 1);
         break;
       }
     }
   }
   Application.chatGroupUserModelMap.clear();
-  for (ChatGroupUserModel userModel in Application.chatGroupUserModelList) {
+  for (ChatGroupUserModel userModel in chatGroupUserModelList) {
     Application.chatGroupUserModelMap[userModel.uid.toString()] = userModel.groupNickName;
   }
 }
-
 
 //todo 之后改为路由跳转
 //判断去拿一个更多界面

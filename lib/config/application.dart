@@ -92,8 +92,6 @@ class Application {
   //main的上下文
   static BuildContext appContext;
 
-  //群成员信息
-  static List<ChatGroupUserModel> chatGroupUserModelList = <ChatGroupUserModel>[];
 
   //群成员的id--群昵称
   static Map<String, String> chatGroupUserModelMap = Map();

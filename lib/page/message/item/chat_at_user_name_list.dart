@@ -1,12 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
-import 'package:mirror/page/message/chat_page.dart';
+import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/page/message/message_view/currency_msg.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:provider/provider.dart';
 
 typedef StringCallback = void Function(ChatGroupUserModel userModel, int index);
 
@@ -75,11 +76,27 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
 
   //list
   Widget listViewUi() {
-    return ListView.builder(
-      physics: BouncingScrollPhysics(),
-      itemCount: Application.chatGroupUserModelList.length,
-      itemBuilder: (context, index) {
-        return item(Application.chatGroupUserModelList[index], index);
+    return Consumer<GroupUserProfileNotifier>(
+      builder: (context, notifier, child) {
+        if (context.watch<GroupUserProfileNotifier>().loadingStatus == LoadingStatus.STATUS_COMPLETED) {
+          return ListView.builder(
+            physics: BouncingScrollPhysics(),
+            itemCount: context.watch<GroupUserProfileNotifier>().chatGroupUserModelList.length,
+            itemBuilder: (context, index) {
+              return item(context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[index], index);
+            },
+          );
+        } else {
+          return Container(
+            width: MediaQuery.of(context).size.width,
+            height: 100,
+            child: UnconstrainedBox(
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          );
+        }
       },
     );
   }

@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
+import 'package:mirror/api/message_page_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
@@ -20,6 +21,7 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
+import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/im/rongcloud.dart';
@@ -198,7 +200,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   @override
   void dispose() {
     _scrollController.dispose();
-    Application.chatGroupUserModelList.clear();
+    context.read<GroupUserProfileNotifier>().clearAllUser();
     if (Application.appContext != null) {
       Application.appContext.read<VoiceSettingNotifier>().stop();
       Application.appContext.read<ChatMessageProfileNotifier>().clear();
@@ -298,7 +300,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
               ToastShow.show(msg: "点击了更多那妞", context: context);
               judgeJumpPage(chatTypeId, this.chatUserId, widget.conversation.type, context, chatUserName, () {
                 Application.chatGroupUserModelMap.clear();
-                for (ChatGroupUserModel userModel in Application.chatGroupUserModelList) {
+                for (ChatGroupUserModel userModel in context.read<GroupUserProfileNotifier>().chatGroupUserModelList) {
                   Application.chatGroupUserModelMap[userModel.uid.toString()] = userModel.groupNickName;
                 }
                 delayedSetState();
@@ -615,7 +617,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     }
     context.read<ChatMessageProfileNotifier>().setData(chatTypeId, chatUserId);
     if (chatTypeId == RCConversationType.Group) {
-      getChatGroupUserModelList(chatUserId);
+      getChatGroupUserModelList(chatUserId, context);
     }
   }
 
@@ -857,7 +859,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       }
     }
     mentionedInfo.userIdList = atUserIdList;
-    mentionedInfo.mentionedContent = gteAtUserName(atUserIdList);
+    mentionedInfo.mentionedContent = gteAtUserName(atUserIdList, context
+        .read<GroupUserProfileNotifier>()
+        .chatGroupUserModelList);
     chatDataModel.mentionedInfo = mentionedInfo;
 
     judgeAddAlertTime();

@@ -6,8 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:provider/provider.dart';
 
 import 'currency_msg.dart';
 
@@ -48,12 +50,12 @@ class AlertMsg extends StatelessWidget {
       padding: EdgeInsets.only(top: 8.0),
       alignment: Alignment.bottomCenter,
       width: MediaQuery.of(context).size.width,
-      child: getAlertText(),
+      child: getAlertText(context),
     );
   }
 
 //获取提示消息
-  Widget getAlertText() {
+  Widget getAlertText(BuildContext context) {
     textArray.clear();
     isChangColorArray.clear();
     colorArray.clear();
@@ -103,7 +105,7 @@ class AlertMsg extends StatelessWidget {
       //群通知
       Map<String, dynamic> mapGroupModel = json.decode(map["data"]["data"]);
       print("mapGroupModel:${map["data"].toString()}");
-      getGroupText(mapGroupModel);
+      getGroupText(mapGroupModel, context);
     }
 
     if (textArray.length > 0) {
@@ -114,7 +116,7 @@ class AlertMsg extends StatelessWidget {
   }
 
   //判断是加入群聊还是退出群聊
-  void getGroupText(Map<String, dynamic> mapGroupModel) {
+  void getGroupText(Map<String, dynamic> mapGroupModel, BuildContext context) {
     colorArray.add(AppColor.textSecondary);
     colorArray.add(AppColor.textPrimary1);
 
@@ -129,18 +131,28 @@ class AlertMsg extends StatelessWidget {
     }
 
     bool isAdd = mapGroupModel["subType"] == 0;
-    if (isAdd && Application.chatGroupUserModelList.length > 0) {
-      if (Application.chatGroupUserModelList[0].uid == Application.profile.uid) {
+    if (isAdd && context
+        .watch<GroupUserProfileNotifier>()
+        .chatGroupUserModelList
+        .length > 0) {
+      if (context
+          .watch<GroupUserProfileNotifier>()
+          .chatGroupUserModelList[0].uid == Application.profile.uid) {
         textArray.add("你邀请了");
         isChangColorArray.add(false);
       } else {
-        textArray.add(Application.chatGroupUserModelList[0].nickName + "邀请了");
+        textArray.add(context
+            .watch<GroupUserProfileNotifier>()
+            .chatGroupUserModelList[0].nickName + "邀请了");
         isChangColorArray.add(true);
         userCount++;
       }
     }
 
-    if (Application.chatGroupUserModelList.length > 0) {
+    if (context
+        .watch<GroupUserProfileNotifier>()
+        .chatGroupUserModelList
+        .length > 0) {
       for (dynamic d in users) {
         print("dynamicdynamic" + d.toString());
         String name = Application.chatGroupUserModelMap[d.toString()];
