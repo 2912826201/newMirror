@@ -298,6 +298,13 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //获取每一个用户的头像显示
   Widget getItemUserImage(int index, ChatGroupUserModel userModel) {
+    String userName;
+    if (userModel.uid == Application.profile.uid && groupMeName != null && groupMeName != "还未取名") {
+      userName = groupMeName;
+    } else {
+      userName = userModel.groupNickName ?? "";
+    }
+
     return Container(
       child: Column(
         children: [
@@ -307,8 +314,8 @@ class GroupMorePageState extends State<GroupMorePage> {
           ),
           SizedBox(
             width: 47,
-            child: Text(userModel.uid == Application.profile.uid ? groupMeName ?? userModel.groupNickName ?? "" :
-            userModel.groupNickName ?? "",
+            child: Text(
+              userName,
               style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -518,7 +525,7 @@ class GroupMorePageState extends State<GroupMorePage> {
     }));
   }
 
-  //删除用户按钮
+  //退出按钮
   void exitGroupChatPr() async {
     Map<String, dynamic> model = await exitGroupChat(groupChatId: int.parse(widget.chatGroupId));
     if (model != null && model["state"] != null && model["state"]) {

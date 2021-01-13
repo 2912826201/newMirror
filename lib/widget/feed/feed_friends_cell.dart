@@ -101,7 +101,9 @@ class FriendsCell extends StatelessWidget {
         height: 24,
         decoration: !isSelectSingleChoice
             ? BoxDecoration(
-                color: AppColor.white,
+                color: isShowSingleChoice && groupTitle != "群成员"
+                    ? AppColor.white
+                    : AppColor.textSecondary.withOpacity(0.65),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(width: 0.5, color: AppColor.textHint),
               )

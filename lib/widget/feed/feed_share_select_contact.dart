@@ -306,15 +306,17 @@ class _FriendsPageState extends State<FriendsPage> {
       noBottomIndex: noBottomIndex,
       voidCallback: !(widget.type == 2 || widget.type == 3) ? widget.voidCallback :
           (String name, int userId, BuildContext context) {
-        if (selectUserUsIdList.contains(userId)) {
-          selectUserUsIdList.remove(userId);
-        } else {
-          selectUserUsIdList.add(userId);
-        }
-        setState(() {
-
-        });
-      },
+              if (widget.type == 2 &&
+                  userId == context.read<GroupUserProfileNotifier>().chatGroupUserModelList[0].uid) {
+                return;
+              }
+              if (selectUserUsIdList.contains(userId)) {
+                selectUserUsIdList.remove(userId);
+              } else {
+                selectUserUsIdList.add(userId);
+              }
+              setState(() {});
+            },
       isShowTitle: !isHaveTextLen,
       isShowSingleChoice: widget.type == 2 || widget.type == 3,
       isSelectSingleChoice: selectUserUsIdList.contains(userModel.uid),
