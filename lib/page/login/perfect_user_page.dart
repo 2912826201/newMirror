@@ -246,7 +246,7 @@ class _PerfectUserState extends LoginBasePageState {
   }
   //TODO 这个是临时的方法,完善信息(只是简单地传入了名字，头像的信息没有传入)
   _perfectUserInfo(BuildContext context,String portrait,String name) async{
-    bool perfectResult = await perfectUserInfo("$name" + Random().nextInt(10000).toString(),portrait);
+    bool perfectResult = await perfectUserInfo(name, portrait);
     if(perfectResult){
       //登录成功之后则要清除掉计数
       Application.smsCodeSendTime = null;
