@@ -171,7 +171,7 @@ class ImgVideoMsg extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: Colors.greenAccent,
+        color: AppColor.transparent,
         borderRadius: BorderRadius.circular(3),
       ),
       child: ClipRRect(

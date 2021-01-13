@@ -1019,9 +1019,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       // print(_timerCount.toString());
       if (_timerCount >= 150) {
         _timerCount = 0;
-        setState(() {
-
-        });
+        delayedSetState();
       }
     });
   }
