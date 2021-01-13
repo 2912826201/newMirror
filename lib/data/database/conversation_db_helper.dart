@@ -71,4 +71,29 @@ class ConversationDBHelper {
     // await DBHelper().closeDB(db);
     return result > 0;
   }
+
+  //用于查询最近联系人
+  Future<List<ConversationDto>> queryLatestContacts(int uid, int size, bool hasPrivate, bool hasGroup) async {
+    String typeStr;
+    if(hasPrivate == true && hasGroup == false){
+      typeStr = "$COLUMN_NAME_CONVERSATION_TYPE = $PRIVATE_TYPE";
+    } else if(hasPrivate == false && hasGroup == true){
+      typeStr = "$COLUMN_NAME_CONVERSATION_TYPE= $GROUP_TYPE";
+    } else if(hasPrivate == true && hasGroup == true){
+      typeStr = "($COLUMN_NAME_CONVERSATION_TYPE = $PRIVATE_TYPE or $COLUMN_NAME_CONVERSATION_TYPE= $GROUP_TYPE)";
+    } else {
+      typeStr = "$COLUMN_NAME_CONVERSATION_TYPE is null";
+    }
+
+    List<ConversationDto> list = [];
+    List<Map<String, dynamic>> result = await DBHelper.instance.db.query(TABLE_NAME_CONVERSATION,
+        where: "$COLUMN_NAME_CONVERSATION_UID = $uid and $typeStr",
+        limit: size,
+        orderBy: "$COLUMN_NAME_CONVERSATION_UPDATETIME desc");
+    for (Map<String, dynamic> map in result) {
+      list.add(ConversationDto.fromMap(map));
+    }
+
+    return list;
+  }
 }
