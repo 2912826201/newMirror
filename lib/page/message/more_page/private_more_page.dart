@@ -11,7 +11,7 @@ import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
-import 'package:mirror/widget/LoadingProgress.dart';
+import 'package:mirror/widget/loading_progress.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 class PrivateMorePage extends StatefulWidget {

@@ -13,7 +13,7 @@ import 'package:mirror/page/message/message_view/currency_msg.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/toast_util.dart';
-import 'package:mirror/widget/LoadingProgress.dart';
+import 'package:mirror/widget/loading_progress.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_share_select_contact.dart';
 import 'package:mirror/api/message_page_api.dart';
