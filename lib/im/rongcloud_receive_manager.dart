@@ -21,11 +21,10 @@ class RongCloudReceiveManager {
   //第二个参数表示的是还剩下的未取的消息数量，第三个参数表示是否是按照包的形势拉取的信息，第四个参数表示的是是否是离线消息
   onMessageReceivedWrapper(Message msg, int left, bool hasPackage, bool offline) {
     //TODO SDK 分批拉取离线消息，当离线消息量巨大的时候，建议当 left == 0 且 hasPackage == false 时刷新会话列表
-    print("收到了融云消息：" + msg.toString());
 
-    Application.appContext
-        .read<ChatMessageProfileNotifier>()
-        .changeCallback(msg);
+    Application.appContext.read<ChatMessageProfileNotifier>().changeCallback(msg);
+
+    print("收到了融云消息：" + msg.toString());
 
     //发信时间在用户注册时期之前的要舍弃掉 融云会保留一段时间 所以会查到用户注册前的消息
     if (msg.sentTime < Application.profile.createTime) {
@@ -37,7 +36,7 @@ class RongCloudReceiveManager {
 
     switch (offline) {
       case true:
-        // _processOffLineRawMsg(msg, left, hasPackage);
+      // _processOffLineRawMsg(msg, left, hasPackage);
         break;
       default:
       // _processCurrentRawMsg(msg,left);

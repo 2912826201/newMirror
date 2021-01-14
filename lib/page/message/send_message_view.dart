@@ -164,10 +164,18 @@ class SendMessageView extends StatelessWidget {
         } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_SELECT) {
           // return new Text('可选择的列表');
           return getSelectMsgData(mapModel["data"]);
+        } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
+          print("----------------------------------------------------------------------------");
+          // return new Text('群通知消息');
+          Map<String, dynamic> map = Map();
+          map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
+          map["data"] = json.decode(mapModel["data"]);
+          return getAlertMsg(map: map);
         } else if (mapModel["name"] != null) {
           //版本过低
           return getTextMsg(text: mapModel["name"], mentionedInfo: msg.content.mentionedInfo);
         }
+        print("map:${mapModel.toString()}");
       } catch (e) {
         return getTextMsg(text: "版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo);
       }
@@ -178,6 +186,13 @@ class SendMessageView extends StatelessWidget {
       // return new Text('提示消息--撤回');
       return getAlertMsg(recallNotificationMessage: ((msg.content) as RecallNotificationMessage));
     } else if (msgType == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
+      // return new Text('群通知');
+      Map<String, dynamic> map = Map();
+      map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
+      map["data"] = msg.originContentMap;
+      return getAlertMsg(map: map);
+    } else if (msgType == ChatTypeModel.MESSAGE_TYPE_CMD) {
+      print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
       // return new Text('群通知');
       Map<String, dynamic> map = Map();
       map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;

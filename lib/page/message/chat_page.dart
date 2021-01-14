@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
+import 'package:mirror/api/message_page_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
@@ -150,16 +151,22 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   //重新编辑消息的位置
   int recallNotificationMessagePosition = -1;
 
+  String systemLastTime;
+  int systemPage = 0;
+
   @override
   void initState() {
     super.initState();
     initData();
-    initSetData();
 
+    context.read<ChatMessageProfileNotifier>().isExitPage = false;
     if (widget.conversation.getType() != RCConversationType.System) {
+      initSetData();
       initTime();
       initTextController();
       initReleaseFeedInputFormatter();
+    } else {
+      getSystemInformation();
     }
 
     _scrollController.addListener(() {
@@ -171,7 +178,11 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
             loadText = "加载中...";
             loadStatus = LoadingStatus.STATUS_LOADING;
           });
-          _onRefresh();
+          if (widget.conversation.getType() != RCConversationType.System) {
+            _onRefresh();
+          } else {
+            _onRefreshSystemInformation();
+          }
         }
       }
     });
@@ -227,7 +238,12 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           children: [
             (chatDataList != null && chatDataList.length > 0) ? getChatDetailsBody() : Container(),
             ChatAtUserList(
-                isShow: context.watch<ChatEnterNotifier>().keyWord == "@", onItemClickListener: atListItemClick),
+              isShow: context
+                  .watch<ChatEnterNotifier>()
+                  .keyWord == "@",
+              onItemClickListener: atListItemClick,
+              groupChatId: chatUserId,
+            ),
           ],
         ),
       ),
@@ -241,6 +257,11 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     bodyArray.add(Offstage(
       offstage: true,
       child: judgeReceiveMessages(),
+    ));
+
+    bodyArray.add(Offstage(
+      offstage: true,
+      child: judgeExitPage(),
     ));
 
     return bodyArray;
@@ -261,7 +282,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       refreshController: _refreshController,
       isHaveAtMeMsg: isHaveAtMeMsg,
       isHaveAtMeMsgIndex: isHaveAtMeMsgIndex,
-      onRefresh: _onRefresh,
+      onRefresh: (widget.conversation.getType() != RCConversationType.System)
+          ? _onRefresh
+          : _onRefreshSystemInformation,
       loadText: loadText,
       loadStatus: loadStatus,
       isShowChatUserName: widget.conversation.getType() == RCConversationType.Group,
@@ -649,6 +672,35 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       });
     });
   }
+
+  //获取系统消息
+  void getSystemInformation() async {
+    List<ChatDataModel> dataList = await getSystemInformationNet();
+    if (dataList != null && dataList.length > 0) {
+      chatDataList.addAll(dataList);
+      //加入时间提示
+      getTimeAlert(chatDataList);
+      delayedSetState();
+    }
+  }
+
+  //获取系统消息
+  Future<List<ChatDataModel>> getSystemInformationNet() async {
+    List<ChatDataModel> dataList = <ChatDataModel>[];
+    Map<String, dynamic> dataListMap = await querySysMsgList(
+        type: widget.conversation.type, size: 20, lastTime: systemLastTime);
+    try {
+      systemLastTime = dataListMap["lastTime"].toString();
+    } catch (e) {}
+    if (dataListMap != null && dataListMap["list"] != null) {
+      systemPage++;
+      dataListMap["list"].forEach((v) {
+        dataList.add(getMessage(getSystemMsg(v, widget.conversation.type), isHaveAnimation: false));
+      });
+    }
+    return dataList;
+  }
+
 
   //加入时间提示
   void getTimeAlert(List<ChatDataModel> chatDataList) {
@@ -1040,6 +1092,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         Message message = context.select((ChatMessageProfileNotifier value) => value.message);
         bool isSettingStatus = context.select((ChatMessageProfileNotifier value) => value.isSettingStatus);
         if (message == null || message.targetId != this.chatUserId && message.conversationType != chatTypeId) {
+          //是不是更新消息的状态
           if (isSettingStatus) {
             Application.appContext.read<ChatMessageProfileNotifier>().setSettingStatus(false);
             int messageId = context.select((ChatMessageProfileNotifier value) => value.messageId);
@@ -1067,7 +1120,45 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         ChatDataModel chatDataModel = getMessage(message, isHaveAnimation: true);
         judgeAddAlertTime();
         chatDataList.insert(0, chatDataModel);
-        delayedSetState();
+
+        //判断是不是群通知
+        if (message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
+          if (chatTypeId == RCConversationType.Group) {
+            print("--------------------------------");
+            getChatGroupUserModelList1(chatUserId, context);
+          } else {
+            delayedSetState();
+          }
+        } else {
+          delayedSetState();
+        }
+        return Container();
+      },
+    );
+  }
+
+//判断是否退出界面
+  Widget judgeExitPage() {
+    return Consumer<ChatMessageProfileNotifier>(
+      builder: (context, notifier, child) {
+        bool isExitPage = context.select((ChatMessageProfileNotifier value) => value.isExitPage);
+        Message message = context.select((ChatMessageProfileNotifier value) => value.exitMessage);
+        if (isExitPage) {
+          MessageManager.removeConversation(
+              context, chatUserId, Application.profile.uid, widget.conversation.type);
+          context
+              .watch<ChatMessageProfileNotifier>()
+              .exitMessage = null;
+          if (message != null) {
+            getChatGroupUserModelList1(chatUserId, context);
+            insertExitGroupMsg(message, chatUserId, (Message msg, int code) {
+              if (code == 0) {
+                chatDataList.insert(0, getMessage(msg));
+                delayedSetState();
+              }
+            });
+          }
+        }
         return Container();
       },
     );
@@ -1388,6 +1479,28 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       });
     });
   }
+
+  //加载更多的系统消息
+  _onRefreshSystemInformation() async {
+    List<ChatDataModel> dataList = await getSystemInformationNet();
+    if (dataList != null && dataList.length > 0) {
+      getTimeAlert(dataList);
+      if (chatDataList[chatDataList.length - 2].msg.sentTime - dataList[0].msg.sentTime < 5 * 60 * 1000) {
+        chatDataList.removeAt(chatDataList.length - 1);
+      }
+      chatDataList.addAll(dataList);
+
+      loadStatus = LoadingStatus.STATUS_IDEL;
+      loadText = "加载中...";
+    } else {
+      loadText = "已加载全部动态";
+      loadStatus = LoadingStatus.STATUS_COMPLETED;
+    }
+    _timerCount = 0;
+    _refreshController.loadComplete();
+    delayedSetState();
+  }
+
 
   //所有的item长按事件
   void onItemLongClickCallBack(

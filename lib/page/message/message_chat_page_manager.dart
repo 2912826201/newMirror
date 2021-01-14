@@ -45,13 +45,12 @@ void jumpChatPageUser(
 
 //分享跳转界面
 Future<bool> jumpShareMessage(
-    Map<String, dynamic> map, String chatType, String name, int userId, BuildContext context) async {
+    Map<String, dynamic> map, String chatType, String name, int userId, int type, BuildContext context) async {
   ConversationDto conversation = new ConversationDto();
   conversation.name = name;
   conversation.conversationId = userId.toString();
   conversation.uid = Application.profile.uid;
-  //todo 目前这里是私聊--写死
-  conversation.type = PRIVATE_TYPE;
+  conversation.type = type == RCConversationType.Private ? PRIVATE_TYPE : GROUP_TYPE;
 
   Message message;
   if (chatType == ChatTypeModel.MESSAGE_TYPE_FEED) {
@@ -60,8 +59,8 @@ Future<bool> jumpShareMessage(
         conversation.conversationId, map, conversation.getType() == RCConversationType.Private);
   } else if (chatType == ChatTypeModel.MESSAGE_TYPE_USER) {
     print("给$name分享了名片");
-    message = await postMessageManagerUser(conversation.conversationId, map,
-        conversation.getType() == RCConversationType.Private);
+    message = await postMessageManagerUser(
+        conversation.conversationId, map, conversation.getType() == RCConversationType.Private);
   } else if (chatType == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
     print("给$name分享了直播课程");
     message = await postMessageManagerLiveCourse(conversation.conversationId,
@@ -278,8 +277,8 @@ void postMessageManagerAlertTime(String chatTypeModel,
     String chatTypeModelName,
     String content,
     String targetId,
-    int conversationType,
-    Function(Message msg, int code) finished, {int sendTime = -1}) {
+    int conversationType, Function(Message msg, int code) finished,
+    {int sendTime = -1}) {
   TextMessage msg = TextMessage();
   msg.sendUserInfo = getChatUserInfo();
   Map<String, dynamic> feedMap = Map();
@@ -289,8 +288,20 @@ void postMessageManagerAlertTime(String chatTypeModel,
   feedMap["name"] = chatTypeModelName;
   feedMap["data"] = content;
   msg.content = jsonEncode(feedMap);
-  Application.rongCloud
-      .insertOutgoingMessage(conversationType, targetId, msg, finished, sendTime: sendTime);
+  Application.rongCloud.insertOutgoingMessage(conversationType, targetId, msg, finished, sendTime: sendTime);
+}
+
+//插入被退出群提示
+void insertExitGroupMsg(Message message, String targetId, Function(Message msg, int code) finished) {
+  TextMessage msg = TextMessage();
+  msg.sendUserInfo = getChatUserInfo();
+  Map<String, dynamic> feedMap = Map();
+  feedMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_GRPNTF;
+  feedMap["name"] = ChatTypeModel.MESSAGE_TYPE_GRPNTF_NAME;
+  feedMap["data"] = jsonEncode(message.originContentMap);
+  msg.content = jsonEncode(feedMap);
+  Application.rongCloud.insertOutgoingMessage(RCConversationType.Group, targetId, msg, finished,
+      sendTime: new DateTime.now().millisecondsSinceEpoch);
 }
 
 //获取用户数据
@@ -390,6 +401,23 @@ Message getAlertTimeMsg({int time, int sendTime, String targetId, int conversati
   return message;
 }
 
+//返回事件msg
+Message getSystemMsg(Map<String, dynamic> dataMap, int targetId) {
+  TextMessage msg = TextMessage();
+  msg.sendUserInfo = getChatUserInfo();
+  msg.content = dataMap["content"];
+  Message message = new Message();
+  message.content = msg;
+  message.senderUserId = targetId.toString();
+  message.sentTime = dataMap["msgTimestamp"];
+  message.messageId = -1;
+  message.messageUId = "-1";
+  message.conversationType = RCConversationType.System;
+  message.targetId = msg.sendUserInfo.userId.toString();
+  message.objectName = TextMessage.objectName;
+  message.sentStatus = RCSentStatus.Sent;
+  return message;
+}
 
 //voice 的更新
 void updateMessage(ChatDataModel chatDataModel, Function(int code) finished) {
@@ -538,8 +566,29 @@ Future<void> getChatGroupUserModelList(String groupChatId, BuildContext context)
     model["list"].forEach((v) {
       chatGroupUserModelList.add(ChatGroupUserModel.fromJson(v));
     });
-    context.read<GroupUserProfileNotifier>().addAll(chatGroupUserModelList);
+    context.read<GroupUserProfileNotifier>().addAll(chatGroupUserModelList, chatGroupUserModelList.length);
     initChatGroupUserModelMap(chatGroupUserModelList);
+  } else {
+    context.read<GroupUserProfileNotifier>().setLen(chatGroupUserModelList.length);
+  }
+
+  print("------len:${chatGroupUserModelList.length}");
+}
+
+//获取群成员信息
+Future<void> getChatGroupUserModelList1(String groupChatId, BuildContext context) async {
+  context.watch<GroupUserProfileNotifier>().clearAllUser();
+  List<ChatGroupUserModel> chatGroupUserModelList = [];
+  Map<String, dynamic> model = await getMembers(groupChatId: int.parse(groupChatId));
+  print("------model:${model.toString()}");
+  if (model != null && model["list"] != null) {
+    model["list"].forEach((v) {
+      chatGroupUserModelList.add(ChatGroupUserModel.fromJson(v));
+    });
+    context.read<GroupUserProfileNotifier>().addAll(chatGroupUserModelList, chatGroupUserModelList.length);
+    initChatGroupUserModelMap(chatGroupUserModelList);
+  } else {
+    context.read<GroupUserProfileNotifier>().setLen(chatGroupUserModelList.length);
   }
 
   print("------len:${chatGroupUserModelList.length}");
@@ -581,6 +630,7 @@ void judgeJumpPage(
         PrivateMorePage(
           chatUserId: chatUserId,
           chatType: chatType,
+          name: name,
         ),
         false,
         context);

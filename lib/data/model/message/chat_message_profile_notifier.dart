@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
+import 'package:mirror/config/application.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+
+import 'chat_type_model.dart';
 
 class ChatMessageProfileNotifier extends ChangeNotifier {
   ChatMessageProfileNotifier() {
@@ -16,6 +21,9 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
   ///消息
   Message message;
 
+  ///消息
+  Message exitMessage;
+
   //消息的id
   int messageId;
 
@@ -24,6 +32,9 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
 
   //是否设置消息状态
   bool isSettingStatus = false;
+
+  //是否退出界面
+  bool isExitPage = false;
 
   //设置消息发送的状态
   setIsSettingStatus({bool isSettingStatus, int messageId, int status}) {
@@ -55,11 +66,31 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
   }
 
   changeCallback(Message message) {
-    if (message.targetId == this.chatUserId &&
-        message.conversationType == chatTypeId) {
-      this.message = message;
-      this.isSettingStatus = false;
-      notifyListeners();
+    if (message.objectName == ChatTypeModel.MESSAGE_TYPE_CMD) {
+      if (message.originContentMap["name"].toString() == "Remove") {
+        Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
+        print(
+            "value:${mapGroupModel["groupChatId"].toString() == this.chatUserId && RCConversationType.Group == chatTypeId}");
+        if (mapGroupModel["groupChatId"].toString() == this.chatUserId && RCConversationType.Group == chatTypeId) {
+          List<dynamic> users = mapGroupModel["users"];
+          for (dynamic d in users) {
+            if (d["uid"] == Application.profile.uid) {
+              isExitPage = true;
+              this.exitMessage = message;
+              notifyListeners();
+              break;
+            }
+          }
+        }
+      }
+      return;
+    }
+    if (message.targetId == this.chatUserId && message.conversationType == chatTypeId) {
+      if (message.conversationType != RCConversationType.System) {
+        this.message = message;
+        this.isSettingStatus = false;
+        notifyListeners();
+      }
     }
   }
 }

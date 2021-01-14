@@ -74,8 +74,8 @@ class FeedSharePopups extends StatelessWidget {
                       Navigator.of(context).pop(1);
                       if(feedViewModel[index].name == "站内好友") {
                         Navigator.push(context, MaterialPageRoute(builder: (_) {
-                          return FriendsPage(voidCallback: (name, userId, context) async {
-                            if (await jumpShareMessage(map, chatTypeModel, name, userId, context)) {
+                          return FriendsPage(voidCallback: (name, userId, type, context) async {
+                            if (await jumpShareMessage(map, chatTypeModel, name, userId, type, context)) {
                               ToastShow.show(msg: "分享成功", context: context);
                             } else {
                               ToastShow.show(msg: "分享失败", context: context);

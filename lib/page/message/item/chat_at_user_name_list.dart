@@ -9,13 +9,16 @@ import 'package:mirror/page/message/message_view/currency_msg.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:provider/provider.dart';
 
+import '../message_chat_page_manager.dart';
+
 typedef StringCallback = void Function(ChatGroupUserModel userModel, int index);
 
 class ChatAtUserList extends StatefulWidget {
   final bool isShow;
   final StringCallback onItemClickListener;
+  final String groupChatId;
 
-  ChatAtUserList({this.isShow = false, this.onItemClickListener});
+  ChatAtUserList({this.isShow = false, this.onItemClickListener, this.groupChatId});
 
   @override
   createState() => _ChatAtUserListState();
@@ -86,17 +89,18 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
               return item(context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[index], index);
             },
           );
-        } else {
-          return Container(
-            width: MediaQuery.of(context).size.width,
-            height: 100,
-            child: UnconstrainedBox(
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            ),
-          );
+        } else if (context.watch<GroupUserProfileNotifier>().len >= 0) {
+          getChatGroupUserModelList(widget.groupChatId, context);
         }
+        return Container(
+          width: MediaQuery.of(context).size.width,
+          height: 100,
+          child: UnconstrainedBox(
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        );
       },
     );
   }

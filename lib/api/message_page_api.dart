@@ -39,6 +39,10 @@ const String QUERYISNOPROMPT = "/appuser/web/black/queryIsNoPrompt";
 const String QUERYNOPROMPTUIDLIST = "/appuser/web/black/queryNoPromptUidList";
 //更新未读消息为已读
 const String REFREASHMSGUNREAD = "/appuser/web/message/updateUnreadMsgToRead";
+
+//获取系统消息
+const String QUERYSYSMSGLIST = "/appuser/web/message/querySysMsgList";
+
 Future<Unreads> getUnReads() async {
   BaseResponseModel responseModel = await requestApi(GET_UNREAD_COUNT, {});
   if (responseModel.isSuccess) {
@@ -315,3 +319,21 @@ Future<bool> refreashUnReadMsg(int type,{int msgIds})async{
   }
 }
 
+
+///获取系统消息
+///请求参数
+///targetId:群聊id/私聊id
+Future<Map> querySysMsgList({int type, int size, String lastTime}) async {
+  Map<String, dynamic> params = {};
+  params["type"] = type;
+  params["size"] = size.toString();
+  if (lastTime != null) {
+    params["lastTime"] = lastTime;
+  }
+  BaseResponseModel responseModel = await requestApi(QUERYSYSMSGLIST, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
