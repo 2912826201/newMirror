@@ -98,9 +98,12 @@ class _settingHomePageState extends State<SettingHomePage>{
                   showAppDialog(
                     context,
                     confirm: AppDialogButton("清除",(){
+                        //清掉拍照截图、录制视频、录制语言的文件夹内容
                         _clearCache(AppConfig.getAppPicDir());
-                        _clearCache(AppConfig.getAppDownloadDir());
+                        _clearCache(AppConfig.getAppVideoDir());
                         _clearCache(AppConfig.getAppVoiceDir());
+                        //TODO Android还需要清更新用的apk包
+                        //下载的视频课内容不在这里清，在专门管理课程的地方清
                         return true;
                     }),
                     cancel: AppDialogButton("取消",(){
