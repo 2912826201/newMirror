@@ -551,8 +551,10 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           attentionIdList.insert(0, -1);
         }
       }
-      // 回到顶部
-      _controller.jumpTo(0);
+      // 回到顶部，加这个判断是没加载过关注页时_controller并未绑定直接调用会崩溃。
+      if(_controller.hasClients) {
+        _controller.jumpTo(0);
+      }
       pulishFeed();
     }
     return Container(

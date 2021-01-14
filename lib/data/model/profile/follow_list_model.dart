@@ -2,7 +2,7 @@
 class FollowListModel {
   int lastTime; //": 1606125125965,
   List<FollowModel> list;
-
+  int hasNext;
   FollowListModel({this.list});
 
   FollowListModel.fromJson(dynamic json) {
@@ -13,6 +13,7 @@ class FollowListModel {
       });
     }
     lastTime = json["lastTime"];
+    hasNext = json["hasNext"];
   }
 
   Map<String, dynamic> toJson() {
@@ -21,6 +22,7 @@ class FollowListModel {
       map["list"] = list.map((v) => v.toJson()).toList();
     }
     map["lastTime"] = lastTime;
+    map['hasNext'] = hasNext;
     return map;
   }
 }

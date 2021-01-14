@@ -206,9 +206,9 @@ class GetTripleAreaState extends State<GetTripleArea> {
                   height: 24,
                 ),
                 onTap: () {
-                  // openFeedCommentBottomSheet(context: context, feedId: widget.model.id);
-                  SingletonForWholePages.singleton().panelController().open();
-                  context.read<FeedMapNotifier>().changeFeeId(widget.model.id);
+                  openFeedCommentBottomSheet(context: context, feedId: widget.model.id);
+                  // SingletonForWholePages.singleton().panelController().open();
+                  // context.read<FeedMapNotifier>().changeFeeId(widget.model.id);
                 }))
       ],
     );

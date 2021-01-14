@@ -11,18 +11,17 @@ Future openFeedCommentBottomSheet({
 }) async {
   await showModalBottomSheet(
       isScrollControlled: true,
+      backgroundColor: AppColor.white,
       context: context,
+      // 圆角
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
       builder: (BuildContext context) {
-        return SingleChildScrollView(
-            child: Container(
-              height:
-              ScreenUtil.instance.height * 0.75,
-              color: AppColor.white,
-              child: CommentBottomSheet(
-                feedId: feedId,
-              ) ,
-            )
-
+        return SizedBox(
+          height: ScreenUtil.instance.height * 0.75,
+          child: CommentBottomSheet(
+            feedId: feedId,
+          ),
         );
       });
 }

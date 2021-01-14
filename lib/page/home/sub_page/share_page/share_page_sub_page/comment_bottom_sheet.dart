@@ -203,7 +203,8 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
                     child: GestureDetector(
                       child: Image.asset("images/resource/2.0x/ic_big_nav_closepage@2x.png", width: 18, height: 18),
                       onTap: () {
-                        SingletonForWholePages.singleton().closePanelController();
+                        // SingletonForWholePages.singleton().closePanelController();
+                        Navigator.pop(context, true);
                       },
                     ))
               ],

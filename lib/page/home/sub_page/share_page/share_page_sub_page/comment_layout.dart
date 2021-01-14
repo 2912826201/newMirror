@@ -5,6 +5,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/widget/feed/feed_comment_popups.dart';
 import 'package:mirror/widget/rich_text_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -91,8 +92,9 @@ class CommentLayout extends StatelessWidget {
             child: Selector<FeedMapNotifier, int>(builder: (context, commentCount, child) {
               return GestureDetector(
                 onTap: () {
-                  SingletonForWholePages.singleton().openPanelController();
-                  context.read<FeedMapNotifier>().changeFeeId(model.id);
+                  openFeedCommentBottomSheet(context: context, feedId: model.id);
+                  // SingletonForWholePages.singleton().openPanelController();
+                  // context.read<FeedMapNotifier>().changeFeeId(model.id);
                 },
                 child: Text("共${StringUtil.getNumber(commentCount)}条评论", style: AppStyle.textHintRegular12),
               );
@@ -103,8 +105,9 @@ class CommentLayout extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () {
-              SingletonForWholePages.singleton().openPanelController();
-              context.read<FeedMapNotifier>().changeFeeId(model.id);
+              openFeedCommentBottomSheet(context: context, feedId: model.id);
+              // SingletonForWholePages.singleton().openPanelController();
+              // context.read<FeedMapNotifier>().changeFeeId(model.id);
             },
               child: Container(
             child: model.comments.length > 0
@@ -124,8 +127,9 @@ class CommentLayout extends StatelessWidget {
           )),
           GestureDetector(
               onTap: () {
-                SingletonForWholePages.singleton().openPanelController();
-                context.read<FeedMapNotifier>().changeFeeId(model.id);
+                openFeedCommentBottomSheet(context: context, feedId: model.id);
+                // SingletonForWholePages.singleton().openPanelController();
+                // context.read<FeedMapNotifier>().changeFeeId(model.id);
               },
               child: Container(
             margin: EdgeInsets.only(top: 4, bottom: 4),

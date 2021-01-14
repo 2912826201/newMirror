@@ -518,7 +518,7 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
       children: [
         Container(
           height: 48,
-          width: ScreenUtil.instance.screenWidthDp,
+          width: ScreenUtil.instance.width,
           child: TabBar(
             controller: controller,
             tabs: [Text("综合"), Text("课程"), Text("话题"), Text("动态"), Text("用户 ")],

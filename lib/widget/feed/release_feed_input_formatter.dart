@@ -285,12 +285,16 @@ class Rule {
 
   // 区分时at还是话题
   final bool isAt;
+  // atUid
+  final int atId;
+  // 动态Id
+  final int topicId;
 
-  Rule(this.startIndex, this.endIndex, this.params, this.clickIndex, this.isAt);
+  Rule(this.startIndex, this.endIndex, this.params, this.clickIndex, this.isAt,[this.atId,this.topicId]);
 
   Rule copy([startIndex, endIndex, params]) {
     return Rule(startIndex ?? this.startIndex, endIndex ?? this.endIndex, params ?? this.params,
-        clickIndex ?? this.clickIndex, isAt ?? this.isAt);
+        clickIndex ?? this.clickIndex, isAt ?? this.isAt,atId ?? this.atId, topicId ?? this.topicId);
   }
 
   @override
