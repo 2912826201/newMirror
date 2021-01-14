@@ -50,7 +50,6 @@ Future<bool> jumpShareMessage(
   conversation.name = name;
   conversation.conversationId = userId.toString();
   conversation.uid = Application.profile.uid;
-  //todo 目前这里是私聊--写死
   conversation.type = type == RCConversationType.Private ? PRIVATE_TYPE : GROUP_TYPE;
 
   Message message;
