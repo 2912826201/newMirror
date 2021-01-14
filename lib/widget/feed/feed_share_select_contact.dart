@@ -7,6 +7,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
+import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/data/model/profile/follow_list_model.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
@@ -139,7 +140,6 @@ class _FriendsPageState extends State<FriendsPage> {
       );
     }
   }
-
 
   //获取appbar
   Widget getAppBar() {
@@ -493,7 +493,7 @@ class _FriendsPageState extends State<FriendsPage> {
     selectUserUsIdList.clear();
     if (model != null && model["state"]) {
       ToastShow.show(msg: "添加成功", context: context);
-      await getChatGroupUserModelList(widget.groupChatId.toString(), context);
+      // await getChatGroupUserModelList(widget.groupChatId.toString(), context);
       widget.voidCallback("添加成功", 0, context);
     } else {
       ToastShow.show(msg: "添加失败", context: context);
@@ -515,7 +515,7 @@ class _FriendsPageState extends State<FriendsPage> {
     selectUserUsIdList.clear();
     if (model != null && model["state"]) {
       ToastShow.show(msg: "删除成功", context: context);
-      await getChatGroupUserModelList(widget.groupChatId.toString(), context);
+      // await getChatGroupUserModelList(widget.groupChatId.toString(), context);
       widget.voidCallback("删除成功", 0, context);
     } else {
       ToastShow.show(msg: "删除失败", context: context);

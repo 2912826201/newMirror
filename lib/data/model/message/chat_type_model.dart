@@ -77,6 +77,10 @@ class ChatTypeModel {
   static const String MESSAGE_TYPE_GRPNTF = "RC:GrpNtf";
   static const String MESSAGE_TYPE_GRPNTF_NAME = "群通知消息，该版本较低请升级版本再行查看";
 
+  //通知消息-私聊
+  static const String MESSAGE_TYPE_CMD = "RC:CmdNtf";
+  static const String MESSAGE_TYPE_CMD_NAME = "通知消息-私聊，该版本较低请升级版本再行查看";
+
   //判断这个消息是不是提示消息
   static bool getIsAlertMessage(String chatTypeModel) {
     if (chatTypeModel == MESSAGE_TYPE_ALERT) {

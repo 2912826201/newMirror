@@ -9,18 +9,27 @@ class GroupUserProfileNotifier extends ChangeNotifier {
 
   LoadingStatus loadingStatus = LoadingStatus.STATUS_IDEL;
 
+  int len = -1;
+
+  setLen(int len) {
+    this.len = len;
+    notifyListeners();
+  }
+
   clearAllUser() {
     chatGroupUserModelList.clear();
     loadingStatus = LoadingStatus.STATUS_IDEL;
+    len = -1;
   }
 
-  addAll(List<ChatGroupUserModel> chatGroupUserModelList) {
+  addAll(List<ChatGroupUserModel> chatGroupUserModelList, int len) {
     if (chatGroupUserModelList == null || chatGroupUserModelList.length < 1) {
       return;
     }
     this.chatGroupUserModelList.clear();
     this.chatGroupUserModelList.addAll(chatGroupUserModelList);
     loadingStatus = LoadingStatus.STATUS_COMPLETED;
+    this.len = len;
     notifyListeners();
   }
 }

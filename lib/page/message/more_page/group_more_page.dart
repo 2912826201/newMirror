@@ -157,19 +157,20 @@ class GroupMorePageState extends State<GroupMorePage> {
               }
             }).toList(),
           );
-        } else {
-          return SliverToBoxAdapter(
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              height: 100,
-              child: UnconstrainedBox(
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
+        } else if (context.watch<GroupUserProfileNotifier>().len >= 0) {
+          getChatGroupUserModelList(widget.chatGroupId, context);
+        }
+        return SliverToBoxAdapter(
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: 100,
+            child: UnconstrainedBox(
+              child: Center(
+                child: CircularProgressIndicator(),
               ),
             ),
-          );
-        }
+          ),
+        );
       },
     );
   }
@@ -409,6 +410,10 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //修改群名
   void modifyPr(String newName) async {
+    if (Application.chatGroupUserModelMap[Application.profile.uid] == null) {
+      ToastShow.show(msg: "你不是群成员", context: context);
+      return;
+    }
     try {
       Map<String, dynamic> model = await modify(
           groupChatId: int.parse(widget.chatGroupId), newName: newName);
@@ -485,6 +490,10 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //查看更多群成员
   void seeMoreGroupUser() {
+    if (Application.chatGroupUserModelMap[Application.profile.uid] == null) {
+      ToastShow.show(msg: "你不是群成员", context: context);
+      return;
+    }
     Navigator.push(context, MaterialPageRoute(builder: (_) {
       return FriendsPage(
           type: 1,
@@ -498,7 +507,10 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //添加用户按钮
   void addGroupUser() {
-    print("添加群成员");
+    if (Application.chatGroupUserModelMap[Application.profile.uid] == null) {
+      ToastShow.show(msg: "你不是群成员", context: context);
+      return;
+    }
 
     Navigator.push(context, MaterialPageRoute(builder: (_) {
       return FriendsPage(type: 3, groupChatId: int.parse(widget.chatGroupId), voidCallback: (name, userId, context) {
@@ -513,7 +525,10 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //删除用户按钮
   void deleteGroupUser() {
-    print("删除群成员");
+    if (Application.chatGroupUserModelMap[Application.profile.uid] == null) {
+      ToastShow.show(msg: "你不是群成员", context: context);
+      return;
+    }
     Navigator.push(context, MaterialPageRoute(builder: (_) {
       return FriendsPage(
           type: 2,
@@ -528,6 +543,10 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //退出按钮
   void exitGroupChatPr() async {
+    if (Application.chatGroupUserModelMap[Application.profile.uid] == null) {
+      ToastShow.show(msg: "你不是群成员", context: context);
+      return;
+    }
     Map<String, dynamic> model = await exitGroupChat(groupChatId: int.parse(widget.chatGroupId));
     if (model != null && model["state"] != null && model["state"]) {
       if (widget.exitGroupListener != null) {
@@ -611,6 +630,10 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //点击事件
   void onClickItemList({String title, String subtitle, bool isOpen, int index,}) {
+    if (Application.chatGroupUserModelMap[Application.profile.uid] == null) {
+      ToastShow.show(msg: "你不是群成员", context: context);
+      return;
+    }
     if (isOpen != null) {
       if (index == 1) {
         disturbTheNews = !disturbTheNews;

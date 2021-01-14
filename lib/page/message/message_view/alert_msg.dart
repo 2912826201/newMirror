@@ -134,8 +134,10 @@ class AlertMsg extends StatelessWidget {
         textArray.add("你邀请了");
         isChangColorArray.add(false);
       } else {
-        textArray.add(mapGroupModel["operatorName"].toString() + "邀请了");
+        textArray.add(mapGroupModel["operatorName"].toString());
         isChangColorArray.add(true);
+        textArray.add("邀请了");
+        isChangColorArray.add(false);
         userCount++;
       }
     } else if (mapGroupModel["subType"] == 2) {
@@ -144,17 +146,27 @@ class AlertMsg extends StatelessWidget {
         textArray.add("你将");
         isChangColorArray.add(false);
       } else {
-        textArray.add(mapGroupModel["operatorName"].toString() + "将");
+        textArray.add(mapGroupModel["operatorName"].toString());
         isChangColorArray.add(true);
+        textArray.add("将");
+        isChangColorArray.add(false);
         userCount++;
       }
     }
 
     for (dynamic d in users) {
-      if (d != null) {
-        userCount++;
-        textArray.add("${d["groupNickName"]}${userCount >= 3 ? "等" : "、"}");
-        isChangColorArray.add(true);
+      try {
+        if (d != null) {
+          userCount++;
+          if (d["uid"] == Application.profile.uid) {
+            textArray.add("你");
+          } else {
+            textArray.add("${d["groupNickName"]}${userCount >= 3 ? "等" : "、"}");
+          }
+          isChangColorArray.add(true);
+        }
+      } catch (e) {
+        break;
       }
       if (userCount >= 3) {
         break;
