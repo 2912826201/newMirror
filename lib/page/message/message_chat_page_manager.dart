@@ -45,13 +45,13 @@ void jumpChatPageUser(
 
 //分享跳转界面
 Future<bool> jumpShareMessage(
-    Map<String, dynamic> map, String chatType, String name, int userId, BuildContext context) async {
+    Map<String, dynamic> map, String chatType, String name, int userId, int type, BuildContext context) async {
   ConversationDto conversation = new ConversationDto();
   conversation.name = name;
   conversation.conversationId = userId.toString();
   conversation.uid = Application.profile.uid;
   //todo 目前这里是私聊--写死
-  conversation.type = PRIVATE_TYPE;
+  conversation.type = type == RCConversationType.Private ? PRIVATE_TYPE : GROUP_TYPE;
 
   Message message;
   if (chatType == ChatTypeModel.MESSAGE_TYPE_FEED) {
@@ -60,8 +60,8 @@ Future<bool> jumpShareMessage(
         conversation.conversationId, map, conversation.getType() == RCConversationType.Private);
   } else if (chatType == ChatTypeModel.MESSAGE_TYPE_USER) {
     print("给$name分享了名片");
-    message = await postMessageManagerUser(conversation.conversationId, map,
-        conversation.getType() == RCConversationType.Private);
+    message = await postMessageManagerUser(
+        conversation.conversationId, map, conversation.getType() == RCConversationType.Private);
   } else if (chatType == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
     print("给$name分享了直播课程");
     message = await postMessageManagerLiveCourse(conversation.conversationId,

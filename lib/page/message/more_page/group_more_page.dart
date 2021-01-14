@@ -498,7 +498,7 @@ class GroupMorePageState extends State<GroupMorePage> {
       return FriendsPage(
           type: 1,
           groupChatId: int.parse(widget.chatGroupId),
-          voidCallback: (name, userId, context) {
+          voidCallback: (name, userId, type, context) {
             jumpPage(ProfileDetailPage(userId: userId), false, context);
             // print("查看了name：$name");
           });
@@ -513,13 +513,14 @@ class GroupMorePageState extends State<GroupMorePage> {
     }
 
     Navigator.push(context, MaterialPageRoute(builder: (_) {
-      return FriendsPage(type: 3, groupChatId: int.parse(widget.chatGroupId), voidCallback: (name, userId, context) {
-        print("添加用户：$name进群");
+      return FriendsPage(
+          type: 3,
+          groupChatId: int.parse(widget.chatGroupId),
+          voidCallback: (name, userId, type, context) {
+            print("添加用户：$name进群");
 
-        setState(() {
-
-        });
-      });
+            setState(() {});
+          });
     }));
   }
 
@@ -533,7 +534,7 @@ class GroupMorePageState extends State<GroupMorePage> {
       return FriendsPage(
           type: 2,
           groupChatId: int.parse(widget.chatGroupId),
-          voidCallback: (name, userId, context) {
+          voidCallback: (name, userId, type, context) {
             print("移除这个用户：$name");
 
             setState(() {});

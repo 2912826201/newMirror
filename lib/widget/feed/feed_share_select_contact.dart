@@ -7,14 +7,13 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
-import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/data/model/profile/follow_list_model.dart';
-import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:provider/provider.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import 'feed_friends_cell.dart';
 import 'feed_index_bar.dart';
@@ -33,7 +32,7 @@ class Friends {
 class FriendsPage extends StatefulWidget {
   final VoidCallback voidCallback;
   final int groupChatId; //群聊id
-  final int type; //0 表示原来的样式 1群成员-查看所有群成员  2移除某一个人出群 3拉人进入群 其余全表示为0
+  final int type; //0 表示原来的样式 1群成员-查看所有群成员  2移除某一个人出群 3拉人进入群 4分享群聊 其余全表示为0
 
   const FriendsPage({
     Key key,
@@ -78,6 +77,9 @@ class _FriendsPageState extends State<FriendsPage> {
   //好友列表
   FollowListModel followListModel = new FollowListModel();
   List<FollowModel> userFollowList = [];
+
+  //群聊列表
+  List<Map<String, dynamic>> groupMapList = [];
 
   @override
   void initState() {
@@ -132,6 +134,8 @@ class _FriendsPageState extends State<FriendsPage> {
         children: <Widget>[
           //顶部搜索框
           _getTopItemSearch(),
+          //去分析群聊界面
+          getGroupBtnUi(),
           //列表
           _getListView(),
           //悬浮检索控件
@@ -141,11 +145,41 @@ class _FriendsPageState extends State<FriendsPage> {
     }
   }
 
+  //获取群聊按钮
+  Widget getGroupBtnUi() {
+    return Visibility(
+      visible: widget.type == 0,
+      child: GestureDetector(
+        child: Container(
+          alignment: Alignment.centerLeft,
+          height: 40,
+          width: MediaQuery
+              .of(context)
+              .size
+              .width,
+          padding: const EdgeInsets.only(left: 16),
+          margin: EdgeInsets.only(top: 55),
+          child: UnconstrainedBox(
+            child: Text("已加入群聊", style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),),
+          ),
+        ),
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) {
+            return FriendsPage(type: 4, voidCallback: (String name, int groupId, int type, BuildContext context) {
+              widget.voidCallback(name, groupId, RCConversationType.Group, context);
+            });
+          }));
+        },
+      ),
+    );
+  }
+
+
   //获取appbar
   Widget getAppBar() {
     return AppBar(
       title: Text(
-        (widget.type == 1 || widget.type == 2) ? "群成员 (${_listDatas.length})" : "选择联系人",
+        (widget.type == 1 || widget.type == 2) ? "群成员 (${_listDatas.length})" : widget.type == 4 ? "选择群聊" : "选择联系人",
         style: TextStyle(color: AppColor.textPrimary1, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       centerTitle: true,
@@ -274,7 +308,7 @@ class _FriendsPageState extends State<FriendsPage> {
     }
     return Container(
         color: AppColor.white,
-        margin: EdgeInsets.only(top: 60),
+        margin: widget.type == 0 ? const EdgeInsets.only(top: 100) : const EdgeInsets.only(top: 60),
         child: ListView.builder(
             controller: _scrollController,
             itemCount: _listUserDataList.length,
@@ -305,17 +339,19 @@ class _FriendsPageState extends State<FriendsPage> {
       groupTitle: _hideIndexLetter ? null : userModel.indexLetter,
       noBottomIndex: noBottomIndex,
       voidCallback: !(widget.type == 2 || widget.type == 3) ? widget.voidCallback :
-          (String name, int userId, BuildContext context) {
-              if (widget.type == 2 &&
-                  userId == context.read<GroupUserProfileNotifier>().chatGroupUserModelList[0].uid) {
-                return;
-              }
-              if (selectUserUsIdList.contains(userId)) {
-                selectUserUsIdList.remove(userId);
-              } else {
-                selectUserUsIdList.add(userId);
-              }
-              setState(() {});
+          (String name, int userId, int type, BuildContext context) {
+        if (widget.type == 2 &&
+            userId == context
+                .read<GroupUserProfileNotifier>()
+                .chatGroupUserModelList[0].uid) {
+          return;
+        }
+        if (selectUserUsIdList.contains(userId)) {
+          selectUserUsIdList.remove(userId);
+        } else {
+          selectUserUsIdList.add(userId);
+        }
+        setState(() {});
             },
       isShowTitle: !isHaveTextLen,
       isShowSingleChoice: widget.type == 2 || widget.type == 3,
@@ -341,9 +377,15 @@ class _FriendsPageState extends State<FriendsPage> {
   //初始化用户数据
   void initUserData() {
     if (widget.type == 1 || widget.type == 2) {
-      List<ChatGroupUserModel> chatGroupUserModelList = context.read<GroupUserProfileNotifier>().chatGroupUserModelList;
+      List<ChatGroupUserModel> chatGroupUserModelList = context
+          .read<GroupUserProfileNotifier>()
+          .chatGroupUserModelList;
       for (int i = 0; i < chatGroupUserModelList.length; i++) {
         addUserNameData(chatGroupUserModelList[i].groupNickName, i, userModel: chatGroupUserModelList[i]);
+      }
+    } else if (widget.type == 4) {
+      for (int i = 0; i < groupMapList.length; i++) {
+        addUserNameData(groupMapList[i]["name"], i, groupMap: groupMapList[i]);
       }
     } else {
       for (int i = 0; i < followListModel.list.length; i++) {
@@ -371,7 +413,8 @@ class _FriendsPageState extends State<FriendsPage> {
 
 
   //对用户的名字格式化处理
-  void addUserNameData(String name, int index, {ChatGroupUserModel userModel, FollowModel followModel}) {
+  void addUserNameData(String name, int index,
+      {ChatGroupUserModel userModel, FollowModel followModel, Map<String, dynamic> groupMap}) {
     Friends friendData = Friends();
     friendData.uid = -1;
     // 转换拼音再截取搜字母转大写
@@ -389,6 +432,9 @@ class _FriendsPageState extends State<FriendsPage> {
     if (followModel != null) {
       friendData.uid = followModel.uid;
     }
+    if (groupMap != null) {
+      friendData.uid = groupMap["id"];
+    }
 
     if ((widget.type == 1 || widget.type == 2) && userModel != null && userModel.isGroupLeader()) {
       var imageUrl = "https://randomuser.me/api/portraits/women/23.jpg";
@@ -400,14 +446,14 @@ class _FriendsPageState extends State<FriendsPage> {
       noSortlistDatas.add(friendData);
     } else if (!mobile.hasMatch(pinyinString)) {
       var imageUrl = "https://randomuser.me/api/portraits/women/23.jpg";
-      imageUrl = userModel?.avatarUri ?? followModel.avatarUri ?? imageUrl;
+      imageUrl = userModel?.avatarUri ?? followModel?.avatarUri ?? groupMap["coverUrl"] ?? imageUrl;
       pinyinString = "#";
       friendData.indexLetter = pinyinString;
       friendData.imageUrl = imageUrl;
       nonLetterlistDatas.add(friendData);
     } else {
       var imageUrl = "https://randomuser.me/api/portraits/women/27.jpg";
-      imageUrl = userModel?.avatarUri ?? followModel.avatarUri ?? imageUrl;
+      imageUrl = userModel?.avatarUri ?? followModel?.avatarUri ?? groupMap["coverUrl"] ?? imageUrl;
       friendData.indexLetter = pinyinString;
       friendData.imageUrl = imageUrl;
       _listDatas.add(friendData);
@@ -459,13 +505,29 @@ class _FriendsPageState extends State<FriendsPage> {
   void getAllData() async {
     if (widget.type == 1 || widget.type == 2) {
       init();
+    } else if (widget.type == 4) {
+      getAllGroupList();
     } else {
       followListModel.list = userFollowList;
       getNetData();
     }
   }
 
-  //获取网络数据
+  //获取所有的群聊
+  void getAllGroupList() async {
+    groupMapList.clear();
+    Map<String, dynamic> groupChatListMap = await getGroupChatList();
+    if (groupChatListMap != null && groupChatListMap["list"] != null) {
+      groupChatListMap["list"].forEach((v) {
+        groupMapList.add(v);
+      });
+
+      // groupMapList.addAll(groupChatListMap["list"] in Map<String, dynamic>);
+    }
+    init();
+  }
+
+  //获取网络数据好友
   void getNetData() async {
     FollowListModel listModel = await GetFollowBothList(100, lastTime: followListModel.lastTime);
     followListModel.list.addAll(listModel.list);
@@ -494,10 +556,10 @@ class _FriendsPageState extends State<FriendsPage> {
     if (model != null && model["state"]) {
       ToastShow.show(msg: "添加成功", context: context);
       // await getChatGroupUserModelList(widget.groupChatId.toString(), context);
-      widget.voidCallback("添加成功", 0, context);
+      widget.voidCallback("添加成功", 0, -1, context);
     } else {
       ToastShow.show(msg: "添加失败", context: context);
-      widget.voidCallback("添加失败", 0, context);
+      widget.voidCallback("添加失败", 0, -1, context);
     }
 
 
@@ -516,10 +578,10 @@ class _FriendsPageState extends State<FriendsPage> {
     if (model != null && model["state"]) {
       ToastShow.show(msg: "删除成功", context: context);
       // await getChatGroupUserModelList(widget.groupChatId.toString(), context);
-      widget.voidCallback("删除成功", 0, context);
+      widget.voidCallback("删除成功", 0, -1, context);
     } else {
       ToastShow.show(msg: "删除失败", context: context);
-      widget.voidCallback("删除失败", 0, context);
+      widget.voidCallback("删除失败", 0, -1, context);
     }
 
     Future.delayed(Duration(milliseconds: 200), () {
