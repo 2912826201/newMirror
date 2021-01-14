@@ -4,13 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
-import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
-import 'package:mirror/util/toast_util.dart';
 
-import 'package:provider/provider.dart';
 
 import 'currency_msg.dart';
 
@@ -24,6 +21,7 @@ class FeedMsg extends StatelessWidget {
   final int position;
   final String sendChatUserId;
   final bool isShowChatUserName;
+  final bool isCanLongClick;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
 
@@ -31,6 +29,7 @@ class FeedMsg extends StatelessWidget {
     this.userUrl,
     this.name,
     this.isShowChatUserName = false,
+    this.isCanLongClick = true,
     this.sendChatUserId,
     this.isMyself,
     this.homeFeedMode,
@@ -136,6 +135,7 @@ class FeedMsg extends StatelessWidget {
             position: position, settingType: longClickStringList[value], contentType: ChatTypeModel.MESSAGE_TYPE_FEED);
         // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
       },
+      isCanLongClick: isCanLongClick,
       contentType: ChatTypeModel.MESSAGE_TYPE_FEED,
       isMySelf: isMyself,
       actions: longClickStringList,

@@ -38,7 +38,7 @@ class VoiceSettingNotifier extends ChangeNotifier {
       // print("======onAudioPositionChanged");
       isPlaying = true;
       isPause = false;
-      showTime = event.inMilliseconds ~/ 1000;
+      showTime = event.inMilliseconds % 1000 > 0 ? (event.inMilliseconds ~/ 1000) + 1 : (event.inMilliseconds ~/ 1000);
       notifyListeners();
     });
   }
@@ -119,6 +119,7 @@ class VoiceSettingNotifier extends ChangeNotifier {
   Future<void> startPlayer(
       String url, BuildContext context, String urlMd5String) async {
     print("======startPlayer");
+    showTime = 0;
     if (url == null) {
       ToastShow.show(msg: "音频损坏,无法播放", context: context);
       return;

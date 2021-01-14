@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
-import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/dotted_line.dart';
 
@@ -18,6 +17,7 @@ class SelectMsg extends StatelessWidget {
   final int status;
   final String sendChatUserId;
   final bool isShowChatUserName;
+  final bool isCanLongClick;
   final int position;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
@@ -26,6 +26,7 @@ class SelectMsg extends StatelessWidget {
     this.userUrl,
     this.name,
     this.isShowChatUserName = false,
+    this.isCanLongClick = true,
     this.sendChatUserId,
     this.isMyself,
     this.selectListString,
@@ -194,6 +195,7 @@ class SelectMsg extends StatelessWidget {
             contentType: ChatTypeModel.MESSAGE_TYPE_SELECT,
             content: text);
       },
+      isCanLongClick: isCanLongClick,
       contentType: ChatTypeModel.MESSAGE_TYPE_SELECT,
       isMySelf: isMyself,
       actions: longClickStringList,

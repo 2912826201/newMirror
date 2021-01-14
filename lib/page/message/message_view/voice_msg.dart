@@ -22,6 +22,7 @@ class VoiceMsg extends StatefulWidget {
   final String sendChatUserId;
   final bool isShowChatUserName;
   final bool isTemporary;
+  final bool isCanLongClick;
   final ChatVoiceModel chatVoiceModel;
   final int status;
   final int position;
@@ -33,6 +34,7 @@ class VoiceMsg extends StatefulWidget {
       this.isMyself,
       this.messageUId,
       this.isShowChatUserName = false,
+      this.isCanLongClick = true,
       this.sendChatUserId,
       this.isTemporary,
       this.userUrl,
@@ -166,6 +168,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
             contentType: ChatTypeModel.MESSAGE_TYPE_VOICE);
         // Scaffold.of(context).showSnackBar(SnackBar(content: Text(longClickStringList[value]), duration: Duration(milliseconds: 500),));
       },
+      isCanLongClick: widget.isCanLongClick,
       contentType: ChatTypeModel.MESSAGE_TYPE_VOICE,
       isMySelf: widget.isMyself,
       actions: longClickStringList,

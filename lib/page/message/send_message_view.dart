@@ -76,7 +76,6 @@ class SendMessageView extends StatelessWidget {
           userUrl = model.msg.content.sendUserInfo?.portraitUri;
           name = getChatUserName(sendChatUserId, model.msg.content.sendUserInfo?.name);
         } catch (e) {
-          print(e);
         }
       }
       return notTemporaryData();
@@ -178,6 +177,12 @@ class SendMessageView extends StatelessWidget {
     } else if (msgType == RecallNotificationMessage.objectName) {
       // return new Text('提示消息--撤回');
       return getAlertMsg(recallNotificationMessage: ((msg.content) as RecallNotificationMessage));
+    } else if (msgType == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
+      // return new Text('群通知');
+      Map<String, dynamic> map = Map();
+      map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
+      map["data"] = msg.originContentMap;
+      return getAlertMsg(map: map);
     }
     if (msg.content == null || msg.content.mentionedInfo == null) {
       return getTextMsg(text: "版本过低请升级版本!");
@@ -223,6 +228,12 @@ class SendMessageView extends StatelessWidget {
     return name;
   }
 
+  bool isCanLongClick() {
+    return conversationDtoType != LIVE_TYPE &&
+        conversationDtoType != OFFICIAL_TYPE &&
+        conversationDtoType != TRAINING_TYPE;
+  }
+
   //************************获取消息模块的方法 ----end
 
   //***************************************获取每一个消息的模块-----start
@@ -234,6 +245,7 @@ class SendMessageView extends StatelessWidget {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
         mentionedInfo: mentionedInfo,
         voidMessageClickCallBack: voidMessageClickCallBack,
@@ -250,6 +262,7 @@ class SendMessageView extends StatelessWidget {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
         voidMessageClickCallBack: voidMessageClickCallBack,
         voidItemLongClickCallBack: voidItemLongClickCallBack,
@@ -264,6 +277,7 @@ class SendMessageView extends StatelessWidget {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
         voidMessageClickCallBack: voidMessageClickCallBack,
         voidItemLongClickCallBack: voidItemLongClickCallBack,
@@ -286,6 +300,7 @@ class SendMessageView extends StatelessWidget {
         isTemporary: isTemporary,
         userUrl: userUrl,
         name: name,
+        isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
         voidMessageClickCallBack: voidMessageClickCallBack,
         voidItemLongClickCallBack: voidItemLongClickCallBack,
@@ -303,6 +318,7 @@ class SendMessageView extends StatelessWidget {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
         voidMessageClickCallBack: voidMessageClickCallBack,
         voidItemLongClickCallBack: voidItemLongClickCallBack,
@@ -318,6 +334,7 @@ class SendMessageView extends StatelessWidget {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
         voidMessageClickCallBack: voidMessageClickCallBack,
         voidItemLongClickCallBack: voidItemLongClickCallBack,
@@ -336,6 +353,7 @@ class SendMessageView extends StatelessWidget {
       userUrl: userUrl,
       name: name,
       status: status,
+      isCanLongClick: isCanLongClick(),
       isTemporary: isTemporary,
       isImgOrVideo: isImgOrVideo,
       mediaFileModel: mediaFileModel,

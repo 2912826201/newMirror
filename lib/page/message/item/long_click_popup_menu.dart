@@ -14,6 +14,7 @@ class LongClickPopupMenu extends StatefulWidget {
     @required this.contentType,
     @required this.isMySelf,
     this.pressType = PressType.longPress,
+    this.isCanLongClick = true,
     this.pageMaxChildCount = 5,
     this.backgroundColor = AppColor.textPrimary1,
     this.contentWidth = 180,
@@ -23,6 +24,7 @@ class LongClickPopupMenu extends StatefulWidget {
   final ValueChanged<int> onValueChanged;
   final List<String> actions;
   final Widget child;
+  final bool isCanLongClick;
   final PressType pressType; // 点击方式 长按 还是单击
   final int pageMaxChildCount;
   final Color backgroundColor;
@@ -70,12 +72,12 @@ class _LongClickPopupMenuState extends State<LongClickPopupMenu> {
         behavior: HitTestBehavior.translucent,
         child: widget.child,
         onTap: () {
-          if (widget.pressType == PressType.singleClick) {
+          if (widget.pressType == PressType.singleClick && widget.isCanLongClick) {
             onTap();
           }
         },
         onLongPress: () {
-          if (widget.pressType == PressType.longPress) {
+          if (widget.pressType == PressType.longPress && widget.isCanLongClick) {
             onTap();
           }
         },

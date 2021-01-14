@@ -1,5 +1,8 @@
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 
 /// profile_notifier
