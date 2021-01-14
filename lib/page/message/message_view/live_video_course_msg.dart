@@ -7,7 +7,6 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
-import 'package:mirror/util/toast_util.dart';
 
 import 'currency_msg.dart';
 
@@ -22,6 +21,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
   final bool isShowChatUserName;
   final int status;
   final int position;
+  final bool isCanLongClick;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
 
@@ -32,6 +32,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
       this.name,
       this.status,
       this.isShowChatUserName = false,
+      this.isCanLongClick = true,
       this.sendChatUserId,
       this.position,
       this.isLiveOrVideo,
@@ -133,6 +134,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
           duration: Duration(milliseconds: 500),
         ));
       },
+      isCanLongClick: isCanLongClick,
       contentType: isLiveOrVideo ? ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE : ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE,
       isMySelf: isMyself,
       actions: longClickStringList,

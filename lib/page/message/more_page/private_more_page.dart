@@ -5,19 +5,19 @@ import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
-import 'package:mirror/widget/LoadingProgress.dart';
+import 'package:mirror/widget/loading_progress.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 class PrivateMorePage extends StatefulWidget {
   ///对话用户id
   final String chatUserId;
 
-  ///这个是什么类型的对话--中文
   ///[chatType] 会话类型，参见类型 [OFFICIAL_TYPE]
   final int chatType;
 
@@ -175,7 +175,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     showProgressDialog();
     //判断有没有免打扰
     Map<String, dynamic> map = await (disturbTheNews ? addNoPrompt : removeNoPrompt)(
-        targetId: int.parse(widget.chatUserId));
+        targetId: int.parse(widget.chatUserId), type: widget.chatType);
     if (!(map != null && map["state"] != null && map["state"])) {
       disturbTheNews = !disturbTheNews;
     } else {
@@ -206,12 +206,17 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     }
 
     //判断有没有免打扰
-    Map<String, dynamic> map = await queryIsNoPrompt(targetId: int.parse(widget.chatUserId));
-    disturbTheNews = map != null && map["state"] != null && map["state"];
-
-    setState(() {
-
-    });
+    if (Application.queryNoPromptUidList == null || Application.queryNoPromptUidList.length < 1) {
+      disturbTheNews = false;
+    } else {
+      for (NoPromptUidModel noPromptUidModel in Application.queryNoPromptUidList) {
+        if (noPromptUidModel.type == widget.chatType && noPromptUidModel.targetId.toString() == widget.chatUserId) {
+          disturbTheNews = true;
+          break;
+        }
+      }
+    }
+    setState(() {});
 
     //融云检测有没有开启免打扰
     // Application.rongCloud.getConversationNotificationStatus(

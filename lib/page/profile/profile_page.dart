@@ -15,6 +15,7 @@ import 'package:mirror/page/profile/fitness_information_entry/height_and_weight_
 import 'package:mirror/page/profile/query_list/query_follow_list.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'profile_detail_page.dart';
@@ -192,7 +193,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
           ///这里是顶部appbar和头像关注
           child: Container(
-            height: height * 0.16 + 61,
+            height: height * 0.11 + 61 + ScreenUtil.instance.statusBarHeight,
             child: Column(
               children: [
                 SizedBox(
@@ -288,7 +289,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 bottom: 0,
                 child: Row(children: [
                   InkWell(
-                    child: _TextAndNumber("关注", followingCount),
+                    child: _TextAndNumber("关注",StringUtil.getNumber(followingCount)),
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                         return QueryFollowList(
@@ -312,12 +313,12 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                         );
                       }));
                     },
-                    child: _TextAndNumber("粉丝", followerCount),
+                    child: _TextAndNumber("粉丝", StringUtil.getNumber(followerCount)),
                   ),
                   SizedBox(
                     width: width * 0.12,
                   ),
-                  _TextAndNumber("动态", feedCount)
+                  _TextAndNumber("动态", StringUtil.getNumber(feedCount))
                 ]))
           ],
         ));
@@ -377,13 +378,13 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   }
 
   ///这里是关注粉丝动态
-  Widget _TextAndNumber(String text, int number) {
+  Widget _TextAndNumber(String text, String number) {
     print('__________________________$number');
     return Column(
       children: [
         Center(
           child: Text(
-            "${_getNumber(number)}",
+            number,
             style: AppStyle.textMedium18,
           ),
         ),

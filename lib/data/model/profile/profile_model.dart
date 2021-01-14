@@ -6,12 +6,13 @@ class ProfileModel{
   int followingCount;
   int followerCount;
   int feedCount;
-
+  int laudedCount;
   ProfileModel(
     {this.uid,
       this.followingCount,
       this.followerCount,
       this.feedCount,
+      this.laudedCount
       });
 
   ProfileModel.fromJson(Map<String, dynamic> json) {
@@ -19,6 +20,8 @@ class ProfileModel{
     followingCount = json["followingCount"];
     followerCount = json["followerCount"];
     feedCount = json["feedCount"];
+    laudedCount = json["laudedCount"];
+
   }
 
   Map<String, dynamic> toJson() {
@@ -27,6 +30,7 @@ class ProfileModel{
     map["followingCount"] = followingCount;
     map["followerCount"] = followerCount;
     map["feedCount"] = feedCount;
+    map["laudedCount"] = laudedCount;
     return map;
   }
 }

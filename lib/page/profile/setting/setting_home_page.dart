@@ -1,8 +1,13 @@
 
+import 'dart:io';
+
+import 'package:mirror/config/config.dart';
 import 'package:mirror/page/profile/setting/blacklist_page.dart';
 import 'package:mirror/page/profile/setting/feedback_page.dart';
 import 'package:mirror/page/profile/setting/notice_setting_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/widget/dialog.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +26,7 @@ import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:toast/toast.dart';
 
 ///设置主页
 class SettingHomePage extends StatefulWidget{
@@ -87,7 +93,27 @@ class _settingHomePageState extends State<SettingHomePage>{
               },
               child: _rowItem(width, "通知设置"),
             ),
-            _rowItem(width, "清除缓存"),
+            InkWell(
+              onTap: (){
+                  showAppDialog(
+                    context,
+                    confirm: AppDialogButton("清除",(){
+                        //清掉拍照截图、录制视频、录制语言的文件夹内容
+                        _clearCache(AppConfig.getAppPicDir());
+                        _clearCache(AppConfig.getAppVideoDir());
+                        _clearCache(AppConfig.getAppVoiceDir());
+                        //TODO Android还需要清更新用的apk包
+                        //下载的视频课内容不在这里清，在专门管理课程的地方清
+                        return true;
+                    }),
+                    cancel: AppDialogButton("取消",(){
+                      return true;
+                    }),
+                    title: "清除缓存",
+                    info: "你确定要清除缓存么",
+                  );
+              },
+              child: _rowItem(width, "清除缓存"),),
             InkWell(
               onTap: (){
                 AppRouter.navigateToSettingFeedBack(context);
@@ -164,4 +190,36 @@ class _settingHomePageState extends State<SettingHomePage>{
       ),
     );
   }
+
+
+
+  void _clearCache(String path) async {
+    try {
+      //删除缓存目录
+      Directory file = Directory(path);
+      await delDir(file);
+      Toast.show('清除缓存成功',context);
+    } catch (e) {
+      print(e);
+      Toast.show('清除缓存失败',context);
+    } finally {
+
+    }
+  }
+  ///递归方式删除目录
+  Future<Null> delDir(FileSystemEntity file) async {
+    try {
+      if (file is Directory) {
+        final List<FileSystemEntity> children = file.listSync();
+        for (final FileSystemEntity child in children) {
+          print('path===========================${child.path}');
+          await delDir(child);
+        }
+      }
+      await file.delete();
+    } catch (e) {
+      print(e);
+    }
+  }
+
 }

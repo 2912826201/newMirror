@@ -56,14 +56,14 @@ Future<List> getRecommendTopic({@required int size}) async {
   }
 }
 // 获取话题详情 GETTOPICINFO
-Future<topicModel> getTopicInfo({@required int topicId}) async {
+Future<TopicDtoModel> getTopicInfo({@required int topicId}) async {
   Map<String, dynamic> params = {};
   params["topicId"] = topicId;
   BaseResponseModel responseModel = await requestApi(GETTOPICINFO, params);
   if (responseModel.isSuccess) {
-    topicModel model;
+    TopicDtoModel model;
     if (responseModel.data != null ) {
-      model = topicModel.fromJson(responseModel.data);
+      model = TopicDtoModel.fromJson(responseModel.data);
     }
     return model;
   } else {

@@ -7,6 +7,7 @@ import 'package:mirror/data/model/profile/follow_list_model.dart';
 import 'package:mirror/data/model/profile/profile_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/model/profile/topic_list_model.dart';
+import 'package:mirror/data/model/query_msglist_model.dart';
 import 'package:mirror/data/model/user_extrainfo_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 
@@ -68,6 +69,9 @@ const String SEARCH_FOLLOW_TOPIC = "/appuser/web/topic/searchFollowTopic";
 
 ///健身信息录入
 const String FITNESS_ENTRY = "/appuser/web/user/saveBasicFitnessInfo";
+
+///用户推送列表
+const String QUERY_MSG_LIST = "/appuser/web/message/queryMsgList";
 //关注
 Future<int> ProfileAddFollow(int id) async {
   BaseResponseModel responseModel = await requestApi(ATTENTION, {"targetId": id});
@@ -333,8 +337,11 @@ Future<FansListModel> GetFansList(int LastTime,int size,{int uid})async{
   }
 }
 ///话题列表
-Future<TopicListModel> GetTopicList(int lastTime,int size)async{
+Future<TopicListModel> GetTopicList(int lastTime,int size,{int uid})async{
   Map<String,dynamic> map = Map();
+  if(uid!=null){
+    map["uid"] = uid;
+  }
   map["lastTime"] = lastTime;
   map["size"] = size;
   BaseResponseModel responseModel = await requestApi(TOPIC_LIST,map);
@@ -389,6 +396,26 @@ Future<FitnessEntryModel> userFitnessEntry({int height,int weight,int bodyType,i
     return model;
   } else {
     print('健身信息录入接口请求失败============================================');
+    return null;
+  }
+}
+Future<QueryListModel> queryMsgList(int type,int size ,int lastTime) async {
+  Map<String, dynamic> map = Map();
+  if(lastTime!=null){
+    map["lastTime"] = lastTime;
+  }
+  map["type"] = type;
+  map["size"] = size;
+  BaseResponseModel responseModel = await requestApi(QUERY_MSG_LIST, map);
+  if (responseModel.isSuccess) {
+    print('用户通知消息接口请求成功=============================');
+    QueryListModel model;
+    if (responseModel.data != null) {
+      model = QueryListModel.fromJson(responseModel.data);
+    }
+    return model;
+  } else {
+    print('用户通知消息接口请求失败============================================');
     return null;
   }
 }

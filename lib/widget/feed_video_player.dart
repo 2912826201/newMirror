@@ -13,8 +13,10 @@ class FeedVideoPlayer extends StatefulWidget {
   final SizeInfo sizeInfo;
   final double width;
   final bool isInListView;
+  final bool isfile;
 
-  FeedVideoPlayer(this.url, this.sizeInfo, this.width, {Key key, this.isInListView = false}) : super(key: key);
+  FeedVideoPlayer(this.url, this.sizeInfo, this.width, {Key key, this.isInListView = false, this.isfile = false})
+      : super(key: key);
 
   @override
   _FeedVideoPlayerState createState() => _FeedVideoPlayerState();
@@ -38,7 +40,12 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
 
     super.initState();
 
-    dataSource = BetterPlayerDataSource.network(widget.url);
+    if (widget.isfile) {
+      dataSource = BetterPlayerDataSource.file(widget.url);
+    } else {
+      dataSource = BetterPlayerDataSource.network(widget.url);
+    }
+
     eventListener = (BetterPlayerEvent event) {
       print("event: ${event.betterPlayerEventType}, params: ${event.parameters}");
       switch (event.betterPlayerEventType) {

@@ -7,6 +7,7 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/live_model.dart';
+import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/route/route_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -29,6 +30,7 @@ class AppRouter {
   static String pathRelease = "/release";
   static String pathPerfectUserPage = "/perfectuser";
   static String pathPreviewPhoto = "/previewphoto";
+  static String pathPreviewVideo = "/previewvideo";
   static String pathLiveBroadcast = "/livebroadcast";
   static String pathLiveDetail = "/livedetail";
   static String pathVideoDetail = "/videodetail";
@@ -72,6 +74,7 @@ class AppRouter {
     router.define(pathLoginSucess, handler: handlerLoginSucessPagePage);
     router.define(pathChatPage, handler: handlerChatPage);
     router.define(pathPreviewPhoto, handler: handlerPreviewPhoto);
+    router.define(pathPreviewVideo, handler: handlerPreviewVideo);
     router.define(pathLiveBroadcast, handler: handlerLiveBroadcast);
     router.define(pathLiveDetail, handler: handlerLiveDetail);
     router.define(pathVideoDetail, handler: handlerVideoDetail);
@@ -302,6 +305,14 @@ class AppRouter {
     map["fixedWidth"] = fixedWidth;
     map["fixedHeight"] = fixedHeight;
     _navigateToPage(context, pathPreviewPhoto, map, callback: callback);
+  }
+
+  static void navigateToPreviewVideoPage(BuildContext context, String filePath, SizeInfo sizeInfo,
+      Function(dynamic result) callback) {
+    Map<String, dynamic> map = Map();
+    map["filePath"] = filePath;
+    map["sizeInfo"] = sizeInfo.toJson();
+    _navigateToPage(context, pathPreviewVideo, map, callback: callback);
   }
 
   static void navigateToMachineRemoteController(BuildContext context) {

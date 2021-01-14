@@ -4,7 +4,7 @@ class FansListModel{
   int lastTime;
   int lastId;
   int lastScore;
-  List<fansModel> list;
+  List<FansModel> list;
   FansListModel({this.list,this.lastTime,this.hasNext,this.lastId,this.lastScore});
   FansListModel.fromJson(dynamic json) {
     hasNext = json["hasNext"];
@@ -14,7 +14,7 @@ class FansListModel{
     if (json["list"] != null) {
       list = [];
       json["list"].forEach((v) {
-        list.add(fansModel.fromJson(v));
+        list.add(FansModel.fromJson(v));
       });
     }
   }
@@ -29,16 +29,16 @@ class FansListModel{
     return map;
   }
 }
-class fansModel{
+class FansModel{
   int uid;
   String avatarUri;
   String nickName;
   String remarkName;
   String description;
   int isFallow;
-  fansModel({this.uid,this.avatarUri,this.nickName,this.description,this.isFallow,this.remarkName});
+  FansModel({this.uid,this.avatarUri,this.nickName,this.description,this.isFallow,this.remarkName});
 
-  fansModel.fromJson(Map<String, dynamic> json) {
+  FansModel.fromJson(Map<String, dynamic> json) {
     uid = json["uid"];
     avatarUri = json["avatarUri"];
     nickName = json["nickName"];
