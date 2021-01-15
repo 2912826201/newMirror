@@ -1,6 +1,7 @@
 
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -15,8 +16,9 @@ class VipHorizontalList extends StatefulWidget{
 }
 class _vipHorizontalListState extends State<VipHorizontalList>{
   Color itemBackGround = AppColor.white;
-  String titleText = "首月优惠";
+  String titleText = "首月优惠dwwdww";
   double titleWidth;
+  int oldIndex;
   @override
   void initState() {
     super.initState();
@@ -34,14 +36,26 @@ class _vipHorizontalListState extends State<VipHorizontalList>{
        itemBuilder:(context,index){
             return Row(
               children: [
-                item(),
+                InkWell(
+                  onTap: (){
+                    if(oldIndex==index){
+                      setState(() {
+                        oldIndex=100;
+                      });
+                    }else{
+                      setState(() {
+                        oldIndex = index;
+                      });
+                    }
+                  },
+                  child: item(index),),
                 SizedBox(width: 9,)
               ],
             );
        } ));
   }
 
-  Widget item(){
+  Widget item(int index){
     return Container(
       height:125.5,
       width: 103,
@@ -53,8 +67,8 @@ class _vipHorizontalListState extends State<VipHorizontalList>{
             height: 117,
             width: 103,
             decoration: BoxDecoration(
-              color:itemBackGround,
-              border: Border.all(width: 0.5, color: AppColor.textPrimary3),
+              color: index==oldIndex?AppColor.bgWhite:AppColor.transparent,
+              border: Border.all(width: index==oldIndex?1:0.5, color: index==oldIndex?AppColor.bgVip2:AppColor.textPrimary3),
               borderRadius: BorderRadius.all(Radius.circular(4))),
             child: Center(
                 child: _itemText(),
@@ -73,10 +87,10 @@ class _vipHorizontalListState extends State<VipHorizontalList>{
                 colors:[AppColor.lightGreen,AppColor.textVipPrimary1],
                 begin: FractionalOffset(0.6,0), end: FractionalOffset(1, 0.6)),
               borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(4),
+                topLeft: Radius.circular(6),
                 topRight:Radius.circular(0),
                 bottomLeft: Radius.circular(0),
-                bottomRight: Radius.circular(4) ),),
+                bottomRight: Radius.circular(6) ),),
             child: Center(
               child: Text(titleText,style: AppStyle.textRegularRed11,),
             ),

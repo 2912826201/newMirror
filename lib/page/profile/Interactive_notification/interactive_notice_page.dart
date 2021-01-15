@@ -244,6 +244,7 @@ class _interactiveNoticeItemState extends State<InteractiveNoticeItem> {
     senderAvatarUrl = msgModel.senderAvatarUrl;
     senderName = msgModel.senderName;
     commentModel = msgModel.commentData;
+    coverImage = msgModel.coverUrl;
     if(widget.type==0){
       if(msgModel.refType==2){
         commentState = "回复了  ";
@@ -251,32 +252,9 @@ class _interactiveNoticeItemState extends State<InteractiveNoticeItem> {
         commentState = "";
       }
     }
-    _getRefData();
     _textSpanAdd();
   }
 
-  _getRefData() async{
-    if (msgModel.refData != null) {
-      feedIsDelete = false;
-      if (msgModel.refType == 0||msgModel.refType == 2) {
-        HomeFeedModel feedModel = HomeFeedModel.fromJson(msgModel.refData);
-        if (feedModel.videos.isNotEmpty) {
-          print('videos Url========================${feedModel.videos.first.coverUrl}');
-          coverImage = feedModel.videos.first.coverUrl;
-        } else  if(feedModel.picUrls.isNotEmpty) {
-          coverImage = feedModel.picUrls.first.url;
-          print('picUrl =============================${feedModel.picUrls.first.url}');
-          print('picUrl========================${feedModel.id}');
-        }else{
-          coverImage = null;
-        }
-      } else if (msgModel.refType == 1) {
-        coverImage = "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=1491622188,2856001475&fm=26&gp=0.jpg";
-      }
-    } else {
-      feedIsDelete = true;
-    }
-  }
   List<BaseRichText> _atText() {
     List<BaseRichText> richList = [];
     atUserList.forEach((element) {
@@ -362,9 +340,7 @@ class _interactiveNoticeItemState extends State<InteractiveNoticeItem> {
                       : Container()
                 ],
               )),
-          Expanded(
-            child: Container(),
-          ),
+          Spacer(),
           Container(
             alignment: Alignment.centerLeft,
             width: ScreenUtil.instance.screenWidthDp * 0.64,
@@ -401,9 +377,7 @@ class _interactiveNoticeItemState extends State<InteractiveNoticeItem> {
               ],
             ),
           ),
-          Expanded(
-            child: Container(),
-          ),
+          Spacer(),
           !feedIsDelete
               ? Container(
                   alignment: Alignment.topRight,

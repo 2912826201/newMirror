@@ -70,4 +70,8 @@ class AppStyle {
   static const textRedMedium21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w500, color: AppColor.mainRed);
   static const textDeleteHintRegular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textHint,decoration: TextDecoration.lineThrough,
     decorationColor:AppColor.textHint,);
+  static const textWhiteMedium18 = TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColor.white);
+  static const textWhiteRegular12 =
+  TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.white);
+
 }
