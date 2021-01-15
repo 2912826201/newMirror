@@ -18,7 +18,6 @@ import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/widget/create_group_popup.dart';
 import 'package:provider/provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-
 import 'message_chat_page_manager.dart';
 
 /// message_page
@@ -41,26 +40,17 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   void initState() {
     _screenWidth = ScreenUtil.instance.screenWidthDp;
     super.initState();
-    _getUnReadMsgCount();
   }
     _getUnReadMsgCount()async{
       Unreads model = await getUnReads();
         if(model!=null){
-          if(isFirst){
-            unReadMsg = model;
-            UnreadMessageModel liveMsgModel = UnreadMessageModel.fromJson(unReadMsg.liveMsg);
-
-      }else{
-            print('从列表返回刷新未读数');
-        setState(() {
-              unReadMsg = model;
-            });
+            context.read<UnReadMessageNotifier>().changeUnReadMsg(comments:model.comment,ats:model.at,lauds: model.laud);
           }
-        }
     }
   @override
   Widget build(BuildContext context) {
     print("消息列表页build");
+    _getUnReadMsgCount();
     super.build(context);
     _listLength =
         context.watch<ConversationNotifier>().topListLength + context.watch<ConversationNotifier>().commonListLength;
@@ -180,9 +170,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                     return InteractiveNoticePage(type: type,);
                   })).then((value){
-                    setState(() {
                       isFirst = false;
-                    });
                     _getUnReadMsgCount();
                   });
 
@@ -207,10 +195,10 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                   left: 29.5,
                   child: CountBadge(
                       type == 0
-                          ? unReadMsg.comment
+                          ? context.read<UnReadMessageNotifier>().comment
                           : type == 1
-                              ? unReadMsg.at
-                              : unReadMsg.laud,
+                              ? context.read<UnReadMessageNotifier>().at
+                              :context.read<UnReadMessageNotifier>().laud,
                       false)),
             ],
           ),),
@@ -438,4 +426,20 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
       ),
     );
   }
+}
+class UnReadMessageNotifier extends ChangeNotifier{
+
+  int comment;
+  int at;
+  int laud;
+
+  UnReadMessageNotifier({this.comment,this.at,this.laud});
+
+  void changeUnReadMsg({int comments,int ats,int lauds}){
+    comment = comments;
+    at = ats;
+    laud = lauds;
+    notifyListeners();
+  }
+
 }
