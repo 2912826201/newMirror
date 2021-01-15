@@ -17,11 +17,12 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 class PrivateMorePage extends StatefulWidget {
   ///对话用户id
   final String chatUserId;
+  final String name;
 
   ///[chatType] 会话类型，参见类型 [OFFICIAL_TYPE]
   final int chatType;
 
-  PrivateMorePage({this.chatUserId, this.chatType});
+  PrivateMorePage({this.chatUserId, this.chatType, this.name});
 
   @override
   createState() => PrivateMorePageState();
@@ -45,14 +46,17 @@ class PrivateMorePageState extends State<PrivateMorePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("${widget.chatType == PRIVATE_TYPE ? "私人消息" : "系统官方消息"}"),
+        title: Text(widget.name),
         centerTitle: true,
       ),
       body: Container(
         color: AppColor.white,
         child: Column(
           children: [
-            item(1, disturbTheNews, "消息免打扰"),
+            Offstage(
+              offstage: !(widget.chatType == PRIVATE_TYPE || widget.chatType == MANAGER_TYPE),
+              child: item(1, disturbTheNews, "消息免打扰"),
+            ),
             item(2, topChat, "置顶聊天"),
             getContainer(),
             Offstage(

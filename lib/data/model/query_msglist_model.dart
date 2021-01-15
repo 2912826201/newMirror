@@ -45,10 +45,10 @@ class QueryModel{
   int createTime;
   int atType;
   CommentDtoModel commentData;
-  Map<String, dynamic> refData;
+  CommentDtoModel refData;
   String senderName;
   String senderAvatarUrl;
-
+  String coverUrl;
   QueryModel.fromJson(Map<String, dynamic> json) {
     id = json["id"];
     senderId = json["senderId"];
@@ -61,9 +61,10 @@ class QueryModel{
     createTime = json["createTime"];
     atType = json["atType"];
     commentData = json["commentData"] != null ? CommentDtoModel.fromJson(json["commentData"]) : null;
-    refData = json["refData"];
+    refData = json["refData"] != null ? CommentDtoModel.fromJson(json["refData"]) : null;
     senderName = json["senderName"];
     senderAvatarUrl = json["senderAvatarUrl"];
+    coverUrl = json["coverUrl"];
   }
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
@@ -80,8 +81,9 @@ class QueryModel{
     if (commentData != null) {
       map["commentData"] = CommentDtoModel().toJson();
     }
-    map["commentData"] = commentData;
-    map["refData"] = refData;
+    if (commentData != null) {
+      map["refData"] = CommentDtoModel().toJson();
+    }
     map["senderName"] = senderName;
     map["senderAvatarUrl"] = senderAvatarUrl;
     return map;

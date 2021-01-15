@@ -6,7 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
 ///编辑昵称
@@ -90,30 +92,32 @@ class _editInformationNameState extends State<EditInformationName>{
             width: width,
             child: Column(
               children: [
-                Container(
-                  width: width,
-                  height: 0.5,
-                  color: AppColor.bgWhite.withOpacity(0.65),
-                ),
-                  SizedBox(height: 17,),
-                  Container(
-                    width: width,
-                    margin: EdgeInsets.only(top: 29),
-                    child: _inputWidget(width)
-                  ),
-                Container(
-                  margin: EdgeInsets.only(left: 16,right: 16),
-                  width: width,
-                  height: 0.5,
-                  color: AppColor.bgWhite.withOpacity(0.65),
-                ),
-                  SizedBox(height: 12,),
-                  _bottomText(width)
-              ],
+            Container(
+              width: width,
+              height: 0.5,
+              color: AppColor.bgWhite.withOpacity(0.65),
             ),
+            SizedBox(
+              height: 17,
+            ),
+            Container(width: width, margin: EdgeInsets.only(top: 29), child: _inputWidget(width)),
+            Container(
+              margin: EdgeInsets.only(left: 16, right: 16),
+              width: width,
+              height: 0.5,
+              color: AppColor.bgWhite.withOpacity(0.65),
+            ),
+            SizedBox(
+              height: 12,
+            ),
+            _bottomText(width),
+          ],
+        ),
           ),
         );
   }
+
+
   //底部提示字数文字
   Widget _bottomText(double width){
     return Container(

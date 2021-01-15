@@ -92,7 +92,6 @@ class _fitnessPartState extends State<FitnesspartPage> {
               width: width,
                 alignment: Alignment.topCenter,
                 child: Wrap(
-                spacing: width*0.11,
                 runSpacing: 28,
                 runAlignment: WrapAlignment.spaceAround,
                 direction: Axis.horizontal,
@@ -131,7 +130,10 @@ class _fitnessPartState extends State<FitnesspartPage> {
 
 
   List<Widget> _boxitem()=> List.generate(partList.length, (index){
-    return ClickLineBtn(
+    return Container(
+      width: ScreenUtil.instance.screenWidthDp/3,
+      child: Center(
+        child:ClickLineBtn(
       title: partList[index].name,
       height: 44.0,
       width: 88,
@@ -142,19 +144,14 @@ class _fitnessPartState extends State<FitnesspartPage> {
       color: choselist.indexOf(partList[index].id-1)!=-1?AppColor.transparent:AppColor.textHint,
       onTap: () {
         if(partList[index].id == 1){
-          print('=====================点击了全身');
                 setState(() {
             if (choselist.indexOf(0)!=-1) {
-              print('================全身亮');
                     choselist.remove(choselist.indexOf(0));
             } else {
-              print('=================全身暗');
                if(choselist.isNotEmpty){
-                 print('===================其他暗');
                       choselist.clear();
               }
               choselist.add(0);
-              print('====================添加全身');
                   }
             print('${choselist.length}');
           });
@@ -162,40 +159,9 @@ class _fitnessPartState extends State<FitnesspartPage> {
           _changeListData(partList[index].id-1);
         }
       }
+    ) ,),
     );
     });
-
-  Widget _locationButton(String text,int type){
-        return ClickLineBtn(
-          title: text,
-          height: 44.0,
-          width: 88,
-          circular:3.0,
-          textColor: choselist.indexOf(type)!=-1?AppColor.white:AppColor.textHint,
-          fontSize: 16,
-          backColor: choselist.indexOf(type)!=-1?AppColor.bgBlack:AppColor.transparent,
-          color: choselist.indexOf(type)!=-1?AppColor.transparent:AppColor.textHint,
-          onTap: () {
-            if(type == 0 ){
-              setState(() {
-                if (choselist.indexOf(0)!=-1) {
-                  choselist.remove(choselist.indexOf(0));
-                } else {
-                  if(choselist.isNotEmpty){
-                    choselist.clear();
-                  }
-                  choselist.add(0);
-                }
-                print('${choselist.length}');
-              });
-            }else{
-              _changeListData(type);
-            }
-          }
-        );
-
-  }
-
   _changeListData(int type){
     setState(() {
     if (choselist.indexOf(type)!=-1) {

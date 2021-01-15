@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
@@ -88,7 +89,16 @@ class FeedMsg extends StatelessWidget {
   //里面的结构-头像和消息
   List<Widget> getSmallBody(BuildContext context) {
     var body = [
-      getUserImage(userUrl, 38, 38),
+      GestureDetector(
+        child: getUserImage(userUrl, 38, 38),
+        onTap: () {
+          if (isCanLongClick) {
+            voidMessageClickCallBack(
+                contentType: ChatTypeModel.MESSAGE_TYPE_USER,
+                map: new UserModel(uid: int.parse(sendChatUserId)).toJson());
+          }
+        },
+      ),
       SizedBox(
         width: 7,
       ),

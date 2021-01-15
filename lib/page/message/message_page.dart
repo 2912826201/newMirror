@@ -18,7 +18,6 @@ import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/widget/create_group_popup.dart';
 import 'package:provider/provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-
 import 'message_chat_page_manager.dart';
 
 /// message_page
@@ -32,8 +31,8 @@ class MessagePage extends StatefulWidget {
 class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin {
   double _screenWidth = 0.0;
   int _listLength = 0;
-  UnreadInterCourses unReadMsg;
-  bool isFrist = true;
+  Unreads unReadMsg;
+  bool isFirst = true;
   @override
   bool get wantKeepAlive => true;
 
@@ -41,25 +40,17 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   void initState() {
     _screenWidth = ScreenUtil.instance.screenWidthDp;
     super.initState();
-    _getUnReadMagCount();
   }
-    _getUnReadMagCount()async{
+    _getUnReadMsgCount()async{
       Unreads model = await getUnReads();
-        if(model.interCourses!=null){
-          if(isFrist){
-            unReadMsg = model.interCourses;
-          }else{
-            setState(() {
-              unReadMsg = model.interCourses;
-            });
+        if(model!=null){
+            context.read<UnReadMessageNotifier>().changeUnReadMsg(comments:model.comment,ats:model.at,lauds: model.laud);
           }
-        }
-
-
     }
   @override
   Widget build(BuildContext context) {
     print("消息列表页build");
+    _getUnReadMsgCount();
     super.build(context);
     _listLength =
         context.watch<ConversationNotifier>().topListLength + context.watch<ConversationNotifier>().commonListLength;
@@ -167,11 +158,9 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
 
   //这里暂时不写枚举了 0评论 1@ 2点赞
   Widget _buildMentionItem(double size, int type) {
-    var colors = [Colors.deepOrangeAccent, Colors.deepPurpleAccent, Colors.cyanAccent];
     return Container(
       height: size,
       width: size,
-      color: colors[type],
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -181,8 +170,8 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                     return InteractiveNoticePage(type: type,);
                   })).then((value){
-                    isFrist = false;
-                    _getUnReadMagCount();
+                      isFirst = false;
+                    _getUnReadMsgCount();
                   });
 
             },
@@ -206,10 +195,10 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                   left: 29.5,
                   child: CountBadge(
                       type == 0
-                          ? unReadMsg.comment
+                          ? context.read<UnReadMessageNotifier>().comment
                           : type == 1
-                              ? unReadMsg.at
-                              : unReadMsg.laud,
+                              ? context.read<UnReadMessageNotifier>().at
+                              :context.read<UnReadMessageNotifier>().laud,
                       false)),
             ],
           ),),
@@ -437,4 +426,20 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
       ),
     );
   }
+}
+class UnReadMessageNotifier extends ChangeNotifier{
+
+  int comment;
+  int at;
+  int laud;
+
+  UnReadMessageNotifier({this.comment,this.at,this.laud});
+
+  void changeUnReadMsg({int comments,int ats,int lauds}){
+    comment = comments;
+    at = ats;
+    laud = lauds;
+    notifyListeners();
+  }
+
 }

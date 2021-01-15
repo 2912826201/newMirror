@@ -18,8 +18,10 @@ import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/rongcloud.dart';
+import 'package:mirror/page/message/message_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
+import 'package:mirror/page/vip/vip_nameplate_page.dart';
 import 'package:mirror/widget/address_Picker.dart';
 import 'package:provider/provider.dart';
 
@@ -64,7 +66,9 @@ void main() {
             ChangeNotifierProvider(create: (_) => AddressPickerNotifier()),
             ChangeNotifierProvider(create: (_) => FitnessInformationNotifier()),
             ChangeNotifierProvider(create: (_) => ProfilePageNotifier()),
-        ChangeNotifierProvider(create: (_) => GroupUserProfileNotifier())
+        ChangeNotifierProvider(create: (_) => GroupUserProfileNotifier()),
+        ChangeNotifierProvider(create: (_) => UnReadMessageNotifier()),
+        ChangeNotifierProvider(create: (_)=>VipMoveNotifier())
       ],
       child: MyApp(),
     ),

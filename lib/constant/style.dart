@@ -47,7 +47,9 @@ class AppStyle {
   static const textRegularRed16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.mainRed);
   static const textRegularRed13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.mainRed);
   static const textMediumRed14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.mainRed);
-
+  static const textMediumRed16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColor.mainRed);
+  static const textRegularRed11 = TextStyle(fontSize: 11, fontWeight: FontWeight.w400, color: AppColor.mainRed);
+  static const textMediumRed13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColor.mainRed);
   //不在规范内style
   static const whiteRegular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.white);
   static const whiteRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.white);
@@ -64,4 +66,12 @@ class AppStyle {
   static const textRegular13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textPrimary1);
   static const textMediumBlue13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.urlText);
   static const textHintRegular10 = TextStyle(fontSize: 10, fontWeight: FontWeight.w400, color: AppColor.textHint);
+  static const whiteMedium15 = TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.white);
+  static const textRedMedium21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w500, color: AppColor.mainRed);
+  static const textDeleteHintRegular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textHint,decoration: TextDecoration.lineThrough,
+    decorationColor:AppColor.textHint,);
+  static const textWhiteMedium18 = TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColor.white);
+  static const textWhiteRegular12 =
+  TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.white);
+
 }

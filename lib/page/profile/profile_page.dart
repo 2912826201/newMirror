@@ -13,6 +13,9 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/page/profile/fitness_information_entry/height_and_weight_page.dart';
 import 'package:mirror/page/profile/query_list/query_follow_list.dart';
+import 'package:mirror/page/vip/vip_not_open_page.dart';
+import 'package:mirror/page/vip/vip_open_page.dart';
+
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
@@ -146,7 +149,15 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   height: 28,
                 ),
                 _bottomSetting("我的课程"),
+                InkWell(
+                  onTap: (){
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                      return VipOpenPage();
+                    }));
+                  },
+                  child:
                 _bottomSetting("我的订单"),
+                ),
                 InkWell(
                   onTap: (){
                     Navigator.of(context).push(MaterialPageRoute(builder: (context) {

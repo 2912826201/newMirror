@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/page/message/message_view/currency_msg.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
-typedef VoidCallback = void Function(String name, int userId, BuildContext context);
+typedef VoidCallback = void Function(String name, int userId, int type, BuildContext context);
 
 // ignore: must_be_immutable
 class FriendsCell extends StatelessWidget {
@@ -33,21 +35,21 @@ class FriendsCell extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Container(
-        child: _buildUi(),
+        child: _buildUi(context),
       ),
       onTap: () {
         if (voidCallback != null) {
-          voidCallback(name, userId, context);
+          voidCallback(name, userId, RCConversationType.Private, context);
         }
       },
     );
   }
 
-  Widget _buildUi() {
+  Widget _buildUi(BuildContext context) {
     return Column(
       children: <Widget>[
         getTitleUi(), //title
-        itemUi(), //item
+        itemUi(context), //item
       ],
     );
   }
@@ -72,7 +74,7 @@ class FriendsCell extends StatelessWidget {
   }
 
   //item-ui
-  Widget itemUi() {
+  Widget itemUi(BuildContext context) {
     return Container(
       color: Colors.white,
       height: 48,
@@ -82,9 +84,9 @@ class FriendsCell extends StatelessWidget {
         children: <Widget>[
           getSingleChoiceUi(), //单选
 
-          getUserImage(), //用户头像
+          getUserImagePr(), //用户头像
 
-          getUserName(), //昵称
+          getUserName(context), //昵称
         ],
       ),
     );
@@ -116,24 +118,24 @@ class FriendsCell extends StatelessWidget {
   }
 
   //用户头像
-  Widget getUserImage() {
-    return Container(
-      width: 38,
-      height: 38,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(19.0),
-          image: DecorationImage(
-              image: imageUrl != null ? NetworkImage(imageUrl) : AssetImage(imageAssets), fit: BoxFit.cover)),
+  Widget getUserImagePr() {
+    return getUserImage(
+      imageUrl,
+      38,
+      38,
     );
   }
 
   //用户的名字
-  Widget getUserName() {
+  Widget getUserName(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(left: 12),
+      width: MediaQuery.of(context).size.width - 16 - 16 - 24 - 14.5 - 38 - 12 - 10,
       child: Text(
         name,
         style: TextStyle(fontSize: 15, color: AppColor.textPrimary3),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }

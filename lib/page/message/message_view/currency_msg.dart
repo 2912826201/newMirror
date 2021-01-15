@@ -8,11 +8,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 //点击事件返回
 typedef VoidMessageClickCallBack = void Function(
-    {String contentType,
-    String content,
-    Map<String, dynamic> map,
-    bool isUrl,
-    int position});
+    {String contentType, String content, Map<String, dynamic> map, bool isUrl, String msgId, int position});
 typedef VoidItemLongClickCallBack = void Function(
     {int position,
     String settingType,

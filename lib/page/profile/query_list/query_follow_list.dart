@@ -21,6 +21,7 @@ import 'package:provider/provider.dart';
 
 class QueryFollowList extends StatefulWidget {
   PanelController pc;
+
   //传1为关注，传2为粉丝，3为话题
   int type;
   int userId;
@@ -94,20 +95,20 @@ class _queryFollowState extends State<QueryFollowList> {
       }
       //这是插入的作为话题入口的假数据
       followList.insert(0, FollowModel());
-    }else if(listPage>1&&_lastTime!=null){
-      if(model != null){
+    } else if (listPage > 1 && _lastTime != null) {
+      if (model != null) {
         _lastTime = model.lastTime;
         model.list.forEach((element) {
           followList.add(element);
         });
         _refreshController.loadComplete();
-      }else{
+      } else {
         _refreshController.loadNoData();
       }
     }
-    setState(() {
-    });
+    setState(() {});
   }
+
   ///搜索关注用户
   _getSearchUser(String text) async {
     if (listPage > 1 && _lastTime == null) {
@@ -117,48 +118,48 @@ class _queryFollowState extends State<QueryFollowList> {
     }
     refreshOver = false;
     print('====开始请求搜索用户接口============================');
-    SearchUserModel model = await searchFollowUser(text, 6, uids:widget.userId.toString(),lastTime: _lastTime);
+    SearchUserModel model = await searchFollowUser(text, 6, uids: widget.userId.toString(), lastTime: _lastTime);
     setState(() {
       if (listPage == 1) {
         _refreshController.loadComplete();
         if (model.list.isNotEmpty) {
-            print('===================== =============model有值');
-            followList.clear();
-            //这是插入的作为话题入口的假数据
-            followList.insert(0, FollowModel());
-            model.list.forEach((element) {
-              //因为搜索的model和关注列表的model不一样，用这个model插入一条数据去接得到的数据
-              searchModel.clear();
-              searchModel.insert(0,FollowModel());
-              searchModel.first.uid = element.uid;
-              searchModel.first.avatarUri =element.avatarUri;
-              searchModel.first.description = element.description;
-              searchModel.first.nickName = element.nickName;
-              if(element.relation==0||element.relation==2){
-                searchModel.first.isFallow = 0;
-              }else{
-                searchModel.first.isFallow = 1;
-              }
-              followList.add(searchModel.first);
-            });
+          print('===================== =============model有值');
+          followList.clear();
+          //这是插入的作为话题入口的假数据
+          followList.insert(0, FollowModel());
+          model.list.forEach((element) {
+            //因为搜索的model和关注列表的model不一样，用这个model插入一条数据去接得到的数据
+            searchModel.clear();
+            searchModel.insert(0, FollowModel());
+            searchModel.first.uid = element.uid;
+            searchModel.first.avatarUri = element.avatarUri;
+            searchModel.first.description = element.description;
+            searchModel.first.nickName = element.nickName;
+            if (element.relation == 0 || element.relation == 2) {
+              searchModel.first.isFallow = 0;
+            } else {
+              searchModel.first.isFallow = 1;
+            }
+            followList.add(searchModel.first);
+          });
           _lastTime = model.lastTime;
           _refreshController.refreshCompleted();
-        }else{
+        } else {
           followList.clear();
           followList.insert(0, FollowModel());
         }
-      } else if (listPage > 1 && _lastTime !=null) {
+      } else if (listPage > 1 && _lastTime != null) {
         if (model.list != null) {
           model.list.forEach((element) {
             searchModel.clear();
-            searchModel.insert(0,FollowModel());
+            searchModel.insert(0, FollowModel());
             searchModel.first.uid = element.uid;
-            searchModel.first.avatarUri =element.avatarUri;
+            searchModel.first.avatarUri = element.avatarUri;
             searchModel.first.description = element.description;
             searchModel.first.nickName = element.nickName;
-            if(element.relation==0||element.relation==2){
+            if (element.relation == 0 || element.relation == 2) {
               searchModel.first.isFallow = 0;
-            }else{
+            } else {
               searchModel.first.isFallow = 1;
             }
             followList.add(searchModel.first);
@@ -175,7 +176,7 @@ class _queryFollowState extends State<QueryFollowList> {
 
   ///获取粉丝列表
   _getFansList() async {
-    if (listPage > 1 && _lastTime ==null) {
+    if (listPage > 1 && _lastTime == null) {
       print('===========================接口退回');
       _refreshController.loadNoData();
       return;
@@ -183,7 +184,7 @@ class _queryFollowState extends State<QueryFollowList> {
     print('====================粉丝页请求接口');
     FansListModel model = await GetFansList(_lastTime, 15, uid: widget.userId);
     setState(() {
-      if (listPage == 1&&_lastTime==null) {
+      if (listPage == 1 && _lastTime == null) {
         _refreshController.loadComplete();
         fansList.clear();
         if (model.list != null) {
@@ -220,7 +221,7 @@ class _queryFollowState extends State<QueryFollowList> {
       return;
     }
     print('====================话题页请求接口');
-    TopicListModel model = await GetTopicList(_lastTime, 20,uid: widget.userId);
+    TopicListModel model = await GetTopicList(_lastTime, 20, uid: widget.userId);
     setState(() {
       if (listPage == 1) {
         _refreshController.loadComplete();
@@ -248,6 +249,7 @@ class _queryFollowState extends State<QueryFollowList> {
       }
     });
   }
+
   //搜索关注话题
   _getSearchTopic(String text) async {
     if (listPage > 1 && _lastScore == null) {
@@ -263,15 +265,15 @@ class _queryFollowState extends State<QueryFollowList> {
         _refreshController.loadComplete();
         _refreshController.isRefresh;
         if (model.list.isNotEmpty) {
-            topicList.clear();
-            print('===================== =============model有值');
-            model.list.forEach((element) {
-              print('model================ ${element.id}');
-              topicList.add(element);
-            });
-            _lastScore = model.lastScore;
+          topicList.clear();
+          print('===================== =============model有值');
+          model.list.forEach((element) {
+            print('model================ ${element.id}');
+            topicList.add(element);
+          });
+          _lastScore = model.lastScore;
           _refreshController.refreshCompleted();
-        }else{
+        } else {
           topicList.clear();
         }
       } else if (listPage > 1 && _lastScore != null) {
@@ -289,22 +291,23 @@ class _queryFollowState extends State<QueryFollowList> {
       refreshOver = true;
     });
   }
+
   //刷新
   __onRefresh() {
-      listPage = 1;
-      _lastTime = null;
+    listPage = 1;
+    _lastTime = null;
     if (widget.type == 1) {
-      if(controller.text.isNotEmpty){
+      if (controller.text.isNotEmpty) {
         _getSearchUser(controller.text);
-      }else{
+      } else {
         _getFollowList();
       }
     } else if (widget.type == 2) {
       _getFansList();
     } else {
-      if(controller.text.isNotEmpty){
+      if (controller.text.isNotEmpty) {
         _getSearchTopic(controller.text);
-      }else{
+      } else {
         _getTopicList();
       }
     }
@@ -312,19 +315,19 @@ class _queryFollowState extends State<QueryFollowList> {
 
   //加载
   _onLoading() {
-      listPage += 1;
-    if(widget.type==1){
-      if(controller.text.isNotEmpty){
+    listPage += 1;
+    if (widget.type == 1) {
+      if (controller.text.isNotEmpty) {
         _getSearchUser(controller.text);
-      }else{
+      } else {
         _getFollowList();
       }
-    }else if (widget.type == 2) {
-        _getFansList();
+    } else if (widget.type == 2) {
+      _getFansList();
     } else {
-      if(controller.text.isNotEmpty){
+      if (controller.text.isNotEmpty) {
         _getSearchTopic(controller.text);
-      }else{
+      } else {
         _getTopicList();
       }
     }
@@ -340,14 +343,13 @@ class _queryFollowState extends State<QueryFollowList> {
     }
     __onRefresh();
 
-
     controller.addListener(() {
       _lastTime = null;
       _lastScore = null;
       listPage = 1;
       if (controller.text.isNotEmpty) {
         print('text===============不为空');
-        if (lastString!=controller.text) {
+        if (lastString != controller.text) {
           print('text===============改变值');
           if (refreshOver) {
             print('text===============刷新完成');
@@ -359,11 +361,11 @@ class _queryFollowState extends State<QueryFollowList> {
           }
         }
       } else {
-       if(widget.type == 1){
-           _getFollowList();
-       }else{
-           _getTopicList();
-       }
+        if (widget.type == 1) {
+          _getFollowList();
+        } else {
+          _getTopicList();
+        }
       }
       lastString = controller.text;
     });
@@ -413,59 +415,63 @@ class _queryFollowState extends State<QueryFollowList> {
         child: Column(
           children: [
             //需要显隐的搜索框
-            isMySelf&&widget.type!=2?Column(
-              children: [
-                SizedBox(
-                  height: 12,
-                ),
-                Container(
-                  height: 32,
-                  width: width,
-                  color: AppColor.bgWhite,
-                  padding: EdgeInsets.only(left: 12),
-                  child: Center(
-                    child: Row(
-                      children: [
-                        Container(
-                          height: 21,
-                          width: 21,
-                          child: Image.asset("images/resource/Nav_search_icon.png"),
-                        ),
-                        SizedBox(
-                          width: 12,
-                        ),
-                        Expanded(
-                          child: TextField(
-                            cursorColor: AppColor.black,
-                            style: AppStyle.textRegular16,
-                            controller: controller,
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.only(bottom: 12),
-                              counterText: '',
-                              hintText: widget.type == 1
-                                ? "搜索用户"
-                                : widget.type == 2
-                                ? "搜索用户"
-                                : "搜索",
-                              hintStyle: TextStyle(fontSize: 16, color: AppColor.textHint),
-                              border: InputBorder.none,
-                            ),
+            isMySelf && widget.type != 2
+                ? Column(
+                    children: [
+                      SizedBox(
+                        height: 12,
+                      ),
+                      Container(
+                        height: 32,
+                        width: width,
+                        color: AppColor.bgWhite,
+                        padding: EdgeInsets.only(left: 12),
+                        child: Center(
+                          child: Row(
+                            children: [
+                              Container(
+                                height: 21,
+                                width: 21,
+                                child: Image.asset("images/resource/Nav_search_icon.png"),
+                              ),
+                              SizedBox(
+                                width: 12,
+                              ),
+                              Expanded(
+                                child: TextField(
+                                  cursorColor: AppColor.black,
+                                  style: AppStyle.textRegular16,
+                                  controller: controller,
+                                  decoration: InputDecoration(
+                                    contentPadding: EdgeInsets.only(bottom: 12),
+                                    counterText: '',
+                                    hintText: widget.type == 1
+                                        ? "搜索用户"
+                                        : widget.type == 2
+                                            ? "搜索用户"
+                                            : "搜索",
+                                    hintStyle: TextStyle(fontSize: 16, color: AppColor.textHint),
+                                    border: InputBorder.none,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      SizedBox(
+                        height: 12,
+                      ),
+                    ],
+                  )
+                : Container(
+                    height: 0,
                   ),
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-              ],
-            ):Container(height: 0,),
 
             Expanded(
               child: SmartRefresher(
                   controller: _refreshController,
-                  enablePullUp:true,
+                  enablePullUp: true,
                   enablePullDown: true,
                   footer: CustomFooter(
                     builder: (BuildContext context, LoadStatus mode) {
@@ -528,7 +534,7 @@ class _queryFollowState extends State<QueryFollowList> {
                             );
                           }
                           //type为2的时候展示粉丝
-                        } else if(widget.type==2){
+                        } else if (widget.type == 2) {
                           return QueryFollowItem(
                               type: widget.type,
                               pc: widget.pc,
@@ -536,14 +542,14 @@ class _queryFollowState extends State<QueryFollowList> {
                               width: width,
                               userId: widget.userId,
                               isMySelf: isMySelf);
-                        }else{
+                        } else {
                           return QueryFollowItem(
-                            type: widget.type,
-                            pc: widget.pc,
-                            tpcModel:topicList[index],
-                            width: width,
-                            userId: widget.userId,
-                            isMySelf: isMySelf);
+                              type: widget.type,
+                              pc: widget.pc,
+                              tpcModel: topicList[index],
+                              width: width,
+                              userId: widget.userId,
+                              isMySelf: isMySelf);
                         }
                       })),
             ),
@@ -596,14 +602,7 @@ class QueryFollowItem extends StatefulWidget {
   bool isMySelf;
 
   QueryFollowItem(
-      {this.width,
-      this.fansModel,
-      this.followModel,
-      this.tpcModel,
-      this.type,
-      this.pc,
-      this.userId,
-      this.isMySelf});
+      {this.width, this.fansModel, this.followModel, this.tpcModel, this.type, this.pc, this.userId, this.isMySelf});
 
   @override
   State<StatefulWidget> createState() {
@@ -630,6 +629,7 @@ class _followItemState extends State<QueryFollowItem> {
   String userName;
 
   String description;
+
   ///这是关注按钮
   _getAttention(int id) async {
     int attntionResult = await ProfileAddFollow(id);
@@ -724,8 +724,8 @@ class _followItemState extends State<QueryFollowItem> {
       } else {
         haveIntroduction = false;
       }
-    }//粉丝列表
-    else if(widget.type ==2) {
+    } //粉丝列表
+    else if (widget.type == 2) {
       avatarUrl = widget.fansModel.avatarUri;
       uid = widget.fansModel.uid;
       userName = widget.fansModel.nickName;
@@ -751,7 +751,7 @@ class _followItemState extends State<QueryFollowItem> {
       } else {
         isFollow = true;
       }
-    }else{
+    } else {
       userName = "#${widget.tpcModel.name}";
       description = widget.tpcModel.description;
       isCanOnclick = false;
@@ -763,119 +763,98 @@ class _followItemState extends State<QueryFollowItem> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Container(
-            alignment: Alignment.centerLeft,
-            child: InkWell(
-              onTap: () {
-                if (widget.type == 1 || widget.type == 2) {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                    return ProfileDetailPage(
-                      userId: uid,
-                    );
-                  })).then((value) {
-                    ///这里每次回来都去请求一遍用户关系,改变按钮状态
-                    if (widget.type == 1) {
-                      if(isCanOnclick){
-                        _getUserInfo(id: widget.followModel.uid);
-                      }
-                    } else {
-                      _getUserInfo(id: widget.fansModel.uid);
+          InkWell(
+            onTap: (){
+              if (widget.type == 1 || widget.type == 2) {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                  return ProfileDetailPage(
+                    userId: uid,
+                  );
+                })).then((value) {
+                  ///这里每次回来都去请求一遍用户关系,改变按钮状态
+                  if (widget.type == 1) {
+                    if (isCanOnclick) {
+                      _getUserInfo(id: widget.followModel.uid);
                     }
-                  });
-                }else{
-                  ///这里处理话题跳转
-                }
-              },
-              child: widget.type == 3
-                  ? Image.asset("images/resource/searchGroup.png")
-                  : ClipOval(
-                      child: CachedNetworkImage(
-                        height: widget.width * 0.1,
-                        width: widget.width * 0.1,
-                        imageUrl:avatarUrl,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Image.asset(
-                          "images/test.png",
-                          fit: BoxFit.cover,
+                  } else {
+                    _getUserInfo(id: widget.fansModel.uid);
+                  }
+                });
+              } else {
+                ///这里处理话题跳转
+              }
+            },
+            child:  Row(
+            children: [
+              Container(
+                alignment: Alignment.centerLeft,
+                child:  widget.type == 3
+                      ? Image.asset("images/resource/searchGroup.png")
+                      : ClipOval(
+                          child: CachedNetworkImage(
+                            height: widget.width * 0.1,
+                            width: widget.width * 0.1,
+                            imageUrl: avatarUrl,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Image.asset(
+                              "images/test.png",
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-            ),
-          ),
-          SizedBox(
-            width: 11,
-          ),
-          Center(
-            child: Container(
-              width: widget.width * 0.59,
-              height: haveRemarks ? 68 : 48,
-              child: Column(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                        alignment: Alignment.centerLeft,
-                        child: InkWell(
-                          onTap: () {
-                            if(widget.type==3){
-                              ///这里处理话题的跳转
-                            }else{
-                            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                              return ProfileDetailPage(
-                                userId:uid,
-                              );
-                            })).then((value) {
-                              ///这里每次回来都去请求一遍用户关系,改变按钮状态
-                              if (widget.type == 1) {
-                                _getUserInfo(id: widget.followModel.uid);
-                              } else {
-                                _getUserInfo(id: widget.fansModel.uid);
-                              }
-                            });
-                            }
-                          },
+
+              ),
+              SizedBox(
+                width: 11,
+              ),
+              Center(
+                child: Container(
+                  width: widget.width * 0.59,
+                  height: haveRemarks ? 68 : 48,
+                  child: Column(
+                    children: [
+                      Spacer(),
+                       Container(
+                          alignment: Alignment.centerLeft,
                           child: Text(
-                            haveRemarks
-                                ? widget.fansModel.remarkName
-                                : userName,
+                            haveRemarks ? widget.fansModel.remarkName : userName,
                             style: AppStyle.textMedium15,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                        )),
+                        ),
+                      Spacer(),
+                      haveRemarks
+                          ?  Container(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  "昵称:${widget.fansModel.nickName}",
+                                  style: AppStyle.textSecondaryRegular12,
+                                ),
+                              )
+                          : Container(),
+                      Spacer(),
+                      haveIntroduction
+                          ? Container(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  description != null ? description : " ",
+                                  style: AppStyle.textSecondaryRegular12,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              )
+                          : Container(
+                              height: 0,
+                            ),
+                      Spacer(),
+                    ],
                   ),
-                  haveRemarks
-                      ? Expanded(
-                          flex: 1,
-                          child: Container(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "昵称:${widget.fansModel.nickName}",
-                              style: AppStyle.textSecondaryRegular12,
-                            ),
-                          ))
-                      : Container(),
-                  haveIntroduction
-                      ? Expanded(
-                          flex: 1,
-                          child: Container(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              description!=null?description:" ",
-                              style: AppStyle.textSecondaryRegular12,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        )
-                      : Container(
-                          height: 0,
-                        )
-                ],
+                ),
               ),
-            ),
-          ),
-          Expanded(child: Container()),
+            ],
+          )),
+          Spacer(),
           isCanOnclick
               ? InkWell(
                   onTap: () {
@@ -894,21 +873,13 @@ class _followItemState extends State<QueryFollowItem> {
                     height: 24,
                     alignment: Alignment.centerRight,
                     decoration: BoxDecoration(
-                      color:!isFollow ? AppColor.textPrimary1
-                              : AppColor.transparent,
+                      color: !isFollow ? AppColor.textPrimary1 : AppColor.transparent,
                       borderRadius: BorderRadius.all(Radius.circular(14)),
-                      border: Border.all(
-                          width:!isFollow? 0.5
-                                  : 0.0),
+                      border: Border.all(width: !isFollow ? 0.5 : 0.0),
                     ),
                     child: Center(
-                      child: Text(
-                                      !isFollow
-                                      ? "关注"
-                                      : "已关注",
-                          style:  !isFollow
-                                  ? AppStyle.whiteRegular12
-                                  : AppStyle.textSecondaryRegular12),
+                      child: Text(!isFollow ? "关注" : "已关注",
+                          style: !isFollow ? AppStyle.whiteRegular12 : AppStyle.textSecondaryRegular12),
                     ),
                   ))
               : Container(),
