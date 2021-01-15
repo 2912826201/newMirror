@@ -856,6 +856,8 @@ class ProfilePageNotifier extends ChangeNotifier{
 
   Color titleColor = AppColor.transparent;
 
+  String backImage = "images/resource/2.0x/white_return@2x.png";
+
   void changeTitleColor(Color color){
     titleColor = color;
     notifyListeners();
@@ -863,6 +865,15 @@ class ProfilePageNotifier extends ChangeNotifier{
 
   void clearTitleColor(){
     titleColor = AppColor.transparent;
+    notifyListeners();
+  }
+
+  void changeBackImage(String image){
+    backImage = image;
+    notifyListeners();
+  }
+  void clearBackImage(){
+    backImage ="images/resource/2.0x/white_return@2x.png";
     notifyListeners();
   }
 }

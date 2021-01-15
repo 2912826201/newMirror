@@ -25,11 +25,9 @@ import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/address_Picker.dart';
 import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:provider/provider.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:intl/intl.dart';
 import 'package:toast/toast.dart';
-
-import 'loading.dart';
+import 'package:mirror/widget/loading.dart';
 
 class EditInformation extends StatefulWidget {
   @override
