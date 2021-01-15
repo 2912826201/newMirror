@@ -9,7 +9,10 @@ import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/triangle_path.dart';
 import 'package:mirror/widget/vip_nameplate_horazontal_list.dart';
+import 'package:mirror/widget/vip_nameplate_pageview.dart';
 import 'package:provider/provider.dart';
+
+//会员特权页
 class VipNamePlatePage extends StatefulWidget{
   int index;
   VipNamePlatePage({this.index});
@@ -20,8 +23,8 @@ class VipNamePlatePage extends StatefulWidget{
 
 }
 class _vipNamePlateState extends State<VipNamePlatePage>{
-  ScrollController controller = ScrollController();
-  double itemWidth = 38;
+  PageController pageController;
+  ScrollController scrollController;
   int oldIndex;
   final List<String> itemName = [
     "身份铭牌",
@@ -37,13 +40,21 @@ class _vipNamePlateState extends State<VipNamePlatePage>{
   ];
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    pageController = PageController(initialPage: widget.index);
+    if(widget.index<4){
+      scrollController  = ScrollController();
+    }else{
+      double offset = 93.5*widget.index;
+      scrollController  = ScrollController(initialScrollOffset: offset);
+    }
   }
   @override
   Widget build(BuildContext context) {
         return Scaffold(
-          body: Container(
+          body: ChangeNotifierProvider(
+            create: (_)=>VipMoveNotifier(choseIndex: widget.index),
+            child: Container(
           height: ScreenUtil.instance.height,
           width: ScreenUtil.instance.height,
           child: Stack(
@@ -59,59 +70,18 @@ class _vipNamePlateState extends State<VipNamePlatePage>{
                 child: _title()),
               Positioned(
                 top: 44+ScreenUtil.instance.statusBarHeight,
-                child:VipNamePlateHorazontalList(index: widget.index,)),
+                child:VipNamePlateHorazontalList(index: widget.index,scrollController: scrollController,pageController: pageController,)),
+                  Positioned(
+                    top: 132+ScreenUtil.instance.statusBarHeight,
+                    child:VipNamePlatePageView(
+                      namePlateList:itemName,pageController: pageController,scrollController: scrollController,)),
                   Positioned(
                     bottom: 0,
                     child: _bottomButton())
             ],
           )
-        ),);
-  }
-  Widget _item(int index){
-    return InkWell(
-      onTap: (){
-        if(oldIndex!=index){
-          setState(() {
-            oldIndex = index;
-          });
-        }else{
-          setState(() {
-            oldIndex = 100;
-          });
-        }
-      },
-      child:Container(
-        width: 93,
-        height: 88,
-
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            oldIndex==index?Container(height: 0,):Spacer(),
-            ClipOval(
-              child: Container(
-                height:oldIndex==index?49:38,
-                width: oldIndex==index?49:38,
-                color: AppColor.bgVip1,
-              )
-            ),
-            SizedBox(height: 10,),
-            Text(itemName[index],style:oldIndex==index?AppStyle.textMediumRed13:AppStyle.textRegularRed13,),
-            Opacity(
-              opacity:oldIndex==index?1:0,
-              child: ClipPath(
-                clipper: TrianglePath(),
-                child: Container(
-                  height: 6,
-                  width: 13,
-                  color: AppColor.white,
-                ),
-              ),),
-            Spacer(),
-          ],
         ),
-      ),);
-
+          ),);
   }
   Widget _title(){
       return Container(
@@ -194,4 +164,16 @@ class _vipNamePlateState extends State<VipNamePlatePage>{
     );
   }
 
+}
+
+
+class VipMoveNotifier extends ChangeNotifier{
+  int choseIndex;
+  VipMoveNotifier({this.choseIndex});
+
+
+  void changeListOldIndex(int index){
+    choseIndex=index;
+    notifyListeners();
+  }
 }
