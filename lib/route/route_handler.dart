@@ -6,6 +6,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/live_model.dart';
+import 'package:mirror/data/model/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/page/feed/like.dart';
 import 'package:mirror/page/feed/release_page.dart';
@@ -180,7 +181,7 @@ var handlerVideoCourseList = Handler(handlerFunc: (BuildContext context, Map<Str
 
 var handlerLiveDetail = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  LiveModel liveModel = LiveModel.fromJson(data["liveModel"]);
+  LiveVideoModel liveModel = LiveVideoModel.fromJson(data["liveModel"]);
   return LiveDetailPage(
     heroTag: data["heroTag"],
     liveCourseId: data["liveCourseId"],
@@ -191,7 +192,7 @@ var handlerLiveDetail = Handler(handlerFunc: (BuildContext context, Map<String, 
 
 var handlerVideoDetail = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  LiveModel videoModel = LiveModel.fromJson(data["videoModel"]);
+  LiveVideoModel videoModel = LiveVideoModel.fromJson(data["videoModel"]);
   return VideoDetailPage(
     heroTag: data["heroTag"],
     liveCourseId: data["liveCourseId"],

@@ -6,19 +6,17 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/live_broadcast/live_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/data/model/live_model.dart';
+import 'package:mirror/data/model/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
-import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 /// 视频课程列表-筛选页
 class VideoCourseListPage extends StatefulWidget {
-  static LiveModel videoModel;
 
   @override
   createState() => new VideoCourseListPageState();
@@ -33,7 +31,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
   var titleItemSubSettingList = <TitleItemSubSetting>[];
 
   //当前显示的直播课程的list
-  var videoModelArray = <LiveModel>[];
+  var videoModelArray = <LiveVideoModel>[];
 
   //头部标签
   VideoTagModel videoTagModel;
@@ -70,13 +68,10 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
 
   //每一页获取的数量
   int pageSize = 5;
+  int pagePosition = 1;
 
   //上拉加载数据
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
-
-  //获取下页的凭证
-  int _lastId;
+  RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   //是否还有更多的数据
   bool isHaveMoreData = true;
@@ -646,7 +641,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
   }
 
   //item--每一个
-  Widget _getItem(LiveModel videoModel, int index, int count) {
+  Widget _getItem(LiveVideoModel videoModel, int index, int count) {
     EdgeInsetsGeometry firstMargin = const EdgeInsets.only(
         left: 16, right: 16, top: 12, bottom: 6);
     EdgeInsetsGeometry commonMargin = const EdgeInsets.only(
@@ -674,19 +669,22 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
         //点击事件
         print("====heroTagArray[index]:${heroTagArray[index]}");
         AppRouter.navigateToVideoDetail(context, heroTagArray[index],
-            videoModel.id, videoModel.courseId, videoModel);
+            videoModel.id, videoModel.coursewareId, videoModel);
       },
     );
   }
 
   //获取left的图片
-  Widget _getItemLeftImageUi(LiveModel value, int index) {
+  Widget _getItemLeftImageUi(LiveVideoModel value, int index) {
     String imageUrl;
-    if (value.playBackUrl != null) {
-      imageUrl = value.playBackUrl;
-    } else if (value.videoUrl != null) {
-      imageUrl = FileUtil.getVideoFirstPhoto(value.videoUrl);
+    if (value.picUrl != null) {
+      imageUrl = value.picUrl;
+    } else if (value.coursewareDto?.picUrl != null) {
+      imageUrl = value.coursewareDto?.picUrl;
+    } else if (value.coursewareDto?.previewVideoUrl != null) {
+      imageUrl = value.coursewareDto?.previewVideoUrl;
     }
+
     return Container(
       width: 120,
       height: 90,
@@ -711,7 +709,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
   }
 
   //获取右边数据的ui
-  Widget _getItemRightDataUi(LiveModel value, int imageHeight, int index) {
+  Widget _getItemRightDataUi(LiveVideoModel value, int imageHeight, int index) {
     TextStyle textStyleBold = TextStyle(fontSize: 12,
         fontWeight: FontWeight.bold,
         color: AppColor.textPrimary2);
@@ -728,7 +726,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
                 Container(
                   width: double.infinity,
                   child: Text(
-                    value.name,
+                    value.title ?? "",
                     style: TextStyle(
                       fontSize: 15,
                       color: AppColor.textPrimary1,
@@ -751,25 +749,24 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
                                 text: TextSpan(
                                     children: [
                                       TextSpan(
-                                          text: value.coursewareDto?.levelDto
+                                          text: value.levelDto
                                               ?.ename, style: textStyleBold),
                                       // ignore: null_aware_before_operator
                                       TextSpan(
                                           // ignore: null_aware_before_operator
-                              text: value.coursewareDto?.levelDto
-                                              ?.name + " · ",
+                                          text: value.levelDto?.name + " · ",
                                           style: textStyleNormal),
                                       TextSpan(
-                                          text: (value.videoSeconds ~/ 60 > 0
-                                              ? value.videoSeconds ~/ 60
-                                              : value.videoSeconds).toString(),
+                                          text: ((value.times ~/ 1000) ~/ 60 > 0
+                                              ? (value.times ~/ 1000) ~/ 60
+                                              : (value.times ~/ 1000)).toString(),
                                           style: textStyleBold),
                                       TextSpan(
-                                          text: value.videoSeconds ~/ 60 > 0
+                                          text: (value.times ~/ 1000) ~/ 60 > 0
                                               ? "分钟 · "
                                               : "秒 · ", style: textStyleNormal),
                                       TextSpan(
-                                          text: value.coursewareDto?.calories
+                                          text: value.calories
                                               .toString(),
                                           style: textStyleBold),
                                       TextSpan(
@@ -807,7 +804,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
 
 
   //给hero的tag设置唯一的值
-  Object getHeroTag(LiveModel videoModel, index) {
+  Object getHeroTag(LiveVideoModel videoModel, index) {
     if (heroTagArray != null && heroTagArray.length > index) {
       return heroTagArray[index];
     } else {
@@ -821,19 +818,11 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
 
   //初始化数据
   _initData() async {
-    if (videoModelArray != null && videoModelArray.length > 0) {
-      return;
-    }
     //判断该不该回去title
     await _getTitleValue();
-
     videoModelArray.clear();
     //获取展示数据
-    await _loadData();
-
-    Future.delayed(Duration(milliseconds: 500), () {
-      setState(() {});
-    });
+    _loadData();
   }
 
   //获取筛选title
@@ -853,68 +842,53 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
   }
 
   //获取数据
-  _loadData({int lastId, bool isRefreshOrLoad = false}) async {
-    try {
-      List<int> _level = <int>[];
-      List<int> _part = <int>[];
-      List<int> _target = <int>[];
-      for (int i = 0; i < _titleItemList.length; i++) {
-        if (_titleItemList[i].type == 0) {
-          _level.add(_titleItemList[i].id);
-        } else if (_titleItemList[i].type == 1) {
-          _part.add(_titleItemList[i].id);
-        } else if (_titleItemList[i].type == 2) {
-          _target.add(_titleItemList[i].id);
+  _loadData({bool isRefreshOrLoad = false}) async {
+    List<int> _level = <int>[];
+    List<int> _part = <int>[];
+    List<int> _target = <int>[];
+    for (int i = 0; i < _titleItemList.length; i++) {
+      if (_titleItemList[i].type == 0) {
+        _level.add(_titleItemList[i].id);
+      } else if (_titleItemList[i].type == 1) {
+        _part.add(_titleItemList[i].id);
+      } else if (_titleItemList[i].type == 2) {
+        _target.add(_titleItemList[i].id);
+      }
+    }
+    Map<String, dynamic> model = await getVideoCourseList(
+      size: pageSize,
+      page: pagePosition,
+      target: _target,
+      part: _part,
+      level: _level,);
+    if (model != null && model["list"] != null) {
+      int count = videoModelArray.length;
+
+      print("videoModelArray.length1111:${videoModelArray.length}");
+      model["list"].forEach((v) {
+        videoModelArray.add(LiveVideoModel.fromJson(v));
+      });
+
+      print("videoModelArray.length222222:${videoModelArray.length}");
+
+
+      Future.delayed(Duration(milliseconds: 500), () {
+        if (isRefreshOrLoad) {
+          _refreshController.refreshCompleted();
+        } else {
+          _refreshController.loadComplete();
         }
-      }
-      Map<String, dynamic> model = await getVideoCourseList(size: pageSize,
-          target: _target,
-          part: _part,
-          level: _level,
-          lastId: lastId);
-      if (model != null && model["list"] != null) {
-        _lastId = model["lastId"];
-        model["list"].forEach((v) {
-          print(v.toString());
-          videoModelArray.add(LiveModel.fromJson(v));
-          videoModelArray.add(LiveModel.fromJson(v));
-          videoModelArray.add(LiveModel.fromJson(v));
-          videoModelArray.add(LiveModel.fromJson(v));
-          videoModelArray.add(LiveModel.fromJson(v));
-          videoModelArray.add(LiveModel.fromJson(v));
-          videoModelArray.add(LiveModel.fromJson(v));
-          videoModelArray.add(LiveModel.fromJson(v));
-          videoModelArray.add(LiveModel.fromJson(v));
-          videoModelArray.add(LiveModel.fromJson(v));
-        });
-        Future.delayed(Duration(milliseconds: 500), () {
-          if (isRefreshOrLoad) {
-            _refreshController.refreshCompleted();
+        setState(() {
+          loadingStatus = LoadingStatus.STATUS_COMPLETED;
+          if (count == videoModelArray.length) {
+            isHaveMoreData = false;
           } else {
-            _refreshController.loadComplete();
+            isHaveMoreData = true;
+            pagePosition++;
           }
-          setState(() {
-            loadingStatus = LoadingStatus.STATUS_COMPLETED;
-            if (_lastId == null || _lastId < 0) {
-              isHaveMoreData = false;
-            } else {
-              isHaveMoreData = true;
-            }
-          });
         });
-      } else {
-        Future.delayed(Duration(milliseconds: 500), () {
-          if (isRefreshOrLoad) {
-            _refreshController.refreshCompleted();
-          } else {
-            _refreshController.loadNoData();
-          }
-          setState(() {
-            loadingStatus = LoadingStatus.STATUS_IDEL;
-          });
-        });
-      }
-    } catch (e) {
+      });
+    } else {
       Future.delayed(Duration(milliseconds: 500), () {
         if (isRefreshOrLoad) {
           _refreshController.refreshCompleted();
@@ -926,6 +900,20 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
         });
       });
     }
+    // try {
+    // } catch (e) {
+    //   print(e);
+    //   Future.delayed(Duration(milliseconds: 500), () {
+    //     if (isRefreshOrLoad) {
+    //       _refreshController.refreshCompleted();
+    //     } else {
+    //       _refreshController.loadNoData();
+    //     }
+    //     setState(() {
+    //       loadingStatus = LoadingStatus.STATUS_IDEL;
+    //     });
+    //   });
+    // }
   }
 
   //刷新数据
@@ -933,12 +921,13 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
     videoModelArray.clear();
     topItemOpacity = 0.0;
     topItemHeight = 0;
+    pagePosition = 1;
     await _loadData(isRefreshOrLoad: true);
   }
 
   //加载数据
   _onLoading() async {
-    await _loadData(lastId: _lastId, isRefreshOrLoad: false);
+    await _loadData(isRefreshOrLoad: false);
   }
 
   //设置高度监听的设置

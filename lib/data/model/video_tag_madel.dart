@@ -93,11 +93,19 @@ class SubTagModel {
   }
 
   SubTagModel.fromJson(dynamic json) {
-    _id = json["id"];
-    _type = json["type"];
-    _name = json["name"];
-    _updateTime = json["updateTime"];
-    _ename = json["ename"];
+    if (json is SubTagModel) {
+      _id = json._id;
+      _type = json._type;
+      _name = json._name;
+      _updateTime = json._updateTime;
+      _ename = json._ename;
+    } else {
+      _id = json["id"];
+      _type = json["type"];
+      _name = json["name"];
+      _updateTime = json["updateTime"];
+      _ename = json["ename"];
+    }
   }
 
   Map<String, dynamic> toJson() {

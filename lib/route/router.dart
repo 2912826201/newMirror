@@ -7,6 +7,7 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/live_model.dart';
+import 'package:mirror/data/model/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/route/route_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -182,7 +183,7 @@ class AppRouter {
   }
 
   static void navigateToLiveDetail(
-      BuildContext context, String heroTag, int liveCourseId, int courseId, LiveModel liveModel) {
+      BuildContext context, String heroTag, int liveCourseId, int courseId, LiveVideoModel liveModel) {
     Map<String, dynamic> map = Map();
     map["heroTag"] = heroTag;
     map["liveCourseId"] = liveCourseId;
@@ -191,8 +192,8 @@ class AppRouter {
     _navigateToPage(context, pathLiveDetail, map);
   }
 
-  static void navigateToVideoDetail(
-      BuildContext context, String heroTag, int liveCourseId, int courseId, LiveModel videoModel) {
+  static void navigateToVideoDetail(BuildContext context, String heroTag, int liveCourseId, int courseId,
+      LiveVideoModel videoModel) {
     Map<String, dynamic> map = Map();
     map["heroTag"] = heroTag;
     map["liveCourseId"] = liveCourseId;

@@ -1,7 +1,6 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 
 import 'live_broadcast_item_page.dart';
@@ -9,8 +8,6 @@ import 'live_broadcast_title_page.dart';
 
 /// 直播日程页
 class LiveBroadcastPage extends StatefulWidget {
-  //todo 先这样实现---以后再改为路由
-  static LiveModel liveModel;
 
   @override
   createState() => new LiveBroadcastPageState();

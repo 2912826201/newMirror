@@ -10,6 +10,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
@@ -1117,6 +1118,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         } else {
           Application.appContext.read<ChatMessageProfileNotifier>().clearMessage();
         }
+        if (message.messageUId == chatDataList[0].msg.messageUId) {
+          return Container();
+        }
         ChatDataModel chatDataModel = getMessage(message, isHaveAnimation: true);
         judgeAddAlertTime();
         chatDataList.insert(0, chatDataModel);
@@ -1446,7 +1450,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   _onRefresh() async {
     List msgList = new List();
     msgList = await RongCloud.init().getHistoryMessages(widget.conversation.getType(),
-        widget.conversation.conversationId, chatDataList[chatDataList.length - 1].msg.sentTime, 30, 0);
+        widget.conversation.conversationId, chatDataList[chatDataList.length - 1].msg.sentTime, 20, 0);
     List<ChatDataModel> dataList = <ChatDataModel>[];
     if (msgList != null && msgList.length > 0) {
       dataList.clear();
@@ -1550,7 +1554,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //所有的item点击事件
   void onMessageClickCallBack(
-      {String contentType, String content, int position, Map<String, dynamic> map, bool isUrl}) {
+      {String contentType, String content, int position, Map<String, dynamic> map, bool isUrl, String msgId}) {
     if (isPersonalButler && position != null) {
       position--;
     }
@@ -1571,9 +1575,15 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       // ToastShow.show(msg: "跳转用户界面", context: context);
       jumpPage(ProfileDetailPage(userId: map["uid"]), false, context);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
-      ToastShow.show(msg: "跳转直播课详情界面", context: context);
+      // ToastShow.show(msg: "跳转直播课详情界面", context: context);
+      LiveVideoModel videoModel = LiveVideoModel.fromJson(map);
+      AppRouter.navigateToLiveDetail(context, msgId, videoModel.id, videoModel.coursewareId, videoModel);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE) {
-      ToastShow.show(msg: "跳转视频课详情界面", context: context);
+      // ToastShow.show(msg: "跳转视频课详情界面", context: context);
+      LiveVideoModel videoModel = LiveVideoModel.fromJson(map);
+      // print(map.toString());
+      AppRouter.navigateToVideoDetail(context, msgId,
+          videoModel.id, videoModel.coursewareId, videoModel);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VOICE) {
       ToastShow.show(msg: "播放录音", context: context);
       updateMessage(chatDataList[position], (code) {

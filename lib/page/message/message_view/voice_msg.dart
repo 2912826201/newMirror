@@ -6,6 +6,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
+import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:provider/provider.dart';
@@ -118,7 +119,16 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
   //里面的结构-头像和消息
   List<Widget> getSmallBody(BuildContext context) {
     var body = [
-      getUserImage(widget.userUrl, 38, 38),
+      GestureDetector(
+        child: getUserImage(widget.userUrl, 38, 38),
+        onTap: () {
+          if (widget.isCanLongClick) {
+            widget.voidMessageClickCallBack(
+                contentType: ChatTypeModel.MESSAGE_TYPE_USER,
+                map: new UserModel(uid: int.parse(widget.sendChatUserId)).toJson());
+          }
+        },
+      ),
       SizedBox(
         width: 7,
       ),

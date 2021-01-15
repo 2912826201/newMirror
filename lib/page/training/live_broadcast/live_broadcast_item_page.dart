@@ -6,7 +6,7 @@ import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/live_broadcast/live_api.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/data/model/live_model.dart';
+import 'package:mirror/data/model/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
@@ -41,10 +41,10 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   var howEarlyToRemind = 15;
 
   //当前显示的直播课程的list
-  var liveModelArray = <LiveModel>[];
+  var liveModelArray = <LiveVideoModel>[];
 
   //当前显示的直播课程的list
-  var liveModelOldArray = <LiveModel>[];
+  var liveModelOldArray = <LiveVideoModel>[];
 
   //日历内有多少个提醒计划
   // var calendarEvents = <Event>[];
@@ -173,7 +173,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   }
 
   //获取列表ui
-  Widget _getLiveBroadcastUI(List<LiveModel> liveList, bool isOld) {
+  Widget _getLiveBroadcastUI(List<LiveVideoModel> liveList, bool isOld) {
     var imageWidth = 120;
     var imageHeight = 90;
     var columnArray = <Widget>[];
@@ -206,13 +206,14 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   }
 
   //获取left的图片
-  Widget _getItemLeftImageUi(
-      LiveModel value, int imageWidth, int imageHeight, bool isOld, int index) {
+  Widget _getItemLeftImageUi(LiveVideoModel value, int imageWidth, int imageHeight, bool isOld, int index) {
     String imageUrl;
-    if (value.playBackUrl != null) {
-      imageUrl = value.playBackUrl;
-    } else if (value.videoUrl != null) {
-      imageUrl = FileUtil.getVideoFirstPhoto(value.videoUrl);
+    if (value.picUrl != null) {
+      imageUrl = value.picUrl;
+    } else if (value.coursewareDto?.picUrl != null) {
+      imageUrl = value.coursewareDto?.picUrl;
+    } else if (value.coursewareDto?.previewVideoUrl != null) {
+      imageUrl = value.coursewareDto?.previewVideoUrl;
     }
     return Container(
       width: imageWidth.toDouble(),
@@ -283,8 +284,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   }
 
   //获取右边数据的ui
-  Widget _getRightDataUi(
-      LiveModel value, int imageWidth, int imageHeight, bool isOld, int index) {
+  Widget _getRightDataUi(LiveVideoModel value, int imageWidth, int imageHeight, bool isOld, int index) {
     return Expanded(
         child: SizedBox(
           child: Container(
@@ -295,7 +295,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
                 Container(
                   width: double.infinity,
                   child: Text(
-                    value.name,
+                    value.title ?? "",
                     style: TextStyle(
                       fontSize: 15,
                       color: AppColor.textPrimary1,
@@ -401,7 +401,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   }
 
   //按钮 去上课 预约 已预约 回放
-  Widget _getButton(LiveModel value, bool isOld, index) {
+  Widget _getButton(LiveVideoModel value, bool isOld, index) {
     var alreadyOrderBgColor = AppColor.white;
     var noAlreadyOrderBgColor = AppColor.textPrimary1;
     if (isOld) {
@@ -490,7 +490,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   //   }
   // }
 
-  void _bookLiveCourse(LiveModel value, int index, bool isCalendar) async {
+  void _bookLiveCourse(LiveVideoModel value, int index, bool isCalendar) async {
     String alert = "";
     bool isBook;
     bool settingTF;
@@ -504,7 +504,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
       settingTF = false;
     }
     Map<String, dynamic> mapBook = await bookLiveCourse(
-        courseId: value.courseId, isBook: value.playType == 2);
+        courseId: value.id, isBook: value.playType == 2);
     if (mapBook != null) {
       if (mapBook["state"]) {
         if (value.playType == 2) {
@@ -552,8 +552,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   }
 
   //点击预约后-查询是否有创建提醒的空间id
-  void onClickMakeAnAppointment(
-      LiveModel value, String alert, bool isBook) async {
+  void onClickMakeAnAppointment(LiveVideoModel value, String alert, bool isBook) async {
     //todo android 添加日历提醒 测试没有问题-虽然没有全机型测试------ios还未测试
     await [Permission.calendar].request();
     DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
@@ -579,7 +578,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
 
   //创建提醒
   void createEvent(String id, DeviceCalendarPlugin _deviceCalendarPlugin,
-      LiveModel value, String alert, bool isBook) async {
+      LiveVideoModel value, String alert, bool isBook) async {
     Event _event = new Event(id);
     DateTime startTime = DateUtil.stringToDateTime(value.startTime);
     _event.start = startTime;
@@ -587,7 +586,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     List<Reminder> _reminders = <Reminder>[];
     _reminders.add(new Reminder(minutes: howEarlyToRemind));
     _event.end = endTime;
-    _event.title = value.name;
+    _event.title = value.title ?? "直播课程预约";
     _event.description = value.coursewareDto?.name;
     _event.reminders = _reminders;
     var createEventResult =
@@ -623,19 +622,19 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   getLiveModelData() async {
     //获取今天可回放的数据
     if (DateUtil.isToday(dataDate)) {
-      Map<String, dynamic> model = await getTodayPlaybackCourse();
+      Map<String, dynamic> model = await getLiveCoursesByDate(date: "2020-12-31", type: 1);
       if (model != null && model["list"] != null) {
         model["list"].forEach((v) {
-          liveModelOldArray.add(LiveModel.fromJson(v));
+          liveModelOldArray.add(LiveVideoModel.fromJson(v));
         });
       }
     }
     //todo 这里应该是获取对应的日期 但是现在其他日期没有数据
     // Map<String, dynamic> model = await getLiveCourses(date: DateUtil.formatDateString(dataDate));
-    Map<String, dynamic> model = await getLiveCourses(date: "2020-12-23");
+    Map<String, dynamic> model = await getLiveCoursesByDate(date: "2020-12-31", type: 0);
     if (model != null && model["list"] != null) {
       model["list"].forEach((v) {
-        liveModelArray.add(LiveModel.fromJson(v));
+        liveModelArray.add(LiveVideoModel.fromJson(v));
       });
     }
 
@@ -653,7 +652,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   }
 
   //给hero的tag设置唯一的值
-  Object getHeroTag(LiveModel liveModel, int index, bool isOld) {
+  Object getHeroTag(LiveVideoModel liveModel, int index, bool isOld) {
     if (isOld) {
       index += liveModelArray?.length;
     }
@@ -670,7 +669,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
 
 
   //点击item按钮判断怎么响应
-  void onClickItem(LiveModel value, int index) {
+  void onClickItem(LiveVideoModel value, int index) {
     if (value.playType == 2) {
       showCupertinoDialog(
           context: context,
@@ -705,8 +704,8 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     }
   }
 
-  void gotoNavigateToLiveDetail(LiveModel value, int index) {
+  void gotoNavigateToLiveDetail(LiveVideoModel value, int index) {
     AppRouter.navigateToLiveDetail(
-        context, heroTagArray[index], value.id, value.courseId, value);
+        context, heroTagArray[index], value.id, value.coursewareId, value);
   }
 }

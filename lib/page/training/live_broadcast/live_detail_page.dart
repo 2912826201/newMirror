@@ -1,15 +1,18 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/live_model.dart';
+import 'package:mirror/data/model/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
-import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -27,32 +30,26 @@ import 'package:provider/provider.dart';
 
 /// 直播详情页
 class LiveDetailPage extends StatefulWidget {
-  const LiveDetailPage(
-      {Key key, this.heroTag, this.liveCourseId, this.courseId, this.liveModel})
-      : super(key: key);
+  const LiveDetailPage({Key key, this.heroTag, this.liveCourseId, this.courseId, this.liveModel}) : super(key: key);
 
   final String heroTag;
   final int liveCourseId;
   final int courseId;
-  final LiveModel liveModel;
+  final LiveVideoModel liveModel;
 
   @override
   createState() {
     return LiveDetailPageState(
-        heroTag: heroTag,
-        liveCourseId: liveCourseId,
-        courseId: courseId,
-        liveModel: liveModel);
+        heroTag: heroTag, liveCourseId: liveCourseId, courseId: liveCourseId, liveModel: liveModel);
   }
 }
 
 class LiveDetailPageState extends State<LiveDetailPage> {
-  LiveDetailPageState(
-      {Key key,
-      this.heroTag,
-      this.liveCourseId,
-      this.courseId,
-      this.liveModel});
+  LiveDetailPageState({Key key,
+    this.heroTag,
+    this.liveCourseId,
+    this.courseId,
+    this.liveModel});
 
   //头部hero的标签
   String heroTag;
@@ -64,7 +61,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   int courseId;
 
   //当前直播的model
-  LiveModel liveModel;
+  LiveVideoModel liveModel;
 
   //加载状态
   LoadingStatus loadingStatus;
@@ -93,6 +90,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
 
   //发布评论时的targetId
   int targetId;
+
   //发布评论时的targetType
   int targetType;
 
@@ -107,12 +105,16 @@ class LiveDetailPageState extends State<LiveDetailPage> {
 
   //是否可以回弹
   bool isBouncingScrollPhysics=false;
+
   //每次请求的评论个数
   int courseCommentPageSize=3;
+
   //热门当前是第几页
   int courseCommentPageHot=1;
+
   //时间排序当前是第几页
   int courseCommentPageTime=1;
+
   //上拉加载数据
   RefreshController _refreshController = RefreshController(initialRefresh: false);
 
@@ -259,16 +261,24 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   //加载数据成功时的布局
   Widget _buildSuggestionsComplete() {
     String imageUrl;
-    if (liveModel.playBackUrl != null) {
-      imageUrl = liveModel.playBackUrl;
-    } else if (liveModel.videoUrl != null) {
-      imageUrl = FileUtil.getVideoFirstPhoto(liveModel.videoUrl);
+    if (liveModel.picUrl != null) {
+      imageUrl = liveModel.picUrl;
+    } else if (liveModel.coursewareDto?.picUrl != null) {
+      imageUrl = liveModel.coursewareDto?.picUrl;
+    } else if (liveModel.coursewareDto?.previewVideoUrl != null) {
+      imageUrl = liveModel.coursewareDto?.previewVideoUrl;
     }
 
     Widget widget = Container(
       color: AppColor.white,
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
+      height: MediaQuery
+          .of(context)
+          .size
+          .height,
       child: Column(
         children: [
           Container(
@@ -305,7 +315,11 @@ class LiveDetailPageState extends State<LiveDetailPage> {
                       if (mode == LoadStatus.idle) {
                         body = Text("");
                       } else if (mode == LoadStatus.loading) {
-                        body = CircularProgressIndicator();
+                        body = Container(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(),
+                        );
                       } else if (mode == LoadStatus.failed) {
                         body = Text("");
                       } else if (mode == LoadStatus.canLoading) {
@@ -328,10 +342,13 @@ class LiveDetailPageState extends State<LiveDetailPage> {
                       SliverPersistentHeader(
                         pinned: true,
                         delegate: SliverCustomHeaderDelegate(
-                          title: liveModel.name,
+                          title: liveModel.title ?? "",
                           collapsedHeight: 40,
                           expandedHeight: 300,
-                          paddingTop: MediaQuery.of(context).padding.top,
+                          paddingTop: MediaQuery
+                              .of(context)
+                              .padding
+                              .top,
                           coverImgUrl: imageUrl,
                           heroTag: heroTag,
                           startTime: liveModel.startTime,
@@ -346,7 +363,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
                       _getLineView(),
                       _getCourseCommentUi(),
                       SliverToBoxAdapter(
-                        child: SizedBox(height: 50,),
+                        child: SizedBox(height: 15,),
                       )
                     ],
                   ),
@@ -434,36 +451,35 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   //获取教练的名字
   Widget _getCoachItem() {
     return SliverToBoxAdapter(
-      child: Container(
-        padding:
-        const EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 20),
-        color: Colors.white,
-        width: double.infinity,
-        child: Row(
-          children: [
-            Container(
-              height: 32,
-              width: 32,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                // border: Border.all(width: 0.0, color: Colors.black),
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(30),
-                child: Image.asset(
-                  "images/test/yxlm1.jpeg",
-                  fit: BoxFit.cover,
+        child: GestureDetector(
+          child: Container(
+            padding:
+            const EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 20),
+            color: AppColor.white,
+            width: double.infinity,
+            child: Row(
+              children: [
+                Container(
+                  height: 32,
+                  width: 32,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    // border: Border.all(width: 0.0, color: Colors.black),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(30),
+                    child: Image.network(
+                      liveModel.coachDto?.avatarUri ?? "",
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            SizedBox(
-              width: 12,
-            ),
-            Container(
-              child: Column(
-                children: [
-                  Text(
+                SizedBox(
+                  width: 12,
+                ),
+                Container(
+                  child: Text(
                     // ignore: null_aware_before_operator
                     liveModel.coachDto?.nickName,
                     style: const TextStyle(
@@ -471,30 +487,38 @@ class LiveDetailPageState extends State<LiveDetailPage> {
                         color: AppColor.textPrimary2,
                         fontWeight: FontWeight.bold),
                   ),
-                ],
-              ),
+                ),
+                Expanded(child: SizedBox()),
+
+                ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(100)),
+                  child: Material(
+                      borderRadius: BorderRadius.all(Radius.circular(100)),
+                      color: AppColor.black,
+                      child: InkWell(
+                        splashColor: AppColor.textHint,
+                        child: Container(
+                          padding: const EdgeInsets.only(
+                              left: 16, right: 16, top: 5, bottom: 5),
+                          child: Text(
+                            "关注",
+                            style: TextStyle(color: AppColor.white, fontSize: 11),
+                          ),
+                        ),
+                        onTap: () {
+                          //点击了关注教练
+                          ToastShow.show(msg: "点击了关注教练", context: context);
+                        },
+                      )
+                  ),
+                )
+              ],
             ),
-            Expanded(child: SizedBox()),
-            InkWell(
-              child: Container(
-                padding: const EdgeInsets.only(
-                    left: 16, right: 16, top: 5, bottom: 5),
-                decoration: BoxDecoration(
-                  color: AppColor.black,
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                child: Text(
-                  "关注",
-                  style: TextStyle(color: AppColor.white, fontSize: 11),
-                ),
-              ),
-              onTap: () {
-                ToastShow.show(msg: "点击了关注教练", context: context);
-              },
-            )
-          ],
-        ),
-      ),
+          ),
+          onTap: () {
+            AppRouter.navigateToMineDetail(context, liveModel.coachDto?.uid, null);
+          },
+        )
     );
   }
 
@@ -512,9 +536,9 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   //获取动作的ui
   Widget _getActionUi() {
     // ignore: null_aware_before_operator
-    if (liveModel.coursewareDto?.movementDtos == null ||
+    if (liveModel.coursewareDto?.actionMapList == null ||
         // ignore: null_aware_before_operator
-        liveModel.coursewareDto?.movementDtos?.length < 1) {
+        liveModel.coursewareDto?.actionMapList?.length < 1) {
       return SliverToBoxAdapter();
     }
     var widgetArray = <Widget>[];
@@ -522,18 +546,30 @@ class LiveDetailPageState extends State<LiveDetailPage> {
       padding: const EdgeInsets.only(left: 16, top: 24, bottom: 11.5),
       width: double.infinity,
       child: Text(
-        "动作${liveModel.coursewareDto?.movementDtos?.length}个",
+        "动作${liveModel.coursewareDto?.actionMapList?.length}个",
         style: titleTextStyle,
       ),
     ));
 
-    for (int i = 0; i < liveModel.coursewareDto?.movementDtos?.length; i++) {
+    for (int i = 0; i < liveModel.coursewareDto?.actionMapList?.length; i++) {
       widgetArray.add(Container(
         width: double.infinity,
         height: 0.5,
         margin: const EdgeInsets.only(left: 16, right: 16),
         color: AppColor.bgWhite,
       ));
+
+      String timeString = "";
+      int longTime = 0;
+      try {
+        longTime = liveModel.coursewareDto?.actionMapList[i]["endTime"] -
+            liveModel.coursewareDto?.actionMapList[i]["startTime"];
+      } catch (e) {
+        longTime = 0;
+      }
+      if (longTime > 0) {
+        timeString = DateUtil.formatSecondToStringNum1(longTime ~/ 1000) + "'${((longTime % 1000) ~/ 10)}'";
+      }
 
       widgetArray.add(
         Container(
@@ -544,12 +580,11 @@ class LiveDetailPageState extends State<LiveDetailPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                liveModel.coursewareDto?.movementDtos[i].name,
+                liveModel.coursewareDto?.actionMapList[i]["name"] ?? "未知动作",
                 style: TextStyle(fontSize: 16, color: AppColor.textPrimary2),
               ),
               Text(
-                liveModel.coursewareDto?.movementDtos[i].amount.toString() +
-                    liveModel.coursewareDto?.movementDtos[i].unit.toString(),
+                timeString,
                 style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
               ),
             ],
@@ -606,9 +641,9 @@ class LiveDetailPageState extends State<LiveDetailPage> {
             onTap: () {
               if(!isHotOrTime) {
                 _refreshController.loadComplete();
-                  isHotOrTime = !isHotOrTime;
-                  getDataAction(isFold: true);
-                }
+                isHotOrTime = !isHotOrTime;
+                getDataAction(isFold: true);
+              }
             },
           ),
           SizedBox(width: 7,),
@@ -653,7 +688,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
-                    image: AssetImage("images/test/yxlm1.jpeg"),
+                    image: NetworkImage(Application.profile.avatarUri),
                     fit: BoxFit.cover)),
           ),
           GestureDetector(
@@ -672,17 +707,14 @@ class LiveDetailPageState extends State<LiveDetailPage> {
                       fontSize: 14, color: AppColor.textHint)),
             ),
             onTap: () {
-              targetId=liveModel.courseId;
-              targetType=1;
+              targetId = liveModel.id;
+              targetType = 1;
               replyId = -1;
               replyCommentId = -1;
 
               openInputBottomSheet(
                 context: this.context,
-                voidCallback:(String text,List<Rule> rules,BuildContext context) {
-                  _publishComment(text);
-                  print("发表评论----" + text);
-                },
+                voidCallback: _publishComment,
               );
             },
           ),
@@ -921,7 +953,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
         ));
 
         textSpanList.add(TextSpan(
-          text: value.replyName+" ",
+          text: value.replyName + " ",
           style: TextStyle(
             fontSize: 15,
             color: AppColor.textPrimary1,
@@ -930,13 +962,17 @@ class LiveDetailPageState extends State<LiveDetailPage> {
         ));
       }
     }
-    textSpanList.add(TextSpan(
-      text: value.content,
-      style: TextStyle(
-        fontSize: 14,
-        color: AppColor.textPrimary1,
-      ),
-    ));
+    if (value.atUsers != null && value.atUsers.length > 0) {
+      textSpanList.addAll(getAtUserTextSpan(value));
+    } else {
+      textSpanList.add(TextSpan(
+        text: value.content,
+        style: TextStyle(
+          fontSize: 14,
+          color: AppColor.textPrimary1,
+        ),
+      ));
+    }
 
 
     return IntrinsicHeight(
@@ -950,8 +986,8 @@ class LiveDetailPageState extends State<LiveDetailPage> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(30),
-                  child: Image.asset(
-                    "images/test/bg.png",
+                  child: Image.network(
+                    value.avatarUrl,
                     fit: BoxFit.cover,
                     width: 42,
                     height: 42,
@@ -967,120 +1003,102 @@ class LiveDetailPageState extends State<LiveDetailPage> {
           // //中间信息
           Expanded(
               child: SizedBox(
-                  child: Stack(
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        child: Column(
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              child: RichText(
-                                text: TextSpan(
-                                  children: textSpanList,
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 6,
-                            ),
-                            Container(
-                                width: double.infinity,
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      child: Text(
-                                        DateUtil.formatDateNoYearString(
-                                            DateUtil.getDateTimeByMs(
-                                                value.createTime)),
-                                        style: TextStyle(fontSize: 12,
-                                            color: AppColor.textSecondary),
-                                      ),
-                                    ),
-                                    SizedBox(width: 12,),
-                                    Container(
-                                      child: Text("回复",
-                                        style: TextStyle(fontSize: 12,
-                                            color: AppColor.textSecondary),
-                                      ),
-                                    ),
-                                    SizedBox(width: 12,),
-                                    Offstage(
-                                      // offstage: uId!=value.uid,
-                                      offstage: true,
-                                      child: InkWell(
-                                        child: Container(
-                                          child: Text("删除",
-                                            style: TextStyle(fontSize: 12,
-                                                color: AppColor.textSecondary),
-                                          ),
-                                        ),
-                                        onTap: () {
-                                          ToastShow.show(
-                                              msg: "点击删除", context: context);
-                                          showCupertinoDialog(
-                                              context: context,
-                                              builder: (context) {
-                                                return CupertinoAlertDialog(
-                                                  title: Text('删除评论'),
-                                                  content: Text('是否删除评论'),
-                                                  actions: <Widget>[
-                                                    CupertinoDialogAction(
-                                                      child: Text('不删除'),
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                      },
-                                                    ),
-                                                    CupertinoDialogAction(
-                                                      child: Text('删除'),
-                                                      onPressed: () {
-                                                        _deleteComment(
-                                                            value.id);
-                                                        Navigator.pop(context);
-                                                      },
-                                                    ),
-                                                  ],
-                                                );
-                                              });
-                                        },
-                                      ),
-                                    )
-                                  ],
-                                )
-                            ),
-                          ],
-                        ),
-                      ),
-                      InkWell(
-                        child: Container(
+                child: GestureDetector(
+                  child: Container(
+                    width: double.infinity,
+                    color: AppColor.transparent,
+                    child: Column(
+                      children: [
+                        Container(
                           width: double.infinity,
-                          color: AppColor.transparent,
-                          height: double.infinity,
+                          child: RichText(
+                            text: TextSpan(
+                              children: textSpanList,
+                            ),
+                          ),
                         ),
-                        onTap: () {
-                          targetId = _targetId;
-                          targetType = 2;
-                          if (isSubComment) {
-                            replyId = value.uid;
-                            replyCommentId = value.id;
-                          } else {
-                            replyId = -1;
-                            replyCommentId = -1;
-                          }
-                          openInputBottomSheet(
-                            context: this.context,
-                            hintText: "回复 " + value.name,
-                            voidCallback: (String text,List<Rule> rules,
-                                BuildContext context) {
-                              // publishComment(text);
-                              _publishComment(text);
-                              print("回复评论----" + text);
-                            },
-                          );
-                        },
-                      ),
-                    ],
-                  )
+                        SizedBox(
+                          height: 6,
+                        ),
+                        Container(
+                            width: double.infinity,
+                            child: Row(
+                              children: [
+                                Container(
+                                  child: Text(
+                                    DateUtil.formatDateNoYearString(
+                                        DateUtil.getDateTimeByMs(
+                                            value.createTime)),
+                                    style: TextStyle(fontSize: 12,
+                                        color: AppColor.textSecondary),
+                                  ),
+                                ),
+                                SizedBox(width: 12,),
+                                Container(
+                                  child: Text("回复",
+                                    style: TextStyle(fontSize: 12,
+                                        color: AppColor.textSecondary),
+                                  ),
+                                ),
+                                SizedBox(width: 12,),
+                                Offstage(
+                                  // offstage: uId!=value.uid,
+                                  offstage: true,
+                                  child: InkWell(
+                                    child: Container(
+                                      child: Text("删除",
+                                        style: TextStyle(fontSize: 12,
+                                            color: AppColor.textSecondary),
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      ToastShow.show(
+                                          msg: "点击删除", context: context);
+                                      showCupertinoDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return CupertinoAlertDialog(
+                                              title: Text('删除评论'),
+                                              content: Text('是否删除评论'),
+                                              actions: <Widget>[
+                                                CupertinoDialogAction(
+                                                  child: Text('不删除'),
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                ),
+                                                CupertinoDialogAction(
+                                                  child: Text('删除'),
+                                                  onPressed: () {
+                                                    _deleteComment(
+                                                        value.id);
+                                                    Navigator.pop(context);
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          });
+                                    },
+                                  ),
+                                )
+                              ],
+                            )
+                        ),
+                      ],
+                    ),
+                  ),
+                  onTap: () {
+                    targetId = _targetId;
+                    targetType = 2;
+                    replyId = value.uid;
+                    replyCommentId = value.id;
+                    openInputBottomSheet(
+                      context: this.context,
+                      hintText: "回复 " + value.name,
+                      voidCallback: _publishComment,
+                    );
+                  },
+                ),
               )
           ),
           SizedBox(width: 16,),
@@ -1112,11 +1130,51 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     );
   }
 
+  List<TextSpan> getAtUserTextSpan(CommentDtoModel value) {
+    var textSpanList = <TextSpan>[];
+    var contentArray = <String>[];
+    Map<String, int> userMap = Map();
+    String content = value.content;
+    int subLen = 0;
+    for (int i = 0; i < value.atUsers.length; i++) {
+      int index = value.atUsers[i].index - subLen;
+      int end = value.atUsers[i].len - subLen;
+      if (index < content.length) {
+        String firstString = content.substring(0, index);
+        String secondString = content.substring(index, end);
+        String threeString = content.substring(end, content.length);
+        contentArray.add(firstString);
+        contentArray.add(secondString);
+        userMap[(contentArray.length - 1).toString()] = value.atUsers[i].uid;
+        content = threeString;
+        subLen = subLen + firstString.length + secondString.length;
+      }
+    }
+    contentArray.add(content);
+    // print(contentArray.toString());
+    for (int i = 0; i < contentArray.length; i++) {
+      textSpanList.add(TextSpan(
+        text: contentArray[i],
+        recognizer: new TapGestureRecognizer()
+          ..onTap = () {
+            if (userMap[(i).toString()] != null) {
+              ToastShow.show(msg: "点击了用户：${userMap[(i).toString()]}", context: context);
+            }
+          },
+        style: TextStyle(
+          fontSize: 14,
+          color: userMap[(i).toString()] != null ? AppColor.mainBlue : AppColor.textPrimary1,
+        ),
+      ));
+    }
+    return textSpanList;
+  }
+
   //获取底部按钮
   Widget _getBottomBar() {
     Widget containerWidget;
     bool isLoggedIn;
-    context.select((TokenNotifier notifier) => notifier.isLoggedIn ? isLoggedIn=true : isLoggedIn=false);
+    context.select((TokenNotifier notifier) => notifier.isLoggedIn ? isLoggedIn = true : isLoggedIn = false);
 
     //todo 判断是否绑定了终端
     bool bindingTerminal = false;
@@ -1209,40 +1267,40 @@ class LiveDetailPageState extends State<LiveDetailPage> {
       if(!courseVip||isVip) {
         if (bindingTerminal) {
           childrenArray.add(
-            Expanded(child: SizedBox(
-              child: GestureDetector(
-                child: widget1,
-                onTap: (){
-                  print("绑定了终端");
-                  ToastShow.show(msg: "使用终端训练", context: context);
-                },
-              ),
-            ))
+              Expanded(child: SizedBox(
+                child: GestureDetector(
+                  child: widget1,
+                  onTap: (){
+                    print("绑定了终端");
+                    ToastShow.show(msg: "使用终端训练", context: context);
+                  },
+                ),
+              ))
           );
         } else {
           childrenArray.add(
-            Expanded(child: SizedBox(
-                child: GestureDetector(
-                child: widget2,
-                onTap: (){
-                  print("没有绑定终端");
-                  ToastShow.show(msg: "登陆终端使用终端播放", context: context);
-                },
-              )
-            ))
+              Expanded(child: SizedBox(
+                  child: GestureDetector(
+                    child: widget2,
+                    onTap: (){
+                      print("没有绑定终端");
+                      ToastShow.show(msg: "登陆终端使用终端播放", context: context);
+                    },
+                  )
+              ))
           );
         }
       }else{
         childrenArray.add(
-          Expanded(child: SizedBox(
-              child: GestureDetector(
-              child: widget5,
-              onTap: (){
-                print("vip课程");
-                ToastShow.show(msg: "开通vip使用终端播放", context: context);
-              },
-            )
-          ))
+            Expanded(child: SizedBox(
+                child: GestureDetector(
+                  child: widget5,
+                  onTap: (){
+                    print("vip课程");
+                    ToastShow.show(msg: "开通vip使用终端播放", context: context);
+                  },
+                )
+            ))
         );
       }
 
@@ -1323,17 +1381,17 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     loadingStatusComment = LoadingStatus.STATUS_COMPLETED;
 
     //获取直播详情数据
-    if (liveModel == null || liveModel.coursewareDto?.movementDtos == null) {
+    if (liveModel == null || liveModel.coursewareDto?.componentDtos == null) {
       //加载数据
       Map<String, dynamic> model =
-          await liveCourseDetail(courseId: liveCourseId);
+      await liveCourseDetail(courseId: liveCourseId, startTime: liveModel.startTime);
       if (model == null) {
         loadingStatus = LoadingStatus.STATUS_IDEL;
         Future.delayed(Duration(seconds: 1), () {
           setState(() {});
         });
       } else {
-        liveModel = LiveModel.fromJson(model);
+        liveModel = LiveVideoModel.fromJson(model);
         loadingStatus = LoadingStatus.STATUS_COMPLETED;
         setState(() {});
       }
@@ -1367,16 +1425,25 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   }
 
   //发布评论
-  _publishComment(String content) async {
+  _publishComment(String text, List<Rule> rules, BuildContext context1) async {
+    List<AtUsersModel> atListModel = [];
+    for (Rule rule in rules) {
+      AtUsersModel atModel = new AtUsersModel();
+      atModel.index = rule.startIndex;
+      atModel.len = rule.endIndex;
+      atModel.uid = 1008611;
+      atListModel.add(atModel);
+    }
     await postComments(
       targetId: targetId,
       targetType: targetType,
-      content: content,
+      content: text,
+      atUsers: jsonEncode(atListModel),
       replyId: replyId > 0 ? replyId : null,
       replyCommentId: replyCommentId > 0 ? replyCommentId : null,
       commentModelCallback: (CommentDtoModel model) {
         if (model != null) {
-          if (targetId == liveModel.courseId) {
+          if (targetId == liveModel.id) {
             if (courseCommentHot != null) {
               courseCommentHot.list.insert(0, model);
               setCommentListSubSetting(courseCommentHot);
@@ -1524,14 +1591,14 @@ class LiveDetailPageState extends State<LiveDetailPage> {
               .list[positionComment].replyCount = commentDtoModelList.length;
         }
       }
-      }catch(e){
+    }catch(e){
 
-      }
+    }
 
-      commentLoadingStatusList[positionComment]=LoadingStatus.STATUS_COMPLETED;
-      setState(() {
+    commentLoadingStatusList[positionComment]=LoadingStatus.STATUS_COMPLETED;
+    setState(() {
 
-      });
+    });
   }
 
   //加载更多的评论
