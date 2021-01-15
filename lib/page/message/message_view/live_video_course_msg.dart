@@ -2,11 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/data/model/live_model.dart';
+import 'package:mirror/data/model/live_video_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/util/date_util.dart';
-import 'package:mirror/util/file_util.dart';
 
 import 'currency_msg.dart';
 
@@ -15,8 +15,9 @@ class LiveVideoCourseMsg extends StatelessWidget {
   final String userUrl;
   final String name;
   final bool isMyself;
-  final LiveModel liveVideoModel;
+  final LiveVideoModel liveVideoModel;
   final bool isLiveOrVideo;
+  final String msgId;
   final String sendChatUserId;
   final bool isShowChatUserName;
   final int status;
@@ -29,6 +30,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
       {this.liveVideoModel,
       this.isMyself,
       this.userUrl,
+      this.msgId,
       this.name,
       this.status,
       this.isShowChatUserName = false,
@@ -85,7 +87,15 @@ class LiveVideoCourseMsg extends StatelessWidget {
   //里面的结构-头像和消息
   List<Widget> getSmallBody(BuildContext context) {
     var body = [
-      getUserImage(userUrl, 38, 38),
+      GestureDetector(
+        child: getUserImage(userUrl, 38, 38),
+        onTap: () {
+          if (isCanLongClick) {
+            voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_USER,
+                map: new UserModel(uid: int.parse(sendChatUserId)).toJson());
+          }
+        },
+      ),
       SizedBox(
         width: 7,
       ),
@@ -144,10 +154,12 @@ class LiveVideoCourseMsg extends StatelessWidget {
         onTap: () {
           if (isLiveOrVideo) {
             // ToastShow.show(msg: "点击了直播课-该跳转", context: context);
-            voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE, map: liveVideoModel.toJson());
+            voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE,
+                map: liveVideoModel.toJson(), msgId: msgId);
           } else {
             voidMessageClickCallBack(
-                contentType: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE, map: liveVideoModel.toJson());
+                contentType: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE,
+                map: liveVideoModel.toJson(), msgId: msgId);
             // ToastShow.show(msg: "点击了视频课-该跳转", context: context);
           }
         },
@@ -177,37 +189,45 @@ class LiveVideoCourseMsg extends StatelessWidget {
   //获取显示的图片
   Widget _getShowPic() {
     String imageUrl;
-    if (liveVideoModel.playBackUrl != null) {
-      imageUrl = liveVideoModel.playBackUrl;
-    } else if (liveVideoModel.videoUrl != null) {
-      imageUrl = FileUtil.getVideoFirstPhoto(liveVideoModel.videoUrl);
+    if (liveVideoModel.picUrl != null) {
+      imageUrl = liveVideoModel.picUrl;
+    } else if (liveVideoModel.coursewareDto?.picUrl != null) {
+      imageUrl = liveVideoModel.coursewareDto?.picUrl;
+    } else if (liveVideoModel.coursewareDto?.previewVideoUrl != null) {
+      imageUrl = liveVideoModel.coursewareDto?.previewVideoUrl;
     }
     return Container(
       width: double.infinity,
       height: 180,
       child: Stack(
         children: [
-          Container(
-            color: AppColor.white,
-            child: ClipRRect(
-              borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(3), topLeft: Radius.circular(3)),
-              child: CachedNetworkImage(
-                height: double.infinity,
-                width: double.infinity,
-                imageUrl: imageUrl == null ? "" : imageUrl,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Image.asset(
-                  "images/test/bg.png",
+          Hero(
+            child: Container(
+              color: AppColor.white,
+              child: ClipRRect(
+                borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(3), topLeft: Radius.circular(3)),
+                child: CachedNetworkImage(
+                  height: double.infinity,
+                  width: double.infinity,
+                  imageUrl: imageUrl == null ? "" : imageUrl,
                   fit: BoxFit.cover,
-                ),
-                errorWidget: (context, url, error) => Image.asset(
-                  "images/test/bg.png",
-                  fit: BoxFit.cover,
+                  placeholder: (context, url) =>
+                      Image.asset(
+                        "images/test/bg.png",
+                        fit: BoxFit.cover,
+                      ),
+                  errorWidget: (context, url, error) =>
+                      Image.asset(
+                        "images/test/bg.png",
+                        fit: BoxFit.cover,
+                      ),
                 ),
               ),
             ),
+            tag: msgId,
           ),
+
           Offstage(
             offstage: !isLiveOrVideo,
             child: Container(
@@ -259,14 +279,16 @@ class LiveVideoCourseMsg extends StatelessWidget {
                   ),
                   Container(
                     height: 20,
+                    width: 120.0,
                     child: Center(
                       child: Text(
-                        liveVideoModel.name,
+                        liveVideoModel.title ?? "",
                         style: TextStyle(
                             fontSize: 14,
                             color: AppColor.textPrimary1,
                             fontWeight: FontWeight.bold),
                         maxLines: 1,
+                        textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),

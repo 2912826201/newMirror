@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/live_model.dart';
+import 'package:mirror/data/model/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
@@ -152,8 +152,8 @@ class SendMessageView extends StatelessWidget {
           //直播和视频课程消息
           Map<String, dynamic> liveVideoModelMap =
           json.decode(mapModel["data"]);
-          return getLiveVideoCourseMsg(liveVideoModelMap,
-              mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE);
+          return getLiveVideoCourseMsg(
+              liveVideoModelMap, mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE, msg.messageUId);
         } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME ||
             mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_INVITE ||
             mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_NEW ||
@@ -260,6 +260,7 @@ class SendMessageView extends StatelessWidget {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        sendChatUserId: sendChatUserId,
         isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
         mentionedInfo: mentionedInfo,
@@ -277,6 +278,7 @@ class SendMessageView extends StatelessWidget {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        sendChatUserId: sendChatUserId,
         isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
         voidMessageClickCallBack: voidMessageClickCallBack,
@@ -292,6 +294,7 @@ class SendMessageView extends StatelessWidget {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        sendChatUserId: sendChatUserId,
         isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
         voidMessageClickCallBack: voidMessageClickCallBack,
@@ -315,6 +318,7 @@ class SendMessageView extends StatelessWidget {
         isTemporary: isTemporary,
         userUrl: userUrl,
         name: name,
+        sendChatUserId: sendChatUserId,
         isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
         voidMessageClickCallBack: voidMessageClickCallBack,
@@ -324,15 +328,16 @@ class SendMessageView extends StatelessWidget {
   }
 
   //获取直播和视频的模块
-  Widget getLiveVideoCourseMsg(
-      Map<String, dynamic> liveVideoModelMap, bool isLiveOrVideo) {
-    LiveModel liveVideoModel = LiveModel.fromJson(liveVideoModelMap);
+  Widget getLiveVideoCourseMsg(Map<String, dynamic> liveVideoModelMap, bool isLiveOrVideo, String msgId) {
+    LiveVideoModel liveVideoModel = LiveVideoModel.fromJson(liveVideoModelMap);
     return LiveVideoCourseMsg(
         liveVideoModel: liveVideoModel,
         isLiveOrVideo: isLiveOrVideo,
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        msgId: msgId,
+        sendChatUserId: sendChatUserId,
         isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
         voidMessageClickCallBack: voidMessageClickCallBack,
@@ -349,6 +354,7 @@ class SendMessageView extends StatelessWidget {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        sendChatUserId: sendChatUserId,
         isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
         voidMessageClickCallBack: voidMessageClickCallBack,
@@ -368,6 +374,7 @@ class SendMessageView extends StatelessWidget {
       userUrl: userUrl,
       name: name,
       status: status,
+      sendChatUserId: sendChatUserId,
       isCanLongClick: isCanLongClick(),
       isTemporary: isTemporary,
       isImgOrVideo: isImgOrVideo,

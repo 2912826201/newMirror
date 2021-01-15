@@ -4,6 +4,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 
+// ignore: must_be_immutable
 class LiveBroadcastTitlePage extends StatefulWidget {
   final List<DateTime> dates;
   void Function(void Function(int)) setCall;
@@ -41,7 +42,7 @@ class LiveBroadcastTitlePageState extends State<LiveBroadcastTitlePage> {
     setState(() {
       curItem = pos;
     });
-    scrollItemToCenter(pos);
+    // scrollItemToCenter(pos);
   }
 
   //滚动Item到指定位置，这里滚动到屏幕正中间
