@@ -875,7 +875,7 @@ class _followItemState extends State<QueryFollowItem> {
               ),
             ),
           ),
-          Expanded(child: Container()),
+          Spacer(),
           isCanOnclick
               ? InkWell(
                   onTap: () {

@@ -32,8 +32,8 @@ class MessagePage extends StatefulWidget {
 class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin {
   double _screenWidth = 0.0;
   int _listLength = 0;
-  UnreadInterCourses unReadMsg;
-  bool isFrist = true;
+  Unreads unReadMsg;
+  bool isFirst = true;
   @override
   bool get wantKeepAlive => true;
 
@@ -41,21 +41,22 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   void initState() {
     _screenWidth = ScreenUtil.instance.screenWidthDp;
     super.initState();
-    _getUnReadMagCount();
+    _getUnReadMsgCount();
   }
-    _getUnReadMagCount()async{
+    _getUnReadMsgCount()async{
       Unreads model = await getUnReads();
-        if(model.interCourses!=null){
-          if(isFrist){
-            unReadMsg = model.interCourses;
-          }else{
-            setState(() {
-              unReadMsg = model.interCourses;
+        if(model!=null){
+          if(isFirst){
+            unReadMsg = model;
+            UnreadMessageModel liveMsgModel = UnreadMessageModel.fromJson(unReadMsg.liveMsg);
+
+      }else{
+            print('从列表返回刷新未读数');
+        setState(() {
+              unReadMsg = model;
             });
           }
         }
-
-
     }
   @override
   Widget build(BuildContext context) {
@@ -167,11 +168,9 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
 
   //这里暂时不写枚举了 0评论 1@ 2点赞
   Widget _buildMentionItem(double size, int type) {
-    var colors = [Colors.deepOrangeAccent, Colors.deepPurpleAccent, Colors.cyanAccent];
     return Container(
       height: size,
       width: size,
-      color: colors[type],
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -181,8 +180,10 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                     return InteractiveNoticePage(type: type,);
                   })).then((value){
-                    isFrist = false;
-                    _getUnReadMagCount();
+                    setState(() {
+                      isFirst = false;
+                    });
+                    _getUnReadMsgCount();
                   });
 
             },

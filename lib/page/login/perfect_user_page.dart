@@ -7,10 +7,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mirror/api/basic_api.dart';
+import 'package:mirror/api/live_broadcast/live_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/page/login/login_base_page_state.dart';
 import 'package:mirror/constant/style.dart';
@@ -278,6 +280,8 @@ class _PerfectUserState extends LoginBasePageState {
     ProfileDto profile = ProfileDto.fromUserModel(user);
     await ProfileDBHelper().insertProfile(profile);
     context.read<ProfileNotifier>().setProfile(profile);
+    Map<String, dynamic> videoCourseTagMap = await getAllTags();
+    Application.videoTagModel = VideoTagModel.fromJson(videoCourseTagMap);
     //连接融云
     Application.rongCloud.connect();
     //TODO 处理登录完成后的数据加载
