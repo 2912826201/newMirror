@@ -35,22 +35,16 @@ Future<DataResponseModel> searchTopic({@required String key, @required int size,
   }
 }
 //获取推荐话题列表
-Future<List> getRecommendTopic({@required int size}) async {
+Future<DataResponseModel> getRecommendTopic({@required int size}) async {
   Map<String, dynamic> params = {};
   params["size"] = size;
   BaseResponseModel responseModel = await requestApi(GETRECOMMENDTOPIC, params);
-  List<TopicDtoModel> topicModelList = [];
   if (responseModel.isSuccess) {
     DataResponseModel  dataResponseModel;
     if (responseModel.data != null) {
       dataResponseModel = DataResponseModel.fromJson(responseModel.data);
-      if (dataResponseModel.list.isNotEmpty) {
-        dataResponseModel.list.forEach((v) {
-          topicModelList.add(TopicDtoModel.fromJson(v));
-        });
-      }
     }
-    return topicModelList;
+    return dataResponseModel;
   } else {
     return null;
   }

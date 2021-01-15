@@ -286,19 +286,18 @@ class Rule {
   // 区分时at还是话题
   final bool isAt;
   // atUid
-  final int atId;
-  // 动态Id
-  final int topicId;
+  final int id;
 
-  Rule(this.startIndex, this.endIndex, this.params, this.clickIndex, this.isAt,[this.atId,this.topicId]);
+
+  Rule(this.startIndex, this.endIndex, this.params, this.clickIndex, this.isAt,[this.id]);
 
   Rule copy([startIndex, endIndex, params]) {
     return Rule(startIndex ?? this.startIndex, endIndex ?? this.endIndex, params ?? this.params,
-        clickIndex ?? this.clickIndex, isAt ?? this.isAt,atId ?? this.atId, topicId ?? this.topicId);
+        clickIndex ?? this.clickIndex, isAt ?? this.isAt,id ?? this.id);
   }
 
   @override
   String toString() {
-    return "startIndex : $startIndex , endIndex : $endIndex, param :$params ,clickIndex :$clickIndex , isAt:$isAt";
+    return "startIndex : $startIndex , endIndex : $endIndex, param :$params ,clickIndex :$clickIndex , isAt:$isAt, id : $id";
   }
 }
