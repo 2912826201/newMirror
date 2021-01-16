@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
@@ -323,7 +324,17 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
             ),
             Spacer(),
             InkWell(
-                onTap: () {},
+                onTap: () {
+                  if (_relation == 0 || _relation == 2) {
+                    ProfileAddFollow(_uid).then((relation) {
+                      if (relation != null) {
+                        setState(() {
+                          _relation = relation;
+                        });
+                      }
+                    });
+                  }
+                },
                 child: Container(
                   width: 56,
                   height: 24,
@@ -455,30 +466,33 @@ class PentagonChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double containerHeight = 200;
-    double containerWidth = 300;
+    double containerWidth = width * 2;
     double a = width / 2 / cos(pi / 5);
     print("a:$a");
-    Offset p1 = Offset(0.0 + containerWidth / 2, 0.0);
+    Offset p1 = Offset(0.0, 0.0);
     print("p1:$p1");
-    Offset p2 = Offset(width / 2 + containerWidth / 2, tan(pi / 5) * width / 2);
+    Offset p2 = Offset(width / 2, tan(pi / 5) * width / 2);
     print("p2:$p2");
-    Offset p3 = Offset(a / 2 + containerWidth / 2, tan(pi / 5) * width / 2 + (width - a) / 2 / tan(pi / 10));
+    Offset p3 = Offset(a / 2, tan(pi / 5) * width / 2 + (width - a) / 2 / tan(pi / 10));
     print("p3:$p3");
-    Offset p4 = Offset(-a / 2 + containerWidth / 2, tan(pi / 5) * width / 2 + (width - a) / 2 / tan(pi / 10));
+    Offset p4 = Offset(-a / 2, tan(pi / 5) * width / 2 + (width - a) / 2 / tan(pi / 10));
     print("p4:$p4");
-    Offset p5 = Offset(-width / 2 + containerWidth / 2, tan(pi / 5) * width / 2);
+    Offset p5 = Offset(-width / 2, tan(pi / 5) * width / 2);
     print("p5:$p5");
-    Offset c = Offset(0.0 + containerWidth / 2, a / 2 / cos(pi * 3 / 10));
+    Offset c = Offset(0.0, a / 2 / cos(pi * 3 / 10));
     print("c:$c");
     List<Offset> pointList = [c, p1, p2, p3, p4, p5];
+    double containerHeight = p3.dy + 20 * 2 + 12 * 2;
     return Container(
       height: containerHeight,
       width: containerWidth,
-      color: Colors.yellowAccent,
       child: Stack(children: [
-        CustomPaint(
-          painter: _PentagonChartPainter(pointList, rateList),
+        Positioned(
+          top: 32,
+          left: containerWidth / 2,
+          child: CustomPaint(
+            painter: _PentagonChartPainter(pointList, rateList),
+          ),
         ),
         Positioned(
           child: SizedBox(
@@ -486,11 +500,12 @@ class PentagonChart extends StatelessWidget {
             child: Text(
               "综合",
               textAlign: TextAlign.center,
+              style: AppStyle.textPrimary3Regular14,
             ),
           ),
         ),
         Positioned(
-          top: p2.dy,
+          top: p2.dy + 10 + 12,
           child: Container(
             width: containerWidth,
             alignment: Alignment.center,
@@ -500,14 +515,14 @@ class PentagonChart extends StatelessWidget {
                 Text(
                   //为了确保布局对称 加了个全角空格
                   "　核心",
-                  textAlign: TextAlign.center,
+                  style: AppStyle.textPrimary3Regular14,
                 ),
                 SizedBox(
-                  width: width + 24,
+                  width: width + 12 * 2,
                 ),
                 Text(
                   "完成度",
-                  textAlign: TextAlign.center,
+                  style: AppStyle.textPrimary3Regular14,
                 ),
               ],
             ),
@@ -523,14 +538,14 @@ class PentagonChart extends StatelessWidget {
               children: [
                 Text(
                   "上肢",
-                  textAlign: TextAlign.center,
+                  style: AppStyle.textPrimary3Regular14,
                 ),
                 SizedBox(
                   width: a,
                 ),
                 Text(
                   "下肢",
-                  textAlign: TextAlign.center,
+                  style: AppStyle.textPrimary3Regular14,
                 ),
               ],
             ),
