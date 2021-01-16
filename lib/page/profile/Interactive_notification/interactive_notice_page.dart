@@ -245,6 +245,7 @@ class _interactiveNoticeItemState extends State<InteractiveNoticeItem> {
     senderName = msgModel.senderName;
     commentModel = msgModel.commentData;
     coverImage = msgModel.coverUrl;
+    print('封面=======================${msgModel.coverUrl}');
     if(widget.type==0){
       if(msgModel.refType==2){
         commentState = "回复了  ";
