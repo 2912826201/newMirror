@@ -410,7 +410,7 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //修改群名
   void modifyPr(String newName) async {
-    if (Application.chatGroupUserModelMap[Application.profile.uid] == null) {
+    if (Application.chatGroupUserModelMap[Application.profile.uid.toString()] == null) {
       ToastShow.show(msg: "你不是群成员", context: context);
       return;
     }
@@ -490,7 +490,7 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //查看更多群成员
   void seeMoreGroupUser() {
-    if (Application.chatGroupUserModelMap[Application.profile.uid] == null) {
+    if (Application.chatGroupUserModelMap[Application.profile.uid.toString()] == null) {
       ToastShow.show(msg: "你不是群成员", context: context);
       return;
     }
@@ -507,7 +507,7 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //添加用户按钮
   void addGroupUser() {
-    if (Application.chatGroupUserModelMap[Application.profile.uid] == null) {
+    if (Application.chatGroupUserModelMap[Application.profile.uid.toString()] == null) {
       ToastShow.show(msg: "你不是群成员", context: context);
       return;
     }
@@ -526,7 +526,7 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //删除用户按钮
   void deleteGroupUser() {
-    if (Application.chatGroupUserModelMap[Application.profile.uid] == null) {
+    if (Application.chatGroupUserModelMap[Application.profile.uid.toString()] == null) {
       ToastShow.show(msg: "你不是群成员", context: context);
       return;
     }
@@ -544,7 +544,7 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //退出按钮
   void exitGroupChatPr() async {
-    if (Application.chatGroupUserModelMap[Application.profile.uid] == null) {
+    if (Application.chatGroupUserModelMap[Application.profile.uid.toString()] == null) {
       ToastShow.show(msg: "你不是群成员", context: context);
       return;
     }
@@ -631,7 +631,7 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //点击事件
   void onClickItemList({String title, String subtitle, bool isOpen, int index,}) {
-    if (Application.chatGroupUserModelMap[Application.profile.uid] == null) {
+    if (Application.chatGroupUserModelMap[Application.profile.uid.toString()] == null) {
       ToastShow.show(msg: "你不是群成员", context: context);
       return;
     }

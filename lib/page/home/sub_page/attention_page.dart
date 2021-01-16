@@ -254,6 +254,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       } else {
         // 发布失败
         print('================================发布失败');
+        // 设置不可发布
+        context.read<FeedMapNotifier>().setPublish(false);
         context.read<FeedMapNotifier>().setPublishFeedModel(postModel);
         _process = -1.0;
         context.read<FeedMapNotifier>().getPostPlannedSpeed(_process);

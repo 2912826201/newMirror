@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/media_file_model.dart';
@@ -20,6 +22,7 @@ import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
@@ -28,7 +31,6 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:text_span_field/range_style.dart';
 import 'package:text_span_field/text_span_field.dart';
 import 'package:toast/toast.dart';
-
 
 /** 搜索关注用户和搜索全局用户比较
  * 比较两数组 取出不同的，
@@ -56,6 +58,7 @@ followModelarrayDate(List<FollowModel> array1, List<FollowModel> array2) {
   print("result${result.toString()}");
   return result;
 }
+
 class ReleasePage extends StatefulWidget {
   @override
   ReleasePageState createState() => ReleasePageState();
@@ -143,13 +146,22 @@ class FeedHeader extends StatelessWidget {
           AtUsersModel atModel = AtUsersModel();
           atModel.index = rule.startIndex;
           atModel.len = rule.endIndex;
-          atModel.uid = rule.atId;
+          atModel.uid = rule.id;
           atUsersModel.add(atModel);
         } else {
+          print("查看发布话题动态——————————————————————————————");
+          print(rule.toString());
           TopicDtoModel topicDtoModel = TopicDtoModel();
-          topicDtoModel.index = rule.startIndex;
-          topicDtoModel.len = rule.endIndex;
-          topicDtoModel.id = 1008611;
+
+          if (rule.id != -1) {
+            topicDtoModel.id = rule.id;
+            topicDtoModel.index = rule.startIndex;
+            topicDtoModel.len = rule.endIndex;
+          } else {
+            topicDtoModel.name = rule.params.substring(1,rule.params.length );
+            topicDtoModel.index = rule.startIndex;
+            topicDtoModel.len = rule.endIndex - 1;
+          }
           topics.add(topicDtoModel);
         }
       }
@@ -298,81 +310,152 @@ class KeyboardInputState extends State<KeyboardInput> {
     });
 
     _formatter = ReleaseFeedInputFormatter(
-      controller: widget.controller,
-      rules: context.read<ReleaseFeedInputNotifier>().rules,
-      // @回调
-      triggerAtCallback: (String str) async {
-        context.read<ReleaseFeedInputNotifier>().changeCallback(str);
-      },
-      // #回调
-      triggerTopicCallback: (String str) async {
-        context.read<ReleaseFeedInputNotifier>().changeCallback(str);
-      },
-      // 关闭@#视图回调
-      shutDownCallback: () async {
-        context.read<ReleaseFeedInputNotifier>().changeCallback("");
-      },
-      valueChangedCallback:
-          (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr, String topicSearchStr) {
-        rules = rules;
-        // print("输入框值回调：$value");
-        // print(rules);
-        print("实时搜索字段$atSearchStr");
-
-        isSwitchCursor = false;
-        if (atIndex > 0) {
-          context.read<ReleaseFeedInputNotifier>().getAtCursorIndex(atIndex);
-        }
-        if (topicIndex > 0) {
-          context.read<ReleaseFeedInputNotifier>().getTopicCursorIndex(topicIndex);
-        }
-        context.read<ReleaseFeedInputNotifier>().setAtSearchStr(atSearchStr);
-        context.read<ReleaseFeedInputNotifier>().setTopicSearchStr(topicSearchStr);
-        context.read<ReleaseFeedInputNotifier>().getInputText(value);
-        if(atSearchStr.isNotEmpty) {
-          requestSearchFollowList(atSearchStr);
-        } else {
-          context.read<ReleaseFeedInputNotifier>().setFollowList(context.read<ReleaseFeedInputNotifier>().backupFollowList);
-        }
-      },
-    );
+        controller: widget.controller,
+        rules: context.read<ReleaseFeedInputNotifier>().rules,
+        // @回调
+        triggerAtCallback: (String str) async {
+          context.read<ReleaseFeedInputNotifier>().changeCallback(str);
+        },
+        // #回调
+        triggerTopicCallback: (String str) async {
+          context.read<ReleaseFeedInputNotifier>().changeCallback(str);
+        },
+        // 关闭@#视图回调
+        shutDownCallback: () async {
+          context.read<ReleaseFeedInputNotifier>().changeCallback("");
+        },
+        valueChangedCallback:
+            (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr, String topicSearchStr) {
+          rules = rules;
+          // print("输入框值回调：$value");
+          // print(rules);
+          print("实时At搜索字段$atSearchStr");
+          print("推荐搜索字段$topicSearchStr");
+          isSwitchCursor = false;
+          // 存储@位置
+          if (atIndex > 0) {
+            context.read<ReleaseFeedInputNotifier>().getAtCursorIndex(atIndex);
+          }
+          // 存储#位置
+          if (topicIndex > 0) {
+            context.read<ReleaseFeedInputNotifier>().getTopicCursorIndex(topicIndex);
+          }
+          // 存储@后面输入的文本
+          context.read<ReleaseFeedInputNotifier>().setAtSearchStr(atSearchStr);
+          // 存储#后面输入的文本
+          context.read<ReleaseFeedInputNotifier>().setTopicSearchStr(topicSearchStr);
+          // 存在整段文本
+          context.read<ReleaseFeedInputNotifier>().getInputText(value);
+          // @布局页面
+          if (context.read<ReleaseFeedInputNotifier>().keyWord == "@") {
+            if (atSearchStr.isNotEmpty) {
+              // 调用搜索全局用户第一页
+              requestSearchFollowList(atSearchStr);
+            } else {
+              // 使用备份的关注用户数据
+              context
+                  .read<ReleaseFeedInputNotifier>()
+                  .setFollowList(context.read<ReleaseFeedInputNotifier>().backupFollowList);
+            }
+          }
+          // 话题布局页面
+          if (context.read<ReleaseFeedInputNotifier>().keyWord == "#") {
+            if (topicSearchStr.isNotEmpty) {
+              // 调用搜索话题第一页
+              requestSearchTopicList(topicSearchStr);
+            } else {
+              // 使用备份的推荐话题数据
+              context
+                  .read<ReleaseFeedInputNotifier>()
+                  .setTopicList(context.read<ReleaseFeedInputNotifier>().backupTopicList);
+            }
+          }
+        });
     _init();
     super.initState();
   }
 
+  // 搜索全局用户第一页
   requestSearchFollowList(String keyWork) async {
     print("搜索字段：：：：：：：：$keyWork");
     List<FollowModel> searchFollowList = [];
     SearchUserModel model = await ProfileSearchUser(keyWork, 20);
-      if (model.list.isNotEmpty) {
-        model.list.forEach((element) {
-          FollowModel followModel = FollowModel();
-          followModel.nickName = element.nickName + " ";
-          followModel.uid = element.uid;
-          followModel.avatarUri = element.avatarUri;
-          searchFollowList.add(followModel);
-        });
-        if (model.hasNext == 0) {
-          context.read<ReleaseFeedInputNotifier>().searchLoadText = "";
-          context.read<ReleaseFeedInputNotifier>().searchLoadStatus = LoadingStatus.STATUS_COMPLETED;
-        }
+    if (model.list.isNotEmpty) {
+      model.list.forEach((element) {
+        FollowModel followModel = FollowModel();
+        followModel.nickName = element.nickName + " ";
+        followModel.uid = element.uid;
+        followModel.avatarUri = element.avatarUri;
+        searchFollowList.add(followModel);
+      });
+      if (model.hasNext == 0) {
+        context.read<ReleaseFeedInputNotifier>().searchLoadText = "";
+        context.read<ReleaseFeedInputNotifier>().searchLoadStatus = LoadingStatus.STATUS_COMPLETED;
       }
-      // 记录搜索状态
+    }
+    // 记录搜索状态
     context.read<ReleaseFeedInputNotifier>().searchLastTime = model.lastTime;
     context.read<ReleaseFeedInputNotifier>().searchHasNext = model.hasNext;
     // 列表回到顶部，不然无法上拉加载下一页
     context.read<ReleaseFeedInputNotifier>().atScrollController.jumpTo(0);
     // 获取关注@数据
-    List<FollowModel> followList = [] ;
+    List<FollowModel> followList = [];
     context.read<ReleaseFeedInputNotifier>().backupFollowList.forEach((v) {
-     if (v.nickName.contains(keyWork))  {
-       followList.add(v);
+      if (v.nickName.contains(keyWork)) {
+        followList.add(v);
       }
     });
     // 筛选全局的@用户数据
-    List<FollowModel> filterFollowList = followModelarrayDate(searchFollowList,followList);
+    List<FollowModel> filterFollowList = followModelarrayDate(searchFollowList, followList);
     filterFollowList.insertAll(0, followList);
     context.read<ReleaseFeedInputNotifier>().setFollowList(filterFollowList);
+  }
+
+  // 搜索话题第一页
+  requestSearchTopicList(String keyWork) async {
+    List<TopicDtoModel> searchTopicList = [];
+    TopicDtoModel createTopModel = TopicDtoModel();
+    DataResponseModel model = await searchTopic(key: keyWork, size: 20);
+    if (model.list.isNotEmpty) {
+      model.list.forEach((v) {
+        searchTopicList.add(TopicDtoModel.fromJson(v));
+      });
+
+      bool isCreated = true;
+      searchTopicList.forEach((v) {
+        print(v.name);
+        print(keyWork);
+        print(v.name.codeUnits);
+        print(keyWork.codeUnits);
+        print(v.name.codeUnits == keyWork.codeUnits);
+        print(v.name  == keyWork+ " ");
+        if(keyWork == v.name.trimRight()) {
+          isCreated = false;
+        }
+          v.name = "#" + v.name + " ";
+      });
+      if (isCreated) {
+        createTopModel.name = "#" +keyWork + " ";
+        createTopModel.id = -1;
+        searchTopicList.insert(0, createTopModel);
+      }
+      if (model.hasNext == 0) {
+        context.read<ReleaseFeedInputNotifier>().searchTopLoadText = "";
+        context.read<ReleaseFeedInputNotifier>().searchTopLoadStatus = LoadingStatus.STATUS_COMPLETED;
+      }
+    } else {
+      createTopModel.name = "#" +keyWork + " ";
+      createTopModel.id = -1;
+      searchTopicList.insert(0, createTopModel);
+      context.read<ReleaseFeedInputNotifier>().searchTopLoadText = "";
+      context.read<ReleaseFeedInputNotifier>().searchTopLoadStatus = LoadingStatus.STATUS_COMPLETED;
+    }
+    // 记录搜索状态
+    context.read<ReleaseFeedInputNotifier>().searchLastScore = model.lastScore;
+    context.read<ReleaseFeedInputNotifier>().searchTopHasNext = model.hasNext;
+    // 列表回到顶部，不然无法上拉加载下一页
+    context.read<ReleaseFeedInputNotifier>().topScrollController.jumpTo(0);
+    context.read<ReleaseFeedInputNotifier>().setTopicList(searchTopicList);
   }
 
   /// 获得文本输入框样式
@@ -431,148 +514,275 @@ class KeyboardInputState extends State<KeyboardInput> {
   }
 }
 
-class TopicModel {
-  String topic;
-  String topicSubStr;
-
-  TopicModel({this.topic, this.topicSubStr});
-}
-
 // 话题列表
-class TopicList extends StatelessWidget {
-  final index;
+class TopicList extends StatefulWidget {
   TextEditingController controller;
 
-  TopicList({this.index, this.controller});
+  TopicList({this.controller});
 
-  List<TopicModel> topics = [
-    TopicModel(topic: "#坚持健身的动力 ", topicSubStr: "哈哈1"),
-    TopicModel(topic: "#坚持健身的动力啊啊 ", topicSubStr: "哈哈飒飒2"),
-    TopicModel(topic: "#坚持健身的动力十点多 ", topicSubStr: "哈哈撒触发3"),
-    TopicModel(topic: "#坚持健水电费身的动力 ", topicSubStr: "哈哈奥术大师4"),
-    TopicModel(topic: "#胜多负少的的动力 ", topicSubStr: "哈哈撒大声地5"),
-    TopicModel(topic: "#坚持健身胜多负少的的动力 ", topicSubStr: "哈哈梵蒂冈地方6"),
-    TopicModel(topic: "#佛挡杀佛 ", topicSubStr: "哈哈鬼地方个地方7"),
-    TopicModel(topic: "#奥术大师大所大所大所多 ", topicSubStr: "哈哈和官方回复8"),
-    TopicModel(topic: "#萨达所大所大 ", topicSubStr: "哈哈价格好几个9"),
-    TopicModel(topic: "#sad撒大所大所大所大所大所 ", topicSubStr: "哈哈讲话稿几个10"),
-    TopicModel(topic: "#坚发的啥地方胜多负少的持健身的动力 ", topicSubStr: "哈哈半年才能保持11"),
-  ];
+  @override
+  TopicListState createState() => TopicListState();
+}
+
+class TopicListState extends State<TopicList> {
+  List<TopicDtoModel> topics = [];
+
+  // 滑动控制器
+  ScrollController _scrollController = new ScrollController();
+
+  // 是否存在下页
+  int hasNext;
+
+  // 推荐数据加载页数
+  int dataPage = 1;
+ // 搜索数据加载页数
+  int searchDataPage = 1;
+  // 加载中默认文字
+  String loadText = "加载中...";
+
+  // 加载状态
+  LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
+
+  @override
+  void initState() {
+    requestRecommendTopic();
+    context.read<ReleaseFeedInputNotifier>().setTopScrollController(_scrollController);
+    _scrollController.addListener(() {
+      // 搜索全局用户关键字
+      String searchTopStr = context.read<ReleaseFeedInputNotifier>().topicSearchStr;
+      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+        if (searchTopStr.isNotEmpty) {
+          searchDataPage += 1;
+          requestSearchTopic(searchTopStr);
+        }
+      }
+    });
+    super.initState();
+  }
+
+  // 获取推荐话题
+  requestRecommendTopic() async {
+    if (loadStatus == LoadingStatus.STATUS_IDEL) {
+      // 先设置状态，防止下拉就直接加载
+      setState(() {
+        loadStatus = LoadingStatus.STATUS_LOADING;
+      });
+    }
+    if (hasNext == 0) {
+      loadText = "已加载全部话题";
+      print("返回不请求数据");
+      return;
+    }
+    DataResponseModel model = await getRecommendTopic(size: 20);
+    if (dataPage == 1) {
+      if (model.list.isNotEmpty) {
+        model.list.forEach((v) {
+          topics.add(TopicDtoModel.fromJson(v));
+        });
+        topics.forEach((v) {
+          v.name = "#" + v.name + " ";
+        });
+          loadText = "";
+          loadStatus = LoadingStatus.STATUS_COMPLETED;
+      }
+    }
+    hasNext = model.hasNext;
+    // 存入话题显示数据
+    context.read<ReleaseFeedInputNotifier>().setTopicList(topics);
+    // 搜索时会替换话题显示数据，备份一份数据
+    context.read<ReleaseFeedInputNotifier>().setBackupTopicList(topics);
+    setState(() {});
+  }
+  // 搜索话题
+  // 此处调用都为第二页及以上数据第一页在输入框回调内调用
+  requestSearchTopic(String keyWork) async {
+    List<TopicDtoModel> searchList = [];
+    if (context.read<ReleaseFeedInputNotifier>().searchTopLoadStatus == LoadingStatus.STATUS_IDEL) {
+      // 先设置状态，防止下拉就直接加载
+      setState(() {
+        context.read<ReleaseFeedInputNotifier>().searchTopLoadStatus = LoadingStatus.STATUS_LOADING;
+      });
+    }
+    if (context.read<ReleaseFeedInputNotifier>().searchTopHasNext == 0) {
+      context.read<ReleaseFeedInputNotifier>().searchTopLoadText = "已加载全部话题";
+      context.read<ReleaseFeedInputNotifier>().searchTopLoadStatus = LoadingStatus.STATUS_COMPLETED;
+      setState(() {});
+      print("返回不请求搜索数据");
+      return;
+    }
+    DataResponseModel model =
+    await searchTopic(key: keyWork, size:20, lastScore: context.read<ReleaseFeedInputNotifier>().searchLastScore);
+    if (searchDataPage > 1 && context.read<ReleaseFeedInputNotifier>().searchLastScore != null) {
+      if (model.list.isNotEmpty) {
+        model.list.forEach((v) {
+          searchList.add(TopicDtoModel.fromJson(v));
+        });
+        searchList.forEach((v) {
+          v.name = "#" + v.name + " ";
+        });
+        context.read<ReleaseFeedInputNotifier>().searchTopLoadStatus = LoadingStatus.STATUS_IDEL;
+        context.read<ReleaseFeedInputNotifier>().searchTopLoadText = "加载中...";
+      }
+    }
+    // 记录搜索状态
+    context.read<ReleaseFeedInputNotifier>().searchLastScore = model.lastScore;
+    context.read<ReleaseFeedInputNotifier>().searchTopHasNext = model.hasNext;
+    setState(() {});
+    // 把在输入框回调内的第一页数据插入
+    searchList.insertAll(0, context.read<ReleaseFeedInputNotifier>().topicList);
+    context.read<ReleaseFeedInputNotifier>().setTopicList(searchList);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-        // 点击空白区域响应事件
-        behavior: HitTestBehavior.opaque,
-        onTap: () {
-          // #的文字长度
-          int topicLength = topics[index].topic.length - 1;
-          // 获取比较规则
-          var rules = context.read<ReleaseFeedInputNotifier>().rules;
-          // 获取实时搜索文本
-          String searchStr = context.read<ReleaseFeedInputNotifier>().topicSearchStr;
-          // 检测是否添加过
-          if (rules.isNotEmpty) {
-            for (Rule atRule in rules) {
-              if (atRule.clickIndex == index && atRule.isAt == false) {
-                print("已经添加过了");
-                return;
-              }
-            }
-          }
-          // 获取#的光标
-          int topicIndex = context.read<ReleaseFeedInputNotifier>().topicCursorIndex;
-          // #前的文字
-          String topicBeforeStr = controller.text.substring(0, topicIndex);
-          // #后的文字
-          String topicRearStr = "";
-          print(searchStr);
-          print("controller.text:${controller.text}");
-          print("topicBeforeStr$topicBeforeStr");
-          if (searchStr != "" || searchStr.isNotEmpty) {
-            print("topicIndex:$topicIndex");
-            print("searchStr:$searchStr");
-            print("controller.text:${controller.text}");
-            topicRearStr = controller.text.substring(topicIndex + searchStr.length, controller.text.length);
-            print("topicRearStr:$topicRearStr");
-          } else {
-            topicRearStr = controller.text.substring(topicIndex, controller.text.length);
-          }
-          // 点击的文本
-          String topicMiddleStr = topics[index].topic.substring(1, topics[index].topic.length);
-          // 拼接修改输入框的值
-          controller.text = topicBeforeStr + topicMiddleStr + topicRearStr;
-          context.read<ReleaseFeedInputNotifier>().getInputText(controller.text);
-          print("controller.text ${controller.text}");
-          // 这是替换输入的文本修改后面输入的#的规则
-          if (searchStr != "" || searchStr.isNotEmpty) {
-            print("话题替换");
-            int oldLength = searchStr.length;
-            int newLength = topics[index].topic.length - 1;
-            int oldStartIndex = topicIndex;
-            int diffLength = newLength - oldLength;
-            for (int i = 0; i < rules.length; i++) {
-              print(rules[i]);
-              if (rules[i].startIndex >= oldStartIndex) {
-                int newStartIndex = rules[i].startIndex + diffLength;
-                int newEndIndex = rules[i].endIndex + diffLength;
-                rules.replaceRange(i, i + 1, <Rule>[rules[i].copy(newStartIndex, newEndIndex)]);
-                print(rules[i]);
-              }
-            }
-          }
-          // 此时为了解决后输入的#切换光标到之前输入的@或者#前方，更新之前输入@和#的索引。
-          for (int i = 0; i < rules.length; i++) {
-            print("进入");
-            // 当最新输入框内的文本对应不上之前的 @或者#值时。
-            if (rules[i].params != controller.text.substring(rules[i].startIndex, rules[i].endIndex)) {
-              print(rules[i]);
-              rules[i] = Rule(rules[i].startIndex + topicLength, rules[i].endIndex + topicLength, rules[i].params,
-                  rules[i].clickIndex, rules[i].isAt);
-              print(rules[i]);
-            }
-          }
-          // 存储规则
-          context
-              .read<ReleaseFeedInputNotifier>()
-              .addRules(Rule(topicIndex - 1, topicIndex + topicLength, topics[index].topic, index, false));
-          // 设置光标
-          var setCursor = TextSelection(
-            baseOffset: controller.text.length,
-            extentOffset: controller.text.length,
-          );
-          controller.selection = setCursor;
-          print(rules);
-          context.read<ReleaseFeedInputNotifier>().setTopicSearchStr("");
-          // 关闭视图
-          context.read<ReleaseFeedInputNotifier>().changeCallback("");
-        },
-        child: Container(
-          margin: EdgeInsets.only(left: 16),
-          height: 54,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 6,
-              ),
-              Text(
-                topics[index].topic,
-                style: AppStyle.textRegular16,
-              ),
-              SizedBox(
-                height: 2,
-              ),
-              Text(
-                topics[index].topicSubStr,
-                style: AppStyle.textSecondaryRegular12,
-              ),
-              SizedBox(
-                height: 6,
-              ),
-            ],
-          ),
-        ));
+    List<TopicDtoModel> list = context.watch<ReleaseFeedInputNotifier>().topicList;
+    // 搜索全局用户关键字
+    String searchTopicStr = context.watch<ReleaseFeedInputNotifier>().topicSearchStr;
+    return list.isNotEmpty
+        ? MediaQuery.removePadding(
+            removeTop: true,
+            context: context,
+            child: ListView.builder(
+              shrinkWrap: true,
+              controller: _scrollController,
+              itemBuilder: (context, index) {
+                if (index == list.length) {
+                  return LoadingView(
+                    loadText:
+                    searchTopicStr.isNotEmpty ? context.read<ReleaseFeedInputNotifier>().searchTopLoadText : loadText,
+                    loadStatus: searchTopicStr.isNotEmpty
+                        ? context.read<ReleaseFeedInputNotifier>().searchTopLoadStatus
+                        : loadStatus,
+                  );
+                } else if (index == list.length + 1) {
+                  return Container();
+                } else {
+                  return GestureDetector(
+                      // 点击空白区域响应事件
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        // #的文字长度
+                        int topicLength = list[index].name.length - 1;
+                        // 获取比较规则
+                        var rules = context.read<ReleaseFeedInputNotifier>().rules;
+                        // 获取实时搜索文本
+                        String searchStr = context.read<ReleaseFeedInputNotifier>().topicSearchStr;
+                        // 检测是否添加过
+                        if (rules.isNotEmpty) {
+                          for (Rule atRule in rules) {
+                            print(atRule.params);
+                            print(list[index].name);
+                            if (atRule.id != -1  && atRule.id == list[index].id && atRule.isAt == false) {
+                              ToastShow.show(msg: "已经添加过了", context: context, gravity: Toast.CENTER);
+                              return;
+                            } else if (atRule.id == -1 && atRule.params == list[index].name){
+                              ToastShow.show(msg: "已经添加过了", context: context, gravity: Toast.CENTER);
+                              return;
+                            }
+                          }
+                        }
+                        // 获取#的光标
+                        int topicIndex = context.read<ReleaseFeedInputNotifier>().topicCursorIndex;
+                        // #前的文字
+                        String topicBeforeStr = widget.controller.text.substring(0, topicIndex);
+                        // #后的文字
+                        String topicRearStr = "";
+                        print(searchStr);
+                        print("controller.text:${widget.controller.text}");
+                        print("topicBeforeStr$topicBeforeStr");
+                        if (searchStr != "" || searchStr.isNotEmpty) {
+                          print("topicIndex:$topicIndex");
+                          print("searchStr:$searchStr");
+                          print("controller.text:${widget.controller.text}");
+                          topicRearStr = widget.controller.text
+                              .substring(topicIndex + searchStr.length, widget.controller.text.length);
+                          print("topicRearStr:$topicRearStr");
+                        } else {
+                          topicRearStr = widget.controller.text.substring(topicIndex, widget.controller.text.length);
+                        }
+                        // 点击的文本
+                        String topicMiddleStr = list[index].name.substring(1, list[index].name.length);
+                        // 拼接修改输入框的值
+                        widget.controller.text = topicBeforeStr + topicMiddleStr + topicRearStr;
+                        context.read<ReleaseFeedInputNotifier>().getInputText(widget.controller.text);
+                        print("controller.text ${widget.controller.text}");
+                        // 这是替换输入的文本修改后面输入的#的规则
+                        if (searchStr != "" || searchStr.isNotEmpty) {
+                          print("话题替换");
+                          int oldLength = searchStr.length;
+                          int newLength = list[index].name.length - 1;
+                          int oldStartIndex = topicIndex;
+                          int diffLength = newLength - oldLength;
+                          for (int i = 0; i < rules.length; i++) {
+                            print(rules[i]);
+                            if (rules[i].startIndex >= oldStartIndex) {
+                              int newStartIndex = rules[i].startIndex + diffLength;
+                              int newEndIndex = rules[i].endIndex + diffLength;
+                              rules.replaceRange(i, i + 1, <Rule>[rules[i].copy(newStartIndex, newEndIndex)]);
+                              print(rules[i]);
+                            }
+                          }
+                        }
+                        // 此时为了解决后输入的#切换光标到之前输入的@或者#前方，更新之前输入@和#的索引。
+                        for (int i = 0; i < rules.length; i++) {
+                          print("进入");
+                          // 当最新输入框内的文本对应不上之前的 @或者#值时。
+                          if (rules[i].params !=
+                              widget.controller.text.substring(rules[i].startIndex, rules[i].endIndex)) {
+                            print(rules[i]);
+                            rules[i] = Rule(rules[i].startIndex + topicLength, rules[i].endIndex + topicLength,
+                                rules[i].params, rules[i].clickIndex, rules[i].isAt,rules[i].id);
+                            print(rules[i]);
+                          }
+                        }
+                        // 存储规则,
+                        context
+                            .read<ReleaseFeedInputNotifier>()
+                            .addRules(Rule(topicIndex - 1, topicIndex + topicLength, list[index].name, index, false, list[index].id));
+                        // 设置光标
+                        var setCursor = TextSelection(
+                          baseOffset: widget.controller.text.length,
+                          extentOffset: widget.controller.text.length,
+                        );
+                        widget.controller.selection = setCursor;
+                        print(rules);
+                        context.read<ReleaseFeedInputNotifier>().setTopicSearchStr("");
+                        // 关闭视图
+                        context.read<ReleaseFeedInputNotifier>().changeCallback("");
+                      },
+                      child: Container(
+                        margin: EdgeInsets.only(left: 16),
+                        height: 54,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: 6,
+                            ),
+                            Text(
+                              list[index].name,
+                              style: AppStyle.textRegular16,
+                            ),
+                            SizedBox(
+                              height: 2,
+                            ),
+                            Text(
+                              list[index].id != -1 ?
+                              "${StringUtil.getNumber(list[index].feedCount)}篇动态" : "创建新话题",
+                              style: AppStyle.textSecondaryRegular12,
+                            ),
+                            SizedBox(
+                              height: 6,
+                            ),
+                          ],
+                        ),
+                      ));
+                }
+              },
+              itemCount: list.length + 1,
+            ),
+          )
+        : Container();
   }
 }
 
@@ -589,22 +799,27 @@ class AtList extends StatefulWidget {
 class AtListState extends State<AtList> {
   List<FollowModel> followList = [];
 
-
   // 滑动控制器
   ScrollController _scrollController = new ScrollController();
+
   /*
   关注列表字段
    */
   // 请求下一页
   int lastTime;
+
   // 是否存在下页
   int hasNext;
+
   // 数据加载页数
   int dataPage = 1;
+
   // 加载中默认文字
   String loadText = "加载中...";
+
   // 加载状态
   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
+
 // /*
 // 搜索全局的字段
 //  */
@@ -620,7 +835,7 @@ class AtListState extends State<AtList> {
       // 搜索全局用户关键字
       String searchUserStr = context.read<ReleaseFeedInputNotifier>().atSearchStr;
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        if(searchUserStr.isNotEmpty) {
+        if (searchUserStr.isNotEmpty) {
           searchDataPage += 1;
           requestSearchFollowList(searchUserStr);
         } else {
@@ -631,10 +846,10 @@ class AtListState extends State<AtList> {
     });
     super.initState();
   }
+
   // 请求搜索关注用户
   // 此处调用都为第二页及以上数据第一页在输入框回调内调用
   requestSearchFollowList(String keyWork) async {
-
     List<FollowModel> searchFollowList = [];
     if (context.read<ReleaseFeedInputNotifier>().searchLoadStatus == LoadingStatus.STATUS_IDEL) {
       // 先设置状态，防止下拉就直接加载
@@ -643,30 +858,15 @@ class AtListState extends State<AtList> {
       });
     }
     if (context.read<ReleaseFeedInputNotifier>().searchHasNext == 0) {
-      context.read<ReleaseFeedInputNotifier>(). searchLoadText = "已加载全部好友";
+      context.read<ReleaseFeedInputNotifier>().searchLoadText = "已加载全部好友";
       context.read<ReleaseFeedInputNotifier>().searchLoadStatus = LoadingStatus.STATUS_COMPLETED;
-      setState(() {
-      });
+      setState(() {});
       print("返回不请求搜索数据");
       return;
     }
-    SearchUserModel model = await ProfileSearchUser(keyWork, 20,lastTime: context.read<ReleaseFeedInputNotifier>().searchLastTime);
-    // if (searchDataPage == 1) {
-    //   if (model.list.isNotEmpty) {
-    //     model.list.forEach((element) {
-    //       FollowModel followModel = FollowModel();
-    //       followModel.nickName = element.nickName + " ";
-    //       followModel.uid = element.uid;
-    //       followModel.avatarUri = element.avatarUri;
-    //       followList.add(followModel);
-    //     });
-    //     if (model.hasNext == 0) {
-    //       context.read<ReleaseFeedInputNotifier>().searchLoadText = "";
-    //       context.read<ReleaseFeedInputNotifier>().searchLoadStatus = LoadingStatus.STATUS_COMPLETED;
-    //     }
-    //   }
-    // } else
-      if (searchDataPage > 1 && context.read<ReleaseFeedInputNotifier>().searchLastTime != null) {
+    SearchUserModel model =
+        await ProfileSearchUser(keyWork, 20, lastTime: context.read<ReleaseFeedInputNotifier>().searchLastTime);
+    if (searchDataPage > 1 && context.read<ReleaseFeedInputNotifier>().searchLastTime != null) {
       if (model.list.isNotEmpty) {
         model.list.forEach((v) {
           FollowModel followModel = FollowModel();
@@ -679,25 +879,25 @@ class AtListState extends State<AtList> {
         context.read<ReleaseFeedInputNotifier>().searchLoadText = "加载中...";
       }
     }
-      // 记录搜索状态
+    // 记录搜索状态
     context.read<ReleaseFeedInputNotifier>().searchLastTime = model.lastTime;
-    context.read<ReleaseFeedInputNotifier>(). searchHasNext = model.hasNext;
+    context.read<ReleaseFeedInputNotifier>().searchHasNext = model.hasNext;
     setState(() {});
     // 把在输入框回调内的第一页数据插入
     searchFollowList.insertAll(0, context.read<ReleaseFeedInputNotifier>().followList);
     // 获取关注@数据
-    List<FollowModel> followList = [] ;
+    List<FollowModel> followList = [];
     context.read<ReleaseFeedInputNotifier>().backupFollowList.forEach((v) {
-      if (v.nickName.contains(keyWork))  {
+      if (v.nickName.contains(keyWork)) {
         followList.add(v);
       }
     });
     // 筛选全局的@用户数据
-    List<FollowModel> filterFollowList = followModelarrayDate(searchFollowList,followList);
+    List<FollowModel> filterFollowList = followModelarrayDate(searchFollowList, followList);
     filterFollowList.insertAll(0, followList);
     context.read<ReleaseFeedInputNotifier>().setFollowList(filterFollowList);
-
   }
+
   // 请求好友列表 /appuser/web/user/follow/queryBothFollowList  GetFollowBothList
   requestBothFollowList() async {
     if (loadStatus == LoadingStatus.STATUS_IDEL) {
@@ -708,9 +908,9 @@ class AtListState extends State<AtList> {
     }
     if (hasNext == 0) {
       setState(() {
-      loadText = "已加载全部好友";
-      loadStatus = LoadingStatus.STATUS_COMPLETED;
-      print("返回不请求数据");
+        loadText = "已加载全部好友";
+        loadStatus = LoadingStatus.STATUS_COMPLETED;
+        print("返回不请求数据");
       });
       return;
     }
@@ -761,8 +961,11 @@ class AtListState extends State<AtList> {
               itemBuilder: (context, index) {
                 if (index == list.length) {
                   return LoadingView(
-                    loadText: searchUserStr.isNotEmpty ?  context.read<ReleaseFeedInputNotifier>().searchLoadText : loadText ,
-                    loadStatus: searchUserStr.isNotEmpty ? context.read<ReleaseFeedInputNotifier>().searchLoadStatus : loadStatus ,
+                    loadText:
+                        searchUserStr.isNotEmpty ? context.read<ReleaseFeedInputNotifier>().searchLoadText : loadText,
+                    loadStatus: searchUserStr.isNotEmpty
+                        ? context.read<ReleaseFeedInputNotifier>().searchLoadStatus
+                        : loadStatus,
                   );
                 } else if (index == list.length + 1) {
                   return Container();
@@ -778,7 +981,7 @@ class AtListState extends State<AtList> {
                       // 检测是否添加过
                       if (rules.isNotEmpty) {
                         for (Rule rule in rules) {
-                          if (rule.clickIndex == index && rule.isAt == true) {
+                          if (rule.id == list[index].uid && rule.isAt == true) {
                             ToastShow.show(msg: "已经添加过了", context: context, gravity: Toast.CENTER);
                             return;
                           }
@@ -832,7 +1035,7 @@ class AtListState extends State<AtList> {
                           print("进入");
                           print(rules[i]);
                           rules[i] = Rule(rules[i].startIndex + AtLength, rules[i].endIndex + AtLength, rules[i].params,
-                              rules[i].clickIndex, rules[i].isAt, rules[i].atId);
+                              rules[i].clickIndex, rules[i].isAt, rules[i].id);
                           print(rules[i]);
                         }
                       }
@@ -1192,21 +1395,51 @@ class ReleaseFeedInputNotifier extends ChangeNotifier {
   // 存储未搜索时关注用户数据源
   List<FollowModel> backupFollowList = [];
 
+  // 话题数据源
+  List<TopicDtoModel> topicList = [];
+
+  // 存储未搜索时话题数据源
+  List<TopicDtoModel> backupTopicList = [];
+
   // 发布动态选择的图片视频
   SelectedMediaFiles selectedMediaFiles;
+
   /*
-搜索全局的字段
+  搜索全局用户的字段
  */
   // 请求下一页
   int searchLastTime;
+
   // 是否存在下页
   int searchHasNext;
+
   // 加载中默认文字
   String searchLoadText = "加载中...";
+
   // 加载状态
   LoadingStatus searchLoadStatus = LoadingStatus.STATUS_IDEL;
+
   // at滑动控制器
   ScrollController atScrollController;
+
+  /*
+  搜索话题的字段
+ */
+  // 请求下一页
+  double searchLastScore;
+
+  // 是否存在下页
+  int searchTopHasNext;
+
+  // 加载中默认文字
+  String searchTopLoadText = "加载中...";
+
+  // 加载状态
+  LoadingStatus searchTopLoadStatus = LoadingStatus.STATUS_IDEL;
+
+  // 话题滑动控制器
+  ScrollController topScrollController;
+
   getAtCursorIndex(int atIndex) {
     this.atCursorIndex = atIndex;
     notifyListeners();
@@ -1256,24 +1489,64 @@ class ReleaseFeedInputNotifier extends ChangeNotifier {
     this.backupFollowList = list;
     notifyListeners();
   }
+
+  setTopicList(List<TopicDtoModel> list) {
+    this.topicList = list;
+    notifyListeners();
+  }
+
+  setBackupTopicList(List<TopicDtoModel> list) {
+    this.backupTopicList = list;
+    notifyListeners();
+  }
+
   setSearchLastTime(int time) {
     this.searchLastTime = time;
     notifyListeners();
   }
+
   setSearchHasNext(int next) {
     this.searchHasNext = next;
     notifyListeners();
   }
+
   setSearchLoadText(String text) {
     this.searchLoadText = text;
     notifyListeners();
   }
+
   setSearchLoadStatus(LoadingStatus status) {
     this.searchLoadStatus = status;
     notifyListeners();
   }
+
   setAtScrollController(ScrollController controller) {
     this.atScrollController = controller;
+    notifyListeners();
+  }
+
+  setSearchLastScore(double time) {
+    this.searchLastScore = time;
+    notifyListeners();
+  }
+
+  setSearchTopHasNext(int next) {
+    this.searchTopHasNext = next;
+    notifyListeners();
+  }
+
+  setSearchTopLoadText(String text) {
+    this.searchTopLoadText = text;
+    notifyListeners();
+  }
+
+  setSearchTopLoadStatus(LoadingStatus status) {
+    this.searchTopLoadStatus = status;
+    notifyListeners();
+  }
+
+  setTopScrollController(ScrollController controller) {
+    this.topScrollController = controller;
     notifyListeners();
   }
 }
