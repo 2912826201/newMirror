@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/page/vip/pay_bottom_dialog.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 
@@ -47,6 +48,11 @@ class _vipHorizontalListState extends State<VipHorizontalList>{
                         oldIndex = index;
                       });
                     }
+                    PayBottomSheet(
+                      context: context,
+                      title: "连续包月",
+                      payNumber:199);
+
                   },
                   child: item(index),),
                 SizedBox(width: 9,)

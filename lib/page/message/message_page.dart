@@ -44,7 +44,10 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     _getUnReadMsgCount()async{
       Unreads model = await getUnReads();
         if(model!=null){
-            context.read<UnReadMessageNotifier>().changeUnReadMsg(comments:model.comment,ats:model.at,lauds: model.laud);
+          print('comment============================${model.comment}');
+          print('laud============================${model.laud}');
+          print('at============================${model.at}');
+          context.read<UnReadMessageNotifier>().changeUnReadMsg(comments:model.comment,ats:model.at,lauds: model.laud);
           }
     }
   @override
@@ -170,7 +173,6 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                     return InteractiveNoticePage(type: type,);
                   })).then((value){
-                      isFirst = false;
                     _getUnReadMsgCount();
                   });
 
@@ -433,7 +435,7 @@ class UnReadMessageNotifier extends ChangeNotifier{
   int at;
   int laud;
 
-  UnReadMessageNotifier({this.comment,this.at,this.laud});
+  UnReadMessageNotifier({this.comment = 0,this.at = 0,this.laud = 0});
 
   void changeUnReadMsg({int comments,int ats,int lauds}){
     comment = comments;
