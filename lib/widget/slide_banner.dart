@@ -39,10 +39,8 @@ class _SlideBannerState extends State<SlideBanner> {
 
   // 指示器横向布局
   final scrollDirection = Axis.horizontal;
-  double photoHeight;
   @override
   void initState() {
-    photoHeight = setAspectRatio(widget.height);
     super.initState();
     controller = AutoScrollController(
         viewportBoundaryGetter: () => Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
@@ -223,16 +221,16 @@ class _SlideBannerState extends State<SlideBanner> {
                 },
                 child: Container(
                   width: width,
-                  height: photoHeight
+                  height: setAspectRatio(widget.height),
                   // setAspectRatio(widget.height)
-                  ,
+
                   child: Swiper(
                     itemCount: widget.model.picUrls.length,
                     itemBuilder: (BuildContext context, int index) {
                       return Hero(
                           tag: widget.isComplex ? "complex${widget.model.id}" : "${widget.model.id}",
                           child:
-                          buildShowItemContainer(index,photoHeight));
+                          buildShowItemContainer(index,setAspectRatio(widget.height),));
                       // buildOpenContainerItem(index);
                     },
                     loop: false,

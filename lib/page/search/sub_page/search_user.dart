@@ -241,21 +241,22 @@ class searchState extends State<SearchUserItem> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          InkWell(
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                return ProfileDetailPage(
+                  userId: widget.model.uid,
+                );
+              })).then((value) {
+                //每次从个人主页退回时去请求用户的接口对比当前的关系
+                _getUserInfo(id: widget.model.uid);
+              });
+            },
+            child: Row(
+              children: [
           Container(
             alignment: Alignment.centerLeft,
-            child: InkWell(
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                  return ProfileDetailPage(
-                    userId: widget.model.uid,
-                  );
-                })).then((value) {
-                  //每次从个人主页退回时去请求用户的接口对比当前的关系
-                  _getUserInfo(id: widget.model.uid);
-                });
-              },
-              //头像
-              child: ClipOval(
+            child: ClipOval(
                 child: CachedNetworkImage(
                   height: 38,
                   width: 38,
@@ -268,7 +269,7 @@ class searchState extends State<SearchUserItem> {
                     ),
                 ),
               ),
-            ),
+
           ),
           SizedBox(
             width: 11,
@@ -279,9 +280,8 @@ class searchState extends State<SearchUserItem> {
               height: 48,
               child: Column(
                 children: [
-                  Expanded(
-                    flex: 1,
-                    child: Container(
+                  Spacer(),
+                  Container(
                       alignment: Alignment.centerLeft,
                       child: InkWell(
                         onTap: () {
@@ -303,11 +303,9 @@ class searchState extends State<SearchUserItem> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       )),
-                  ),
+                    Spacer(),
                   //签名
-                  widget.model.description != null?Expanded(
-                    flex: 1,
-                    child: Container(
+                  widget.model.description != null?Container(
                       alignment: Alignment.centerLeft,
                       child: Text(
                         widget.model.description,
@@ -315,12 +313,13 @@ class searchState extends State<SearchUserItem> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                  ):Container(height: 0,)
+                    ):Container(height: 0,),
+                  Spacer(),
                 ],
               ),
             ),
           ),
+          ],)),
           Spacer(),
           !isMySelf?InkWell(
             onTap: () {

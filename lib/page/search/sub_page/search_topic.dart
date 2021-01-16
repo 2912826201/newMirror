@@ -11,6 +11,7 @@ import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/topic/topic_detail.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
 
 class SearchTopic extends StatefulWidget {
   SearchTopic({Key key, this.keyWord, this.focusNode,this.textController}) : super(key: key);
@@ -235,7 +236,7 @@ class SearchTopiciItem extends StatelessWidget {
             ),
             SizedBox(height: 2),
             Text(
-              "${model.feedCount}篇动态",
+              "${StringUtil.getNumber(model.feedCount)}篇动态",
               style: AppStyle.textHintRegular12,
             ),
             // SizedBox(height: 6),

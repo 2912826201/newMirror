@@ -5,34 +5,43 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
+import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/vip_grid_list.dart';
 import 'package:mirror/widget/vip_horizontal_list.dart';
 import 'package:provider/provider.dart';
 
-class VipPage extends StatefulWidget {
+enum VipState{
+  //续费
+  RENEW,
+  //未开通
+  NOTOPEN
+}
+//会员未开通页
+class VipNotOpenPage extends StatefulWidget {
+
+  VipState type;
+  VipNotOpenPage({this.type});
   @override
   State<StatefulWidget> createState() {
     return _vipPageState();
   }
 }
 
-class _vipPageState extends State<VipPage> {
+class _vipPageState extends State<VipNotOpenPage> {
   ScrollController controller = ScrollController();
   final String whiteBack = "images/resource/2.0x/white_return@2x.png";
   final String blackBack = "images/resource/2.0x/return2x.png";
   final String serviceText =
       "付款：自动续费商品包括“连续包年/连续包月”，您确认购买后，会从您的偏账号账户扣费； 取消续订：如果需要续订，请在当前订阅周期前24小时以前，手动关闭自动续费功能，到期前24小时内取消，将会收取订阅费用。";
-
+  int lastTime = 12123434545455;
   @override
   void initState() {
     super.initState();
     controller.addListener(() {
       if (controller.offset >= 88) {
-        context.read<ProfilePageNotifier>().changeBackImage(blackBack);
-        context.read<ProfilePageNotifier>().changeTitleColor(AppColor.black);
+        context.read<ProfilePageNotifier>().changeTitleColor(AppColor.white);
       } else {
-        context.read<ProfilePageNotifier>().changeBackImage(whiteBack);
         context.read<ProfilePageNotifier>().changeTitleColor(AppColor.transparent);
       }
     });
@@ -49,7 +58,20 @@ class _vipPageState extends State<VipPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: null,
+      appBar: AppBar(
+        backgroundColor: AppColor.black,
+        leading: InkWell(
+          child: Container(
+            margin: EdgeInsets.only(left: 16),
+            child: Image.asset("images/resource/2.0x/white_return@2x.png"),
+          ),
+          onTap: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Text("会员中心",style: TextStyle(fontWeight: FontWeight.w500,fontSize: 15,color:context.watch<ProfilePageNotifier>().titleColor),),
+        centerTitle: true,
+      ),
       backgroundColor: AppColor.white,
       body: Container(
         height: ScreenUtil.instance.height,
@@ -110,38 +132,10 @@ class _vipPageState extends State<VipPage> {
   }
 
   Widget _body() {
-    return NestedScrollView(
-        controller: controller,
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return <Widget>[
-            SliverAppBar(
-              title: Text(context.watch<ProfileNotifier>().profile.nickName,
-                  style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                      color: context.watch<ProfilePageNotifier>().titleColor)),
-              pinned: true,
-              forceElevated: false,
-              leading: InkWell(
-                  onTap: () {
-                    Navigator.pop(this.context);
-                  },
-                  child: Container(
-                    margin: EdgeInsets.only(left: 16),
-                    child: Image.asset(context.watch<ProfilePageNotifier>().backImage),
-                  )),
-              backgroundColor: AppColor.white,
-              expandedHeight: 132,
-              flexibleSpace: FlexibleSpaceBar(background: _appBarBackGround()),
-            ),
-          ];
-        },
-        body: MediaQuery.removePadding(
-          context: context,
-          removeTop: true,
-          child: Container(
-            child: ListView(
+    return ListView(
+            controller: controller,
               children: [
+                _avatarName(),
                 SizedBox(
                   height: 24,
                 ),
@@ -165,10 +159,10 @@ class _vipPageState extends State<VipPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      widget.type==VipState.NOTOPEN?Text(
                         "这是文案文案文案文案文案文案文案文案",
                         style: AppStyle.textSecondaryRegular14,
-                      ),
+                      ):Container(),
                     ],
                   ),
                 ),
@@ -194,7 +188,7 @@ class _vipPageState extends State<VipPage> {
                   height: 16,
                 ),
                 //会员特权
-                VipGridList(),
+                VipGridList(vipType: VipType.NOTOPEN,),
                 SizedBox(
                   height: 24,
                 ),
@@ -220,71 +214,62 @@ class _vipPageState extends State<VipPage> {
                   height: ScreenUtil.instance.bottomBarHeight + 49,
                 ),
               ],
-            ),
-          ),
-        ));
-  }
+            );
 
-  Widget _appBarBackGround() {
+  }
+    Widget _avatarName(){
     return Container(
-      height: 132 + ScreenUtil.instance.statusBarHeight,
-      width: ScreenUtil.instance.width,
-      padding: EdgeInsets.only(left: 16, right: 16),
+      height: 88,
       color: AppColor.black,
-      child: Column(
-        children: [
-          SizedBox(
-            height: 44 + ScreenUtil.instance.statusBarHeight,
-          ),
-          Container(
-            height: 88,
-            child: Center(
-              child: Row(
-                children: [
-                  Container(
-                    height: 38,
-                    width: 38,
-                    child: ClipOval(
-                      child: CachedNetworkImage(
-                        imageUrl: context.read<ProfileNotifier>().profile.avatarUri,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Image.asset(
-                          "images/test.png",
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
+      padding: EdgeInsets.only(left: 16),
+      child: Center(
+        child: Row(
+          children: [
+            Container(
+              height: 38,
+              width: 38,
+              child: ClipOval(
+                child: CachedNetworkImage(
+                  imageUrl: context.watch<ProfileNotifier>().profile.avatarUri,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Image.asset(
+                    "images/test.png",
+                    fit: BoxFit.cover,
                   ),
-                  SizedBox(
-                    width: 12,
-                  ),
-                  Container(
-                    width: ScreenUtil.instance.screenWidthDp * 0.64,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Spacer(),
-                        Text(
-                          context.read<ProfileNotifier>().profile.nickName,
-                          style: AppStyle.whiteMedium15,
-                        ),
-                        SizedBox(
-                          height: 6,
-                        ),
-                        Text(
-                          "未开通会员",
-                          style: AppStyle.whiteRegular12,
-                        ),
-                        Spacer(),
-                      ],
-                    ),
-                  )
-                ],
+                ),
               ),
             ),
-          )
-        ],
+            SizedBox(
+              width: 12,
+            ),
+            Container(
+              width: ScreenUtil.instance.screenWidthDp * 0.64,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Spacer(),
+                  Text(
+                    context.watch<ProfileNotifier>().profile.nickName,
+                    style: AppStyle.whiteMedium15,
+                  ),
+                  SizedBox(
+                    height: 6,
+                  ),
+                  widget.type==VipState.NOTOPEN?Text("未开通会员", style: AppStyle.textHintRegular13,)
+                  :RichText(text: TextSpan(
+                      text:"${DateUtil.generateFormatDate(lastTime)}到期  ",
+                      style: TextStyle(fontSize: 13,fontWeight: FontWeight.w400,color: AppColor.bgVip2),
+                    children: [
+                      TextSpan(text:"购买后有效期延长",style: AppStyle.textHintRegular13),
+                    ]
+                  )),
+                  Spacer(),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
-  }
+    }
 }
