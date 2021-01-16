@@ -1,12 +1,12 @@
 
-class FansListModel{
+class BuddyListModel{
   int hasNext;
   int lastTime;
   int lastId;
   int lastScore;
-  List<FansModel> list;
-  FansListModel({this.list,this.lastTime,this.hasNext,this.lastId,this.lastScore});
-  FansListModel.fromJson(dynamic json) {
+  List<BuddyModel> list;
+  BuddyListModel({this.list,this.lastTime,this.hasNext,this.lastId,this.lastScore});
+  BuddyListModel.fromJson(dynamic json) {
     hasNext = json["hasNext"];
     lastTime = json["lastTime"];
     lastId = json["lastId"];
@@ -14,7 +14,7 @@ class FansListModel{
     if (json["list"] != null) {
       list = [];
       json["list"].forEach((v) {
-        list.add(FansModel.fromJson(v));
+        list.add(BuddyModel.fromJson(v));
       });
     }
   }
@@ -29,32 +29,28 @@ class FansListModel{
     return map;
   }
 }
-class FansModel{
+class BuddyModel{
   int uid;
   String avatarUri;
   String nickName;
-  String remarkName;
   String description;
-  int isFallow;
-  FansModel({this.uid,this.avatarUri,this.nickName,this.description,this.isFallow,this.remarkName});
+  int relation;
+  BuddyModel({this.uid,this.avatarUri,this.nickName,this.description,this.relation});
 
-  FansModel.fromJson(Map<String, dynamic> json) {
+  BuddyModel.fromJson(Map<String, dynamic> json) {
     uid = json["uid"];
     avatarUri = json["avatarUri"];
     nickName = json["nickName"];
-    remarkName = json["remarkName"];
     description = json["description"];
-    isFallow = json["isFallow"];
-
+    relation = json["relation"];
   }
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
     map["uid"] = uid;
     map["avatarUri"] = avatarUri;
     map["nickName"] = nickName;
-    map["remarkName"] = remarkName;
     map["description"] = description;
-    map["isFallow"] = isFallow;
+    map["relation"] = relation;
     return map;
   }
 }

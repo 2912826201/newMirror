@@ -17,12 +17,12 @@ class VipNamePlateHorazontalList extends StatefulWidget{
   VipNamePlateHorazontalList({this.index,this.scrollController,this.pageController});
   @override
   State<StatefulWidget> createState() {
-    return _vipNamePlateState();
+    return _VipNamePlateState();
   }
 
 }
 
-class _vipNamePlateState extends State<VipNamePlateHorazontalList>{
+class _VipNamePlateState extends State<VipNamePlateHorazontalList>{
   double itemWidth = 38;
   int oldIndex;
   ScrollController controller;
@@ -65,10 +65,11 @@ class _vipNamePlateState extends State<VipNamePlateHorazontalList>{
                width: 93,
                height: 88,
 
-               child: Column(
+               child: Center(
+                 child: Column(
                  crossAxisAlignment: CrossAxisAlignment.center,
                  children: [
-                  context.watch<VipMoveNotifier>().choseIndex==index?Container(height: 0,):Spacer(),
+                  Spacer(),
                    ClipOval(
                      child: Container(
                        height:context.watch<VipMoveNotifier>().choseIndex==index?49:38,
@@ -76,22 +77,22 @@ class _vipNamePlateState extends State<VipNamePlateHorazontalList>{
                        color: AppColor.bgVip1,
                      )
                    ),
-                   SizedBox(height: 10,),
-                   Text(itemName[index],style:context.watch<VipMoveNotifier>().choseIndex==index?AppStyle.textMediumRed13:AppStyle.textRegularRed13,),
                    Spacer(),
+                   Text(itemName[index],style:context.watch<VipMoveNotifier>().choseIndex==index?AppStyle.textMediumRed13:AppStyle.textRegularRed13,),
+                   SizedBox(height: 2,),
                    Opacity(
                      opacity:context.watch<VipMoveNotifier>().choseIndex==index?1:0,
                      child: ClipPath(
                        clipper: TrianglePath(),
                        child: Container(
-                         height: 6,
+                         height: 7,
                          width: 13,
                          color: AppColor.white,
                        ),
                      ),),
 
                  ],
-               ),
+               ),),
              ),);
        }
        ),

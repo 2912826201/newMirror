@@ -7,7 +7,7 @@ import 'package:mirror/util/screen_util.dart';
 typedef OnItemClickListener = void Function(PayTheWay pay);
 enum PayTheWay { WECHAT, ZHIFUBAO }
 
-Future PayBottomSheet(
+Future payBottomSheet(
     {@required BuildContext context,
     @required String title,
     @required int payNumber}) async {
@@ -34,11 +34,11 @@ class PayBottomDialog extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _payBottomDialogState();
+    return _PayBottomDialogState();
   }
 }
 
-class _payBottomDialogState extends State<PayBottomDialog> {
+class _PayBottomDialogState extends State<PayBottomDialog> {
   bool weChat = true;
   bool zhifuBao = false;
   PayTheWay payTheWay;

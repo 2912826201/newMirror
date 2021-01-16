@@ -1,9 +1,8 @@
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/profile/add_remarks_model.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
-import 'package:mirror/data/model/profile/fans_list_model.dart';
+import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/model/profile/fitness_entry_model.dart';
-import 'package:mirror/data/model/profile/follow_list_model.dart';
 import 'package:mirror/data/model/profile/profile_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/model/profile/topic_list_model.dart';
@@ -249,7 +248,7 @@ Future<SearchUserModel> ProfileSearchUser(String key, int size, {String uids, in
 }
 
 ///关注列表
-Future<FollowListModel> GetFollowList(int size, {String uid, int lastTime}) async {
+Future<BuddyListModel> GetFollowList(int size, {String uid, int lastTime}) async {
   Map<String, dynamic> map = Map();
   if (uid != null) {
     map["uid"] = uid;
@@ -261,8 +260,9 @@ Future<FollowListModel> GetFollowList(int size, {String uid, int lastTime}) asyn
   BaseResponseModel responseModel = await requestApi(FOLLOW_LIST, map);
   if (responseModel.isSuccess) {
     print('用户关注列表请求接口=============================');
-    FollowListModel model;
-    model = FollowListModel.fromJson(responseModel.data);
+    BuddyListModel model;
+    model = BuddyListModel.fromJson(responseModel.data);
+
     return model;
   } else {
     print('用户关注列表请求接口失败============================================');
@@ -271,7 +271,7 @@ Future<FollowListModel> GetFollowList(int size, {String uid, int lastTime}) asyn
 }
 
 ///好友列表--互相关注列表
-Future<FollowListModel> GetFollowBothList(int size, {String uid, int lastTime}) async {
+Future<BuddyListModel> GetFollowBothList(int size, {String uid, int lastTime}) async {
   Map<String, dynamic> map = Map();
   if (uid != null) {
     map["uid"] = uid;
@@ -283,8 +283,8 @@ Future<FollowListModel> GetFollowBothList(int size, {String uid, int lastTime}) 
   BaseResponseModel responseModel = await requestApi(FOLLOW_BOTH_LIST, map);
   if (responseModel.isSuccess) {
     print('用户关注列表请求接口=============================');
-    FollowListModel model;
-    model = FollowListModel.fromJson(responseModel.data);
+    BuddyListModel model;
+    model = BuddyListModel.fromJson(responseModel.data);
     return model;
   } else {
     print('用户关注列表请求接口失败============================================');
@@ -318,7 +318,7 @@ Future<SearchUserModel> searchFollowUser(String key, int size, {String uids, int
 }
 
 ///粉丝列表
-Future<FansListModel> GetFansList(int LastTime,int size,{int uid})async{
+Future<BuddyListModel> GetFansList(int LastTime,int size,{int uid})async{
   Map<String,dynamic> map = Map();
   map["LastTime"] = LastTime;
   map["size"] = size;
@@ -328,8 +328,8 @@ Future<FansListModel> GetFansList(int LastTime,int size,{int uid})async{
   BaseResponseModel responseModel = await requestApi(FANS_LIST,map);
   if(responseModel.isSuccess){
     print('用户粉丝列表请求接口=============================');
-    FansListModel model;
-    model = FansListModel.fromJson(responseModel.data);
+    BuddyListModel model;
+    model = BuddyListModel.fromJson(responseModel.data);
     return model;
   }else{
     print('用户粉丝列表请求接口失败============================================');

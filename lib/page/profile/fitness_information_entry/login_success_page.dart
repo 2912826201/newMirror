@@ -15,11 +15,11 @@ import 'package:provider/provider.dart';
 class LoginSucessPage extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
-   return _loginSucessState();
+   return _LoginSucessState();
   }
 
 }
-class _loginSucessState extends State<LoginSucessPage>{
+class _LoginSucessState extends State<LoginSucessPage>{
   String username;
   @override
   void initState() {

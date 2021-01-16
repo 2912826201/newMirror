@@ -15,11 +15,11 @@ import 'package:provider/provider.dart';
 class VipOpenPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _vipOpenPage();
+    return _VipOpenPage();
   }
 }
 
-class _vipOpenPage extends State<VipOpenPage> {
+class _VipOpenPage extends State<VipOpenPage> {
   double textWidth;
   int lastTime = 1432121322112;
 

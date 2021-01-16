@@ -13,11 +13,11 @@ import 'package:provider/provider.dart';
 class FitnessLevelPage extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
-    return _fitnessLevelState();
+    return _FitnessLevelState();
   }
 
 }
-class _fitnessLevelState extends State<FitnessLevelPage>{
+class _FitnessLevelState extends State<FitnessLevelPage>{
   List<SubTagModel> levelList;
   int beforIndex;
   @override

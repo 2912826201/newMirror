@@ -9,11 +9,11 @@ import 'package:mirror/util/screen_util.dart';
 class AboutPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-        return _aboutPageState();
+        return _AboutPageState();
   }
 
 }
-class _aboutPageState extends State<AboutPage>{
+class _AboutPageState extends State<AboutPage>{
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;

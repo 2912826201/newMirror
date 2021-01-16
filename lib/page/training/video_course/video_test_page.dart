@@ -37,6 +37,7 @@ class VideoTestState extends State<VideoTestPage> {
               : Container(),
         ),
         floatingActionButton: FloatingActionButton(
+          heroTag: "唯一标识video",
           onPressed: () {
             setState(() {
               _controller.value.isPlaying

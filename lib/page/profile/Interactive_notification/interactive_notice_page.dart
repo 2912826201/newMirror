@@ -7,6 +7,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/query_msglist_model.dart';
+import 'package:mirror/page/feed/feed_detail_page.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -20,11 +21,11 @@ class InteractiveNoticePage extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _interactiveNoticeState();
+    return _InteractiveNoticeState();
   }
 }
 
-class _interactiveNoticeState extends State<InteractiveNoticePage> {
+class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   RefreshController controller = RefreshController();
   int lastTime;
   int listPage = 1;
@@ -380,7 +381,12 @@ class _interactiveNoticeItemState extends State<InteractiveNoticeItem> {
           ),
           Spacer(),
           !feedIsDelete
-              ? Container(
+              ? InkWell(
+                onTap: (){
+                 /* Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                  }));*/
+                },
+            child: Container(
                   alignment: Alignment.topRight,
                   child: ClipRect(
                     child: CachedNetworkImage(
@@ -394,7 +400,7 @@ class _interactiveNoticeItemState extends State<InteractiveNoticeItem> {
                       ),
                     ),
                   ),
-                )
+                ),)
               : Container(
                   height: 38,
                   width: 38,

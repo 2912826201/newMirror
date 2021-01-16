@@ -32,11 +32,11 @@ import 'package:mirror/widget/loading.dart';
 class EditInformation extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _editInformationState();
+    return _EditInformationState();
   }
 }
 
-class _editInformationState extends State<EditInformation> {
+class _EditInformationState extends State<EditInformation> {
   String userName = "--";
   int userSex;
   String userSexText = "--";

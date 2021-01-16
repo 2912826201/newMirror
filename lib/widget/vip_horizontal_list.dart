@@ -11,11 +11,11 @@ import 'package:mirror/util/text_util.dart';
 class VipHorizontalList extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
-      return _vipHorizontalListState();
+      return _VipHorizontalListState();
   }
 
 }
-class _vipHorizontalListState extends State<VipHorizontalList>{
+class _VipHorizontalListState extends State<VipHorizontalList>{
   Color itemBackGround = AppColor.white;
   String titleText = "首月优惠dwwdww";
   double titleWidth;
@@ -39,16 +39,12 @@ class _vipHorizontalListState extends State<VipHorizontalList>{
               children: [
                 InkWell(
                   onTap: (){
-                    if(oldIndex==index){
-                      setState(() {
-                        oldIndex=100;
-                      });
-                    }else{
+                    if(oldIndex!=index){
                       setState(() {
                         oldIndex = index;
                       });
                     }
-                    PayBottomSheet(
+                    payBottomSheet(
                       context: context,
                       title: "连续包月",
                       payNumber:199);

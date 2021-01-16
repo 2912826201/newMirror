@@ -13,15 +13,11 @@ import 'package:provider/provider.dart';
 class FitnessTargetPage extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
-   return _fitnessTargetState();
+   return _FitnessTargetState();
   }
 
 }
-class _fitnessTargetState extends State<FitnessTargetPage>{
-  bool chose1 = false;
-  bool chose2 = false;
-  bool chose3 = false;
-  bool chose4 = false;
+class _FitnessTargetState extends State<FitnessTargetPage>{
   List<SubTagModel> targetList = [];
   int beforIndex;
   @override

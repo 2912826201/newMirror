@@ -18,11 +18,11 @@ class VipNamePlatePage extends StatefulWidget{
   VipNamePlatePage({this.index});
   @override
   State<StatefulWidget> createState() {
-   return _vipNamePlateState();
+   return _VipNamePlateState();
   }
 
 }
-class _vipNamePlateState extends State<VipNamePlatePage>{
+class _VipNamePlateState extends State<VipNamePlatePage>{
   PageController pageController;
   ScrollController scrollController;
   int oldIndex;
@@ -41,6 +41,7 @@ class _vipNamePlateState extends State<VipNamePlatePage>{
   @override
   void initState() {
     super.initState();
+    //这里将上个页面点击的索引给到初始索引
     pageController = PageController(initialPage: widget.index);
     if(widget.index<4){
       scrollController  = ScrollController();

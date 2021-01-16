@@ -23,14 +23,13 @@ class SearchUser extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return searchUserState();
+    return _SearchUserState();
   }
 }
 
-class searchUserState extends State<SearchUser> {
+class _SearchUserState extends State<SearchUser> {
   List<UserModel> modelList = [];
   bool isFollow = false;
-  LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
   int _lastTime;
   int hashNext;
   int dataPage = 1;
@@ -192,11 +191,11 @@ class SearchUserItem extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return searchState();
+    return _SearchState();
   }
 }
 
-class searchState extends State<SearchUserItem> {
+class _SearchState extends State<SearchUserItem> {
   bool isFollow = false;
   bool isMySelf = false;
     //获取当前item用户的信息
@@ -247,10 +246,7 @@ class searchState extends State<SearchUserItem> {
                 return ProfileDetailPage(
                   userId: widget.model.uid,
                 );
-              })).then((value) {
-                //每次从个人主页退回时去请求用户的接口对比当前的关系
-                _getUserInfo(id: widget.model.uid);
-              });
+              }));
             },
             child: Row(
               children: [
@@ -283,18 +279,7 @@ class searchState extends State<SearchUserItem> {
                   Spacer(),
                   Container(
                       alignment: Alignment.centerLeft,
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                            return ProfileDetailPage(
-                              userId: widget.model.uid,
-                            );
-                          })).then((value){
-                            _getUserInfo(id: widget.model.uid);
-                          });
-                        },
-                        //昵称
-                        child: Text(
+                      child:Text(
                           widget.model.nickName != null
                             ? widget.model.nickName
                             : " ",
@@ -302,8 +287,8 @@ class searchState extends State<SearchUserItem> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                      )),
-                    Spacer(),
+                      ),
+                  widget.model.description != null?Spacer():Container(),
                   //签名
                   widget.model.description != null?Container(
                       alignment: Alignment.centerLeft,
