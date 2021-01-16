@@ -13,11 +13,11 @@ class VipNamePlatePageView  extends StatefulWidget{
   VipNamePlatePageView({this.namePlateList,this.pageController,this.scrollController});
   @override
   State<StatefulWidget> createState() {
-    return _vipNamePlatePageState();
+    return _VipNamePlatePageState();
   }
 
 }
-class _vipNamePlatePageState extends State<VipNamePlatePageView>{
+class _VipNamePlatePageState extends State<VipNamePlatePageView>{
   List<String> contentList = [
     "彰显尊贵身份",
     "量身定制个人专属计划",
@@ -59,11 +59,11 @@ class _vipNamePlatePageState extends State<VipNamePlatePageView>{
           controller: widget.pageController,
           children: widgetList,
           onPageChanged: (index){
-                if(index<3){
+                if(index<1){
                   context.read<VipMoveNotifier>().changeListOldIndex(index);
                 }else{
                   context.read<VipMoveNotifier>().changeListOldIndex(index);
-                  double offset = (index-3)*93.5;
+                  double offset = (index-1.5)*93.5;
                   widget.scrollController.animateTo(offset, duration: Duration(milliseconds: 400), curve:Curves.ease);
                 }
           },

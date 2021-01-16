@@ -105,7 +105,6 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
           height: 0.5,
           color: AppColor.bgWhite.withOpacity(0.65),
         ),
-        _remarks(width),
         Container(
           width: width,
           height: 12,
@@ -182,31 +181,6 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
     );
   }
 
-  Widget _remarks(double width){
-    return  Container(
-      width: width,
-      height: 48,
-      padding: EdgeInsets.only(left: 16,right: 16),
-      child: InkWell(
-        onTap: (){
-          AppRouter.navigateToProfileAddRemarks(context,widget.userName,widget.userId);
-        },
-        child: Row(
-        children: [
-          Center(
-            child: Text("修改备注",style: AppStyle.textRegular16,),
-          ),
-          Expanded(child: Container()),
-          Center(
-            child:Text(_smarks,style: AppStyle.textHintRegular16,) ,),
-          SizedBox(width: 17,),
-          Center(
-            child: Text(">",style: AppStyle.textHintRegular16,),
-          )
-        ],
-      ),)
-    );
-  }
     ///取消关注
   _cancelFollow()async{
     int cancelResult = await ProfileCancelFollow(widget.userId);

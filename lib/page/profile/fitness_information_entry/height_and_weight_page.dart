@@ -13,11 +13,11 @@ import 'package:provider/provider.dart';
 class HeightAndWeightPage extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
-    return _heightAndWeightState();
+    return _HeightAndWeightState();
   }
 
 }
-class _heightAndWeightState extends State<HeightAndWeightPage>{
+class _HeightAndWeightState extends State<HeightAndWeightPage>{
     int weight;
     int heights;
     FocusNode blankNode = FocusNode();

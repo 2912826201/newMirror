@@ -8,7 +8,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
-import 'package:mirror/data/model/profile/follow_list_model.dart';
+import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -75,8 +75,8 @@ class _FriendsPageState extends State<FriendsPage> {
   LoadingStatus loadingStatus = LoadingStatus.STATUS_IDEL;
 
   //好友列表
-  FollowListModel followListModel = new FollowListModel();
-  List<FollowModel> userFollowList = [];
+  BuddyListModel followListModel = new BuddyListModel();
+  List<BuddyModel> userFollowList = [];
 
   //群聊列表
   List<Map<String, dynamic>> groupMapList = [];
@@ -414,7 +414,7 @@ class _FriendsPageState extends State<FriendsPage> {
 
   //对用户的名字格式化处理
   void addUserNameData(String name, int index,
-      {ChatGroupUserModel userModel, FollowModel followModel, Map<String, dynamic> groupMap}) {
+      {ChatGroupUserModel userModel, BuddyModel followModel, Map<String, dynamic> groupMap}) {
     Friends friendData = Friends();
     friendData.uid = -1;
     // 转换拼音再截取搜字母转大写
@@ -529,7 +529,7 @@ class _FriendsPageState extends State<FriendsPage> {
 
   //获取网络数据好友
   void getNetData() async {
-    FollowListModel listModel = await GetFollowBothList(100, lastTime: followListModel.lastTime);
+    BuddyListModel listModel = await GetFollowBothList(100, lastTime: followListModel.lastTime);
     followListModel.list.addAll(listModel.list);
     followListModel.lastTime = listModel.lastTime;
 
