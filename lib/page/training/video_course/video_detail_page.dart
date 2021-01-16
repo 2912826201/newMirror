@@ -1332,18 +1332,17 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     );
 
     if (!isDownLoading) {
-      if (!isLoggedIn || !bindingTerminal) {
-        childrenArray.add(
-            Expanded(child: SizedBox(
-              child: GestureDetector(
-                child: getBtnUi(
-                    false, "试听", textStyle, double.infinity, 40, margin_32),
-                onTap: () {
-                  print("绑定了终端");
-                  ToastShow.show(msg: "使用终端训练", context: context);
-                },
-              ),
-            ))
+      if (!isLoggedIn) {
+        childrenArray.add(Expanded(
+            child: SizedBox(
+          child: GestureDetector(
+            child: getBtnUi(false, "试听", textStyle, double.infinity, 40, margin_32),
+            onTap: () {
+              print("绑定了终端");
+              ToastShow.show(msg: "使用终端训练", context: context);
+            },
+          ),
+        ))
         );
       } else {
         childrenArray.add(
@@ -1370,19 +1369,35 @@ class VideoDetailPageState extends State<VideoDetailPage> {
               ))
           );
         } else {
-          childrenArray.add(
-              Expanded(child: SizedBox(
-                child: GestureDetector(
-                  child: getBtnUi(
-                      false, "使用终端训练", textStyle, double.infinity, 40,
-                      margin_32),
-                  onTap: () {
-                    print("绑定了终端");
-                    ToastShow.show(msg: "使用终端训练", context: context);
-                  },
-                ),
-              ))
-          );
+          if (bindingTerminal) {
+            childrenArray.add(
+                Expanded(child: SizedBox(
+                  child: GestureDetector(
+                    child: getBtnUi(
+                        false, "使用终端训练", textStyle, double.infinity, 40,
+                        margin_32),
+                    onTap: () {
+                      print("绑定了终端");
+                      ToastShow.show(msg: "使用终端训练", context: context);
+                    },
+                  ),
+                ))
+            );
+          } else {
+            childrenArray.add(
+                Expanded(child: SizedBox(
+                  child: GestureDetector(
+                    child: getBtnUi(
+                        false, "登陆终端使用终端播放", textStyle, double.infinity, 40,
+                        margin_32),
+                    onTap: () {
+                      print("没有绑定终端");
+                      ToastShow.show(msg: "登陆终端", context: context);
+                    },
+                  ),
+                ))
+            );
+          }
         }
       }
     } else {
