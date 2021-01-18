@@ -124,10 +124,6 @@ class SingletonForWholePages {
   //ifPage的key
   GlobalKey IfPagekey;
   PanelController ifPagePc = PanelController();
-  PanelController messagePagePc = PanelController();
-
-  //MessagePage的key
-  GlobalKey messagePageKey;
 
   //记录tabbar的索引
   int index = 0;
