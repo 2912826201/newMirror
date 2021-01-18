@@ -37,7 +37,6 @@ class HomeFeedModel {
 
   // 添加字段
   int totalCount = -1;
-
   HomeFeedModel({
     this.id,
     this.type,
@@ -485,7 +484,8 @@ class CommentDtoModel {
   String replyName;
   int delete;
   int pullNumber = 0;
-
+  //是否选中
+  bool itemChose = false;
 // 是否显示隐藏按钮
   bool isShowHiddenButtons = false;
 

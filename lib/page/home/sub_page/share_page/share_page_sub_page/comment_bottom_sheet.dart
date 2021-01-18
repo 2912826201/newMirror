@@ -1,4 +1,5 @@
 // 底部评论抽屉
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
@@ -225,23 +226,29 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
 //￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥
 //￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥
 
-class CommentBottomListView extends StatelessWidget {
+class CommentBottomListView extends StatefulWidget{
   CommentDtoModel model;
   int index;
   int feedId;
-
-  CommentBottomListView({this.model, this.index, this.feedId});
-
+  int choseItem;
+  CommentBottomListView({this.model, this.index, this.feedId,this.choseItem});
+  @override
+  State<StatefulWidget> createState() {
+  return CommentBottomListState();
+  }
+}
+class CommentBottomListState extends State<CommentBottomListView> {
+  bool isChose = false;
   // 点赞
   setUpLuad(BuildContext context) async {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
-    print("是否点赞了￥${context.read<FeedMapNotifier>().feedMap[feedId].comments[index].isLaud}");
+    print("是否点赞了￥${context.read<FeedMapNotifier>().feedMap[widget.feedId].comments[widget.feedId].isLaud}");
     if (isLoggedIn) {
-      Map<String, dynamic> model = await laudComment(commentId: this.model.id, laud: this.model.isLaud == 0 ? 1 : 0);
+      Map<String, dynamic> model = await laudComment(commentId: widget.model.id, laud: widget.model.isLaud == 0 ? 1 : 0);
       // 点赞/取消赞成功
       print("state:${model["state"]}");
       if (model["state"]) {
-        context.read<FeedMapNotifier>().mainCommentLaud(this.model.isLaud, this.feedId, this.index);
+        context.read<FeedMapNotifier>().mainCommentLaud(widget.model.isLaud, widget.feedId, widget.index);
       } else {
         // 失败
         print("shib ");
@@ -251,18 +258,33 @@ class CommentBottomListView extends StatelessWidget {
       AppRouter.navigateToLoginPage(context);
     }
   }
-
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if(widget.model.itemChose){
+        isChose = true;
+        Timer timer = Timer.periodic(Duration(milliseconds: 2000), (timer) {
+          widget.model.itemChose = false;
+          timer.cancel();
+          setState(() {
+          });
+        });
+    }else{
+      isChose = false;
+    }
+  }
   @override
   Widget build(BuildContext context) {
-    print(model.targetId);
+    print(widget.model.targetId);
     // 头像
     var avatar = Container(
       child: Container(
         height: 42,
         width: 42,
         child: ClipOval(
-          child: model.avatarUrl != null
-              ? Image.network(model.avatarUrl, fit: BoxFit.cover)
+          child: widget.model.avatarUrl != null
+              ? Image.network(widget.model.avatarUrl, fit: BoxFit.cover)
               : Image.asset("images/test/yxlm1.jpeg", fit: BoxFit.cover),
         ),
       ),
@@ -276,7 +298,7 @@ class CommentBottomListView extends StatelessWidget {
           children: <Widget>[
             MyRichTextWidget(
               Text(
-                model.name + " " + model.content,
+                widget.model.name + " " + widget.model.content,
                 overflow: TextOverflow.visible,
                 style: TextStyle(fontSize: 14, color: AppColor.textPrimary1, fontWeight: FontWeight.w400),
               ),
@@ -284,10 +306,10 @@ class CommentBottomListView extends StatelessWidget {
               textOverflow: TextOverflow.ellipsis,
               richTexts: [
                 BaseRichText(
-                  (model.name + " " + model.content).substring(0, model.name.length),
+                  (widget.model.name + " " + widget.model.content).substring(0, widget.model.name.length),
                   style: TextStyle(color: AppColor.textPrimary1, fontSize: 15, fontWeight: FontWeight.w500),
                   onTap: () {
-                    print(model.uid);
+                    print(widget.model.uid);
                   },
                 ),
               ],
@@ -295,7 +317,7 @@ class CommentBottomListView extends StatelessWidget {
             Container(height: 6),
             Container(
               child: Text(
-                "${DateUtil.generateFormatDate(model.createTime)} 回复",
+                "${DateUtil.generateFormatDate(widget.model.createTime)} 回复",
                 style: TextStyle(
                   fontSize: 12,
                   color: AppColor.textSecondary,
@@ -315,9 +337,9 @@ class CommentBottomListView extends StatelessWidget {
           },
           child: Icon(
             Icons.favorite,
-            color: context.watch<FeedMapNotifier>().feedMap[feedId].comments[index].isLaud == 0
+            color: context.watch<FeedMapNotifier>().feedMap[widget.feedId].comments[widget.index].isLaud == 0
                 ? Colors.grey
-                : context.watch<FeedMapNotifier>().feedMap[feedId].comments[index].isLaud == null
+                : context.watch<FeedMapNotifier>().feedMap[widget.feedId].comments[widget.index].isLaud == null
                     ? Colors.grey
                     : Colors.red,
           ),
@@ -326,9 +348,9 @@ class CommentBottomListView extends StatelessWidget {
           height: 4,
         ),
         Offstage(
-          offstage: context.watch<FeedMapNotifier>().feedMap[feedId].comments[index].laudCount == 0,
+          offstage: context.watch<FeedMapNotifier>().feedMap[widget.feedId].comments[widget.index].laudCount == 0,
           child: Text(
-            "${StringUtil.getNumber(context.select((FeedMapNotifier value) => value.feedMap[feedId].comments[index].laudCount))}",
+            "${StringUtil.getNumber(context.select((FeedMapNotifier value) => value.feedMap[widget.feedId].comments[widget.index].laudCount))}",
             style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
           ),
         )
@@ -336,7 +358,7 @@ class CommentBottomListView extends StatelessWidget {
     );
 
     return Container(
-      margin: EdgeInsets.only(left: 16, right: 16, top: 12),
+      margin: EdgeInsets.only(top: 12),
       // color: AppColor.mainRed,
       child: Column(
         children: [
@@ -345,7 +367,7 @@ class CommentBottomListView extends StatelessWidget {
             onTap: () {
               openInputBottomSheet(
                 context: context,
-                hintText: "回复 ${model.name}",
+                hintText: "回复 ${widget.model.name}",
                 voidCallback: (String text, List<Rule> rules, BuildContext context) {
                   List<AtUsersModel> atListModel = [];
                   for (Rule rule in rules) {
@@ -357,21 +379,29 @@ class CommentBottomListView extends StatelessWidget {
                   }
                   // 评论父评论
                   postComments(
-                      targetId: model.id,
+                      targetId: widget.model.id,
                       targetType: 2,
                       content: text,
                       atUsers: jsonEncode(atListModel),
-                      replyId: model.uid,
-                      replyCommentId: model.id,
+                      replyId: widget.model.uid,
+                      replyCommentId: widget.model.id,
                       commentModelCallback: (CommentDtoModel commentModel) {
-                        context.read<FeedMapNotifier>().commentFeedCom(feedId, index, commentModel);
+                        context.read<FeedMapNotifier>().commentFeedCom(widget.feedId, widget.index, commentModel);
                         // 关闭评论输入框
                         // Navigator.of(context).pop(1);
                       });
                 },
               );
             },
-            child: Row(
+            child:  AnimatedPhysicalModel(
+              shape: BoxShape.rectangle,
+              color: widget.model.itemChose ? AppColor.bgWhite: AppColor.white,
+              elevation:0,
+              shadowColor: !widget.model.itemChose ?AppColor.bgWhite: AppColor.white,
+              duration: Duration(seconds: 1),
+              child: Container(
+              padding: EdgeInsets.only(left: 16,right: 16,top: 9,bottom: 8),
+              child: Row(
               // 横轴距定对齐
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -379,17 +409,18 @@ class CommentBottomListView extends StatelessWidget {
                 Expanded(child: info),
                 right,
               ],
+            ),) ,
             ),
           ),
           // context.select((FeedMapNotifier value) => value.feedMap[feedId].comments[index].replyCount)  != 0
-          model.replyCount != 0
+          widget.model.replyCount != 0
               ? BottomListViewSubComment(
                   replys:
                       // context.select((FeedMapNotifier value) => value.feedMap[feedId].comments[index].replys),
-                      model.replys,
-                  commentDtoModel: model,
+                  widget.model.replys,
+                  commentDtoModel: widget.model,
                   // context.select((FeedMapNotifier value) => value.feedMap[feedId].comments[index]),
-                  listIndex: index, feedId: feedId,
+                  listIndex: widget.index, feedId: widget.feedId,
                 )
               : Container(),
         ],
@@ -407,8 +438,8 @@ class BottomListViewSubComment extends StatefulWidget {
   int feedId;
   List<CommentDtoModel> replys;
   CommentDtoModel commentDtoModel;
-
-  BottomListViewSubComment({Key key, this.replys, this.commentDtoModel, this.listIndex, this.feedId}) : super(key: key);
+  int commentId;
+  BottomListViewSubComment({Key key,this.commentId, this.replys, this.commentDtoModel, this.listIndex, this.feedId}) : super(key: key);
 
   BottomListViewSubCommentState createState() => BottomListViewSubCommentState();
 }
@@ -502,6 +533,7 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
   Widget build(BuildContext context) {
     return Container(
         margin: EdgeInsets.only(top: 12, left: 57),
+        padding: EdgeInsets.only(left: 16,right: 16),
         // color: Colors.green,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

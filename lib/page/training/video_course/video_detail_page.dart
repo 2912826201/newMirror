@@ -597,7 +597,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
           ),
         ),
         onTap: () {
-          AppRouter.navigateToMineDetail(context, videoModel.coachDto?.uid, null);
+          AppRouter.navigateToMineDetail(context, videoModel.coachDto?.uid);
         },
       ),
     );

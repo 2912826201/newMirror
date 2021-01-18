@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
@@ -29,8 +30,8 @@ import 'package:provider/provider.dart';
 
 // 动态详情页
 class FeedDetailPage extends StatefulWidget {
-  FeedDetailPage({Key key, this.model, this.index});
-
+  FeedDetailPage({Key key, this.model, this.index,this.commentId});
+  int commentId;
   HomeFeedModel model;
   int index;
 
@@ -55,7 +56,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
 
   // 请求下一页
   int hasNext = 0;
-
+  int choseItem;
   // 列表监听
   ScrollController _controller = new ScrollController();
 
@@ -70,6 +71,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
         getQueryListByHot();
       }
     });
+
   }
 
   // 获取热门评论
@@ -98,7 +100,14 @@ class FeedDetailPageState extends State<FeedDetailPage> {
               model.isShowInteractiveButton = false;
             }
           }
-          commentModel.addAll(modelList);
+          for(int i=0;i<modelList.length;i++) {
+            if(modelList[i].id==widget.commentId){
+              modelList[i].itemChose = true;
+              commentModel.insert(0,modelList[i]);
+            }else{
+              commentModel.add(modelList[i]);
+            }
+          };
           print("数据长度${commentModel.length}");
         }
       } else if (this.dataPage > 1 && this.hasNext != 0) {
@@ -240,6 +249,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                     model: commentModel[index],
                     index: index,
                     feedId: feedModel.id,
+                    choseItem: choseItem,
                   );
                 }
               },childCount:commentModel.length + 1)) :  SliverToBoxAdapter()

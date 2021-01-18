@@ -143,7 +143,9 @@ class CameraPhotoState extends State<CameraPhotoPage> with WidgetsBindingObserve
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     print("Camera dispose");
-    _controller?.dispose();
+    _controller?.dispose()?.then((value) {
+      Application.isCameraInUse = false;
+    });
     super.dispose();
   }
 
@@ -155,7 +157,9 @@ class CameraPhotoState extends State<CameraPhotoPage> with WidgetsBindingObserve
     //在切到后台或返回前台
     if (state == AppLifecycleState.inactive) {
       print("Camera dispose");
-      _controller?.dispose();
+      _controller?.dispose()?.then((value) {
+        Application.isCameraInUse = false;
+      });
     } else if (state == AppLifecycleState.resumed) {
       if (_controller != null) {
         onCameraSelected(_controller.description);
@@ -170,8 +174,9 @@ class CameraPhotoState extends State<CameraPhotoPage> with WidgetsBindingObserve
     if (_controller != null) {
       print("Camera dispose");
       await _controller.dispose();
+      Application.isCameraInUse = false;
     }
-    _controller = CameraController(description, ResolutionPreset.medium, enableAudio: false);
+    _controller = CameraController(description, ResolutionPreset.high, enableAudio: false);
 
     // If the controller is updated then update the UI.
     _controller.addListener(() {
@@ -183,7 +188,11 @@ class CameraPhotoState extends State<CameraPhotoPage> with WidgetsBindingObserve
     });
 
     try {
+      while(Application.isCameraInUse){
+        await Future.delayed(Duration(milliseconds: 100));
+      }
       await _controller.initialize();
+      Application.isCameraInUse = true;
     } on CameraException catch (e) {
       print(e);
     }

@@ -1,17 +1,21 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/message_page_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/query_msglist_model.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/feed/feed_detail_page.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/rich_text_widget.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 ///消息提醒列表
 class InteractiveNoticePage extends StatefulWidget {
@@ -206,18 +210,18 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
 }
 
 class InteractiveNoticeItem extends StatefulWidget {
-  int type = 1;
+  int type;
   QueryModel model;
 
   InteractiveNoticeItem(this.type, this.model);
 
   @override
   State<StatefulWidget> createState() {
-    return _interactiveNoticeItemState();
+    return _InteractiveNoticeItemState();
   }
 }
 
-class _interactiveNoticeItemState extends State<InteractiveNoticeItem> {
+class _InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
   //评论内容：@和评论拿接口内容，点赞给固定内容
   String comment = "";
 
@@ -226,6 +230,7 @@ class _interactiveNoticeItemState extends State<InteractiveNoticeItem> {
 
   //评论状态
   String noticeState = "";
+
   String receiverName = "";
 
   String senderName;
@@ -233,6 +238,7 @@ class _interactiveNoticeItemState extends State<InteractiveNoticeItem> {
   QueryModel msgModel;
   int index;
   CommentDtoModel commentModel;
+  HomeFeedModel homeFeedModel;
   List<AtUsersModel> atUserList = [];
   String coverImage;
   bool feedIsDelete = false;
@@ -246,6 +252,7 @@ class _interactiveNoticeItemState extends State<InteractiveNoticeItem> {
     senderName = msgModel.senderName;
     commentModel = msgModel.commentData;
     coverImage = msgModel.coverUrl;
+    _getRefData();
     print('封面=======================${msgModel.coverUrl}');
     if(widget.type==0){
       if(msgModel.refType==2){
@@ -257,13 +264,23 @@ class _interactiveNoticeItemState extends State<InteractiveNoticeItem> {
     _textSpanAdd();
   }
 
+
+  _getRefData()async{
+    if(msgModel.refType==0){
+      homeFeedModel = HomeFeedModel.fromJson(msgModel.refData);
+    }else if(msgModel.refType==2){
+      homeFeedModel = await feedDetail(id: commentModel.targetId);
+    }
+  }
   List<BaseRichText> _atText() {
     List<BaseRichText> richList = [];
     atUserList.forEach((element) {
       richList.add(BaseRichText(
         comment.substring(element.index, element.len),
         style: widget.type == 0 ? AppStyle.textMedium13 : AppStyle.textMediumBlue13,
-        onTap: () {},
+        onTap: () {
+          AppRouter.navigateToMineDetail(context,element.uid);
+        },
       ));
     });
     return richList;
@@ -352,7 +369,7 @@ class _interactiveNoticeItemState extends State<InteractiveNoticeItem> {
                 Text(
                   "$senderName",
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                overflow: TextOverflow.ellipsis,
                   style: AppStyle.textMedium15,
                 ),
                 SizedBox(
@@ -383,8 +400,11 @@ class _interactiveNoticeItemState extends State<InteractiveNoticeItem> {
           !feedIsDelete
               ? InkWell(
                 onTap: (){
-                 /* Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                  }));*/
+                  if(msgModel.refType==0||msgModel.refType==2){
+                    if(msgModel.commentId!=null){
+                      getFeedDetail(homeFeedModel.id,commentId: msgModel.commentId);
+                    }
+                  }
                 },
             child: Container(
                   alignment: Alignment.topRight,
@@ -414,6 +434,19 @@ class _interactiveNoticeItemState extends State<InteractiveNoticeItem> {
                 )
         ],
       ),
+    );
+  }
+
+  getFeedDetail(int feedId,{int commentId}) async {
+    HomeFeedModel feedModel = await feedDetail(id: feedId);
+    List<HomeFeedModel> list = [];
+    list.add(feedModel);
+    context.read<FeedMapNotifier>().updateFeedMap(list);
+    // print("----------feedModel:${feedModel.toJson().toString()}");
+    // 跳转动态详情页
+    Navigator.push(
+      context,
+      new MaterialPageRoute(builder: (context) => FeedDetailPage(model: feedModel,commentId: commentId,)),
     );
   }
 }
