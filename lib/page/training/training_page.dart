@@ -1,6 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/live_broadcast/live_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
@@ -15,6 +18,8 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
   List<int> _courseList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   double _screenWidth = 0.0;
 
+  List<LiveModel> _liveList;
+
   @override
   bool get wantKeepAlive => true;
 
@@ -22,6 +27,9 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
   void initState() {
     _screenWidth = ScreenUtil.instance.screenWidthDp;
     super.initState();
+    getLatestLive().then((result) {
+      _liveList = result;
+    }).catchError((error) {});
   }
 
   @override
@@ -274,63 +282,72 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
           Container(
             margin: const EdgeInsets.only(top: 12),
             height: _screenWidth * 151 / 343,
-            child: Stack(
-              children: [
-                Container(
-                  color: AppColor.textPrimary3,
-                ),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            child: _liveList != null && _liveList.length > 0
+                ? Stack(
                     children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            height: 16,
-                            width: 44,
-                            color: AppColor.mainRed,
-                          ),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          Text(
-                            "17:00-18:00",
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.white),
-                          )
-                        ],
+                      CachedNetworkImage(
+                        imageUrl: _liveList.first.picUrl,
+                        width: _screenWidth,
+                        height: _screenWidth * 151 / 343,
+                        fit: BoxFit.cover,
                       ),
-                      Spacer(),
-                      Text(
-                        "帕梅拉15分钟复古有氧舞蹈操·新...",
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.white),
-                      ),
-                      SizedBox(
-                        height: 8,
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            "减脂·90Kcal",
-                            style: TextStyle(
-                                fontSize: 10, fontWeight: FontWeight.w400, color: AppColor.white.withOpacity(0.85)),
-                          ),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          Text(
-                            "减脂·90Kcal",
-                            style: TextStyle(
-                                fontSize: 10, fontWeight: FontWeight.w400, color: AppColor.white.withOpacity(0.85)),
-                          ),
-                        ],
-                      ),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  height: 16,
+                                  width: 44,
+                                  color: AppColor.mainRed,
+                                ),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                Text(
+                                  "${_liveList.first.startTime}-${_liveList.first.endTime}",
+                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.white),
+                                )
+                              ],
+                            ),
+                            Spacer(),
+                            Text(
+                              "${_liveList.first.coursewareDto.name}",
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.white),
+                            ),
+                            SizedBox(
+                              height: 8,
+                            ),
+                            Row(
+                              children: [
+                                Text(
+                                  "${_liveList.first.coursewareDto.targetDto.name}·${_liveList.first.coursewareDto.calories}Kcal",
+                                  style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w400,
+                                      color: AppColor.white.withOpacity(0.85)),
+                                ),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                Text(
+                                  "${_liveList.first.coachDto.nickName}",
+                                  style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w400,
+                                      color: AppColor.white.withOpacity(0.85)),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      )
                     ],
-                  ),
-                )
-              ],
-            ),
+                  )
+                : Container(),
           )
         ],
       ),

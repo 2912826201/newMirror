@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/data/model/base_response_model.dart';
+import 'package:mirror/data/model/live_model.dart';
 
 // 根据日期获取直播课程列表
 const String GETLIVECOURSESBYDATE = "/sport/web/liveCourse/getLiveCoursesByDate";
@@ -22,6 +23,9 @@ const String GETVIDEOCOURSELIST = "/sport/web/videoCourse/getVideoCourseList";
 
 // TA们也完成该视频课程的接口
 const String GETFINISHEDVIDEOCOURSE = "/sport/course/getFinishedVideoCourse";
+
+//获取最近直播
+const String GETLATESTLIVE = "/sport/web/liveCourse/getLatestLive";
 
 ///根据日期获取直播课程列表
 ///请求参数
@@ -149,6 +153,23 @@ Future<Map> getFinishedVideoCourse(int videoCourseId, int size,
       await requestApi(GETFINISHEDVIDEOCOURSE, params);
   if (responseModel.isSuccess) {
     return responseModel.data;
+  } else {
+    return null;
+  }
+}
+
+//获取最近直播
+Future<List<LiveModel>> getLatestLive() async {
+  Map<String, dynamic> params = {};
+  BaseResponseModel responseModel = await requestApi(GETLATESTLIVE, params);
+  if (responseModel.isSuccess) {
+    List<LiveModel> list = [];
+    if(responseModel.data["list"] != null){
+      responseModel.data["list"].forEach((e){
+        list.add(LiveModel.fromJson(e));
+      });
+    }
+    return list;
   } else {
     return null;
   }
