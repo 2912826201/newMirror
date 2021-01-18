@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/feed/feed_detail_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/attention_user.dart';
@@ -12,6 +13,7 @@ import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/getTrip
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/head_view.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/expandable_text.dart';
+import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/slide_banner.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -73,7 +75,7 @@ class DynamicListLayout extends StatelessWidget {
               )
             : Container(),
         // 视频区域
-        model.videos.isNotEmpty ? getVideo() : Container(),
+        model.videos.isNotEmpty ? getVideo(model.videos) : Container(),
         // 点赞，转发，评论三连区域 getTripleArea
         GetTripleArea( model: model, index: index),
         // 课程信息和地址
@@ -228,13 +230,16 @@ class DynamicListLayout extends StatelessWidget {
   // }
 
 // 视频
-  Widget getVideo() {
-    return Container(
-      width: ScreenUtil.instance.width,
-      height: 200,
-      child: Center(
-        child: Text("视频"),
-      ),
+  Widget getVideo(List<VideosModel> videos) {
+    SizeInfo sizeInfo = SizeInfo();
+    sizeInfo.width = videos.last.width;
+    sizeInfo.height = videos.last.height;
+    sizeInfo.duration = videos.last.duration;
+    sizeInfo.offsetRatioX = videos.last.offsetRatioX;
+    sizeInfo.offsetRatioY = videos.last.offsetRatioY;
+    sizeInfo.videoCroppedRatio = videos.last.videoCroppedRatio;
+    return
+      FeedVideoPlayer(videos.last.url,sizeInfo,ScreenUtil.instance.width,isInListView: true,
     );
   }
 

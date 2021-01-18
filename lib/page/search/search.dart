@@ -8,6 +8,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/database/search_history_db_helper.dart';
 import 'package:mirror/data/dto/search_history_dto.dart';
+import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
@@ -197,7 +198,12 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
       // 请求热门课程
     ]).then((results) {
       print("历史记录（（（（（（（））））））$searchHistoryList");
-      topicList = results[0];
+      DataResponseModel  model = results[0];
+      if (model.list.isNotEmpty) {
+        model.list.forEach((v) {
+          topicList.add(TopicDtoModel.fromJson(v));
+        });
+      }
       if (context.read<TokenNotifier>().isLoggedIn) {
         searchHistoryList = results[1];
       }

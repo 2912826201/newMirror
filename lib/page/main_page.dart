@@ -57,7 +57,7 @@ class MainPageState extends State<MainPage> with SingleTickerProviderStateMixin 
     return Scaffold(
       // 此属性是重新计算布局空间大小
       // 内部元素要监听键盘高度必需要设置为false,
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       bottomNavigationBar: BottomAppBar(
           child: Stack(
         children: <Widget>[
@@ -134,13 +134,9 @@ class MainPageState extends State<MainPage> with SingleTickerProviderStateMixin 
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             GestureDetector(
-              // child: Card(
-              //   elevation: 0,
-              //   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16.0))),
-              //   color: currentIndex == index ? AppColor.black : Colors.transparent,
+             behavior: HitTestBehavior.opaque,
               child: Container(
                 padding: EdgeInsets.only(top: 2, bottom: 2, left: 7.5, right: 7.5),
-                // color: Colors.cyan,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -185,52 +181,8 @@ class MainPageState extends State<MainPage> with SingleTickerProviderStateMixin 
             ),
           ],
         ),
-        // child: Row(
-        //   mainAxisSize: MainAxisSize.min,
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: <Widget>[
-        //     GestureDetector(
-        //       child: Card(
-        //         elevation: 0,
-        //         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16.0))),
-        //         color: currentIndex == index ? AppColor.black : Colors.transparent,
-        //         child: Container(
-        //           padding: EdgeInsets.only(top: 2, bottom: 2, left: 7.5, right: 7.5),
-        //           child: Row(
-        //             crossAxisAlignment: CrossAxisAlignment.center,
-        //             children: [
-        //               Image.asset(imgUrl, width: 28, height: 28),
-        //               Container(
-        //                   margin: const EdgeInsets.only(left: 6),
-        //                   child: Offstage(
-        //                     offstage: currentIndex != index,
-        //                     child: Text(
-        //                       titles[index],
-        //                       style: style,
-        //                     ),
-        //                   ))
-        //             ],
-        //           ),
-        //         ),
-        //       ),
-        //       onTap: () {
-        //         if ((index == 2 || index == 3) && !context.read<TokenNotifier>().isLoggedIn) {
-        //           AppRouter.navigateToLoginPage(context);
-        //         } else {
-        //           context.read<SelectedbottomNavigationBarNotifier>().changeIndex(index);
-        //           if (currentIndex != index) {
-        //             setState(() {
-        //               currentIndex = index;
-        //             });
-        //           }
-        //         }
-        //       },
-        //     ),
-        //   ],
-        // ),
       );
     }
-
     return item(context);
   }
 }

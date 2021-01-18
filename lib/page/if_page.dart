@@ -52,9 +52,6 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin, WidgetsBi
     return AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.dark,
         child: Scaffold(
-            // 此属性是重新计算布局空间大小
-            // 内部元素要监听键盘高度必需要设置为false,
-            resizeToAvoidBottomInset: false,
             body: Container(
                 child: Stack(children: [
               SlidingUpPanel(

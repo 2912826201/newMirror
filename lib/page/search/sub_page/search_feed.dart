@@ -13,16 +13,16 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
-import 'package:mirror/page/feed/feed_detail_page.dart';
 import 'package:mirror/page/feed/feed_flow.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
-import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/slide_banner.dart';
 import 'package:provider/provider.dart';
 
@@ -362,8 +362,9 @@ class SearchFeeditemState extends State<SearchFeeditem> {
   }
   // @override
   Widget build(BuildContext context) {
-    // print("你也要搞事情!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    // print(model.picUrls.toString());
+    if (model.videos.isNotEmpty) {
+      print("视频model数据++++++++++++++++++++${   model.videos.toString()}");
+    }
     return Container(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -383,7 +384,6 @@ class SearchFeeditemState extends State<SearchFeeditem> {
                     list.insert(0, model);
                   }
                 }
-                print("打开前&&&&&&&&&&&&&&&&**&&&：：hero$index");
                 Navigator.push(
                   context,
                   new MaterialPageRoute(builder: (context) => FeedFlow(feedList: list,isComplex: widget.isComplex,)),
@@ -395,23 +395,24 @@ class SearchFeeditemState extends State<SearchFeeditem> {
               ),
             )
             // buildOpenContainerItem()
-                : model.videos.isNotEmpty
-                ? ClipRRect(
-              //圆角图片
-              borderRadius: BorderRadius.circular(2),
-              child: CachedNetworkImage(
-                height: setAspectRatio(1.0 * model.videos[0].height, 1.0 * model.videos[0].width),
-                width: ((ScreenUtil.instance.screenWidthDp) / 2),
-                fit: BoxFit.cover,
-                placeholder: (context, url) => new Container(
-                    child: new Center(
-                      child: new CircularProgressIndicator(),
-                    )),
-                imageUrl: model.videos[0].coverUrl,
-                errorWidget: (context, url, error) => new Image.asset("images/test.png"),
-              ),
-            )
+            // ClipRRect(
+            //   //圆角图片
+            //   borderRadius: BorderRadius.circular(2),
+            //   child: CachedNetworkImage(
+            //     height: setAspectRatio(1.0 * model.videos[0].height, 1.0 * model.videos[0].width),
+            //     width: ((ScreenUtil.instance.screenWidthDp) / 2),
+            //     fit: BoxFit.cover,
+            //     placeholder: (context, url) => new Container(
+            //         child: new Center(
+            //           child: new CircularProgressIndicator(),
+            //         )),
+            //     imageUrl: model.videos[0].coverUrl,
+            //     errorWidget: (context, url, error) => new Image.asset("images/test.png"),
+            //   ),
+            // )
                 : Container(),
+            model.videos.isNotEmpty
+                ? getVideo(model.videos) : Container(),
             Container(
               width: ((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) - 16,
               margin: EdgeInsets.only(top: 8),
@@ -462,6 +463,18 @@ class SearchFeeditemState extends State<SearchFeeditem> {
             )
           ],
         ));
+  }
+  // 视频
+  Widget getVideo(List<VideosModel> videos) {
+    SizeInfo sizeInfo = SizeInfo();
+    sizeInfo.width = videos.first.width;
+    sizeInfo.height = videos.first.height;
+    sizeInfo.duration = videos.first.duration;
+    sizeInfo.offsetRatioX = videos.first.offsetRatioX ?? 0.0;
+    sizeInfo.offsetRatioY = videos.first.offsetRatioY ?? 0.0;
+    sizeInfo.videoCroppedRatio = videos.first.videoCroppedRatio ;
+    return
+      FeedVideoPlayer(videos.first.url,sizeInfo,(ScreenUtil.instance.screenWidthDp - 32) / 2 - 4,isInListView: true,);
   }
 }
 
