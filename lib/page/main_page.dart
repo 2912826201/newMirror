@@ -6,6 +6,8 @@ import 'package:mirror/page/if_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/page/message/message_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/image_cropper.dart';
 import 'package:provider/provider.dart';
 
 import 'profile/profile_page.dart';
@@ -17,7 +19,7 @@ class MainPage extends StatefulWidget {
   MainPageState createState() => MainPageState();
 }
 
-class MainPageState extends State<MainPage> {
+class MainPageState extends State<MainPage> with SingleTickerProviderStateMixin {
   int currentIndex;
   bool isInit = false;
 
@@ -36,10 +38,15 @@ class MainPageState extends State<MainPage> {
     "images/test/user-filling1.png",
   ];
 
+  //动画控制器
+  AnimationController controller;
+  double _start = 0;
+
   @override
   void initState() {
     super.initState();
     currentIndex = 0;
+    _start = (ScreenUtil.instance.width / 5) / 7;
   }
 
   @override
@@ -52,32 +59,44 @@ class MainPageState extends State<MainPage> {
       // 内部元素要监听键盘高度必需要设置为false,
       resizeToAvoidBottomInset: false,
       bottomNavigationBar: BottomAppBar(
-        child: Row(children: [
-          Expanded(
-            child: SizedBox(height: 51, width: itemWidth, child: tabbar(0, context)),
-            flex: 1,
+          child: Stack(
+        children: <Widget>[
+          AnimatedPositionedDirectional(
+            top: 9,
+            start: _start,
+            width: itemWidth,
+            height: 32,
+            duration: Duration(milliseconds: 300),
+            child: Container(
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: AppColor.black),
+            ),
           ),
-          Expanded(
-            child: SizedBox(height: 51, width: itemWidth, child: tabbar(1, context)),
-            flex: 1,
-          ),
-          Expanded(
-            child: SizedBox(height: 51, width: itemWidth, child: tabbar(2, context)),
-            flex: 1,
-          ),
-          Expanded(
-            child: SizedBox(height: 51, width: itemWidth, child: tabbar(3, context)),
-            flex: 1,
-          )
-        ]),
-      ),
+          Row(children: [
+            Expanded(
+              child: SizedBox(height: 51, width: itemWidth, child: tabbar(0, context,itemWidth)),
+              flex: 1,
+            ),
+            Expanded(
+              child: SizedBox(height: 51, width: itemWidth, child: tabbar(1, context,itemWidth)),
+              flex: 1,
+            ),
+            Expanded(
+              child: SizedBox(height: 51, width: itemWidth, child: tabbar(2, context,itemWidth)),
+              flex: 1,
+            ),
+            Expanded(
+              child: SizedBox(height: 51, width: itemWidth, child: tabbar(3, context,itemWidth)),
+              flex: 1,
+            )
+          ])
+        ],
+      )),
       // SlidingUpPanel
       body: Stack(
         children: <Widget>[
           new Offstage(
             offstage: currentIndex != 0, //这里控制
-            child: HomePage(
-            ),
+            child: HomePage(),
           ),
           new Offstage(
             offstage: currentIndex != 1, //这里控制
@@ -89,10 +108,7 @@ class MainPageState extends State<MainPage> {
           ),
           new Offstage(
             offstage: currentIndex != 3, //这里控制
-            child: context.watch<TokenNotifier>().isLoggedIn
-                ? ProfilePage(
-                  )
-                : Container(),
+            child: context.watch<TokenNotifier>().isLoggedIn ? ProfilePage() : Container(),
           ),
         ],
       ),
@@ -101,7 +117,7 @@ class MainPageState extends State<MainPage> {
   }
 
   // 自定义BottomAppBar
-  Widget tabbar(int index, BuildContext context) {
+  Widget tabbar(int index, BuildContext context,double itemWidth) {
     //设置默认未选中的状态
     TextStyle style = TextStyle(fontSize: 15, color: Colors.black);
     String imgUrl = normalImgUrls[index];
@@ -118,28 +134,29 @@ class MainPageState extends State<MainPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             GestureDetector(
-              child: Card(
-                elevation: 0,
-                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16.0))),
-                color: currentIndex == index ? AppColor.black : Colors.transparent,
-                child: Container(
-                  padding: EdgeInsets.only(top: 2, bottom: 2, left: 7.5, right: 7.5),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image.asset(imgUrl, width: 28, height: 28),
-                      Container(
-                          margin: const EdgeInsets.only(left: 6),
-                          child: Offstage(
-                            offstage: currentIndex != index,
-                            child: Text(
-                              titles[index],
-                              style: style,
-                            ),
-                          ))
-                    ],
-                  ),
+              // child: Card(
+              //   elevation: 0,
+              //   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16.0))),
+              //   color: currentIndex == index ? AppColor.black : Colors.transparent,
+              child: Container(
+                padding: EdgeInsets.only(top: 2, bottom: 2, left: 7.5, right: 7.5),
+                // color: Colors.cyan,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(imgUrl, width: 28, height: 28),
+                    Container(
+                        margin: const EdgeInsets.only(left: 6),
+                        child: Offstage(
+                          offstage: currentIndex != index,
+                          child: Text(
+                            titles[index],
+                            style: style,
+                          ),
+                        ))
+                  ],
                 ),
+                // ),
               ),
               onTap: () {
                 if ((index == 2 || index == 3) && !context.read<TokenNotifier>().isLoggedIn) {
@@ -149,6 +166,18 @@ class MainPageState extends State<MainPage> {
                   if (currentIndex != index) {
                     setState(() {
                       currentIndex = index;
+                      if (index == 0) {
+                        _start = itemWidth / 7;
+                      }
+                      if (index == 1) {
+                        _start = itemWidth + itemWidth * 0.4;
+                      }
+                      if (index == 2) {
+                        _start = 2 * itemWidth + itemWidth * 0.64;
+                      }
+                      if (index == 3) {
+                        _start = 3 * itemWidth + itemWidth * 0.9;
+                      }
                     });
                   }
                 }
@@ -156,6 +185,49 @@ class MainPageState extends State<MainPage> {
             ),
           ],
         ),
+        // child: Row(
+        //   mainAxisSize: MainAxisSize.min,
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: <Widget>[
+        //     GestureDetector(
+        //       child: Card(
+        //         elevation: 0,
+        //         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16.0))),
+        //         color: currentIndex == index ? AppColor.black : Colors.transparent,
+        //         child: Container(
+        //           padding: EdgeInsets.only(top: 2, bottom: 2, left: 7.5, right: 7.5),
+        //           child: Row(
+        //             crossAxisAlignment: CrossAxisAlignment.center,
+        //             children: [
+        //               Image.asset(imgUrl, width: 28, height: 28),
+        //               Container(
+        //                   margin: const EdgeInsets.only(left: 6),
+        //                   child: Offstage(
+        //                     offstage: currentIndex != index,
+        //                     child: Text(
+        //                       titles[index],
+        //                       style: style,
+        //                     ),
+        //                   ))
+        //             ],
+        //           ),
+        //         ),
+        //       ),
+        //       onTap: () {
+        //         if ((index == 2 || index == 3) && !context.read<TokenNotifier>().isLoggedIn) {
+        //           AppRouter.navigateToLoginPage(context);
+        //         } else {
+        //           context.read<SelectedbottomNavigationBarNotifier>().changeIndex(index);
+        //           if (currentIndex != index) {
+        //             setState(() {
+        //               currentIndex = index;
+        //             });
+        //           }
+        //         }
+        //       },
+        //     ),
+        //   ],
+        // ),
       );
     }
 
