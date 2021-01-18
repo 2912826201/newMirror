@@ -13,7 +13,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/feed/post_feed.dart';
-import 'package:mirror/data/model/profile/follow_list_model.dart';
+import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/feed/search_location.dart';
@@ -37,10 +37,10 @@ import 'package:toast/toast.dart';
  * array1 数组一
  * array2 数组二
  * **/
-followModelarrayDate(List<FollowModel> array1, List<FollowModel> array2) {
+followModelarrayDate(List<BuddyModel> array1, List<BuddyModel> array2) {
   var arr1 = array1;
   var arr2 = array2;
-  List<FollowModel> result = [];
+  List<BuddyModel> result = [];
   for (var i = 0; i < array1.length; i++) {
     var obj = array1[i].nickName;
     var isExist = false;
@@ -378,11 +378,11 @@ class KeyboardInputState extends State<KeyboardInput> {
   // 搜索全局用户第一页
   requestSearchFollowList(String keyWork) async {
     print("搜索字段：：：：：：：：$keyWork");
-    List<FollowModel> searchFollowList = [];
+    List<BuddyModel> searchFollowList = [];
     SearchUserModel model = await ProfileSearchUser(keyWork, 20);
     if (model.list.isNotEmpty) {
       model.list.forEach((element) {
-        FollowModel followModel = FollowModel();
+        BuddyModel followModel = BuddyModel();
         followModel.nickName = element.nickName + " ";
         followModel.uid = element.uid;
         followModel.avatarUri = element.avatarUri;
@@ -399,14 +399,14 @@ class KeyboardInputState extends State<KeyboardInput> {
     // 列表回到顶部，不然无法上拉加载下一页
     context.read<ReleaseFeedInputNotifier>().atScrollController.jumpTo(0);
     // 获取关注@数据
-    List<FollowModel> followList = [];
+    List<BuddyModel> followList = [];
     context.read<ReleaseFeedInputNotifier>().backupFollowList.forEach((v) {
       if (v.nickName.contains(keyWork)) {
         followList.add(v);
       }
     });
     // 筛选全局的@用户数据
-    List<FollowModel> filterFollowList = followModelarrayDate(searchFollowList, followList);
+    List<BuddyModel> filterFollowList = followModelarrayDate(searchFollowList, followList);
     filterFollowList.insertAll(0, followList);
     context.read<ReleaseFeedInputNotifier>().setFollowList(filterFollowList);
   }
@@ -797,7 +797,7 @@ class AtList extends StatefulWidget {
 }
 
 class AtListState extends State<AtList> {
-  List<FollowModel> followList = [];
+  List<BuddyModel> followList = [];
 
   // 滑动控制器
   ScrollController _scrollController = new ScrollController();
@@ -850,7 +850,7 @@ class AtListState extends State<AtList> {
   // 请求搜索关注用户
   // 此处调用都为第二页及以上数据第一页在输入框回调内调用
   requestSearchFollowList(String keyWork) async {
-    List<FollowModel> searchFollowList = [];
+    List<BuddyModel> searchFollowList = [];
     if (context.read<ReleaseFeedInputNotifier>().searchLoadStatus == LoadingStatus.STATUS_IDEL) {
       // 先设置状态，防止下拉就直接加载
       setState(() {
@@ -869,7 +869,7 @@ class AtListState extends State<AtList> {
     if (searchDataPage > 1 && context.read<ReleaseFeedInputNotifier>().searchLastTime != null) {
       if (model.list.isNotEmpty) {
         model.list.forEach((v) {
-          FollowModel followModel = FollowModel();
+          BuddyModel followModel = BuddyModel();
           followModel.nickName = v.nickName + " ";
           followModel.uid = v.uid;
           followModel.avatarUri = v.avatarUri;
@@ -886,14 +886,14 @@ class AtListState extends State<AtList> {
     // 把在输入框回调内的第一页数据插入
     searchFollowList.insertAll(0, context.read<ReleaseFeedInputNotifier>().followList);
     // 获取关注@数据
-    List<FollowModel> followList = [];
+    List<BuddyModel> followList = [];
     context.read<ReleaseFeedInputNotifier>().backupFollowList.forEach((v) {
       if (v.nickName.contains(keyWork)) {
         followList.add(v);
       }
     });
     // 筛选全局的@用户数据
-    List<FollowModel> filterFollowList = followModelarrayDate(searchFollowList, followList);
+    List<BuddyModel> filterFollowList = followModelarrayDate(searchFollowList, followList);
     filterFollowList.insertAll(0, followList);
     context.read<ReleaseFeedInputNotifier>().setFollowList(filterFollowList);
   }
@@ -914,7 +914,7 @@ class AtListState extends State<AtList> {
       });
       return;
     }
-    FollowListModel model = await GetFollowList(20, lastTime: lastTime);
+    BuddyListModel model = await GetFollowList(20, lastTime: lastTime);
     if (dataPage == 1) {
       if (model.list.isNotEmpty) {
         print(model.list.length);
@@ -948,7 +948,7 @@ class AtListState extends State<AtList> {
 
   @override
   Widget build(BuildContext context) {
-    List<FollowModel> list = context.watch<ReleaseFeedInputNotifier>().followList;
+    List<BuddyModel> list = context.watch<ReleaseFeedInputNotifier>().followList;
     // 搜索全局用户关键字
     String searchUserStr = context.watch<ReleaseFeedInputNotifier>().atSearchStr;
     return list.isNotEmpty
@@ -1390,10 +1390,10 @@ class ReleaseFeedInputNotifier extends ChangeNotifier {
   String topicSearchStr;
 
   // 关注用户数据源
-  List<FollowModel> followList = [];
+  List<BuddyModel> followList = [];
 
   // 存储未搜索时关注用户数据源
-  List<FollowModel> backupFollowList = [];
+  List<BuddyModel> backupFollowList = [];
 
   // 话题数据源
   List<TopicDtoModel> topicList = [];
@@ -1480,12 +1480,12 @@ class ReleaseFeedInputNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  setFollowList(List<FollowModel> list) {
+  setFollowList(List<BuddyModel> list) {
     this.followList = list;
     notifyListeners();
   }
 
-  setBackupFollowList(List<FollowModel> list) {
+  setBackupFollowList(List<BuddyModel> list) {
     this.backupFollowList = list;
     notifyListeners();
   }

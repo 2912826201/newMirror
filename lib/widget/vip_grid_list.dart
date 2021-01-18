@@ -12,12 +12,12 @@ class VipGridList extends StatefulWidget{
   VipGridList({this.vipType});
   @override
   State<StatefulWidget> createState() {
-   return _vipGridState();
+   return _VipGridState();
   }
 
 }
 
-class _vipGridState extends State<VipGridList>{
+class _VipGridState extends State<VipGridList>{
 
   final List<String> itemName = [
     "身份铭牌",

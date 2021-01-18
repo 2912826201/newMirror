@@ -24,11 +24,11 @@ class VipNotOpenPage extends StatefulWidget {
   VipNotOpenPage({this.type});
   @override
   State<StatefulWidget> createState() {
-    return _vipPageState();
+    return _VipPageState();
   }
 }
 
-class _vipPageState extends State<VipNotOpenPage> {
+class _VipPageState extends State<VipNotOpenPage> {
   ScrollController controller = ScrollController();
   final String whiteBack = "images/resource/2.0x/white_return@2x.png";
   final String blackBack = "images/resource/2.0x/return2x.png";

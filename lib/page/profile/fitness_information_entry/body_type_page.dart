@@ -11,11 +11,11 @@ import 'package:provider/provider.dart';
 class BodyTypePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _bodyTypeState();
+    return _BodyTypeState();
   }
 }
 
-class _bodyTypeState extends State<BodyTypePage> {
+class _BodyTypeState extends State<BodyTypePage> {
   int startSize = 10;
   int endSize = 14;
   int bodyType = 1;

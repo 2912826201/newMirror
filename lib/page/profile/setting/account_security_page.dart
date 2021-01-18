@@ -14,11 +14,11 @@ class AccountSecurityPage extends StatefulWidget{
 
   @override
   State<StatefulWidget> createState() {
-        return _accouontSecurityState();
+        return _AccouontSecurityState();
   }
 
 }
-class _accouontSecurityState extends State<AccountSecurityPage>{
+class _AccouontSecurityState extends State<AccountSecurityPage>{
   String phoneNumber;
   String qQNumber;
   String weChatNumber;

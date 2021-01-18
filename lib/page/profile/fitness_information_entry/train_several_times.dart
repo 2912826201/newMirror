@@ -15,11 +15,11 @@ import 'package:provider/provider.dart';
 class TrainSeveralTimes extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
-    return _trainSeveralTimesState();
+    return _TrainSeveralTimesState();
   }
 
 }
-class _trainSeveralTimesState extends State<TrainSeveralTimes>{
+class _TrainSeveralTimesState extends State<TrainSeveralTimes>{
   bool three = false;
   bool four = false;
   bool fives = false;

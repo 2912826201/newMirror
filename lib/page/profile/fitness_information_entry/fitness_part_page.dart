@@ -13,11 +13,11 @@ import 'package:provider/provider.dart';
 class FitnesspartPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _fitnessPartState();
+    return _FitnessPartState();
   }
 }
 
-class _fitnessPartState extends State<FitnesspartPage> {
+class _FitnessPartState extends State<FitnesspartPage> {
   List<int> choselist = [];
   List<SubTagModel> partList = [];
 

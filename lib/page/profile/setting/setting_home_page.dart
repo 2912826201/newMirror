@@ -34,10 +34,10 @@ class SettingHomePage extends StatefulWidget{
   SettingHomePage({this.pcController});
   @override
   State<StatefulWidget> createState() {
-   return _settingHomePageState();
+   return _SettingHomePageState();
   }
 }
-class _settingHomePageState extends State<SettingHomePage>{
+class _SettingHomePageState extends State<SettingHomePage>{
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;

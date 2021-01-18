@@ -9,7 +9,7 @@ class AppColor {
   static const mainRed = Color.fromRGBO(0xFF, 0x40, 0x59, 1.0);
 
   //MB 主题蓝 @、#
-  static const mainBlue = Color.fromRGBO(0x57, 0x6B, 0x95, 1.0);
+    static const mainBlue = Color.fromRGBO(0x57, 0x6B, 0x95, 1.0);
 
   //N0 白色
   static const white = Color.fromRGBO(0xFF, 0xFF, 0xFF, 1.0);
@@ -52,4 +52,5 @@ class AppColor {
   static const textHint1 = Color.fromRGBO(0xE8, 0xE8, 0xE8, 1.0);
   static const lightGreen = Color.fromRGBO(0x76, 0xEF, 0x7B, 1.0);
   static const bgaims = Color.fromRGBO(0x40,0x40,0x40 ,1.0);
+  static const textVipSemibold = Color.fromRGBO(0x8F,0x58,0x08,1.0);
 }

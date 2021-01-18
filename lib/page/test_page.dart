@@ -11,6 +11,7 @@ import 'package:mirror/page/download_test_page.dart';
 import 'package:mirror/page/media_test_page.dart';
 import 'package:mirror/page/qiniu_test_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_page.dart';
+import 'package:mirror/page/training/video_course/video_course_result_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -320,6 +321,16 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                     showVolumePopup(context);
                   },
                   child: Text("音量"),
+                ),
+              ]),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                RaisedButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return VideoCourseResultPage();
+                    }));
+                  },
+                  child: Text("视频课结果页"),
                 ),
               ]),
             ],

@@ -18,11 +18,11 @@ class EditInformationName extends StatefulWidget{
   EditInformationName({this.userName,this.title});
   @override
   State<StatefulWidget> createState() {
-   return _editInformationNameState();
+   return _EditInformationNameState();
   }
 
 }
-class _editInformationNameState extends State<EditInformationName>{
+class _EditInformationNameState extends State<EditInformationName>{
   int textLength = 0;
   String _EditText;
   int _reciprocal = 15;

@@ -40,7 +40,6 @@ class AppRouter {
   static String pathMineDetails = "/minedetails";
   static String pathProfileDetails = "/profile/details";
   static String pathProfileDetailsMore = "/profile/details/more";
-  static String pathProfileAddRemarks = "/profile/addremarks";
   static String pathEditInformation = "/profile/editinformation";
   static String pathEditInformationName = "/profile/editinformation/name";
   static String pathEditInformationIntroduction = "/profile/editinformation/introduction";
@@ -55,6 +54,7 @@ class AppRouter {
   static String pathSettingAbout = "/profile/settingabout";
   static String pathSettingAccountSecurity = "/profile/settingaccountsecurity";
   static String pathLoginSucess = "/profile/loginsucess";
+  static String pathTrrainingRecord = "/profile/trrainingRecord";
 
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
@@ -83,7 +83,6 @@ class AppRouter {
     router.define(pathProfileDetails, handler: handlermineDetails);
     router.define(pathVideoCourseList, handler: handlerVideoCourseList);
     router.define(pathProfileDetailsMore, handler: handlerProfileDetailMore);
-    router.define(pathProfileAddRemarks, handler: handlerProfileAddRemarks);
     router.define(pathEditInformation, handler: handlerEditInformation);
     router.define(pathEditInformationName, handler: handlerEditInformationName);
     router.define(pathEditInformationIntroduction, handler: handlerEditInformationIntroduction);
@@ -99,6 +98,7 @@ class AppRouter {
     router.define(pathSettingBlackList, handler: handlerSettingBlackList);
     router.define(pathSettingAbout, handler: handlerSettingAbout);
     router.define(pathSettingAccountSecurity, handler: handlerSettingAccountSecurity);
+    router.define(pathTrrainingRecord, handler: handlerTrrainingRecord);
 
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
@@ -210,13 +210,6 @@ class AppRouter {
     _navigateToPage(context, pathProfileDetailsMore, {});
   }
 
-  static void navigateToProfileAddRemarks(BuildContext context, String username, int userId) {
-    Map<String, dynamic> map = Map();
-    map["username"] = username;
-    map["userId"] = userId;
-    _navigateToPage(context, pathProfileAddRemarks, map);
-  }
-
   static void navigateToEditInfomation(BuildContext context, Function(dynamic result) callback) {
     _navigateToPage(context, pathEditInformation, {}, callback: callback);
   }
@@ -326,5 +319,9 @@ class AppRouter {
 
   static void navigateToMachineSetting(BuildContext context) {
     _navigateToPage(context, pathMachineSetting, {});
+  }
+
+  static void navigateToTrainingRecordPage(BuildContext context) {
+    _navigateToPage(context, pathTrrainingRecord, {});
   }
 }

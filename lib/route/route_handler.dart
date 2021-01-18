@@ -20,7 +20,6 @@ import 'package:mirror/page/media_picker/preview_photo_page.dart';
 import 'package:mirror/page/media_picker/preview_video_page.dart';
 import 'package:mirror/page/message/chat_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/login_success_page.dart';
-import 'package:mirror/page/profile/profile_add_remarks.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_introduction.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_name.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_page.dart';
@@ -33,6 +32,7 @@ import 'package:mirror/page/profile/setting/blacklist_page.dart';
 import 'package:mirror/page/profile/setting/feedback_page.dart';
 import 'package:mirror/page/profile/setting/notice_setting_page.dart';
 import 'package:mirror/page/profile/setting/setting_home_page.dart';
+import 'package:mirror/page/profile/training_record/training_record_page.dart';
 import 'package:mirror/page/scan_code_page.dart';
 import 'package:mirror/page/profile/setting/blacklist_page.dart';
 import 'package:mirror/page/profile/setting/feedback_page.dart';
@@ -119,13 +119,7 @@ var handlermineDetails = Handler(handlerFunc: (BuildContext context, Map<String,
 var handlerProfileDetailMore = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return ProfileDetailsMore();
 });
-var handlerProfileAddRemarks = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return ProfileAddRemarks(
-    userName: data["username"],
-    userId: data["userId"],
-  );
-});
+
 
 var handlerEditInformation = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return EditInformation();
@@ -165,6 +159,9 @@ var handlerSettingAbout = Handler(handlerFunc: (BuildContext context, Map<String
 });
 var handlerSettingAccountSecurity = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return AccountSecurityPage();
+});
+var handlerTrrainingRecord = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return TrainingRecordPage();
 });
 var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);

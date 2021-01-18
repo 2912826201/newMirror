@@ -18,11 +18,11 @@ class BlackListPage extends StatefulWidget{
   BlackListPage({this.pc});
   @override
   State<StatefulWidget> createState() {
-   return _blackListState();
+   return _BlackListState();
   }
 
 }
-class _blackListState extends State<BlackListPage>{
+class _BlackListState extends State<BlackListPage>{
   List<blackUserModel> blackList = [];
 
   _getBlackList()async{

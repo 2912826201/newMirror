@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/comment_model.dart';
@@ -494,20 +495,32 @@ class LiveDetailPageState extends State<LiveDetailPage> {
                   borderRadius: BorderRadius.all(Radius.circular(100)),
                   child: Material(
                       borderRadius: BorderRadius.all(Radius.circular(100)),
-                      color: AppColor.black,
-                      child: InkWell(
-                        splashColor: AppColor.textHint,
-                        child: Container(
-                          padding: const EdgeInsets.only(
-                              left: 16, right: 16, top: 5, bottom: 5),
-                          child: Text(
-                            "关注",
-                            style: TextStyle(color: AppColor.white, fontSize: 11),
-                          ),
-                        ),
+                  color: liveModel.coachDto?.relation == 1 || liveModel.coachDto?.relation == 3
+                      ? AppColor.white
+                      : AppColor.black,
+                  child: InkWell(
+                    splashColor: AppColor.textHint,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(100)),
+                        border: Border.all(
+                            width: liveModel.coachDto?.relation == 1 || liveModel.coachDto?.relation == 3 ? 1 : 0.0,
+                            color: AppColor.textHint),
+                      ),
+                      padding: const EdgeInsets.only(left: 16, right: 16, top: 5, bottom: 5),
+                      child: Text(
+                        liveModel.coachDto?.relation == 1 || liveModel.coachDto?.relation == 3 ? "已关注" : "关注",
+                        style: TextStyle(
+                            color: liveModel.coachDto?.relation == 1 || liveModel.coachDto?.relation == 3
+                                ? AppColor.textHint
+                                : AppColor.white,
+                            fontSize: 11),
+                      ),
+                    ),
                         onTap: () {
-                          //点击了关注教练
-                          ToastShow.show(msg: "点击了关注教练", context: context);
+                          if (!(liveModel.coachDto?.relation == 1 || liveModel.coachDto?.relation == 3)) {
+                            _getAttention(liveModel.coachDto?.uid);
+                          }
                         },
                       )
                   ),
@@ -1696,6 +1709,18 @@ class LiveDetailPageState extends State<LiveDetailPage> {
         context: context,
         map: liveModel.toJson(),
         chatTypeModel: ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE);
+  }
+
+  ///这是关注的方法
+  _getAttention(int userId) async {
+    int attntionResult = await ProfileAddFollow(userId);
+    print('关注监听=========================================$attntionResult');
+    if (attntionResult == 1 || attntionResult == 3) {
+      liveModel.coachDto?.relation = 1;
+      setState(() {
+
+      });
+    }
   }
 }
 

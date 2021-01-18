@@ -12,16 +12,16 @@ import 'package:mirror/util/screen_util.dart';
 class NoticeSettingPage extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
-    return _noticeSettingState();
+    return _NoticeSettingState();
   }
 }
 
-class _noticeSettingState extends State<NoticeSettingPage> {
+class _NoticeSettingState extends State<NoticeSettingPage> {
   bool getNoticeIsOpen = false;
   //未关注私信人
   bool notFollow = false;
   //我关注及好友私信
-  bool FollowBuddy = false;
+  bool followBuddy = false;
   //@我
   bool mentionedMe = false;
   //评论
@@ -45,13 +45,13 @@ class _noticeSettingState extends State<NoticeSettingPage> {
             }
             break;
           case 1:
-            if (FollowBuddy) {
+            if (followBuddy) {
               setState(() {
-                FollowBuddy = false;
+                followBuddy = false;
               });
             } else {
               setState(() {
-                FollowBuddy = true;
+                followBuddy = true;
               });
             }
             break;
@@ -97,9 +97,9 @@ class _noticeSettingState extends State<NoticeSettingPage> {
             break;
           case 1:
             if (element.isOpen == 0) {
-              FollowBuddy = false;
+              followBuddy = false;
             } else {
-              FollowBuddy = true;
+              followBuddy = true;
             }
             break;
           case 2:
@@ -179,7 +179,7 @@ class _noticeSettingState extends State<NoticeSettingPage> {
               ),
             ),
             _switchRow(width, 0, notFollow, "未关注私信人"),
-            _switchRow(width, 1, FollowBuddy, "我关注及好友私信"),
+            _switchRow(width, 1, followBuddy, "我关注及好友私信"),
             SizedBox(
               height: 12,
             ),
@@ -252,7 +252,7 @@ class _noticeSettingState extends State<NoticeSettingPage> {
                         _setUserNotice(0, notFollow ? 0 : 1);
                       break;
                     case 1:
-                        _setUserNotice(1, FollowBuddy ? 0 : 1);
+                        _setUserNotice(1, followBuddy ? 0 : 1);
                       break;
                     case 2:
                         _setUserNotice(2, mentionedMe ? 0 : 1);

@@ -105,9 +105,11 @@ dependencies:
   volume_watcher: ^1.3.1
   # 解决NestedScroll和瀑布流滑动冲突的问题
   extended_nested_scroll_view: ^2.0.0
-
   # 更好的播放器
   better_player: ^0.0.44
+  # 绘制扩展
+  # path_drawing: ^0.4.1+1
+
   #高德三方库
   amap_map_fluttify: ^0.30.1
   #扫码测试
@@ -162,6 +164,7 @@ flutter:
     - images/chat/
     - assets/emoji.json
     - images/resource/2.0x/vip_logo@2x.png
+    - images/resource/2.0x/chose_pay@2x.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 
