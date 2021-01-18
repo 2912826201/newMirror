@@ -374,7 +374,7 @@ class CommentBottomListState extends State<CommentBottomListView> {
                     AtUsersModel atModel;
                     atModel.index = rule.startIndex;
                     atModel.len = rule.endIndex;
-                    atModel.uid = 1008611;
+                    atModel.uid = rule.id;
                     atListModel.add(atModel);
                   }
                   // 评论父评论
@@ -624,7 +624,7 @@ class BottomListViewSubCommentListItem extends StatelessWidget {
               AtUsersModel atModel;
               atModel.index = rule.startIndex;
               atModel.len = rule.endIndex;
-              atModel.uid = 1008611;
+              atModel.uid = rule.id;
               atListModel.add(atModel);
             }
             // 评论子评论

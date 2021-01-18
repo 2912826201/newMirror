@@ -1444,7 +1444,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
       AtUsersModel atModel = new AtUsersModel();
       atModel.index = rule.startIndex;
       atModel.len = rule.endIndex;
-      atModel.uid = 1008611;
+      atModel.uid = rule.id;
       atListModel.add(atModel);
     }
     await postComments(

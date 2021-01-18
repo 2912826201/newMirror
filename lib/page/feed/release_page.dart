@@ -898,7 +898,7 @@ class AtListState extends State<AtList> {
     context.read<ReleaseFeedInputNotifier>().setFollowList(filterFollowList);
   }
 
-  // 请求好友列表 /appuser/web/user/follow/queryBothFollowList  GetFollowBothList
+  // 请求好友列表
   requestBothFollowList() async {
     if (loadStatus == LoadingStatus.STATUS_IDEL) {
       // 先设置状态，防止下拉就直接加载

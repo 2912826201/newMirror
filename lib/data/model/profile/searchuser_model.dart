@@ -6,7 +6,7 @@ class SearchUserModel{
   int lastTime;
   int hasNext;
   List<UserModel> list = [];
-
+  SearchUserModel({this.list,this.hasNext,this.lastTime});
   SearchUserModel.fromJson(dynamic json) {
     hasNext = json["hasNext"];
     lastTime = json["lastTime"];

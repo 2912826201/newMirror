@@ -95,7 +95,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
                         AtUsersModel atModel = AtUsersModel();
                         atModel.index = rule.startIndex;
                         atModel.len = rule.endIndex;
-                        atModel.uid = 1008611;
+                        atModel.uid = rule.id;
                         atListModel.add(atModel);
                       }
                       // 发布评论
