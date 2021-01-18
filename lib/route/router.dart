@@ -54,6 +54,7 @@ class AppRouter {
   static String pathSettingAbout = "/profile/settingabout";
   static String pathSettingAccountSecurity = "/profile/settingaccountsecurity";
   static String pathLoginSucess = "/profile/loginsucess";
+  static String pathTrrainingRecord = "/profile/trrainingRecord";
 
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
@@ -97,6 +98,7 @@ class AppRouter {
     router.define(pathSettingBlackList, handler: handlerSettingBlackList);
     router.define(pathSettingAbout, handler: handlerSettingAbout);
     router.define(pathSettingAccountSecurity, handler: handlerSettingAccountSecurity);
+    router.define(pathTrrainingRecord, handler: handlerTrrainingRecord);
 
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
@@ -316,5 +318,9 @@ class AppRouter {
 
   static void navigateToMachineSetting(BuildContext context) {
     _navigateToPage(context, pathMachineSetting, {});
+  }
+
+  static void navigateToTrainingRecordPage(BuildContext context) {
+    _navigateToPage(context, pathTrrainingRecord, {});
   }
 }

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/comment_model.dart';
@@ -15,6 +16,7 @@ import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/training/video_course/sliver_custom_header_delegate_video.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -124,8 +126,25 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   int courseCommentPageTime = 1;
 
   //上拉加载数据
-  RefreshController _refreshController =
-  RefreshController(initialRefresh: false);
+  RefreshController _refreshController = RefreshController(initialRefresh: false);
+
+  //下载监听
+  Function(String, int, int) _progressListener;
+
+  //下载进度
+  double _progress = 0.0;
+
+  //全部需要下载多少个文件
+  int allDownLoadCount = 0;
+
+  //已经下载了多少个文件
+  int completeDownCount = 0;
+
+  //剩余下载的文件地址
+  var downloadStringArray = <String>[];
+
+  //是不是在下载中
+  bool isDownLoading = false;
 
   @override
   void initState() {
@@ -142,6 +161,8 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
       getDataAction();
     }
+
+    initProgressListener();
   }
 
   @override
@@ -360,22 +381,30 @@ class VideoDetailPageState extends State<VideoDetailPage> {
 
   //训练器材界面
   Widget _getTrainingEquipmentUi() {
+    var widgetList = <Widget>[];
+    widgetList.add(
+        Container(
+          padding: const EdgeInsets.only(left: 16),
+          child: Text(
+            "训练器材",
+            style: titleTextStyle,
+          ),
+        )
+    );
+
+    widgetList.add(Expanded(child: SizedBox()));
+
     if (videoModel.equipmentDtos == null || videoModel.equipmentDtos.length < 1) {
-      return SliverToBoxAdapter();
-    } else {
-      var widgetList = <Widget>[];
       widgetList.add(
           Container(
-            padding: const EdgeInsets.only(left: 16),
+            padding: const EdgeInsets.only(right: 32),
             child: Text(
-              "训练器材",
-              style: titleTextStyle,
+              "无",
+              style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
             ),
           )
       );
-
-      widgetList.add(Expanded(child: SizedBox()));
-
+    } else {
       for (int i = 0; i < videoModel.equipmentDtos.length; i++) {
         widgetList.add(Container(
           margin: const EdgeInsets.all(8),
@@ -383,36 +412,35 @@ class VideoDetailPageState extends State<VideoDetailPage> {
             videoModel.equipmentDtos[i]?.terminalPicUrl ?? "", width: 24, height: 24, fit: BoxFit.cover,),
         ));
       }
-
-
-      return SliverToBoxAdapter(
-        child: Container(
-            width: MediaQuery
-                .of(context)
-                .size
-                .width,
-            margin: const EdgeInsets.only(top: 12),
-            child: Column(
-              children: [
-                Container(
-                  height: 48,
-                  padding: const EdgeInsets.only(right: 4),
-                  child: Row(children: widgetList,),
-                ),
-                Container(
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width,
-                  height: 1,
-                  margin: const EdgeInsets.only(left: 16, right: 16),
-                  color: AppColor.bgWhite,
-                ),
-              ],
-            )
-        ),
-      );
     }
+
+    return SliverToBoxAdapter(
+      child: Container(
+          width: MediaQuery
+              .of(context)
+              .size
+              .width,
+          margin: const EdgeInsets.only(top: 12),
+          child: Column(
+            children: [
+              Container(
+                height: 48,
+                padding: const EdgeInsets.only(right: 4),
+                child: Row(children: widgetList,),
+              ),
+              Container(
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
+                height: 1,
+                margin: const EdgeInsets.only(left: 16, right: 16),
+                color: AppColor.bgWhite,
+              ),
+            ],
+          )
+      ),
+    );
   }
 
 
@@ -532,28 +560,39 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                 ),
               ),
               Expanded(child: SizedBox()),
+
               ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(100)),
                 child: Material(
                     borderRadius: BorderRadius.all(Radius.circular(100)),
-                    color: AppColor.black,
+                    color: videoModel.coachDto?.relation == 1 ||
+                        videoModel.coachDto?.relation == 3 ? AppColor.white : AppColor.black,
                     child: InkWell(
                       splashColor: AppColor.textHint,
                       child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(100)),
+                          border: Border.all(width: videoModel.coachDto?.relation == 1 ||
+                              videoModel.coachDto?.relation == 3 ?
+                          1 : 0.0, color: AppColor.textHint),
+                        ),
                         padding: const EdgeInsets.only(
                             left: 16, right: 16, top: 5, bottom: 5),
                         child: Text(
-                          "关注",
-                          style: TextStyle(color: AppColor.white, fontSize: 11),
+                          videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3 ? "已关注" : "关注",
+                          style: TextStyle(color: videoModel.coachDto?.relation == 1 ||
+                              videoModel.coachDto?.relation == 3 ? AppColor.textHint : AppColor.white, fontSize: 11),
                         ),
                       ),
                       onTap: () {
-                        //点击了关注教练
-                        ToastShow.show(msg: "点击了关注教练", context: context);
+                        if (!(videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3)) {
+                          _getAttention(videoModel.coachDto?.uid);
+                        }
                       },
                     )
                 ),
               )
+
             ],
           ),
         ),
@@ -1307,8 +1346,6 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     bool isVip = false;
     //todo 判断这个课程是不是vip直播
     bool courseVip = false;
-    //todo 是否在下载中
-    bool isDownLoading = false;
 
     TextStyle textStyle = const TextStyle(color: AppColor.white, fontSize: 16);
     TextStyle textStyleVip = const TextStyle(
@@ -1337,21 +1374,16 @@ class VideoDetailPageState extends State<VideoDetailPage> {
             child: SizedBox(
           child: GestureDetector(
             child: getBtnUi(false, "试听", textStyle, double.infinity, 40, margin_32),
-            onTap: () {
-              print("绑定了终端");
-              ToastShow.show(msg: "使用终端训练", context: context);
-            },
+            onTap: onNoLoginClickListener,
           ),
         ))
         );
       } else {
+        //试听图片
         childrenArray.add(
             GestureDetector(
               child: widget3,
-              onTap: () {
-                print("试听");
-                ToastShow.show(msg: "试听", context: context);
-              },
+              onTap: onJudgeIsDownLoadCompleteVideo,
             )
         );
         if (!(!courseVip || isVip)) {
@@ -1404,8 +1436,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       childrenArray.add(
           Expanded(child: SizedBox(
             child: GestureDetector(
-              child: getBtnUi(
-                  false, "下载中", textStyle, double.infinity, 40, margin_32),
+              child: getDownloadingUi(_progress == 0.0 ? "下载准备中" : "下载中 ${formatProgress(_progress)}%"),
               onTap: () {
                 print("下载中");
                 ToastShow.show(msg: "下载中", context: context);
@@ -1423,6 +1454,56 @@ class VideoDetailPageState extends State<VideoDetailPage> {
         child: Row(
           children: childrenArray,
         ),
+      ),
+    );
+  }
+
+  //获取下载中的ui
+  Widget getDownloadingUi(String text) {
+    return Container(
+      width: double.infinity,
+      height: 40,
+      margin: const EdgeInsets.only(left: 32, right: 32),
+      child: Stack(
+        children: [
+          Container(
+            width: double.infinity,
+            height: 40,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(40 / 2),
+                color: AppColor.bgWhite
+            ),
+          ),
+
+          Container(
+            width: double.infinity,
+            height: 40,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(40 / 2),
+              child: UnconstrainedBox(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  width: (MediaQuery
+                      .of(context)
+                      .size
+                      .width - 64) * _progress,
+                  height: 40,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(40 / 2),
+                      color: AppColor.textPrimary1
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Container(
+            width: double.infinity,
+            height: 40,
+            child: Center(
+              child: Text(text, style: const TextStyle(color: AppColor.white, fontSize: 16)),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1821,6 +1902,92 @@ class VideoDetailPageState extends State<VideoDetailPage> {
         context: context,
         map: videoModel.toJson(),
         chatTypeModel: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
+  }
+
+  void toastShow(String text) {
+    ToastShow.show(msg: text, context: context);
+  }
+
+  //下载监听
+  void initProgressListener() {
+    _progressListener = (taskId, received, total) {
+      isDownLoading = true;
+      _progress = received / total * (1.0 / allDownLoadCount) + completeDownCount * (1.0 / allDownLoadCount);
+      _progress = ((_progress * 10000) ~/ 1) / 10000.0;
+      if (received == total) {
+        completeDownCount++;
+        downloadStringArray.removeAt(0);
+        if (downloadStringArray.length < 1) {
+          isDownLoading = false;
+          downloadAllCompleteVideo();
+        } else {
+          startDownVideo(downloadStringArray[0]);
+        }
+      }
+      print("[${DateTime
+          .now()
+          .millisecondsSinceEpoch}]taskId:$taskId; received:$received; total:$total; "
+          "progress:$_progress; allDownLoadCount:$allDownLoadCount; completeDownCount:$completeDownCount");
+      setState(() {
+
+      });
+    };
+  }
+
+  //没有登陆点击事件
+  void onNoLoginClickListener() {
+    toastShow("没有登陆，请先登陆app");
+  }
+
+  //判断有没有完整的下载好视频
+  void onJudgeIsDownLoadCompleteVideo() async {
+    if (videoModel.coursewareDto.videoMapList != null || videoModel.coursewareDto.videoMapList.length > 0) {
+      for (Map<String, dynamic> map in videoModel.coursewareDto.videoMapList) {
+        if (await FileUtil().getDownloadedPath(map["videoUrl"]) == null) {
+          downloadStringArray.add(map["videoUrl"]);
+        }
+      }
+      allDownLoadCount = videoModel.coursewareDto.videoMapList.length;
+    } else {
+      // toastShow("没有视频");
+    }
+    if (downloadStringArray.length < 1) {
+      completeDownCount = allDownLoadCount;
+      downloadAllCompleteVideo();
+    } else {
+      completeDownCount = allDownLoadCount - downloadStringArray.length;
+      startDownVideo(downloadStringArray[0]);
+    }
+  }
+
+  //todo 全部的视频地址已经下载完成--跳转
+  void downloadAllCompleteVideo() {
+    toastShow("全部下载完成跳转界面");
+  }
+
+  //开始下载
+  void startDownVideo(String downloadUrl) async {
+    String taskId = await FileUtil().download(downloadUrl, _progressListener);
+    print("task的id是：$taskId");
+  }
+
+
+  //格式化进度
+  String formatProgress(double progress) {
+    int value = (progress * 10000) ~/ 1;
+    return "${value ~/ 100}.${value % 100}";
+  }
+
+  ///这是关注的方法
+  _getAttention(int userId) async {
+    int attntionResult = await ProfileAddFollow(userId);
+    print('关注监听=========================================$attntionResult');
+    if (attntionResult == 1 || attntionResult == 3) {
+      videoModel.coachDto?.relation = 1;
+      setState(() {
+
+      });
+    }
   }
 }
 

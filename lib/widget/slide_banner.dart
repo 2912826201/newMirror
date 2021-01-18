@@ -180,7 +180,11 @@ class _SlideBannerState extends State<SlideBanner> {
 
   // 宽高比
   double setAspectRatio(double height) {
-    return (ScreenUtil.instance.width / widget.model.picUrls[0].width) * height;
+    if (height == 0 ) {
+      return ScreenUtil.instance.width;
+    } else {
+      return (ScreenUtil.instance.width / widget.model.picUrls[0].width) * height;
+    }
   }
 
   // 点赞

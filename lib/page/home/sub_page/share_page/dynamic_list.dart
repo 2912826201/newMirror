@@ -65,7 +65,8 @@ class DynamicListLayout extends StatelessWidget {
             }),
         // 图片区域
         model.picUrls.isNotEmpty
-            ? SlideBanner(
+            ?
+        SlideBanner(
                 height: model.picUrls[0].height.toDouble(),
                 model: model,
                 isComplex: isComplex,

@@ -19,6 +19,7 @@ import 'package:mirror/page/vip/vip_open_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'profile_detail_page.dart';
@@ -460,6 +461,19 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         )
       ],
     );
-    return _userPlate;
+    return GestureDetector(
+      child: _userPlate,
+      onTap: () {
+        onClickListener(text);
+      },
+    );
+  }
+
+  //点击事件Training record
+  void onClickListener(String title) {
+    ToastShow.show(msg: "点击了：" + title, context: context);
+    if ("训练记录" == title) {
+      AppRouter.navigateToTrainingRecordPage(context);
+    }
   }
 }
