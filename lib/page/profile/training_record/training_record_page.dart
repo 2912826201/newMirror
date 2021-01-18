@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/widget/no_blue_effect_behavior.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'training_record_page_item.dart';
 
@@ -12,6 +15,9 @@ class TrainingRecordPage extends StatefulWidget {
 
 class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTickerProviderStateMixin {
   TabController tabController;
+  LoadingStatus loadingStatus = LoadingStatus.STATUS_COMPLETED;
+  RefreshController _refreshController = RefreshController(initialRefresh: false);
+  int itemCountListView = 10;
 
   @override
   void initState() {
@@ -27,37 +33,42 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
   }
 
   ///构建滑动布局
-  NestedScrollView buildNestedScrollView() {
-    return NestedScrollView(
-      headerSliverBuilder: (BuildContext context, bool b) {
-        return [
-          SliverAppBar(
-            leading: Container(),
-            pinned: true,
-            floating: true,
-            elevation: 0.5,
-            brightness: Brightness.light,
-            backgroundColor: AppColor.white,
-            expandedHeight: 114,
-            flexibleSpace: buildFlexibleSpaceBar(),
-            bottom: buildTabBar(),
-          ),
-        ];
-      },
+  Widget buildNestedScrollView() {
+    return ScrollConfiguration(
+      behavior: NoBlueEffectBehavior(),
+      child: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool b) {
+          return [
+            SliverAppBar(
+              leading: Container(),
+              pinned: true,
+              floating: true,
+              elevation: 0.5,
+              brightness: Brightness.light,
+              backgroundColor: AppColor.white,
+              expandedHeight: 114,
+              flexibleSpace: buildFlexibleSpaceBar(),
+              bottom: buildTabBar(),
+            ),
+          ];
+        },
 
-      ///主体部分
-      body: buildTabBarView(),
+        ///主体部分
+        body: buildTabBarView(),
+      ),
     );
   }
 
   TabBarView buildTabBarView() {
+    loadingStatus = LoadingStatus.STATUS_COMPLETED;
+
     return TabBarView(
       controller: tabController,
       children: <Widget>[
-        TrainingRecordPageItem(),
-        TrainingRecordPageItem(),
-        TrainingRecordPageItem(),
-        TrainingRecordPageItem(),
+        trainingRecordPageItem(context, "日", onLoadData, _refreshController, itemCountListView, loadingStatus),
+        trainingRecordPageItem(context, "周", onLoadData, _refreshController, itemCountListView, loadingStatus),
+        trainingRecordPageItem(context, "月", onLoadData, _refreshController, itemCountListView, loadingStatus),
+        trainingRecordPageItem(context, "总", onLoadData, _refreshController, itemCountListView, loadingStatus),
       ],
     );
   }
@@ -176,5 +187,13 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
         ),
       ),
     );
+  }
+
+  void onLoadData() {
+    itemCountListView += 10;
+    _refreshController.loadComplete();
+    setState(() {
+      print("itemCountListView,:$itemCountListView");
+    });
   }
 }
