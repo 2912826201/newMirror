@@ -11,7 +11,6 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:photo_manager/photo_manager.dart';
 
 /// camera_video_page
 /// Created by yangjiayi on 2021/1/13.
@@ -235,7 +234,13 @@ class CameraVideoState extends State<CameraVideoPage> with WidgetsBindingObserve
       print("controller.value : ${_controller.value}");
       if (mounted)
         setState(() {
-          _cameraSize = _controller.value.previewSize;
+          //如果镜头角度是转了90度 那么尺寸要宽高互换
+          if (Application.cameras[_cameraIndex].sensorOrientation == 90 ||
+              Application.cameras[_cameraIndex].sensorOrientation == 270) {
+            _cameraSize = Size(_controller.value.previewSize.height, _controller.value.previewSize.width);
+          } else {
+            _cameraSize = _controller.value.previewSize;
+          }
         });
       if (_controller.value.hasError) {
         print("Camera error ${_controller.value.errorDescription}");
