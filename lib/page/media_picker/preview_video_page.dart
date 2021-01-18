@@ -9,7 +9,6 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/feed_video_player.dart';
-import 'package:mirror/widget/image_cropper.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 /// preview_video_page
