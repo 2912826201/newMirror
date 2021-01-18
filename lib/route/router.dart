@@ -268,10 +268,9 @@ class AppRouter {
     _navigateToPage(context, pathLike, map);
   }
 
-  static void navigateToMineDetail(BuildContext context, int uId, PanelController pcController) {
+  static void navigateToMineDetail(BuildContext context, int uId) {
     Map<String, dynamic> map = Map();
     map["userId"] = uId;
-    map["pcController"] = pcController;
     _navigateToPage(context, pathProfileDetails, map);
   }
 

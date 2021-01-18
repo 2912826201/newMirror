@@ -45,7 +45,7 @@ class QueryModel{
   int createTime;
   int atType;
   CommentDtoModel commentData;
-  CommentDtoModel refData;
+  Map<String ,dynamic> refData;
   String senderName;
   String senderAvatarUrl;
   String coverUrl;
@@ -61,7 +61,7 @@ class QueryModel{
     createTime = json["createTime"];
     atType = json["atType"];
     commentData = json["commentData"] != null ? CommentDtoModel.fromJson(json["commentData"]) : null;
-    refData = json["refData"] != null ? CommentDtoModel.fromJson(json["refData"]) : null;
+    refData = json["refData"];
     senderName = json["senderName"];
     senderAvatarUrl = json["senderAvatarUrl"];
     coverUrl = json["coverUrl"];
@@ -81,9 +81,7 @@ class QueryModel{
     if (commentData != null) {
       map["commentData"] = CommentDtoModel().toJson();
     }
-    if (commentData != null) {
-      map["refData"] = CommentDtoModel().toJson();
-    }
+    map["refData"] = refData;
     map["senderName"] = senderName;
     map["senderAvatarUrl"] = senderAvatarUrl;
     return map;

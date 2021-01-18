@@ -14,6 +14,8 @@ class FeedMapNotifier extends ChangeNotifier {
    PostFeedModel postFeedModel;
    // 发布动态进度
   double plannedSpeed = 0.0;
+
+  bool itemChose = false;
 // 更新全局动态map
   void updateFeedMap(List<HomeFeedModel> _feedList) {
     _feedList.forEach((element) {

@@ -516,7 +516,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
             ),
           ),
           onTap: () {
-            AppRouter.navigateToMineDetail(context, liveModel.coachDto?.uid, null);
+            AppRouter.navigateToMineDetail(context, liveModel.coachDto?.uid);
           },
         )
     );
