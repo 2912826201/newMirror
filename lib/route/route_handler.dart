@@ -33,6 +33,7 @@ import 'package:mirror/page/profile/setting/blacklist_page.dart';
 import 'package:mirror/page/profile/setting/feedback_page.dart';
 import 'package:mirror/page/profile/setting/notice_setting_page.dart';
 import 'package:mirror/page/profile/setting/setting_home_page.dart';
+import 'package:mirror/page/profile/training_record/training_record_page.dart';
 import 'package:mirror/page/scan_code_page.dart';
 import 'package:mirror/page/profile/setting/blacklist_page.dart';
 import 'package:mirror/page/profile/setting/feedback_page.dart';
@@ -165,6 +166,9 @@ var handlerSettingAbout = Handler(handlerFunc: (BuildContext context, Map<String
 });
 var handlerSettingAccountSecurity = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return AccountSecurityPage();
+});
+var handlerTrrainingRecord = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return TrainingRecordPage();
 });
 var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
