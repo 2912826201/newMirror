@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/api/live_broadcast/live_api.dart';
+import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/live_video_model.dart';
@@ -944,7 +944,7 @@ Widget buildVideoCourseItemRightDataUi(LiveVideoModel value, int imageHeight, bo
                   ),
                   Positioned(
                     child: Text(
-                      isMine ? "已完成${value.finishAmount}次" : IntegerUtil.formatIntegerCn(value.joinAmount) + "人练过",
+                      isMine ? "已完成${value.finishAmount}次" : IntegerUtil.formatIntegerCn(value.practiceAmount) + "人练过",
                       style: TextStyle(fontSize: 12, color: AppColor.textPrimary2),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

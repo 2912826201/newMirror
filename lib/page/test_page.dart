@@ -219,7 +219,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                       ToastShow.show(msg: "还没有下载完视频，先去下载测试页下载", context: context);
                     } else {
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return VideoCoursePlayPage(result);
+                        return VideoCoursePlayPage(result, null);
                       }));
                     }
                   },

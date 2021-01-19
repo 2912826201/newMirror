@@ -13,7 +13,7 @@ double _radianBetweenPart = pi * 6 / 180; //每段间隔的角度 6°
 class VideoCourseCircleProgressBar extends StatelessWidget {
   VideoCourseCircleProgressBar(this.partList, this.partIndex, this.partProgress, {Key key}) : super(key: key);
 
-  final List<Part> partList;
+  final List<VideoCoursePart> partList;
   final int partIndex;
   final double partProgress;
 
@@ -76,8 +76,8 @@ class VideoCourseCircleProgressBar extends StatelessWidget {
   }
 }
 
-class _RadianPart extends Part {
-  _RadianPart(Part part) : super(part.videoList, part.duration, part.name, part.type);
+class _RadianPart extends VideoCoursePart {
+  _RadianPart(VideoCoursePart part) : super(part.videoList, part.duration, part.name, part.type);
 
   double startRadian;
   double sweepRadian;

@@ -34,6 +34,7 @@ import 'package:mirror/page/profile/setting/notice_setting_page.dart';
 import 'package:mirror/page/profile/setting/setting_home_page.dart';
 import 'package:mirror/page/profile/training_record/training_record_all_page.dart';
 import 'package:mirror/page/profile/training_record/training_record_page.dart';
+import 'package:mirror/page/profile/training_record/weight_record_page.dart';
 import 'package:mirror/page/scan_code_page.dart';
 import 'package:mirror/page/profile/setting/blacklist_page.dart';
 import 'package:mirror/page/profile/setting/feedback_page.dart';
@@ -47,6 +48,7 @@ import 'package:mirror/page/training/machine/connection_info_page.dart';
 import 'package:mirror/page/training/machine/machine_setting_page.dart';
 import 'package:mirror/page/training/machine/remote_controller_page.dart';
 import 'package:mirror/page/training/video_course/video_course_list_page.dart';
+import 'package:mirror/page/training/video_course/video_course_play_page.dart';
 import 'package:mirror/page/training/video_course/video_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -121,7 +123,6 @@ var handlerProfileDetailMore = Handler(handlerFunc: (BuildContext context, Map<S
   return ProfileDetailsMore();
 });
 
-
 var handlerEditInformation = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return EditInformation();
 });
@@ -164,6 +165,9 @@ var handlerSettingAccountSecurity = Handler(handlerFunc: (BuildContext context, 
 var handlerTrrainingRecord = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return TrainingRecordPage();
 });
+var handlerWeightRecordPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return WeightRecordPage();
+});
 var handlerTrainingRecordAllPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return TrainingRecordAllPage();
 });
@@ -178,6 +182,12 @@ var handlerLiveBroadcast = Handler(handlerFunc: (BuildContext context, Map<Strin
 
 var handlerVideoCourseList = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return VideoCourseListPage();
+});
+
+var handlerVideoCoursePlay = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return VideoCoursePlayPage(
+      Map<String, String>.from(data["videoPathMap"]), LiveVideoModel.fromJson(data["videoCourseModel"]));
 });
 
 var handlerLiveDetail = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {

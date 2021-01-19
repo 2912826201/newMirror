@@ -32,10 +32,11 @@ class AppRouter {
   static String pathPerfectUserPage = "/perfectuser";
   static String pathPreviewPhoto = "/previewphoto";
   static String pathPreviewVideo = "/previewvideo";
-  static String pathLiveBroadcast = "/livebroadcast";
-  static String pathLiveDetail = "/livedetail";
-  static String pathVideoDetail = "/videodetail";
-  static String pathVideoCourseList = "/videocourselist";
+  static String pathLiveBroadcast = "/training/livebroadcast";
+  static String pathLiveDetail = "/training/livedetail";
+  static String pathVideoDetail = "/training/videodetail";
+  static String pathVideoCourseList = "/training/videocourselist";
+  static String pathVideoCoursePlay = "/training/videocourseplay";
   static String pathScanCode = "/scancode";
   static String pathMineDetails = "/minedetails";
   static String pathProfileDetails = "/profile/details";
@@ -55,6 +56,7 @@ class AppRouter {
   static String pathSettingAccountSecurity = "/profile/settingaccountsecurity";
   static String pathLoginSucess = "/profile/loginsucess";
   static String pathTrrainingRecord = "/profile/trrainingRecord";
+  static String pathWeightRecordPage = "/profile/weightRecordPage";
   static String pathTrainingRecordAllPage = "/profile/trrainingRecord/TrainingRecordAllPage";
 
   static void configureRouter(FluroRouter router) {
@@ -83,6 +85,7 @@ class AppRouter {
     router.define(pathScanCode, handler: handlerScanCode);
     router.define(pathProfileDetails, handler: handlermineDetails);
     router.define(pathVideoCourseList, handler: handlerVideoCourseList);
+    router.define(pathVideoCoursePlay, handler: handlerVideoCoursePlay);
     router.define(pathProfileDetailsMore, handler: handlerProfileDetailMore);
     router.define(pathEditInformation, handler: handlerEditInformation);
     router.define(pathEditInformationName, handler: handlerEditInformationName);
@@ -100,6 +103,7 @@ class AppRouter {
     router.define(pathSettingAbout, handler: handlerSettingAbout);
     router.define(pathSettingAccountSecurity, handler: handlerSettingAccountSecurity);
     router.define(pathTrrainingRecord, handler: handlerTrrainingRecord);
+    router.define(pathWeightRecordPage, handler: handlerWeightRecordPage);
     router.define(pathTrainingRecordAllPage, handler: handlerTrainingRecordAllPage);
 
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
@@ -182,6 +186,14 @@ class AppRouter {
 
   static void navigateToVideoCourseList(BuildContext context) {
     _navigateToPage(context, pathVideoCourseList, {});
+  }
+
+  static void navigateToVideoCoursePlay(BuildContext context, Map<String, String> videoPathMap,
+      LiveVideoModel videoCourseModel) {
+    Map<String, dynamic> map = Map();
+    map["videoPathMap"] = videoPathMap;
+    map["videoCourseModel"] = videoCourseModel.toJson();
+    _navigateToPage(context, pathVideoCoursePlay, map);
   }
 
   static void navigateToLiveDetail(
@@ -328,5 +340,9 @@ class AppRouter {
 
   static void navigateToTrainingRecordAllPage(BuildContext context) {
     _navigateToPage(context, pathTrainingRecordAllPage, {});
+  }
+
+  static void navigateToWeightRecordPage(BuildContext context) {
+    _navigateToPage(context, pathWeightRecordPage, {});
   }
 }
