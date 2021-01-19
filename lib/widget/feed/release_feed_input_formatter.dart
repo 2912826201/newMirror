@@ -122,8 +122,11 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
 
     print("还调用了下面");
     print(delRules);
-    _correctRules(oldValue.selection.start, oldValue.text.length, newValue.text.length);
+    if(rules.isNotEmpty) {
+      _correctRules(oldValue.selection.start, oldValue.text.length, newValue.text.length);
+    }
     _valueChangedCallback(rules, newValue.text, atIndex, topicIndex,atSearchStr,topicSearchStr);
+    print("返回值++++++++++++++++${newValue.text}");
     return newValue;
   }
 

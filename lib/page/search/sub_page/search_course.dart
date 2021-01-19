@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/search/search_api.dart';
@@ -10,6 +9,7 @@ import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
+import 'package:mirror/page/training/video_course/video_course_list_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
@@ -24,8 +24,9 @@ class SearchCourse extends StatefulWidget {
   SearchCourseState createState() => SearchCourseState();
 }
 
-class SearchCourseState extends State<SearchCourse>  {
-
+class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
 
   // 声明定时器
   Timer timer;
@@ -78,6 +79,7 @@ class SearchCourseState extends State<SearchCourse>  {
         lastString = widget.keyWord;
       });
     });
+    super.initState();
   }
 
   @override
@@ -202,6 +204,8 @@ class SearchCourseState extends State<SearchCourse>  {
       );
     }
   }
+
+
 }
 
 class SearchCourseItem extends StatefulWidget {
@@ -231,8 +235,8 @@ class SearchCourseItemState extends State<SearchCourseItem> {
         margin: widget.index == widget.count - 1 ? endMargin : (widget.index == 0 ? firstMargin : commonMargin),
         child: Row(
           children: [
-            _getItemLeftImageUi(widget.videoModel, widget.index),
-            _getItemRightDataUi(widget.videoModel, 90, widget.index),
+            buildVideoCourseItemLeftImageUi(widget.videoModel, getHeroTag(widget.videoModel, widget.index)),
+            buildVideoCourseItemRightDataUi(widget.videoModel, 90, false),
           ],
         ),
       ),
@@ -245,40 +249,6 @@ class SearchCourseItemState extends State<SearchCourseItem> {
     );
   }
 
-  //获取left的图片
-  Widget _getItemLeftImageUi(LiveVideoModel value, int index) {
-    String imageUrl;
-    if (value.picUrl != null) {
-      imageUrl = value.picUrl;
-    } else if (value.coursewareDto?.picUrl != null) {
-      imageUrl = value.coursewareDto?.picUrl;
-    } else if (value.coursewareDto?.previewVideoUrl != null) {
-      imageUrl = value.coursewareDto?.previewVideoUrl;
-    }
-
-    return Container(
-      width: 120,
-      height: 90,
-      child: Hero(
-        child: CachedNetworkImage(
-          height: 90,
-          width: 120,
-          imageUrl: imageUrl == null ? "" : imageUrl,
-          fit: BoxFit.cover,
-          placeholder: (context, url) => Image.asset(
-            "images/test/bg.png",
-            fit: BoxFit.cover,
-          ),
-          errorWidget: (context, url, error) => Image.asset(
-            "images/test/bg.png",
-            fit: BoxFit.cover,
-          ),
-        ),
-        tag: getHeroTag(value, index),
-      ),
-    );
-  }
-
   //给hero的tag设置唯一的值
   Object getHeroTag(LiveVideoModel videoModel, index) {
     if (heroTagArray != null && heroTagArray.length > index) {
@@ -288,82 +258,5 @@ class SearchCourseItemState extends State<SearchCourseItem> {
       heroTagArray.add(string);
       return string;
     }
-  }
-
-  //获取右边数据的ui
-  Widget _getItemRightDataUi(LiveVideoModel value, int imageHeight, int index) {
-    TextStyle textStyleBold = TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColor.textPrimary2);
-    TextStyle textStyleNormal = TextStyle(fontSize: 12, color: AppColor.textSecondary);
-
-    return Expanded(
-        child: SizedBox(
-      child: Container(
-        margin: const EdgeInsets.only(left: 12),
-        height: imageHeight.toDouble(),
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              child: Text(
-                value.title ?? "",
-                style: TextStyle(
-                  fontSize: 15,
-                  color: AppColor.textPrimary1,
-                  fontWeight: FontWeight.bold,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            Expanded(
-                child: SizedBox(
-              child: Container(
-                padding: const EdgeInsets.only(top: 6),
-                width: double.infinity,
-                height: double.infinity,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      child: RichText(
-                        text: TextSpan(children: [
-                          TextSpan(text: value.levelDto?.ename, style: textStyleBold),
-                          // ignore: null_aware_before_operator
-                          TextSpan(
-                              // ignore: null_aware_before_operator
-                              text: value.levelDto?.name + " · ",
-                              style: textStyleNormal),
-                          TextSpan(
-                              text: ((value.times ~/ 1000) ~/ 60 > 0
-                                      ? (value.times ~/ 1000) ~/ 60
-                                      : (value.times ~/ 1000))
-                                  .toString(),
-                              style: textStyleBold),
-                          TextSpan(text: (value.times ~/ 1000) ~/ 60 > 0 ? "分钟 · " : "秒 · ", style: textStyleNormal),
-                          TextSpan(text: value.calories.toString(), style: textStyleBold),
-                          TextSpan(text: "千卡", style: textStyleNormal),
-                        ]),
-                      ),
-                      top: 0,
-                      left: 0,
-                    ),
-                    Positioned(
-                      child: Text(
-                        IntegerUtil.formatIntegerCn(value.joinAmount) + "人练过",
-                        style: TextStyle(fontSize: 12, color: AppColor.textPrimary2),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      bottom: 0,
-                      left: 0,
-                      right: 8,
-                    )
-                  ],
-                ),
-              ),
-            )),
-          ],
-        ),
-      ),
-    ));
   }
 }
