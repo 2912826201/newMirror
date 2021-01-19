@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/live_video_model.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/dialog.dart';
@@ -20,28 +21,28 @@ final List<String> testVideoUrls = [
 ];
 
 //测试用数据结构
-class Part {
+class VideoCoursePart {
   List<String> videoList;
   int duration;
   String name;
   int type; //0-课程 1-休息
 
-  Part(this.videoList, this.duration, this.name, this.type);
+  VideoCoursePart(this.videoList, this.duration, this.name, this.type);
 }
 
-final List<Part> partList = [
-  Part([
+List<VideoCoursePart> partList = [
+  VideoCoursePart([
     // "videos/1.mp4",
     // "videos/2.mp4",
     testVideoUrls[0],
     testVideoUrls[1],
   ], 50, "第一段多视频结束不休息", 0),
-  Part([
+  VideoCoursePart([
     // "videos/3.mp4",
     testVideoUrls[2],
   ], 55, "第二段单视频结束有休息", 0),
-  Part([], 30, "休息", 1),
-  Part([
+  VideoCoursePart([], 30, "休息", 1),
+  VideoCoursePart([
     // "videos/4.mp4",
     testVideoUrls[3],
   ], 182, "第三段单视频结束后完成", 0),
@@ -52,10 +53,13 @@ int _buttonTapInterval = 500;
 int _timerInterval = 100;
 
 class VideoCoursePlayPage extends StatefulWidget {
-  VideoCoursePlayPage(this.videoPathMap, {Key key}) : super(key: key);
+  VideoCoursePlayPage(this.videoPathMap, this.videoCourseModel, {Key key}) : super(key: key);
 
   //视频播放地址对应本地文件地址的map
   final Map<String, String> videoPathMap;
+
+  //视频课的model
+  final LiveVideoModel videoCourseModel;
 
   @override
   _VideoCoursePlayState createState() => _VideoCoursePlayState();
@@ -145,6 +149,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
   @override
   void initState() {
     super.initState();
+    _parseModelToPartList();
     _parsePartList();
     if (_timer == null) {
       _timer = Timer.periodic(Duration(milliseconds: _timerInterval), _updateInfoByTimer);
@@ -228,7 +233,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                                 width: 8,
                               ),
                               Text(
-                                "1234人已学习",
+                                "${widget.videoCourseModel.practiceAmount}人已学习",
                                 style: TextStyle(
                                   color: AppColor.white.withOpacity(0.35),
                                   fontSize: 10,
@@ -522,7 +527,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
 
     _currentPartIndex++;
 
-    Part part = partList[_currentPartIndex];
+    VideoCoursePart part = partList[_currentPartIndex];
     if (part.type == 0) {
       //需要去播放
       setState(() {
@@ -600,7 +605,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
       //已经是第一段落 不做操作
       return;
     }
-    Part previousPart = partList[basePartIndex - 1];
+    VideoCoursePart previousPart = partList[basePartIndex - 1];
     if (previousPart.type == 0) {
       //如果基准段落的上一段落是训练 则将基准段落的值-2赋值给当前段落索引 跳到基准段落的下一段落
       _currentPartIndex = basePartIndex - 2;
@@ -619,7 +624,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
       //已经是最后一段落 直接结束
       return;
     }
-    Part nextPart = partList[basePartIndex + 1];
+    VideoCoursePart nextPart = partList[basePartIndex + 1];
     if (nextPart.type == 0) {
       //如果基准段落的下一段落是训练 则将基准段落的值赋值给当前段落索引 跳到基准段落的下一段落
       _currentPartIndex = basePartIndex;
@@ -631,6 +636,18 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
       //类型出错
       return;
     }
+  }
+
+  _parseModelToPartList() {
+    partList = [];
+    widget.videoCourseModel.coursewareDto.componentDtos.forEach((component) {
+      List<String> urlList = [];
+      component.scriptToVideo?.forEach((element) {
+        urlList.add(element.videoUrl);
+      });
+      partList
+          .add(VideoCoursePart(urlList, (component.times / 1000).floor(), component.name, component.type == 3 ? 1 : 0));
+    });
   }
 
   _parsePartList() {

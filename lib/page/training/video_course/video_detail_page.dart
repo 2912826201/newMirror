@@ -25,20 +25,14 @@ import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
-import 'package:mirror/api/live_broadcast/live_api.dart';
+import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/widget/post_comments.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 
-
 /// 视频详情页
 class VideoDetailPage extends StatefulWidget {
-  const VideoDetailPage({Key key,
-    this.heroTag,
-    this.liveCourseId,
-    this.courseId,
-    this.videoModel})
-      : super(key: key);
+  const VideoDetailPage({Key key, this.heroTag, this.liveCourseId, this.courseId, this.videoModel}) : super(key: key);
 
   final String heroTag;
   final int liveCourseId;
@@ -48,10 +42,7 @@ class VideoDetailPage extends StatefulWidget {
   @override
   createState() {
     return VideoDetailPageState(
-        heroTag: heroTag,
-        videoCourseId: liveCourseId,
-        courseId: liveCourseId,
-        videoModel: videoModel);
+        heroTag: heroTag, videoCourseId: liveCourseId, courseId: liveCourseId, videoModel: videoModel);
   }
 }
 
@@ -83,8 +74,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   var commentLoadingStatusList = <LoadingStatus>[];
 
   //title文字的样式
-  var titleTextStyle = TextStyle(
-      fontSize: 18, fontWeight: FontWeight.bold, color: AppColor.textPrimary1);
+  var titleTextStyle = TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColor.textPrimary1);
 
   //用户的评论热度
   CommentModel courseCommentHot;
@@ -146,6 +136,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   //是不是在下载中
   bool isDownLoading = false;
 
+  //下载完成后视频文件的本地地址Map
+  Map<String, String> videoPathMap = {};
+
   @override
   void initState() {
     super.initState();
@@ -188,25 +181,25 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       if (loadingStatus == LoadingStatus.STATUS_LOADING) {
         widgetArray.add(Expanded(
             child: SizedBox(
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            )));
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        )));
       } else {
         //加载失败
         widgetArray.add(Expanded(
             child: SizedBox(
-              child: Center(
-                child: GestureDetector(
-                  child: Text("加载失败"),
-                  onTap: () {
-                    loadingStatus = LoadingStatus.STATUS_LOADING;
-                    setState(() {});
-                    getDataAction();
-                  },
-                ),
-              ),
-            )));
+          child: Center(
+            child: GestureDetector(
+              child: Text("加载失败"),
+              onTap: () {
+                loadingStatus = LoadingStatus.STATUS_LOADING;
+                setState(() {});
+                getDataAction();
+              },
+            ),
+          ),
+        )));
       }
       return Container(
         child: Column(children: widgetArray),
@@ -268,10 +261,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
         children: [
           Container(
             width: double.infinity,
-            height: MediaQuery
-                .of(context)
-                .size
-                .height - 50,
+            height: MediaQuery.of(context).size.height - 50,
             child: ScrollConfiguration(
               behavior: NoBlueEffectBehavior(),
               child: NotificationListener<ScrollNotification>(
@@ -280,16 +270,12 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                   if (metrics.pixels < 10) {
                     if (isBouncingScrollPhysics) {
                       isBouncingScrollPhysics = false;
-                      setState(() {
-
-                      });
+                      setState(() {});
                     }
                   } else {
                     if (!isBouncingScrollPhysics) {
                       isBouncingScrollPhysics = true;
-                      setState(() {
-
-                      });
+                      setState(() {});
                     }
                   }
                   return false;
@@ -324,9 +310,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                   controller: _refreshController,
                   onLoading: _onLoading,
                   child: CustomScrollView(
-                    physics: isBouncingScrollPhysics
-                        ? BouncingScrollPhysics()
-                        : ClampingScrollPhysics(),
+                    physics: isBouncingScrollPhysics ? BouncingScrollPhysics() : ClampingScrollPhysics(),
                     slivers: <Widget>[
                       // header,
                       SliverPersistentHeader(
@@ -335,10 +319,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                           title: videoModel.title ?? "",
                           collapsedHeight: 40,
                           expandedHeight: 300,
-                          paddingTop: MediaQuery
-                              .of(context)
-                              .padding
-                              .top,
+                          paddingTop: MediaQuery.of(context).padding.top,
                           coverImgUrl: imageUrl,
                           heroTag: heroTag,
                           startTime: videoModel.startTime,
@@ -355,7 +336,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                       _getLineView(),
                       _getCourseCommentUi(),
                       SliverToBoxAdapter(
-                        child: SizedBox(height: 15,),
+                        child: SizedBox(
+                          height: 15,
+                        ),
                       )
                     ],
                   ),
@@ -378,71 +361,64 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     );
   }
 
-
   //训练器材界面
   Widget _getTrainingEquipmentUi() {
     var widgetList = <Widget>[];
-    widgetList.add(
-        Container(
-          padding: const EdgeInsets.only(left: 16),
-          child: Text(
-            "训练器材",
-            style: titleTextStyle,
-          ),
-        )
-    );
+    widgetList.add(Container(
+      padding: const EdgeInsets.only(left: 16),
+      child: Text(
+        "训练器材",
+        style: titleTextStyle,
+      ),
+    ));
 
     widgetList.add(Expanded(child: SizedBox()));
 
     if (videoModel.equipmentDtos == null || videoModel.equipmentDtos.length < 1) {
-      widgetList.add(
-          Container(
-            padding: const EdgeInsets.only(right: 32),
-            child: Text(
-              "无",
-              style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
-            ),
-          )
-      );
+      widgetList.add(Container(
+        padding: const EdgeInsets.only(right: 32),
+        child: Text(
+          "无",
+          style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+        ),
+      ));
     } else {
       for (int i = 0; i < videoModel.equipmentDtos.length; i++) {
         widgetList.add(Container(
           margin: const EdgeInsets.all(8),
           child: Image.network(
-            videoModel.equipmentDtos[i]?.terminalPicUrl ?? "", width: 24, height: 24, fit: BoxFit.cover,),
+            videoModel.equipmentDtos[i]?.terminalPicUrl ?? "",
+            width: 24,
+            height: 24,
+            fit: BoxFit.cover,
+          ),
         ));
       }
     }
 
     return SliverToBoxAdapter(
       child: Container(
-          width: MediaQuery
-              .of(context)
-              .size
-              .width,
+          width: MediaQuery.of(context).size.width,
           margin: const EdgeInsets.only(top: 12),
           child: Column(
             children: [
               Container(
                 height: 48,
                 padding: const EdgeInsets.only(right: 4),
-                child: Row(children: widgetList,),
+                child: Row(
+                  children: widgetList,
+                ),
               ),
               Container(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width,
+                width: MediaQuery.of(context).size.width,
                 height: 1,
                 margin: const EdgeInsets.only(left: 16, right: 16),
                 color: AppColor.bgWhite,
               ),
             ],
-          )
-      ),
+          )),
     );
   }
-
 
   //获取训练数据ui
   Widget _getTitleWidget() {
@@ -456,51 +432,51 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     var tagArray = ["时间", "消耗", "难度"];
 
     for (int i = 0; i < titleArray.length; i++) {
-      widgetArray.add(
-          Container(
-            child: Column(
-              children: [
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    verticalDirection: VerticalDirection.down,
-                    children: [
-                      Text(titleArray[i] ?? "",
-                        style: TextStyle(fontSize: 23,
-                            color: AppColor.black,
-                            fontWeight: FontWeight.bold),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      SizedBox(width: 2,),
-                      Container(
-                        child: Text(subTitleArray[i] ?? "", style: TextStyle(
-                            fontSize: 12, color: AppColor.textPrimary3),),
-                        margin: const EdgeInsets.only(top: 4),
-                      )
-                    ],
+      widgetArray.add(Container(
+        child: Column(
+          children: [
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                verticalDirection: VerticalDirection.down,
+                children: [
+                  Text(
+                    titleArray[i] ?? "",
+                    style: TextStyle(fontSize: 23, color: AppColor.black, fontWeight: FontWeight.bold),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                SizedBox(height: 6,),
-                Text(tagArray[i],
-                  style: TextStyle(fontSize: 12, color: AppColor.textHint),),
-              ],
+                  SizedBox(
+                    width: 2,
+                  ),
+                  Container(
+                    child: Text(
+                      subTitleArray[i] ?? "",
+                      style: TextStyle(fontSize: 12, color: AppColor.textPrimary3),
+                    ),
+                    margin: const EdgeInsets.only(top: 4),
+                  )
+                ],
+              ),
             ),
-            width: (MediaQuery
-                .of(context)
-                .size
-                .width - 1) / 3,
-          )
-      );
+            SizedBox(
+              height: 6,
+            ),
+            Text(
+              tagArray[i],
+              style: TextStyle(fontSize: 12, color: AppColor.textHint),
+            ),
+          ],
+        ),
+        width: (MediaQuery.of(context).size.width - 1) / 3,
+      ));
       if (i < titleArray.length - 1) {
-        widgetArray.add(
-            Container(
-              width: 0.5,
-              height: 18,
-              color: AppColor.textHint,
-            )
-        );
+        widgetArray.add(Container(
+          width: 0.5,
+          height: 18,
+          color: AppColor.textHint,
+        ));
       }
     }
     return SliverToBoxAdapter(
@@ -520,8 +496,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     return SliverToBoxAdapter(
       child: GestureDetector(
         child: Container(
-          padding:
-          const EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 20),
+          padding: const EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 20),
           color: Colors.white,
           width: double.infinity,
           child: Row(
@@ -551,37 +526,36 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                     Text(
                       // ignore: null_aware_before_operator
                       videoModel.coachDto?.nickName,
-                      style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColor.textPrimary2,
-                          fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 14, color: AppColor.textPrimary2, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
               ),
               Expanded(child: SizedBox()),
-
               ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(100)),
                 child: Material(
                     borderRadius: BorderRadius.all(Radius.circular(100)),
-                    color: videoModel.coachDto?.relation == 1 ||
-                        videoModel.coachDto?.relation == 3 ? AppColor.white : AppColor.black,
+                    color: videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3
+                        ? AppColor.white
+                        : AppColor.black,
                     child: InkWell(
                       splashColor: AppColor.textHint,
                       child: Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(100)),
-                          border: Border.all(width: videoModel.coachDto?.relation == 1 ||
-                              videoModel.coachDto?.relation == 3 ?
-                          1 : 0.0, color: AppColor.textHint),
+                          border: Border.all(
+                              width: videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3 ? 1 : 0.0,
+                              color: AppColor.textHint),
                         ),
-                        padding: const EdgeInsets.only(
-                            left: 16, right: 16, top: 5, bottom: 5),
+                        padding: const EdgeInsets.only(left: 16, right: 16, top: 5, bottom: 5),
                         child: Text(
                           videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3 ? "已关注" : "关注",
-                          style: TextStyle(color: videoModel.coachDto?.relation == 1 ||
-                              videoModel.coachDto?.relation == 3 ? AppColor.textHint : AppColor.white, fontSize: 11),
+                          style: TextStyle(
+                              color: videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3
+                                  ? AppColor.textHint
+                                  : AppColor.white,
+                              fontSize: 11),
                         ),
                       ),
                       onTap: () {
@@ -589,10 +563,8 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                           _getAttention(videoModel.coachDto?.uid);
                         }
                       },
-                    )
-                ),
+                    )),
               )
-
             ],
           ),
         ),
@@ -617,8 +589,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   //获取动作的ui
   Widget _getActionUi() {
     // ignore: null_aware_before_operator
-    if (videoModel.coursewareDto?.actionMapList == null ||
-        videoModel.coursewareDto?.actionMapList?.length < 1) {
+    if (videoModel.coursewareDto?.actionMapList == null || videoModel.coursewareDto?.actionMapList?.length < 1) {
       return SliverToBoxAdapter();
     }
     var widgetArray = <Widget>[];
@@ -664,12 +635,12 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                 padding: const EdgeInsets.all(12),
                 margin: index == 0
                     ? const EdgeInsets.only(left: 15.5)
-                // ignore: null_aware_before_operator
-                    : (index ==
                     // ignore: null_aware_before_operator
-                    videoModel.coursewareDto?.actionMapList?.length - 1
-                    ? const EdgeInsets.only(left: 8)
-                    : const EdgeInsets.only(left: 8, right: 15.5)),
+                    : (index ==
+                            // ignore: null_aware_before_operator
+                            videoModel.coursewareDto?.actionMapList?.length - 1
+                        ? const EdgeInsets.only(left: 8)
+                        : const EdgeInsets.only(left: 8, right: 15.5)),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4),
                   color: AppColor.bgWhite,
@@ -681,25 +652,23 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                       width: double.infinity,
                       child: Text(
                         videoModel.coursewareDto?.actionMapList[index]["name"],
-                        style: TextStyle(
-                            fontSize: 14, color: AppColor.textPrimary2),
+                        style: TextStyle(fontSize: 14, color: AppColor.textPrimary2),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    Container(width: double.infinity,
+                    Container(
+                        width: double.infinity,
                         child: Text(
                           timeString,
-                          style: TextStyle(
-                              fontSize: 12, color: AppColor.textSecondary),)),
+                          style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                        )),
                   ],
                 ),
               );
-            }
-        ),
+            }),
       ),
     );
-
 
     return SliverToBoxAdapter(
       child: Container(
@@ -720,19 +689,15 @@ class VideoDetailPageState extends State<VideoDetailPage> {
         imageArray.add(
           Container(
             margin: const EdgeInsets.only(right: 8),
-            child: Image.network(otherUsers[i].avatarUri, fit: BoxFit.cover,),
-            width: (MediaQuery
-                .of(context)
-                .size
-                .width - 16 * 3) / 3,
-            height: (MediaQuery
-                .of(context)
-                .size
-                .width - 16 * 3) / 3,
+            child: Image.network(
+              otherUsers[i].avatarUri,
+              fit: BoxFit.cover,
+            ),
+            width: (MediaQuery.of(context).size.width - 16 * 3) / 3,
+            height: (MediaQuery.of(context).size.width - 16 * 3) / 3,
           ),
         );
       }
-
 
       return SliverToBoxAdapter(
         child: Column(
@@ -742,35 +707,49 @@ class VideoDetailPageState extends State<VideoDetailPage> {
               height: 12,
               color: AppColor.bgWhite.withOpacity(0.65),
             ),
-            SizedBox(height: 23,),
+            SizedBox(
+              height: 23,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
                   padding: const EdgeInsets.only(left: 16),
-                  child: Text("TA们刚刚完成训练", style: titleTextStyle,),
+                  child: Text(
+                    "TA们刚刚完成训练",
+                    style: titleTextStyle,
+                  ),
                 ),
                 Container(
                   padding: const EdgeInsets.only(right: 16),
-                  child: Icon(Icons.chevron_right, color: AppColor.textHint,),
+                  child: Icon(
+                    Icons.chevron_right,
+                    color: AppColor.textHint,
+                  ),
                 ),
               ],
             ),
-            SizedBox(height: 11,),
+            SizedBox(
+              height: 11,
+            ),
             Container(
               width: double.infinity,
               height: 1,
               margin: const EdgeInsets.only(left: 16, right: 16),
               color: AppColor.bgWhite,
             ),
-            SizedBox(height: 12,),
+            SizedBox(
+              height: 12,
+            ),
             Container(
               padding: const EdgeInsets.only(left: 16, right: 8),
               child: Row(
                 children: imageArray,
               ),
             ),
-            SizedBox(height: 16,),
+            SizedBox(
+              height: 16,
+            ),
           ],
         ),
       );
@@ -778,7 +757,6 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       return SliverToBoxAdapter();
     }
   }
-
 
   //课程评论的框架--头部的数据
   Widget _getCourseCommentUi() {
@@ -793,67 +771,71 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       ),
     ));
     //评论数量等等
-    widgetArray.add(Container(
-      width: double.infinity,
-      padding: const EdgeInsets.only(left: 16.5, right: 16, top: 8),
-      child: Row(
-        children: [
-          Text(
-            "${isHotOrTime ? (courseCommentHot?.totalCount) : (courseCommentTime
-                ?.totalCount)}评论",
-            style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
-          ),
-          Expanded(child: SizedBox()),
-          InkWell(
-            child: Text(
-              "按热度",
-              style: TextStyle(
-                fontSize: 14,
-                color: isHotOrTime ? AppColor.textPrimary1 : AppColor
-                    .textSecondary,
-                fontWeight: isHotOrTime ? FontWeight.bold : FontWeight.normal,
-              ),
+    widgetArray.add(
+      Container(
+        width: double.infinity,
+        padding: const EdgeInsets.only(left: 16.5, right: 16, top: 8),
+        child: Row(
+          children: [
+            Text(
+              "${isHotOrTime ? (courseCommentHot?.totalCount) : (courseCommentTime?.totalCount)}评论",
+              style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
             ),
-            splashColor: AppColor.textHint1,
-            onTap: () {
-              if (!isHotOrTime) {
-                _refreshController.loadComplete();
-                isHotOrTime = !isHotOrTime;
-                getDataAction(isFold: true);
-              }
-            },
-          ),
-          SizedBox(width: 7,),
-          Container(
-            width: 0.5,
-            height: 15.5,
-            color: AppColor.textHint1,
-          ),
-          SizedBox(width: 7,),
-          InkWell(
-            child: Text(
-              "按时间",
-              style: TextStyle(
-                fontSize: 14,
-                color: !isHotOrTime ? AppColor.textPrimary1 : AppColor
-                    .textSecondary,
-                fontWeight: !isHotOrTime ? FontWeight.bold : FontWeight.normal,
+            Expanded(child: SizedBox()),
+            InkWell(
+              child: Text(
+                "按热度",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: isHotOrTime ? AppColor.textPrimary1 : AppColor.textSecondary,
+                  fontWeight: isHotOrTime ? FontWeight.bold : FontWeight.normal,
+                ),
               ),
+              splashColor: AppColor.textHint1,
+              onTap: () {
+                if (!isHotOrTime) {
+                  _refreshController.loadComplete();
+                  isHotOrTime = !isHotOrTime;
+                  getDataAction(isFold: true);
+                }
+              },
             ),
-            splashColor: AppColor.textHint1,
-            onTap: () {
-              if (isHotOrTime) {
-                _refreshController.loadComplete();
-                isHotOrTime = !isHotOrTime;
-                getDataAction(isFold: true);
-              }
-            },
-          ),
-
-        ],
+            SizedBox(
+              width: 7,
+            ),
+            Container(
+              width: 0.5,
+              height: 15.5,
+              color: AppColor.textHint1,
+            ),
+            SizedBox(
+              width: 7,
+            ),
+            InkWell(
+              child: Text(
+                "按时间",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: !isHotOrTime ? AppColor.textPrimary1 : AppColor.textSecondary,
+                  fontWeight: !isHotOrTime ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+              splashColor: AppColor.textHint1,
+              onTap: () {
+                if (isHotOrTime) {
+                  _refreshController.loadComplete();
+                  isHotOrTime = !isHotOrTime;
+                  getDataAction(isFold: true);
+                }
+              },
+            ),
+          ],
+        ),
       ),
-    ),);
-    widgetArray.add(SizedBox(height: 12,));
+    );
+    widgetArray.add(SizedBox(
+      height: 12,
+    ));
     //点击写评论
     widgetArray.add(Center(
       child: Row(
@@ -865,9 +847,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
             height: 28,
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                image: DecorationImage(
-                    image: NetworkImage(Application.profile.avatarUri),
-                    fit: BoxFit.cover)),
+                image: DecorationImage(image: NetworkImage(Application.profile.avatarUri), fit: BoxFit.cover)),
           ),
           GestureDetector(
             child: Container(
@@ -880,9 +860,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                 borderRadius: BorderRadius.all(Radius.circular(14)),
                 color: AppColor.bgWhite.withOpacity(0.65),
               ),
-              child: Text("说点什么吧~",
-                  style: TextStyle(
-                      fontSize: 14, color: AppColor.textHint)),
+              child: Text("说点什么吧~", style: TextStyle(fontSize: 14, color: AppColor.textHint)),
             ),
             onTap: () {
               targetId = videoModel.id;
@@ -916,7 +894,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   Widget _getCommentItemUi() {
     var widgetArray = <Widget>[];
 
-    widgetArray.add(SizedBox(height: 23,));
+    widgetArray.add(SizedBox(
+      height: 23,
+    ));
     if (loadingStatusComment == LoadingStatus.STATUS_LOADING) {
       widgetArray.add(Container());
     } else {
@@ -924,40 +904,39 @@ class VideoDetailPageState extends State<VideoDetailPage> {
         widgetArray.add(Container(
           child: Column(
             children: [
-              Image.asset("images/test/bg.png", fit: BoxFit.cover,
+              Image.asset(
+                "images/test/bg.png",
+                fit: BoxFit.cover,
                 width: 224,
-                height: 224,),
-              SizedBox(height: 16,),
-              Text("偷偷逆袭中，还没有人来冒泡呢",
-                style: TextStyle(fontSize: 14, color: AppColor.textSecondary),)
+                height: 224,
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                "偷偷逆袭中，还没有人来冒泡呢",
+                style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+              )
             ],
           ),
         ));
       } else {
-        for (int i = 0; i <
-            (isHotOrTime ? (courseCommentHot) : (courseCommentTime))?.list
-                ?.length; i++) {
-          CommentDtoModel value = (isHotOrTime
-              ? (courseCommentHot)
-              : (courseCommentTime)).list[i];
+        for (int i = 0; i < (isHotOrTime ? (courseCommentHot) : (courseCommentTime))?.list?.length; i++) {
+          CommentDtoModel value = (isHotOrTime ? (courseCommentHot) : (courseCommentTime)).list[i];
           var subCommentCompleteTitle =
-          // ignore: null_aware_before_operator
-          (value.replys?.length < value.replyCount + value.pullNumber
-              ? "查看"
-              : (commentListSubSettingList[i].isFold ? "查看" : "隐藏"));
-          var subCommentComplete =
-          // ignore: null_aware_before_operator
-          subCommentCompleteTitle +
               // ignore: null_aware_before_operator
-              "${value.replys?.length >= value.replyCount + value.pullNumber
-                  ? value.replyCount
-                  : (value.replyCount + value.pullNumber -
-                  value.replys?.length)}条回复";
+              (value.replys?.length < value.replyCount + value.pullNumber
+                  ? "查看"
+                  : (commentListSubSettingList[i].isFold ? "查看" : "隐藏"));
+          var subCommentComplete =
+              // ignore: null_aware_before_operator
+              subCommentCompleteTitle +
+                  // ignore: null_aware_before_operator
+                  "${value.replys?.length >= value.replyCount + value.pullNumber ? value.replyCount : (value.replyCount + value.pullNumber - value.replys?.length)}条回复";
           if (subCommentCompleteTitle == "隐藏") {
             subCommentComplete = "隐藏回复";
           }
           var subCommentLoading = "正在加载。。。";
-
 
           widgetArray.add(Container(
             width: double.infinity,
@@ -965,7 +944,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
             child: Column(
               children: [
                 _getCommentUi(value, false, value.id),
-                SizedBox(height: 13,),
+                SizedBox(
+                  height: 13,
+                ),
                 Offstage(
                   offstage: value.replyCount + value.pullNumber < 1,
                   child: Container(
@@ -980,18 +961,22 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                             child: GestureDetector(
                               child: Row(
                                 children: [
-                                  SizedBox(width: 57,),
+                                  SizedBox(
+                                    width: 57,
+                                  ),
                                   Container(
                                     width: 40,
                                     height: 0.5,
                                     color: AppColor.textSecondary,
                                   ),
-                                  SizedBox(width: 4,),
+                                  SizedBox(
+                                    width: 4,
+                                  ),
                                   Container(
-                                    child: Text(commentLoadingStatusList[i] ==
-                                        LoadingStatus.STATUS_COMPLETED
-                                        ? subCommentComplete
-                                        : subCommentLoading,
+                                    child: Text(
+                                      commentLoadingStatusList[i] == LoadingStatus.STATUS_COMPLETED
+                                          ? subCommentComplete
+                                          : subCommentLoading,
                                       style: TextStyle(color: Colors.grey),
                                     ),
                                   ),
@@ -999,19 +984,14 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                               ),
                               onTap: () {
                                 // ignore: null_aware_before_operator
-                                if (value.replys?.length >=
-                                    value.replyCount + value.pullNumber) {
-                                  (isHotOrTime
-                                      ? courseCommentHot.list[i].replys
-                                      : courseCommentTime.list[i].replys)
+                                if (value.replys?.length >= value.replyCount + value.pullNumber) {
+                                  (isHotOrTime ? courseCommentHot.list[i].replys : courseCommentTime.list[i].replys)
                                       .clear();
                                   if (isHotOrTime) {
-                                    courseCommentHot.list[i].replyCount +=
-                                        courseCommentHot.list[i].pullNumber;
+                                    courseCommentHot.list[i].replyCount += courseCommentHot.list[i].pullNumber;
                                     courseCommentHot.list[i].pullNumber = 0;
                                   } else {
-                                    courseCommentTime.list[i].replyCount +=
-                                        courseCommentTime.list[i].pullNumber;
+                                    courseCommentTime.list[i].replyCount += courseCommentTime.list[i].pullNumber;
                                     courseCommentTime.list[i].pullNumber = 0;
                                   }
                                   courseCommentPageHot = 1;
@@ -1019,19 +999,17 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                                   setState(() {});
                                 } else {
                                   commentListSubSettingList[i].isFold = false;
-                                  commentLoadingStatusList[i] =
-                                      LoadingStatus.STATUS_LOADING;
-                                  setState(() {
-
-                                  });
-                                  _getSubComment(value.id, value.replys?.length,
-                                      value.replyCount, value.pullNumber, i);
+                                  commentLoadingStatusList[i] = LoadingStatus.STATUS_LOADING;
+                                  setState(() {});
+                                  _getSubComment(value.id, value.replys?.length, value.replyCount, value.pullNumber, i);
                                 }
                               },
                             ),
                           ),
                         ),
-                        SizedBox(height: 13,),
+                        SizedBox(
+                          height: 13,
+                        ),
                       ],
                     ),
                   ),
@@ -1042,7 +1020,6 @@ class VideoDetailPageState extends State<VideoDetailPage> {
         }
       }
     }
-
 
     return Container(
       width: double.infinity,
@@ -1058,7 +1035,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     if (value.replys != null && value.replys.length > 0) {
       for (int i = 0; i < value.replys.length; i++) {
         widgetArray.add(_getCommentUi(value.replys[i], true, value.id));
-        widgetArray.add(SizedBox(height: 13,));
+        widgetArray.add(SizedBox(
+          height: 13,
+        ));
       }
     }
 
@@ -1093,8 +1072,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   }
 
   //获取评论的item--每一个item
-  Widget _getCommentUi(CommentDtoModel value, bool isSubComment,
-      int _targetId) {
+  Widget _getCommentUi(CommentDtoModel value, bool isSubComment, int _targetId) {
     var textSpanList = <TextSpan>[];
     textSpanList.add(TextSpan(
       text: value.name + " ",
@@ -1136,7 +1114,6 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       ));
     }
 
-
     return IntrinsicHeight(
       child: Row(
         verticalDirection: VerticalDirection.up,
@@ -1165,105 +1142,104 @@ class VideoDetailPageState extends State<VideoDetailPage> {
           // //中间信息
           Expanded(
               child: SizedBox(
-                child: GestureDetector(
-                  child: Container(
-                    width: double.infinity,
-                    color: AppColor.transparent,
-                    child: Column(
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          child: RichText(
-                            text: TextSpan(
-                              children: textSpanList,
-                            ),
-                          ),
+            child: GestureDetector(
+              child: Container(
+                width: double.infinity,
+                color: AppColor.transparent,
+                child: Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      child: RichText(
+                        text: TextSpan(
+                          children: textSpanList,
                         ),
-                        SizedBox(
-                          height: 6,
-                        ),
-                        Container(
-                            width: double.infinity,
-                            child: Row(
-                              children: [
-                                Container(
-                                  child: Text(
-                                    DateUtil.formatDateNoYearString(
-                                        DateUtil.getDateTimeByMs(
-                                            value.createTime)),
-                                    style: TextStyle(fontSize: 12,
-                                        color: AppColor.textSecondary),
-                                  ),
-                                ),
-                                SizedBox(width: 12,),
-                                Container(
-                                  child: Text("回复",
-                                    style: TextStyle(fontSize: 12,
-                                        color: AppColor.textSecondary),
-                                  ),
-                                ),
-                                SizedBox(width: 12,),
-                                Offstage(
-                                  // offstage: uId!=value.uid,
-                                  offstage: true,
-                                  child: InkWell(
-                                    child: Container(
-                                      child: Text("删除",
-                                        style: TextStyle(fontSize: 12,
-                                            color: AppColor.textSecondary),
-                                      ),
-                                    ),
-                                    onTap: () {
-                                      ToastShow.show(
-                                          msg: "点击删除", context: context);
-                                      showCupertinoDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return CupertinoAlertDialog(
-                                              title: Text('删除评论'),
-                                              content: Text('是否删除评论'),
-                                              actions: <Widget>[
-                                                CupertinoDialogAction(
-                                                  child: Text('不删除'),
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                  },
-                                                ),
-                                                CupertinoDialogAction(
-                                                  child: Text('删除'),
-                                                  onPressed: () {
-                                                    _deleteComment(
-                                                        value.id);
-                                                    Navigator.pop(context);
-                                                  },
-                                                ),
-                                              ],
-                                            );
-                                          });
-                                    },
-                                  ),
-                                )
-                              ],
-                            )
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                  onTap: () {
-                    targetId = _targetId;
-                    targetType = 2;
-                    replyId = value.uid;
-                    replyCommentId = value.id;
-                    openInputBottomSheet(
-                      context: this.context,
-                      hintText: "回复 " + value.name,
-                      voidCallback: _publishComment,
-                    );
-                  },
+                    SizedBox(
+                      height: 6,
+                    ),
+                    Container(
+                        width: double.infinity,
+                        child: Row(
+                          children: [
+                            Container(
+                              child: Text(
+                                DateUtil.formatDateNoYearString(DateUtil.getDateTimeByMs(value.createTime)),
+                                style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 12,
+                            ),
+                            Container(
+                              child: Text(
+                                "回复",
+                                style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 12,
+                            ),
+                            Offstage(
+                              // offstage: uId!=value.uid,
+                              offstage: true,
+                              child: InkWell(
+                                child: Container(
+                                  child: Text(
+                                    "删除",
+                                    style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                                  ),
+                                ),
+                                onTap: () {
+                                  ToastShow.show(msg: "点击删除", context: context);
+                                  showCupertinoDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return CupertinoAlertDialog(
+                                          title: Text('删除评论'),
+                                          content: Text('是否删除评论'),
+                                          actions: <Widget>[
+                                            CupertinoDialogAction(
+                                              child: Text('不删除'),
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                            ),
+                                            CupertinoDialogAction(
+                                              child: Text('删除'),
+                                              onPressed: () {
+                                                _deleteComment(value.id);
+                                                Navigator.pop(context);
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      });
+                                },
+                              ),
+                            )
+                          ],
+                        )),
+                  ],
                 ),
-              )
+              ),
+              onTap: () {
+                targetId = _targetId;
+                targetType = 2;
+                replyId = value.uid;
+                replyCommentId = value.id;
+                openInputBottomSheet(
+                  context: this.context,
+                  hintText: "回复 " + value.name,
+                  voidCallback: _publishComment,
+                );
+              },
+            ),
+          )),
+          SizedBox(
+            width: 16,
           ),
-          SizedBox(width: 16,),
           //点赞
           Container(
             child: GestureDetector(
@@ -1274,11 +1250,12 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                     color: value.isLaud == 1 ? Colors.red : Colors.grey,
                     size: 18,
                   ),
-                  SizedBox(height: 7,),
+                  SizedBox(
+                    height: 7,
+                  ),
                   Text(
                     IntegerUtil.formatIntegerEn(value.laudCount),
-                    style: TextStyle(
-                        fontSize: 12, color: AppColor.textSecondary),
+                    style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
                   ),
                 ],
               ),
@@ -1291,7 +1268,6 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       ),
     );
   }
-
 
   List<TextSpan> getAtUserTextSpan(CommentDtoModel value) {
     var textSpanList = <TextSpan>[];
@@ -1333,12 +1309,10 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     return textSpanList;
   }
 
-
   //获取底部按钮
   Widget _getBottomBar() {
     bool isLoggedIn;
-    context.select((TokenNotifier notifier) =>
-    notifier.isLoggedIn ? isLoggedIn = true : isLoggedIn = false);
+    context.select((TokenNotifier notifier) => notifier.isLoggedIn ? isLoggedIn = true : isLoggedIn = false);
 
     //todo 判断是否链接了终端
     bool bindingTerminal = false;
@@ -1348,11 +1322,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     bool courseVip = false;
 
     TextStyle textStyle = const TextStyle(color: AppColor.white, fontSize: 16);
-    TextStyle textStyleVip = const TextStyle(
-        color: AppColor.textVipPrimary1, fontSize: 16);
+    TextStyle textStyleVip = const TextStyle(color: AppColor.textVipPrimary1, fontSize: 16);
     EdgeInsetsGeometry margin_32 = const EdgeInsets.only(left: 32, right: 32);
-    EdgeInsetsGeometry marginLeft26Right20 = const EdgeInsets.only(
-        left: 26, right: 20);
+    EdgeInsetsGeometry marginLeft26Right20 = const EdgeInsets.only(left: 26, right: 20);
 
     var childrenArray = <Widget>[];
 
@@ -1376,74 +1348,61 @@ class VideoDetailPageState extends State<VideoDetailPage> {
             child: getBtnUi(false, "试听", textStyle, double.infinity, 40, margin_32),
             onTap: onNoLoginClickListener,
           ),
-        ))
-        );
+        )));
       } else {
         //试听图片
-        childrenArray.add(
-            GestureDetector(
-              child: widget3,
-              onTap: onJudgeIsDownLoadCompleteVideo,
-            )
-        );
+        childrenArray.add(GestureDetector(
+          child: widget3,
+          onTap: onJudgeIsDownLoadCompleteVideo,
+        ));
         if (!(!courseVip || isVip)) {
-          childrenArray.add(
-              Expanded(child: SizedBox(
-                child: GestureDetector(
-                  child: getBtnUi(
-                      true, "开通vip使用终端播放", textStyleVip, double.infinity, 40,
-                      margin_32),
-                  onTap: () {
-                    print("vip");
-                    ToastShow.show(msg: "开通vip使用终端播放", context: context);
-                  },
-                ),
-              ))
-          );
+          childrenArray.add(Expanded(
+              child: SizedBox(
+            child: GestureDetector(
+              child: getBtnUi(true, "开通vip使用终端播放", textStyleVip, double.infinity, 40, margin_32),
+              onTap: () {
+                print("vip");
+                ToastShow.show(msg: "开通vip使用终端播放", context: context);
+              },
+            ),
+          )));
         } else {
           if (bindingTerminal) {
-            childrenArray.add(
-                Expanded(child: SizedBox(
-                  child: GestureDetector(
-                    child: getBtnUi(
-                        false, "使用终端训练", textStyle, double.infinity, 40,
-                        margin_32),
-                    onTap: () {
-                      print("绑定了终端");
-                      ToastShow.show(msg: "使用终端训练", context: context);
-                    },
-                  ),
-                ))
-            );
+            childrenArray.add(Expanded(
+                child: SizedBox(
+              child: GestureDetector(
+                child: getBtnUi(false, "使用终端训练", textStyle, double.infinity, 40, margin_32),
+                onTap: () {
+                  print("绑定了终端");
+                  ToastShow.show(msg: "使用终端训练", context: context);
+                },
+              ),
+            )));
           } else {
-            childrenArray.add(
-                Expanded(child: SizedBox(
-                  child: GestureDetector(
-                    child: getBtnUi(
-                        false, "登陆终端使用终端播放", textStyle, double.infinity, 40,
-                        margin_32),
-                    onTap: () {
-                      print("没有绑定终端");
-                      ToastShow.show(msg: "登陆终端", context: context);
-                    },
-                  ),
-                ))
-            );
+            childrenArray.add(Expanded(
+                child: SizedBox(
+              child: GestureDetector(
+                child: getBtnUi(false, "登陆终端使用终端播放", textStyle, double.infinity, 40, margin_32),
+                onTap: () {
+                  print("没有绑定终端");
+                  ToastShow.show(msg: "登陆终端", context: context);
+                },
+              ),
+            )));
           }
         }
       }
     } else {
-      childrenArray.add(
-          Expanded(child: SizedBox(
-            child: GestureDetector(
-              child: getDownloadingUi(_progress == 0.0 ? "下载准备中" : "下载中 ${formatProgress(_progress)}%"),
-              onTap: () {
-                print("下载中");
-                ToastShow.show(msg: "下载中", context: context);
-              },
-            ),
-          ))
-      );
+      childrenArray.add(Expanded(
+          child: SizedBox(
+        child: GestureDetector(
+          child: getDownloadingUi(_progress == 0.0 ? "下载准备中" : "下载中 ${formatProgress(_progress)}%"),
+          onTap: () {
+            print("下载中");
+            ToastShow.show(msg: "下载中", context: context);
+          },
+        ),
+      )));
     }
 
     return Container(
@@ -1469,12 +1428,8 @@ class VideoDetailPageState extends State<VideoDetailPage> {
           Container(
             width: double.infinity,
             height: 40,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(40 / 2),
-                color: AppColor.bgWhite
-            ),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(40 / 2), color: AppColor.bgWhite),
           ),
-
           Container(
             width: double.infinity,
             height: 40,
@@ -1483,15 +1438,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
               child: UnconstrainedBox(
                 alignment: Alignment.centerLeft,
                 child: Container(
-                  width: (MediaQuery
-                      .of(context)
-                      .size
-                      .width - 64) * _progress,
+                  width: (MediaQuery.of(context).size.width - 64) * _progress,
                   height: 40,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(40 / 2),
-                      color: AppColor.textPrimary1
-                  ),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(40 / 2), color: AppColor.textPrimary1),
                 ),
               ),
             ),
@@ -1508,9 +1457,8 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     );
   }
 
-
-  Widget getBtnUi(bool isVip, String text, TextStyle textStyle, double width1,
-      double height1, EdgeInsetsGeometry marginData) {
+  Widget getBtnUi(
+      bool isVip, String text, TextStyle textStyle, double width1, double height1, EdgeInsetsGeometry marginData) {
     var colors = <Color>[];
     if (isVip) {
       colors.add(AppColor.bgVip1);
@@ -1532,11 +1480,13 @@ class VideoDetailPageState extends State<VideoDetailPage> {
         ),
       ),
       child: Center(
-        child: Text(text, style: textStyle,),
+        child: Text(
+          text,
+          style: textStyle,
+        ),
       ),
     );
   }
-
 
   //加载网络数据
   void getDataAction({bool isFold = false}) async {
@@ -1544,10 +1494,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     if (isHotOrTime) {
       if (courseCommentHot == null) {
         Map<String, dynamic> commentModel = await queryListByHot2(
-            targetId: courseId,
-            targetType: 3,
-            page: courseCommentPageHot,
-            size: courseCommentPageSize);
+            targetId: courseId, targetType: 3, page: courseCommentPageHot, size: courseCommentPageSize);
         if (commentModel != null) {
           courseCommentHot = CommentModel.fromJson(commentModel);
           courseCommentPageHot++;
@@ -1557,10 +1504,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     } else {
       if (courseCommentTime == null) {
         Map<String, dynamic> commentModel = await queryListByTime(
-            targetId: courseId,
-            targetType: 3,
-            page: courseCommentPageTime,
-            size: courseCommentPageSize);
+            targetId: courseId, targetType: 3, page: courseCommentPageTime, size: courseCommentPageSize);
         if (commentModel != null) {
           courseCommentTime = CommentModel.fromJson(commentModel);
           courseCommentPageTime++;
@@ -1585,8 +1529,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     //获取视频详情数据
     if (videoModel == null || videoModel.coursewareDto?.componentDtos == null) {
       //加载数据
-      Map<String, dynamic> model = await getVideoCourseDetail(
-          courseId: videoCourseId);
+      Map<String, dynamic> model = await getVideoCourseDetail(courseId: videoCourseId);
       if (model == null) {
         loadingStatus = LoadingStatus.STATUS_IDEL;
         Future.delayed(Duration(seconds: 1), () {
@@ -1604,8 +1547,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   }
 
   //设置评论的动画类
-  void setCommentListSubSetting(CommentModel commentModel,
-      {bool isFold = false}) {
+  void setCommentListSubSetting(CommentModel commentModel, {bool isFold = false}) {
     commentListSubSettingList.clear();
     commentLoadingStatusList.clear();
     if (commentModel == null) {
@@ -1618,7 +1560,6 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       commentListSubSettingList.add(commentListSubSetting);
       GlobalKey _globalKey = GlobalKey();
       commentListSubSetting.globalKey = _globalKey;
-
 
       //每一个加载评论的加载子评论的状态
       LoadingStatus commentLoadingStatus = LoadingStatus.STATUS_COMPLETED;
@@ -1679,16 +1620,13 @@ class VideoDetailPageState extends State<VideoDetailPage> {
             }
           }
           ToastShow.show(msg: "发布成功", context: context);
-          setState(() {
-
-          });
+          setState(() {});
         } else {
           ToastShow.show(msg: "发布失败", context: context);
         }
       },
     );
   }
-
 
   //删除评论
   _deleteComment(int commentId) async {
@@ -1698,16 +1636,13 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       _deleteCommentData(courseCommentHot, commentId, true);
       _deleteCommentData(courseCommentTime, commentId, false);
       ToastShow.show(msg: "删除成功", context: context);
-      setState(() {
-
-      });
+      setState(() {});
     } else {
       ToastShow.show(msg: "删除失败，只能删除自己的评论", context: context);
     }
   }
 
-  _deleteCommentData(CommentModel commentModel, int commentId,
-      bool isHotOrTime) {
+  _deleteCommentData(CommentModel commentModel, int commentId, bool isHotOrTime) {
     if (commentModel != null) {
       for (int i = 0; i < commentModel.list.length; i++) {
         if (commentModel.list[i].id == commentId) {
@@ -1718,16 +1653,11 @@ class VideoDetailPageState extends State<VideoDetailPage> {
         for (int j = 0; j < commentModel.list[i].replys.length; j++) {
           if (commentModel.list[i].replys[j].id == commentId) {
             commentModel.list[i].replys.removeAt(j);
-            (isHotOrTime ? courseCommentHot : courseCommentTime).list[i]
-                .replyCount--;
-            if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[i]
-                .pullNumber > 0) {
-              (isHotOrTime ? courseCommentHot : courseCommentTime).list[i]
-                  .replyCount +=
-                  (isHotOrTime ? courseCommentHot : courseCommentTime).list[i]
-                      .pullNumber;
-              (isHotOrTime ? courseCommentHot : courseCommentTime).list[i]
-                  .pullNumber = 0;
+            (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].replyCount--;
+            if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[i].pullNumber > 0) {
+              (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].replyCount +=
+                  (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].pullNumber;
+              (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].pullNumber = 0;
             }
             commentListSubSettingList[i].subCommentAllHeight = null;
             judge = 1;
@@ -1742,8 +1672,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   }
 
   //获取子评论
-  _getSubComment(int targetId, int replyLength, int replyCount, int pullNumber,
-      int positionComment) async {
+  _getSubComment(int targetId, int replyLength, int replyCount, int pullNumber, int positionComment) async {
     int subCommentPageSize = 3;
     // int subCommentAllPage=replyCount%subCommentPageSize>0?(replyCount~/subCommentPageSize)+1:(replyCount~/subCommentPageSize);
     int nowSubCommentPage = (replyLength - pullNumber) % subCommentPageSize > 0
@@ -1752,81 +1681,60 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     int page = nowSubCommentPage + 1;
 
     try {
-      Map<String, dynamic> commentModel = await (isHotOrTime
-          ? queryListByHot2
-          : queryListByTime)(targetId: targetId,
-          targetType: 2,
-          page: page,
-          size: subCommentPageSize);
+      Map<String, dynamic> commentModel = await (isHotOrTime ? queryListByHot2 : queryListByTime)(
+          targetId: targetId, targetType: 2, page: page, size: subCommentPageSize);
 
       if (commentModel != null) {
         List<CommentDtoModel> commentDtoModelList = <CommentDtoModel>[];
-        commentDtoModelList.addAll(CommentModel
-            .fromJson(commentModel)
-            .list);
+        commentDtoModelList.addAll(CommentModel.fromJson(commentModel).list);
 
-        if ((isHotOrTime ? courseCommentHot : courseCommentTime)
-            .list[positionComment].replys != null) {
-          if ((isHotOrTime ? courseCommentHot : courseCommentTime)
-              .list[positionComment].pullNumber > 0) {
-            for (int i = 0; i <
-                (isHotOrTime ? courseCommentHot : courseCommentTime)
-                    .list[positionComment].replys.length; i++) {
+        if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys != null) {
+          if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber > 0) {
+            for (int i = 0;
+                i < (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys.length;
+                i++) {
               for (int j = 0; j < commentDtoModelList.length; j++) {
-                if ((isHotOrTime ? courseCommentHot : courseCommentTime)
-                    .list[positionComment].replys[i].id ==
+                if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys[i].id ==
                     commentDtoModelList[j].id) {
                   commentDtoModelList.removeAt(j);
                   j--;
-                  (isHotOrTime ? courseCommentHot : courseCommentTime)
-                      .list[positionComment].pullNumber--;
+                  (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber--;
                 }
               }
             }
           }
-          commentDtoModelList.insertAll(0,
-              (isHotOrTime ? courseCommentHot : courseCommentTime)
-                  .list[positionComment].replys);
+          commentDtoModelList.insertAll(
+              0, (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys);
         }
 
-        (isHotOrTime ? courseCommentHot : courseCommentTime)
-            .list[positionComment].replys = commentDtoModelList;
+        (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys = commentDtoModelList;
         if (commentDtoModelList.length >
-            (isHotOrTime ? courseCommentHot : courseCommentTime)
-                .list[positionComment].replyCount) {
-          (isHotOrTime ? courseCommentHot : courseCommentTime)
-              .list[positionComment].replyCount = commentDtoModelList.length;
+            (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replyCount) {
+          (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replyCount =
+              commentDtoModelList.length;
         }
       }
-    } catch (e) {
-
-    }
+    } catch (e) {}
 
     commentLoadingStatusList[positionComment] = LoadingStatus.STATUS_COMPLETED;
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   //加载更多的评论
   void _onLoading() async {
     Future.delayed(Duration(milliseconds: 500), () async {
-      Map<String, dynamic> mapModel = await (isHotOrTime
-          ? queryListByHot2
-          : queryListByTime)(targetId: courseId,
+      Map<String, dynamic> mapModel = await (isHotOrTime ? queryListByHot2 : queryListByTime)(
+          targetId: courseId,
           targetType: 3,
           page: (isHotOrTime ? courseCommentPageHot : courseCommentPageTime),
           size: courseCommentPageSize);
       if (mapModel != null) {
         CommentModel commentModel = CommentModel.fromJson(mapModel);
-        if (commentModel == null || commentModel.list == null ||
-            commentModel.list.length < 1) {
+        if (commentModel == null || commentModel.list == null || commentModel.list.length < 1) {
           _refreshController.loadNoData();
         } else {
-          (isHotOrTime ? courseCommentHot : courseCommentTime)?.list?.addAll(
-              commentModel.list);
-          setCommentListSubSetting(
-              (isHotOrTime ? courseCommentHot : courseCommentTime));
+          (isHotOrTime ? courseCommentHot : courseCommentTime)?.list?.addAll(commentModel.list);
+          setCommentListSubSetting((isHotOrTime ? courseCommentHot : courseCommentTime));
           isHotOrTime ? courseCommentPageHot++ : courseCommentPageTime++;
           _refreshController.loadComplete();
         }
@@ -1839,8 +1747,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
 
   //点赞-取消点赞
   _laudComment(int commentId, bool laud) async {
-    Map<String, dynamic> model = await laudComment(
-        commentId: commentId, laud: laud ? 1 : 0);
+    Map<String, dynamic> model = await laudComment(commentId: commentId, laud: laud ? 1 : 0);
     if (model != null && model["state"]) {
       _laudCommentData(courseCommentHot, commentId, true, laud);
       _laudCommentData(courseCommentTime, commentId, false, laud);
@@ -1849,9 +1756,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       } else {
         ToastShow.show(msg: "取消点赞成功", context: context);
       }
-      setState(() {
-
-      });
+      setState(() {});
     } else {
       if (laud) {
         ToastShow.show(msg: "点赞失败", context: context);
@@ -1862,28 +1767,23 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   }
 
   //点赞
-  _laudCommentData(CommentModel commentModel, int commentId, bool isHotOrTime,
-      bool isLaud) {
+  _laudCommentData(CommentModel commentModel, int commentId, bool isHotOrTime, bool isLaud) {
     if (commentModel != null) {
       for (int i = 0; i < commentModel.list.length; i++) {
         if (commentModel.list[i].id == commentId) {
-          isLaud ? (isHotOrTime ? courseCommentHot : courseCommentTime).list[i]
-              .laudCount++ : (isHotOrTime
-              ? courseCommentHot
-              : courseCommentTime).list[i].laudCount--;
-          (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].isLaud =
-          isLaud ? 1 : 0;
+          isLaud
+              ? (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].laudCount++
+              : (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].laudCount--;
+          (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].isLaud = isLaud ? 1 : 0;
           break;
         }
         int judge = 0;
         for (int j = 0; j < commentModel.list[i].replys.length; j++) {
           if (commentModel.list[i].replys[j].id == commentId) {
-            isLaud ? (isHotOrTime ? courseCommentHot : courseCommentTime)
-                .list[i].replys[j].laudCount++ : (isHotOrTime
-                ? courseCommentHot
-                : courseCommentTime).list[i].replys[j].laudCount--;
-            (isHotOrTime ? courseCommentHot : courseCommentTime).list[i]
-                .replys[j].isLaud = isLaud ? 1 : 0;
+            isLaud
+                ? (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].replys[j].laudCount++
+                : (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].replys[j].laudCount--;
+            (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].replys[j].isLaud = isLaud ? 1 : 0;
             judge = 1;
             break;
           }
@@ -1899,9 +1799,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   void _shareBtnClick() {
     print("分享点击事件视频课");
     openShareBottomSheet(
-        context: context,
-        map: videoModel.toJson(),
-        chatTypeModel: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
+        context: context, map: videoModel.toJson(), chatTypeModel: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
   }
 
   void toastShow(String text) {
@@ -1910,12 +1808,15 @@ class VideoDetailPageState extends State<VideoDetailPage> {
 
   //下载监听
   void initProgressListener() {
-    _progressListener = (taskId, received, total) {
+    _progressListener = (taskId, received, total) async {
       isDownLoading = true;
       _progress = received / total * (1.0 / allDownLoadCount) + completeDownCount * (1.0 / allDownLoadCount);
       _progress = ((_progress * 10000) ~/ 1) / 10000.0;
       if (received == total) {
         completeDownCount++;
+        //将下载地址写到map
+        String path = await FileUtil().getDownloadedPath(downloadStringArray[0]);
+        videoPathMap[downloadStringArray[0]] = path;
         downloadStringArray.removeAt(0);
         if (downloadStringArray.length < 1) {
           isDownLoading = false;
@@ -1924,13 +1825,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
           startDownVideo(downloadStringArray[0]);
         }
       }
-      print("[${DateTime
-          .now()
-          .millisecondsSinceEpoch}]taskId:$taskId; received:$received; total:$total; "
+      print("[${DateTime.now().millisecondsSinceEpoch}]taskId:$taskId; received:$received; total:$total; "
           "progress:$_progress; allDownLoadCount:$allDownLoadCount; completeDownCount:$completeDownCount");
-      setState(() {
-
-      });
+      setState(() {});
     };
   }
 
@@ -1943,7 +1840,10 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   void onJudgeIsDownLoadCompleteVideo() async {
     if (videoModel.coursewareDto.videoMapList != null || videoModel.coursewareDto.videoMapList.length > 0) {
       for (Map<String, dynamic> map in videoModel.coursewareDto.videoMapList) {
-        if (await FileUtil().getDownloadedPath(map["videoUrl"]) == null) {
+        String path = await FileUtil().getDownloadedPath(map["videoUrl"]);
+        if (path != null) {
+          videoPathMap[map["videoUrl"]] = path;
+        } else {
           downloadStringArray.add(map["videoUrl"]);
         }
       }
@@ -1960,9 +1860,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     }
   }
 
-  //todo 全部的视频地址已经下载完成--跳转
+  //全部的视频地址已经下载完成--跳转
   void downloadAllCompleteVideo() {
-    toastShow("全部下载完成跳转界面");
+    AppRouter.navigateToVideoCoursePlay(context, videoPathMap, widget.videoModel);
   }
 
   //开始下载
@@ -1970,7 +1870,6 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     String taskId = await FileUtil().download(downloadUrl, _progressListener);
     print("task的id是：$taskId");
   }
-
 
   //格式化进度
   String formatProgress(double progress) {
@@ -1984,9 +1883,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     print('关注监听=========================================$attntionResult');
     if (attntionResult == 1 || attntionResult == 3) {
       videoModel.coachDto?.relation = 1;
-      setState(() {
-
-      });
+      setState(() {});
     }
   }
 }

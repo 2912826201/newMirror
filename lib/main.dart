@@ -25,7 +25,7 @@ import 'package:mirror/page/vip/vip_nameplate_page.dart';
 import 'package:mirror/widget/address_Picker.dart';
 import 'package:provider/provider.dart';
 
-import 'api/live_broadcast/live_api.dart';
+import 'api/training/live_api.dart';
 import 'api/message_page_api.dart';
 import 'api/user_api.dart';
 import 'config/application.dart';

@@ -153,7 +153,7 @@ class FileUtil {
       onProgressListener(taskId, received, total);
     }).then((response) {
       //当下载完成时去更新数据库
-      if(response.statusCode == HttpStatus.ok){
+      if (response.statusCode == HttpStatus.ok) {
         DownloadDBHelper().insertDownload(taskId, url, filePath);
         return taskId;
       } else {
