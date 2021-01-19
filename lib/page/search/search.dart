@@ -13,12 +13,16 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/search/sub_page/search_complex.dart';
+import 'package:mirror/page/search/sub_page/search_course.dart';
 import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:mirror/page/search/sub_page/search_topic.dart';
 import 'package:mirror/page/search/sub_page/search_user.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/Input_method_rules/input_formatter.dart';
 import 'package:mirror/widget/custom_button.dart';
+import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
+import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
 
@@ -29,6 +33,7 @@ class SearchPage extends StatelessWidget {
 
   // 输入框焦点控制器
   FocusNode focusNode = new FocusNode();
+
 
   @override
   Widget build(BuildContext context) {
@@ -68,30 +73,23 @@ class SearchHeader extends StatefulWidget {
 }
 
 class SearchHeaderState extends State<SearchHeader> {
-  final controller = TextEditingController();
+  TextEditingController controller = TextEditingController();
 
-  // 输入框旧值
-  String oldValue;
+  ///记录上次结果
+  var lastInput = "";
 
-  // 输入框新值
-  String newValue;
+  InputFormatter _formatter;
+  List<TextInputFormatter> inputFormatters;
 
   @override
   void initState() {
     context.read<SearchEnterNotifier>().EditTextController(controller);
-    controller.addListener(() {
-      newValue = controller.text;
-      if (newValue.length > 30) {
-        ToastShow.show(msg: "字数超出", context: context);
-      }
-      if (newValue == oldValue && newValue.isNotEmpty) {
-        SearchHistoryDBHelper().insertSearchHistory(context.read<ProfileNotifier>().profile.uid, newValue);
-        print("点击了搜索按钮");
-        return;
-      }
-      context.read<SearchEnterNotifier>().changeCallback(controller.text);
-      oldValue = newValue;
-    });
+    _formatter = InputFormatter(
+      controller: controller,
+      inputChangedCallback: (String value) {
+        context.read<SearchEnterNotifier>().changeCallback(value);
+      },
+    );
   }
 
   @override
@@ -128,17 +126,26 @@ class SearchHeaderState extends State<SearchHeader> {
                     alignment: Alignment.center,
                     child: TextField(
                       controller: controller,
-                      focusNode: widget.focusNode,
                       textInputAction: TextInputAction.search,
+                      onSubmitted: (text){
+                        if(text.isNotEmpty) {
+                          SearchHistoryDBHelper().insertSearchHistory(context
+                              .read<ProfileNotifier>()
+                              .profile
+                              .uid, text);
+                        }
+                      },
                       decoration: new InputDecoration(
                           isCollapsed: true,
                           contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
                           hintText: '搜索结果的样式',
                           border: InputBorder.none),
-                      inputFormatters: [
-                        WhitelistingTextInputFormatter(RegExp("[a-zA-Z]|[\u4e00-\u9fa5]|[0-9]")), //只能输入汉字或者字母或数字
-                        LengthLimitingTextInputFormatter(30),
-                      ],
+                      inputFormatters:
+                      inputFormatters == null ? [_formatter] : (inputFormatters..add(_formatter)),
+                      // inputFormatters: [
+                      //   WhitelistingTextInputFormatter(RegExp("[a-zA-Z]|[\u4e00-\u9fa5]|[0-9]")), //只能输入汉字或者字母或数字
+                      //   LengthLimitingTextInputFormatter(30),
+                      // ],
                     ),
                   ),
                 ),
@@ -551,12 +558,10 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
                   focusNode: widget.focusNode,
                   controller: controller,
                   textController: context.watch<SearchEnterNotifier>().textController),
-              Container(
-                color: Colors.orange,
-                child: Center(
-                  child: Text("课程"),
-                ),
-              ),
+              SearchCourse(
+                  keyWord: context.watch<SearchEnterNotifier>().enterText,
+                  focusNode: widget.focusNode,
+                  textController: context.watch<SearchEnterNotifier>().textController),
               SearchTopic(
                   keyWord: context.watch<SearchEnterNotifier>().enterText,
                   focusNode: widget.focusNode,

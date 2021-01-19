@@ -5,7 +5,8 @@ import 'package:mirror/data/model/data_response_model.dart';
 
 import '../api.dart';
 // 搜索课程
-const String SRARCHCOURSE = "/sport/course/searchCourse";
+const String SRARCHCOURSE = "/sport/web/videoCourse/searchCourse";
+
 // 搜索动态
 const String SEARCHFEED = "/appuser/web/feed/searchFeed";
 //获取搜索动态列表

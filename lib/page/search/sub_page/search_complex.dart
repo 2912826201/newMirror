@@ -17,6 +17,7 @@ import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:mirror/page/search/sub_page/search_user.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:provider/provider.dart';
 import 'search_topic.dart';
 
@@ -67,21 +68,22 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
     // 合并请求
     mergeRequest();
     widget.textController.addListener(() {
-      // 取消延时
-      if (timer != null) {
-        timer.cancel();
-      }
-      // 延迟器:
-      timer = Timer(Duration(milliseconds: 700), () {
-        if (lastString != widget.keyWord) {
-          courseList.clear();
-          userList.clear();
-          topicList.clear();
-          feedList.clear();
-          mergeRequest();
+
+        // 取消延时
+        if (timer != null) {
+          timer.cancel();
         }
-        lastString = widget.keyWord;
-      });
+        // 延迟器:
+        timer = Timer(Duration(milliseconds: 700), () {
+          if (lastString != widget.keyWord) {
+            courseList.clear();
+            userList.clear();
+            topicList.clear();
+            feedList.clear();
+            mergeRequest();
+          }
+          lastString = widget.keyWord;
+        });
     });
     // 上拉加载
     _scrollController.addListener(() {

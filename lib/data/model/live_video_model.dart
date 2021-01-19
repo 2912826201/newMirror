@@ -390,7 +390,10 @@ class LiveVideoModel {
     map["vipprice"] = _vipprice;
     return map;
   }
-
+   @override
+  String toString() {
+    return toJson().toString();
+  }
 }
 
 /// id : 1

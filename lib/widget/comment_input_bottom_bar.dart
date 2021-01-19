@@ -274,13 +274,12 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
           searchLoadText = "加载中...";
         }
       }
-      // 记录搜索状态
-      searchLastTime = model.lastTime;
-      searchHasNext = model.hasNext;
-      // 列表回到顶部，不然无法上拉加载下一页
     }
+    // 记录搜索状态
+    searchLastTime = model.lastTime;
+    searchHasNext = model.hasNext;
 
-
+    // 列表回到顶部，不然无法上拉加载下一页
     if (searchDataPage == 1) {
       _scrollController.jumpTo(0);
     }
@@ -336,10 +335,9 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       }
       // 备份字段赋值
       backupFollowList = followList;
-      lastTime = model.lastTime;
-      hasNext = model.hasNext;
     }
-
+    lastTime = model.lastTime;
+    hasNext = model.hasNext;
     if (hasNext == 0) {
       loadText = "已加载全部好友";
       loadStatus = LoadingStatus.STATUS_COMPLETED;

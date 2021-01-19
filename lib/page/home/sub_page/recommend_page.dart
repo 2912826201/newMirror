@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
@@ -75,7 +76,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   // 数据源
   List<int> recommendIdList = [];
   List<HomeFeedModel> recommendModelList = [];
-  List<CourseDtoModel> courseList = [];
+  List<LiveVideoModel> liveVideoModel = [];
 
   // 列表监听
   ScrollController _controller = new ScrollController();
@@ -133,7 +134,8 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       // 请求推荐接口
       getHotList(size: 20),
       // 请求推荐教练
-      recommendCoach(),
+      // recommendCoach(),
+      newRecommendCoach(),
     ]).then((results) {
       if (results[0] != null) {
         List<HomeFeedModel> modelList = results[0];
@@ -147,7 +149,9 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
         context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
       }
       if (results[1] != null) {
-        courseList = results[1];
+        liveVideoModel = results[1];
+        print("推荐教练书剑返回");
+        print(liveVideoModel.toString());
       }
       setState(() {});
     }).catchError((e) {
@@ -226,8 +230,8 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                 if (recommendModelList.isNotEmpty) {
                   recommendIdList.clear();
                 }
-                if (courseList.isNotEmpty) {
-                  courseList.clear();
+                if (liveVideoModel.isNotEmpty) {
+                  liveVideoModel.clear();
                 }
                 loadStatus = LoadingStatus.STATUS_LOADING;
                 loadText = "加载中...";
@@ -259,7 +263,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                   // CustomScrollView要求内部元素为Sliver组件， SliverToBoxAdapter可包裹普通的组件。
                   // 横向滑动区域
                   SliverToBoxAdapter(
-                    child: courseList.isNotEmpty ? getCourse() : Container(),
+                    child: liveVideoModel.isNotEmpty ? getCourse() : Container(),
                   ),
                   // 垂直列表
                   SliverList(
@@ -309,7 +313,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         shrinkWrap: true,
-        itemCount: courseList.length,
+        itemCount: liveVideoModel.length,
         itemBuilder: (context, index) {
           return Container(
             child: Column(
@@ -317,13 +321,13 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
               children: [
                 Container(
                   margin: EdgeInsets.only(
-                      left: index > 0 ? 24 : 16, right: index == courseList.length - 1 ? 16 : 0, top: 0, bottom: 8.5),
+                      left: index > 0 ? 24 : 16, right: index == liveVideoModel.length - 1 ? 16 : 0, top: 0, bottom: 8.5),
                   height: 53,
                   width: 53,
                   decoration: BoxDecoration(
                     // color: Colors.redAccent,
                     image:
-                        DecorationImage(image: NetworkImage(courseList[index].coachDto.avatarUri), fit: BoxFit.cover),
+                        DecorationImage(image: NetworkImage(liveVideoModel[index].coachDto.avatarUri), fit: BoxFit.cover),
                     // image
                     borderRadius: BorderRadius.all(Radius.circular(26.5)),
                   ),
@@ -331,10 +335,10 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                 Container(
                   width: 53,
                   margin: EdgeInsets.only(
-                      left: index > 0 ? 24 : 16, right: index == courseList.length - 1 ? 16 : 0, top: 0, bottom: 8.5),
+                      left: index > 0 ? 24 : 16, right: index == liveVideoModel.length - 1 ? 16 : 0, top: 0, bottom: 8.5),
                   child: Center(
                     child: Text(
-                      courseList[index].coachDto.nickName,
+                      liveVideoModel[index].coachDto.nickName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
