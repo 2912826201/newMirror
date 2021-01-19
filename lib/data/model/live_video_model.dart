@@ -574,30 +574,38 @@ class CoursewareDto {
     _updateTime = json["updateTime"];
 
     if (_componentDtos != null) {
-      for (int i = 0; i < _componentDtos.length; i++) {
-        for (int j = 0; j < _componentDtos[i]?.scriptToVideo?.length; j++) {
-          for (int z = 0; z < _componentDtos[i]?.scriptToVideo[j].scriptIds?.length; z++) {
-            Map<String, dynamic> map = Map();
-            map["id"] = _componentDtos[i]?.scriptToVideo[j]?.scriptIds[z]?.id;
-            map["startTime"] = _componentDtos[i]?.scriptToVideo[j]?.scriptIds[z]?.startTime;
-            map["endTime"] = _componentDtos[i]?.scriptToVideo[j]?.scriptIds[z]?.endTime;
-            for (int n = 0; n < _componentDtos[i]?.scripts?.length; n++) {
-              if (_componentDtos[i]?.scripts[n]?.id == map["id"]) {
-                map["name"] = _componentDtos[i]?.scripts[n].name;
-                map["picUrl"] = _componentDtos[i]?.scripts[n].picUrl;
-                break;
+      for (int i = 0; i < _componentDtos.length ?? 0; i++) {
+        if (_componentDtos[i]?.scriptToVideo != null) {
+          for (int j = 0; j < _componentDtos[i]?.scriptToVideo?.length; j++) {
+            if (_componentDtos[i]?.scriptToVideo[j].scriptIds != null) {
+              for (int z = 0; z < _componentDtos[i]?.scriptToVideo[j].scriptIds?.length; z++) {
+                Map<String, dynamic> map = Map();
+                map["id"] = _componentDtos[i].scriptToVideo[j]?.scriptIds[z]?.id;
+                map["startTime"] = _componentDtos[i].scriptToVideo[j]?.scriptIds[z]?.startTime;
+                map["endTime"] = _componentDtos[i].scriptToVideo[j]?.scriptIds[z]?.endTime;
+
+                if (_componentDtos[i].scripts != null) {
+                  for (int n = 0; n < _componentDtos[i].scripts?.length; n++) {
+                    if (_componentDtos[i]?.scripts[n].id == map["id"]) {
+                      map["name"] = _componentDtos[i].scripts[n].name;
+                      map["picUrl"] = _componentDtos[i].scripts[n].picUrl;
+                      break;
+                    }
+                  }
+                }
+
+                actionMapList.add(map);
               }
             }
-            actionMapList.add(map);
-          }
-          if (_componentDtos[i]?.scriptToVideo[j]._videoUrl != null &&
-              _componentDtos[i]?.scriptToVideo[j]._videoUrl.length > 0) {
-            if (videoMapId[StringUtil.generateMd5(_componentDtos[i]?.scriptToVideo[j]._videoUrl)] == null) {
-              videoMapId[StringUtil.generateMd5(_componentDtos[i]?.scriptToVideo[j]._videoUrl)] = 1;
-              Map<String, dynamic> videoMap = Map();
-              videoMap["videoUrl"] = _componentDtos[i]?.scriptToVideo[j]._videoUrl;
-              videoMap["videoTime"] = _componentDtos[i]?.scriptToVideo[j]._videoTime;
-              videoMapList.add(videoMap);
+            if (_componentDtos[i]?.scriptToVideo[j]._videoUrl != null &&
+                _componentDtos[i]?.scriptToVideo[j]._videoUrl.length > 0) {
+              if (videoMapId[StringUtil.generateMd5(_componentDtos[i]?.scriptToVideo[j]._videoUrl)] == null) {
+                videoMapId[StringUtil.generateMd5(_componentDtos[i]?.scriptToVideo[j]._videoUrl)] = 1;
+                Map<String, dynamic> videoMap = Map();
+                videoMap["videoUrl"] = _componentDtos[i]?.scriptToVideo[j]._videoUrl;
+                videoMap["videoTime"] = _componentDtos[i]?.scriptToVideo[j]._videoTime;
+                videoMapList.add(videoMap);
+              }
             }
           }
         }
