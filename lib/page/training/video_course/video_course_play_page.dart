@@ -30,7 +30,7 @@ class VideoCoursePart {
   VideoCoursePart(this.videoList, this.duration, this.name, this.type);
 }
 
-List<VideoCoursePart> partList = [
+final List<VideoCoursePart> testPartList = [
   VideoCoursePart([
     // "videos/1.mp4",
     // "videos/2.mp4",
@@ -73,6 +73,8 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
   //   "http://devmedia.aimymusic.com/25e85ec9a9399023629d3fc15bcb8877.mp4",
   //   "http://devmedia.aimymusic.com/01e889ed5d0314abba48382d669b739b",
   // ];
+
+  List<VideoCoursePart> _partList = [];
 
   Map<int, int> _indexMapWithoutRest = {};
   int _partAmountWithoutRest = 0;
@@ -130,7 +132,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
         if (_videoDuration == 0) {
           _progress = 0;
         } else {
-          _progress = (_currentVideoPos + _partCompletedDuration) / (partList[_currentPartIndex].duration * 1000);
+          _progress = (_currentVideoPos + _partCompletedDuration) / (_partList[_currentPartIndex].duration * 1000);
           if (_progress > 1) {
             _progress = 1;
           }
@@ -358,13 +360,13 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(_formatTime(partList[_currentPartIndex] == null ? 0 : partList[_currentPartIndex].duration),
+              Text(_formatTime(_partList[_currentPartIndex] == null ? 0 : _partList[_currentPartIndex].duration),
                   style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 28, fontWeight: FontWeight.w500)),
               SizedBox(height: 7.5),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(partList[_currentPartIndex] == null ? "" : partList[_currentPartIndex].name,
+                  Text(_partList[_currentPartIndex] == null ? "" : _partList[_currentPartIndex].name,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 16)),
@@ -450,7 +452,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
               child: Stack(children: [
                 Center(
                   child: Text(
-                    _formatTime((partList[_currentPartIndex].duration * (1 - _restProgress)).round()),
+                    _formatTime((_partList[_currentPartIndex].duration * (1 - _restProgress)).round()),
                     style:
                         TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 60, fontWeight: FontWeight.w500),
                   ),
@@ -519,7 +521,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
 
   //播放下一段落
   _playNextPart() {
-    if (_currentPartIndex >= partList.length - 1) {
+    if (_currentPartIndex >= _partList.length - 1) {
       //TODO 已经最后一段落 处理结束的操作
       Navigator.pop(context);
       return;
@@ -527,7 +529,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
 
     _currentPartIndex++;
 
-    VideoCoursePart part = partList[_currentPartIndex];
+    VideoCoursePart part = _partList[_currentPartIndex];
     if (part.type == 0) {
       //需要去播放
       setState(() {
@@ -550,7 +552,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
 
   //播放下一个视频
   _playNextVideo() {
-    if (_currentVideoIndex >= partList[_currentPartIndex].videoList.length - 1) {
+    if (_currentVideoIndex >= _partList[_currentPartIndex].videoList.length - 1) {
       //已经最后一条 需要去播下一段落了
       _playNextPart();
       return;
@@ -565,7 +567,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
     var oldController = _controller;
 
     _controller =
-        VideoPlayerController.file(File(widget.videoPathMap[partList[_currentPartIndex].videoList[_currentVideoIndex]]))
+        VideoPlayerController.file(File(widget.videoPathMap[_partList[_currentPartIndex].videoList[_currentVideoIndex]]))
           ..initialize().then((_) {
             setState(() {
               _controller.addListener(_playerListener);
@@ -585,7 +587,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
       }
       int restTime = DateTime.now().millisecondsSinceEpoch - _restStartTimeStamp;
       setState(() {
-        _restProgress = restTime / (partList[_currentPartIndex].duration * 1000);
+        _restProgress = restTime / (_partList[_currentPartIndex].duration * 1000);
 
         if (_restProgress >= 1) {
           _restProgress = 1;
@@ -605,7 +607,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
       //已经是第一段落 不做操作
       return;
     }
-    VideoCoursePart previousPart = partList[basePartIndex - 1];
+    VideoCoursePart previousPart = _partList[basePartIndex - 1];
     if (previousPart.type == 0) {
       //如果基准段落的上一段落是训练 则将基准段落的值-2赋值给当前段落索引 跳到基准段落的下一段落
       _currentPartIndex = basePartIndex - 2;
@@ -620,11 +622,11 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
   }
 
   _skipToNextPart(int basePartIndex) {
-    if (basePartIndex >= partList.length - 1) {
+    if (basePartIndex >= _partList.length - 1) {
       //已经是最后一段落 直接结束
       return;
     }
-    VideoCoursePart nextPart = partList[basePartIndex + 1];
+    VideoCoursePart nextPart = _partList[basePartIndex + 1];
     if (nextPart.type == 0) {
       //如果基准段落的下一段落是训练 则将基准段落的值赋值给当前段落索引 跳到基准段落的下一段落
       _currentPartIndex = basePartIndex;
@@ -639,13 +641,13 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
   }
 
   _parseModelToPartList() {
-    partList = [];
+    _partList.clear();
     widget.videoCourseModel.coursewareDto.componentDtos.forEach((component) {
       List<String> urlList = [];
       component.scriptToVideo?.forEach((element) {
         urlList.add(element.videoUrl);
       });
-      partList
+      _partList
           .add(VideoCoursePart(urlList, (component.times / 1000).floor(), component.name, component.type == 3 ? 1 : 0));
     });
   }
@@ -653,9 +655,9 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
   _parsePartList() {
     _indexMapWithoutRest.clear();
     _partAmountWithoutRest = 0;
-    for (int i = 0; i < partList.length; i++) {
+    for (int i = 0; i < _partList.length; i++) {
       //序号以除去休息的段落数量为基准计算 如果为是休息则序号不加 如果不是休息序号加1
-      if (partList[i].type == 1) {
+      if (_partList[i].type == 1) {
         _indexMapWithoutRest[i] = _partAmountWithoutRest - 1;
       } else {
         _indexMapWithoutRest[i] = _partAmountWithoutRest;

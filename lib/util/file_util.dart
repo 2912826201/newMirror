@@ -12,6 +12,8 @@ import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:sy_flutter_qiniu_storage/sy_flutter_qiniu_storage.dart';
 import 'package:uuid/uuid.dart';
 
+import 'string_util.dart';
+
 /// file_util
 /// Created by yangjiayi on 2020/12/9.
 
@@ -148,6 +150,12 @@ class FileUtil {
   Future<String> download(String url, Function(String taskId, int received, int total) onProgressListener) async {
     String taskId = Uuid().v4();
     String fileName = url.split("/").last;
+    List<String> strs = fileName.split(".");
+    if(strs.length > 1){
+      fileName = StringUtil.generateMd5(fileName) + "." + strs.last;
+    }else{
+      fileName = StringUtil.generateMd5(fileName);
+    }
     String filePath = "${AppConfig.getAppDownloadDir()}/$fileName";
     return await Dio().download(url, filePath, deleteOnError: true, onReceiveProgress: (received, total) {
       onProgressListener(taskId, received, total);

@@ -1814,9 +1814,6 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       _progress = ((_progress * 10000) ~/ 1) / 10000.0;
       if (received == total) {
         completeDownCount++;
-        //将下载地址写到map
-        String path = await FileUtil().getDownloadedPath(downloadStringArray[0]);
-        videoPathMap[downloadStringArray[0]] = path;
         downloadStringArray.removeAt(0);
         if (downloadStringArray.length < 1) {
           isDownLoading = false;
@@ -1862,7 +1859,17 @@ class VideoDetailPageState extends State<VideoDetailPage> {
 
   //全部的视频地址已经下载完成--跳转
   void downloadAllCompleteVideo() {
-    AppRouter.navigateToVideoCoursePlay(context, videoPathMap, widget.videoModel);
+    //等一下 避免数据还没有写进数据库
+    Future.delayed(Duration(milliseconds: 200), () async {
+      if (videoModel.coursewareDto.videoMapList != null || videoModel.coursewareDto.videoMapList.length > 0) {
+        for (Map<String, dynamic> map in videoModel.coursewareDto.videoMapList) {
+          if(videoPathMap[map["videoUrl"]] == null){
+            videoPathMap[map["videoUrl"]] = await FileUtil().getDownloadedPath(map["videoUrl"]);
+          }
+        }
+      }
+      AppRouter.navigateToVideoCoursePlay(context, videoPathMap, videoModel);
+    });
   }
 
   //开始下载

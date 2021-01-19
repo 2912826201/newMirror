@@ -186,7 +186,8 @@ var handlerVideoCourseList = Handler(handlerFunc: (BuildContext context, Map<Str
 
 var handlerVideoCoursePlay = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return VideoCoursePlayPage(data["videoPathMap"], LiveVideoModel.fromJson(data["videoCourseModel"]));
+  return VideoCoursePlayPage(
+      Map<String, String>.from(data["videoPathMap"]), LiveVideoModel.fromJson(data["videoCourseModel"]));
 });
 
 var handlerLiveDetail = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
