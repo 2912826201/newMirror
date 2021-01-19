@@ -1,12 +1,19 @@
+import 'dart:math';
+
+import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/live_broadcast/live_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/live_model.dart';
+import 'package:mirror/data/model/live_video_model.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
+
+import 'video_course/video_course_list_page.dart';
 
 class TrainingPage extends StatefulWidget {
   @override
@@ -15,10 +22,17 @@ class TrainingPage extends StatefulWidget {
 
 class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMixin {
   bool _machineConnected = true;
-  List<int> _courseList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   double _screenWidth = 0.0;
 
-  List<LiveModel> _liveList;
+  List<LiveModel> _liveList = [];
+  List<LiveVideoModel> _videoCourseList = [];
+
+  bool _isVideoCourseRequesting = false;
+  int _isVideoCourseLastTime;
+  bool _videoCourseHasNext = false;
+
+  //hero动画的标签
+  List<String> heroTagArray = [];
 
   @override
   bool get wantKeepAlive => true;
@@ -27,9 +41,29 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
   void initState() {
     _screenWidth = ScreenUtil.instance.screenWidthDp;
     super.initState();
+    _isVideoCourseRequesting = true;
+    getLearnedCourse(10).then((result) {
+      _isVideoCourseRequesting = false;
+      if (result != null) {
+        _videoCourseHasNext = result.hasNext == 1;
+        _isVideoCourseLastTime = result.lastTime;
+        _videoCourseList.addAll(result.list);
+      }
+      if (mounted) {
+        setState(() {});
+      }
+    }).catchError((error) {
+      _isVideoCourseRequesting = false;
+    });
     getLatestLive().then((result) {
-      _liveList = result;
+      if (result != null) {
+        _liveList.addAll(result);
+      }
+      if (mounted) {
+        setState(() {});
+      }
     }).catchError((error) {});
+    //TODO 还没做分页加载
   }
 
   @override
@@ -56,16 +90,16 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
               behavior: NoBlueEffectBehavior(),
               child: ListView.builder(
                   //有个头部 有个尾部
-                  itemCount: _courseList.length + 2,
+                  itemCount: _videoCourseList.length + 2,
                   itemBuilder: (context, index) {
                     if (index == 0) {
                       return _buildTopView();
-                    } else if (index == _courseList.length + 1) {
+                    } else if (index == _videoCourseList.length + 1) {
                       return SizedBox(
                         height: 40,
                       );
                     } else {
-                      return _buildCourseItem(index);
+                      return _buildCourseItem(index - 1);
                     }
                   })),
           Positioned(
@@ -81,7 +115,14 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
   //我的课程列表上方的所有部分
   Widget _buildTopView() {
     return Column(
-      children: [_buildBanner(), _buildConnection(), _buildEquipment(), _buildLive(), _buildCourseTitle()],
+      children: [
+        _buildBanner(),
+        _buildConnection(),
+        _buildEquipment(),
+        _buildLive(),
+        _buildCourseTitle(),
+        _buildPlaceHolder()
+      ],
     );
   }
 
@@ -279,11 +320,11 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
               )
             ],
           ),
-          Container(
-            margin: const EdgeInsets.only(top: 12),
-            height: _screenWidth * 151 / 343,
-            child: _liveList != null && _liveList.length > 0
-                ? Stack(
+          _liveList.length > 0
+              ? Container(
+                  margin: const EdgeInsets.only(top: 12),
+                  height: _screenWidth * 151 / 343,
+                  child: Stack(
                     children: [
                       CachedNetworkImage(
                         imageUrl: _liveList.first.picUrl,
@@ -308,7 +349,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
                                   width: 8,
                                 ),
                                 Text(
-                                  "${_liveList.first.startTime}-${_liveList.first.endTime}",
+                                  "${_parseLiveTime(_liveList.first.startTime)} - ${_parseLiveTime(_liveList.first.endTime)}",
                                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.white),
                                 )
                               ],
@@ -346,9 +387,8 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
                         ),
                       )
                     ],
-                  )
-                : Container(),
-          )
+                  ))
+              : Container(),
         ],
       ),
     );
@@ -392,14 +432,70 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
     );
   }
 
+  Widget _buildPlaceHolder() {
+    if (_videoCourseList.length > 0) {
+      return Container();
+    } else {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: 16,
+          ),
+          Container(
+            height: 224,
+            width: 224,
+            color: AppColor.bgWhite,
+          ),
+          SizedBox(
+            height: 16,
+          ),
+          Text(
+            "还没有课程，去添加课程吧",
+            style: AppStyle.textSecondaryRegular14,
+          ),
+          SizedBox(
+            height: 16,
+          ),
+        ],
+      );
+    }
+  }
+
   Widget _buildCourseItem(int index) {
+    LiveVideoModel videoModel = _videoCourseList[index];
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-      child: Container(
-        height: 90,
-        color: Colors.tealAccent,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          width: ScreenUtil.instance.screenWidthDp,
+          child: Row(
+            children: [
+              buildVideoCourseItemLeftImageUi(videoModel, getHeroTag(videoModel, index)),
+              buildVideoCourseItemRightDataUi(videoModel, 90, true),
+            ],
+          ),
+        ),
+        onTap: () {
+          //点击事件
+          print("====heroTagArray[index]:${heroTagArray[index]}");
+          AppRouter.navigateToVideoDetail(
+              context, heroTagArray[index], videoModel.id, videoModel.coursewareId, videoModel);
+        },
       ),
     );
+  }
+
+  //给hero的tag设置唯一的值
+  Object getHeroTag(LiveVideoModel videoModel, index) {
+    if (heroTagArray != null && heroTagArray.length > index) {
+      return heroTagArray[index];
+    } else {
+      String string = "heroTag_video_${DateUtil.getNowDateMs()}_${Random().nextInt(100000)}_${videoModel.id}_$index";
+      heroTagArray.add(string);
+      return string;
+    }
   }
 
   Widget _buildInfoBar() {
@@ -446,4 +542,21 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
       ),
     );
   }
+}
+
+String _parseLiveTime(String liveTime) {
+  DateTime time = DateTime.tryParse(liveTime);
+  String timeStr;
+  if (time == null) {
+    timeStr = liveTime;
+  } else {
+    if (DateUtil.isToday(time)) {
+      timeStr = DateUtil.formatTimeString(time);
+    } else if (DateUtil.isToYear(time)) {
+      timeStr = DateFormat('MM-dd HH:mm').format(time);
+    } else {
+      timeStr = DateUtil.formatDateTimeString(time);
+    }
+  }
+  return timeStr;
 }

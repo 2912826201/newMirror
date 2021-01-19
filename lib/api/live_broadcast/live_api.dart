@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/data/model/base_response_model.dart';
+import 'package:mirror/data/model/list_model.dart';
 import 'package:mirror/data/model/live_model.dart';
+import 'package:mirror/data/model/live_video_model.dart';
 
 // 根据日期获取直播课程列表
 const String GETLIVECOURSESBYDATE = "/sport/web/liveCourse/getLiveCoursesByDate";
@@ -27,6 +29,9 @@ const String GETFINISHEDVIDEOCOURSE = "/sport/course/getFinishedVideoCourse";
 //获取最近直播
 const String GETLATESTLIVE = "/sport/web/liveCourse/getLatestLive";
 
+//获取学过的课程列表
+const String GETLEARNEDCOURSE = "/sport/web/videoCourse/getLearnedCourse";
+
 ///根据日期获取直播课程列表
 ///请求参数
 ///date:2020-12-10
@@ -35,15 +40,13 @@ Future<Map> getLiveCoursesByDate({@required String date, @required int type}) as
   Map<String, dynamic> params = {};
   params["date"] = date;
   params["type"] = type;
-  BaseResponseModel responseModel = await requestApi(
-      GETLIVECOURSESBYDATE, params);
+  BaseResponseModel responseModel = await requestApi(GETLIVECOURSESBYDATE, params);
   if (responseModel.isSuccess) {
     return responseModel.data;
   } else {
     return null;
   }
 }
-
 
 ///直播课程详情
 ///请求参数
@@ -59,7 +62,6 @@ Future<Map> liveCourseDetail({@required int courseId, @required String startTime
     return null;
   }
 }
-
 
 ///视频课程详情
 ///请求参数
@@ -79,8 +81,7 @@ Future<Map> getVideoCourseDetail({@required int courseId}) async {
 ///请求参数
 ///courseId:1
 ///isBook:true
-Future<Map> bookLiveCourse(
-    {@required int courseId, @required bool isBook}) async {
+Future<Map> bookLiveCourse({@required int courseId, @required bool isBook}) async {
   Map<String, dynamic> params = {};
   params["courseId"] = courseId;
   params["isBook"] = isBook ? 1 : 0;
@@ -113,11 +114,13 @@ Future<Map> getAllTags() async {
 ///part:[1,2,3]
 ///level:[1,2,3]
 ///lastId:上一页的值
-Future<Map> getVideoCourseList({@required int size,
+Future<Map> getVideoCourseList({
+  @required int size,
   @required int page,
   @required List<int> target,
   @required List<int> part,
-  @required List<int> level,}) async {
+  @required List<int> level,
+}) async {
   Map<String, dynamic> params = {};
   params["size"] = size;
   params["page"] = page;
@@ -130,8 +133,7 @@ Future<Map> getVideoCourseList({@required int size,
   if (level != null && level.length > 0) {
     params["levelIds"] = level.toString();
   }
-  BaseResponseModel responseModel =
-      await requestApi(GETVIDEOCOURSELIST, params);
+  BaseResponseModel responseModel = await requestApi(GETVIDEOCOURSELIST, params);
   if (responseModel.isSuccess) {
     return responseModel.data;
   } else {
@@ -141,16 +143,14 @@ Future<Map> getVideoCourseList({@required int size,
 
 ///TA们也完成该视频课程的接口
 ///请求参数
-Future<Map> getFinishedVideoCourse(int videoCourseId, int size,
-    {int lastId}) async {
+Future<Map> getFinishedVideoCourse(int videoCourseId, int size, {int lastId}) async {
   Map<String, dynamic> params = {};
   params["videoCourseId"] = videoCourseId;
   params["size"] = size;
   if (lastId != null && lastId > 0) {
     params["lastId"] = lastId;
   }
-  BaseResponseModel responseModel =
-      await requestApi(GETFINISHEDVIDEOCOURSE, params);
+  BaseResponseModel responseModel = await requestApi(GETFINISHEDVIDEOCOURSE, params);
   if (responseModel.isSuccess) {
     return responseModel.data;
   } else {
@@ -164,12 +164,37 @@ Future<List<LiveModel>> getLatestLive() async {
   BaseResponseModel responseModel = await requestApi(GETLATESTLIVE, params);
   if (responseModel.isSuccess) {
     List<LiveModel> list = [];
-    if(responseModel.data["list"] != null){
-      responseModel.data["list"].forEach((e){
+    if (responseModel.data["list"] != null) {
+      responseModel.data["list"].forEach((e) {
         list.add(LiveModel.fromJson(e));
       });
     }
     return list;
+  } else {
+    return null;
+  }
+}
+
+//获取学过的课程列表
+Future<ListModel<LiveVideoModel>> getLearnedCourse(int size, {int lastTime}) async {
+  Map<String, dynamic> params = {};
+  params["size"] = size;
+  if (lastTime != null) {
+    params["lastTime"] = lastTime;
+  }
+  BaseResponseModel responseModel = await requestApi(GETLEARNEDCOURSE, params);
+  if (responseModel.isSuccess) {
+    ListModel<LiveVideoModel> listModel = ListModel<LiveVideoModel>();
+    List<LiveVideoModel> list = [];
+    listModel.hasNext = responseModel.data["hasNext"];
+    listModel.lastTime = responseModel.data["lastTime"];
+    if (responseModel.data["list"] != null) {
+      responseModel.data["list"].forEach((e) {
+        list.add(LiveVideoModel.fromJson(e));
+      });
+    }
+    listModel.list = list;
+    return listModel;
   } else {
     return null;
   }
