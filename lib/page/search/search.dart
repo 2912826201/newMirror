@@ -13,6 +13,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/search/sub_page/search_complex.dart';
+import 'package:mirror/page/search/sub_page/search_course.dart';
 import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:mirror/page/search/sub_page/search_topic.dart';
 import 'package:mirror/page/search/sub_page/search_user.dart';
@@ -551,12 +552,16 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
                   focusNode: widget.focusNode,
                   controller: controller,
                   textController: context.watch<SearchEnterNotifier>().textController),
-              Container(
-                color: Colors.orange,
-                child: Center(
-                  child: Text("课程"),
-                ),
-              ),
+              SearchCourse(
+                  keyWord: context.watch<SearchEnterNotifier>().enterText,
+                  focusNode: widget.focusNode,
+                  textController: context.watch<SearchEnterNotifier>().textController),
+              // Container(
+              //   color: Colors.orange,
+              //   child: Center(
+              //     child: Text("课程"),
+              //   ),
+              // ),
               SearchTopic(
                   keyWord: context.watch<SearchEnterNotifier>().enterText,
                   focusNode: widget.focusNode,

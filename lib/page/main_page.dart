@@ -57,7 +57,7 @@ class MainPageState extends State<MainPage> with SingleTickerProviderStateMixin 
     return Scaffold(
       // 此属性是重新计算布局空间大小
       // 内部元素要监听键盘高度必需要设置为false,
-      resizeToAvoidBottomInset: true,
+      // resizeToAvoidBottomInset: true,
       bottomNavigationBar: BottomAppBar(
           child: Stack(
         children: <Widget>[

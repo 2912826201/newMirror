@@ -85,7 +85,7 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
 
   @override
   void dispose() {
-    print("销毁了页面");
+    print("话题页销毁了页面");
 
     ///取消延时任务
     timer.cancel();
