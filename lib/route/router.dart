@@ -55,6 +55,7 @@ class AppRouter {
   static String pathSettingAccountSecurity = "/profile/settingaccountsecurity";
   static String pathLoginSucess = "/profile/loginsucess";
   static String pathTrrainingRecord = "/profile/trrainingRecord";
+  static String pathWeightRecordPage = "/profile/weightRecordPage";
   static String pathTrainingRecordAllPage = "/profile/trrainingRecord/TrainingRecordAllPage";
 
   static void configureRouter(FluroRouter router) {
@@ -100,6 +101,7 @@ class AppRouter {
     router.define(pathSettingAbout, handler: handlerSettingAbout);
     router.define(pathSettingAccountSecurity, handler: handlerSettingAccountSecurity);
     router.define(pathTrrainingRecord, handler: handlerTrrainingRecord);
+    router.define(pathWeightRecordPage, handler: handlerWeightRecordPage);
     router.define(pathTrainingRecordAllPage, handler: handlerTrainingRecordAllPage);
 
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
@@ -329,5 +331,9 @@ class AppRouter {
 
   static void navigateToTrainingRecordAllPage(BuildContext context) {
     _navigateToPage(context, pathTrainingRecordAllPage, {});
+  }
+
+  static void navigateToWeightRecordPage(BuildContext context) {
+    _navigateToPage(context, pathWeightRecordPage, {});
   }
 }

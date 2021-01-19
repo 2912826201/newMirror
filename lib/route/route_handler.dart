@@ -34,6 +34,7 @@ import 'package:mirror/page/profile/setting/notice_setting_page.dart';
 import 'package:mirror/page/profile/setting/setting_home_page.dart';
 import 'package:mirror/page/profile/training_record/training_record_all_page.dart';
 import 'package:mirror/page/profile/training_record/training_record_page.dart';
+import 'package:mirror/page/profile/training_record/weight_record_page.dart';
 import 'package:mirror/page/scan_code_page.dart';
 import 'package:mirror/page/profile/setting/blacklist_page.dart';
 import 'package:mirror/page/profile/setting/feedback_page.dart';
@@ -163,6 +164,9 @@ var handlerSettingAccountSecurity = Handler(handlerFunc: (BuildContext context, 
 });
 var handlerTrrainingRecord = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return TrainingRecordPage();
+});
+var handlerWeightRecordPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return WeightRecordPage();
 });
 var handlerTrainingRecordAllPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return TrainingRecordAllPage();

@@ -23,6 +23,7 @@ class _AppDialog extends StatelessWidget {
   final String info;
   final String circleImageUrl;
   final String topImageUrl;
+  final Widget customizeWidget;
 
   final List<Widget> _viewList = [];
 
@@ -34,6 +35,7 @@ class _AppDialog extends StatelessWidget {
       this.title,
       this.info,
       this.circleImageUrl,
+      this.customizeWidget,
       this.topImageUrl})
       : super(key: key);
 
@@ -61,6 +63,7 @@ class _AppDialog extends StatelessWidget {
     _buildCircleImageView();
     _buildTitle();
     _buildInfo();
+    _buildCustomizeWidget();
     _buildButton(context);
     _buildButtonList(context);
     return _viewList;
@@ -122,6 +125,22 @@ class _AppDialog extends StatelessWidget {
           info,
           style: AppStyle.textSecondaryRegular16,
         ),
+      ));
+    }
+    //加下外边距
+    _viewList.add(SizedBox(
+      height: _outerPadding,
+    ));
+  }
+
+  _buildCustomizeWidget() {
+    //判断有没有自定义的widget
+    if (customizeWidget != null) {
+      _viewList.add(Padding(
+        padding: title == null
+            ? const EdgeInsets.fromLTRB(_outerPadding, _innerPadding, _outerPadding, 0)
+            : const EdgeInsets.fromLTRB(_outerPadding, _innerPaddingTitleInfo, _outerPadding, 0),
+        child: customizeWidget,
       ));
     }
     //加下外边距
@@ -255,13 +274,14 @@ class AppDialogButton {
 
 showAppDialog(BuildContext context,
     {AppDialogButton confirm,
-    AppDialogButton cancel,
-    List<AppDialogButton> buttonList,
-    String title,
-    String info,
-    String circleImageUrl,
-    String topImageUrl,
-    bool barrierDismissible = true}) {
+      AppDialogButton cancel,
+      List<AppDialogButton> buttonList,
+      String title,
+      String info,
+      String circleImageUrl,
+      String topImageUrl,
+      Widget customizeWidget,
+      bool barrierDismissible = true}) {
   showDialog(
       context: context,
       barrierDismissible: barrierDismissible,
@@ -275,6 +295,7 @@ showAppDialog(BuildContext context,
                   buttonList: buttonList,
                   title: title,
                   info: info,
+                  customizeWidget: customizeWidget,
                   circleImageUrl: circleImageUrl,
                   topImageUrl: topImageUrl),
             ));
