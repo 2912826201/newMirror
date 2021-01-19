@@ -73,6 +73,7 @@ class LiveModel {
   int _id;
   int _courseId;
   String _name;
+  String _picUrl;
   int _creatorId;
   int _coachId;
   UserModel _coachDto;
@@ -100,7 +101,11 @@ class LiveModel {
   int get id => _id;
 
   int get courseId => _courseId;
+
   String get name => _name;
+
+  String get picUrl => _picUrl;
+
   int get creatorId => _creatorId;
 
   int get coachId => _coachId;
@@ -157,6 +162,7 @@ class LiveModel {
     int id,
     int courseId,
     String name,
+    String picUrl,
     int creatorId,
     int coachId,
     UserModel coachDto,
@@ -183,6 +189,7 @@ class LiveModel {
     _id = id;
     _courseId = courseId;
     _name = name;
+    _picUrl = picUrl;
     _creatorId = creatorId;
     _coachId = coachId;
     _coachDto = coachDto;
@@ -213,6 +220,7 @@ class LiveModel {
     _id = json["id"];
     _courseId = json["courseId"];
     _name = json["name"];
+    _picUrl = json["picUrl"];
     _creatorId = json["creatorId"];
     _coachId = json["coachId"];
     _coachDto =
@@ -251,6 +259,7 @@ class LiveModel {
     map["id"] = _id;
     map["courseId"] = _courseId;
     map["name"] = _name;
+    map["picUrl"] = _picUrl;
     map["creatorId"] = _creatorId;
     map["coachId"] = _coachId;
     if (_coachDto != null) {
