@@ -111,6 +111,8 @@ dependencies:
   # path_drawing: ^0.4.1+1
   # 获取视频的缩略图
   video_thumbnail: ^0.2.5+1
+  # 阻止熄屏
+  wakelock: ^0.2.1+1
 
   #高德三方库
   amap_map_fluttify: ^0.30.1
