@@ -29,7 +29,11 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     super.initState();
     controller = TabController(length: 2, vsync: this, initialIndex: 1);
   }
-
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
 
 

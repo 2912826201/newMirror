@@ -85,6 +85,7 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
   @override
   void dispose() {
     print("课程页销毁了页面");
+    _scrollController.dispose();
 
     ///取消延时任务
     timer.cancel();
@@ -204,8 +205,6 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
       );
     }
   }
-
-
 }
 
 class SearchCourseItem extends StatefulWidget {
@@ -219,9 +218,9 @@ class SearchCourseItem extends StatefulWidget {
 }
 
 class SearchCourseItemState extends State<SearchCourseItem> {
-  EdgeInsetsGeometry firstMargin = const EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 6);
+  EdgeInsetsGeometry firstMargin = const EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 6);
   EdgeInsetsGeometry commonMargin = const EdgeInsets.only(left: 16, right: 16, top: 6, bottom: 6);
-  EdgeInsetsGeometry endMargin = const EdgeInsets.only(left: 16, right: 16, top: 6, bottom: 50);
+  EdgeInsetsGeometry endMargin = const EdgeInsets.only(left: 16, right: 16, top: 6, bottom: 16);
 
   //hero动画的标签
   var heroTagArray = <String>[];

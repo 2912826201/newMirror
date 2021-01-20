@@ -513,8 +513,9 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                               focusNode: commentFocus,
                               // 多行展示
                               keyboardType: TextInputType.multiline,
-                              maxLines: null,
                               //不限制行数
+                              maxLines: null,
+                             enableInteractiveSelection: true,
                               // 光标颜色
                               cursorColor: Color.fromRGBO(253, 137, 140, 1),
                               scrollPadding: EdgeInsets.all(0),
@@ -525,11 +526,15 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                 context.read<CommentEnterNotifier>().changeCallback(text);
                               },
                               onSubmitted: (text) {
-                                voidCallback(
-                                  text,
-                                  rules,
-                                  context,
-                                );
+                                if (text.isNotEmpty) {
+                                  voidCallback(
+                                    text,
+                                    rules,
+                                    context,
+                                  );
+                                } else {
+                                  ToastShow.show(msg: "不能发送空文本", context: context,gravity: Toast.CENTER);
+                                }
                                 Navigator.of(context).pop(1);
                               },
                               // onEditingComplete:() {
@@ -553,15 +558,6 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                   inputFormatters == null ? [_formatter] : (inputFormatters..add(_formatter)),
                             ),
                           ),
-                          // Positioned(
-                          //   bottom: 6,
-                          //   right: 44,
-                          //   child: Container(
-                          //     width: 24,
-                          //     height: 24,
-                          //     color: Colors.redAccent,
-                          //   ),
-                          // ),
                           Positioned(
                               right: 16,
                               bottom: 6,

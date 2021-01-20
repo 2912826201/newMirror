@@ -92,7 +92,11 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
 
   // 数据加载页数
   int dataPage = 1;
-
+@override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
   @override
   void initState() {
     // 合并请求

@@ -75,7 +75,12 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   // 最新话题动态请求下一页
   int newestLastTime;
   GlobalKey<NestedScrollViewState> _key = GlobalKey<NestedScrollViewState>();
-
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
   @override
   void initState() {
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0);

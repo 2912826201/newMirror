@@ -48,7 +48,11 @@ class MainPageState extends State<MainPage> with SingleTickerProviderStateMixin 
     currentIndex = 0;
     _start = (ScreenUtil.instance.width / 5) / 7;
   }
-
+  @override
+  void dispose() {
+   controller.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     double itemWidth = MediaQuery.of(context).size.width / 5;

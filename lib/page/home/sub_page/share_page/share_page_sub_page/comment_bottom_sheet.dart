@@ -17,6 +17,7 @@ import 'package:mirror/page/if_page.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/comment_input_bottom_bar.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
@@ -52,7 +53,11 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
 
   // 列表监听
   ScrollController _controller = new ScrollController();
-
+@override
+  void dispose() {
+  _controller.dispose();
+    super.dispose();
+  }
   @override
   void initState() {
     print("请求接口吗");
@@ -215,7 +220,8 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
           CommentInputBox(
             isUnderline: true,
             feedModel: context.watch<FeedMapNotifier>().feedMap[widget.feedId],
-          )
+          ),
+          SizedBox(height: ScreenUtil.instance.bottomHeight,)
         ],
       ),
     );

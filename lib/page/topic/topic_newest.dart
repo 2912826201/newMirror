@@ -9,7 +9,8 @@ import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:provider/provider.dart';
-class TopicNewest extends StatefulWidget{
+
+class TopicNewest extends StatefulWidget {
   TopicNewest({this.loadText, this.loadStatus, this.tabKey, this.topicList, this.refreshCallBack});
 
   final ValueChanged<bool> refreshCallBack;
@@ -23,16 +24,12 @@ class TopicNewest extends StatefulWidget{
 
   // 加载状态
   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
-  @override
-  Widget build(BuildContext context) {
-
-  }
 
   @override
   TopicNewestState createState() => TopicNewestState();
-
 }
-class TopicNewestState extends State<TopicNewest>  with AutomaticKeepAliveClientMixin {
+
+class TopicNewestState extends State<TopicNewest> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true; //必须重写
   @override
@@ -82,22 +79,21 @@ class TopicNewestState extends State<TopicNewest>  with AutomaticKeepAliveClient
     return widget.topicList.isNotEmpty
         ? NestedScrollViewInnerScrollPositionKeyWidget(widget.tabKey, child)
         : Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            width: 224,
-            height: 224,
-            color: AppColor.color246,
-            margin: EdgeInsets.only(bottom: 16, top: 188),
-          ),
-          Text(
-            "这里空空如也，去推荐看看吧",
-            style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
-          ),
-        ],
-      ),
-    );
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 224,
+                  height: 224,
+                  color: AppColor.color246,
+                  margin: EdgeInsets.only(bottom: 16, top: 188),
+                ),
+                Text(
+                  "这里空空如也，去推荐看看吧",
+                  style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+                ),
+              ],
+            ),
+          );
   }
-
 }
