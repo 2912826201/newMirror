@@ -59,11 +59,11 @@ class _VipNamePlatePageState extends State<VipNamePlatePageView>{
           controller: widget.pageController,
           children: widgetList,
           onPageChanged: (index){
-                if(index<1){
+                if(index<2){
                   context.read<VipMoveNotifier>().changeListOldIndex(index);
                 }else{
                   context.read<VipMoveNotifier>().changeListOldIndex(index);
-                  double offset = (index-1.5)*93.5;
+                  double offset = (index-1.75)*93.5;
                   widget.scrollController.animateTo(offset, duration: Duration(milliseconds: 400), curve:Curves.ease);
                 }
           },

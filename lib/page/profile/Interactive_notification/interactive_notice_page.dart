@@ -17,6 +17,7 @@ import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/rich_text_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:toast/toast.dart';
 ///消息提醒列表
 class InteractiveNoticePage extends StatefulWidget {
   int type;
@@ -253,7 +254,6 @@ class _InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     commentModel = msgModel.commentData;
     coverImage = msgModel.coverUrl;
     _getRefData();
-    print('封面=======================${msgModel.coverUrl}');
     if(widget.type==0){
       if(msgModel.refType==2){
         commentState = "回复了  ";
@@ -266,11 +266,21 @@ class _InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
 
 
   _getRefData()async{
-    if(msgModel.refType==0){
-      homeFeedModel = HomeFeedModel.fromJson(msgModel.refData);
-    }else if(msgModel.refType==2){
-      homeFeedModel = await feedDetail(id: commentModel.targetId);
-    }
+      if(msgModel.refType==0){
+        homeFeedModel = HomeFeedModel.fromJson(msgModel.refData);
+        if(homeFeedModel!=null){
+          feedIsDelete = false;
+        }else{
+          feedIsDelete = true;
+        }
+      }else if(msgModel.refType==2){
+        commentModel = CommentDtoModel.fromJson(msgModel.refData);
+        if(commentModel!=null){
+          homeFeedModel = await feedDetail(id: commentModel.targetId);
+        }
+      }
+
+
   }
   List<BaseRichText> _atText() {
     List<BaseRichText> richList = [];
@@ -313,12 +323,10 @@ class _InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       TextPainter testSize = calculateTextWidth(
           "$commentState$comment", AppStyle.textRegular13, ScreenUtil.instance.screenWidthDp * 0.64, 3);
       textHeight = testSize.height;
-      print('textHeight==============================$textHeight');
     } else {
       TextPainter testSize =
           calculateTextWidth("$comment", AppStyle.textRegular13, ScreenUtil.instance.screenWidthDp * 0.64, 3);
       textHeight = testSize.height;
-      print('textHeight==============================$textHeight');
     }
     return Container(
       width: ScreenUtil.instance.screenWidthDp,
@@ -402,7 +410,7 @@ class _InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                 onTap: (){
                   if(msgModel.refType==0||msgModel.refType==2){
                     if(msgModel.commentId!=null){
-                      getFeedDetail(homeFeedModel.id,commentId: msgModel.commentId);
+                      getFeedDetail(homeFeedModel.id,comment: msgModel.commentData);
                     }
                   }
                 },
@@ -421,7 +429,11 @@ class _InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                     ),
                   ),
                 ),)
-              : Container(
+              : InkWell(
+              onTap:(){
+                Toast.show("该内容已删除", context);
+              },
+            child: Container(
                   height: 38,
                   width: 38,
                   color: AppColor.bgWhite,
@@ -431,13 +443,13 @@ class _InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                       style: AppStyle.textHintRegular10,
                     ),
                   ),
-                )
+                ),)
         ],
       ),
     );
   }
 
-  getFeedDetail(int feedId,{int commentId}) async {
+  getFeedDetail(int feedId,{CommentDtoModel comment}) async {
     HomeFeedModel feedModel = await feedDetail(id: feedId);
     List<HomeFeedModel> list = [];
     list.add(feedModel);
@@ -446,7 +458,7 @@ class _InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     // 跳转动态详情页
     Navigator.push(
       context,
-      new MaterialPageRoute(builder: (context) => FeedDetailPage(model: feedModel,commentId: commentId,)),
+      new MaterialPageRoute(builder: (context) => FeedDetailPage(model: feedModel,comment: comment,)),
     );
   }
 }

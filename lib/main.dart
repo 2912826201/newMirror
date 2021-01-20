@@ -23,6 +23,8 @@ import 'package:mirror/page/profile/fitness_information_entry/train_several_time
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/vip/vip_nameplate_page.dart';
 import 'package:mirror/widget/address_Picker.dart';
+import 'package:mirror/widget/dialog.dart';
+import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 
 import 'api/live_broadcast/live_api.dart';
@@ -68,7 +70,8 @@ void main() {
             ChangeNotifierProvider(create: (_) => ProfilePageNotifier()),
         ChangeNotifierProvider(create: (_) => GroupUserProfileNotifier()),
         ChangeNotifierProvider(create: (_) => UnReadMessageNotifier()),
-        ChangeNotifierProvider(create: (_)=>VipMoveNotifier())
+        ChangeNotifierProvider(create: (_)=>VipMoveNotifier()),
+        ChangeNotifierProvider(create: (_)=>AppDialogNotifier()),
       ],
       child: MyApp(),
     ),
@@ -80,15 +83,34 @@ Future _initApp() async {
   //要先执行该方法 不然插件无法加载调用
   WidgetsFlutterBinding.ensureInitialized();
 
+  // 强制竖屏
+  SystemChrome.setPreferredOrientations(
+    [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+
+  //获取版本号
+  PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
+    //app名称
+    String appName = packageInfo.appName;
+    //包名
+    String packageName = packageInfo.packageName;
+    //app版本
+    String version = packageInfo.version;
+    //build号
+    String buildNumber = packageInfo.buildNumber;
+    AppConfig.version = version;
+    AppConfig.buildNumber = buildNumber;
+    print('appName==&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&=========$appName');
+    print('packageName======&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&======$packageName');
+    print('version=========&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&===$version');
+    print('buildNumber=====&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&=======$buildNumber');
+  });
+
+  //获取操作系统
   Application.platform = Platform.isAndroid
       ? 0
       : Platform.isIOS
           ? 1
           : -1;
-
-  // 强制竖屏
-  SystemChrome.setPreferredOrientations(
-      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
   //初始化SharedPreferences
   AppPrefs.init();
@@ -226,6 +248,7 @@ class MyAppState extends State<MyApp> {
       // 连接融云
       Application.rongCloud.connect();
     }
+
     super.initState();
   }
 

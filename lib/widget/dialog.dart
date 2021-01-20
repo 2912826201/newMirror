@@ -1,7 +1,9 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-
+import 'package:provider/provider.dart';
 /// dialog
 /// Created by yangjiayi on 2020/12/31.
 
@@ -18,12 +20,11 @@ class _AppDialog extends StatelessWidget {
   final AppDialogButton confirm;
   final AppDialogButton cancel;
   final List<AppDialogButton> buttonList;
-
+  final double progress;
   final String title;
   final String info;
   final String circleImageUrl;
   final String topImageUrl;
-
   final List<Widget> _viewList = [];
 
   _AppDialog(
@@ -32,7 +33,7 @@ class _AppDialog extends StatelessWidget {
       this.cancel,
       this.buttonList,
       this.title,
-      this.info,
+      this.info, this.progress,
       this.circleImageUrl,
       this.topImageUrl})
       : super(key: key);
@@ -61,6 +62,7 @@ class _AppDialog extends StatelessWidget {
     _buildCircleImageView();
     _buildTitle();
     _buildInfo();
+    _buildProgress(context);
     _buildButton(context);
     _buildButtonList(context);
     return _viewList;
@@ -74,12 +76,24 @@ class _AppDialog extends StatelessWidget {
         color: AppColor.mainBlue,
       ));
     }
-
     _viewList.add(SizedBox(
       height: _outerPadding - _innerPadding,
     ));
   }
-
+  _buildProgress(BuildContext context){
+    if(progress!=null){
+      _viewList.add(
+        Padding(
+          padding: const EdgeInsets.fromLTRB(_outerPadding, _innerPadding, _outerPadding, 5),
+          child: LinearProgressIndicator(
+            value: context.watch<AppDialogNotifier>().progress,
+            backgroundColor: AppColor.white,
+            valueColor: AlwaysStoppedAnimation<Color>(AppColor.bgVip1),
+          ),
+        )
+      );
+    }
+  }
   _buildCircleImageView() {
     if (circleImageUrl != null) {
       _viewList.add(Padding(
@@ -259,6 +273,7 @@ showAppDialog(BuildContext context,
     List<AppDialogButton> buttonList,
     String title,
     String info,
+    double progress,
     String circleImageUrl,
     String topImageUrl,
     bool barrierDismissible = true}) {
@@ -275,8 +290,18 @@ showAppDialog(BuildContext context,
                   buttonList: buttonList,
                   title: title,
                   info: info,
+                  progress: progress,
                   circleImageUrl: circleImageUrl,
                   topImageUrl: topImageUrl),
             ));
       });
+}
+
+class AppDialogNotifier extends ChangeNotifier{
+  double progress;
+
+  void changeProgress(double prs){
+    progress = prs;
+    notifyListeners();
+  }
 }

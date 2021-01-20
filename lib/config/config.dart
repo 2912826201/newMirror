@@ -12,8 +12,8 @@ class AppConfig {
 
   //版本号
   //TODO 暂时先写在这 之后需要和打包配置联动
-  static const String VER = "0.0.1";
-
+  static  String version = "0.0.1";
+  static  String buildNumber = "1";
   //各环境api请求基础路径
   // static const String _DEV_HOST = "http://ifdev.i-fitness.cn";
   // static const String _MIRROR_HOST = "http://ifdev.i-fitness.cn";

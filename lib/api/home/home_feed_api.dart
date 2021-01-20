@@ -37,7 +37,7 @@ const String RECOMMENDCOACH = "/sport/course/RecommendCoach";
 const String DELETEFEED = "/appuser/web/feed/delete";
 // 动态详情
 const String DETAIL = "/appuser/web/feed/detail";
-
+const String GET_COMMENT = "/appuser/web/comment/pullComment";
 //获取动态列表
 Future<DataResponseModel> getPullList({@required int type, @required int size, int targetId, int lastTime}) async {
   Map<String, dynamic> params = {};
@@ -225,7 +225,15 @@ Future<Map> queryListByHot2(
     return null;
   }
 }
-
+  //获取一条评论
+  Future<CommentDtoModel> getComment(int commentId)async{
+    BaseResponseModel responseModel = await requestApi(GET_COMMENT, {"commentId":commentId});
+    if (responseModel.isSuccess) {
+      return CommentDtoModel.fromJson(responseModel.data);
+    } else {
+      return null;
+    }
+  }
 // 更新获取评论列表热度接口返回数据方式
 Future<List> queryListByHot(
     {@required int targetId, @required int targetType, @required int page, @required int size}) async {
