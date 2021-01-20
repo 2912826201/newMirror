@@ -46,6 +46,7 @@ class Application {
 
   //相机列表
   static List<CameraDescription> cameras;
+  static bool isCameraInUse = false;
 
   // 动态model
   static HomeFeedModel feedModel;

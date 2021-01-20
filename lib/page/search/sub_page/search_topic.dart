@@ -12,6 +12,7 @@ import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/topic/topic_detail.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 
 class SearchTopic extends StatefulWidget {
   SearchTopic({Key key, this.keyWord, this.focusNode,this.textController}) : super(key: key);
@@ -85,8 +86,8 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
 
   @override
   void dispose() {
-    print("销毁了页面");
-
+    print("话题页销毁了页面");
+    _scrollController.dispose();
     ///取消延时任务
     timer.cancel();
     super.dispose();

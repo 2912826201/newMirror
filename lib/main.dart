@@ -5,6 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/data/database/db_helper.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
@@ -27,7 +28,7 @@ import 'package:mirror/widget/dialog.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 
-import 'api/live_broadcast/live_api.dart';
+import 'api/training/live_api.dart';
 import 'api/message_page_api.dart';
 import 'api/user_api.dart';
 import 'config/application.dart';
@@ -80,6 +81,7 @@ void main() {
 
 //初始化APP
 Future _initApp() async {
+  // 升级flutter版本1.10.2后，因为在main()方法中有异步操作，对一些插件做了初始化操作。
   //要先执行该方法 不然插件无法加载调用
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -262,6 +264,14 @@ class MyAppState extends State<MyApp> {
       ),
       //通过统一方法处理页面跳转路由
       onGenerateRoute: Application.router.generator,
+      // localizationsDelegates: [
+      //   GlobalMaterialLocalizations.delegate,
+      //   GlobalWidgetsLocalizations.delegate,
+      // ],
+      // supportedLocales: [
+      //   const Locale('zh','CH'),
+      //   const Locale('en', 'US'),
+      // ],
     );
   }
 

@@ -55,7 +55,7 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes>{
                   alignment: Alignment.bottomLeft,
                   child: Text(
                     "你每周训练几次",
-                    style: AppStyle.textBlackMedium23,
+                    style: AppStyle.textMedium23,
                   ),
                 ),
               ),

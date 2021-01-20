@@ -1,7 +1,4 @@
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/api/live_broadcast/live_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
@@ -66,7 +63,7 @@ class _FitnessTargetState extends State<FitnessTargetPage>{
                   alignment: Alignment.bottomLeft,
                   child: Text(
                     "你的目标是？",
-                    style: AppStyle.textBlackMedium23,
+                    style: AppStyle.textMedium23,
                   ),
                 ),
               ),
@@ -120,13 +117,13 @@ class _FitnessTargetState extends State<FitnessTargetPage>{
       children: [
        Container(
          margin: EdgeInsets.only(top: 12),
-         child: Text("$order",style:beforIndex==index?AppStyle.textblackMedium29:AppStyle.textMedium29,),) ,
+         child: Text("$order",style:beforIndex==index?AppStyle.textMedium29:AppStyle.textPrimary3Medium29,),) ,
           SizedBox(width: ScreenUtil.instance.screenWidthDp*0.78*0.04,),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
                 Expanded(child: SizedBox()),
-                Text(title,style:beforIndex==index?AppStyle.textblackMedium21:AppStyle.textMedium21,),
+                Text(title,style:beforIndex==index?AppStyle.textMedium21:AppStyle.textPrimary3Medium21,),
                 SizedBox(height: 8,),
                 Text(introduction,style:AppStyle.textSecondaryRegular12,maxLines: 1,overflow: TextOverflow.ellipsis,),
                 Expanded(child: SizedBox()),

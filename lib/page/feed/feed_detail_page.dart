@@ -64,6 +64,11 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   GlobalKey _key = GlobalKey();
   WidgetsBinding widgetsBinding;
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+  @override
   void initState() {
     print("进入详情页");
     WidgetsBinding.instance.addPostFrameCallback((callback){

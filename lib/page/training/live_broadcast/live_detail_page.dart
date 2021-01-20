@@ -21,7 +21,7 @@ import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
-import 'package:mirror/api/live_broadcast/live_api.dart';
+import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/widget/post_comments.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -1444,7 +1444,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
       AtUsersModel atModel = new AtUsersModel();
       atModel.index = rule.startIndex;
       atModel.len = rule.endIndex;
-      atModel.uid = 1008611;
+      atModel.uid = rule.id;
       atListModel.add(atModel);
     }
     await postComments(

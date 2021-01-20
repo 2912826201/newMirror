@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/api/live_broadcast/live_api.dart';
+import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/live_video_model.dart';
@@ -12,12 +12,12 @@ import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 /// 视频课程列表-筛选页
 class VideoCourseListPage extends StatefulWidget {
-
   @override
   createState() => new VideoCourseListPageState();
 }
@@ -81,8 +81,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
 
   //一些通用的属性
   var marginCommonly = const EdgeInsets.only(left: 3, right: 3);
-  var topTitleItem =
-      const EdgeInsets.only(left: 10, right: 10, top: 2, bottom: 2);
+  var topTitleItem = const EdgeInsets.only(left: 10, right: 10, top: 2, bottom: 2);
   var topTitleItemSelect = BoxDecoration(
     borderRadius: BorderRadius.circular(50),
     color: Colors.cyanAccent,
@@ -129,26 +128,18 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
     var columnArray = <Widget>[];
     //判断有没有筛选栏
     if (videoTagModel != null) {
-      columnArray.add(_getScreenTitleUi(),);
+      columnArray.add(
+        _getScreenTitleUi(),
+      );
     }
-    columnArray.add(
-        Expanded(
-            child: SizedBox(
-              child: _bodyBox(),
-            )
-        )
-    );
-
+    columnArray.add(Expanded(
+        child: SizedBox(
+      child: _bodyBox(),
+    )));
 
     return Container(
-      height: MediaQuery
-          .of(context)
-          .size
-          .height,
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
       color: AppColor.white,
       child: Column(
         children: columnArray,
@@ -156,40 +147,39 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
     );
   }
 
-
   //顶部筛选的列表
   Widget _getScreenTitleUi() {
-    TextStyle textStyle = TextStyle(fontSize: 15,
-        color: AppColor.textPrimary1,
-        fontWeight: FontWeight.bold);
+    TextStyle textStyle = TextStyle(fontSize: 15, color: AppColor.textPrimary1, fontWeight: FontWeight.bold);
     var expandedArray = <Widget>[];
     for (int i = 0; i < _titleItemString.length; i++) {
-      expandedArray.add(
-          Expanded(
-            flex: 1,
-            child: InkWell(
-              child: Container(
-                height: 48,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(_titleItemString[i], style: textStyle,),
-                    SizedBox(width: 1,),
-                    Icon(
-                      i == _titleItemString.length - 1 ? Icons
-                          .filter_alt_outlined : Icons.arrow_drop_down_sharp,
-                      color: AppColor.textHint,
-                      size: 16,
-                    ),
-                  ],
+      expandedArray.add(Expanded(
+        flex: 1,
+        child: InkWell(
+          child: Container(
+            height: 48,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  _titleItemString[i],
+                  style: textStyle,
                 ),
-              ),
-              onTap: () {
-                _screenTitleOnclick(i);
-              },
+                SizedBox(
+                  width: 1,
+                ),
+                Icon(
+                  i == _titleItemString.length - 1 ? Icons.filter_alt_outlined : Icons.arrow_drop_down_sharp,
+                  color: AppColor.textHint,
+                  size: 16,
+                ),
+              ],
             ),
-          )
-      );
+          ),
+          onTap: () {
+            _screenTitleOnclick(i);
+          },
+        ),
+      ));
     }
     return Container(
       width: double.infinity,
@@ -209,24 +199,18 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
     );
   }
 
-
   //主体框架
   Widget _bodyBox() {
     if (filterBoxOpacity > 0) {
-      filterBoxHeight = MediaQuery
-          .of(context)
-          .size
-          .height * 0.75 - 150;
+      filterBoxHeight = MediaQuery.of(context).size.height * 0.75 - 150;
       if (showScreenTitlePosition < 0 || showScreenTitlePosition >= 3) {
-        double itemHeight = titleItemSubSettingList[0].height +
-            titleItemSubSettingList[1].height +
-            titleItemSubSettingList[2].height;
+        double itemHeight =
+            titleItemSubSettingList[0].height + titleItemSubSettingList[1].height + titleItemSubSettingList[2].height;
         if (itemHeight + 20 < filterBoxHeight) {
           filterBoxHeight = itemHeight + 20;
         }
       } else {
-        filterBoxHeight =
-            titleItemSubSettingList[showScreenTitlePosition].height + 80;
+        filterBoxHeight = titleItemSubSettingList[showScreenTitlePosition].height + 80;
       }
     }
 
@@ -270,7 +254,8 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
                       ),
                     ),
                   ),
-                  Expanded(child: SizedBox(
+                  Expanded(
+                      child: SizedBox(
                     child: GestureDetector(
                       child: Container(
                         width: double.infinity,
@@ -295,8 +280,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
 
   //list box
   Widget _listBox() {
-    if (loadingStatus == LoadingStatus.STATUS_COMPLETED &&
-        videoModelArray != null && videoModelArray.length > 0) {
+    if (loadingStatus == LoadingStatus.STATUS_COMPLETED && videoModelArray != null && videoModelArray.length > 0) {
       return _listContentBox();
     } else if (loadingStatus == LoadingStatus.STATUS_LOADING) {
       return UnconstrainedBox(
@@ -308,12 +292,19 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
         child: Center(
           child: Column(
             children: [
-              Image.asset("images/test/bg.png", fit: BoxFit.cover,
+              Image.asset(
+                "images/test/bg.png",
+                fit: BoxFit.cover,
                 width: 224,
-                height: 224,),
-              SizedBox(height: 16,),
-              Text("暂无视频课程，去看看其他的吧~",
-                style: TextStyle(fontSize: 14, color: AppColor.textSecondary),)
+                height: 224,
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                "暂无视频课程，去看看其他的吧~",
+                style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+              )
             ],
           ),
         ),
@@ -363,14 +354,12 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
                 scrollDirection: Axis.vertical,
                 itemCount: videoModelArray.length,
                 itemBuilder: (context, index) {
-                  return _getItem(
-                      videoModelArray[index], index, videoModelArray.length);
+                  return _getItem(videoModelArray[index], index, videoModelArray.length);
                 }),
           ),
           onNotification: (ScrollNotification notification) {
             ScrollMetrics metrics = notification.metrics;
-            if (metrics.axisDirection == AxisDirection.up ||
-                metrics.axisDirection == AxisDirection.down) {
+            if (metrics.axisDirection == AxisDirection.up || metrics.axisDirection == AxisDirection.down) {
               // 注册通知回调
               if (notification is ScrollStartNotification) {
                 // 滚动开始
@@ -382,9 +371,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
                   if (metrics.pixels - showBackTopBoxHeight > topItemHeight) {
                     topItemOpacity = 1.0;
                   } else {
-                    topItemOpacity =
-                        (metrics.pixels - showBackTopBoxHeight) /
-                            topTitleItemHeight;
+                    topItemOpacity = (metrics.pixels - showBackTopBoxHeight) / topTitleItemHeight;
                     if (topItemOpacity > 1) {
                       topItemOpacity = 1.0;
                     }
@@ -395,8 +382,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
                 setState(() {
                   if (topItemOpacity == 0) {
                     topItemHeight = 0;
-                  } else if (metrics.pixels > showBackTopBoxHeight &&
-                      topItemHeight == 0) {
+                  } else if (metrics.pixels > showBackTopBoxHeight && topItemHeight == 0) {
                     topItemHeight = topItemHeight1;
                     topItemOpacity = 0.0;
                   }
@@ -407,8 +393,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
               }
             }
             return false;
-          }
-      ),
+          }),
     );
   }
 
@@ -423,8 +408,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
           height: topItemHeight,
         ),
         onTap: () {
-          scrollController.animateTo(0.0,
-              duration: Duration(milliseconds: 300), curve: Curves.ease);
+          scrollController.animateTo(0.0, duration: Duration(milliseconds: 300), curve: Curves.ease);
         },
       ),
     );
@@ -472,8 +456,10 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
                   borderRadius: BorderRadius.circular(17),
                 ),
                 child: Center(
-                  child: Text("重置",
-                    style: TextStyle(color: AppColor.mainRed, fontSize: 16),),
+                  child: Text(
+                    "重置",
+                    style: TextStyle(color: AppColor.mainRed, fontSize: 16),
+                  ),
                 ),
               ),
               onTap: () {
@@ -498,9 +484,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
                     }
                   }
                 }
-                setState(() {
-
-                });
+                setState(() {});
               },
             ),
             flex: 1,
@@ -516,8 +500,10 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
                   color: AppColor.mainRed.withOpacity(0.06),
                 ),
                 child: Center(
-                  child: Text("确定",
-                    style: TextStyle(color: AppColor.mainRed, fontSize: 16),),
+                  child: Text(
+                    "确定",
+                    style: TextStyle(color: AppColor.mainRed, fontSize: 16),
+                  ),
                 ),
               ),
               onTap: () {
@@ -553,12 +539,24 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
     //难度
     childrenArray3 = _filterTitleArray("难度", videoTagModel.level, 2);
 
-    childrenArray.add(Container(key: titleItemSubSettingList[0].globalKey,
-      child: Column(children: childrenArray1,),));
-    childrenArray.add(Container(key: titleItemSubSettingList[1].globalKey,
-      child: Column(children: childrenArray2,),));
-    childrenArray.add(Container(key: titleItemSubSettingList[2].globalKey,
-      child: Column(children: childrenArray3,),));
+    childrenArray.add(Container(
+      key: titleItemSubSettingList[0].globalKey,
+      child: Column(
+        children: childrenArray1,
+      ),
+    ));
+    childrenArray.add(Container(
+      key: titleItemSubSettingList[1].globalKey,
+      child: Column(
+        children: childrenArray2,
+      ),
+    ));
+    childrenArray.add(Container(
+      key: titleItemSubSettingList[2].globalKey,
+      child: Column(
+        children: childrenArray3,
+      ),
+    ));
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -572,62 +570,63 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
   }
 
   //每一个筛选的块
-  List<Widget> _filterTitleArray(String title, List<SubTagModel> list,
-      int index) {
+  List<Widget> _filterTitleArray(String title, List<SubTagModel> list, int index) {
     var childrenArray = <Widget>[];
     var wrapArray = <Widget>[];
 
-    var titleStyle = const TextStyle(
-        fontSize: 14, color: AppColor.textSecondary);
+    var titleStyle = const TextStyle(fontSize: 14, color: AppColor.textSecondary);
     var marginTitleFirst = const EdgeInsets.only(top: 16, bottom: 12);
     var marginTitleCommon = const EdgeInsets.only(top: 0, bottom: 12);
 
-    childrenArray.add(Offstage(offstage: !(showScreenTitlePosition == index ||
-        showScreenTitlePosition == 3), child:
-    Container(width: double.infinity,
-      child: Text(title, style: titleStyle,),
-      margin: index == 0 ? marginTitleFirst : (showScreenTitlePosition == 3
-          ? marginTitleCommon
-          : marginTitleFirst),),));
+    childrenArray.add(Offstage(
+      offstage: !(showScreenTitlePosition == index || showScreenTitlePosition == 3),
+      child: Container(
+        width: double.infinity,
+        child: Text(
+          title,
+          style: titleStyle,
+        ),
+        margin: index == 0 ? marginTitleFirst : (showScreenTitlePosition == 3 ? marginTitleCommon : marginTitleFirst),
+      ),
+    ));
     for (int i = 0; i < list.length; i++) {
       wrapArray.add(_filterTitleItem(list[i]));
     }
-    childrenArray.add(Offstage(offstage: !(showScreenTitlePosition == index ||
-        showScreenTitlePosition == 3), child:
-    Container(width: double.infinity,
-      child: Wrap(alignment: WrapAlignment.start, children: wrapArray,),),));
+    childrenArray.add(Offstage(
+      offstage: !(showScreenTitlePosition == index || showScreenTitlePosition == 3),
+      child: Container(
+        width: double.infinity,
+        child: Wrap(
+          alignment: WrapAlignment.start,
+          children: wrapArray,
+        ),
+      ),
+    ));
     return childrenArray;
   }
 
   //每一个筛选按钮
   Widget _filterTitleItem(SubTagModel model) {
     var marginItem = const EdgeInsets.only(right: 12, bottom: 12);
-    var paddingItem = const EdgeInsets.only(
-        left: 24, top: 4, right: 24, bottom: 4);
-    var selectPaddingItem = const EdgeInsets.only(
-        left: 23.5, top: 3.5, right: 23.5, bottom: 3.5);
-    var decorationItem = const BoxDecoration(color: AppColor.bgWhite,
-        borderRadius: BorderRadius.all(Radius.circular(14)));
+    var paddingItem = const EdgeInsets.only(left: 24, top: 4, right: 24, bottom: 4);
+    var selectPaddingItem = const EdgeInsets.only(left: 23.5, top: 3.5, right: 23.5, bottom: 3.5);
+    var decorationItem =
+        const BoxDecoration(color: AppColor.bgWhite, borderRadius: BorderRadius.all(Radius.circular(14)));
     var styleItem = const TextStyle(fontSize: 14, color: AppColor.textPrimary2);
-    var selectStyleItem = const TextStyle(
-        fontSize: 14, color: AppColor.mainRed);
+    var selectStyleItem = const TextStyle(fontSize: 14, color: AppColor.mainRed);
     var selectDecorationItem = BoxDecoration(
         color: AppColor.mainRed.withOpacity(0.06),
         borderRadius: BorderRadius.all(Radius.circular(14)),
         border: Border.all(width: 0.5, color: AppColor.mainRed));
     return InkWell(
       child: Container(
-        child: Text((model.ename == null ? "" : model.ename) + model.name,
-          style: _titleItemListTemp.contains(model)
-              ? selectStyleItem
-              : styleItem,),
+        child: Text(
+          (model.ename == null ? "" : model.ename) + model.name,
+          style: _titleItemListTemp.contains(model) ? selectStyleItem : styleItem,
+        ),
         margin: marginItem,
-        padding: _titleItemListTemp.contains(model)
-            ? selectPaddingItem
-            : paddingItem,
-        decoration: _titleItemListTemp.contains(model)
-            ? selectDecorationItem
-            : decorationItem,
+        padding: _titleItemListTemp.contains(model) ? selectPaddingItem : paddingItem,
+        decoration: _titleItemListTemp.contains(model) ? selectDecorationItem : decorationItem,
       ),
       onTap: () {
         if (_titleItemListTemp.contains(model)) {
@@ -642,175 +641,36 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
 
   //item--每一个
   Widget _getItem(LiveVideoModel videoModel, int index, int count) {
-    EdgeInsetsGeometry firstMargin = const EdgeInsets.only(
-        left: 16, right: 16, top: 12, bottom: 6);
-    EdgeInsetsGeometry commonMargin = const EdgeInsets.only(
-        left: 16, right: 16, top: 6, bottom: 6);
-    EdgeInsetsGeometry endMargin = const EdgeInsets.only(
-        left: 16, right: 16, top: 6, bottom: 50);
+    EdgeInsetsGeometry firstMargin = const EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 6);
+    EdgeInsetsGeometry commonMargin = const EdgeInsets.only(left: 16, right: 16, top: 6, bottom: 6);
+    EdgeInsetsGeometry endMargin = const EdgeInsets.only(left: 16, right: 16, top: 6, bottom: 50);
     return GestureDetector(
       child: Container(
         color: AppColor.transparent,
-        width: MediaQuery
-            .of(context)
-            .size
-            .width,
-        margin: index == count - 1 ? endMargin : (index == 0
-            ? firstMargin
-            : commonMargin),
+        width: ScreenUtil.instance.screenWidthDp,
+        margin: index == count - 1 ? endMargin : (index == 0 ? firstMargin : commonMargin),
         child: Row(
           children: [
-            _getItemLeftImageUi(videoModel, index),
-            _getItemRightDataUi(videoModel, 90, index),
+            buildVideoCourseItemLeftImageUi(videoModel, getHeroTag(videoModel, index)),
+            buildVideoCourseItemRightDataUi(videoModel, 90, false),
           ],
         ),
       ),
       onTap: () {
         //点击事件
         print("====heroTagArray[index]:${heroTagArray[index]}");
-        AppRouter.navigateToVideoDetail(context, heroTagArray[index],
-            videoModel.id, videoModel.coursewareId, videoModel);
+        AppRouter.navigateToVideoDetail(
+            context, heroTagArray[index], videoModel.id, videoModel.coursewareId, videoModel);
       },
     );
   }
-
-  //获取left的图片
-  Widget _getItemLeftImageUi(LiveVideoModel value, int index) {
-    String imageUrl;
-    if (value.picUrl != null) {
-      imageUrl = value.picUrl;
-    } else if (value.coursewareDto?.picUrl != null) {
-      imageUrl = value.coursewareDto?.picUrl;
-    } else if (value.coursewareDto?.previewVideoUrl != null) {
-      imageUrl = value.coursewareDto?.previewVideoUrl;
-    }
-
-    return Container(
-      width: 120,
-      height: 90,
-      child: Hero(
-        child: CachedNetworkImage(
-          height: 90,
-          width: 120,
-          imageUrl: imageUrl == null ? "" : imageUrl,
-          fit: BoxFit.cover,
-          placeholder: (context, url) => Image.asset(
-            "images/test/bg.png",
-            fit: BoxFit.cover,
-          ),
-          errorWidget: (context, url, error) => Image.asset(
-            "images/test/bg.png",
-            fit: BoxFit.cover,
-          ),
-        ),
-        tag: getHeroTag(value, index),
-      ),
-    );
-  }
-
-  //获取右边数据的ui
-  Widget _getItemRightDataUi(LiveVideoModel value, int imageHeight, int index) {
-    TextStyle textStyleBold = TextStyle(fontSize: 12,
-        fontWeight: FontWeight.bold,
-        color: AppColor.textPrimary2);
-    TextStyle textStyleNormal = TextStyle(
-        fontSize: 12, color: AppColor.textSecondary);
-
-    return Expanded(
-        child: SizedBox(
-          child: Container(
-            margin: const EdgeInsets.only(left: 12),
-            height: imageHeight.toDouble(),
-            child: Column(
-              children: [
-                Container(
-                  width: double.infinity,
-                  child: Text(
-                    value.title ?? "",
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: AppColor.textPrimary1,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                Expanded(
-                    child: SizedBox(
-                      child: Container(
-                        padding: const EdgeInsets.only(top: 6),
-                        width: double.infinity,
-                        height: double.infinity,
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              child: RichText(
-                                text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                          text: value.levelDto
-                                              ?.ename, style: textStyleBold),
-                                      // ignore: null_aware_before_operator
-                                      TextSpan(
-                                          // ignore: null_aware_before_operator
-                                          text: value.levelDto?.name + " · ",
-                                          style: textStyleNormal),
-                                      TextSpan(
-                                          text: ((value.times ~/ 1000) ~/ 60 > 0
-                                              ? (value.times ~/ 1000) ~/ 60
-                                              : (value.times ~/ 1000)).toString(),
-                                          style: textStyleBold),
-                                      TextSpan(
-                                          text: (value.times ~/ 1000) ~/ 60 > 0
-                                              ? "分钟 · "
-                                              : "秒 · ", style: textStyleNormal),
-                                      TextSpan(
-                                          text: value.calories
-                                              .toString(),
-                                          style: textStyleBold),
-                                      TextSpan(
-                                          text: "千卡", style: textStyleNormal),
-                                    ]
-                                ),
-                              ),
-                              top: 0,
-                              left: 0,
-                            ),
-                            Positioned(
-                              child: Text(
-                                IntegerUtil.formatIntegerCn(value.joinAmount) +
-                                    "人练过",
-                                style: TextStyle(
-                                    fontSize: 12, color: AppColor.textPrimary2),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              bottom: 0,
-                              left: 0,
-                              right: 8,
-                            )
-                          ],
-                        ),
-                      ),
-                    )
-                ),
-              ],
-            ),
-          ),
-        )
-    );
-  }
-
 
   //给hero的tag设置唯一的值
   Object getHeroTag(LiveVideoModel videoModel, index) {
     if (heroTagArray != null && heroTagArray.length > index) {
       return heroTagArray[index];
     } else {
-      String string =
-          "heroTag_video_${DateUtil.getNowDateMs()}_${Random().nextInt(
-          100000)}_${videoModel.id}_$index";
+      String string = "heroTag_video_${DateUtil.getNowDateMs()}_${Random().nextInt(100000)}_${videoModel.id}_$index";
       heroTagArray.add(string);
       return string;
     }
@@ -860,7 +720,8 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
       page: pagePosition,
       target: _target,
       part: _part,
-      level: _level,);
+      level: _level,
+    );
     if (model != null && model["list"] != null) {
       int count = videoModelArray.length;
 
@@ -870,7 +731,6 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
       });
 
       print("videoModelArray.length222222:${videoModelArray.length}");
-
 
       Future.delayed(Duration(milliseconds: 500), () {
         if (isRefreshOrLoad) {
@@ -956,8 +816,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
     //获取每一个筛序组的高度
     for (int j = 0; j < titleItemSubSettingList.length; j++) {
       if (titleItemSubSettingList[j].height < 1) {
-        titleItemSubSettingList[j].height =
-            titleItemSubSettingList[j].globalKey.currentContext.size.height;
+        titleItemSubSettingList[j].height = titleItemSubSettingList[j].globalKey.currentContext.size.height;
       }
     }
 
@@ -992,4 +851,114 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
 class TitleItemSubSetting {
   double height;
   GlobalKey globalKey;
+}
+
+//获取left的图片
+Widget buildVideoCourseItemLeftImageUi(LiveVideoModel value, Object heroTag) {
+  String imageUrl;
+  if (value.picUrl != null) {
+    imageUrl = value.picUrl;
+  } else if (value.coursewareDto?.picUrl != null) {
+    imageUrl = value.coursewareDto?.picUrl;
+  } else if (value.coursewareDto?.previewVideoUrl != null) {
+    imageUrl = value.coursewareDto?.previewVideoUrl;
+  }
+
+  return Container(
+    width: 120,
+    height: 90,
+    child: Hero(
+      child: CachedNetworkImage(
+        height: 90,
+        width: 120,
+        imageUrl: imageUrl == null ? "" : imageUrl,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => Image.asset(
+          "images/test/bg.png",
+          fit: BoxFit.cover,
+        ),
+        errorWidget: (context, url, error) => Image.asset(
+          "images/test/bg.png",
+          fit: BoxFit.cover,
+        ),
+      ),
+      tag: heroTag,
+    ),
+  );
+}
+
+//获取右边数据的ui
+Widget buildVideoCourseItemRightDataUi(LiveVideoModel value, int imageHeight, bool isMine) {
+  TextStyle textStyleBold = TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColor.textPrimary2);
+  TextStyle textStyleNormal = TextStyle(fontSize: 12, color: AppColor.textSecondary);
+
+  return Expanded(
+      child: SizedBox(
+    child: Container(
+      margin: const EdgeInsets.only(left: 12),
+      height: imageHeight.toDouble(),
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            child: Text(
+              value.title ?? "",
+              style: TextStyle(
+                fontSize: 15,
+                color: AppColor.textPrimary1,
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Expanded(
+              child: SizedBox(
+            child: Container(
+              padding: const EdgeInsets.only(top: 6),
+              width: double.infinity,
+              height: double.infinity,
+              child: Stack(
+                children: [
+                  Positioned(
+                    child: RichText(
+                      text: TextSpan(children: [
+                        TextSpan(text: value.levelDto?.ename, style: textStyleBold),
+                        // ignore: null_aware_before_operator
+                        TextSpan(
+                            // ignore: null_aware_before_operator
+                            text: value.levelDto?.name + " · ",
+                            style: textStyleNormal),
+                        TextSpan(
+                            text:
+                                ((value.times ~/ 1000) ~/ 60 > 0 ? (value.times ~/ 1000) ~/ 60 : (value.times ~/ 1000))
+                                    .toString(),
+                            style: textStyleBold),
+                        TextSpan(text: (value.times ~/ 1000) ~/ 60 > 0 ? "分钟 · " : "秒 · ", style: textStyleNormal),
+                        TextSpan(text: value.calories.toString(), style: textStyleBold),
+                        TextSpan(text: "千卡", style: textStyleNormal),
+                      ]),
+                    ),
+                    top: 0,
+                    left: 0,
+                  ),
+                  Positioned(
+                    child: Text(
+                      isMine ? "已完成${value.finishAmount}次" : IntegerUtil.formatIntegerCn(value.practiceAmount) + "人练过",
+                      style: TextStyle(fontSize: 12, color: AppColor.textPrimary2),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    bottom: 0,
+                    left: 0,
+                    right: 8,
+                  )
+                ],
+              ),
+            ),
+          )),
+        ],
+      ),
+    ),
+  ));
 }

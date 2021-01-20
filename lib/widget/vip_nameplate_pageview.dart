@@ -81,7 +81,7 @@ class _VipNamePlatePageState extends State<VipNamePlatePageView>{
         shrinkWrap: true,
       children: [
         SizedBox(height: 14,),
-        Text(widget.namePlateList[index],style: AppStyle.textRedMedium21,),
+        Text(widget.namePlateList[index],style: AppStyle.redMedium21,),
         SizedBox(height: 14,),
         Text(".${contentList[index]}",style: AppStyle.textPrimary3Regular14,),
         SizedBox(height: 32,),

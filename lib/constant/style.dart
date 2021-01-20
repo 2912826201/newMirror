@@ -10,69 +10,82 @@ class AppStyle {
   static const textRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.textPrimary1);
   static const textRegular15 = TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: AppColor.textPrimary1);
   static const textRegular14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.textPrimary1);
+  static const textRegular13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textPrimary1);
   static const textRegular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textPrimary1);
 
-  // Regular 辅助字体灰色
-  static const textSecondaryRegular12 =
-      TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
-  static const textSecondaryRegular13 =
-      TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
+  // Medium主体文字黑色
+  static const textMedium29 = TextStyle(fontSize: 29, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
+  static const textMedium23 = TextStyle(fontSize: 23, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
+  static const textMedium21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
+  static const textMedium18 = TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
+  static const textMedium16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
+  static const textMedium15 = TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
+  static const textMedium14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
+  static const textMedium13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
+  static const textMedium12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
 
-  // textSecondary
-  static const textSecondaryRegular14 =
-      TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
+  // Regular textSecondary 辅助字体灰色
   static const textSecondaryRegular16 =
       TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
+  static const textSecondaryRegular14 =
+      TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
+  static const textSecondaryRegular13 =
+      TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
+  static const textSecondaryRegular12 =
+      TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
+
+  // Medium textSecondary 辅助字体灰色
   static const textSecondaryMedium14 =
       TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.textSecondary);
-  static const textHintRegular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textHint);
-  static const textHintRegular13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textHint);
-  static const textHintRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.textHint);
 
-  // Regular 灰色
+  // textHint 提示字体灰色
+  static const textHintRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.textHint);
+  static const textHintRegular13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textHint);
+  static const textHintRegular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textHint);
+  static const textHintRegular10 = TextStyle(fontSize: 10, fontWeight: FontWeight.w400, color: AppColor.textHint);
+
+  // Regular primary3灰色
   static const textPrimary3Regular14 =
       TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.textPrimary3);
   static const textPrimary3Regular12 =
       TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textPrimary3);
 
-  // Medium主体文字黑色
-  static const textMedium18 = TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
-  static const textMedium16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
-  static const textMedium15 = TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
-  static const textMedium14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
-  static const textMedium12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
-  static const textMedium13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
-
-  //红色
-  static const textRegularRed16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.mainRed);
-  static const textRegularRed13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.mainRed);
-  static const textMediumRed14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.mainRed);
-  static const textMediumRed16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColor.mainRed);
-  static const textRegularRed11 = TextStyle(fontSize: 11, fontWeight: FontWeight.w400, color: AppColor.mainRed);
-  static const textMediumRed13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColor.mainRed);
-  //不在规范内style
-  static const whiteRegular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.white);
-  static const whiteRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.white);
-  static const textBlackMedium23 = TextStyle(fontSize: 23, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
-  static const textBold21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w700, color: AppColor.black);
-  static const textMedium29 = TextStyle(fontSize: 29, fontWeight: FontWeight.w500, color: AppColor.textPrimary3);
-  static const textMedium21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w500, color: AppColor.textPrimary3);
-  static const textblackMedium29 = TextStyle(fontSize: 29, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
-  static const textblackMedium21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w500, color: AppColor.textPrimary1);
-  static const textPrimary3Medium16 =
-      TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColor.textPrimary3);
+  // Medium primary3灰色
+  static const textPrimary3Medium29 =
+      TextStyle(fontSize: 29, fontWeight: FontWeight.w500, color: AppColor.textPrimary3);
   static const textPrimary3Medium23 =
       TextStyle(fontSize: 23, fontWeight: FontWeight.w500, color: AppColor.textPrimary3);
-  static const textRegular13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textPrimary1);
-  static const textMediumBlue13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.urlText);
-  static const textHintRegular10 = TextStyle(fontSize: 10, fontWeight: FontWeight.w400, color: AppColor.textHint);
+  static const textPrimary3Medium21 =
+      TextStyle(fontSize: 21, fontWeight: FontWeight.w500, color: AppColor.textPrimary3);
+  static const textPrimary3Medium16 =
+      TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColor.textPrimary3);
+
+  //红色
+  static const redRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.mainRed);
+  static const redRegular13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.mainRed);
+  static const redRegular11 = TextStyle(fontSize: 11, fontWeight: FontWeight.w400, color: AppColor.mainRed);
+  static const redMedium21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w500, color: AppColor.mainRed);
+  static const redMedium16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColor.mainRed);
+  static const redMedium14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.mainRed);
+  static const redMedium13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColor.mainRed);
+
+  //纯白色
+  static const whiteRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.white);
+  static const whiteRegular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.white);
+  static const whiteMedium18 = TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColor.white);
   static const whiteMedium15 = TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.white);
-  static const textRedMedium21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w500, color: AppColor.mainRed);
-  static const textDeleteHintRegular12 = TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textHint,decoration: TextDecoration.lineThrough,
-    decorationColor:AppColor.textHint,);
-  static const textWhiteMedium18 = TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColor.white);
-  static const textWhiteRegular12 =
-  TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.white);
-  static const textSemibold23 =
-  TextStyle(fontSize: 23, fontWeight: FontWeight.w500, color: AppColor.textVipSemibold);
+
+  //纯黑色
+  static const blackBold21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w700, color: AppColor.black);
+  
+  //不在规范内style
+  static const textMediumBlue13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.urlText);
+  static const textDeleteHintRegular12 = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    color: AppColor.textHint,
+    decoration: TextDecoration.lineThrough,
+    decorationColor: AppColor.textHint,
+  );
+  static const textSemibold23 = TextStyle(fontSize: 23, fontWeight: FontWeight.w500, color: AppColor.textVipSemibold);
 }

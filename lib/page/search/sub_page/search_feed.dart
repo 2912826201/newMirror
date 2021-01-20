@@ -1,4 +1,5 @@
 import 'dart:async';
+
 // import 'dart:html';
 import 'dart:ui';
 
@@ -13,16 +14,17 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
-import 'package:mirror/page/feed/feed_detail_page.dart';
 import 'package:mirror/page/feed/feed_flow.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
-import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
+import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/slide_banner.dart';
 import 'package:provider/provider.dart';
 
@@ -103,7 +105,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
   @override
   void dispose() {
     print("销毁了页面");
-
+    _scrollController.dispose();
     ///取消延时任务
     timer.cancel();
     super.dispose();
@@ -158,6 +160,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
     print(feedList.isNotEmpty);
     if (feedList.isNotEmpty) {
       return Container(
+          margin: EdgeInsets.only(top: 12),
           child: RefreshIndicator(
               onRefresh: () async {
                 feedList.clear();
@@ -170,52 +173,55 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
               // child:
               //     CustomScrollView(controller: _scrollController, physics: AlwaysScrollableScrollPhysics(), slivers: [
               //   SliverToBoxAdapter(
-                    child: Container(
-                  margin: EdgeInsets.only(left: 16, right: 16),
-                  child: StaggeredGridView.countBuilder(
-                    shrinkWrap: true,
-                    itemCount: feedList.length + 1,
-                    primary: false,
-                    crossAxisCount: 4,
-                    // 上下间隔
-                    mainAxisSpacing: 4.0,
-                    // 左右间隔
-                    crossAxisSpacing: 8.0,
-                    controller:_scrollController ,
-                    itemBuilder: (context, index) {
-                      // 获取动态id
-                      int id;
-                      // 获取动态id指定model
-                      HomeFeedModel model;
-                      if (index < feedList.length) {
-                        id = feedList[index].id;
-                        model = context.read<FeedMapNotifier>().feedMap[id];
-                      }
-                      // if (feedList.isNotEmpty) {
-                      if (index == feedList.length) {
-                        return LoadingView(
-                          loadText: loadText,
-                          loadStatus: loadStatus,
-                        );
-                      } else if (index == feedList.length + 1) {
-                        return Container();
-                      } else {
-                        return SearchFeeditem(
-                          model: model,
-                          list:feedList,
-                          index: index,
-                          focusNode: widget.focusNode,
-                          isComplex: false,
-                        );
-                      }
-                      // }
-                    },
-                    staggeredTileBuilder: (index) => StaggeredTile.fit(2),
-                  ),
-                ))
+              child: Container(
+                margin: EdgeInsets.only(left: 16, right: 16),
+                child: MediaQuery.removePadding(
+                    removeTop: true,
+                    context: context,
+                    child: StaggeredGridView.countBuilder(
+                      shrinkWrap: true,
+                      itemCount: feedList.length + 1,
+                      primary: false,
+                      crossAxisCount: 4,
+                      // 上下间隔
+                      mainAxisSpacing: 4.0,
+                      // 左右间隔
+                      crossAxisSpacing: 8.0,
+                      controller: _scrollController,
+                      itemBuilder: (context, index) {
+                        // 获取动态id
+                        int id;
+                        // 获取动态id指定model
+                        HomeFeedModel model;
+                        if (index < feedList.length) {
+                          id = feedList[index].id;
+                          model = context.read<FeedMapNotifier>().feedMap[id];
+                        }
+                        // if (feedList.isNotEmpty) {
+                        if (index == feedList.length) {
+                          return LoadingView(
+                            loadText: loadText,
+                            loadStatus: loadStatus,
+                          );
+                        } else if (index == feedList.length + 1) {
+                          return Container();
+                        } else {
+                          return SearchFeeditem(
+                            model: model,
+                            list: feedList,
+                            index: index,
+                            focusNode: widget.focusNode,
+                            isComplex: false,
+                          );
+                        }
+                        // }
+                      },
+                      staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+                    )),
+              ))
           //     ])
           // )
-    );
+          );
     } else {
       return Container(
         child: Column(
@@ -244,10 +250,12 @@ class SearchFeeditem extends StatefulWidget {
   List<HomeFeedModel> list;
   int index;
   bool isComplex;
-  SearchFeeditem({this.model, this.list,this.index, this.focusNode,this.isComplex});
+
+  SearchFeeditem({this.model, this.list, this.index, this.focusNode, this.isComplex});
 
   @override
-  SearchFeeditemState createState() => SearchFeeditemState(model: model,list:list, index: index, focusNode: focusNode,isComplex:  isComplex);
+  SearchFeeditemState createState() =>
+      SearchFeeditemState(model: model, list: list, index: index, focusNode: focusNode, isComplex: isComplex);
 // [index] 列表条目对应的索引
 // buildOpenContainerItem() {
 // return OpenContainer(
@@ -296,7 +304,8 @@ class SearchFeeditem extends StatefulWidget {
 }
 
 class SearchFeeditemState extends State<SearchFeeditem> {
-  SearchFeeditemState({this.focusNode, this.model,this.list, this.index,this.isComplex});
+  SearchFeeditemState({this.focusNode, this.model, this.list, this.index, this.isComplex});
+
   bool isComplex;
   FocusNode focusNode;
   List<HomeFeedModel> list;
@@ -360,108 +369,134 @@ class SearchFeeditemState extends State<SearchFeeditem> {
     }
     return (((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) / width) * height;
   }
+
   // @override
   Widget build(BuildContext context) {
-    // print("你也要搞事情!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    // print(model.picUrls.toString());
+    if (model.videos.isNotEmpty) {
+      print("视频model数据++++++++++++++++++++${model.videos.toString()}");
+    }
     return Container(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            model.picUrls.isNotEmpty
-                ? InkWell(
-              onTap: () {
-                ///失去输入框焦点
-                if (focusNode != null ) {
-                  focusNode.unfocus();
-                }
-                for(feedModel in list) {
-                  feedModel = context.read<FeedMapNotifier>().feedMap[feedModel.id];
-                  if (model.id == feedModel.id) {
-                    list.remove(feedModel);
-                    list.insert(0, model);
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        model.picUrls.isNotEmpty
+            ? InkWell(
+                onTap: () {
+                  ///失去输入框焦点
+                  if (focusNode != null) {
+                    focusNode.unfocus();
                   }
-                }
-                print("打开前&&&&&&&&&&&&&&&&**&&&：：hero$index");
-                Navigator.push(
-                  context,
-                  new MaterialPageRoute(builder: (context) => FeedFlow(feedList: list,isComplex: widget.isComplex,)),
-                );
-              },
-              child: Hero(
-                tag: isComplex ? "complex${model.id}" : "${model.id}",
-                child: buildShowItemContainer(),
-              ),
-            )
-            // buildOpenContainerItem()
-                : model.videos.isNotEmpty
-                ? ClipRRect(
-              //圆角图片
-              borderRadius: BorderRadius.circular(2),
-              child: CachedNetworkImage(
-                height: setAspectRatio(1.0 * model.videos[0].height, 1.0 * model.videos[0].width),
-                width: ((ScreenUtil.instance.screenWidthDp) / 2),
-                fit: BoxFit.cover,
-                placeholder: (context, url) => new Container(
-                    child: new Center(
-                      child: new CircularProgressIndicator(),
-                    )),
-                imageUrl: model.videos[0].coverUrl,
-                errorWidget: (context, url, error) => new Image.asset("images/test.png"),
-              ),
-            )
-                : Container(),
-            Container(
-              width: ((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) - 16,
-              margin: EdgeInsets.only(top: 8),
-              child: Text(
-                '${model.content}',
-                style: TextStyle(
-                  fontSize: 13,
+                  for (feedModel in list) {
+                    feedModel = context.read<FeedMapNotifier>().feedMap[feedModel.id];
+                    if (model.id == feedModel.id) {
+                      list.remove(feedModel);
+                      list.insert(0, model);
+                    }
+                  }
+                  Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (context) => FeedFlow(
+                              feedList: list,
+                              isComplex: widget.isComplex,
+                            )),
+                  );
+                },
+                child: Hero(
+                  tag: isComplex ? "complex${model.id}" : "${model.id}",
+                  child: buildShowItemContainer(),
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
+              )
+            // buildOpenContainerItem()
+            // ClipRRect(
+            //   //圆角图片
+            //   borderRadius: BorderRadius.circular(2),
+            //   child: CachedNetworkImage(
+            //     height: setAspectRatio(1.0 * model.videos[0].height, 1.0 * model.videos[0].width),
+            //     width: ((ScreenUtil.instance.screenWidthDp) / 2),
+            //     fit: BoxFit.cover,
+            //     placeholder: (context, url) => new Container(
+            //         child: new Center(
+            //           child: new CircularProgressIndicator(),
+            //         )),
+            //     imageUrl: model.videos[0].coverUrl,
+            //     errorWidget: (context, url, error) => new Image.asset("images/test.png"),
+            //   ),
+            // )
+            : Container(),
+        model.videos.isNotEmpty ? getVideo(model.videos) : Container(),
+        Container(
+          width: ((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) - 16,
+          margin: EdgeInsets.only(top: 8),
+          child: Text(
+            '${model.content}',
+            style: TextStyle(
+              fontSize: 13,
             ),
-            Container(
-              width: ((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) - 16,
-              // height: 16,
-              padding: EdgeInsets.only(
-                bottom: 8,
-                top: 6,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        Container(
+          width: ((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) - 16,
+          // height: 16,
+          padding: EdgeInsets.only(
+            bottom: 8,
+            top: 6,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              CircleAvatar(
+                backgroundImage: NetworkImage(model.avatarUrl),
+                radius: 8,
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  CircleAvatar(
-                    backgroundImage: NetworkImage(model.avatarUrl),
-                    radius: 8,
+              Container(
+                margin: EdgeInsets.only(left: 4),
+                width: 81,
+                child: Text(
+                  model.name,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: AppColor.textSecondary,
                   ),
-                  Container(
-                    margin: EdgeInsets.only(left: 4),
-                    width: 81,
-                    child: Text(
-                      model.name,
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: AppColor.textSecondary,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  SizedBox(width: 8,),
-                  Expanded(
-                    child: LaudItem(model: model,),
-                  ),
-                  // SizedBox(width: 1,)
-                ],
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-            )
-          ],
-        ));
+              SizedBox(
+                width: 8,
+              ),
+              Expanded(
+                child: LaudItem(
+                  model: model,
+                ),
+              ),
+              // SizedBox(width: 1,)
+            ],
+          ),
+        )
+      ],
+    ));
+  }
+
+  // 视频
+  Widget getVideo(List<VideosModel> videos) {
+    SizeInfo sizeInfo = SizeInfo();
+    sizeInfo.width = videos.first.width;
+    sizeInfo.height = videos.first.height;
+    sizeInfo.duration = videos.first.duration;
+    sizeInfo.offsetRatioX = videos.first.offsetRatioX ?? 0.0;
+    sizeInfo.offsetRatioY = videos.first.offsetRatioY ?? 0.0;
+    sizeInfo.videoCroppedRatio = videos.first.videoCroppedRatio;
+    return FeedVideoPlayer(
+      videos.first.url,
+      sizeInfo,
+      (ScreenUtil.instance.screenWidthDp - 32) / 2 - 4,
+      isInListView: true,
+    );
   }
 }
 
@@ -476,13 +511,16 @@ class LaudItem extends StatefulWidget {
 class LaudItemState extends State<LaudItem> {
   // 点赞
   setUpLuad() async {
-    bool  isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
+    bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     if (isLoggedIn) {
-      Map<String, dynamic> model = await laud(id: widget.model.id, laud:widget.model.isLaud == 0 ? 1 : 0);
+      Map<String, dynamic> model = await laud(id: widget.model.id, laud: widget.model.isLaud == 0 ? 1 : 0);
       // 点赞/取消赞成功
       if (model["state"]) {
-        context.read<FeedMapNotifier>().setLaud(widget.model.isLaud,context.read<ProfileNotifier>().profile.avatarUri,widget.model.id);
-      } else { // 失败
+        context
+            .read<FeedMapNotifier>()
+            .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
+      } else {
+        // 失败
         print("shib ");
       }
     } else {
@@ -490,6 +528,7 @@ class LaudItemState extends State<LaudItem> {
       AppRouter.navigateToLoginPage(context);
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -500,16 +539,26 @@ class LaudItemState extends State<LaudItem> {
           },
           child: Icon(
             Icons.favorite,
-            color:   context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 1 ? Colors.red : Colors.grey,
+            color: context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 1
+                ? Colors.red
+                : Colors.grey,
             size: 16,
           ),
         ),
-        SizedBox(width: 2,),
+        SizedBox(
+          width: 2,
+        ),
         Offstage(
           offstage: context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].laudCount) == 0,
           child: //用Selector的方式监听数据
-          Selector<FeedMapNotifier, int>(builder: (context,laudCount , child) {
-            return Text("${StringUtil.getNumber(laudCount)}",style: TextStyle(fontSize: 10,color: AppColor.textSecondary,),);
+              Selector<FeedMapNotifier, int>(builder: (context, laudCount, child) {
+            return Text(
+              "${StringUtil.getNumber(laudCount)}",
+              style: TextStyle(
+                fontSize: 10,
+                color: AppColor.textSecondary,
+              ),
+            );
           }, selector: (context, notifier) {
             return notifier.feedMap[widget.model.id].laudCount;
           }),

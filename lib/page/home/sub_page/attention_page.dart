@@ -4,10 +4,8 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
-import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/data/model/course_model.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
@@ -20,7 +18,6 @@ import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:provider/provider.dart';
 
@@ -503,7 +500,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   @override
   void dispose() {
     print("关注页面销毁了");
-
+    _controller.dispose();
     super.dispose();
   }
 

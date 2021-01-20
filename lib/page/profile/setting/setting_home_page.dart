@@ -166,7 +166,7 @@ class _SettingHomePageState extends State<SettingHomePage>{
         padding: EdgeInsets.only(left: 16,right: 16),
         child: Row(
           children: [
-            Text("退出登录",style: AppStyle.textRegularRed16,),
+            Text("退出登录",style: AppStyle.redRegular16,),
             Expanded(child: SizedBox())
           ],
         ),

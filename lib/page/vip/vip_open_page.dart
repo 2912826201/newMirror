@@ -48,7 +48,7 @@ class _VipOpenPage extends State<VipOpenPage> {
         ),
         title: Text(
           "我的VIP会员",
-          style: AppStyle.textWhiteMedium18,
+          style: AppStyle.whiteMedium18,
         ),
         centerTitle: true,
       ),
@@ -76,7 +76,7 @@ class _VipOpenPage extends State<VipOpenPage> {
                             margin: EdgeInsets.only(left: 16),
                         child: Text(
                         "会员尊享权益",
-                        style: AppStyle.textMediumRed16,
+                        style: AppStyle.redMedium16,
                       ),),
                       SizedBox(
                         height: 16,
@@ -171,7 +171,7 @@ class _VipOpenPage extends State<VipOpenPage> {
             ),
             Text(
               "管理制度续费 >",
-              style: AppStyle.textWhiteRegular12,
+              style: AppStyle.whiteRegular12,
             ),
           ],
         ),
@@ -186,7 +186,7 @@ class _VipOpenPage extends State<VipOpenPage> {
           alignment: Alignment.centerLeft,
           child: Text(
           "vip会员至${DateUtil.generateFormatDate(lastTime)}",
-          style: AppStyle.textRegularRed13,
+          style: AppStyle.redRegular13,
         ),),
         Spacer(),
         InkWell(
@@ -202,7 +202,7 @@ class _VipOpenPage extends State<VipOpenPage> {
               color: AppColor.bgVip1,
               borderRadius: BorderRadius.all(Radius.circular(14)),),
           child: Center(
-            child: Text("立即续费",style: AppStyle.textMediumRed14,),
+            child: Text("立即续费",style: AppStyle.redMedium14,),
           ),
         ),)
       ],

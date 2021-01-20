@@ -78,7 +78,7 @@ class _VipNamePlateState extends State<VipNamePlateHorazontalList>{
                      )
                    ),
                    Spacer(),
-                   Text(itemName[index],style:context.watch<VipMoveNotifier>().choseIndex==index?AppStyle.textMediumRed13:AppStyle.textRegularRed13,),
+                   Text(itemName[index],style:context.watch<VipMoveNotifier>().choseIndex==index?AppStyle.redMedium13:AppStyle.redRegular13,),
                    SizedBox(height: 2,),
                    Opacity(
                      opacity:context.watch<VipMoveNotifier>().choseIndex==index?1:0,

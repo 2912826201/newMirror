@@ -362,6 +362,9 @@ class TopicDtoModel {
 // 课程model
 class CourseDtoModel {
   int id;
+  String title;
+  String picUrl;
+  String description;
   int courseId;
   String name; // 课程名
   int creatorId; // 创建人Id

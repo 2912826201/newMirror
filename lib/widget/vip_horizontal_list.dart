@@ -23,7 +23,7 @@ class _VipHorizontalListState extends State<VipHorizontalList>{
   @override
   void initState() {
     super.initState();
-    TextPainter testSize = calculateTextWidth(titleText, AppStyle.textRegularRed11, 96, 1);
+    TextPainter testSize = calculateTextWidth(titleText, AppStyle.redRegular11, 96, 1);
     titleWidth = testSize.width;
   }
   @override
@@ -94,7 +94,7 @@ class _VipHorizontalListState extends State<VipHorizontalList>{
                 bottomLeft: Radius.circular(0),
                 bottomRight: Radius.circular(6) ),),
             child: Center(
-              child: Text(titleText,style: AppStyle.textRegularRed11,),
+              child: Text(titleText,style: AppStyle.redRegular11,),
             ),
           )
         )
@@ -110,9 +110,9 @@ Widget _itemText(){
               RichText(
                 text: TextSpan(
                   text: "￥",
-                  style: AppStyle.textRegularRed13,
+                  style: AppStyle.redRegular13,
                   children: <TextSpan>[
-                      TextSpan(text: "124.44",style: AppStyle.textRedMedium21)
+                      TextSpan(text: "124.44",style: AppStyle.redMedium21)
                   ]
                 ),
               ),

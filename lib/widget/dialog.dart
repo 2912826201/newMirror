@@ -25,6 +25,8 @@ class _AppDialog extends StatelessWidget {
   final String info;
   final String circleImageUrl;
   final String topImageUrl;
+  final Widget customizeWidget;
+
   final List<Widget> _viewList = [];
 
   _AppDialog(
@@ -35,6 +37,7 @@ class _AppDialog extends StatelessWidget {
       this.title,
       this.info, this.progress,
       this.circleImageUrl,
+      this.customizeWidget,
       this.topImageUrl})
       : super(key: key);
 
@@ -63,6 +66,7 @@ class _AppDialog extends StatelessWidget {
     _buildTitle();
     _buildInfo();
     _buildProgress(context);
+    _buildCustomizeWidget();
     _buildButton(context);
     _buildButtonList(context);
     return _viewList;
@@ -136,6 +140,22 @@ class _AppDialog extends StatelessWidget {
           info,
           style: AppStyle.textSecondaryRegular16,
         ),
+      ));
+    }
+    //加下外边距
+    _viewList.add(SizedBox(
+      height: _outerPadding,
+    ));
+  }
+
+  _buildCustomizeWidget() {
+    //判断有没有自定义的widget
+    if (customizeWidget != null) {
+      _viewList.add(Padding(
+        padding: title == null
+            ? const EdgeInsets.fromLTRB(_outerPadding, _innerPadding, _outerPadding, 0)
+            : const EdgeInsets.fromLTRB(_outerPadding, _innerPaddingTitleInfo, _outerPadding, 0),
+        child: customizeWidget,
       ));
     }
     //加下外边距
@@ -274,6 +294,7 @@ showAppDialog(BuildContext context,
     String title,
     String info,
     double progress,
+    Widget customizeWidget,
     String circleImageUrl,
     String topImageUrl,
     bool barrierDismissible = true}) {
@@ -290,6 +311,7 @@ showAppDialog(BuildContext context,
                   buttonList: buttonList,
                   title: title,
                   info: info,
+                  customizeWidget: customizeWidget,
                   progress: progress,
                   circleImageUrl: circleImageUrl,
                   topImageUrl: topImageUrl),

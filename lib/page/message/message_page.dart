@@ -397,7 +397,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                     isMentioned
                         ? Text(
                             "[有人@你]",
-                            style: AppStyle.textRegularRed13,
+                            style: AppStyle.redRegular13,
                           )
                         : Container(),
                     Expanded(

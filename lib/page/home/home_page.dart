@@ -1,14 +1,10 @@
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
-import 'package:mirror/data/model/course_model.dart';
 import 'package:mirror/page/home/sub_page/attention_page.dart';
 import 'package:mirror/page/home/sub_page/home_top_tab.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({
@@ -33,7 +29,11 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     super.initState();
     controller = TabController(length: 2, vsync: this, initialIndex: 1);
   }
-
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
 
 

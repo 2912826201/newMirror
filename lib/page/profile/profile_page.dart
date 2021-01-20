@@ -1,10 +1,8 @@
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/profile/profile_model.dart';
@@ -474,6 +472,10 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     ToastShow.show(msg: "点击了：" + title, context: context);
     if ("训练记录" == title) {
       AppRouter.navigateToTrainingRecordPage(context);
+    } else if ("体重记录" == title) {
+      AppRouter.navigateToWeightRecordPage(context);
+    } else if ("健身相册" == title) {
+      AppRouter.navigateToTrainingGalleryPage(context);
     }
   }
 }

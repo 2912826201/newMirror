@@ -32,10 +32,11 @@ class AppRouter {
   static String pathPerfectUserPage = "/perfectuser";
   static String pathPreviewPhoto = "/previewphoto";
   static String pathPreviewVideo = "/previewvideo";
-  static String pathLiveBroadcast = "/livebroadcast";
-  static String pathLiveDetail = "/livedetail";
-  static String pathVideoDetail = "/videodetail";
-  static String pathVideoCourseList = "/videocourselist";
+  static String pathLiveBroadcast = "/training/livebroadcast";
+  static String pathLiveDetail = "/training/livedetail";
+  static String pathVideoDetail = "/training/videodetail";
+  static String pathVideoCourseList = "/training/videocourselist";
+  static String pathVideoCoursePlay = "/training/videocourseplay";
   static String pathScanCode = "/scancode";
   static String pathMineDetails = "/minedetails";
   static String pathProfileDetails = "/profile/details";
@@ -54,7 +55,10 @@ class AppRouter {
   static String pathSettingAbout = "/profile/settingabout";
   static String pathSettingAccountSecurity = "/profile/settingaccountsecurity";
   static String pathLoginSucess = "/profile/loginsucess";
-  static String pathTrrainingRecord = "/profile/trrainingRecord";
+  static String pathTrainingRecord = "/profile/trainingrecord";
+  static String pathWeightRecordPage = "/profile/weightrecordpage";
+  static String pathTrainingRecordAllPage = "/profile/trainingrecord/trainingrecordallpage";
+  static String pathTrainingGallery = "/profile/traininggallery";
 
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
@@ -82,6 +86,7 @@ class AppRouter {
     router.define(pathScanCode, handler: handlerScanCode);
     router.define(pathProfileDetails, handler: handlermineDetails);
     router.define(pathVideoCourseList, handler: handlerVideoCourseList);
+    router.define(pathVideoCoursePlay, handler: handlerVideoCoursePlay);
     router.define(pathProfileDetailsMore, handler: handlerProfileDetailMore);
     router.define(pathEditInformation, handler: handlerEditInformation);
     router.define(pathEditInformationName, handler: handlerEditInformationName);
@@ -98,7 +103,10 @@ class AppRouter {
     router.define(pathSettingBlackList, handler: handlerSettingBlackList);
     router.define(pathSettingAbout, handler: handlerSettingAbout);
     router.define(pathSettingAccountSecurity, handler: handlerSettingAccountSecurity);
-    router.define(pathTrrainingRecord, handler: handlerTrrainingRecord);
+    router.define(pathTrainingRecord, handler: handlerTrainingRecord);
+    router.define(pathWeightRecordPage, handler: handlerWeightRecordPage);
+    router.define(pathTrainingRecordAllPage, handler: handlerTrainingRecordAllPage);
+    router.define(pathTrainingGallery, handler: handlerTrainingGallery);
 
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
@@ -180,6 +188,14 @@ class AppRouter {
 
   static void navigateToVideoCourseList(BuildContext context) {
     _navigateToPage(context, pathVideoCourseList, {});
+  }
+
+  static void navigateToVideoCoursePlay(BuildContext context, Map<String, String> videoPathMap,
+      LiveVideoModel videoCourseModel) {
+    Map<String, dynamic> map = Map();
+    map["videoPathMap"] = videoPathMap;
+    map["videoCourseModel"] = videoCourseModel.toJson();
+    _navigateToPage(context, pathVideoCoursePlay, map);
   }
 
   static void navigateToLiveDetail(
@@ -321,6 +337,18 @@ class AppRouter {
   }
 
   static void navigateToTrainingRecordPage(BuildContext context) {
-    _navigateToPage(context, pathTrrainingRecord, {});
+    _navigateToPage(context, pathTrainingRecord, {});
+  }
+
+  static void navigateToTrainingRecordAllPage(BuildContext context) {
+    _navigateToPage(context, pathTrainingRecordAllPage, {});
+  }
+
+  static void navigateToWeightRecordPage(BuildContext context) {
+    _navigateToPage(context, pathWeightRecordPage, {});
+  }
+
+  static void navigateToTrainingGalleryPage(BuildContext context) {
+    _navigateToPage(context, pathTrainingGallery, {});
   }
 }

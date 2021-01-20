@@ -44,28 +44,28 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   _parsePartList() {
     _indexMapWithoutRest.clear();
     _partAmountWithoutRest = 0;
-    for (int i = 0; i < partList.length; i++) {
+    for (int i = 0; i < testPartList.length; i++) {
       //序号以除去休息的段落数量为基准计算 如果为是休息则序号不加 如果不是休息序号加1
-      if (partList[i].type == 1) {
+      if (testPartList[i].type == 1) {
         _indexMapWithoutRest[i] = _partAmountWithoutRest - 1;
       } else {
         _indexMapWithoutRest[i] = _partAmountWithoutRest;
         _partAmountWithoutRest++;
       }
-      _totalDuration += partList[i].duration;
+      _totalDuration += testPartList[i].duration;
     }
   }
 
   _updateInfoByPosition() {
     int time = _currentPosition.toInt();
-    for (int i = 0; i < partList.length; i++) {
+    for (int i = 0; i < testPartList.length; i++) {
       _currentPartIndex = i;
-      if (time <= partList[i].duration) {
-        _remainingPartTime = partList[i].duration - time;
-        _partProgress = time / partList[i].duration;
+      if (time <= testPartList[i].duration) {
+        _remainingPartTime = testPartList[i].duration - time;
+        _partProgress = time / testPartList[i].duration;
         return;
       } else {
-        time -= partList[i].duration;
+        time -= testPartList[i].duration;
       }
     }
   }
@@ -152,7 +152,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
           child: Stack(
             children: [
               Center(
-                child: VideoCourseCircleProgressBar(partList, _currentPartIndex, _partProgress),
+                child: VideoCourseCircleProgressBar(testPartList, _currentPartIndex, _partProgress),
               ),
               Center(
                   child: Text(
@@ -163,9 +163,9 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
           ),
         ),
         Text(
-          partList[_currentPartIndex].type == 1
+          testPartList[_currentPartIndex].type == 1
               ? "休息"
-              : "${partList[_currentPartIndex].name} ${_indexMapWithoutRest[_currentPartIndex] + 1}/$_partAmountWithoutRest",
+              : "${testPartList[_currentPartIndex].name} ${_indexMapWithoutRest[_currentPartIndex] + 1}/$_partAmountWithoutRest",
           style: TextStyle(color: AppColor.textPrimary2, fontSize: 16),
         )
       ],

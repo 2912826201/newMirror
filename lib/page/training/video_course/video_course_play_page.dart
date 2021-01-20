@@ -2,12 +2,15 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/live_video_model.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/volume_popup.dart';
 import 'package:video_player/video_player.dart';
+import 'package:wakelock/wakelock.dart';
 
 /// video_course_play_page
 /// Created by yangjiayi on 2020/12/15.
@@ -20,28 +23,28 @@ final List<String> testVideoUrls = [
 ];
 
 //测试用数据结构
-class Part {
+class VideoCoursePart {
   List<String> videoList;
   int duration;
   String name;
   int type; //0-课程 1-休息
 
-  Part(this.videoList, this.duration, this.name, this.type);
+  VideoCoursePart(this.videoList, this.duration, this.name, this.type);
 }
 
-final List<Part> partList = [
-  Part([
+final List<VideoCoursePart> testPartList = [
+  VideoCoursePart([
     // "videos/1.mp4",
     // "videos/2.mp4",
     testVideoUrls[0],
     testVideoUrls[1],
   ], 50, "第一段多视频结束不休息", 0),
-  Part([
+  VideoCoursePart([
     // "videos/3.mp4",
     testVideoUrls[2],
   ], 55, "第二段单视频结束有休息", 0),
-  Part([], 30, "休息", 1),
-  Part([
+  VideoCoursePart([], 30, "休息", 1),
+  VideoCoursePart([
     // "videos/4.mp4",
     testVideoUrls[3],
   ], 182, "第三段单视频结束后完成", 0),
@@ -52,10 +55,13 @@ int _buttonTapInterval = 500;
 int _timerInterval = 100;
 
 class VideoCoursePlayPage extends StatefulWidget {
-  VideoCoursePlayPage(this.videoPathMap, {Key key}) : super(key: key);
+  VideoCoursePlayPage(this.videoPathMap, this.videoCourseModel, {Key key}) : super(key: key);
 
   //视频播放地址对应本地文件地址的map
   final Map<String, String> videoPathMap;
+
+  //视频课的model
+  final LiveVideoModel videoCourseModel;
 
   @override
   _VideoCoursePlayState createState() => _VideoCoursePlayState();
@@ -69,6 +75,8 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
   //   "http://devmedia.aimymusic.com/25e85ec9a9399023629d3fc15bcb8877.mp4",
   //   "http://devmedia.aimymusic.com/01e889ed5d0314abba48382d669b739b",
   // ];
+
+  List<VideoCoursePart> _partList = [];
 
   Map<int, int> _indexMapWithoutRest = {};
   int _partAmountWithoutRest = 0;
@@ -126,7 +134,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
         if (_videoDuration == 0) {
           _progress = 0;
         } else {
-          _progress = (_currentVideoPos + _partCompletedDuration) / (partList[_currentPartIndex].duration * 1000);
+          _progress = (_currentVideoPos + _partCompletedDuration) / (_partList[_currentPartIndex].duration * 1000);
           if (_progress > 1) {
             _progress = 1;
           }
@@ -145,10 +153,12 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
   @override
   void initState() {
     super.initState();
+    _parseModelToPartList();
     _parsePartList();
     if (_timer == null) {
       _timer = Timer.periodic(Duration(milliseconds: _timerInterval), _updateInfoByTimer);
     }
+    Wakelock.enable();
     //TODO 是否需要校验一下数据 比如视频文件map
     _playNextPart();
   }
@@ -159,6 +169,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
     _timer?.cancel();
     _controller?.removeListener(_playerListener);
     _controller?.dispose();
+    Wakelock.disable();
   }
 
   @override
@@ -168,177 +179,182 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
         _onBackButtonClicked();
         return false;
       },
-      child: Scaffold(
-        body: Stack(children: [
-          Column(
-            children: [
-              Container(
-                height: ScreenUtil.instance.statusBarHeight,
-                color: AppColor.black,
-              ),
-              Expanded(
-                child: Stack(
-                  children: [
-                    Container(
-                      color: AppColor.black,
-                    ),
-                    Container(
-                      height: ScreenUtil.instance.screenWidthDp / 0.75,
-                      alignment: Alignment.center,
-                      child: _controller != null && _controller.value.initialized
-                          ? AspectRatio(
-                              aspectRatio: _controller.value.aspectRatio,
-                              child: VideoPlayer(_controller),
-                            )
-                          : Container(),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.only(left: 16),
-                          height: 27,
-                          alignment: Alignment.bottomLeft,
-                          child: Text(
-                            DateUtil.formatMillisecondToMinuteAndSecond(_totalTrainingTime),
-                            style: TextStyle(
-                                color: AppColor.white.withOpacity(0.85), fontWeight: FontWeight.w500, fontSize: 18),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                          height: 21,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                "训练时长",
-                                style: TextStyle(
-                                  color: AppColor.white.withOpacity(0.35),
-                                  fontSize: 10,
-                                ),
-                              ),
-                              Spacer(),
-                              Icon(
-                                Icons.play_circle_outline,
-                                color: AppColor.white.withOpacity(0.35),
-                                size: 12,
-                              ),
-                              SizedBox(
-                                width: 8,
-                              ),
-                              Text(
-                                "1234人已学习",
-                                style: TextStyle(
-                                  color: AppColor.white.withOpacity(0.35),
-                                  fontSize: 10,
-                                ),
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light,
+        child: Scaffold(
+          body: Stack(children: [
+            Column(
+              children: [
+                Container(
+                  height: ScreenUtil.instance.statusBarHeight,
+                  color: AppColor.black,
+                ),
+                Expanded(
+                  child: Stack(
+                    children: [
+                      Container(
+                        color: AppColor.black,
+                      ),
+                      Container(
+                        height: ScreenUtil.instance.screenWidthDp / 0.75,
+                        alignment: Alignment.center,
+                        child: _controller != null && _controller.value.initialized
+                            ? AspectRatio(
+                                aspectRatio: _controller.value.aspectRatio,
+                                child: VideoPlayer(_controller),
                               )
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                    Positioned(bottom: 24, child: _buildInfoView()),
-                    Positioned(
-                        right: 16,
-                        top: 80,
-                        child: GestureDetector(
-                          onTap: () {
-                            _onBackButtonClicked();
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            height: 32,
-                            width: 32,
-                            decoration: BoxDecoration(color: AppColor.white.withOpacity(0.12), shape: BoxShape.circle),
-                            child: Icon(
-                              Icons.clear,
-                              color: AppColor.white,
-                              size: 16,
+                            : Container(),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.only(left: 16),
+                            height: 27,
+                            alignment: Alignment.bottomLeft,
+                            child: Text(
+                              DateUtil.formatMillisecondToMinuteAndSecond(_totalTrainingTime),
+                              style: TextStyle(
+                                  color: AppColor.white.withOpacity(0.85), fontWeight: FontWeight.w500, fontSize: 18),
                             ),
                           ),
-                        )),
-                    Positioned(
-                        right: 16,
-                        top: 128,
-                        child: GestureDetector(
-                          onTap: () {
-                            showVolumePopup(context);
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            height: 32,
-                            width: 32,
-                            decoration: BoxDecoration(color: AppColor.white.withOpacity(0.12), shape: BoxShape.circle),
-                            child: Icon(
-                              Icons.settings,
-                              color: AppColor.white,
-                              size: 16,
+                          Container(
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                            height: 21,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "训练时长",
+                                  style: TextStyle(
+                                    color: AppColor.white.withOpacity(0.35),
+                                    fontSize: 10,
+                                  ),
+                                ),
+                                Spacer(),
+                                Icon(
+                                  Icons.play_circle_outline,
+                                  color: AppColor.white.withOpacity(0.35),
+                                  size: 12,
+                                ),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                Text(
+                                  "${widget.videoCourseModel.practiceAmount}人已学习",
+                                  style: TextStyle(
+                                    color: AppColor.white.withOpacity(0.35),
+                                    fontSize: 10,
+                                  ),
+                                )
+                              ],
                             ),
-                          ),
-                        )),
-                  ],
+                          )
+                        ],
+                      ),
+                      Positioned(bottom: 24, child: _buildInfoView()),
+                      Positioned(
+                          right: 16,
+                          top: 80,
+                          child: GestureDetector(
+                            onTap: () {
+                              _onBackButtonClicked();
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              height: 32,
+                              width: 32,
+                              decoration:
+                                  BoxDecoration(color: AppColor.white.withOpacity(0.12), shape: BoxShape.circle),
+                              child: Icon(
+                                Icons.clear,
+                                color: AppColor.white,
+                                size: 16,
+                              ),
+                            ),
+                          )),
+                      Positioned(
+                          right: 16,
+                          top: 128,
+                          child: GestureDetector(
+                            onTap: () {
+                              showVolumePopup(context);
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              height: 32,
+                              width: 32,
+                              decoration:
+                                  BoxDecoration(color: AppColor.white.withOpacity(0.12), shape: BoxShape.circle),
+                              child: Icon(
+                                Icons.settings,
+                                color: AppColor.white,
+                                size: 16,
+                              ),
+                            ),
+                          )),
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                height: 60 + ScreenUtil.instance.bottomBarHeight,
-                color: AppColor.black,
-                child: Container(
-                  padding: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
-                  width: ScreenUtil.instance.screenWidthDp,
+                Container(
                   height: 60 + ScreenUtil.instance.bottomBarHeight,
-                  color: AppColor.white.withOpacity(0.12),
-                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-                    GestureDetector(
-                      onTap: () {
-                        int currentTime = DateTime.now().millisecondsSinceEpoch;
-                        if (currentTime - _buttonTapTime < _buttonTapInterval) {
-                          return;
-                        } else {
-                          _buttonTapTime = currentTime;
-                          _returnToPreviousPart(_currentPartIndex);
-                        }
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        height: 60,
-                        width: 60,
-                        child: Icon(
-                          Icons.skip_previous,
-                          color: AppColor.white,
-                          size: 24,
+                  color: AppColor.black,
+                  child: Container(
+                    padding: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
+                    width: ScreenUtil.instance.screenWidthDp,
+                    height: 60 + ScreenUtil.instance.bottomBarHeight,
+                    color: AppColor.white.withOpacity(0.12),
+                    child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+                      GestureDetector(
+                        onTap: () {
+                          int currentTime = DateTime.now().millisecondsSinceEpoch;
+                          if (currentTime - _buttonTapTime < _buttonTapInterval) {
+                            return;
+                          } else {
+                            _buttonTapTime = currentTime;
+                            _returnToPreviousPart(_currentPartIndex);
+                          }
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          height: 60,
+                          width: 60,
+                          child: Icon(
+                            Icons.skip_previous,
+                            color: AppColor.white,
+                            size: 24,
+                          ),
                         ),
                       ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        int currentTime = DateTime.now().millisecondsSinceEpoch;
-                        if (currentTime - _buttonTapTime < _buttonTapInterval) {
-                          return;
-                        } else {
-                          _buttonTapTime = currentTime;
-                          _skipToNextPart(_currentPartIndex);
-                        }
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        height: 60,
-                        width: 60,
-                        child: Icon(
-                          Icons.skip_next,
-                          color: AppColor.white,
-                          size: 24,
+                      GestureDetector(
+                        onTap: () {
+                          int currentTime = DateTime.now().millisecondsSinceEpoch;
+                          if (currentTime - _buttonTapTime < _buttonTapInterval) {
+                            return;
+                          } else {
+                            _buttonTapTime = currentTime;
+                            _skipToNextPart(_currentPartIndex);
+                          }
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          height: 60,
+                          width: 60,
+                          child: Icon(
+                            Icons.skip_next,
+                            color: AppColor.white,
+                            size: 24,
+                          ),
                         ),
                       ),
-                    ),
-                  ]),
-                ),
-              )
-            ],
-          ),
-          _buildRestView()
-        ]),
+                    ]),
+                  ),
+                )
+              ],
+            ),
+            _buildRestView()
+          ]),
+        ),
       ),
     );
   }
@@ -353,13 +369,13 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(_formatTime(partList[_currentPartIndex] == null ? 0 : partList[_currentPartIndex].duration),
+              Text(_formatTime(_partList[_currentPartIndex] == null ? 0 : _partList[_currentPartIndex].duration),
                   style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 28, fontWeight: FontWeight.w500)),
               SizedBox(height: 7.5),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(partList[_currentPartIndex] == null ? "" : partList[_currentPartIndex].name,
+                  Text(_partList[_currentPartIndex] == null ? "" : _partList[_currentPartIndex].name,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 16)),
@@ -445,7 +461,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
               child: Stack(children: [
                 Center(
                   child: Text(
-                    _formatTime((partList[_currentPartIndex].duration * (1 - _restProgress)).round()),
+                    _formatTime((_partList[_currentPartIndex].duration * (1 - _restProgress)).round()),
                     style:
                         TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 60, fontWeight: FontWeight.w500),
                   ),
@@ -514,7 +530,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
 
   //播放下一段落
   _playNextPart() {
-    if (_currentPartIndex >= partList.length - 1) {
+    if (_currentPartIndex >= _partList.length - 1) {
       //TODO 已经最后一段落 处理结束的操作
       Navigator.pop(context);
       return;
@@ -522,7 +538,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
 
     _currentPartIndex++;
 
-    Part part = partList[_currentPartIndex];
+    VideoCoursePart part = _partList[_currentPartIndex];
     if (part.type == 0) {
       //需要去播放
       setState(() {
@@ -545,7 +561,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
 
   //播放下一个视频
   _playNextVideo() {
-    if (_currentVideoIndex >= partList[_currentPartIndex].videoList.length - 1) {
+    if (_currentVideoIndex >= _partList[_currentPartIndex].videoList.length - 1) {
       //已经最后一条 需要去播下一段落了
       _playNextPart();
       return;
@@ -559,15 +575,15 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
     _controller?.pause();
     var oldController = _controller;
 
-    _controller =
-        VideoPlayerController.file(File(widget.videoPathMap[partList[_currentPartIndex].videoList[_currentVideoIndex]]))
-          ..initialize().then((_) {
-            setState(() {
-              _controller.addListener(_playerListener);
-              _controller.play();
-            });
-            oldController?.dispose();
-          });
+    _controller = VideoPlayerController.file(
+        File(widget.videoPathMap[_partList[_currentPartIndex].videoList[_currentVideoIndex]]))
+      ..initialize().then((_) {
+        setState(() {
+          _controller.addListener(_playerListener);
+          _controller.play();
+        });
+        oldController?.dispose();
+      });
   }
 
   _updateInfoByTimer(Timer timer) {
@@ -580,7 +596,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
       }
       int restTime = DateTime.now().millisecondsSinceEpoch - _restStartTimeStamp;
       setState(() {
-        _restProgress = restTime / (partList[_currentPartIndex].duration * 1000);
+        _restProgress = restTime / (_partList[_currentPartIndex].duration * 1000);
 
         if (_restProgress >= 1) {
           _restProgress = 1;
@@ -600,7 +616,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
       //已经是第一段落 不做操作
       return;
     }
-    Part previousPart = partList[basePartIndex - 1];
+    VideoCoursePart previousPart = _partList[basePartIndex - 1];
     if (previousPart.type == 0) {
       //如果基准段落的上一段落是训练 则将基准段落的值-2赋值给当前段落索引 跳到基准段落的下一段落
       _currentPartIndex = basePartIndex - 2;
@@ -615,11 +631,11 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
   }
 
   _skipToNextPart(int basePartIndex) {
-    if (basePartIndex >= partList.length - 1) {
+    if (basePartIndex >= _partList.length - 1) {
       //已经是最后一段落 直接结束
       return;
     }
-    Part nextPart = partList[basePartIndex + 1];
+    VideoCoursePart nextPart = _partList[basePartIndex + 1];
     if (nextPart.type == 0) {
       //如果基准段落的下一段落是训练 则将基准段落的值赋值给当前段落索引 跳到基准段落的下一段落
       _currentPartIndex = basePartIndex;
@@ -633,12 +649,24 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
     }
   }
 
+  _parseModelToPartList() {
+    _partList.clear();
+    widget.videoCourseModel.coursewareDto.componentDtos.forEach((component) {
+      List<String> urlList = [];
+      component.scriptToVideo?.forEach((element) {
+        urlList.add(element.videoUrl);
+      });
+      _partList
+          .add(VideoCoursePart(urlList, (component.times / 1000).floor(), component.name, component.type == 3 ? 1 : 0));
+    });
+  }
+
   _parsePartList() {
     _indexMapWithoutRest.clear();
     _partAmountWithoutRest = 0;
-    for (int i = 0; i < partList.length; i++) {
+    for (int i = 0; i < _partList.length; i++) {
       //序号以除去休息的段落数量为基准计算 如果为是休息则序号不加 如果不是休息序号加1
-      if (partList[i].type == 1) {
+      if (_partList[i].type == 1) {
         _indexMapWithoutRest[i] = _partAmountWithoutRest - 1;
       } else {
         _indexMapWithoutRest[i] = _partAmountWithoutRest;
