@@ -39,6 +39,9 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin, WidgetsBi
     double screen_bottom = MediaQuery.of(context).padding.bottom;
     Size screen_size = MediaQuery.of(context).size;
     double inputHeight = MediaQuery.of(context).viewInsets.bottom;
+    print("获取一下底部安全间距");
+    // print(screen_bottom);
+    // print(inputHeight);
     // 初始化获取屏幕数据
     if (isInit == false) {
       ScreenUtil.init(

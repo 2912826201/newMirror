@@ -232,12 +232,12 @@ class DynamicListLayout extends StatelessWidget {
 // 视频
   Widget getVideo(List<VideosModel> videos) {
     SizeInfo sizeInfo = SizeInfo();
-    sizeInfo.width = videos.last.width;
-    sizeInfo.height = videos.last.height;
-    sizeInfo.duration = videos.last.duration;
-    sizeInfo.offsetRatioX = videos.last.offsetRatioX;
-    sizeInfo.offsetRatioY = videos.last.offsetRatioY;
-    sizeInfo.videoCroppedRatio = videos.last.videoCroppedRatio;
+    sizeInfo.width = videos.first.width;
+    sizeInfo.height = videos.first.height;
+    sizeInfo.duration = videos.first.duration;
+    sizeInfo.offsetRatioX = videos.first.offsetRatioX ?? 0.0;
+    sizeInfo.offsetRatioY = videos.first.offsetRatioY ?? 0.0;
+    sizeInfo.videoCroppedRatio = videos.first.videoCroppedRatio;
     return
       FeedVideoPlayer(videos.last.url,sizeInfo,ScreenUtil.instance.width,isInListView: true,
     );
