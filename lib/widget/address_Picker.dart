@@ -145,7 +145,7 @@ class _addressPickerState extends State<AddressPicker>{
                         },
                         child: Text(
                           "确定",
-                          style: AppStyle.textRegularRed16,
+                          style: AppStyle.redRegular16,
                         ),
                       )
                     ],

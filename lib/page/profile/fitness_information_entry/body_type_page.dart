@@ -52,7 +52,7 @@ class _BodyTypeState extends State<BodyTypePage> {
                   alignment: Alignment.bottomLeft,
                   child: Text(
                     "你现在的体型是？",
-                    style: AppStyle.textBlackMedium23,
+                    style: AppStyle.textMedium23,
                   ),
                 ),
               ),

@@ -76,7 +76,7 @@ class _LoginSucessState extends State<LoginSucessPage>{
                   ),
                 ),
                 SizedBox(height: 9,),
-                Text("欢迎回来$username,登陆成功!",style: AppStyle.textBlackMedium23,),
+                Text("欢迎回来$username,登陆成功!",style: AppStyle.textMedium23,),
                 SizedBox(height: 12,),
                 Text("为了确保让你获得出色的体验,我们需要对你做出进一步的了解。"
                   ,maxLines: 2,style: AppStyle.textPrimary3Regular14,),

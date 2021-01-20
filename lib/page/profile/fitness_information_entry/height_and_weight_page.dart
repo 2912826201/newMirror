@@ -52,7 +52,7 @@ class _HeightAndWeightState extends State<HeightAndWeightPage>{
                   alignment: Alignment.bottomLeft,
                   child: Text(
                   "你的身高体重是"
-                    ,style: AppStyle.textBlackMedium23,
+                    ,style: AppStyle.textMedium23,
                 ),),
               ),),
               SizedBox(height: 12,),
@@ -117,7 +117,7 @@ class _HeightAndWeightState extends State<HeightAndWeightPage>{
                 height: 44,
                child: TextField(
                  autofocus: false,
-                style: AppStyle.textBold21,
+                style: AppStyle.blackBold21,
                 textAlign: TextAlign.center,
                  keyboardType:TextInputType.phone,
                  cursorColor: AppColor.black,

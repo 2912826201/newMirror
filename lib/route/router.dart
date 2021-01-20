@@ -55,9 +55,10 @@ class AppRouter {
   static String pathSettingAbout = "/profile/settingabout";
   static String pathSettingAccountSecurity = "/profile/settingaccountsecurity";
   static String pathLoginSucess = "/profile/loginsucess";
-  static String pathTrrainingRecord = "/profile/trrainingRecord";
-  static String pathWeightRecordPage = "/profile/weightRecordPage";
-  static String pathTrainingRecordAllPage = "/profile/trrainingRecord/TrainingRecordAllPage";
+  static String pathTrainingRecord = "/profile/trainingrecord";
+  static String pathWeightRecordPage = "/profile/weightrecordpage";
+  static String pathTrainingRecordAllPage = "/profile/trainingrecord/trainingrecordallpage";
+  static String pathTrainingGallery = "/profile/traininggallery";
 
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
@@ -102,9 +103,10 @@ class AppRouter {
     router.define(pathSettingBlackList, handler: handlerSettingBlackList);
     router.define(pathSettingAbout, handler: handlerSettingAbout);
     router.define(pathSettingAccountSecurity, handler: handlerSettingAccountSecurity);
-    router.define(pathTrrainingRecord, handler: handlerTrrainingRecord);
+    router.define(pathTrainingRecord, handler: handlerTrainingRecord);
     router.define(pathWeightRecordPage, handler: handlerWeightRecordPage);
     router.define(pathTrainingRecordAllPage, handler: handlerTrainingRecordAllPage);
+    router.define(pathTrainingGallery, handler: handlerTrainingGallery);
 
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
@@ -335,7 +337,7 @@ class AppRouter {
   }
 
   static void navigateToTrainingRecordPage(BuildContext context) {
-    _navigateToPage(context, pathTrrainingRecord, {});
+    _navigateToPage(context, pathTrainingRecord, {});
   }
 
   static void navigateToTrainingRecordAllPage(BuildContext context) {
@@ -344,5 +346,9 @@ class AppRouter {
 
   static void navigateToWeightRecordPage(BuildContext context) {
     _navigateToPage(context, pathWeightRecordPage, {});
+  }
+
+  static void navigateToTrainingGalleryPage(BuildContext context) {
+    _navigateToPage(context, pathTrainingGallery, {});
   }
 }

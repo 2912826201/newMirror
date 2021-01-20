@@ -195,7 +195,7 @@ class _PayBottomDialogState extends State<PayBottomDialog> {
           child: Center(
             child: Text(
               "立即开通",
-              style: AppStyle.textMediumRed16,
+              style: AppStyle.redMedium16,
             ),
           ),
         ),

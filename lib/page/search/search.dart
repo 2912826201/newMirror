@@ -354,7 +354,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
             children: [
               Text(
                 "${index + 1}",
-                style: index == 3 ? AppStyle.textSecondaryMedium14 : AppStyle.textMediumRed14,
+                style: index == 3 ? AppStyle.textSecondaryMedium14 : AppStyle.redMedium14,
               ),
               Spacer(),
               Container(

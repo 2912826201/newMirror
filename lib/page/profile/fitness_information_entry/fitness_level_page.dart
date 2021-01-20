@@ -61,7 +61,7 @@ class _FitnessLevelState extends State<FitnessLevelPage>{
                     alignment: Alignment.bottomLeft,
                     child: Text(
                       "选择适合你的难度",
-                      style: AppStyle.textBlackMedium23,
+                      style: AppStyle.textMedium23,
                     ),
                   ),
               SizedBox(
@@ -113,7 +113,7 @@ class _FitnessLevelState extends State<FitnessLevelPage>{
                         Expanded(child: Container()),
                         Row(
                           children: [
-                            Text(level,style:beforIndex!=index?AppStyle.textPrimary3Medium23:AppStyle.textBlackMedium23,),
+                            Text(level,style:beforIndex!=index?AppStyle.textPrimary3Medium23:AppStyle.textMedium23,),
                             SizedBox(width: 7.5,),
                             Text(leveltext,style:beforIndex!=index?AppStyle.textPrimary3Medium16:AppStyle.textMedium16,)
                         ],

@@ -140,7 +140,7 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
           onTap: (){
             _cancelFollow();
           },
-          child:  _itemSelect(width, AppStyle.textRegularRed16, "取消关注"),
+          child:  _itemSelect(width, AppStyle.redRegular16, "取消关注"),
         ),
 
         Container(
@@ -163,7 +163,7 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
             CupertinoDialogAction(child: Text('再想想',style: AppStyle.textRegular16,),onPressed: (){
               Navigator.pop(context);
             },),
-            CupertinoDialogAction(child: Text('必须举报！',style: AppStyle.textRegularRed16,),onPressed: (){
+            CupertinoDialogAction(child: Text('必须举报！',style: AppStyle.redRegular16,),onPressed: (){
              _denounceUser(context);
             },),
           ],
