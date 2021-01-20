@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/live_video_model.dart';
 import 'package:mirror/util/date_util.dart';
@@ -9,6 +10,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/volume_popup.dart';
 import 'package:video_player/video_player.dart';
+import 'package:wakelock/wakelock.dart';
 
 /// video_course_play_page
 /// Created by yangjiayi on 2020/12/15.
@@ -156,6 +158,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
     if (_timer == null) {
       _timer = Timer.periodic(Duration(milliseconds: _timerInterval), _updateInfoByTimer);
     }
+    Wakelock.enable();
     //TODO 是否需要校验一下数据 比如视频文件map
     _playNextPart();
   }
@@ -166,6 +169,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
     _timer?.cancel();
     _controller?.removeListener(_playerListener);
     _controller?.dispose();
+    Wakelock.disable();
   }
 
   @override
@@ -175,177 +179,182 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
         _onBackButtonClicked();
         return false;
       },
-      child: Scaffold(
-        body: Stack(children: [
-          Column(
-            children: [
-              Container(
-                height: ScreenUtil.instance.statusBarHeight,
-                color: AppColor.black,
-              ),
-              Expanded(
-                child: Stack(
-                  children: [
-                    Container(
-                      color: AppColor.black,
-                    ),
-                    Container(
-                      height: ScreenUtil.instance.screenWidthDp / 0.75,
-                      alignment: Alignment.center,
-                      child: _controller != null && _controller.value.initialized
-                          ? AspectRatio(
-                              aspectRatio: _controller.value.aspectRatio,
-                              child: VideoPlayer(_controller),
-                            )
-                          : Container(),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.only(left: 16),
-                          height: 27,
-                          alignment: Alignment.bottomLeft,
-                          child: Text(
-                            DateUtil.formatMillisecondToMinuteAndSecond(_totalTrainingTime),
-                            style: TextStyle(
-                                color: AppColor.white.withOpacity(0.85), fontWeight: FontWeight.w500, fontSize: 18),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                          height: 21,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                "训练时长",
-                                style: TextStyle(
-                                  color: AppColor.white.withOpacity(0.35),
-                                  fontSize: 10,
-                                ),
-                              ),
-                              Spacer(),
-                              Icon(
-                                Icons.play_circle_outline,
-                                color: AppColor.white.withOpacity(0.35),
-                                size: 12,
-                              ),
-                              SizedBox(
-                                width: 8,
-                              ),
-                              Text(
-                                "${widget.videoCourseModel.practiceAmount}人已学习",
-                                style: TextStyle(
-                                  color: AppColor.white.withOpacity(0.35),
-                                  fontSize: 10,
-                                ),
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light,
+        child: Scaffold(
+          body: Stack(children: [
+            Column(
+              children: [
+                Container(
+                  height: ScreenUtil.instance.statusBarHeight,
+                  color: AppColor.black,
+                ),
+                Expanded(
+                  child: Stack(
+                    children: [
+                      Container(
+                        color: AppColor.black,
+                      ),
+                      Container(
+                        height: ScreenUtil.instance.screenWidthDp / 0.75,
+                        alignment: Alignment.center,
+                        child: _controller != null && _controller.value.initialized
+                            ? AspectRatio(
+                                aspectRatio: _controller.value.aspectRatio,
+                                child: VideoPlayer(_controller),
                               )
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                    Positioned(bottom: 24, child: _buildInfoView()),
-                    Positioned(
-                        right: 16,
-                        top: 80,
-                        child: GestureDetector(
-                          onTap: () {
-                            _onBackButtonClicked();
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            height: 32,
-                            width: 32,
-                            decoration: BoxDecoration(color: AppColor.white.withOpacity(0.12), shape: BoxShape.circle),
-                            child: Icon(
-                              Icons.clear,
-                              color: AppColor.white,
-                              size: 16,
+                            : Container(),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.only(left: 16),
+                            height: 27,
+                            alignment: Alignment.bottomLeft,
+                            child: Text(
+                              DateUtil.formatMillisecondToMinuteAndSecond(_totalTrainingTime),
+                              style: TextStyle(
+                                  color: AppColor.white.withOpacity(0.85), fontWeight: FontWeight.w500, fontSize: 18),
                             ),
                           ),
-                        )),
-                    Positioned(
-                        right: 16,
-                        top: 128,
-                        child: GestureDetector(
-                          onTap: () {
-                            showVolumePopup(context);
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            height: 32,
-                            width: 32,
-                            decoration: BoxDecoration(color: AppColor.white.withOpacity(0.12), shape: BoxShape.circle),
-                            child: Icon(
-                              Icons.settings,
-                              color: AppColor.white,
-                              size: 16,
+                          Container(
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                            height: 21,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "训练时长",
+                                  style: TextStyle(
+                                    color: AppColor.white.withOpacity(0.35),
+                                    fontSize: 10,
+                                  ),
+                                ),
+                                Spacer(),
+                                Icon(
+                                  Icons.play_circle_outline,
+                                  color: AppColor.white.withOpacity(0.35),
+                                  size: 12,
+                                ),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                Text(
+                                  "${widget.videoCourseModel.practiceAmount}人已学习",
+                                  style: TextStyle(
+                                    color: AppColor.white.withOpacity(0.35),
+                                    fontSize: 10,
+                                  ),
+                                )
+                              ],
                             ),
-                          ),
-                        )),
-                  ],
+                          )
+                        ],
+                      ),
+                      Positioned(bottom: 24, child: _buildInfoView()),
+                      Positioned(
+                          right: 16,
+                          top: 80,
+                          child: GestureDetector(
+                            onTap: () {
+                              _onBackButtonClicked();
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              height: 32,
+                              width: 32,
+                              decoration:
+                                  BoxDecoration(color: AppColor.white.withOpacity(0.12), shape: BoxShape.circle),
+                              child: Icon(
+                                Icons.clear,
+                                color: AppColor.white,
+                                size: 16,
+                              ),
+                            ),
+                          )),
+                      Positioned(
+                          right: 16,
+                          top: 128,
+                          child: GestureDetector(
+                            onTap: () {
+                              showVolumePopup(context);
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              height: 32,
+                              width: 32,
+                              decoration:
+                                  BoxDecoration(color: AppColor.white.withOpacity(0.12), shape: BoxShape.circle),
+                              child: Icon(
+                                Icons.settings,
+                                color: AppColor.white,
+                                size: 16,
+                              ),
+                            ),
+                          )),
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                height: 60 + ScreenUtil.instance.bottomBarHeight,
-                color: AppColor.black,
-                child: Container(
-                  padding: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
-                  width: ScreenUtil.instance.screenWidthDp,
+                Container(
                   height: 60 + ScreenUtil.instance.bottomBarHeight,
-                  color: AppColor.white.withOpacity(0.12),
-                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-                    GestureDetector(
-                      onTap: () {
-                        int currentTime = DateTime.now().millisecondsSinceEpoch;
-                        if (currentTime - _buttonTapTime < _buttonTapInterval) {
-                          return;
-                        } else {
-                          _buttonTapTime = currentTime;
-                          _returnToPreviousPart(_currentPartIndex);
-                        }
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        height: 60,
-                        width: 60,
-                        child: Icon(
-                          Icons.skip_previous,
-                          color: AppColor.white,
-                          size: 24,
+                  color: AppColor.black,
+                  child: Container(
+                    padding: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
+                    width: ScreenUtil.instance.screenWidthDp,
+                    height: 60 + ScreenUtil.instance.bottomBarHeight,
+                    color: AppColor.white.withOpacity(0.12),
+                    child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+                      GestureDetector(
+                        onTap: () {
+                          int currentTime = DateTime.now().millisecondsSinceEpoch;
+                          if (currentTime - _buttonTapTime < _buttonTapInterval) {
+                            return;
+                          } else {
+                            _buttonTapTime = currentTime;
+                            _returnToPreviousPart(_currentPartIndex);
+                          }
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          height: 60,
+                          width: 60,
+                          child: Icon(
+                            Icons.skip_previous,
+                            color: AppColor.white,
+                            size: 24,
+                          ),
                         ),
                       ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        int currentTime = DateTime.now().millisecondsSinceEpoch;
-                        if (currentTime - _buttonTapTime < _buttonTapInterval) {
-                          return;
-                        } else {
-                          _buttonTapTime = currentTime;
-                          _skipToNextPart(_currentPartIndex);
-                        }
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        height: 60,
-                        width: 60,
-                        child: Icon(
-                          Icons.skip_next,
-                          color: AppColor.white,
-                          size: 24,
+                      GestureDetector(
+                        onTap: () {
+                          int currentTime = DateTime.now().millisecondsSinceEpoch;
+                          if (currentTime - _buttonTapTime < _buttonTapInterval) {
+                            return;
+                          } else {
+                            _buttonTapTime = currentTime;
+                            _skipToNextPart(_currentPartIndex);
+                          }
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          height: 60,
+                          width: 60,
+                          child: Icon(
+                            Icons.skip_next,
+                            color: AppColor.white,
+                            size: 24,
+                          ),
                         ),
                       ),
-                    ),
-                  ]),
-                ),
-              )
-            ],
-          ),
-          _buildRestView()
-        ]),
+                    ]),
+                  ),
+                )
+              ],
+            ),
+            _buildRestView()
+          ]),
+        ),
       ),
     );
   }
@@ -566,15 +575,15 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
     _controller?.pause();
     var oldController = _controller;
 
-    _controller =
-        VideoPlayerController.file(File(widget.videoPathMap[_partList[_currentPartIndex].videoList[_currentVideoIndex]]))
-          ..initialize().then((_) {
-            setState(() {
-              _controller.addListener(_playerListener);
-              _controller.play();
-            });
-            oldController?.dispose();
-          });
+    _controller = VideoPlayerController.file(
+        File(widget.videoPathMap[_partList[_currentPartIndex].videoList[_currentVideoIndex]]))
+      ..initialize().then((_) {
+        setState(() {
+          _controller.addListener(_playerListener);
+          _controller.play();
+        });
+        oldController?.dispose();
+      });
   }
 
   _updateInfoByTimer(Timer timer) {
