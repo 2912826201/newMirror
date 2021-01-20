@@ -9,11 +9,13 @@ import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
+import 'package:mirror/page/search/sub_page/search_course.dart';
 import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:mirror/page/search/sub_page/search_user.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -44,7 +46,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
   List<UserModel> userList = [];
 
   // 相关课程data
-  List<CourseDtoModel> courseList = [];
+  List<LiveVideoModel> liveVideoList = [];
 
   // 声明定时器
   Timer timer;
@@ -64,26 +66,31 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
   int lastTime;
 
   @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     // 合并请求
     mergeRequest();
     widget.textController.addListener(() {
-
-        // 取消延时
-        if (timer != null) {
-          timer.cancel();
+      // 取消延时
+      if (timer != null) {
+        timer.cancel();
+      }
+      // 延迟器:
+      timer = Timer(Duration(milliseconds: 700), () {
+        if (lastString != widget.keyWord) {
+          liveVideoList.clear();
+          userList.clear();
+          topicList.clear();
+          feedList.clear();
+          mergeRequest();
         }
-        // 延迟器:
-        timer = Timer(Duration(milliseconds: 700), () {
-          if (lastString != widget.keyWord) {
-            courseList.clear();
-            userList.clear();
-            topicList.clear();
-            feedList.clear();
-            mergeRequest();
-          }
-          lastString = widget.keyWord;
-        });
+        lastString = widget.keyWord;
+      });
     });
     // 上拉加载
     _scrollController.addListener(() {
@@ -105,18 +112,18 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
       // 请求相关动态
       searchFeed(key: widget.keyWord, size: 20),
       // 请求相关课程
-      // searchCourse(key: widget.keyWord, size: 2),
+      searchCourse(key: widget.keyWord, size: 2),
     ]).then((results) {
       SearchUserModel userModel;
       userModel = results[0];
       DataResponseModel topicModel = results[1];
       DataResponseModel feedModel = results[2];
-      // DataResponseModel courseModel = results[3];
-      // if (courseModel != null && courseModel.list != null) {
-      //   courseModel.list.forEach((v) {
-      //     courseList.add(CourseDtoModel.fromJson(v));
-      //   });
-      // }
+      DataResponseModel courseModel = results[3];
+      if (courseModel != null && courseModel.list != null) {
+        courseModel.list.forEach((v) {
+          liveVideoList.add(LiveVideoModel.fromJson(v));
+        });
+      }
       if (userModel != null && userModel.list.isNotEmpty) {
         userList = userModel.list;
       }
@@ -182,32 +189,28 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
     // 更新全局监听
     context.read<FeedMapNotifier>().updateFeedMap(feedList);
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       child: CustomScrollView(
-        controller:_scrollController ,
+        controller: _scrollController,
         slivers: [
           SliverToBoxAdapter(
               child: Offstage(
-            offstage: courseList.length == 0,
+            offstage: liveVideoList.length == 0,
             child: ItemTitle("相关课程", 12, 1, widget.controller),
           )),
           SliverList(
             delegate: SliverChildBuilderDelegate((content, index) {
               return Offstage(
-                  offstage: courseList.length == 0,
-                  child: Container(
-                    height: 90,
-                    width: ScreenUtil.instance.width - 32,
-                    margin: EdgeInsets.only(left: 16, right: 16),
-                    color: Colors.primaries[index % Colors.primaries.length],
-                    child: Text(
-                      '$index',
-                      style: TextStyle(color: Colors.white, fontSize: 20),
-                    ),
+                  offstage: liveVideoList.length == 0,
+                  child: SearchCourseItem(
+                    videoModel: liveVideoList[index],
+                    index: index,
+                    count: liveVideoList.length,
                   ));
-            }, childCount: courseList.length),
+            }, childCount: liveVideoList.length),
           ),
           SliverToBoxAdapter(
               child: Offstage(offstage: userList.length == 0, child: ItemTitle("相关用户", 16, 4, widget.controller))),
@@ -240,35 +243,38 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                   offstage: feedList.length == 0,
                   child: Container(
                       margin: EdgeInsets.only(left: 16, right: 16),
-                      child: StaggeredGridView.countBuilder(
-                        shrinkWrap: true,
-                        itemCount: feedList.length + 1,
-                        primary: false,
-                        crossAxisCount: 4,
-                        // 上下间隔
-                        mainAxisSpacing: 4.0,
-                        // 左右间隔
-                        crossAxisSpacing: 8.0,
-                        itemBuilder: (context, index) {
-                          if (index == feedList.length) {
-                            return LoadingView(
-                              loadText: loadText,
-                              loadStatus: loadStatus,
-                            );
-                          } else if (index == feedList.length + 1) {
-                            return Container();
-                          } else {
-                            return SearchFeeditem(
-                              model: feedList[index],
-                              list: feedList,
-                              index: index,
-                              focusNode: widget.focusNode,
-                              isComplex: true,
-                            );
-                          }
-                        },
-                        staggeredTileBuilder: (index) => StaggeredTile.fit(2),
-                      )))),
+                      child: MediaQuery.removePadding(
+                          removeTop: true,
+                          context: context,
+                          child: StaggeredGridView.countBuilder(
+                            shrinkWrap: true,
+                            itemCount: feedList.length + 1,
+                            primary: false,
+                            crossAxisCount: 4,
+                            // 上下间隔
+                            mainAxisSpacing: 4.0,
+                            // 左右间隔
+                            crossAxisSpacing: 8.0,
+                            itemBuilder: (context, index) {
+                              if (index == feedList.length) {
+                                return LoadingView(
+                                  loadText: loadText,
+                                  loadStatus: loadStatus,
+                                );
+                              } else if (index == feedList.length + 1) {
+                                return Container();
+                              } else {
+                                return SearchFeeditem(
+                                  model: feedList[index],
+                                  list: feedList,
+                                  index: index,
+                                  focusNode: widget.focusNode,
+                                  isComplex: true,
+                                );
+                              }
+                            },
+                            staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+                          ))))),
         ],
       ),
     );

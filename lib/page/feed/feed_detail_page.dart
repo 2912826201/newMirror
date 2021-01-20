@@ -61,6 +61,11 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   ScrollController _controller = new ScrollController();
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+  @override
   void initState() {
     print("进入详情页");
     feedModel = context.read<FeedMapNotifier>().feedMap[widget.model.id];

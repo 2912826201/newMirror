@@ -73,6 +73,12 @@ class ReleasePageState extends State<ReleasePage> {
   List<Rule> rules = [];
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     //TODO 取出来判断是否为空 非空则将图片视频作为初始值 取出后需将Application中的值清空
     print("查明￥${Application.selectedMediaFiles}");
@@ -158,7 +164,7 @@ class FeedHeader extends StatelessWidget {
             topicDtoModel.index = rule.startIndex;
             topicDtoModel.len = rule.endIndex;
           } else {
-            topicDtoModel.name = rule.params.substring(1,rule.params.length );
+            topicDtoModel.name = rule.params.substring(1, rule.params.length);
             topicDtoModel.index = rule.startIndex;
             topicDtoModel.len = rule.endIndex - 1;
           }
@@ -428,14 +434,14 @@ class KeyboardInputState extends State<KeyboardInput> {
         print(v.name.codeUnits);
         print(keyWork.codeUnits);
         print(v.name.codeUnits == keyWork.codeUnits);
-        print(v.name  == keyWork+ " ");
-        if(keyWork == v.name.trimRight()) {
+        print(v.name == keyWork + " ");
+        if (keyWork == v.name.trimRight()) {
           isCreated = false;
         }
-          v.name = "#" + v.name + " ";
+        v.name = "#" + v.name + " ";
       });
       if (isCreated) {
-        createTopModel.name = "#" +keyWork + " ";
+        createTopModel.name = "#" + keyWork + " ";
         createTopModel.id = -1;
         searchTopicList.insert(0, createTopModel);
       }
@@ -444,7 +450,7 @@ class KeyboardInputState extends State<KeyboardInput> {
         context.read<ReleaseFeedInputNotifier>().searchTopLoadStatus = LoadingStatus.STATUS_COMPLETED;
       }
     } else {
-      createTopModel.name = "#" +keyWork + " ";
+      createTopModel.name = "#" + keyWork + " ";
       createTopModel.id = -1;
       searchTopicList.insert(0, createTopModel);
       context.read<ReleaseFeedInputNotifier>().searchTopLoadText = "";
@@ -535,13 +541,21 @@ class TopicListState extends State<TopicList> {
 
   // 推荐数据加载页数
   int dataPage = 1;
- // 搜索数据加载页数
+
+  // 搜索数据加载页数
   int searchDataPage = 1;
+
   // 加载中默认文字
   String loadText = "加载中...";
 
   // 加载状态
   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -582,8 +596,8 @@ class TopicListState extends State<TopicList> {
         topics.forEach((v) {
           v.name = "#" + v.name + " ";
         });
-          loadText = "";
-          loadStatus = LoadingStatus.STATUS_COMPLETED;
+        loadText = "";
+        loadStatus = LoadingStatus.STATUS_COMPLETED;
       }
     }
     hasNext = model.hasNext;
@@ -593,6 +607,7 @@ class TopicListState extends State<TopicList> {
     context.read<ReleaseFeedInputNotifier>().setBackupTopicList(topics);
     setState(() {});
   }
+
   // 搜索话题
   // 此处调用都为第二页及以上数据第一页在输入框回调内调用
   requestSearchTopic(String keyWork) async {
@@ -611,7 +626,7 @@ class TopicListState extends State<TopicList> {
       return;
     }
     DataResponseModel model =
-    await searchTopic(key: keyWork, size:20, lastScore: context.read<ReleaseFeedInputNotifier>().searchLastScore);
+        await searchTopic(key: keyWork, size: 20, lastScore: context.read<ReleaseFeedInputNotifier>().searchLastScore);
     if (searchDataPage > 1 && context.read<ReleaseFeedInputNotifier>().searchLastScore != null) {
       if (model.list.isNotEmpty) {
         model.list.forEach((v) {
@@ -648,8 +663,9 @@ class TopicListState extends State<TopicList> {
               itemBuilder: (context, index) {
                 if (index == list.length) {
                   return LoadingView(
-                    loadText:
-                    searchTopicStr.isNotEmpty ? context.read<ReleaseFeedInputNotifier>().searchTopLoadText : loadText,
+                    loadText: searchTopicStr.isNotEmpty
+                        ? context.read<ReleaseFeedInputNotifier>().searchTopLoadText
+                        : loadText,
                     loadStatus: searchTopicStr.isNotEmpty
                         ? context.read<ReleaseFeedInputNotifier>().searchTopLoadStatus
                         : loadStatus,
@@ -672,10 +688,10 @@ class TopicListState extends State<TopicList> {
                           for (Rule atRule in rules) {
                             print(atRule.params);
                             print(list[index].name);
-                            if (atRule.id != -1  && atRule.id == list[index].id && atRule.isAt == false) {
+                            if (atRule.id != -1 && atRule.id == list[index].id && atRule.isAt == false) {
                               ToastShow.show(msg: "已经添加过了", context: context, gravity: Toast.CENTER);
                               return;
-                            } else if (atRule.id == -1 && atRule.params == list[index].name){
+                            } else if (atRule.id == -1 && atRule.params == list[index].name) {
                               ToastShow.show(msg: "已经添加过了", context: context, gravity: Toast.CENTER);
                               return;
                             }
@@ -731,14 +747,13 @@ class TopicListState extends State<TopicList> {
                               widget.controller.text.substring(rules[i].startIndex, rules[i].endIndex)) {
                             print(rules[i]);
                             rules[i] = Rule(rules[i].startIndex + topicLength, rules[i].endIndex + topicLength,
-                                rules[i].params, rules[i].clickIndex, rules[i].isAt,rules[i].id);
+                                rules[i].params, rules[i].clickIndex, rules[i].isAt, rules[i].id);
                             print(rules[i]);
                           }
                         }
                         // 存储规则,
-                        context
-                            .read<ReleaseFeedInputNotifier>()
-                            .addRules(Rule(topicIndex - 1, topicIndex + topicLength, list[index].name, index, false, list[index].id));
+                        context.read<ReleaseFeedInputNotifier>().addRules(Rule(
+                            topicIndex - 1, topicIndex + topicLength, list[index].name, index, false, list[index].id));
                         // 设置光标
                         var setCursor = TextSelection(
                           baseOffset: widget.controller.text.length,
@@ -767,8 +782,7 @@ class TopicListState extends State<TopicList> {
                               height: 2,
                             ),
                             Text(
-                              list[index].id != -1 ?
-                              "${StringUtil.getNumber(list[index].feedCount)}篇动态" : "创建新话题",
+                              list[index].id != -1 ? "${StringUtil.getNumber(list[index].feedCount)}篇动态" : "创建新话题",
                               style: AppStyle.textSecondaryRegular12,
                             ),
                             SizedBox(
@@ -826,6 +840,12 @@ class AtListState extends State<AtList> {
 
   // 数据加载页数
   int searchDataPage = 1;
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {

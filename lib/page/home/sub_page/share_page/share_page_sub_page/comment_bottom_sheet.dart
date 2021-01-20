@@ -53,7 +53,11 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
 
   // 列表监听
   ScrollController _controller = new ScrollController();
-
+@override
+  void dispose() {
+  _controller.dispose();
+    super.dispose();
+  }
   @override
   void initState() {
     print("请求接口吗");

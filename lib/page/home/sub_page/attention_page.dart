@@ -500,7 +500,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   @override
   void dispose() {
     print("关注页面销毁了");
-
+    _controller.dispose();
     super.dispose();
   }
 

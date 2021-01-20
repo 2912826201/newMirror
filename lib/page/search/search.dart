@@ -82,6 +82,11 @@ class SearchHeaderState extends State<SearchHeader> {
   List<TextInputFormatter> inputFormatters;
 
   @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+  @override
   void initState() {
     context.read<SearchEnterNotifier>().EditTextController(controller);
     _formatter = InputFormatter(
@@ -518,6 +523,11 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
   // taBar和TabBarView必要的
   TabController controller;
 
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
   @override
   void initState() {
     controller = TabController(length: 5, vsync: this, initialIndex: 0);
