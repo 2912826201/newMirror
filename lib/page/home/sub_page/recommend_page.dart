@@ -230,7 +230,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
           child: RefreshIndicator(
               onRefresh: () async {
                 print("推荐ye下拉刷新");
-                dataPage = 1;
+                // dataPage = 1;
                 if (recommendModelList.isNotEmpty) {
                   recommendIdList.clear();
                 }
@@ -239,20 +239,20 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                 }
                 loadStatus = LoadingStatus.STATUS_LOADING;
                 loadText = "加载中...";
-                // mergeRequest();
-                List<HomeFeedModel> modelList = await getHotList(size: 20);
-                setState(() {
-                  try {
-                    if (modelList.isNotEmpty) {
-                      for (HomeFeedModel model in modelList) {
-                        recommendIdList.add(model.id);
-                      }
-                      recommendModelList.addAll(modelList);
-                    }
-                  } catch (e) {}
-                });
-                // 更新全局监听
-                context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
+                mergeRequest();
+                // List<HomeFeedModel> modelList = await getHotList(size: 20);
+                // setState(() {
+                //   try {
+                //     if (modelList.isNotEmpty) {
+                //       for (HomeFeedModel model in modelList) {
+                //         recommendIdList.add(model.id);
+                //       }
+                //       recommendModelList.addAll(modelList);
+                //     }
+                //   } catch (e) {}
+                // });
+                // // 更新全局监听
+                // context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
               },
               child: CustomScrollView(
                 controller: _controller,

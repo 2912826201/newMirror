@@ -30,7 +30,8 @@ import 'package:provider/provider.dart';
 
 // 动态详情页
 class FeedDetailPage extends StatefulWidget {
-  FeedDetailPage({Key key, this.model, this.index,this.commentId});
+  FeedDetailPage({Key key, this.model, this.index, this.commentId});
+
   int commentId;
   HomeFeedModel model;
   int index;
@@ -57,6 +58,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   // 请求下一页
   int hasNext = 0;
   int choseItem;
+
   // 列表监听
   ScrollController _controller = new ScrollController();
 
@@ -65,6 +67,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
     _controller.dispose();
     super.dispose();
   }
+
   @override
   void initState() {
     print("进入详情页");
@@ -76,7 +79,6 @@ class FeedDetailPageState extends State<FeedDetailPage> {
         getQueryListByHot();
       }
     });
-
   }
 
   // 获取热门评论
@@ -105,14 +107,15 @@ class FeedDetailPageState extends State<FeedDetailPage> {
               model.isShowInteractiveButton = false;
             }
           }
-          for(int i=0;i<modelList.length;i++) {
-            if(modelList[i].id==widget.commentId){
+          for (int i = 0; i < modelList.length; i++) {
+            if (modelList[i].id == widget.commentId) {
               modelList[i].itemChose = true;
-              commentModel.insert(0,modelList[i]);
-            }else{
+              commentModel.insert(0, modelList[i]);
+            } else {
               commentModel.add(modelList[i]);
             }
-          };
+          }
+          ;
           print("数据长度${commentModel.length}");
         }
       } else if (this.dataPage > 1 && this.hasNext != 0) {
@@ -191,6 +194,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                           height: feedModel?.picUrls[0]?.height?.toDouble(),
                           model: feedModel,
                           isComplex: true,
+                          isDynamicDetails: true,
                         )
                       : Container(),
                   // 视频区域
@@ -242,22 +246,25 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                       : Container(),
                 ]),
               ),
-              context.watch<FeedMapNotifier>().feedMap[feedModel.id].totalCount != -1 ? SliverList(delegate: SliverChildBuilderDelegate((content, index) {
-              // return Container(
-                print(index);
-                print(commentModel.length);
-                if (index == commentModel.length) {
-                  print("进入了吗$index");
-                  return SizedBox(height: 48 + ScreenUtil.instance.bottomBarHeight + 40) ;
-                } else {
-                  return CommentBottomListView(
-                    model: commentModel[index],
-                    index: index,
-                    feedId: feedModel.id,
-                    choseItem: choseItem,
-                  );
-                }
-              },childCount:commentModel.length + 1)) :  SliverToBoxAdapter()
+              context.watch<FeedMapNotifier>().feedMap[feedModel.id].totalCount != -1
+                  ? SliverList(
+                      delegate: SliverChildBuilderDelegate((content, index) {
+                      // return Container(
+                      print(index);
+                      print(commentModel.length);
+                      if (index == commentModel.length) {
+                        print("进入了吗$index");
+                        return SizedBox(height: 48 + ScreenUtil.instance.bottomBarHeight + 40);
+                      } else {
+                        return CommentBottomListView(
+                          model: commentModel[index],
+                          index: index,
+                          feedId: feedModel.id,
+                          choseItem: choseItem,
+                        );
+                      }
+                    }, childCount: commentModel.length + 1))
+                  : SliverToBoxAdapter()
             ]),
             Positioned(
               bottom: 0,

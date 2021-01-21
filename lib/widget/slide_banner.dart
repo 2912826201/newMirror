@@ -1,10 +1,8 @@
 import 'dart:async';
-
-import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sound_lite/flutter_sound.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -12,8 +10,8 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
-import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
-import 'package:mirror/page/search/sub_page/should_build.dart';
+import 'package:mirror/page/image_preview/image_preview_page.dart';
+import 'package:mirror/page/image_preview/image_preview_view.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
@@ -21,10 +19,11 @@ import 'package:provider/provider.dart';
 
 // 轮播图
 class SlideBanner extends StatefulWidget {
-  SlideBanner({Key key, this.height, this.model,this.isComplex}) : super(key: key);
+  SlideBanner({Key key, this.height, this.model, this.isComplex, this.isDynamicDetails = false}) : super(key: key);
   HomeFeedModel model;
   double height;
   bool isComplex;
+  bool isDynamicDetails;
 
   @override
   _SlideBannerState createState() => _SlideBannerState();
@@ -39,6 +38,7 @@ class _SlideBannerState extends State<SlideBanner> {
 
   // 指示器横向布局
   final scrollDirection = Axis.horizontal;
+
   @override
   void initState() {
     super.initState();
@@ -158,12 +158,43 @@ class _SlideBannerState extends State<SlideBanner> {
   //   );
   // }
   // 轮播图图片设置
-  Container buildShowItemContainer(int index,double height) {
-    return Container(
-      // child: Image.network(
-      //   widget.model.picUrls[index].url,
-      //   fit: BoxFit.cover,
-      // ),
+  Widget buildShowItemContainer(int indexs, double height) {
+    ExtendedImageGesturePageView.builder(itemBuilder:(BuildContext context, int index) {
+      var item = widget.model.picUrls[index].url;
+      Widget image = ExtendedImage.network(
+        item,
+        fit: BoxFit.contain,
+        mode: ExtendedImageMode.gesture,
+
+      );
+    });
+    int photoIndex = 0;
+    return widget.isDynamicDetails ? CupertinoButton(
+      borderRadius: BorderRadius.zero,
+      padding: EdgeInsets.zero,
+      onPressed: () {
+        ImagePreview.preview(
+          context,
+          images: List.generate(widget.model.picUrls.length, (index) {
+            photoIndex = index;
+            return ImageOptions(
+        url: widget.model.picUrls[photoIndex].url != null ? widget.model.picUrls[photoIndex].url : "",
+        tag: widget.model.picUrls[photoIndex].url + "$indexs",
+        );
+      }),
+        );
+      },
+      child: ImagePreviewHero(
+        tag: widget.model.picUrls[indexs].url + "$indexs",
+        child: CachedNetworkImage(
+          imageUrl: widget.model.picUrls[indexs].url,
+          width: ScreenUtil.instance.width,
+          height: height,
+          fit: BoxFit.cover,
+        ),
+      ),
+    )
+    : Container(
       width: ScreenUtil.instance.width,
         height:height ,
         child: CachedNetworkImage(
@@ -172,7 +203,7 @@ class _SlideBannerState extends State<SlideBanner> {
               child: new Center(
                 child: new CircularProgressIndicator(),
               )),
-          imageUrl:  widget.model.picUrls[index].url != null ?  widget.model.picUrls[index].url : "",
+          imageUrl:  widget.model.picUrls[indexs].url != null ?  widget.model.picUrls[indexs].url : "",
           errorWidget: (context, url, error) => new Image.asset("images/test.png"),
         )
     );
@@ -180,7 +211,7 @@ class _SlideBannerState extends State<SlideBanner> {
 
   // 宽高比
   double setAspectRatio(double height) {
-    if (height == 0 ) {
+    if (height == 0) {
       return ScreenUtil.instance.width;
     } else {
       return (ScreenUtil.instance.width / widget.model.picUrls[0].width) * height;
@@ -195,7 +226,9 @@ class _SlideBannerState extends State<SlideBanner> {
       // 点赞/取消赞成功
       print("state:${model["state"]}");
       if (model["state"]) {
-        context.read<FeedMapNotifier>().setLaud(widget.model.isLaud,context.read<ProfileNotifier>().profile.avatarUri,widget.model.id);
+        context
+            .read<FeedMapNotifier>()
+            .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
       } else {
         // 失败
         print("shib ");
@@ -213,7 +246,7 @@ class _SlideBannerState extends State<SlideBanner> {
       child: Column(
         children: [
           Stack(
-      children: [
+            children: [
               GestureDetector(
                 onDoubleTap: () {
                   // 获取是否点赞
@@ -231,10 +264,17 @@ class _SlideBannerState extends State<SlideBanner> {
                   child: Swiper(
                     itemCount: widget.model.picUrls.length,
                     itemBuilder: (BuildContext context, int index) {
-                      return Hero(
-                          tag: widget.isComplex ? "complex${widget.model.id}" : "${widget.model.id}",
-                          child:
-                          buildShowItemContainer(index,setAspectRatio(widget.height),));
+                      return widget.isDynamicDetails
+                          ? buildShowItemContainer(
+                              index,
+                              setAspectRatio(widget.height),
+                            )
+                          : Hero(
+                              tag: widget.isComplex ? "complex${widget.model.id}" : "${widget.model.id}",
+                              child: buildShowItemContainer(
+                                index,
+                                setAspectRatio(widget.height),
+                              ));
                       // buildOpenContainerItem(index);
                     },
                     loop: false,
@@ -242,7 +282,10 @@ class _SlideBannerState extends State<SlideBanner> {
                       autoPlay(index);
                     },
                     onTap: (index) {
-                      print("点击了第$index个图片");
+                      // Navigator.push(context, MaterialPageRoute(builder: (_) {
+                          // ZoomImageDemo(imageTestUrl: widget.model.picUrls[index].url);
+                          // SimplePhotoViewDemo();
+                      // }));
                     },
                   ),
                 ),
@@ -255,7 +298,8 @@ class _SlideBannerState extends State<SlideBanner> {
                   child: Container(
                     padding: EdgeInsets.only(left: 6, top: 3, right: 6, bottom: 3),
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(12)), color: AppColor.textPrimary1.withOpacity(0.5)),
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                        color: AppColor.textPrimary1.withOpacity(0.5)),
                     child: Text(
                       "${zindex + 1}/${widget.model.picUrls.length}",
                       style: TextStyle(color: AppColor.white, fontSize: 12),
@@ -300,12 +344,12 @@ class _SlideBannerState extends State<SlideBanner> {
 }
 
 class Item2Page extends StatefulWidget {
-
   String photoUrl;
   HomeFeedModel model;
   int index;
   bool isComplex;
-  Item2Page({Key key, this.photoUrl,this.model,this.index,this.isComplex}) : super(key: key);
+
+  Item2Page({Key key, this.photoUrl, this.model, this.index, this.isComplex}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -316,25 +360,22 @@ class Item2Page extends StatefulWidget {
 class _Item2PageState extends State<Item2Page> {
   @override
   Widget shouldBuild(BuildContext context) {
-
-
     ///页面二中的Hero
   }
 
   @override
   Widget build(BuildContext context) {
     print("第${widget.index}个元素的动态ID：：：：${widget.model.id}");
-    return  Scaffold(
+    return Scaffold(
         backgroundColor: Colors.white,
-        body:
-        Column(
+        body: Column(
           children: [
             Container(
               child: InkWell(
                 onTap: () {
                   Navigator.of(context).pop();
                 },
-                child:Hero (
+                child: Hero(
                   tag: widget.isComplex ? "complex${widget.model.id}" : "${widget.model.id}:${widget.index}",
                   child: Image.network(widget.model.picUrls[0].url),
                   // SlideBanner(height: model.picUrls[0].height.toDouble(),model: model,),
@@ -347,7 +388,6 @@ class _Item2PageState extends State<Item2Page> {
               color: Colors.red,
             )
           ],
-        )
-    );
+        ));
   }
 }
