@@ -32,8 +32,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
 
   _initData() {
     _dataList.add(TrainingGalleryDayModel()
-      ..month = "1月 2021"
-      ..day = "18"
+      ..dateTime = "2021-01-18"
       ..list = [
         TrainingGalleryImageModel()
           ..url = "https://i2.hdslb.com/bfs/archive/4431155151f0b9b3da5f150b7b4273bcc525afe1.jpg",
@@ -51,15 +50,13 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
           ..url = "https://i1.hdslb.com/bfs/archive/7bd977dacfe35cecb5ea13df2673bb453ea53195.jpg"
       ]);
     _dataList.add(TrainingGalleryDayModel()
-      ..month = "1月 2021"
-      ..day = "10"
+      ..dateTime = "2021-01-10"
       ..list = [
         TrainingGalleryImageModel()
           ..url = "https://i0.hdslb.com/bfs/archive/2b8bf21ed1117b345aa596f34b6c53c310a801cb.jpg"
       ]);
     _dataList.add(TrainingGalleryDayModel()
-      ..month = "1月 2021"
-      ..day = "1"
+      ..dateTime = "2021-01-01"
       ..list = [
         TrainingGalleryImageModel()
           ..url = "https://i2.hdslb.com/bfs/archive/6dad8b9612336e1c9fd88dd54a7eac08909e410e.jpg",
@@ -71,8 +68,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
           ..url = "https://i2.hdslb.com/bfs/archive/76f307eab11e961ad92ced6de85f85d8d600c9f3.jpg"
       ]);
     _dataList.add(TrainingGalleryDayModel()
-      ..month = "11月 2020"
-      ..day = "11"
+      ..dateTime = "2020-11-15"
       ..list = [
         TrainingGalleryImageModel()
           ..url = "https://i2.hdslb.com/bfs/archive/4431155151f0b9b3da5f150b7b4273bcc525afe1.jpg",
@@ -90,15 +86,13 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
           ..url = "https://i1.hdslb.com/bfs/archive/7bd977dacfe35cecb5ea13df2673bb453ea53195.jpg"
       ]);
     _dataList.add(TrainingGalleryDayModel()
-      ..month = "11月 2020"
-      ..day = "15"
+      ..dateTime = "2020-11-11"
       ..list = [
         TrainingGalleryImageModel()
           ..url = "https://i0.hdslb.com/bfs/archive/2b8bf21ed1117b345aa596f34b6c53c310a801cb.jpg"
       ]);
     _dataList.add(TrainingGalleryDayModel()
-      ..month = "10月 2020"
-      ..day = "20"
+      ..dateTime = "2020-10-20"
       ..list = [
         TrainingGalleryImageModel()
           ..url = "https://i2.hdslb.com/bfs/archive/6dad8b9612336e1c9fd88dd54a7eac08909e410e.jpg",
@@ -356,7 +350,10 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
         } else {
           //插入新数据
           setState(() {
-            _dataList.insert(0, TrainingGalleryDayModel(dateTime: saveList.first.dateTime, list: saveList));
+            //要把是不是显示月份标签修改了
+            _dataList[0].isShowSuspension = false;
+            _dataList.insert(
+                0, TrainingGalleryDayModel(dateTime: saveList.first.dateTime, list: saveList)..isShowSuspension = true);
           });
         }
       } else {

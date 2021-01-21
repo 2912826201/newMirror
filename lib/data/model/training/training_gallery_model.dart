@@ -1,12 +1,28 @@
 import 'package:azlistview/azlistview.dart';
+import 'package:intl/intl.dart';
 
 /// training_gallery_model
 /// Created by yangjiayi on 2021/1/21.
 
 // 要继承这个ISuspensionBean
 class TrainingGalleryDayModel with ISuspensionBean {
-  String month;
-  String day;
+  String _month;
+  String _day;
+
+  String get month {
+    if(_month == null){
+      _month = _dateTimeToMonth(dateTime);
+    }
+    return _month;
+  }
+
+  String get day {
+    if(_day == null){
+      _day = _dateTimeToDay(dateTime);
+    }
+    return _day;
+  }
+
   String dateTime;
   List<TrainingGalleryImageModel> list;
 
@@ -65,7 +81,8 @@ class TrainingGalleryImageModel {
     url = json["url"];
     width = json["width"];
     height = json["height"];
-    size = json["size"];
+    //数据可能为0 int得转一下double
+    size = json["size"].toDouble();
     dataState = json["dataState"];
     createTime = json["createTime"];
     updateTime = json["updateTime"];
@@ -86,4 +103,12 @@ class TrainingGalleryImageModel {
     map["dateTime"] = dateTime;
     return map;
   }
+}
+
+String _dateTimeToMonth(String dateTime){
+  return DateFormat('MM月 yyyy').format(DateFormat('yyyy-MM-dd').parse(dateTime));
+}
+
+String _dateTimeToDay(String dateTime){
+  return DateFormat('dd').format(DateFormat('yyyy-MM-dd').parse(dateTime));
 }
