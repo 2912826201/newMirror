@@ -37,6 +37,14 @@ class BottomListViewSubCommentListItemState extends State<BottomListViewSubComme
   int mainIndex;
   int feedId;
   CommentDtoModel commentDtoModel;
+
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    print('========================子评论item销毁');
+  }
   @override
   void initState() {
     // TODO: implement initState
@@ -80,7 +88,6 @@ class BottomListViewSubCommentListItemState extends State<BottomListViewSubComme
       AppRouter.navigateToLoginPage(context);
     }
   }
-
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,

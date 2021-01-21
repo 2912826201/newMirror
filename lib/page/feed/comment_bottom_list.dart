@@ -177,7 +177,9 @@ class CommentBottomListView extends StatelessWidget {
                     replyCommentId: this.model.id,
                     commentModelCallback: (CommentDtoModel commentModel) {
                       context.read<FeedMapNotifier>().commentFeedCom(this.feedId, this.index, commentModel);
-                      // 关闭评论输入框
+                      print('${model.replys[0].content}');
+                      print('${context.read<FeedMapNotifier>().feedMap[feedId].comments[index].replys[0]}');
+                        // 关闭评论输入框
                       // Navigator.of(context).pop(1);
                     });
                 },
