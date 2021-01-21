@@ -16,10 +16,8 @@ class DottedLine extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        final boxWidth = direction == Axis.horizontal
-            ? constraints.constrainWidth()
-            : constraints.constrainHeight();
-        final dashWidth = 4.0;
+        final boxWidth = direction == Axis.horizontal ? constraints.constrainWidth() : constraints.constrainHeight();
+        final dashWidth = 3.0;
         final dashHeight = height;
         final dashCount = (boxWidth / (2 * dashWidth)).floor();
         return Flex(
