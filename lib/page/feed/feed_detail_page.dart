@@ -258,6 +258,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                           height: feedModel?.picUrls[0]?.height?.toDouble(),
                           model: feedModel,
                           isComplex: true,
+                          isDynamicDetails: true,
                         )
                       : Container(),
                   // 视频区域

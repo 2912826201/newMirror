@@ -81,10 +81,11 @@ Future<Map> getVideoCourseDetail({@required int courseId}) async {
 ///请求参数
 ///courseId:1
 ///isBook:true
-Future<Map> bookLiveCourse({@required int courseId, @required bool isBook}) async {
+Future<Map> bookLiveCourse({@required int courseId, @required String startTime, @required bool isBook}) async {
   Map<String, dynamic> params = {};
   params["courseId"] = courseId;
-  params["isBook"] = isBook ? 1 : 0;
+  params["startTime"] = startTime;
+  params["type"] = isBook ? 1 : 0;
   BaseResponseModel responseModel = await requestApi(BOOKLIVECOURSE, params);
   if (responseModel.isSuccess) {
     return responseModel.data;

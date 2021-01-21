@@ -8,6 +8,14 @@ const String GETTRAININGRECORDSLIST = "/appuser/web/training/getTrainingRecordsL
 // 获取训练记录总体信息
 const String GETTRAININGRECORDS = "/appuser/web/training/getTrainingRecords";
 
+// 保存目标体重
+const String SAVETARGETWEIGHT = "/appuser/web/user/saveTargetWeight";
+
+// 记录体重
+const String SAVEWEIGHT = "/appuser/web/user/saveWeight";
+// 获取体重
+const String GETWEIGHTRECORDS = "/appuser/web/user/getWeightRecords";
+
 // 获取训练记录列表
 Future<List<TrainingRecordModel>> getTrainingRecordsList({@required String startTime, @required String endTime}) async {
   List<TrainingRecordModel> recordModelList = <TrainingRecordModel>[];
@@ -28,11 +36,57 @@ Future<List<TrainingRecordModel>> getTrainingRecordsList({@required String start
 }
 
 // 获取训练记录总体信息
-Future<Map> getTrainingRecords({@required int startTime, @required int endTime}) async {
+//不传查询全部
+Future<Map> getTrainingRecords({String startTime, String endTime}) async {
   Map<String, dynamic> params = {};
-  params["startTime"] = startTime;
-  params["endTime"] = endTime;
+  if (startTime != null) {
+    params["startTime"] = startTime;
+  }
+  if (endTime != null) {
+    params["endTime"] = endTime;
+  }
   BaseResponseModel responseModel = await requestApi(GETTRAININGRECORDS, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
+
+// 保存目标体重
+Future<Map> saveTargetWeight(String targetWeight) async {
+  Map<String, dynamic> params = {};
+  if (targetWeight != null) {
+    params["targetWeight"] = targetWeight;
+  }
+  BaseResponseModel responseModel = await requestApi(SAVETARGETWEIGHT, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
+
+// 记录体重
+Future<Map> saveWeight(String weight) async {
+  Map<String, dynamic> params = {};
+  if (weight != null) {
+    params["weight"] = weight;
+  }
+  BaseResponseModel responseModel = await requestApi(SAVEWEIGHT, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
+
+// 获取体重
+Future<Map> getWeightRecords(int page, int size) async {
+  Map<String, dynamic> params = {};
+  params["page"] = page;
+  params["size"] = size;
+  BaseResponseModel responseModel = await requestApi(GETWEIGHTRECORDS, params);
   if (responseModel.isSuccess) {
     return responseModel.data;
   } else {

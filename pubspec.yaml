@@ -137,6 +137,10 @@ dependencies:
     git: https://github.com/LiuC520/flutter_drag_scale.git
   #  粘性header
   #  sticky_headers: ^0.1.8+1
+  sticky_headers: ^0.1.8+1
+  # 测试大图预览
+  photo_view: ^0.10.3
+  extended_image: ^1.5.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
