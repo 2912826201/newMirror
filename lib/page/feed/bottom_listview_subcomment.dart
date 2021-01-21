@@ -32,18 +32,22 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
     print(
       "初始化数据了+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     if (widget.commentDtoModel.initCount == null) {
+      print('===========================initCount赋值');
       widget.commentDtoModel.initCount = widget.commentDtoModel.replyCount;
       widget.commentDtoModel.isShowHiddenButtons = false;
       widget.commentDtoModel.isClickHideButton = false;
     }
-    if(widget.comment != null){
-      if(widget.type==1&&!widget.commentDtoModel.isClickHideButton){
-        if(widget.commentDtoModel.id==widget.comment.targetId){
-          loadData();
+      if(widget.comment!=null){
+        if(widget.type==1&&!widget.commentDtoModel.isClickHideButton){
+          print('=====================子评论列表加载判断2');
+          print('model父评论id=========================${widget.commentDtoModel.id}');
+          print('传过来的父评论id=========================${widget.comment.targetId}');
+          if(widget.comment.targetId == widget.commentDtoModel.id){
+            print('=====================子评论列表加载判断3');
+            loadData();
+          }
         }
       }
-    }
-
   }
 
   // 隐藏数据
@@ -71,7 +75,7 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
         }
       }
     }
-    }
+      }
     // 总条数大于三每次点击取三条
     if (widget.commentDtoModel.initCount > 4) {
       Map<String, dynamic> model =

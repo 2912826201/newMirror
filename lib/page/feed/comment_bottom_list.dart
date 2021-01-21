@@ -62,7 +62,7 @@ class CommentBottomListView extends StatelessWidget {
       Future.delayed(Duration(milliseconds: 2000), () {
         try {
           print('=========================父评论背景改变');
-          context.read<FeedMapNotifier>().changeItemChose(this.feedId, this.index);
+          context.read<FeedMapNotifier>().changeFatherItemChose(this.feedId, this.index);
         } catch (e) {
         }
       });

@@ -59,7 +59,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   int hasNext = 0;
   // 列表监听
   ScrollController _controller = new ScrollController();
-  int totalCount;
+  int totalCount = 0;
   bool isCanLoading = false;
   GlobalKey _key = GlobalKey();
   WidgetsBinding widgetsBinding;
@@ -71,6 +71,8 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   @override
   void initState() {
     print("进入详情页");
+
+    print('=============================');
     if(widget.comment!=null){
     WidgetsBinding.instance.addPostFrameCallback((callback){
       print('===============################################====  =build结束');
@@ -116,7 +118,6 @@ class FeedDetailPageState extends State<FeedDetailPage> {
       }
       childmodel.itemChose = true;
       commentModel.insert(0, childmodel);
-    /*  context.read<FeedMapNotifier>().feedPublishComment(childmodel,widget.model.id);*/
     }else if(childmodel.type==2){
       print('=========================评论类型为====2');
       CommentDtoModel fsModel = await getComment(childmodel.targetId);
@@ -126,12 +127,11 @@ class FeedDetailPageState extends State<FeedDetailPage> {
         commentModel.insert(0, fsModel);
         childmodel.itemChose = true;
         commentModel[0].replys.insert(0, childmodel);
-       /* context.read<FeedMapNotifier>().commentFeedCom(widget.model.id,0,childmodel);*/
         context.read<FeedMapNotifier>().insertChildModel(childmodel);
       }
     }
-    context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
     }
+    context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
   }
   // 获取热门评论
   getQueryListByHot() async {
@@ -198,7 +198,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
       // commentModel.insert(commentModel.length, CommentDtoModel());
 
     });
-    context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
+ /*   context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);*/
   }
 
   // getFeedDetail() async {
