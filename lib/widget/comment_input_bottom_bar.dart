@@ -129,7 +129,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
     _scrollController.addListener(() {
       String atStr = context.read<CommentEnterNotifier>().atSearchStr;
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        if (atStr.isNotEmpty) {
+        if (atStr != null) {
           searchDataPage += 1;
           requestSearchFollowList(atStr);
         } else {
@@ -206,7 +206,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
         }
         context.read<CommentEnterNotifier>().setAtSearchStr(atSearchStr);
         context.read<CommentEnterNotifier>().changeCallback(value);
-        if (atSearchStr.isNotEmpty) {
+        if (atSearchStr != null) {
           searchHasNext = null;
           searchDataPage = 1;
           requestSearchFollowList(atSearchStr);
@@ -371,8 +371,8 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                     itemBuilder: (context, index) {
                       if (index == followList.length) {
                         return LoadingView(
-                          loadText: atStr.isNotEmpty ? searchLoadText : loadText,
-                          loadStatus: atStr.isNotEmpty ? searchLoadStatus : loadStatus,
+                          loadText: atStr != null ? searchLoadText : loadText,
+                          loadStatus: atStr != null ? searchLoadStatus : loadStatus,
                         );
                       } else if (index == followList.length + 1) {
                         return Container();
@@ -405,7 +405,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                             print(searchStr);
                             print("controller.text:${_textEditingController.text}");
                             print("atBeforeStr$atBeforeStr");
-                            if (searchStr != "" || searchStr.isNotEmpty) {
+                            if (searchStr != "" || searchStr != null) {
                               print("atIndex:$atIndex");
                               print("searchStr:$searchStr");
                               print("controller.text:${_textEditingController.text}");
@@ -421,7 +421,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                             _textEditingController.text = atBeforeStr + followList[index].nickName + atRearStr;
                             print("controller.text:${_textEditingController.text}");
                             // 这是替换输入的文本修改后面输入的@的规则
-                            if (searchStr != "" || searchStr.isNotEmpty) {
+                            if (searchStr != "" || searchStr != null) {
                               int oldLength = searchStr.length;
                               int newLength = followList[index].nickName.length;
                               int oldStartIndex = atIndex;
@@ -526,7 +526,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                 context.read<CommentEnterNotifier>().changeCallback(text);
                               },
                               onSubmitted: (text) {
-                                if (text.isNotEmpty) {
+                                if (text != null) {
                                   voidCallback(
                                     text,
                                     rules,
