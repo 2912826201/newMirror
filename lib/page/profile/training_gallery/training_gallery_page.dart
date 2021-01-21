@@ -1,3 +1,4 @@
+import 'package:azlistview/azlistview.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
@@ -15,14 +16,11 @@ class TrainingGalleryPage extends StatefulWidget {
 }
 
 class _TrainingGalleryState extends State<TrainingGalleryPage> {
-  List<_TrainingGalleryMonthModel> _rawData = [];
-  List<_TrainingGalleryItemModel> _galleryData = [];
+  List<_TrainingGalleryDayModel> _dataList = [];
 
   _initData() {
-    _TrainingGalleryMonthModel monthModel1 = _TrainingGalleryMonthModel()
+    _dataList.add(_TrainingGalleryDayModel()
       ..month = "1月 2021"
-      ..days = [];
-    monthModel1.days.add(_TrainingGalleryDayModel()
       ..day = "18"
       ..images = [
         "https://i2.hdslb.com/bfs/archive/4431155151f0b9b3da5f150b7b4273bcc525afe1.jpg",
@@ -33,10 +31,12 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
         "https://i2.hdslb.com/bfs/archive/de2b17a1e96a26c3b8222b316f8417fba45c7737.jpg",
         "https://i1.hdslb.com/bfs/archive/7bd977dacfe35cecb5ea13df2673bb453ea53195.jpg"
       ]);
-    monthModel1.days.add(_TrainingGalleryDayModel()
+    _dataList.add(_TrainingGalleryDayModel()
+      ..month = "1月 2021"
       ..day = "10"
       ..images = ["https://i2.hdslb.com/bfs/archive/de2b17a1e96a26c3b8222b316f8417fba45c7737.jpg"]);
-    monthModel1.days.add(_TrainingGalleryDayModel()
+    _dataList.add(_TrainingGalleryDayModel()
+      ..month = "1月 2021"
       ..day = "1"
       ..images = [
         "https://i2.hdslb.com/bfs/archive/6dad8b9612336e1c9fd88dd54a7eac08909e410e.jpg",
@@ -44,10 +44,8 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
         "https://i2.hdslb.com/bfs/archive/53b58742ebb860bd0ada1e9fd048c48bb8383c51.jpg",
         "https://i2.hdslb.com/bfs/archive/76f307eab11e961ad92ced6de85f85d8d600c9f3.jpg"
       ]);
-    _TrainingGalleryMonthModel monthModel2 = _TrainingGalleryMonthModel()
+    _dataList.add(_TrainingGalleryDayModel()
       ..month = "11月 2020"
-      ..days = [];
-    monthModel2.days.add(_TrainingGalleryDayModel()
       ..day = "11"
       ..images = [
         "https://i2.hdslb.com/bfs/archive/4431155151f0b9b3da5f150b7b4273bcc525afe1.jpg",
@@ -58,13 +56,12 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
         "https://i2.hdslb.com/bfs/archive/de2b17a1e96a26c3b8222b316f8417fba45c7737.jpg",
         "https://i1.hdslb.com/bfs/archive/7bd977dacfe35cecb5ea13df2673bb453ea53195.jpg"
       ]);
-    monthModel2.days.add(_TrainingGalleryDayModel()
-      ..day = "5"
+    _dataList.add(_TrainingGalleryDayModel()
+      ..month = "11月 2020"
+      ..day = "15"
       ..images = ["https://i2.hdslb.com/bfs/archive/de2b17a1e96a26c3b8222b316f8417fba45c7737.jpg"]);
-    _TrainingGalleryMonthModel monthModel3 = _TrainingGalleryMonthModel()
+    _dataList.add(_TrainingGalleryDayModel()
       ..month = "10月 2020"
-      ..days = [];
-    monthModel3.days.add(_TrainingGalleryDayModel()
       ..day = "20"
       ..images = [
         "https://i2.hdslb.com/bfs/archive/6dad8b9612336e1c9fd88dd54a7eac08909e410e.jpg",
@@ -72,22 +69,8 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
         "https://i2.hdslb.com/bfs/archive/53b58742ebb860bd0ada1e9fd048c48bb8383c51.jpg",
         "https://i2.hdslb.com/bfs/archive/76f307eab11e961ad92ced6de85f85d8d600c9f3.jpg"
       ]);
-    _rawData.add(monthModel1);
-    _rawData.add(monthModel2);
-    _rawData.add(monthModel3);
 
-    _rawData.forEach((monthModel) {
-      _galleryData.add(_TrainingGalleryItemModel()
-        ..type = 0
-        ..month = monthModel.month);
-
-      monthModel.days.forEach((dayModel) {
-        _galleryData.add(_TrainingGalleryItemModel()
-          ..type = 1
-          ..day = dayModel.day
-          ..images = dayModel.images);
-      });
-    });
+    SuspensionUtil.setShowSuspensionStatus(_dataList);
 
     if (mounted) {
       setState(() {});
@@ -141,7 +124,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   }
 
   Widget _buildBody() {
-    if (_galleryData.isEmpty) {
+    if (_dataList.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -164,7 +147,15 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
     } else {
       return Column(
         children: [
-          Expanded(child: ListView.builder(itemCount: _galleryData.length, itemBuilder: _buildItem)),
+          Expanded(
+              child: AzListView(
+            padding: EdgeInsets.zero,
+            itemBuilder: _buildItem,
+            susItemBuilder: _buildHeader,
+            itemCount: _dataList.length,
+            data: _dataList,
+            indexBarData: [],
+          )),
           GestureDetector(
             onTap: () {
               print("制作对比图");
@@ -185,53 +176,58 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
     }
   }
 
+  Widget _buildHeader(BuildContext context, int index) {
+    _TrainingGalleryDayModel model = _dataList[index];
+    return Container(
+      height: 48,
+      width: ScreenUtil.instance.screenWidthDp,
+      color: AppColor.white,
+      alignment: Alignment.centerLeft,
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+      child: Text(
+        model.month,
+        style: AppStyle.textMedium18,
+      ),
+    );
+  }
+
   Widget _buildItem(BuildContext context, int index) {
-    _TrainingGalleryItemModel model = _galleryData[index];
-    if (model.type == 1) {
-      bool isLastDayInMonth = false;
-      if (index < _galleryData.length - 1 && _galleryData[index + 1].type != 1) {
-        isLastDayInMonth = true;
-      }
-      return Container(
-        padding: const EdgeInsets.fromLTRB(16, 0, 30, 0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 44,
-              child: Text(
-                model.day,
-              ),
-            ),
-            Expanded(
-              child: Container(
-                padding:
-                    isLastDayInMonth ? const EdgeInsets.fromLTRB(0, 5, 0, 12) : const EdgeInsets.fromLTRB(0, 5, 0, 23),
-                child: GridView.builder(
-                    itemCount: model.images.length,
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        childAspectRatio: 1, crossAxisCount: 3, crossAxisSpacing: 3, mainAxisSpacing: 3),
-                    itemBuilder: (context, index) {
-                      return _buildImage(context, index, model.images[index]);
-                    }),
-              ),
-            ),
-          ],
-        ),
-      );
-    } else {
-      return Container(
-        height: 48,
-        alignment: Alignment.centerLeft,
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-        child: Text(
-          model.month,
-          style: AppStyle.textMedium18,
-        ),
-      );
+    _TrainingGalleryDayModel model = _dataList[index];
+    bool isLastDayInMonth = false;
+    if (index < _dataList.length - 1 && _dataList[index + 1].month != model.month) {
+      isLastDayInMonth = true;
     }
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 0, 30, 0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 44,
+            child: Text(
+              model.day,
+            ),
+          ),
+          Expanded(
+            child: Container(
+              padding:
+                  isLastDayInMonth ? const EdgeInsets.fromLTRB(0, 5, 0, 12) : const EdgeInsets.fromLTRB(0, 5, 0, 23),
+              child: GridView.builder(
+                  itemCount: model.images.length,
+                  shrinkWrap: true,
+                  //padding要设置为0，不然默认下方会有一定距离
+                  padding: EdgeInsets.zero,
+                  physics: NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      childAspectRatio: 1, crossAxisCount: 3, crossAxisSpacing: 3, mainAxisSpacing: 3),
+                  itemBuilder: (context, index) {
+                    return _buildImage(context, index, model.images[index]);
+                  }),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildImage(BuildContext context, int index, String url) {
@@ -242,20 +238,12 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   }
 }
 
-class _TrainingGalleryItemModel {
-  //0-month, 1-day
-  int type;
+// 要继承这个ISuspensionBean
+class _TrainingGalleryDayModel with ISuspensionBean {
   String month;
   String day;
   List<String> images;
-}
 
-class _TrainingGalleryMonthModel {
-  String month;
-  List<_TrainingGalleryDayModel> days;
-}
-
-class _TrainingGalleryDayModel {
-  String day;
-  List<String> images;
+  @override
+  String getSuspensionTag() => month;
 }

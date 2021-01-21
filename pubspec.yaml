@@ -112,6 +112,12 @@ dependencies:
   video_thumbnail: ^0.2.5+1
   # 阻止熄屏
   wakelock: ^0.2.1+1
+  # 联系人样式列表
+  azlistview: ^1.1.0
+  # 软件包信息
+  package_info: ^0.4.3+2
+
+
 
   #高德三方库
   amap_map_fluttify: ^0.30.1
@@ -131,7 +137,6 @@ dependencies:
     git: https://github.com/LiuC520/flutter_drag_scale.git
   #  粘性header
   #  sticky_headers: ^0.1.8+1
-  package_info: ^0.4.3+2
 dev_dependencies:
   flutter_test:
     sdk: flutter
