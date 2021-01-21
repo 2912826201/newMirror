@@ -88,6 +88,12 @@ class DateUtil {
     return formatted;
   }
 
+  //获取提供日期的日期
+  //列如：12月10日
+  static String formatDateNoYearString1(DateTime dateTime) {
+    return "${dateTime.month}月${dateTime.day}日";
+  }
+
   //比较两个日期谁大
   //第一个大返回 true
   //第二个大返回 false

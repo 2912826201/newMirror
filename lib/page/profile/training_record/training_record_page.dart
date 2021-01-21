@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,7 +20,6 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
   TabController tabController;
   LoadingStatus loadingStatus = LoadingStatus.STATUS_IDEL;
   RefreshController _refreshController = RefreshController(initialRefresh: false);
-  int itemCountListView = 10;
 
   List<TrainingRecordModel> dayModelList = <TrainingRecordModel>[];
   List<TrainingRecordWeekModel> weekModelList = <TrainingRecordWeekModel>[];
@@ -35,6 +32,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
   int weekMaxValue = 0;
   Map<String, int> weekModelMap = Map();
   Map<String, int> monthModelMap = Map();
+  Map<String, dynamic> allDataMap = Map();
 
   int pageIndex = 0;
   int startTime = 0;
@@ -43,12 +41,11 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
   //每次获取三个月的数据
   int pageSize = 3;
 
-
   @override
   void initState() {
     super.initState();
     tabController = new TabController(length: 4, vsync: this);
-    loadingStatus = LoadingStatus.STATUS_IDEL;
+    loadingStatus = LoadingStatus.STATUS_LOADING;
     onLoadData();
   }
 
@@ -87,8 +84,6 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
   }
 
   TabBarView buildTabBarView() {
-    loadingStatus = LoadingStatus.STATUS_COMPLETED;
-
     return TabBarView(
       controller: tabController,
       children: <Widget>[
@@ -264,13 +259,20 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
 
 
   Widget getAllTrainingUi() {
+    String countString;
+    if (allDataMap == null || allDataMap["clockCount"] == null) {
+      countString = "0";
+    } else {
+      countString = (allDataMap["clockCount"]).toString();
+    }
+
     return SliverToBoxAdapter(
       child: Container(
         margin: const EdgeInsets.only(top: 32, left: 16, right: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("训练共 5 次", style: TextStyle(color: AppColor.textPrimary3, fontSize: 16)),
+            Text("训练共 $countString 次", style: TextStyle(color: AppColor.textPrimary3, fontSize: 16)),
             SizedBox(height: 21),
             GestureDetector(
               child: Container(
@@ -295,25 +297,101 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
 
 //获取竖向的listView
   Widget getVerticalListView(String typeString) {
+    int childCount = 0;
+    if (typeString == "日") {
+      childCount = dayModelList[daySelectPosition].courseModelList.length;
+    } else if (typeString == "周") {
+      childCount = weekModelList[weekSelectPosition].dayListIndex.length;
+    } else {
+      childCount = monthModelList[monthSelectPosition].dayListIndex.length;
+    }
+
     return SliverList(
       delegate: SliverChildBuilderDelegate((content, index) {
-        return getVerticalListViewItem(index);
-      }, childCount: 10),
+        return getVerticalListViewItem(index, typeString);
+      }, childCount: childCount),
     );
   }
 
 //获取竖向的listViewItem
-  Widget getVerticalListViewItem(int index) {
+  Widget getVerticalListViewItem(int index, String typeString) {
+    var widgetArray = <Widget>[];
+    if (typeString == "日") {
+      return getItem(dayModelList[daySelectPosition].courseModelList[index]);
+    } else if (typeString == "周") {
+      for (int i = 0;
+          i < dayModelList[weekModelList[weekSelectPosition].dayListIndex[index]].courseModelList.length;
+          i++) {
+        CourseModelList courseModel =
+            dayModelList[weekModelList[weekSelectPosition].dayListIndex[index]].courseModelList[i];
+        DateTime dateTime = DateUtil.getDateTimeByMs(courseModel.createTime);
+        String date = "${dateTime.month}月${dateTime.day}日";
+        int time = dayModelList[weekModelList[weekSelectPosition].dayListIndex[index]].dmsecondsCount;
+        int calorie = dayModelList[weekModelList[weekSelectPosition].dayListIndex[index]].dcalorieCount;
+        widgetArray.add(getItem(courseModel, date: date, time: time, calorie: calorie, isShowDate: i == 0));
+      }
+    } else {
+      for (int i = 0;
+          i < dayModelList[monthModelList[monthSelectPosition].dayListIndex[index]].courseModelList.length;
+          i++) {
+        CourseModelList courseModel =
+            dayModelList[monthModelList[monthSelectPosition].dayListIndex[index]].courseModelList[i];
+        DateTime dateTime = DateUtil.getDateTimeByMs(courseModel.createTime);
+        String date = "${dateTime.month}月${dateTime.day}日";
+        int time = dayModelList[monthModelList[monthSelectPosition].dayListIndex[index]].dmsecondsCount;
+        int calorie = dayModelList[monthModelList[monthSelectPosition].dayListIndex[index]].dcalorieCount;
+        widgetArray.add(getItem(courseModel, date: date, time: time, calorie: calorie, isShowDate: i == 0));
+      }
+    }
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Column(
+        children: widgetArray,
+      ),
+    );
+  }
+
+  //每一个列表的item
+  Widget getItem(CourseModelList courseModel,
+      {bool isShowDate = false, String date = "", int time = 0, int calorie = 0}) {
+    String showTime =
+        DateUtil.formatDateV(DateUtil.getDateTimeByMs(courseModel.createTime), format: "yyyy-MM-dd HH:mm");
+
+    return Container(
+      margin: const EdgeInsets.only(left: 16, right: 16, top: 6, bottom: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("2021/01/06 16:48", style: TextStyle(fontSize: 12, color: AppColor.textPrimary3)),
+          Visibility(
+            visible: isShowDate,
+            child: Container(
+              child: Row(
+                children: [
+                  Icon(Icons.access_time_sharp, size: 12, color: AppColor.textPrimary2),
+                  SizedBox(width: 8),
+                  Text(date, style: TextStyle(fontSize: 14, color: AppColor.textPrimary2)),
+                  Expanded(child: SizedBox()),
+                  Icon(Icons.access_time_sharp, size: 12, color: AppColor.textPrimary2),
+                  SizedBox(width: 4),
+                  Text("${time ~/ 1000 ~/ 60}分钟", style: TextStyle(fontSize: 12, color: AppColor.textPrimary2)),
+                  SizedBox(width: 12),
+                  Icon(Icons.local_fire_department, size: 12, color: AppColor.textHint),
+                  SizedBox(width: 4),
+                  Text("$calorie千卡", style: TextStyle(fontSize: 12, color: AppColor.textPrimary2)),
+                ],
+              ),
+            ),
+          ),
+          Visibility(
+            visible: isShowDate,
+            child: SizedBox(height: 18),
+          ),
+          Text(showTime, style: TextStyle(fontSize: 12, color: AppColor.textPrimary3)),
           SizedBox(height: 11),
-          Text("蜜桃臀打造训练"),
+          Text(courseModel.title, style: TextStyle(fontSize: 16, color: AppColor.textPrimary1)),
           SizedBox(height: 6),
-          Text("第33次  13分钟  18千卡", style: TextStyle(fontSize: 12, color: AppColor.textSecondary)),
+          Text("第${courseModel.no}次  ${courseModel.mseconds ~/ 1000 ~/ 60}分钟  ${courseModel.calorie}千卡",
+              style: TextStyle(fontSize: 12, color: AppColor.textSecondary)),
+          SizedBox(height: 12),
           Container(
             height: 1,
             color: AppColor.bgWhite,
@@ -323,6 +401,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
     );
   }
 
+
 //获取训练次数的ui
   Widget getTrainAllCountUi(String typeString) {
     String title = "训练次数";
@@ -331,20 +410,21 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
     String calorie = "千卡";
 
     if (typeString == "日") {
-      title = "训练共" + dayModelList[daySelectPosition].courseModelList.length.toString() + "次";
-      subTitle = dayModelList[daySelectPosition].finishTime;
-      time = dayModelList[daySelectPosition].dmsecondsCount.toString() + "分钟";
+      title = "训练共${dayModelList[daySelectPosition].courseModelList.length}次";
+      DateTime dateTime = DateUtil.stringToDateTime(dayModelList[daySelectPosition].finishTime);
+      subTitle = "${dateTime.month}月${dateTime.day}日";
+      time = (dayModelList[daySelectPosition].dmsecondsCount ~/ 1000 ~/ 60).toString() + "分钟";
       calorie = dayModelList[daySelectPosition].dcalorieCount.toString() + "千卡";
     } else if (typeString == "周") {
-      title = "训练共" + weekModelList[daySelectPosition].allCount.toString() + "次";
-      subTitle = weekModelList[daySelectPosition].dateString;
-      time = weekModelList[daySelectPosition].dmsecondsCount.toString() + "分钟";
-      calorie = weekModelList[daySelectPosition].dcalorieCount.toString() + "千卡";
+      title = "训练共${weekModelList[weekSelectPosition].allCount}次";
+      subTitle = weekModelList[weekSelectPosition].dateCompleteString;
+      time = (weekModelList[weekSelectPosition].dmsecondsCount ~/ 1000 ~/ 60).toString() + "分钟";
+      calorie = weekModelList[weekSelectPosition].dcalorieCount.toString() + "千卡";
     } else {
-      title = "训练共" + monthModelList[daySelectPosition].allCount.toString() + "次";
-      subTitle = monthModelList[daySelectPosition].dateString;
-      time = monthModelList[daySelectPosition].dmsecondsCount.toString() + "分钟";
-      calorie = monthModelList[daySelectPosition].dcalorieCount.toString() + "千卡";
+      title = "训练共${monthModelList[monthSelectPosition].allCount}次";
+      subTitle = monthModelList[monthSelectPosition].dateCompleteString1;
+      time = (monthModelList[monthSelectPosition].dmsecondsCount ~/ 1000 ~/ 60).toString() + "分钟";
+      calorie = monthModelList[monthSelectPosition].dcalorieCount.toString() + "千卡";
     }
 
 
@@ -371,11 +451,17 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
                         children: [
                           Text(subTitle, style: TextStyle(fontSize: 14, color: AppColor.textPrimary3)),
                           Expanded(child: SizedBox()),
-                          Icon(Icons.access_time_sharp, size: 16, color: AppColor.textHint),
+                          Container(
+                            margin: const EdgeInsets.only(top: 3),
+                            child: Icon(Icons.access_time_sharp, size: 16, color: AppColor.textHint),
+                          ),
                           SizedBox(width: 2),
                           Text(time, style: TextStyle(fontSize: 12, color: AppColor.textPrimary3)),
                           SizedBox(width: 15),
-                          Icon(Icons.local_fire_department, size: 16, color: AppColor.textHint),
+                          Container(
+                            margin: const EdgeInsets.only(top: 3),
+                            child: Icon(Icons.local_fire_department, size: 16, color: AppColor.textHint),
+                          ),
                           SizedBox(width: 2),
                           Text(calorie, style: TextStyle(fontSize: 12, color: AppColor.textPrimary3)),
                         ],
@@ -413,16 +499,24 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
     int itemCount;
     if (typeString == "月") {
       itemCount = monthModelList.length + 2;
+      if (itemCount < 5) {
+        itemCount = 5;
+      }
     } else if (typeString == "周") {
       itemCount = weekModelList.length + 2;
+      if (itemCount < 5) {
+        itemCount = 5;
+      }
     } else {
       itemCount = dayModelList.length + 3;
+      if (itemCount < 7) {
+        itemCount = 7;
+      }
     }
-
 
     return SliverToBoxAdapter(
       child: Container(
-        height: 175.0,
+        height: 180.0,
         child: SmartRefresher(
           enablePullDown: false,
           enablePullUp: true,
@@ -453,65 +547,134 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
     int newValue = 0;
     String title = " ";
     int count = 5;
+    bool isNowTime = false;
 
     if (typeString == "日") {
       maxValue = dayMaxValue;
-      newValue = dayModelList[index].dmsecondsCount;
-      title = dayModelList[index].finishTime;
+      if (index > 2 && index < dayModelList.length + 3) {
+        newValue = dayModelList[index - 3].dmsecondsCount;
+        DateTime dateTime = DateUtil.stringToDateTime(dayModelList[index - 3].finishTime);
+        isNowTime = (index - 3) == daySelectPosition;
+        if (DateUtil.isToday(dateTime)) {
+          title = "今日";
+        } else {
+          title = "${dateTime.month}.${dateTime.day}";
+        }
+      } else {
+        newValue = 0;
+        title = "";
+        isNowTime = false;
+      }
       count = 7;
     } else if (typeString == "周") {
       maxValue = weekMaxValue;
-      newValue = weekModelList[index].dmsecondsCount;
-      title = weekModelList[index].dateString;
       count = 5;
+      if (index > 1 && index < weekModelList.length + 2) {
+        newValue = weekModelList[index - 2].dmsecondsCount;
+        isNowTime = weekModelList[index - 2].dateString == getWeekString(DateUtil.formatDateString(new DateTime.now()));
+        if (isNowTime) {
+          title = "本周";
+        } else {
+          title = weekModelList[index - 2].dateString;
+        }
+        isNowTime = (index - 2) == weekSelectPosition;
+      } else {
+        newValue = 0;
+        title = "";
+        isNowTime = false;
+      }
     } else {
       maxValue = monthMaxValue;
-      newValue = monthModelList[index].dmsecondsCount;
-      title = monthModelList[index].dateString;
       count = 5;
+      if (index > 1 && index < monthModelList.length + 2) {
+        newValue = monthModelList[index - 2].dmsecondsCount;
+        isNowTime =
+            monthModelList[index - 2].dateString == getMonthString(DateUtil.formatDateString(new DateTime.now()));
+        if (isNowTime) {
+          title = "本月";
+        } else {
+          title = monthModelList[index - 2].dateCompleteString;
+        }
+        isNowTime = (index - 2) == monthSelectPosition;
+      } else {
+        newValue = 0;
+        title = "";
+        isNowTime = false;
+      }
     }
-    return Container(
-      width: MediaQuery
-          .of(context)
-          .size
-          .width / count,
-      child: Column(
-        children: [
-          Expanded(
-              child: SizedBox(
-                child: Stack(
-                  alignment: AlignmentDirectional.bottomCenter,
-                  children: [
-                    Container(
-                      width: 16,
-                      height: double.infinity,
-                    ),
-                    Container(
-                      width: 1,
-                      height: double.infinity,
-                      color: AppColor.textHint,
-                    ),
-                    Positioned(
-                      child: Container(
+
+    return GestureDetector(
+      child: Container(
+        width: MediaQuery
+            .of(context)
+            .size
+            .width / count,
+        color: Colors.transparent,
+        child: Column(
+          children: [
+            Expanded(
+                child: SizedBox(
+                  child: Stack(
+                    alignment: AlignmentDirectional.bottomCenter,
+                    children: [
+                      Container(
                         width: 16,
-                        height: newValue / maxValue * (175 - 20),
-                        decoration: BoxDecoration(
-                          color: index == 3 ? AppColor.textPrimary2 : AppColor.bgWhite,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+                        height: double.infinity,
                       ),
-                      bottom: 0,
-                    ),
-                  ],
-                ),
-              )),
-          SizedBox(height: 8),
-          Text(
-            title,
-            style: TextStyle(color: index == 3 ? AppColor.textPrimary1 : AppColor.textSecondary, fontSize: 12),
-          ),
-        ],
+                      Container(
+                        width: 1,
+                        height: double.infinity,
+                        color: AppColor.textHint,
+                      ),
+                      Positioned(
+                        child: Container(
+                          width: 16,
+                          height: newValue / maxValue * (175 - 20),
+                          decoration: BoxDecoration(
+                            color: isNowTime ? AppColor.textPrimary2 : AppColor.bgWhite,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        bottom: 0,
+                      ),
+                    ],
+                  ),
+                )),
+            SizedBox(height: 8),
+            Text(
+              title,
+              style: TextStyle(color: isNowTime ? AppColor.textPrimary1 : AppColor.textSecondary, fontSize: 12),
+            ),
+          ],
+        ),
       ),
+      onTap: () {
+        if (typeString == "日") {
+          if (index < 3 || index >= dayModelList.length + 3) {
+            return;
+          }
+          daySelectPosition = index - 3;
+          setState(() {
+
+          });
+        } else if (typeString == "周") {
+          if (index < 2 || index >= weekModelList.length + 2) {
+            return;
+          }
+          weekSelectPosition = index - 2;
+          setState(() {
+
+          });
+        } else {
+          if (index < 2 || index >= monthModelList.length + 2) {
+            return;
+          }
+          monthSelectPosition = index - 2;
+          setState(() {
+
+          });
+        }
+      },
     );
   }
 
@@ -543,7 +706,8 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
                       child: SizedBox(
                         child: Column(
                           children: [
-                            Text("2", style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: AppColor
+                            Text(getTopCheckInCount(typeString), style: TextStyle(fontSize: 23, fontWeight: FontWeight
+                                .bold, color: AppColor
                                 .textPrimary2)),
                             SizedBox(height: 6),
                             Text("打卡次数", style: alertTextStyle),
@@ -594,31 +758,58 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
     if (typeString == "总") {
       return "累计训练时长";
     } else if (typeString == "月") {
-      return monthModelList[monthSelectPosition].dateString + " 训练时长";
+      return monthModelList[monthSelectPosition].dateCompleteString + " 训练时长";
     } else if (typeString == "周") {
-      return weekModelList[weekSelectPosition].dateString + " 训练时长";
+      return weekModelList[weekSelectPosition].dateCompleteString + " 训练时长";
     } else {
-      return dayModelList[daySelectPosition].finishTime + " 训练时长";
+      return DateUtil.formatDateNoYearString1(DateUtil.stringToDateTime(dayModelList[daySelectPosition].finishTime)) +
+          " 训练时长";
     }
   }
 
   //获取头部--总共学了多少分钟
   String getTopLearnTime(String typeString) {
     if (typeString == "总") {
-      return "未知";
+      if (allDataMap == null || allDataMap["msecondsCount"] == null) {
+        return "0";
+      } else {
+        print("allDataMap[msecondsCount]：${allDataMap["msecondsCount"]}");
+        return (allDataMap["msecondsCount"] ~/ 1000 ~/ 60).toString();
+      }
     } else if (typeString == "月") {
-      return monthModelList[monthSelectPosition].dmsecondsCount.toString();
+      return (monthModelList[monthSelectPosition].dmsecondsCount ~/ 1000 ~/ 60).toString();
     } else if (typeString == "周") {
-      return weekModelList[weekSelectPosition].dmsecondsCount.toString();
+      return (weekModelList[weekSelectPosition].dmsecondsCount ~/ 1000 ~/ 60).toString();
     } else {
-      return dayModelList[daySelectPosition].dmsecondsCount.toString();
+      return (dayModelList[daySelectPosition].dmsecondsCount ~/ 1000 ~/ 60).toString();
+    }
+  }
+
+  //获取头部--共打卡次数
+  String getTopCheckInCount(String typeString) {
+    if (typeString == "总") {
+      if (allDataMap == null || allDataMap["clockCount"] == null) {
+        return "0";
+      } else {
+        return (allDataMap["clockCount"]).toString();
+      }
+    } else if (typeString == "月") {
+      return monthModelList[monthSelectPosition].clockCount.toString();
+    } else if (typeString == "周") {
+      return weekModelList[weekSelectPosition].clockCount.toString();
+    } else {
+      return dayModelList[daySelectPosition].clockCount.toString();
     }
   }
 
   //获取头部--训练天数
   String getTopTrainingDay(String typeString) {
     if (typeString == "总") {
-      return "未知";
+      if (allDataMap == null || allDataMap["dayCount"] == null) {
+        return "0";
+      } else {
+        return (allDataMap["dayCount"]).toString();
+      }
     } else if (typeString == "月") {
       return monthModelList[monthSelectPosition].dayListIndex.length.toString();
     } else if (typeString == "周") {
@@ -631,7 +822,11 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
   //获取头部--消耗千卡
   String getTopCalorie(String typeString) {
     if (typeString == "总") {
-      return "未知";
+      if (allDataMap == null || allDataMap["calorieCount"] == null) {
+        return "0";
+      } else {
+        return (allDataMap["calorieCount"]).toString();
+      }
     } else if (typeString == "月") {
       return monthModelList[monthSelectPosition].dcalorieCount.toString();
     } else if (typeString == "周") {
@@ -702,7 +897,6 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
 
 //加载数据
   void onLoadData() async {
-    itemCountListView += 10;
     if (pageIndex != 0 && endTime < Application.profile.createTime) {
       _refreshController.loadComplete();
       return;
@@ -719,9 +913,14 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
     }
     _refreshController.loadComplete();
 
+    allDataMap = await getTrainingRecords();
 
     setState(() {
-      loadingStatus = LoadingStatus.STATUS_COMPLETED;
+      if (dayModelList.length > 0) {
+        loadingStatus = LoadingStatus.STATUS_COMPLETED;
+      } else {
+        loadingStatus = LoadingStatus.STATUS_IDEL;
+      }
     });
   }
 
@@ -730,6 +929,8 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
     for (int i = 0; i < dayModelList.length; i++) {
       TrainingRecordModel recordModel = dayModelList[i];
 
+      int clockCount = getClockCount(recordModel);
+      recordModel.clockCount = clockCount;
 
       int position = judgeAddDayModelList(recordModel);
 
@@ -741,11 +942,13 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
       if (weekModelMap[getWeekString(recordModel.finishTime)] == null) {
         TrainingRecordWeekModel weekModel = new TrainingRecordWeekModel();
         weekModel.dateString = getWeekString(recordModel.finishTime);
+        weekModel.dateCompleteString = getWeekStringComplete(recordModel.finishTime);
         weekModel.dataStringList.add(recordModel.finishTime);
         weekModel.dayListIndex.add(position);
         weekModel.dcalorieCount = recordModel.dcalorieCount;
         weekModel.dmsecondsCount = recordModel.dmsecondsCount;
         weekModel.allCount = recordModel.courseModelList.length;
+        weekModel.clockCount = clockCount;
         if (weekMaxValue < weekModel.dmsecondsCount) {
           weekMaxValue = weekModel.dmsecondsCount;
         }
@@ -758,6 +961,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
         weekModel.dcalorieCount += recordModel.dcalorieCount;
         weekModel.dmsecondsCount += recordModel.dmsecondsCount;
         weekModel.allCount += recordModel.courseModelList.length;
+        weekModel.clockCount += clockCount;
         if (weekMaxValue < weekModel.dmsecondsCount) {
           weekMaxValue = weekModel.dmsecondsCount;
         }
@@ -767,11 +971,14 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
       if (monthModelMap[getMonthString(recordModel.finishTime)] == null) {
         TrainingRecordMonthModel monthModel = new TrainingRecordMonthModel();
         monthModel.dateString = getMonthString(recordModel.finishTime);
+        monthModel.dateCompleteString = getMonthStringComplete(recordModel.finishTime);
+        monthModel.dateCompleteString1 = getMonthStringComplete1(recordModel.finishTime);
         monthModel.dataStringList.add(recordModel.finishTime);
         monthModel.dayListIndex.add(position);
         monthModel.dcalorieCount = recordModel.dcalorieCount;
         monthModel.dmsecondsCount = recordModel.dmsecondsCount;
         monthModel.allCount = recordModel.courseModelList.length;
+        monthModel.clockCount = clockCount;
         if (monthMaxValue < monthModel.dmsecondsCount) {
           monthMaxValue = monthModel.dmsecondsCount;
         }
@@ -784,6 +991,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
         monthModel.dcalorieCount += recordModel.dcalorieCount;
         monthModel.dmsecondsCount += recordModel.dmsecondsCount;
         monthModel.allCount += recordModel.courseModelList.length;
+        monthModel.clockCount += clockCount;
         if (monthMaxValue < monthModel.dmsecondsCount) {
           monthMaxValue = monthModel.dmsecondsCount;
         }
@@ -799,11 +1007,9 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
       dayModelList.add(recordModel);
       position = dayModelList.length - 1;
 
-      print("第一个值--recordModel:${recordModel.finishTime}");
       return position;
     }
 
-    print("第其余值--recordModel:${recordModel.finishTime}");
     DateTime now = DateUtil.stringToDateTime(recordModel.finishTime).add(new Duration(days: 1));
     DateTime old = DateUtil.stringToDateTime(dayModelList[dayModelList.length - 1].finishTime);
     if (old.year == now.year && old.month == now.month && old.day == now.day) {
@@ -821,19 +1027,35 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
         } else {
           TrainingRecordModel model = new TrainingRecordModel();
           model.finishTime = DateUtil.formatDateString(dateTime);
+          List<CourseModelList> courseModelList = <CourseModelList>[];
+          model.courseModelList = courseModelList;
           model.dmsecondsCount = 0;
           model.dcalorieCount = 0;
           dayModelList.add(model);
           i++;
         }
         if (i > 100) {
-          print("判断错误--recordModel:${recordModel.finishTime}, dayModelList:${dayModelList[dayModelList.length - 1]
-              .finishTime}");
           break;
         }
       }
     }
     return position;
+  }
+
+  int getClockCount(TrainingRecordModel recordModel) {
+    if (recordModel == null || recordModel.courseModelList == null ||
+        recordModel.courseModelList.length < 1) {
+      return 0;
+    } else {
+      int count = 0;
+      for (int i = 0; i < recordModel.courseModelList.length; i++) {
+        if (!(recordModel.courseModelList[i].isClock == null ||
+            recordModel.courseModelList[i].isClock == 0)) {
+          count++;
+        }
+      }
+      return count;
+    }
   }
 
 
@@ -844,6 +1066,18 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
 String getMonthString(String finishTime) {
   DateTime dateTime = DateUtil.stringToDateTime(finishTime);
   return "${dateTime.year}/${dateTime.month}";
+}
+
+
+//获取月的string 1月
+String getMonthStringComplete(String finishTime) {
+  DateTime dateTime = DateUtil.stringToDateTime(finishTime);
+  return "${dateTime.month}月";
+}
+//获取月的string 2021年1月
+String getMonthStringComplete1(String finishTime) {
+  DateTime dateTime = DateUtil.stringToDateTime(finishTime);
+  return "${dateTime.year}年${dateTime.month}月";
 }
 
 
@@ -866,6 +1100,26 @@ String getWeekString(String finishTime) {
   }
 
   return "${startDateTime.month}/${startDateTime.day}-${endDateTime.month}/${endDateTime.day}";
+}
+//获取周的string 1月4日-1月10日
+String getWeekStringComplete(String finishTime) {
+  DateTime dateTime = DateUtil.stringToDateTime(finishTime);
+  int weekDay = dateTime.weekday;
+  DateTime startDateTime;
+  DateTime endDateTime;
+  if (weekDay == 1) {
+    startDateTime = dateTime;
+  } else {
+    startDateTime = dateTime.add(new Duration(days: -(weekDay - 1)));
+  }
+
+  if (weekDay == 7) {
+    endDateTime = dateTime;
+  } else {
+    endDateTime = dateTime.add(new Duration(days: (7 - weekDay)));
+  }
+
+  return "${startDateTime.month}月${startDateTime.day}日-${endDateTime.month}月${endDateTime.day}日";
 }
 
 
