@@ -67,7 +67,7 @@ class _FitnessPartState extends State<FitnesspartPage> {
                   alignment: Alignment.bottomLeft,
                   child: Text(
                     "有重要想要训练的部位吗？",
-                    style: AppStyle.textBlackMedium23,
+                    style: AppStyle.textMedium23,
                   ),
                 ),
               ),

@@ -73,7 +73,7 @@ Dio _getDioInstance() {
 //FIXME 如果token已过期或即将过期则需要做刷新token或重新获取token的操作
 void _setHeaders(int authType) {
   //TODO 操作系统和版本号渠道号暂时写死
-  _getDioInstance().options.headers["aimy-drivers"] = "{\"os\":0,\"clientVersion\":\"1.0.0\",\"channel\":0}";
+  _getDioInstance().options.headers["aimy-drivers"] = "{\"os\":${Application.platform},\"clientVersion\":\"${AppConfig.version}\",\"channel\":0}";
   //授权认证信息根据个别请求不同取不同的token
   String auth;
   switch (authType) {

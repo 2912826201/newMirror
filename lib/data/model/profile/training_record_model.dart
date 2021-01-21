@@ -8,32 +8,31 @@
 
 class TrainingRecordModel {
   String finishTime;
-  List<CourseModelList> courseModelList=<CourseModelList>[];
+  List<CourseModelList> courseModelList = <CourseModelList>[];
   int dmsecondsCount;
   int dcalorieCount;
+  int clockCount = 0;
 
-
-  TrainingRecordModel({
-      String finishTime, 
-      List<CourseModelList> courseModelList, 
-      int dmsecondsCount, 
-      int dcalorieCount}){
+  TrainingRecordModel(
+      {String finishTime, List<CourseModelList> courseModelList, int dmsecondsCount, int dcalorieCount}) {
     this.finishTime = finishTime;
     this.courseModelList = courseModelList;
     this.dmsecondsCount = dmsecondsCount;
     this.dcalorieCount = dcalorieCount;
-}
+  }
 
   TrainingRecordModel.fromJson(dynamic json) {
     this.finishTime = json["finishTime"];
     if (json["courseModelList"] != null) {
-      this.courseModelList = [];
       json["courseModelList"].forEach((v) {
         this.courseModelList.add(CourseModelList.fromJson(v));
       });
     }
     this.dmsecondsCount = json["dmsecondsCount"];
     this.dcalorieCount = json["dcalorieCount"];
+    if (courseModelList == null) {
+      courseModelList = <CourseModelList>[];
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -52,26 +51,28 @@ class TrainingRecordModel {
 
 //周
 class TrainingRecordWeekModel {
-  String dateString="";
-  int dcalorieCount=0;
-  int dmsecondsCount=0;
-  int allCount=0;
-  List<String> dataStringList=<String>[];
-  List<int> dayListIndex=<int>[];
+  String dateString = "";
+  String dateCompleteString = "";
+  int dcalorieCount = 0;
+  int dmsecondsCount = 0;
+  int allCount = 0;
+  int clockCount = 0;
+  List<String> dataStringList = <String>[];
+  List<int> dayListIndex = <int>[];
 }
 
 //月
 class TrainingRecordMonthModel {
-  String dateString="";
-  int dcalorieCount=0;
-  int dmsecondsCount=0;
-  int allCount=0;
-  List<String> dataStringList=<String>[];
-  List<int> dayListIndex=<int>[];
+  String dateString = "";
+  String dateCompleteString = "";
+  String dateCompleteString1 = "";
+  int dcalorieCount = 0;
+  int dmsecondsCount = 0;
+  int clockCount = 0;
+  int allCount = 0;
+  List<String> dataStringList = <String>[];
+  List<int> dayListIndex = <int>[];
 }
-
-
-
 
 /// id : 63
 /// targetId : 1
@@ -90,30 +91,42 @@ class CourseModelList {
   int _type;
   int _createTime;
   int _calorie;
+  int _isClock;
   String _finishTime;
   int _mseconds;
   int _no;
 
   int get id => _id;
+
   int get targetId => _targetId;
+
   String get title => _title;
+
   int get type => _type;
+
+  int get isClock => _isClock;
+
   int get createTime => _createTime;
+
   int get calorie => _calorie;
+
   String get finishTime => _finishTime;
+
   int get mseconds => _mseconds;
+
   int get no => _no;
 
-  CourseModelList({
-      int id, 
-      int targetId, 
-      String title, 
-      int type, 
-      int createTime, 
-      int calorie, 
-      String finishTime, 
-      int mseconds, 
-      int no}){
+  CourseModelList(
+      {int id,
+      int targetId,
+      String title,
+      int type,
+      int createTime,
+      int calorie,
+      int isClock,
+      String finishTime,
+      int mseconds,
+      int no}) {
     _id = id;
     _targetId = targetId;
     _title = title;
@@ -122,8 +135,9 @@ class CourseModelList {
     _calorie = calorie;
     _finishTime = finishTime;
     _mseconds = mseconds;
+    _isClock = isClock;
     _no = no;
-}
+  }
 
   CourseModelList.fromJson(dynamic json) {
     _id = json["id"];
@@ -134,6 +148,7 @@ class CourseModelList {
     _calorie = json["calorie"];
     _finishTime = json["finishTime"];
     _mseconds = json["mseconds"];
+    _isClock = json["isClock"];
     _no = json["no"];
   }
 
@@ -147,6 +162,7 @@ class CourseModelList {
     map["calorie"] = _calorie;
     map["finishTime"] = _finishTime;
     map["mseconds"] = _mseconds;
+    map["isClock"] = _isClock;
     map["no"] = _no;
     return map;
   }

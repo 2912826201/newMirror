@@ -59,11 +59,11 @@ class _VipNamePlatePageState extends State<VipNamePlatePageView>{
           controller: widget.pageController,
           children: widgetList,
           onPageChanged: (index){
-                if(index<1){
+                if(index<2){
                   context.read<VipMoveNotifier>().changeListOldIndex(index);
                 }else{
                   context.read<VipMoveNotifier>().changeListOldIndex(index);
-                  double offset = (index-1.5)*93.5;
+                  double offset = (index-1.75)*93.5;
                   widget.scrollController.animateTo(offset, duration: Duration(milliseconds: 400), curve:Curves.ease);
                 }
           },
@@ -81,7 +81,7 @@ class _VipNamePlatePageState extends State<VipNamePlatePageView>{
         shrinkWrap: true,
       children: [
         SizedBox(height: 14,),
-        Text(widget.namePlateList[index],style: AppStyle.textRedMedium21,),
+        Text(widget.namePlateList[index],style: AppStyle.redMedium21,),
         SizedBox(height: 14,),
         Text(".${contentList[index]}",style: AppStyle.textPrimary3Regular14,),
         SizedBox(height: 32,),

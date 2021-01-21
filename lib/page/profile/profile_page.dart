@@ -1,10 +1,8 @@
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/profile/profile_model.dart';
@@ -43,7 +41,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   int followerCount;
   int feedCount;
   int trainingSeconds;
-  int weight;
+  double weight;
   int albumNum;
 
   @override
@@ -141,7 +139,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   children: [
                     _secondData(Icons.access_alarms_sharp, trainingSeconds, "训练记录", height, width),
                     Expanded(child: Container()),
-                    _secondData(Icons.access_alarms_sharp, weight, "体重记录", height, width),
+                    _secondData(Icons.access_alarms_sharp, weight ,"体重记录", height, width),
                     Expanded(child: Container()),
                     _secondData(Icons.access_alarms_sharp, albumNum, "健身相册", height, width),
                   ],
@@ -431,7 +429,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
   ///这里是训练计划，体重记录，健身相册的
   ///                这是中间的图标| 这是数值   |这是title
-  Widget _secondData(IconData icon, int number, String text, double height, double width) {
+  Widget _secondData(IconData icon, number, String text, double height, double width) {
     var _userPlate = Stack(
       children: [
         Container(
@@ -476,6 +474,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       AppRouter.navigateToTrainingRecordPage(context);
     } else if ("体重记录" == title) {
       AppRouter.navigateToWeightRecordPage(context);
+    } else if ("健身相册" == title) {
+      AppRouter.navigateToTrainingGalleryPage(context);
     }
   }
 }

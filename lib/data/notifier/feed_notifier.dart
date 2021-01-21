@@ -8,6 +8,7 @@ class FeedMapNotifier extends ChangeNotifier {
   // 动态的id加model组成的Map
   Map<int, HomeFeedModel> feedMap = {};
 
+  Map<int, HomeFeedModel> oldFeedMap = {};
   // 点击评论图标记录此动态的Id用于请求评论列表
   int feedId;
   // 发布动态需要的model
@@ -15,7 +16,22 @@ class FeedMapNotifier extends ChangeNotifier {
    // 发布动态进度
   double plannedSpeed = 0.0;
 
-  bool itemChose = false;
+
+  CommentDtoModel childModel;
+
+
+  void setOldFeedMap(){
+    oldFeedMap = feedMap;
+    notifyListeners();
+  }
+  void setFeedMap(){
+    feedMap = oldFeedMap;
+    notifyListeners();
+  }
+  void insertChildModel(CommentDtoModel model){
+    childModel = model;
+    notifyListeners();
+  }
 // 更新全局动态map
   void updateFeedMap(List<HomeFeedModel> _feedList) {
     _feedList.forEach((element) {
@@ -93,7 +109,10 @@ class FeedMapNotifier extends ChangeNotifier {
     this.feedId = id;
     notifyListeners();
   }
-
+  changeItemChose(int id,int index){
+    feedMap[id].comments[index].itemChose = false;
+    notifyListeners();
+  }
   // 动态评论详情页赋值
   void commensAssignment(int id, List<CommentDtoModel> commentList, int totalCount) {
     feedMap[id].comments = commentList;
@@ -101,6 +120,12 @@ class FeedMapNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  // 动态评论抽屉赋值
+  void bootomSheetCommensAssignment(int id, List<CommentDtoModel> commentList, int totalCount) {
+    feedMap[id].comments = commentList;
+    feedMap[id].totalCount = totalCount;
+    notifyListeners();
+  }
   // 评论动态的评论
   void commentFeedCom(int id, int index, CommentDtoModel model) {
     feedMap[id].comments[index].replys.insert(0, model);
@@ -126,6 +151,10 @@ class FeedMapNotifier extends ChangeNotifier {
 void PublishInsertData(int id,HomeFeedModel model) {
   feedMap[id] = model;
   notifyListeners();
+}
+void removeComment(int id,CommentDtoModel model){
+    feedMap[id].comments.remove(model);
+    notifyListeners();
 }
 // 发布数据需要的model
   void setPublishFeedModel(PostFeedModel model) {

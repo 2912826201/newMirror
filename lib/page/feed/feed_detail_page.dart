@@ -28,14 +28,15 @@ import 'package:mirror/widget/rich_text_widget.dart';
 import 'package:mirror/widget/slide_banner.dart';
 import 'package:provider/provider.dart';
 
+import 'comment_bottom_list.dart';
+
 // 动态详情页
 class FeedDetailPage extends StatefulWidget {
-  FeedDetailPage({Key key, this.model, this.index, this.commentId});
-
-  int commentId;
+  FeedDetailPage({Key key, this.model,this.type, this.index,this.comment});
+  CommentDtoModel comment;
   HomeFeedModel model;
   int index;
-
+  int type;
   @override
   FeedDetailPageState createState() => FeedDetailPageState();
 }
@@ -54,37 +55,86 @@ class FeedDetailPageState extends State<FeedDetailPage> {
 
 //  数据源
   List<CommentDtoModel> commentModel = [];
-
   // 请求下一页
   int hasNext = 0;
-  int choseItem;
-
   // 列表监听
   ScrollController _controller = new ScrollController();
-
+  int totalCount;
+  bool isCanLoading = false;
+  GlobalKey _key = GlobalKey();
+  WidgetsBinding widgetsBinding;
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
-
   @override
   void initState() {
     print("进入详情页");
+    if(widget.comment!=null){
+    WidgetsBinding.instance.addPostFrameCallback((callback){
+      print('===============################################====  =build结束');
+      RenderBox box = _key.currentContext.findRenderObject();
+      Offset offset = box.localToGlobal(Offset.zero);
+       print('offset=============%%%%%%%%%%%%%%%%%%%%%%%%%%%=======================${offset.dy}');
+      Future.delayed(Duration(milliseconds: 200), () {
+        try {
+          _controller.animateTo(offset.dy-box.size.height, duration: Duration(milliseconds: 1000), curve: Curves.ease);
+          isCanLoading = false;
+          setState(() {
+          });
+        } catch (e) {
+        }
+      });
+    });
+    }
     feedModel = context.read<FeedMapNotifier>().feedMap[widget.model.id];
-    getQueryListByHot();
+      getQueryListByHot();
+      if(widget.comment!=null){
+        _getChoseComment();
+      }
     _controller.addListener(() {
-      if (_controller.position.pixels == _controller.position.maxScrollExtent) {
-        dataPage += 1;
-        getQueryListByHot();
+      if(isCanLoading){
+        if (_controller.position.pixels == _controller.position.maxScrollExtent) {
+          dataPage += 1;
+          getQueryListByHot();
+        }
       }
     });
-  }
 
+  }
+  _getChoseComment()async{
+    print('================================筛选评论');
+    CommentDtoModel childmodel = await getComment(widget.comment.id);
+    if(childmodel!=null){
+    if(childmodel.type==0){
+      if (childmodel.replyCount > 0) {
+        childmodel.isShowInteractiveButton = true;
+      } else {
+        childmodel.isShowInteractiveButton = false;
+      }
+      childmodel.itemChose = true;
+      commentModel.insert(0, childmodel);
+      /*context.read<FeedMapNotifier>().feedPublishComment(childmodel,widget.model.id);*/
+    }else if(childmodel.type==2){
+      print('=========================评论类型为====2');
+      CommentDtoModel fsModel = await getComment(childmodel.targetId);
+      if(fsModel!=null){
+        print('=======================父评论不为空');
+       fsModel.isShowInteractiveButton = true;
+        commentModel.insert(0, fsModel);
+        childmodel.itemChose = true;
+        commentModel[0].replys.insert(0, childmodel);
+       /* context.read<FeedMapNotifier>().commentFeedCom(widget.model.id,0,childmodel);*/
+        context.read<FeedMapNotifier>().insertChildModel(childmodel);
+      }
+    }
+    context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
+    }
+  }
   // 获取热门评论
   getQueryListByHot() async {
     // 评论总数
-    int totalCount = -1;
     if (loadStatus == LoadingStatus.STATUS_IDEL) {
       // 先设置状态，防止下拉就直接加载
       setState(() {
@@ -107,15 +157,15 @@ class FeedDetailPageState extends State<FeedDetailPage> {
               model.isShowInteractiveButton = false;
             }
           }
-          for (int i = 0; i < modelList.length; i++) {
-            if (modelList[i].id == widget.commentId) {
-              modelList[i].itemChose = true;
-              commentModel.insert(0, modelList[i]);
-            } else {
-              commentModel.add(modelList[i]);
-            }
+          if(widget.comment!=null){
+            modelList.forEach((element) {
+              if(element.id!=widget.comment.id&&element.id!=widget.comment.targetId){
+                commentModel.add(element);
+              }
+            });
+          }else{
+           commentModel.addAll(modelList);
           }
-          ;
           print("数据长度${commentModel.length}");
         }
       } else if (this.dataPage > 1 && this.hasNext != 0) {
@@ -127,7 +177,15 @@ class FeedDetailPageState extends State<FeedDetailPage> {
             model.isShowInteractiveButton = false;
           }
         }
-        commentModel.addAll(modelList);
+        if(widget.comment!=null){
+          modelList.forEach((element) {
+            if(element.id!=widget.comment.id&&element.id!=widget.comment.targetId){
+              commentModel.add(element);
+            }
+          });
+        }else{
+          commentModel.addAll(modelList);
+        }
         print("数据长度${commentModel.length}");
         loadStatus = LoadingStatus.STATUS_IDEL;
         loadText = "加载中...";
@@ -137,8 +195,9 @@ class FeedDetailPageState extends State<FeedDetailPage> {
         loadStatus = LoadingStatus.STATUS_COMPLETED;
       }
       // commentModel.insert(commentModel.length, CommentDtoModel());
-      context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
+
     });
+    context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
   }
 
   // getFeedDetail() async {
@@ -172,7 +231,11 @@ class FeedDetailPageState extends State<FeedDetailPage> {
             elevation: 0.5),
         body: Stack(
           children: [
-            CustomScrollView(controller: _controller, slivers: <Widget>[
+            Container(
+              height: ScreenUtil.instance.height,
+              child:CustomScrollView(
+                controller: _controller,
+                slivers: <Widget>[
               SliverToBoxAdapter(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
                   // 顶部间距
@@ -201,10 +264,12 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                   feedModel.videos.isNotEmpty ? Container() : Container(),
                   // 点赞，转发，评论三连区域 getTripleArea
                   GetTripleArea(
+                    offsetKey: _key,
                     model: feedModel,
                   ),
                   // 课程信息和地址
                   Offstage(
+
                     offstage: (feedModel.address == null),
                     child: Container(
                       margin: EdgeInsets.only(left: 16, right: 16),
@@ -246,26 +311,26 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                       : Container(),
                 ]),
               ),
-              context.watch<FeedMapNotifier>().feedMap[feedModel.id].totalCount != -1
-                  ? SliverList(
-                      delegate: SliverChildBuilderDelegate((content, index) {
-                      // return Container(
-                      print(index);
-                      print(commentModel.length);
-                      if (index == commentModel.length) {
-                        print("进入了吗$index");
-                        return SizedBox(height: 48 + ScreenUtil.instance.bottomBarHeight + 40);
-                      } else {
-                        return CommentBottomListView(
-                          model: commentModel[index],
-                          index: index,
-                          feedId: feedModel.id,
-                          choseItem: choseItem,
-                        );
-                      }
-                    }, childCount: commentModel.length + 1))
-                  : SliverToBoxAdapter()
-            ]),
+              context.watch<FeedMapNotifier>().feedMap[feedModel.id].totalCount != -1 ?
+              SliverList(
+                delegate: SliverChildBuilderDelegate((content, index) {
+              // return Container(
+                print(index);
+                print(commentModel.length);
+                if (index == commentModel.length) {
+                  print("进入了吗$index");
+                  return SizedBox(height: 48 + ScreenUtil.instance.bottomBarHeight + 40) ;
+                } else {
+                  return CommentBottomListView(
+                    model: commentModel[index],
+                    index: index,
+                    type: 1,
+                    feedId: feedModel.id,
+                    comment: widget.comment,
+                  );
+                }
+              },childCount:commentModel.length + 1)) :  SliverToBoxAdapter()
+            ]) ,),
             Positioned(
               bottom: 0,
               child: CommentInputBox(

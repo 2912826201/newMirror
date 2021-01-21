@@ -4,7 +4,7 @@
 class UserExtraInfoModel{
   int uid;
   int trainingSeconds;
-  int weight;
+  double weight;
   int albumNum;
 
   UserExtraInfoModel(

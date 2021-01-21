@@ -8,8 +8,8 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/triangle_path.dart';
-import 'package:mirror/widget/vip_nameplate_horazontal_list.dart';
-import 'package:mirror/widget/vip_nameplate_pageview.dart';
+import 'package:mirror/widget/vip/vip_nameplate_horazontal_list.dart';
+import 'package:mirror/widget/vip/vip_nameplate_pageview.dart';
 import 'package:provider/provider.dart';
 
 //会员特权页
@@ -151,7 +151,7 @@ class _VipNamePlateState extends State<VipNamePlatePage>{
                 child: Center(
                   child: Text(
                     "立即开通",
-                    style: AppStyle.textMediumRed16,
+                    style: AppStyle.redMedium16,
                   ),
                 ),
               ),

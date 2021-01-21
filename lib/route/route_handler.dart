@@ -32,6 +32,7 @@ import 'package:mirror/page/profile/setting/blacklist_page.dart';
 import 'package:mirror/page/profile/setting/feedback_page.dart';
 import 'package:mirror/page/profile/setting/notice_setting_page.dart';
 import 'package:mirror/page/profile/setting/setting_home_page.dart';
+import 'package:mirror/page/profile/training_gallery/training_gallery_page.dart';
 import 'package:mirror/page/profile/training_record/training_record_all_page.dart';
 import 'package:mirror/page/profile/training_record/training_record_page.dart';
 import 'package:mirror/page/profile/training_record/weight_record_page.dart';
@@ -113,12 +114,14 @@ var handlerLoginPhone = Handler(handlerFunc: (BuildContext context, Map<String, 
 var handlerLike = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return Like();
 });
+
 var handlermineDetails = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return ProfileDetailPage(
     userId: data["userId"],
   );
 });
+
 var handlerProfileDetailMore = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return ProfileDetailsMore();
 });
@@ -144,33 +147,43 @@ var handlerEditInformationIntroduction = Handler(handlerFunc: (BuildContext cont
     introduction: data["introduction"],
   );
 });
+
 var handlerSettingHomePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return SettingHomePage();
 });
+
 var handlerSettingBlackList = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return BlackListPage();
 });
+
 var handlerSettingNoticeSetting = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return NoticeSettingPage();
 });
+
 var handlerSettingFeedBack = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return FeedBackPage();
 });
+
 var handlerSettingAbout = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return AboutPage();
 });
+
 var handlerSettingAccountSecurity = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return AccountSecurityPage();
 });
-var handlerTrrainingRecord = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+
+var handlerTrainingRecord = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return TrainingRecordPage();
 });
+
 var handlerWeightRecordPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return WeightRecordPage();
 });
+
 var handlerTrainingRecordAllPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return TrainingRecordAllPage();
 });
+
 var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return ReleasePage();
@@ -231,9 +244,11 @@ var handlerPreviewVideo = Handler(handlerFunc: (BuildContext context, Map<String
 var handlerPerfectUserPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return PerfectUserPage();
 });
+
 var handlerLoginSucessPagePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return LoginSucessPage();
 });
+
 var handlerChatPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   ConversationDto conversation = ConversationDto.fromMap(data["conversation"]);
@@ -260,4 +275,9 @@ var handlerMachineSetting = Handler(handlerFunc: (BuildContext context, Map<Stri
 //扫描二维码页
 var handlerScanCode = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return ScanCodePage();
+});
+
+//健身相册页
+var handlerTrainingGallery = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return TrainingGalleryPage();
 });

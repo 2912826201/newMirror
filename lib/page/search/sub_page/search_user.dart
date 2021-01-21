@@ -27,7 +27,7 @@ class SearchUser extends StatefulWidget {
   }
 }
 
-class _SearchUserState extends State<SearchUser> {
+class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMixin{
   List<UserModel> modelList = [];
   bool isFollow = false;
   int _lastTime;
@@ -181,6 +181,10 @@ class _SearchUserState extends State<SearchUser> {
           )),
       ));
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }
 //搜索的item
 class SearchUserItem extends StatefulWidget {

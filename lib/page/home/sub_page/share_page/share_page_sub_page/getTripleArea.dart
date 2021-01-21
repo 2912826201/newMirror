@@ -20,7 +20,8 @@ import 'package:provider/provider.dart';
 class GetTripleArea extends StatefulWidget {
   HomeFeedModel model;
   int index;
-  GetTripleArea({Key key, this.model,this.index}) : super(key: key);
+  GlobalKey offsetKey;
+  GetTripleArea({Key key, this.model,this.index,this.offsetKey}) : super(key: key);
 
   GetTripleAreaState createState() => GetTripleAreaState();
 }
@@ -30,6 +31,7 @@ class GetTripleAreaState extends State<GetTripleArea> {
   Widget build(BuildContext context) {
     print("打印model的值￥${widget.model}");
     return Container(
+        key: widget.offsetKey,
         height: 48,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,

@@ -17,8 +17,9 @@ import 'package:provider/provider.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 
 class CommentInputBox extends StatefulWidget {
-  CommentInputBox({Key key, this.isUnderline = false, this.feedModel,this.isFeedDetail = false}) : super(key: key);
+  CommentInputBox({Key key,this.type, this.isUnderline = false, this.feedModel,this.isFeedDetail = false}) : super(key: key);
   bool isUnderline;
+  int type;
   bool isFeedDetail;
   // 动态model
   HomeFeedModel feedModel;
