@@ -8,6 +8,7 @@ class FeedMapNotifier extends ChangeNotifier {
   // 动态的id加model组成的Map
   Map<int, HomeFeedModel> feedMap = {};
 
+  Map<int, HomeFeedModel> oldFeedMap = {};
   // 点击评论图标记录此动态的Id用于请求评论列表
   int feedId;
   // 发布动态需要的model
@@ -18,6 +19,15 @@ class FeedMapNotifier extends ChangeNotifier {
 
   CommentDtoModel childModel;
 
+
+  void setOldFeedMap(){
+    oldFeedMap = feedMap;
+    notifyListeners();
+  }
+  void setFeedMap(){
+    feedMap = oldFeedMap;
+    notifyListeners();
+  }
   void insertChildModel(CommentDtoModel model){
     childModel = model;
     notifyListeners();

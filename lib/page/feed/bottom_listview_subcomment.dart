@@ -36,11 +36,14 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
       widget.commentDtoModel.isShowHiddenButtons = false;
       widget.commentDtoModel.isClickHideButton = false;
     }
-    if(widget.type==1){
-      if(widget.commentDtoModel.id==widget.comment.targetId){
-        loadData();
+    if(widget.comment!=null){
+      if(widget.type==1&&!widget.commentDtoModel.isClickHideButton){
+        if(widget.commentDtoModel.id==widget.comment.targetId){
+          loadData();
+        }
       }
     }
+
   }
 
   // 隐藏数据
@@ -60,8 +63,8 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
   // 加载数据
   loadData() async {
     pageCount += 1;
-    if(widget.type==1){
     if(widget.comment!=null){
+      if(widget.type==1){
       if(widget.commentDtoModel.isClickHideButton&&pageCount==1){
         if(widget.commentDtoModel.id==widget.comment.targetId){
           widget.replys.insert(0, context.read<FeedMapNotifier>().childModel);

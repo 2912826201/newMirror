@@ -87,7 +87,9 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                 }),
           ],
         ),
-        body: ScrollConfiguration(
+        body: ChangeNotifierProvider(
+          create:(_)=> UnReadMessageNotifier(),
+          child: ScrollConfiguration(
             behavior: NoBlueEffectBehavior(),
             child: ListView.builder(
                 itemCount: _listLength + 1,
@@ -99,7 +101,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                     return _buildConversationItem(
                         index, context.watch<ConversationNotifier>().getConversationInAllList(index - 1));
                   }
-                })));
+                }))),);
   }
 
   //消息列表上方的所有部分
@@ -172,9 +174,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
             onTap: (){
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                     return InteractiveNoticePage(type: type,);
-                  })).then((value){
-                    _getUnReadMsgCount();
-                  });
+                  }));
 
             },
             child: Stack(

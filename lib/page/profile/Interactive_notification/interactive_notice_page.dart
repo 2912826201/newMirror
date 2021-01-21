@@ -458,7 +458,7 @@ class _InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     // 跳转动态详情页
     Navigator.push(
       context,
-      new MaterialPageRoute(builder: (context) => FeedDetailPage(model: feedModel,comment: comment,)),
+      new MaterialPageRoute(builder: (context) => FeedDetailPage(model: feedModel,comment: comment,type: 2,)),
     );
   }
 }

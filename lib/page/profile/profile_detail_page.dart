@@ -20,6 +20,7 @@ import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_bottom_sheet.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
+import 'package:mirror/page/profile/profile_detail_list.dart';
 import 'package:mirror/page/profile/profile_details_more.dart';
 import 'package:mirror/page/profile/query_list/query_follow_list.dart';
 import 'package:mirror/page/profile/sticky_tabbar.dart';
@@ -33,9 +34,7 @@ import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-
 import '../if_page.dart';
-
 enum StateResult { HAVARESULT, RESULTNULL }
 
 ///判断lastTime，控件的controller冲突
@@ -54,7 +53,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   bool get wantKeepAlive => true;
   final String _imgShared = "images/test/分享.png";
   final String _imgMore = "images/test/ic_big_dynamic_more.png";
-
   ///昵称
   String _textName;
 
@@ -80,18 +78,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   String _buttonText = "+ 关注";
   TabController _mController;
 
-  ///动态model
-  List<HomeFeedModel> followModel = [];
-
-  ///动态id
-  List<int> _followListId = [];
-
-  ///喜欢model
-  List<HomeFeedModel> likeModel = [];
-
-  ///喜欢id
-  List<int> _likeListId = [];
-
   ///true是自己的页面，false是别人的页面
   bool isMselfId;
 
@@ -101,15 +87,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///该用户和我的关系
   int relation;
 
-  ///关注否
-  bool _isFllow = false;
-  String loadingText = "加载中...";
-  int likeDataPage = 1;
-  int likeLastTime;
-  int followDataPage = 1;
-  int followlastTime;
-  StateResult fllowState = StateResult.RESULTNULL;
-  RefreshController _refreshController = new RefreshController();
   ScrollController scrollController = ScrollController();
   double _signatureHeight = 10;
   Color titleColor = AppColor.transparent;
@@ -118,25 +95,14 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   void initState() {
     super.initState();
     _mController = TabController(length: 2, vsync: this);
-
     ///判断是自己的页面还是别人的页面
     if (context.read<ProfileNotifier>().profile.uid == widget.userId) {
       isMselfId = true;
     } else {
       isMselfId = false;
     }
-
-    ///区分接口
-    if (isMselfId) {
       _getUserInfo();
       _getFollowCount();
-      _getDynamicData(2);
-      _getlikeData();
-    } else {
-      _getUserInfo(id: widget.userId);
-      _getFollowCount(id: widget.userId);
-      _getDynamicData(3, id: widget.userId);
-    }
     scrollController.addListener(() {
       /* if (scrollController.hasClients) {*/
       if (scrollController.offset >=
@@ -149,52 +115,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     });
   }
 
-  ///上拉加载
-  _onLoadding() async {
-    if (isMselfId) {
-      if (_mController.index == 0) {
-        followDataPage += 1;
-        _getDynamicData(2);
-      } else {
-        likeDataPage += 1;
-        _getlikeData();
-      }
-    } else {
-      followDataPage += 1;
-      _getDynamicData(3, id: widget.userId);
-    }
-  }
-
-  _onRefresh() {
-    if (isMselfId) {
-      if (_mController.index == 0) {
-        followDataPage = 1;
-        followlastTime = null;
-        _getDynamicData(2);
-      } else {
-        likeDataPage = 1;
-        followlastTime = null;
-        _getlikeData();
-      }
-      _getUserInfo();
-    } else {
-      likeLastTime = null;
-      followDataPage = 1;
-      _getDynamicData(3, id: widget.userId);
-      _getUserInfo(id: widget.userId);
-    }
-  }
-
   ///获取关注、粉丝、动态数
   _getFollowCount({int id}) async {
     ProfileModel attentionModel = await ProfileFollowCount(id: id);
-    print(
-        'attentionModel========================${attentionModel.followingCount}${attentionModel.feedCount}${attentionModel.laudedCount}');
-    setState(() {
-      _attention = attentionModel.followingCount;
-      _fans = attentionModel.followerCount;
-      _lauded = attentionModel.laudedCount;
-    });
+    print('attentionModel========================${attentionModel.followingCount}${attentionModel.feedCount}${attentionModel.laudedCount}');
+    if(attentionModel!=null){
+      context.read<ProfilePageNotifier>().changeAttentionModel(attentionModel);
+    }
   }
 
   ///获取用户信息
@@ -215,99 +142,17 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         }
         _textName = userModel.nickName;
         relation = userModel.relation;
-        if (isMselfId) {
-          _buttonText = "编辑资料";
-        } else {
+        if (!isMselfId) {
           print('判断relation=====================$relation');
-          if (relation == 0 || relation == 2) {
-            _buttonText = "+ 关注";
-            _isFllow = true;
-          } else if (relation == 1 || relation == 3) {
-            _isFllow = false;
-            _buttonText = "私聊";
-          }
         }
       });
-    }
-  }
-
-  _getlikeData() async {
-    if (likeDataPage > 1 && likeLastTime == null) {
-      _refreshController.loadNoData();
-      return;
-    }
-    DataResponseModel model = await getPullList(type: 6, size: 20, lastTime: likeLastTime);
-    setState(() {
-      if (likeDataPage == 1) {
-        likeModel.clear();
-        _likeListId.clear();
-        if (model.list.isNotEmpty) {
-          model.list.forEach((result) {
-            likeModel.add(HomeFeedModel.fromJson(result));
-            _likeListId.add(HomeFeedModel.fromJson(result).id);
-          });
-          _likeListId.insert(0, -1);
-          _refreshController.refreshCompleted();
-          fllowState = StateResult.HAVARESULT;
-        } else {
-          _refreshController.resetNoData();
-          fllowState = StateResult.RESULTNULL;
-        }
-      } else if (likeDataPage > 1 && likeLastTime != null) {
-        if (model.list.isNotEmpty) {
-          model.list.forEach((result) {
-            likeModel.add(HomeFeedModel.fromJson(result));
-            _likeListId.add(HomeFeedModel.fromJson(result).id);
-          });
-          _refreshController.loadComplete();
-        }
-      } else {
-        _refreshController.loadNoData();
+      if (relation == 0 || relation == 2) {
+        context.read<ProfilePageNotifier>().changeIsFollow(true);
+      } else if (relation == 1 || relation == 3) {
+        context.read<ProfilePageNotifier>().changeIsFollow(false);
       }
-    });
-    likeLastTime = model.lastTime;
-    context.read<FeedMapNotifier>().updateFeedMap(likeModel);
-  }
-
-  ///获取动态
-  _getDynamicData(int type, {int id}) async {
-    if (followDataPage > 1 && followlastTime == null) {
-      _refreshController.loadNoData();
-      return;
     }
-    DataResponseModel model = await getPullList(type: type, size: 20, targetId: id, lastTime: followlastTime);
-    setState(() {
-      if (followDataPage == 1) {
-        followModel.clear();
-        _followListId.clear();
-        if (model.list.isNotEmpty) {
-          model.list.forEach((result) {
-            followModel.add(HomeFeedModel.fromJson(result));
-            _followListId.add(HomeFeedModel.fromJson(result).id);
-          });
-          _followListId.insert(0, -1);
-          fllowState = StateResult.HAVARESULT;
-          _refreshController.refreshCompleted();
-        } else {
-          fllowState = StateResult.RESULTNULL;
-          _refreshController.resetNoData();
-        }
-      } else if (followDataPage > 1 && followlastTime != null) {
-        if (model.list.isNotEmpty) {
-          model.list.forEach((result) {
-            followModel.add(HomeFeedModel.fromJson(result));
-            _followListId.add(HomeFeedModel.fromJson(result).id);
-          });
-          _refreshController.loadComplete();
-        }
-      } else {
-        _refreshController.loadNoData();
-      }
-    });
-    followlastTime = model.lastTime;
-    context.read<FeedMapNotifier>().updateFeedMap(followModel);
   }
-
   @override
   void dispose() {
     super.dispose();
@@ -368,7 +213,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               leading: InkWell(
                 onTap: () {
                   context.read<ProfilePageNotifier>().clearTitleColor();
-                  Navigator.pop(this.context, _isFllow);
+                  Navigator.pop(this.context, context.read<ProfilePageNotifier>().isFollow);
                 },
                 child: Image.asset(
                   "images/test/back.png",
@@ -397,7 +242,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                             return ProfileDetailsMore(
                               userId: widget.userId,
-                              isFollow: _isFllow,
+                              isFollow: context.watch<ProfilePageNotifier>().isFollow,
                               userName: _textName,
                             );
                           })).then((value) {
@@ -431,10 +276,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 child: mineHomeData(height, width),
               )),
             ),
-            /*  SliverToBoxAdapter(
-              child:mineHomeData(height, width),
-            ),*/
-
             ///根据布尔值返回视图
             isMselfId
                 ? SliverPersistentHeader(
@@ -476,11 +317,10 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             ? TabBarView(
                 controller: _mController,
                 children: <Widget>[
-                  _ListView(width, _followListId, fllowState, "发布你的第一条动态吧~"),
-                  _ListView(width, _likeListId, fllowState, "发布你的第一条动态吧~")
-                ],
-              )
-            : _ListView(width, _followListId, fllowState, "他还没有动态呢~"));
+                  ProfileDetailsList(type: 2,id: widget.userId,),
+                  ProfileDetailsList(type: 6,id: widget.userId,)
+                ],):ProfileDetailsList(type: 3,id: widget.userId)
+    );
   }
 
   ///高斯模糊
@@ -585,7 +425,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               child: Row(
                 children: [
                   InkWell(
-                    child: _textAndNumber("关注", StringUtil.getNumber(_attention), height),
+                    child: _textAndNumber("关注", StringUtil.getNumber(context.read<ProfilePageNotifier>().attentionModel.followingCount), height),
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                         return QueryFollowList(
@@ -607,12 +447,12 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                         );
                       }));
                     },
-                    child: _textAndNumber("粉丝", StringUtil.getNumber(_fans), height),
+                    child: _textAndNumber("粉丝", StringUtil.getNumber(context.read<ProfilePageNotifier>().attentionModel.followerCount), height),
                   ),
                   SizedBox(
                     width: 61,
                   ),
-                  _textAndNumber("获赞", StringUtil.getNumber(_lauded), height),
+                  _textAndNumber("获赞", StringUtil.getNumber(context.read<ProfilePageNotifier>().attentionModel.laudedCount), height),
                 ],
               ),
             ),
@@ -625,96 +465,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           ],
         ));
   }
-
-  ///这是动态和喜欢展示的listView
-  Widget _ListView(double width, List<int> listId, StateResult state, String nullText) {
-    var _listData = Container(
-      width: width,
-      color: AppColor.white,
-
-      ///刷新控件
-      child: SmartRefresher(
-        enablePullUp: true,
-        enablePullDown: true,
-        footer: CustomFooter(
-          builder: (BuildContext context, LoadStatus mode) {
-            Widget body;
-            if (mode == LoadStatus.loading) {
-              body = Text("正在加载");
-            } else if (mode == LoadStatus.idle) {
-              body = Text("上拉加载更多");
-            } else if (mode == LoadStatus.failed) {
-              body = Text("加载失败,请重试");
-            } else {
-              body = Text("没有更多了");
-            }
-            return Container(
-              child: Center(
-                child: body,
-              ),
-            );
-          },
-        ),
-        header: WaterDropHeader(
-          complete: Text("刷新完成"),
-          failed: Text(""),
-        ),
-        controller: _refreshController,
-        onLoading: _onLoadding,
-        onRefresh: _onRefresh,
-        child: ListView.builder(
-            shrinkWrap: true, //解决无限高度问题
-            physics: AlwaysScrollableScrollPhysics(),
-            itemCount: listId.length,
-            itemBuilder: (context, index) {
-              int id = listId[index];
-              HomeFeedModel model = context.read<FeedMapNotifier>().feedMap[id];
-              if (index == 0) {
-                return Container(
-                  height: 10,
-                );
-              } else {
-                return DynamicListLayout(
-                    index: index, isShowRecommendUser: false, model: model, key: GlobalObjectKey("attention$index"));
-              }
-            }),
-      ),
-    );
-
-    ///这里当model为null或者刚进来接口还没获取到的时候放一张图片
-    switch (state) {
-      case StateResult.RESULTNULL:
-        return Container(
-            padding: EdgeInsets.only(top: 12),
-            color: AppColor.white,
-            child: ListView(
-              children: [
-                Center(
-                  child: Container(
-                    width: 224,
-                    height: 224,
-                    color: AppColor.bgWhite.withOpacity(0.65),
-                  ),
-                ),
-                SizedBox(
-                  height: 16,
-                ),
-                Center(
-                  child: Text(
-                    nullText,
-                    style: AppStyle.textPrimary3Regular14,
-                  ),
-                )
-              ],
-            ));
-        break;
-      case StateResult.HAVARESULT:
-        return _listData;
-        break;
-    }
-  }
-
-  ///关注，编辑资料，私聊按钮
+///关注，编辑资料，私聊按钮
   Widget _mineButton(double height) {
     return InkWell(
         onTap: () {
@@ -724,24 +475,20 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               _getUserInfo();
             });
           } else {
-            setState(() {
-              if (_buttonText == "+ 关注") {
-                _getAttention(true);
-              } else if (_buttonText == "取消关注") {
-                ///打开dialog
-                _getAttention(false);
-              } else {
+            print('isFollow================================${context.read<ProfilePageNotifier>().isFollow}');
+            if (context.read<ProfilePageNotifier>().isFollow) {
+                _getAttention();
+              }  else {
                 ///这里跳转到私聊界面
                 jumpChatPageUser(context, userModel);
               }
-            });
           }
         },
         child: Container(
           height: 28,
           width: 72,
           decoration: BoxDecoration(
-              color: _isFllow ? AppColor.mainRed : AppColor.transparent,
+              color: context.read<ProfilePageNotifier>().isFollow ? AppColor.mainRed : AppColor.transparent,
               borderRadius: BorderRadius.all(Radius.circular(14)),
               border: Border.all(width: 0.5, color: AppColor.black)),
 
@@ -749,7 +496,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           child: isMselfId
               ? Center(
                   child: Text(
-                    _buttonText,
+                    "编辑资料",
                     style: AppStyle.textRegular12,
                   ),
                 )
@@ -759,35 +506,41 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 
   ///通过布尔值来判断该展示私聊按钮还是关注按钮
   Widget _buttonLayoutSelect() {
-    if (_isFllow) {
-      return Center(
+    return Stack(
+      children: [
+        Opacity(
+          opacity:context.read<ProfilePageNotifier>().isFollow?1:0,
+        child: Center(
           child: Text(
-        _buttonText,
-        style: TextStyle(color: AppColor.white, fontSize: 12),
-      ));
-    } else {
-      return Center(
-        child: Row(
-          children: [
-            SizedBox(
-              width: 15,
-            ),
-            Image.asset(
-              "images/test/comment-filling.png",
-              width: 12,
-              height: 12,
-            ),
-            SizedBox(
-              width: 2,
-            ),
-            Text(
-              _buttonText,
-              style: AppStyle.textRegular12,
-            ),
-          ],
-        ),
-      );
-    }
+            "+ 关注",
+            style: TextStyle(color: AppColor.white, fontSize: 12),
+          )),),
+        Opacity(
+          opacity: context.read<ProfilePageNotifier>().isFollow?0:1,
+        child: Center(
+          child: Row(
+            children: [
+              SizedBox(
+                width: 15,
+              ),
+              Image.asset(
+                "images/test/comment-filling.png",
+                width: 12,
+                height: 12,
+              ),
+              SizedBox(
+                width: 2,
+              ),
+              Text(
+                "私聊",
+                style: AppStyle.textRegular12,
+              ),
+            ],
+          ),
+        ),)
+
+      ],
+    );
   }
 
   ///头像
@@ -824,13 +577,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   }
 
   ///这是取消关注和关注的方法，true为关注，false为取消关注
-  _getAttention(bool attention) async {
+  _getAttention() async {
     int attntionResult = await ProfileAddFollow(widget.userId);
     print('关注监听=========================================$attntionResult');
     if (attntionResult == 1 || attntionResult == 3) {
-      ToastShow.show(msg: "关注成功!", context: context);
+      context.read<ProfilePageNotifier>().changeIsFollow(false);
       _getFollowCount(id: widget.userId);
-      _getUserInfo(id: widget.userId);
+      ToastShow.show(msg: "关注成功!", context: context);
     }
   }
 }
@@ -840,6 +593,19 @@ class ProfilePageNotifier extends ChangeNotifier {
 
   String backImage = "images/resource/2.0x/white_return@2x.png";
 
+  ProfileModel attentionModel = ProfileModel();
+
+  bool isFollow = false;
+
+  void changeIsFollow(bool bl){
+    isFollow = bl;
+    print('changeIsFollow============================$isFollow');
+    notifyListeners();
+  }
+  void changeAttentionModel(ProfileModel model){
+    attentionModel = model;
+    notifyListeners();
+  }
   void changeTitleColor(Color color) {
     titleColor = color;
     notifyListeners();

@@ -2,11 +2,11 @@
 
 
 class ProfileModel{
-  int uid;
-  int followingCount;
-  int followerCount;
-  int feedCount;
-  int laudedCount;
+  int uid = 0;
+  int followingCount = 0;
+  int followerCount = 0;
+  int feedCount = 0;
+  int laudedCount = 0;
   ProfileModel(
     {this.uid,
       this.followingCount,

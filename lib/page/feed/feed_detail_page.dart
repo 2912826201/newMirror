@@ -32,11 +32,11 @@ import 'comment_bottom_list.dart';
 
 // 动态详情页
 class FeedDetailPage extends StatefulWidget {
-  FeedDetailPage({Key key, this.model, this.index,this.comment});
+  FeedDetailPage({Key key, this.model,this.type, this.index,this.comment});
   CommentDtoModel comment;
   HomeFeedModel model;
   int index;
-
+  int type;
   @override
   FeedDetailPageState createState() => FeedDetailPageState();
 }
@@ -71,6 +71,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   @override
   void initState() {
     print("进入详情页");
+    if(widget.type==2){
     WidgetsBinding.instance.addPostFrameCallback((callback){
       print('===============################################====  =build结束');
       RenderBox box = _key.currentContext.findRenderObject();
@@ -86,6 +87,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
         }
       });
     });
+    }
     feedModel = context.read<FeedMapNotifier>().feedMap[widget.model.id];
       getQueryListByHot();
       if(widget.comment!=null){
@@ -155,11 +157,15 @@ class FeedDetailPageState extends State<FeedDetailPage> {
               model.isShowInteractiveButton = false;
             }
           }
-          modelList.forEach((element) {
-            if(element.id!=widget.comment.id&&element.id!=widget.comment.targetId){
-              commentModel.add(element);
-            }
-          });
+          if(widget.comment!=null){
+            modelList.forEach((element) {
+              if(element.id!=widget.comment.id&&element.id!=widget.comment.targetId){
+                commentModel.add(element);
+              }
+            });
+          }else{
+           commentModel.addAll(modelList);
+          }
           print("数据长度${commentModel.length}");
         }
       } else if (this.dataPage > 1 && this.hasNext != 0) {
@@ -171,11 +177,15 @@ class FeedDetailPageState extends State<FeedDetailPage> {
             model.isShowInteractiveButton = false;
           }
         }
-        modelList.forEach((element) {
-          if(element.id!=widget.comment.id&&element.id!=widget.comment.targetId){
-            commentModel.add(element);
-          }
-        });
+        if(widget.comment!=null){
+          modelList.forEach((element) {
+            if(element.id!=widget.comment.id&&element.id!=widget.comment.targetId){
+              commentModel.add(element);
+            }
+          });
+        }else{
+          commentModel.addAll(modelList);
+        }
         print("数据长度${commentModel.length}");
         loadStatus = LoadingStatus.STATUS_IDEL;
         loadText = "加载中...";

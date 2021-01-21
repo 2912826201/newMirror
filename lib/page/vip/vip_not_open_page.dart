@@ -7,8 +7,8 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/widget/vip_grid_list.dart';
-import 'package:mirror/widget/vip_horizontal_list.dart';
+import 'package:mirror/widget/vip/vip_grid_list.dart';
+import 'package:mirror/widget/vip/vip_horizontal_list.dart';
 import 'package:provider/provider.dart';
 
 enum VipState{
