@@ -94,7 +94,7 @@ class BottomListViewSubCommentListItemState extends State<BottomListViewSubComme
               AtUsersModel atModel;
               atModel.index = rule.startIndex;
               atModel.len = rule.endIndex;
-              atModel.uid = 1008611;
+              atModel.uid = rule.id;
               atListModel.add(atModel);
             }
             // 评论子评论
@@ -107,6 +107,9 @@ class BottomListViewSubCommentListItemState extends State<BottomListViewSubComme
               replyCommentId: model.id,
               commentModelCallback: (CommentDtoModel commentModel) {
                 context.read<FeedMapNotifier>().commentFeedCom(feedId, mainIndex, commentModel);
+                print("查看一下+++++++++++++++++++++");
+                print(commentDtoModel.replys.toString());
+                print(context.read<FeedMapNotifier>().feedMap[feedId].comments[mainIndex].replys.toString());
                 // 关闭评论输入框
                 // Navigator.of(context).pop(1);
               });
