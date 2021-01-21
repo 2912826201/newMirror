@@ -3,7 +3,7 @@ import 'package:mirror/api/api.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/live_video_model.dart';
+import 'package:mirror/data/model/training/live_video_model.dart';
 
 // 获取动态列表
 const String PULLLISTFEED = "/appuser/web/feed/pullList";

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/page/profile/training_gallery/training_gallery_page.dart';
+import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/widget/scale_view.dart';
 
 /// training_gallery_detail_page
@@ -34,11 +34,11 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
   _initData() {
     for (int i = 0; i < widget.dataList.length; i++) {
       TrainingGalleryDayModel model = widget.dataList[i];
-      for (int j = 0; j < model.images.length; j++) {
+      for (int j = 0; j < model.list.length; j++) {
         if (i == widget.dayIndex && j == widget.imageIndex) {
           _currentIndex = _imageList.length;
         }
-        _imageList.add(model.images[j]);
+        _imageList.add(model.list[j]);
       }
     }
     _title = "index: $_currentIndex";

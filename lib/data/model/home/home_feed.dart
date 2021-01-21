@@ -1,6 +1,6 @@
 import 'package:mirror/data/model/user_model.dart';
 
-import '../live_model.dart';
+import '../training/live_model.dart';
 
 enum CommentTypes {
   commentFeed, // 评论动态

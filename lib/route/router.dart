@@ -6,12 +6,10 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 
 import 'package:mirror/data/dto/profile_dto.dart';
-import 'package:mirror/data/model/live_model.dart';
-import 'package:mirror/data/model/live_video_model.dart';
+import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/route/route_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 /// router
 /// Created by yangjiayi on 2020/11/14.
