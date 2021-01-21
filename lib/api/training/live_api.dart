@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/list_model.dart';
-import 'package:mirror/data/model/live_model.dart';
 import 'package:mirror/data/model/live_video_model.dart';
 
 // 根据日期获取直播课程列表
@@ -31,6 +30,14 @@ const String GETLATESTLIVE = "/sport/web/liveCourse/getLatestLive";
 
 //获取学过的课程列表
 const String GETLEARNEDCOURSE = "/sport/web/videoCourse/getLearnedCourse";
+
+//添加我的课程
+const String ADDTOMYCOURSE = "/sport/web/videoCourse/addToMyCourse";
+//从我的课程移除
+const String DELETEFROMMYCOURSE = "/sport/web/videoCourse/deleteFromMyCourse";
+
+//获取我的课程列表
+const String GETMYCOURSE = "/sport/web/videoCourse/getMyCourse";
 
 ///根据日期获取直播课程列表
 ///请求参数
@@ -160,14 +167,14 @@ Future<Map> getFinishedVideoCourse(int videoCourseId, int size, {int lastId}) as
 }
 
 //获取最近直播
-Future<List<LiveModel>> getLatestLive() async {
+Future<List<LiveVideoModel>> getLatestLive() async {
   Map<String, dynamic> params = {};
   BaseResponseModel responseModel = await requestApi(GETLATESTLIVE, params);
   if (responseModel.isSuccess) {
-    List<LiveModel> list = [];
+    List<LiveVideoModel> list = [];
     if (responseModel.data["list"] != null) {
       responseModel.data["list"].forEach((e) {
-        list.add(LiveModel.fromJson(e));
+        list.add(LiveVideoModel.fromJson(e));
       });
     }
     return list;
@@ -196,6 +203,63 @@ Future<ListModel<LiveVideoModel>> getLearnedCourse(int size, {int lastTime}) asy
     }
     listModel.list = list;
     return listModel;
+  } else {
+    return null;
+  }
+}
+
+
+//获取我的课程列表
+Future<ListModel<LiveVideoModel>> getMyCourse(int page, int size, {int lastTime}) async {
+  Map<String, dynamic> params = {};
+  params["size"] = size;
+  params["page"] = page;
+  if (lastTime != null) {
+    params["lastTime"] = lastTime;
+  }
+  BaseResponseModel responseModel = await requestApi(GETMYCOURSE, params);
+  if (responseModel.isSuccess) {
+    ListModel<LiveVideoModel> listModel = ListModel<LiveVideoModel>();
+    List<LiveVideoModel> list = [];
+    listModel.hasNext = responseModel.data["hasNext"];
+    listModel.lastTime = responseModel.data["lastTime"];
+    if (responseModel.data["list"] != null) {
+      responseModel.data["list"].forEach((e) {
+        list.add(LiveVideoModel.fromJson(e));
+      });
+    }
+    listModel.list = list;
+    return listModel;
+  } else {
+    return null;
+  }
+}
+
+
+///添加我的课程
+///请求参数
+///视频课程的id
+Future<Map> addToMyCourse(int courseId) async {
+  Map<String, dynamic> params = {};
+  params["courseId"] = courseId;
+  BaseResponseModel responseModel = await requestApi(ADDTOMYCOURSE, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
+
+
+///从我的课程移除
+///请求参数
+///视频课程的id
+Future<Map> deleteFromMyCourse(int courseId) async {
+  Map<String, dynamic> params = {};
+  params["courseId"] = courseId;
+  BaseResponseModel responseModel = await requestApi(DELETEFROMMYCOURSE, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
   } else {
     return null;
   }

@@ -262,24 +262,30 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
   ///这里是底部订单成就，为了代码复用写成一个布局，通过传值来改变
   Widget _bottomSetting(String text) {
-    return Container(
-      height: 48,
-      child: Center(
-        child: Row(
-          children: [
-            Icon(Icons.account_balance_sharp),
-            SizedBox(
-              width: 12,
-            ),
-            Text(
-              text,
-              style: AppStyle.textRegular16,
-            ),
-            Expanded(child: Container()),
-            Icon(Icons.arrow_forward_ios)
-          ],
+    return GestureDetector(
+      child: Container(
+        color: AppColor.transparent,
+        height: 48,
+        child: Center(
+          child: Row(
+            children: [
+              Icon(Icons.account_balance_sharp),
+              SizedBox(
+                width: 12,
+              ),
+              Text(
+                text,
+                style: AppStyle.textRegular16,
+              ),
+              Expanded(child: Container()),
+              Icon(Icons.arrow_forward_ios)
+            ],
+          ),
         ),
       ),
+      onTap: () {
+        onClickListener(text);
+      },
     );
   }
 
@@ -476,6 +482,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       AppRouter.navigateToWeightRecordPage(context);
     } else if ("健身相册" == title) {
       AppRouter.navigateToTrainingGalleryPage(context);
+    } else if ("我的课程" == title) {
+      AppRouter.navigateToMeCoursePage(context);
     }
   }
 }

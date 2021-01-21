@@ -1,5 +1,6 @@
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/download_dto.dart';
+import 'package:mirror/data/dto/download_video_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/region_dto.dart';
 import 'package:mirror/data/dto/search_history_dto.dart';
@@ -534,6 +535,15 @@ Future<void> _createDB(Database db, int version) async {
       "$COLUMN_NAME_DOWNLOAD_URL varchar(256) not null," +
       "$COLUMN_NAME_DOWNLOAD_FILEPATH varchar(256) not null," +
       "$COLUMN_NAME_DOWNLOAD_CREATETIME bigint(20) not null" +
+      ")");
+  //download_course_video
+  await db.execute("create table $TABLE_NAME_DOWNLOAD_COURSE_VIDEO (" +
+      "$COLUMN_NAME_DOWNLOAD_COURSE_ID integer primary key autoincrement," +
+      "$COLUMN_NAME_DOWNLOAD_COURSE_NAME varchar(256) not null," +
+      "$COLUMN_NAME_DOWNLOAD_COURSE_URLS varchar(256) not null," +
+      "$COLUMN_NAME_DOWNLOAD_COURSE_FILEPATHS varchar(256) not null," +
+      "$COLUMN_NAME_DOWNLOAD_COURSE_MODEL varchar(256) not null," +
+      "$COLUMN_NAME_DOWNLOAD_COURSE_DOWNLOAD_TIME bigint(20) not null" +
       ")");
 }
 

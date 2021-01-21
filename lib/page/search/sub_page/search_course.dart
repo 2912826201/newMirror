@@ -242,8 +242,8 @@ class SearchCourseItemState extends State<SearchCourseItem> {
       onTap: () {
         //点击事件
         print("====heroTagArray[index]:${heroTagArray[widget.index]}");
-        AppRouter.navigateToVideoDetail(context, heroTagArray[widget.index], widget.videoModel.id,
-            widget.videoModel.coursewareId, widget.videoModel);
+        AppRouter.navigateToVideoDetail(context, widget.videoModel.id,
+            heroTag: heroTagArray[widget.index], videoModel: widget.videoModel);
       },
     );
   }
