@@ -23,6 +23,8 @@ import 'package:mirror/page/profile/edit_information/edit_information_introducti
 import 'package:mirror/page/profile/edit_information/edit_information_name.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_page.dart';
 import 'package:mirror/page/profile/login_test_page.dart';
+import 'package:mirror/page/profile/me_course/me_course_page.dart';
+import 'package:mirror/page/profile/me_course/me_download_video_page.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/profile_details_more.dart';
 import 'package:mirror/page/profile/setting/about_page.dart';
@@ -51,7 +53,6 @@ import 'package:mirror/page/training/video_course/video_course_list_page.dart';
 import 'package:mirror/page/training/video_course/video_course_play_page.dart';
 import 'package:mirror/page/training/video_course/video_detail_page.dart';
 import 'package:mirror/route/router.dart';
-import 'package:photo_manager/photo_manager.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 /// route_handler
@@ -202,24 +203,30 @@ var handlerVideoCoursePlay = Handler(handlerFunc: (BuildContext context, Map<Str
       Map<String, String>.from(data["videoPathMap"]), LiveVideoModel.fromJson(data["videoCourseModel"]));
 });
 
+//直播课程详情界面
 var handlerLiveDetail = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  LiveVideoModel liveModel = LiveVideoModel.fromJson(data["liveModel"]);
+  LiveVideoModel liveModel;
+  if (data["liveModel"] != null) {
+    liveModel = LiveVideoModel.fromJson(data["liveModel"]);
+  }
   return LiveDetailPage(
-    heroTag: data["heroTag"],
+    heroTag: data["heroTag"] == null ? "" : data["heroTag"],
     liveCourseId: data["liveCourseId"],
-    courseId: data["courseId"],
     liveModel: liveModel,
   );
 });
 
+//视频课程详情界面
 var handlerVideoDetail = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  LiveVideoModel videoModel = LiveVideoModel.fromJson(data["videoModel"]);
+  LiveVideoModel videoModel;
+  if (data["videoModel"] != null) {
+    videoModel = LiveVideoModel.fromJson(data["videoModel"]);
+  }
   return VideoDetailPage(
-    heroTag: data["heroTag"],
-    liveCourseId: data["liveCourseId"],
-    courseId: data["courseId"],
+    heroTag: data["heroTag"] == null ? "" : data["heroTag"],
+    liveCourseId: data["videoCourseId"],
     videoModel: videoModel,
   );
 });
@@ -248,6 +255,7 @@ var handlerLoginSucessPagePage = Handler(handlerFunc: (BuildContext context, Map
   return LoginSucessPage();
 });
 
+//消息界面
 var handlerChatPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   ConversationDto conversation = ConversationDto.fromMap(data["conversation"]);
@@ -279,4 +287,14 @@ var handlerScanCode = Handler(handlerFunc: (BuildContext context, Map<String, Li
 //健身相册页
 var handlerTrainingGallery = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return TrainingGalleryPage();
+});
+
+//我的课程界面
+var handlerMeCoursePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return MeCoursePage();
+});
+
+//我的课程界面--下载课程界面
+var handlerMeDownloadVideoCoursePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return MeDownloadVideoCoursePage();
 });

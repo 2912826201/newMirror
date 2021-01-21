@@ -704,7 +704,6 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   }
 
   void gotoNavigateToLiveDetail(LiveVideoModel value, int index) {
-    AppRouter.navigateToLiveDetail(
-        context, heroTagArray[index], value.id, value.coursewareId, value);
+    AppRouter.navigateToLiveDetail(context, value.id, heroTag: heroTagArray[index], liveModel: value);
   }
 }

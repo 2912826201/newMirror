@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/data/model/training/live_model.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
@@ -24,7 +23,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
   bool _machineConnected = true;
   double _screenWidth = 0.0;
 
-  List<LiveModel> _liveList = [];
+  List<LiveVideoModel> _liveList = [];
   List<LiveVideoModel> _videoCourseList = [];
 
   bool _isVideoCourseRequesting = false;
@@ -480,8 +479,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
         onTap: () {
           //点击事件
           print("====heroTagArray[index]:${heroTagArray[index]}");
-          AppRouter.navigateToVideoDetail(
-              context, heroTagArray[index], videoModel.id, videoModel.coursewareId, videoModel);
+          AppRouter.navigateToVideoDetail(context, videoModel.id, heroTag: heroTagArray[index], videoModel: videoModel);
         },
       ),
     );

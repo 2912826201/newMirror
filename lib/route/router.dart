@@ -57,6 +57,8 @@ class AppRouter {
   static String pathWeightRecordPage = "/profile/weightrecordpage";
   static String pathTrainingRecordAllPage = "/profile/trainingrecord/trainingrecordallpage";
   static String pathTrainingGallery = "/profile/traininggallery";
+  static String pathMeCoursePage = "/profile/mecoursepage";
+  static String pathMeDownloadVideoCoursePage = "/profile/mecoursepage/medownloadvideocoursepage";
 
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
@@ -105,6 +107,8 @@ class AppRouter {
     router.define(pathWeightRecordPage, handler: handlerWeightRecordPage);
     router.define(pathTrainingRecordAllPage, handler: handlerTrainingRecordAllPage);
     router.define(pathTrainingGallery, handler: handlerTrainingGallery);
+    router.define(pathMeCoursePage, handler: handlerMeCoursePage);
+    router.define(pathMeDownloadVideoCoursePage, handler: handlerMeDownloadVideoCoursePage);
 
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
@@ -196,23 +200,28 @@ class AppRouter {
     _navigateToPage(context, pathVideoCoursePlay, map);
   }
 
-  static void navigateToLiveDetail(
-      BuildContext context, String heroTag, int liveCourseId, int courseId, LiveVideoModel liveModel) {
+  static void navigateToLiveDetail(BuildContext context, int liveCourseId, {String heroTag, LiveVideoModel liveModel}) {
     Map<String, dynamic> map = Map();
-    map["heroTag"] = heroTag;
     map["liveCourseId"] = liveCourseId;
-    map["courseId"] = courseId;
-    map["liveModel"] = liveModel.toJson();
+    if (liveModel != null) {
+      map["liveModel"] = liveModel.toJson();
+    }
+    if (heroTag != null) {
+      map["heroTag"] = heroTag;
+    }
     _navigateToPage(context, pathLiveDetail, map);
   }
 
-  static void navigateToVideoDetail(BuildContext context, String heroTag, int liveCourseId, int courseId,
-      LiveVideoModel videoModel) {
+  static void navigateToVideoDetail(BuildContext context, int liveCourseId,
+      {String heroTag, LiveVideoModel videoModel}) {
     Map<String, dynamic> map = Map();
-    map["heroTag"] = heroTag;
-    map["liveCourseId"] = liveCourseId;
-    map["courseId"] = courseId;
-    map["videoModel"] = videoModel.toJson();
+    map["videoCourseId"] = liveCourseId;
+    if (videoModel != null) {
+      map["videoModel"] = videoModel.toJson();
+    }
+    if (heroTag != null) {
+      map["heroTag"] = heroTag;
+    }
     _navigateToPage(context, pathVideoDetail, map);
   }
 
@@ -348,5 +357,13 @@ class AppRouter {
 
   static void navigateToTrainingGalleryPage(BuildContext context) {
     _navigateToPage(context, pathTrainingGallery, {});
+  }
+
+  static void navigateToMeCoursePage(BuildContext context) {
+    _navigateToPage(context, pathMeCoursePage, {});
+  }
+
+  static void navigateToMeDownloadVideoCoursePage(BuildContext context) {
+    _navigateToPage(context, pathMeDownloadVideoCoursePage, {});
   }
 }
