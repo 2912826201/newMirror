@@ -19,7 +19,9 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
   double titleSize = 30;
   String startTime;
   String endTime;
+  bool isFavor;
   final VoidCallback shareBtnClick;
+  final VoidCallback favorBtnClick;
 
   SliverCustomHeaderDelegateVideo({
     this.collapsedHeight,
@@ -32,7 +34,9 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
     this.heroTag,
     this.startTime,
     this.endTime,
+    this.isFavor,
     this.shareBtnClick,
+    this.favorBtnClick,
   });
 
   @override
@@ -244,10 +248,12 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
                           IconButton(
                             icon: Icon(
                               Icons.favorite_border_rounded,
-                              color: AppColor.white,
+                              color: isFavor ? AppColor.mainRed : AppColor.white,
                             ),
                             onPressed: () {
-                              print("点击了收藏--视频课程头部详情页");
+                              if (favorBtnClick != null) {
+                                favorBtnClick();
+                              }
                             },
                           ),
                           IconButton(
