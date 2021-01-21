@@ -8,7 +8,7 @@ class FeedMapNotifier extends ChangeNotifier {
   // 动态的id加model组成的Map
   Map<int, HomeFeedModel> feedMap = {};
 
-  Map<int, HomeFeedModel> oldFeedMap = {};
+  Map<int, HomeFeedModel> bootomSheetFeedMap = {};
   // 点击评论图标记录此动态的Id用于请求评论列表
   int feedId;
   // 发布动态需要的model
@@ -19,14 +19,9 @@ class FeedMapNotifier extends ChangeNotifier {
 
   CommentDtoModel childModel;
 
-
-  void setOldFeedMap(){
-    oldFeedMap = feedMap;
-    notifyListeners();
-  }
-  void setFeedMap(){
-    feedMap = oldFeedMap;
-    notifyListeners();
+    void changeItemChose(int id,int index){
+      feedMap[id].comments[index].itemChose = false;
+      notifyListeners();
   }
   void insertChildModel(CommentDtoModel model){
     childModel = model;
@@ -107,10 +102,6 @@ class FeedMapNotifier extends ChangeNotifier {
   // 修改动态Id
   changeFeeId(int id,) {
     this.feedId = id;
-    notifyListeners();
-  }
-  changeItemChose(int id,int index){
-    feedMap[id].comments[index].itemChose = false;
     notifyListeners();
   }
   // 动态评论详情页赋值

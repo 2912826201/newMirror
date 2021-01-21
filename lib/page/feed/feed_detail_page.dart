@@ -77,10 +77,10 @@ class FeedDetailPageState extends State<FeedDetailPage> {
       RenderBox box = _key.currentContext.findRenderObject();
       Offset offset = box.localToGlobal(Offset.zero);
        print('offset=============%%%%%%%%%%%%%%%%%%%%%%%%%%%=======================${offset.dy}');
-      Future.delayed(Duration(milliseconds: 200), () {
+      Future.delayed(Duration(milliseconds: 1000), () {
         try {
           _controller.animateTo(offset.dy-box.size.height, duration: Duration(milliseconds: 1000), curve: Curves.ease);
-          isCanLoading = false;
+          isCanLoading = true;
           setState(() {
           });
         } catch (e) {
@@ -96,6 +96,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
     _controller.addListener(() {
       if(isCanLoading){
         if (_controller.position.pixels == _controller.position.maxScrollExtent) {
+          print('==================动态详情刷新');
           dataPage += 1;
           getQueryListByHot();
         }
@@ -115,7 +116,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
       }
       childmodel.itemChose = true;
       commentModel.insert(0, childmodel);
-      /*context.read<FeedMapNotifier>().feedPublishComment(childmodel,widget.model.id);*/
+    /*  context.read<FeedMapNotifier>().feedPublishComment(childmodel,widget.model.id);*/
     }else if(childmodel.type==2){
       print('=========================评论类型为====2');
       CommentDtoModel fsModel = await getComment(childmodel.targetId);
