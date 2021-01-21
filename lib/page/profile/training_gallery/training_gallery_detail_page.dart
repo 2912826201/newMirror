@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
@@ -41,7 +43,7 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
         _imageList.add(model.list[j]);
       }
     }
-    _title = "index: $_currentIndex";
+    _title = _getTitleTime();
   }
 
   @override
@@ -90,7 +92,7 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
         onIndexChanged: (index) {
           setState(() {
             _currentIndex = index;
-            _title = "index: $_currentIndex";
+            _title = _getTitleTime();
           });
         },
         loop: false,
@@ -111,5 +113,9 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
         ),
       ),
     );
+  }
+
+  String _getTitleTime() {
+    return DateFormat('MM月dd日 HH:mm').format(DateTime.fromMillisecondsSinceEpoch(_imageList[_currentIndex].createTime));
   }
 }

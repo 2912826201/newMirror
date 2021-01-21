@@ -9,6 +9,7 @@ import 'package:mirror/api/training/training_gallery_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/list_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
@@ -28,81 +29,16 @@ class TrainingGalleryPage extends StatefulWidget {
 }
 
 class _TrainingGalleryState extends State<TrainingGalleryPage> {
+  bool hasNext;
+  int lastTime;
+
   List<TrainingGalleryDayModel> _dataList = [];
 
-  _initData() {
-    _dataList.add(TrainingGalleryDayModel()
-      ..dateTime = "2021-01-18"
-      ..list = [
-        TrainingGalleryImageModel()
-          ..url = "https://i2.hdslb.com/bfs/archive/4431155151f0b9b3da5f150b7b4273bcc525afe1.jpg",
-        TrainingGalleryImageModel()
-          ..url = "https://i2.hdslb.com/bfs/archive/2c7f0d9854199fa61ffeb06af05f3c81fd30e19d.jpg",
-        TrainingGalleryImageModel()
-          ..url = "https://i0.hdslb.com/bfs/archive/a4cd4bf40a10d6d1a841ab4246db86d8df713c64.jpg",
-        TrainingGalleryImageModel()
-          ..url = "https://i1.hdslb.com/bfs/archive/08a1ac97644b93563cd17a601a81803528133f71.jpg",
-        TrainingGalleryImageModel()
-          ..url = "https://i2.hdslb.com/bfs/archive/857d28d02e35ef9eefcdfea0b8b00d608a08e682.jpg",
-        TrainingGalleryImageModel()
-          ..url = "https://i2.hdslb.com/bfs/archive/de2b17a1e96a26c3b8222b316f8417fba45c7737.jpg",
-        TrainingGalleryImageModel()
-          ..url = "https://i1.hdslb.com/bfs/archive/7bd977dacfe35cecb5ea13df2673bb453ea53195.jpg"
-      ]);
-    _dataList.add(TrainingGalleryDayModel()
-      ..dateTime = "2021-01-10"
-      ..list = [
-        TrainingGalleryImageModel()
-          ..url = "https://i0.hdslb.com/bfs/archive/2b8bf21ed1117b345aa596f34b6c53c310a801cb.jpg"
-      ]);
-    _dataList.add(TrainingGalleryDayModel()
-      ..dateTime = "2021-01-01"
-      ..list = [
-        TrainingGalleryImageModel()
-          ..url = "https://i2.hdslb.com/bfs/archive/6dad8b9612336e1c9fd88dd54a7eac08909e410e.jpg",
-        TrainingGalleryImageModel()
-          ..url = "https://i0.hdslb.com/bfs/archive/8e58184f1dca7e82cc801d3dc170b98ec7333a42.jpg",
-        TrainingGalleryImageModel()
-          ..url = "https://i2.hdslb.com/bfs/archive/53b58742ebb860bd0ada1e9fd048c48bb8383c51.jpg",
-        TrainingGalleryImageModel()
-          ..url = "https://i2.hdslb.com/bfs/archive/76f307eab11e961ad92ced6de85f85d8d600c9f3.jpg"
-      ]);
-    _dataList.add(TrainingGalleryDayModel()
-      ..dateTime = "2020-11-15"
-      ..list = [
-        TrainingGalleryImageModel()
-          ..url = "https://i2.hdslb.com/bfs/archive/4431155151f0b9b3da5f150b7b4273bcc525afe1.jpg",
-        TrainingGalleryImageModel()
-          ..url = "https://i2.hdslb.com/bfs/archive/2c7f0d9854199fa61ffeb06af05f3c81fd30e19d.jpg",
-        TrainingGalleryImageModel()
-          ..url = "https://i0.hdslb.com/bfs/archive/a4cd4bf40a10d6d1a841ab4246db86d8df713c64.jpg",
-        TrainingGalleryImageModel()
-          ..url = "https://i1.hdslb.com/bfs/archive/08a1ac97644b93563cd17a601a81803528133f71.jpg",
-        TrainingGalleryImageModel()
-          ..url = "https://i2.hdslb.com/bfs/archive/857d28d02e35ef9eefcdfea0b8b00d608a08e682.jpg",
-        TrainingGalleryImageModel()
-          ..url = "https://i2.hdslb.com/bfs/archive/de2b17a1e96a26c3b8222b316f8417fba45c7737.jpg",
-        TrainingGalleryImageModel()
-          ..url = "https://i1.hdslb.com/bfs/archive/7bd977dacfe35cecb5ea13df2673bb453ea53195.jpg"
-      ]);
-    _dataList.add(TrainingGalleryDayModel()
-      ..dateTime = "2020-11-11"
-      ..list = [
-        TrainingGalleryImageModel()
-          ..url = "https://i0.hdslb.com/bfs/archive/2b8bf21ed1117b345aa596f34b6c53c310a801cb.jpg"
-      ]);
-    _dataList.add(TrainingGalleryDayModel()
-      ..dateTime = "2020-10-20"
-      ..list = [
-        TrainingGalleryImageModel()
-          ..url = "https://i2.hdslb.com/bfs/archive/6dad8b9612336e1c9fd88dd54a7eac08909e410e.jpg",
-        TrainingGalleryImageModel()
-          ..url = "https://i0.hdslb.com/bfs/archive/8e58184f1dca7e82cc801d3dc170b98ec7333a42.jpg",
-        TrainingGalleryImageModel()
-          ..url = "https://i2.hdslb.com/bfs/archive/53b58742ebb860bd0ada1e9fd048c48bb8383c51.jpg",
-        TrainingGalleryImageModel()
-          ..url = "https://i2.hdslb.com/bfs/archive/76f307eab11e961ad92ced6de85f85d8d600c9f3.jpg"
-      ]);
+  _initData() async {
+    ListModel<TrainingGalleryDayModel> listModel = await getAlbum(20);
+    hasNext = listModel.hasNext == 1;
+    lastTime = listModel.lastTime;
+    _dataList.addAll(listModel.list);
 
     SuspensionUtil.setShowSuspensionStatus(_dataList);
 
