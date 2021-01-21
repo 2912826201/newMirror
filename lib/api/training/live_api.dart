@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/list_model.dart';
-import 'package:mirror/data/model/training/live_model.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 
 // 根据日期获取直播课程列表

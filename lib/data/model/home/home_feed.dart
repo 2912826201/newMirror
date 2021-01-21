@@ -1,7 +1,5 @@
-import 'package:mirror/data/model/live_video_model.dart';
+import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/user_model.dart';
-
-import '../training/live_model.dart';
 
 enum CommentTypes {
   commentFeed, // 评论动态

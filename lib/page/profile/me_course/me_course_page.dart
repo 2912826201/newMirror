@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/data/model/live_video_model.dart';
+import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/route/router.dart';
 
 //我的课程

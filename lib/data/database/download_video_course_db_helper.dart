@@ -1,6 +1,6 @@
 import 'package:mirror/data/database/db_helper.dart';
 import 'package:mirror/data/dto/download_video_dto.dart';
-import 'package:mirror/data/model/live_video_model.dart';
+import 'package:mirror/data/model/training/live_video_model.dart';
 
 /// download_video_course_db_helper
 /// Created by shipk on 2021/1/21.
