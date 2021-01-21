@@ -320,7 +320,7 @@ showAppDialog(BuildContext context,
 }
 
 class AppDialogNotifier extends ChangeNotifier{
-  double progress;
+  double progress = 0;
 
   void changeProgress(double prs){
     progress = prs;

@@ -36,7 +36,7 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
       widget.commentDtoModel.isShowHiddenButtons = false;
       widget.commentDtoModel.isClickHideButton = false;
     }
-    if(widget.comment!=null){
+    if(widget.comment != null){
       if(widget.type==1&&!widget.commentDtoModel.isClickHideButton){
         if(widget.commentDtoModel.id==widget.comment.targetId){
           loadData();
