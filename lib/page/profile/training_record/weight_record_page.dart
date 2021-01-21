@@ -293,6 +293,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
         confirm: AppDialogButton("确定", () {
           try {
             userWeight = double.parse(_numberController.text);
+            userWeight = formatData(userWeight);
             saveTargetWeight(userWeight.toString());
             weightDataMap["targetWeight"] = userWeight;
             setState(() {});
@@ -348,6 +349,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
         confirm: AppDialogButton("确定", () {
           try {
             double userWeight = double.parse(_numberController.text);
+            userWeight = formatData(userWeight);
             saveWeight(userWeight.toString());
             addWeightData(userWeight);
             _numberController.text = "";
@@ -384,13 +386,14 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
     });
   }
 
-
   //获取数据
   loadData() async {
     weightDataMap = await getWeightRecords(1, 1000);
     loadingStatus = LoadingStatus.STATUS_COMPLETED;
-    setState(() {
+    setState(() {});
+  }
 
-    });
+  double formatData(double value) {
+    return ((value * 100) ~/ 1) / 100;
   }
 }
