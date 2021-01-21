@@ -370,13 +370,11 @@ void _getNewVersion(BuildContext context)async{
                 return true;
               }),
               confirm: AppDialogButton("安装",(){
-
                 return true;
               }),
             );
           }else{
-            showAppDialog(context,
-              title:"获取到新版本，是否更新？",
+            showAppDialog(context, title:"获取到新版本，是否更新？",
               cancel:AppDialogButton("不更新",(){
                 return true;
               }),

@@ -9,7 +9,7 @@ import 'package:mirror/page/vip/vip_not_open_page.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
-import 'package:mirror/widget/vip_grid_list.dart';
+import 'package:mirror/widget/vip/vip_grid_list.dart';
 import 'package:provider/provider.dart';
 //会员已开通页
 class VipOpenPage extends StatefulWidget {

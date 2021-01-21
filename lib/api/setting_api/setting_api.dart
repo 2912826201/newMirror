@@ -48,10 +48,10 @@ Future<UserNoticeModel> getUserNotice()async{
 Future<bool> putFeedBack(String content,String picUrls)async{
   BaseResponseModel responseModel = await requestApi(FEED_BACK,{"content":content,"picUrls":picUrls});
   if(responseModel.isSuccess){
-    print("==================这是借口请求成功的输出");
+    print("==================这是接口请求成功的输出");
     return true;
   }else{
-    print("==================这是借口请求失败的输出");
+    print("==================这是接口请求失败的输出");
     return false;
   }
 }

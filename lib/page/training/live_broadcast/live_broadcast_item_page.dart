@@ -502,8 +502,8 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
       isBook = false;
       settingTF = false;
     }
-    Map<String, dynamic> mapBook = await bookLiveCourse(
-        courseId: value.id, isBook: value.playType == 2);
+    Map<String, dynamic> mapBook =
+        await bookLiveCourse(courseId: value.id, startTime: value.startTime, isBook: value.playType == 2);
     if (mapBook != null) {
       if (mapBook["state"]) {
         if (value.playType == 2) {

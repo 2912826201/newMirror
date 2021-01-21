@@ -41,7 +41,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   int followerCount;
   int feedCount;
   int trainingSeconds;
-  int weight;
+  double weight;
   int albumNum;
 
   @override
@@ -139,7 +139,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   children: [
                     _secondData(Icons.access_alarms_sharp, trainingSeconds, "训练记录", height, width),
                     Expanded(child: Container()),
-                    _secondData(Icons.access_alarms_sharp, weight, "体重记录", height, width),
+                    _secondData(Icons.access_alarms_sharp, weight ,"体重记录", height, width),
                     Expanded(child: Container()),
                     _secondData(Icons.access_alarms_sharp, albumNum, "健身相册", height, width),
                   ],
@@ -429,7 +429,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
   ///这里是训练计划，体重记录，健身相册的
   ///                这是中间的图标| 这是数值   |这是title
-  Widget _secondData(IconData icon, int number, String text, double height, double width) {
+  Widget _secondData(IconData icon, number, String text, double height, double width) {
     var _userPlate = Stack(
       children: [
         Container(

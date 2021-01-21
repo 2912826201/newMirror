@@ -100,33 +100,29 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
         topicSearchStr =
             newValue.text.substring(topicIndex, newValue.selection.start);
       }
-
-      // print("_textController.text:${controller.text}");
-      // // 在删除操作中删除了rules中的数据，使用了provide后， 回调后会再次进入重走逻辑。在此阻止。
-      // if (delRules.isNotEmpty&&oldValue.text.length!=0) {
-      //   if (oldValue.text == newValue.text.substring(0,delRules[0].startIndex)) {
-      //     delRules = [];
-      //     print("删除");
-      //     return oldValue;
-      //   }
-      // }
     } else {
       /// 删除或替换内容 （含直接delete、选中后输入别的字符替换）
-      if (!oldValue.composing.isValid || oldValue.selection.start != oldValue.selection.end) {
+      print("删除");
+      print("isValid:::${!oldValue.composing.isValid}");
+      print(oldValue.selection.start);
+      print(oldValue.selection.end);
+      if (!oldValue.composing.isValid  || oldValue.selection.start != oldValue.selection.end) {
         print("进了这里面");
         /// 直接delete情况 / 选中一部分替换的情况
-        delRules = [];
+        // delRules = [];
         return checkRules(oldValue, newValue);
       }
     }
 
     print("还调用了下面");
-    print(delRules);
-    if(rules.isNotEmpty) {
-      _correctRules(oldValue.selection.start, oldValue.text.length, newValue.text.length);
+    // print(delRules);
+    if (!oldValue.composing.isValid) {
+      if (rules.isNotEmpty) {
+        _correctRules(oldValue.selection.start, oldValue.text.length, newValue.text.length);
+      }
+      _valueChangedCallback(rules, newValue.text, atIndex, topicIndex, atSearchStr, topicSearchStr);
+      print("返回值++++++++++++++++${newValue.text}");
     }
-    _valueChangedCallback(rules, newValue.text, atIndex, topicIndex,atSearchStr,topicSearchStr);
-    print("返回值++++++++++++++++${newValue.text}");
     return newValue;
   }
 

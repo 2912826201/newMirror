@@ -4,7 +4,7 @@ class BuddyListModel{
   int lastTime;
   int lastId;
   int lastScore;
-  List<BuddyModel> list;
+  List<BuddyModel> list = [];
   BuddyListModel({this.list,this.lastTime,this.hasNext,this.lastId,this.lastScore});
   BuddyListModel.fromJson(dynamic json) {
     hasNext = json["hasNext"];

@@ -1548,7 +1548,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     // 跳转动态详情页
     Navigator.push(
       context,
-      new MaterialPageRoute(builder: (context) => FeedDetailPage(model: feedModel)),
+      new MaterialPageRoute(builder: (context) => FeedDetailPage(model: feedModel,type: 1,)),
     );
   }
 

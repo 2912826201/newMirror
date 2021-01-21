@@ -1,3 +1,4 @@
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -180,7 +181,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                         onTap: (){
 
                         },
-                        child: InteractiveNoticeItem(widget.type, msgList[index]));
+                        child: InteractiveNoticeItemState(widget.type, msgList[index]));
                     }),
               )
             : Center(
@@ -209,7 +210,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     );
   }
 }
-
+/*
 class InteractiveNoticeItem extends StatefulWidget {
   int type;
   QueryModel model;
@@ -220,9 +221,12 @@ class InteractiveNoticeItem extends StatefulWidget {
   State<StatefulWidget> createState() {
     return _InteractiveNoticeItemState();
   }
-}
+}*/
 
-class _InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
+class InteractiveNoticeItemState extends StatelessWidget {
+  int type;
+  QueryModel msgModel;
+  InteractiveNoticeItemState(this.type, this.msgModel);
   //评论内容：@和评论拿接口内容，点赞给固定内容
   String comment = "";
 
@@ -236,7 +240,6 @@ class _InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
 
   String senderName;
   String senderAvatarUrl;
-  QueryModel msgModel;
   int index;
   CommentDtoModel commentModel;
   HomeFeedModel homeFeedModel;
@@ -245,24 +248,6 @@ class _InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
   bool feedIsDelete = false;
   bool commentIsDelete = false;
   String commentState;
-  @override
-  void initState() {
-    super.initState();
-    msgModel = widget.model;
-    senderAvatarUrl = msgModel.senderAvatarUrl;
-    senderName = msgModel.senderName;
-    commentModel = msgModel.commentData;
-    coverImage = msgModel.coverUrl;
-    _getRefData();
-    if(widget.type==0){
-      if(msgModel.refType==2){
-        commentState = "回复了  ";
-      }else{
-        commentState = "";
-      }
-    }
-    _textSpanAdd();
-  }
 
 
   _getRefData()async{
@@ -282,12 +267,12 @@ class _InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
 
 
   }
-  List<BaseRichText> _atText() {
+  List<BaseRichText> _atText(BuildContext context) {
     List<BaseRichText> richList = [];
     atUserList.forEach((element) {
       richList.add(BaseRichText(
         comment.substring(element.index, element.len),
-        style: widget.type == 0 ? AppStyle.textMedium13 : AppStyle.textMediumBlue13,
+        style:type == 0 ? AppStyle.textMedium13 : AppStyle.textMediumBlue13,
         onTap: () {
           AppRouter.navigateToMineDetail(context,element.uid);
         },
@@ -297,7 +282,7 @@ class _InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
   }
 
   _textSpanAdd() {
-    if (widget.type == 0 || widget.type == 1) {
+    if (type == 0 || type == 1) {
       if(commentModel.content==null){
         commentIsDelete = true;
       }else{
@@ -318,7 +303,21 @@ class _InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.type == 0) {
+    print('-====================消息互动列表页Item  biuld');
+   senderAvatarUrl = msgModel.senderAvatarUrl;
+    senderName = msgModel.senderName;
+    commentModel = msgModel.commentData;
+    coverImage = msgModel.coverUrl;
+    _getRefData();
+    if(type==0){
+    if(msgModel.refType==2){
+    commentState = "回复了  ";
+    }else{
+    commentState = "";
+    }
+    }
+    _textSpanAdd();
+    if (type == 0) {
       ///判断文字的高度，动态改变
       TextPainter testSize = calculateTextWidth(
           "$commentState$comment", AppStyle.textRegular13, ScreenUtil.instance.screenWidthDp * 0.64, 3);
@@ -390,7 +389,7 @@ class _InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                   ),
                   maxLines: 3,
                   textOverflow: TextOverflow.ellipsis,
-                  richTexts: _atText(),
+                  richTexts: _atText(context),
                   headText: commentState,
                   headStyle: AppStyle.textMedium13,
                 ):Text("该评论已删除",style:AppStyle.textHintRegular13,),
@@ -408,10 +407,14 @@ class _InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
           !feedIsDelete
               ? InkWell(
                 onTap: (){
-                  if(msgModel.refType==0||msgModel.refType==2){
-                    if(msgModel.commentId!=null){
-                      getFeedDetail(homeFeedModel.id,comment: msgModel.commentData);
+                  if(type==0){
+                    if(msgModel.refType==0||msgModel.refType==2){
+                      if(msgModel.commentData!=null){
+                        getFeedDetail(context,homeFeedModel.id,comment: msgModel.commentData);
+                      }
                     }
+                  }else{
+                    getFeedDetail(context,homeFeedModel.id);
                   }
                 },
             child: Container(
@@ -449,7 +452,7 @@ class _InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     );
   }
 
-  getFeedDetail(int feedId,{CommentDtoModel comment}) async {
+  getFeedDetail(BuildContext context,int feedId,{CommentDtoModel comment}) async {
     HomeFeedModel feedModel = await feedDetail(id: feedId);
     List<HomeFeedModel> list = [];
     list.add(feedModel);
@@ -458,7 +461,7 @@ class _InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     // 跳转动态详情页
     Navigator.push(
       context,
-      new MaterialPageRoute(builder: (context) => FeedDetailPage(model: feedModel,comment: comment,)),
+      new MaterialPageRoute(builder: (context) => FeedDetailPage(model: feedModel,comment: comment,type: 2,)),
     );
   }
 }

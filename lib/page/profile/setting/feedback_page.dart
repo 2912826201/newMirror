@@ -214,16 +214,16 @@ Widget _addImageItem(){
     //从相册获取照片
   _getImage(){
     AppRouter.navigateToMediaPickerPage(
-      context, 9, typeImage, false, startPageGallery, false, false, (result) {
+      context, 9, typeImage, true, startPageGallery, false, false, (result) {
       SelectedMediaFiles files = Application.selectedMediaFiles;
-      if (result != true || files == null) {
+      if (!result|| files == null) {
         print('===============================值为空退回');
         return;
       }
       Application.selectedMediaFiles = null;
       List<MediaFileModel> model = files.list;
           model.forEach((element) async{
-      if (element != null) {
+      if (element.croppedImage != null) {
         print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
         ByteData byteData = await element.croppedImage.toByteData(format: ui.ImageByteFormat.png);
         print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
