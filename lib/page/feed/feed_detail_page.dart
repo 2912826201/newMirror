@@ -71,7 +71,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   @override
   void initState() {
     print("进入详情页");
-    if(widget.type==2){
+    if(widget.comment!=null){
     WidgetsBinding.instance.addPostFrameCallback((callback){
       print('===============################################====  =build结束');
       RenderBox box = _key.currentContext.findRenderObject();

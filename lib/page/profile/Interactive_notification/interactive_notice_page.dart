@@ -408,10 +408,14 @@ class _InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
           !feedIsDelete
               ? InkWell(
                 onTap: (){
-                  if(msgModel.refType==0||msgModel.refType==2){
-                    if(msgModel.commentId!=null){
-                      getFeedDetail(homeFeedModel.id,comment: msgModel.commentData);
+                  if(widget.type==0){
+                    if(msgModel.refType==0||msgModel.refType==2){
+                      if(msgModel.commentData!=null){
+                        getFeedDetail(homeFeedModel.id,comment: msgModel.commentData);
+                      }
                     }
+                  }else{
+                    getFeedDetail(homeFeedModel.id);
                   }
                 },
             child: Container(

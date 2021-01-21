@@ -101,8 +101,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     } else {
       isMselfId = false;
     }
-      _getUserInfo();
-      _getFollowCount();
+      _getUserInfo(id: widget.userId);
+      _getFollowCount(id: widget.userId);
     scrollController.addListener(() {
       /* if (scrollController.hasClients) {*/
       if (scrollController.offset >=
