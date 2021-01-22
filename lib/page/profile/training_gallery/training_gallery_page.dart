@@ -14,7 +14,6 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
-import 'package:mirror/page/profile/training_gallery/training_gallery_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -209,13 +208,48 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   Widget _buildImage(BuildContext context, int index, int dayIndex) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return TrainingGalleryDetailPage(
-            _dataList,
-            dayIndex: dayIndex,
-            imageIndex: index,
-          );
-        }));
+        AppRouter.navigateToTrainingGalleryDetailPage(context, _dataList, (result) {
+          if (result == null) {
+            return;
+          }
+
+          TrainingGalleryResult galleryResult = result as TrainingGalleryResult;
+          //TODO 目前只处理删除操作结果 还没有同步更新我的页面的相册数量
+          //要确保遍历后再进行增删操作
+          if (galleryResult.operation == -1) {
+            Set<int> deleteImageIdSet = Set<int>();
+            galleryResult.list.forEach((deleteImage) {
+              deleteImageIdSet.add(deleteImage.id);
+            });
+
+            List<TrainingGalleryDayModel> deleteDayList = [];
+            for (TrainingGalleryDayModel day in _dataList) {
+              List<TrainingGalleryImageModel> deleteImageList = [];
+              for (TrainingGalleryImageModel image in day.list) {
+                if (deleteImageIdSet.contains(image.id)) {
+                  deleteImageList.add(image);
+                }
+              }
+              if (deleteImageList.isNotEmpty) {
+                deleteImageList.forEach((deleteImage) {
+                  day.list.remove(deleteImage);
+                });
+                //检查是否列表中还有数据 如果没有则整条要删掉
+                if (day.list.isEmpty) {
+                  deleteDayList.add(day);
+                }
+              }
+            }
+            if (deleteDayList.isNotEmpty) {
+              deleteDayList.forEach((deleteDay) {
+                _dataList.remove(deleteDay);
+              });
+              // 有整条删掉的数据后默认重新更新tag 不做复杂的数据的比较了
+              SuspensionUtil.setShowSuspensionStatus(_dataList);
+            }
+            setState(() {});
+          }
+        }, dayIndex: dayIndex, imageIndex: index);
       },
       child: CachedNetworkImage(
         imageUrl: _dataList[dayIndex].list[index].url,
@@ -299,4 +333,10 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
       ToastShow.show(msg: "上传失败", context: context);
     }
   }
+}
+
+class TrainingGalleryResult {
+  //-1删除 1添加
+  int operation;
+  List<TrainingGalleryImageModel> list;
 }
