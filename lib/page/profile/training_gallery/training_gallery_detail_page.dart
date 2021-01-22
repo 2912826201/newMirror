@@ -6,8 +6,11 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/api/training/training_gallery_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/dto/download_dto.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/loading.dart';
 import 'package:mirror/widget/scale_view.dart';
 
 import 'training_gallery_page.dart';
@@ -87,7 +90,7 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
                 color: AppColor.black,
               ),
               onPressed: () {
-                _showMorePopup(context, _imageList[_currentIndex].id);
+                _showMorePopup(context, _imageList[_currentIndex]);
               }),
         ],
       ),
@@ -130,17 +133,17 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
     return DateFormat('MM月dd日 HH:mm').format(DateTime.fromMillisecondsSinceEpoch(_imageList[_currentIndex].createTime));
   }
 
-  _showMorePopup(BuildContext context, int id) {
+  _showMorePopup(BuildContext context, TrainingGalleryImageModel image) {
     showModalBottomSheet(
         context: context,
         elevation: 0,
         backgroundColor: AppColor.transparent,
         builder: (context) {
-          return _buildMorePopup(id);
+          return _buildMorePopup(image);
         });
   }
 
-  _buildMorePopup(int id) {
+  _buildMorePopup(TrainingGalleryImageModel image) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
@@ -152,7 +155,8 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
           GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () {
-              print("保存本地");
+              Navigator.pop(context);
+              _saveImage(image.url);
             },
             child: Container(
               width: ScreenUtil.instance.screenWidthDp,
@@ -172,11 +176,11 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
                 return;
               }
               _isRequesting = true;
-              bool result = await deleteAlbum([id]);
+              bool result = await deleteAlbum([image.id]);
               _isRequesting = false;
               if(result != null && result){
                 Navigator.pop(context);
-                _afterDelete(id);
+                _afterDelete(image.id);
               }
             },
             child: Container(
@@ -237,5 +241,9 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
     } else {
       setState(() {});
     }
+  }
+
+  _saveImage(String url) async {
+
   }
 }

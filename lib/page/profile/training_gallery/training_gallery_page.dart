@@ -18,6 +18,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/loading.dart';
 
 /// training_gallery_page
 /// Created by yangjiayi on 2021/1/20.
@@ -271,6 +272,8 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
       return;
     }
 
+    Loading.showLoading(context);
+
     for (MediaFileModel model in files.list) {
       if (model.croppedImage != null) {
         print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
@@ -332,6 +335,8 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
     } else {
       ToastShow.show(msg: "上传失败", context: context);
     }
+
+    Loading.hideLoading(context);
   }
 }
 
