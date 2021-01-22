@@ -88,9 +88,9 @@ class CommentInputBoxState extends State<CommentInputBox> {
                 ),
                 onTap: () {
                   openInputBottomSheet(
-                    context: this.context,
+                    buildContext: this.context,
                     hintText: widget.isUnderline ? "说点什么吧~" : "喜欢就评论吧~",
-                    voidCallback: (String text,List<Rule> rules, BuildContext context) {
+                    voidCallback: (String text,List<Rule> rules) {
                       List<AtUsersModel> atListModel = [];
                       for (Rule rule in rules) {
                         AtUsersModel atModel = AtUsersModel();

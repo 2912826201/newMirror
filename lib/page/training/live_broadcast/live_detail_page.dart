@@ -726,7 +726,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
               replyCommentId = -1;
 
               openInputBottomSheet(
-                context: this.context,
+                buildContext: this.context,
                 voidCallback: _publishComment,
               );
             },
@@ -1106,7 +1106,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
                     replyId = value.uid;
                     replyCommentId = value.id;
                     openInputBottomSheet(
-                      context: this.context,
+                      buildContext: this.context,
                       hintText: "回复 " + value.name,
                       voidCallback: _publishComment,
                     );
@@ -1438,7 +1438,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   }
 
   //发布评论
-  _publishComment(String text, List<Rule> rules, BuildContext context1) async {
+  _publishComment(String text, List<Rule> rules) async {
     List<AtUsersModel> atListModel = [];
     for (Rule rule in rules) {
       AtUsersModel atModel = new AtUsersModel();

@@ -196,16 +196,10 @@ class FeedDetailPageState extends State<FeedDetailPage> {
         loadStatus = LoadingStatus.STATUS_COMPLETED;
       }
       // commentModel.insert(commentModel.length, CommentDtoModel());
-
     });
     context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
   }
 
-  // getFeedDetail() async {
-  //   feedModel = await feedDetail(id: widget.model.id);
-  //   setState(() {
-  //   });
-  // }
   @override
   Widget build(BuildContext context) {
     print("动态详情页--${feedModel}");
@@ -270,7 +264,6 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                   ),
                   // 课程信息和地址
                   Offstage(
-
                     offstage: (feedModel.address == null),
                     child: Container(
                       margin: EdgeInsets.only(left: 16, right: 16),

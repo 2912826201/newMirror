@@ -32,6 +32,7 @@ class BottomListViewSubCommentListItem extends StatefulWidget{
 
 }
 class BottomListViewSubCommentListItemState extends State<BottomListViewSubCommentListItem> {
+  BottomListViewSubCommentListItemState({this.model,this.feedId,this.mainIndex,this.commentDtoModel,this.subIndex});
   CommentDtoModel model;
   int subIndex;
   int mainIndex;
@@ -86,9 +87,9 @@ class BottomListViewSubCommentListItemState extends State<BottomListViewSubComme
       behavior: HitTestBehavior.opaque,
       onTap: () {
         openInputBottomSheet(
-          context: context,
+          buildContext: context,
           hintText: "回复 ${model.name}",
-          voidCallback: (String text, List<Rule> rules, BuildContext context) {
+          voidCallback: (String text, List<Rule> rules) {
             List<AtUsersModel> atListModel = [];
             for (Rule rule in rules) {
               AtUsersModel atModel;
