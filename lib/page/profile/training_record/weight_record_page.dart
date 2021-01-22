@@ -23,7 +23,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
   @override
   void initState() {
     super.initState();
-    loadingStatus = LoadingStatus.STATUS_IDEL;
+    loadingStatus = LoadingStatus.STATUS_LOADING;
     loadData();
   }
 
@@ -211,6 +211,19 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
 
   //获取头部ui
   Widget getTopUi() {
+    if (loadingStatus == LoadingStatus.STATUS_LOADING) {
+      return SliverToBoxAdapter(
+        child: Container(
+          height: 224,
+          width: MediaQuery.of(context).size.width,
+          margin: const EdgeInsets.only(top: 16, bottom: 16),
+          child: UnconstrainedBox(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      );
+    }
+
     if (weightDataMap == null || weightDataMap["recordList"] == null || weightDataMap["recordList"].length < 1) {
       return SliverToBoxAdapter(
         child: Container(

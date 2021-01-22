@@ -6,9 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/database/download_video_course_db_helper.dart';
 import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/live_video_model.dart';
+import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
@@ -32,22 +33,20 @@ import 'package:provider/provider.dart';
 
 /// 视频详情页
 class VideoDetailPage extends StatefulWidget {
-  const VideoDetailPage({Key key, this.heroTag, this.liveCourseId, this.courseId, this.videoModel}) : super(key: key);
+  const VideoDetailPage({Key key, this.heroTag, this.liveCourseId, this.videoModel}) : super(key: key);
 
   final String heroTag;
   final int liveCourseId;
-  final int courseId;
   final LiveVideoModel videoModel;
 
   @override
   createState() {
-    return VideoDetailPageState(
-        heroTag: heroTag, videoCourseId: liveCourseId, courseId: liveCourseId, videoModel: videoModel);
+    return VideoDetailPageState(heroTag: heroTag, videoCourseId: liveCourseId, videoModel: videoModel);
   }
 }
 
 class VideoDetailPageState extends State<VideoDetailPage> {
-  VideoDetailPageState({Key key, this.heroTag, this.videoCourseId, this.courseId, this.videoModel});
+  VideoDetailPageState({Key key, this.heroTag, this.videoCourseId, this.videoModel});
 
   //头部hero的标签
   String heroTag;
@@ -55,8 +54,6 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   //视频课程的id
   int videoCourseId;
 
-  //视频课程的大课程的id
-  int courseId;
 
   //当前视频课程的model
   LiveVideoModel videoModel;
@@ -138,6 +135,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
 
   //下载完成后视频文件的本地地址Map
   Map<String, String> videoPathMap = {};
+
+  //是否收藏
+  bool isFavor = false;
 
   @override
   void initState() {
@@ -325,6 +325,8 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                           startTime: videoModel.startTime,
                           endTime: videoModel.endTime,
                           shareBtnClick: _shareBtnClick,
+                          favorBtnClick: _favorBtnClick,
+                          isFavor: isFavor,
                         ),
                       ),
                       _getTitleWidget(),
@@ -1494,7 +1496,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     if (isHotOrTime) {
       if (courseCommentHot == null) {
         Map<String, dynamic> commentModel = await queryListByHot2(
-            targetId: courseId, targetType: 3, page: courseCommentPageHot, size: courseCommentPageSize);
+            targetId: videoCourseId, targetType: 3, page: courseCommentPageHot, size: courseCommentPageSize);
         if (commentModel != null) {
           courseCommentHot = CommentModel.fromJson(commentModel);
           courseCommentPageHot++;
@@ -1504,7 +1506,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     } else {
       if (courseCommentTime == null) {
         Map<String, dynamic> commentModel = await queryListByTime(
-            targetId: courseId, targetType: 3, page: courseCommentPageTime, size: courseCommentPageSize);
+            targetId: videoCourseId, targetType: 3, page: courseCommentPageTime, size: courseCommentPageSize);
         if (commentModel != null) {
           courseCommentTime = CommentModel.fromJson(commentModel);
           courseCommentPageTime++;
@@ -1517,7 +1519,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
 
     //其他人完成训练
     if (otherUsers == null) {
-      Map<String, dynamic> map = await getFinishedVideoCourse(courseId, 3);
+      Map<String, dynamic> map = await getFinishedVideoCourse(videoCourseId, 3);
       if (map != null) {
         otherUsers = <UserModel>[];
         map["list"].forEach((v) {
@@ -1724,7 +1726,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   void _onLoading() async {
     Future.delayed(Duration(milliseconds: 500), () async {
       Map<String, dynamic> mapModel = await (isHotOrTime ? queryListByHot2 : queryListByTime)(
-          targetId: courseId,
+          targetId: videoCourseId,
           targetType: 3,
           page: (isHotOrTime ? courseCommentPageHot : courseCommentPageTime),
           size: courseCommentPageSize);
@@ -1802,6 +1804,18 @@ class VideoDetailPageState extends State<VideoDetailPage> {
         context: context, map: videoModel.toJson(), chatTypeModel: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
   }
 
+  //分享的收藏按钮
+  void _favorBtnClick() async {
+    print("点击了${isFavor ? "取消收藏" : "收藏"}按钮");
+    Map<String, dynamic> map = await (!isFavor ? addToMyCourse : deleteFromMyCourse)(videoModel.id);
+    if (map != null && map["state"] != null && map["state"]) {
+      isFavor = !isFavor;
+      setState(() {
+
+      });
+    }
+  }
+
   void toastShow(String text) {
     ToastShow.show(msg: text, context: context);
   }
@@ -1861,13 +1875,18 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   void downloadAllCompleteVideo() {
     //等一下 避免数据还没有写进数据库
     Future.delayed(Duration(milliseconds: 200), () async {
+      List<String> urls = <String>[];
+      List<String> filePaths = <String>[];
       if (videoModel.coursewareDto.videoMapList != null || videoModel.coursewareDto.videoMapList.length > 0) {
         for (Map<String, dynamic> map in videoModel.coursewareDto.videoMapList) {
-          if(videoPathMap[map["videoUrl"]] == null){
+          urls.add(map["videoUrl"]);
+          if (videoPathMap[map["videoUrl"]] == null) {
             videoPathMap[map["videoUrl"]] = await FileUtil().getDownloadedPath(map["videoUrl"]);
           }
+          filePaths.add(videoPathMap[map["videoUrl"]]);
         }
       }
+      DownloadVideoCourseDBHelper().update(videoModel, urls, filePaths);
       AppRouter.navigateToVideoCoursePlay(context, videoPathMap, videoModel);
     });
   }

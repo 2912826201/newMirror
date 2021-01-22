@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/live_video_model.dart';
+import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';

@@ -9,7 +9,7 @@ import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/live_video_model.dart';
+import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/model/user_model.dart';

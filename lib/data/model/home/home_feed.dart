@@ -1,6 +1,5 @@
+import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/user_model.dart';
-
-import '../live_model.dart';
 
 enum CommentTypes {
   commentFeed, // 评论动态
@@ -37,6 +36,7 @@ class HomeFeedModel {
 
   // 添加字段
   int totalCount = -1;
+
   HomeFeedModel({
     this.id,
     this.type,
@@ -282,6 +282,7 @@ class TopicDtoModel {
   List<String> pics = [];
   String description;
   String avatarUrl;
+
   TopicDtoModel(
       {this.id,
       this.uid,
@@ -387,27 +388,26 @@ class CourseDtoModel {
   int createTime;
   int updateTime;
 
-  CourseDtoModel(
-      {this.id,
-      this.courseId,
-      this.name,
-      this.creatorId,
-      this.coachId,
-      this.coursewareId,
-      this.videoUrl,
-      this.startTime,
-      this.endTime,
-      this.videoSeconds,
-      this.isBooked,
-      this.totalTrainingTime,
-      this.totalTrainingAmount,
-      this.totalCalories,
-      this.finishAmount,
-      this.dataState,
-      this.createTime,
-      this.updateTime,
-      this.coachDto,
-      this.coursewareDto});
+  CourseDtoModel({this.id,
+    this.courseId,
+    this.name,
+    this.creatorId,
+    this.coachId,
+    this.coursewareId,
+    this.videoUrl,
+    this.startTime,
+    this.endTime,
+    this.videoSeconds,
+    this.isBooked,
+    this.totalTrainingTime,
+    this.totalTrainingAmount,
+    this.totalCalories,
+    this.finishAmount,
+    this.dataState,
+    this.createTime,
+    this.updateTime,
+    this.coachDto,
+    this.coursewareDto});
 
   CourseDtoModel.fromJson(Map<String, dynamic> json) {
     id = json["id"];
@@ -487,6 +487,7 @@ class CommentDtoModel {
   String replyName;
   int delete;
   int pullNumber = 0;
+
   //是否选中
   bool itemChose = false;
 // 是否显示隐藏按钮
@@ -504,25 +505,24 @@ class CommentDtoModel {
   // 添加字段
   int totalCount = -1;
 
-  CommentDtoModel(
-      {this.id,
-      this.targetId,
-      this.type,
-      this.content,
-      this.createTime,
-      this.uid,
-      this.name,
-      this.avatarUrl,
-      this.replyCount,
-      this.laudCount,
-      this.isLaud,
-      this.top,
-      this.replyId,
-      this.replyName,
-      this.delete,
-      this.picUrls,
-      this.atUsers,
-      this.replys});
+  CommentDtoModel({this.id,
+    this.targetId,
+    this.type,
+    this.content,
+    this.createTime,
+    this.uid,
+    this.name,
+    this.avatarUrl,
+    this.replyCount,
+    this.laudCount,
+    this.isLaud,
+    this.top,
+    this.replyId,
+    this.replyName,
+    this.delete,
+    this.picUrls,
+    this.atUsers,
+    this.replys});
 
   CommentDtoModel.fromJson(Map<String, dynamic> json) {
     id = json["id"];

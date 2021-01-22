@@ -8,7 +8,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/live_video_model.dart';
+import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
@@ -31,17 +31,15 @@ import 'package:provider/provider.dart';
 
 /// 直播详情页
 class LiveDetailPage extends StatefulWidget {
-  const LiveDetailPage({Key key, this.heroTag, this.liveCourseId, this.courseId, this.liveModel}) : super(key: key);
+  const LiveDetailPage({Key key, this.heroTag, this.liveCourseId, this.liveModel}) : super(key: key);
 
   final String heroTag;
   final int liveCourseId;
-  final int courseId;
   final LiveVideoModel liveModel;
 
   @override
   createState() {
-    return LiveDetailPageState(
-        heroTag: heroTag, liveCourseId: liveCourseId, courseId: liveCourseId, liveModel: liveModel);
+    return LiveDetailPageState(heroTag: heroTag, liveCourseId: liveCourseId, liveModel: liveModel);
   }
 }
 
@@ -49,7 +47,6 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   LiveDetailPageState({Key key,
     this.heroTag,
     this.liveCourseId,
-    this.courseId,
     this.liveModel});
 
   //头部hero的标签
@@ -57,9 +54,6 @@ class LiveDetailPageState extends State<LiveDetailPage> {
 
   //直播课程的id
   int liveCourseId;
-
-  //直播课程的大课程的id
-  int courseId;
 
   //当前直播的model
   LiveVideoModel liveModel;
@@ -1367,10 +1361,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     if (isHotOrTime) {
       if (courseCommentHot == null) {
         Map<String, dynamic> commentModel = await queryListByHot2(
-            targetId: courseId,
-            targetType: 1,
-            page: courseCommentPageHot,
-            size: courseCommentPageSize);
+            targetId: liveCourseId, targetType: 1, page: courseCommentPageHot, size: courseCommentPageSize);
         if (commentModel != null) {
           courseCommentHot = CommentModel.fromJson(commentModel);
           courseCommentPageHot++;
@@ -1380,7 +1371,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     } else {
       if (courseCommentTime == null) {
         Map<String, dynamic> commentModel = await queryListByTime(
-            targetId: courseId,
+            targetId: liveCourseId,
             targetType: 1,
             page: courseCommentPageTime,
             size: courseCommentPageSize);
@@ -1619,7 +1610,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     Future.delayed(Duration(milliseconds: 500), () async{
       Map<String, dynamic> mapModel = await (isHotOrTime
           ? queryListByHot2
-          : queryListByTime)(targetId: courseId,
+          : queryListByTime)(targetId: liveCourseId,
           targetType: 1,
           page: (isHotOrTime ? courseCommentPageHot : courseCommentPageTime),
           size: courseCommentPageSize);

@@ -6,9 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/data/model/live_video_model.dart';
+import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
+import 'package:mirror/page/search/search.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
@@ -113,7 +114,10 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
             child: IconButton(
               icon: Icon(Icons.search),
               onPressed: () {
-                ToastShow.show(msg: "搜索界面", context: context);
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return SearchPage();
+                }));
+                print("点击了搜索");
               },
             ),
           )
@@ -659,8 +663,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
       onTap: () {
         //点击事件
         print("====heroTagArray[index]:${heroTagArray[index]}");
-        AppRouter.navigateToVideoDetail(
-            context, heroTagArray[index], videoModel.id, videoModel.coursewareId, videoModel);
+        AppRouter.navigateToVideoDetail(context, videoModel.id, heroTag: heroTagArray[index], videoModel: videoModel);
       },
     );
   }

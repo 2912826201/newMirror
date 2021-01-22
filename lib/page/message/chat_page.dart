@@ -10,7 +10,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/live_video_model.dart';
+import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
@@ -1576,14 +1576,12 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       jumpPage(ProfileDetailPage(userId: map["uid"]), false, context);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
       // ToastShow.show(msg: "跳转直播课详情界面", context: context);
-      LiveVideoModel videoModel = LiveVideoModel.fromJson(map);
-      AppRouter.navigateToLiveDetail(context, msgId, videoModel.id, videoModel.coursewareId, videoModel);
+      LiveVideoModel liveModel = LiveVideoModel.fromJson(map);
+      AppRouter.navigateToLiveDetail(context, liveModel.id, heroTag: msgId, liveModel: liveModel);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE) {
       // ToastShow.show(msg: "跳转视频课详情界面", context: context);
       LiveVideoModel videoModel = LiveVideoModel.fromJson(map);
-      // print(map.toString());
-      AppRouter.navigateToVideoDetail(context, msgId,
-          videoModel.id, videoModel.coursewareId, videoModel);
+      AppRouter.navigateToVideoDetail(context, videoModel.id, heroTag: msgId, videoModel: videoModel);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VOICE) {
       ToastShow.show(msg: "播放录音", context: context);
       updateMessage(chatDataList[position], (code) {

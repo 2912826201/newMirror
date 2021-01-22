@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/search/search_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/data_response_model.dart';
-import 'package:mirror/data/model/live_video_model.dart';
+import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/training/video_course/video_course_list_page.dart';
@@ -242,8 +242,8 @@ class SearchCourseItemState extends State<SearchCourseItem> {
       onTap: () {
         //点击事件
         print("====heroTagArray[index]:${heroTagArray[widget.index]}");
-        AppRouter.navigateToVideoDetail(context, heroTagArray[widget.index], widget.videoModel.id,
-            widget.videoModel.coursewareId, widget.videoModel);
+        AppRouter.navigateToVideoDetail(context, widget.videoModel.id,
+            heroTag: heroTagArray[widget.index], videoModel: widget.videoModel);
       },
     );
   }
