@@ -266,6 +266,7 @@ class _FriendsPageState extends State<FriendsPage> {
               alignment: Alignment.center,
               child: TextField(
                 textInputAction: TextInputAction.search,
+                focusNode:FocusNode(),
                 controller: textController,
                 onChanged: (text) {
                   if (StringUtil.strNoEmpty(text)) {

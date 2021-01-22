@@ -3,7 +3,7 @@ import 'package:mirror/api/api.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/live_video_model.dart';
+import 'package:mirror/data/model/training/live_video_model.dart';
 
 // 获取动态列表
 const String PULLLISTFEED = "/appuser/web/feed/pullList";
@@ -63,21 +63,26 @@ Future<DataResponseModel> getPullList({@required int type, @required int size, i
 }
 
 // 获取推荐动态列表
-Future<List> getHotList({@required size}) async {
+Future<DataResponseModel> getHotList({@required size}) async {
   Map<String, dynamic> params = {};
   params["size"] = size;
   BaseResponseModel responseModel = await requestApi(PULLHOTLIST, params);
   if (responseModel.isSuccess) {
-    Map<String, dynamic> model = responseModel.data;
-    List<HomeFeedModel> feedModelList = [];
+
+    DataResponseModel dataResponseModel;
     if (responseModel.data != null) {
-      if (model["list"] != null) {
-        model["list"].forEach((v) {
-          feedModelList.add(HomeFeedModel.fromJson(v));
-        });
-      }
+      dataResponseModel = DataResponseModel.fromJson(responseModel.data);
     }
-    return feedModelList;
+    return dataResponseModel;
+    // List<HomeFeedModel> feedModelList = [];
+    // if (responseModel.data != null) {
+    //   if (model["list"] != null) {
+    //     model["list"].forEach((v) {
+    //       feedModelList.add(HomeFeedModel.fromJson(v));
+    //     });
+    //   }
+    // }
+    // return feedModelList;
   } else {
     return null;
   }

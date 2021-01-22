@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
+import 'package:mirror/api/search/search_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
@@ -10,6 +11,7 @@ import 'package:mirror/data/database/search_history_db_helper.dart';
 import 'package:mirror/data/dto/search_history_dto.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/search/sub_page/search_complex.dart';
@@ -198,7 +200,7 @@ class SearchMiddleView extends StatefulWidget {
 class SearchMiddleViewState extends State<SearchMiddleView> {
   List<TopicDtoModel> topicList = [];
   List<SearchHistoryDto> searchHistoryList = [];
-
+  List<LiveVideoModel> liveVideoList = [];
   @override
   void initState() {
     // 合并请求
@@ -207,6 +209,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
       getRecommendTopic(size: 20),
       // 请求历史记录
       SearchHistoryDBHelper().querySearchHistory(context.read<ProfileNotifier>().profile.uid),
+      recommendCourse(),
       // 请求热门课程
     ]).then((results) {
       print("历史记录（（（（（（（））））））$searchHistoryList");
@@ -218,6 +221,11 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
       }
       if (context.read<TokenNotifier>().isLoggedIn) {
         searchHistoryList = results[1];
+      }
+      List<LiveVideoModel> liveList = [];
+      liveList = results[2];
+      if (liveList.isNotEmpty) {
+        liveVideoList.addAll(liveList);
       }
       setState(() {});
     }).catchError((e) {
@@ -235,8 +243,8 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
         // 最近搜索标题栏
         searchHistoryList.isNotEmpty ? searchTitleBar(context) : Container(),
         searchHistoryList.isNotEmpty ? historyRecord(context) : Container(),
-        HotCourseTitleBar(),
-        HotCourseContent(),
+        liveVideoList.isNotEmpty ?  HotCourseTitleBar() : Container(),
+        liveVideoList.isNotEmpty ? HotCourseContent() : Container(),
         topicList.isNotEmpty ? HotTopicTitleBar() : Container(),
         topicList.isNotEmpty ? HotTopicContent() : Container(),
       ],
@@ -329,7 +337,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
 // 热面课程推荐类容
   HotCourseContent() {
     return Container(
-      height: 96,
+      height: liveVideoList.length > 2 ? 96 : 48,
       width: ScreenUtil.instance.screenWidthDp,
       margin: EdgeInsets.only(
         left: 16,
@@ -349,7 +357,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
   }
 
   // 热门课程推荐类容Item
-  List<Widget> HotCourseContentItem() => List.generate(4, (index) {
+  List<Widget> HotCourseContentItem() => List.generate(liveVideoList.length > 4 ? 4 : liveVideoList.length, (index) {
         return Container(
           height: 48,
           width: (ScreenUtil.instance.width - 48) / 2,
@@ -369,10 +377,10 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("胸背训练教学动作", style: AppStyle.textRegular14, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    Text(liveVideoList[index].title, style: AppStyle.textRegular14, maxLines: 1, overflow: TextOverflow.ellipsis),
                     Spacer(),
                     Text(
-                      "描述信息描述信息描述是男是女你说呢",
+                      liveVideoList[index].description,
                       style: AppStyle.textSecondaryRegular12,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

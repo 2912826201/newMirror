@@ -157,15 +157,15 @@ class CommentBottomListView extends StatelessWidget {
             behavior: HitTestBehavior.opaque,
             onTap: () {
               openInputBottomSheet(
-                context: context,
+                buildContext: context,
                 hintText: "回复 ${this.model.name}",
-                voidCallback: (String text, List<Rule> rules, BuildContext context) {
+                voidCallback: (String text, List<Rule> rules) {
                   List<AtUsersModel> atListModel = [];
                   for (Rule rule in rules) {
                     AtUsersModel atModel;
                     atModel.index = rule.startIndex;
                     atModel.len = rule.endIndex;
-                    atModel.uid = 1008611;
+                    atModel.uid = rule.id;
                     atListModel.add(atModel);
                   }
                   // 评论父评论

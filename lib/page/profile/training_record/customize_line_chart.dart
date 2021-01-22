@@ -655,38 +655,10 @@ class MyPainter extends CustomPainter {
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => true;
 
-  /// Draws smooth lines between each point.
+  //绘制三次贝塞尔曲线
   void _drawSmoothLine(Canvas canvas, Paint paint, List<Point> points) {
-    print("开始绘制-----points：${points.length}");
-    var targetPoints = List<Point>();
-    targetPoints.addAll(points);
-    targetPoints.add(Point(points[points.length - 1].x * 2, points[points.length - 1].y * 2));
-    var x0, y0, x1, y1, t0, path = Path();
-    for (int i = 0; i < targetPoints.length; i++) {
-      var t1;
-      var x = targetPoints[i].x;
-      var y = targetPoints[i].y;
-      if (x == x1 && y == y1) return;
-      switch (i) {
-        case 0:
-          path.moveTo(x, y);
-          break;
-        case 1:
-          break;
-        case 2:
-          t1 = MonotoneX.slope3(x0, y0, x1, y1, x, y);
-          MonotoneX.point(path, x0, y0, x1, y1, MonotoneX.slope2(x0, y0, x1, y1, t1), t1);
-          break;
-        default:
-          t1 = MonotoneX.slope3(x0, y0, x1, y1, x, y);
-          MonotoneX.point(path, x0, y0, x1, y1, t0, t1);
-      }
-      x0 = x1;
-      y0 = y1;
-      x1 = x;
-      y1 = y;
-      t0 = t1;
-    }
+    final path = new Path()..moveTo(points.first.x.toDouble(), points.first.y.toDouble());
+    MonotoneX.addCurve(path, points);
     canvas.drawPath(path, paint);
   }
 }
@@ -731,9 +703,10 @@ class MyPainter1 extends CustomPainter {
     ));
     pb.pushStyle(ui.TextStyle(color: AppColor.textHint, fontWeight: FontWeight.bold));
     pb.addText(benchmarkValueText);
-    ParagraphConstraints pc = ParagraphConstraints(width: 50);
-    Paragraph paragraph = pb.build()..layout(pc);
-    double xValue = size.width - 50;
+    ParagraphConstraints pc = ParagraphConstraints(width: 60);
+    Paragraph paragraph = pb.build()
+      ..layout(pc);
+    double xValue = size.width - 60;
     Offset offset = Offset(xValue, getPointHeight(benchmarkValue, size) - 23);
     canvas.drawParagraph(paragraph, offset); /**/
   }

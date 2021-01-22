@@ -3,8 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/live_video_model.dart';
+import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
@@ -83,7 +84,8 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
 
   // 请求下一页
   int lastTime;
-
+ // 是否存在下一页
+  int hasNext;
   // 加载中默认文字
   String loadText = "";
 
@@ -138,17 +140,27 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       // 请求推荐接口
       getHotList(size: 20),
       // 请求推荐教练
-      // recommendCoach(),
       newRecommendCoach(),
     ]).then((results) {
       if (results[0] != null) {
-        List<HomeFeedModel> modelList = results[0];
+        List<HomeFeedModel> modelList = [];
+        DataResponseModel dataModel = results[0];
+        if (dataModel.list.isNotEmpty) {
+          dataModel.list.forEach((v) {
+            modelList.add(HomeFeedModel.fromJson(v));
+          });
+        }
         if (modelList.isNotEmpty) {
           for (HomeFeedModel model in modelList) {
             recommendIdList.add(model.id);
           }
           recommendModelList.addAll(modelList);
         }
+        if( hasNext == 0) {
+          loadStatus = LoadingStatus.STATUS_COMPLETED;
+          loadText = "";
+        }
+        hasNext = dataModel.hasNext;
         // 更新全局监听
         context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
       }
@@ -172,31 +184,30 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
         loadStatus = LoadingStatus.STATUS_LOADING;
       });
     }
-    // 请求推荐接口
-    List<HomeFeedModel> modelList = await getHotList(size: 20);
-
-    setState(() {
-      if (dataPage == 1) {
-        if (modelList.isNotEmpty) {
-          for (HomeFeedModel model in modelList) {
-            recommendIdList.add(model.id);
-          }
-          recommendModelList.addAll(modelList);
-        }
-      } else if (dataPage > 1) {
-        if (modelList.isNotEmpty) {
-          for (HomeFeedModel model in modelList) {
-            recommendIdList.add(model.id);
-          }
-          recommendModelList.addAll(modelList);
-        }
-        loadStatus = LoadingStatus.STATUS_IDEL;
-        loadText = "加载中...";
-      } else {
-        // 加载完毕
-        loadText = "已加载全部动态";
-        loadStatus = LoadingStatus.STATUS_COMPLETED;
+    DataResponseModel dataModel = DataResponseModel();
+    List<HomeFeedModel> modelList = [];
+    if (hasNext != 0) {
+      // 请求推荐接口
+      dataModel = await getHotList(size: 20);
+      if (dataModel.list.isNotEmpty) {
+        dataModel.list.forEach((v) {
+          modelList.add(HomeFeedModel.fromJson(v));
+        });
       }
+      if (modelList.isNotEmpty) {
+        for (HomeFeedModel model in modelList) {
+          recommendIdList.add(model.id);
+        }
+        recommendModelList.addAll(modelList);
+      }
+      loadStatus = LoadingStatus.STATUS_IDEL;
+      loadText = "加载中...";
+    } else {
+      loadText = "已加载全部动态";
+      loadStatus = LoadingStatus.STATUS_COMPLETED;
+    }
+    hasNext = dataModel.hasNext;
+    setState(() {
     });
     // 更新全局监听
     context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
@@ -239,6 +250,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                 }
                 loadStatus = LoadingStatus.STATUS_LOADING;
                 loadText = "加载中...";
+                hasNext = null;
                 mergeRequest();
                 // List<HomeFeedModel> modelList = await getHotList(size: 20);
                 // setState(() {

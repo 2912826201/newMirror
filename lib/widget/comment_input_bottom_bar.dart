@@ -21,31 +21,24 @@ import 'package:toast/toast.dart';
 
 import 'feed/release_feed_input_formatter.dart';
 
-typedef VoidCallback = void Function(String content, List<Rule> rules, BuildContext context);
+typedef VoidCallback = void Function(String content, List<Rule> rules);
 
 Future openInputBottomSheet({
-  @required BuildContext context,
+  @required BuildContext buildContext,
   @required VoidCallback voidCallback,
   String hintText,
 }) async {
   await showModalBottomSheet(
       isScrollControlled: true,
-      context: context,
+      context: buildContext,
       enableDrag: false,
       backgroundColor: AppColor.transparent,
       builder: (BuildContext context) {
         FocusNode _commentFocus = FocusNode();
         return ChangeNotifierProvider(
             create: (_) => CommentEnterNotifier(),
-            builder: (context, _) {
+            builder: (providerContext, _) {
               return Container(
-                // decoration: BoxDecoration(
-                //   color: AppColor.white,
-                // borderRadius: BorderRadius.only(
-                //   topLeft: Radius.circular(15),
-                //   topRight: Radius.circular(15),
-                // ),
-                // ),
                 padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom), // !important
                 child: CommentInputBottomBar(
                   hintText: hintText,
@@ -140,6 +133,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
     });
     widgetsBinding = WidgetsBinding.instance;
     widgetsBinding.addPostFrameCallback((callback) {
+      print("进入");
       FocusScope.of(context).requestFocus(commentFocus);
     });
     _textEditingController.addListener(() {
@@ -530,7 +524,6 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                   voidCallback(
                                     text,
                                     rules,
-                                    context,
                                   );
                                 } else {
                                   ToastShow.show(msg: "不能发送空文本", context: context,gravity: Toast.CENTER);
@@ -580,7 +573,6 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                 voidCallback(
                                   _textEditingController.text,
                                   rules,
-                                  context,
                                 );
                                 Navigator.of(context).pop(1);
                               },
