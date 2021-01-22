@@ -59,6 +59,7 @@ void main() {
             ChangeNotifierProvider(
                 create: (_) => TokenNotifier(Application.token)),
             ChangeNotifierProvider(create: (_) => ProfileNotifier(Application.profile)),
+          // ValueListenableProvider<FeedMapNotifier>(builder: (_) => {},)
             ChangeNotifierProvider(create: (_) => FeedMapNotifier(feedMap: {})),
             ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
             ChangeNotifierProvider(create: (_) => ConversationNotifier()),

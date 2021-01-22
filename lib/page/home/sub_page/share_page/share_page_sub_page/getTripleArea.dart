@@ -153,6 +153,7 @@ class GetTripleAreaState extends State<GetTripleArea> {
         // margin: EdgeInsets.only(left: 6),
           child: Offstage(
             offstage: context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].laudCount) == null,
+
             child: //用Selector的方式监听数据
             Selector<FeedMapNotifier, int>(builder: (context,laudCount , child) {
               return Text("${StringUtil.getNumber(laudCount)}次赞",style: TextStyle(fontSize: 12),);
