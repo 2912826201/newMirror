@@ -103,27 +103,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   void initState() {
     // 合并请求
     mergeRequest();
-    // Future.wait([
-    // // 请求推荐接口
-    //  getHotList(size: 20),
-    //   // 请求推荐教练
-    //   recommendCoach(),
-    // ]).then((results) {
-    //   List<HomeFeedModel> modelList = results[0];
-    //    if (modelList.isNotEmpty) {
-    //      for (HomeFeedModel model in modelList) {
-    //        recommendIdList.add(model.id);
-    //      }
-    //      recommendModelList.addAll(modelList);
-    //    }
-    //   // 更新全局监听
-    //   context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
-    //   courseList = results[1];
-    //   setState(() {});
-    // }).catchError((e) {
-    //   print("报错了");
-    //   print(e);
-    // });
     _controller.addListener(() {
       if (_controller.position.pixels == _controller.position.maxScrollExtent) {
         dataPage += 1;
@@ -254,19 +233,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                 loadText = "加载中...";
                 hasNext = null;
                 mergeRequest();
-                // List<HomeFeedModel> modelList = await getHotList(size: 20);
-                // setState(() {
-                //   try {
-                //     if (modelList.isNotEmpty) {
-                //       for (HomeFeedModel model in modelList) {
-                //         recommendIdList.add(model.id);
-                //       }
-                //       recommendModelList.addAll(modelList);
-                //     }
-                //   } catch (e) {}
-                // });
-                // // 更新全局监听
-                // context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
               },
               child: CustomScrollView(
                 controller: _controller,

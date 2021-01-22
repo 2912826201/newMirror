@@ -101,6 +101,7 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin, WidgetsBi
   @override
   void dispose() {
     _controller.dispose();
+    print("IFPage销毁了页面");
     //销毁
     WidgetsBinding.instance.removeObserver(this);
     // _childController.dispose();

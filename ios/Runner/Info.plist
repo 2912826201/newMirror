@@ -30,6 +30,8 @@
 	<string>App正在征用麦克风，快点同意，否则自爆</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>App正在征用相册，快点同意，否则自爆</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>App正在添加相册，快点同意，否则自爆</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>App正在征用录音，快点同意，否则自爆</string>
 	<key>UILaunchStoryboardName</key>

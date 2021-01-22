@@ -9,6 +9,7 @@ import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
+import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/route/route_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
@@ -58,6 +59,7 @@ class AppRouter {
   static String pathWeightRecordPage = "/profile/weightrecordpage";
   static String pathTrainingRecordAllPage = "/profile/trainingrecord/trainingrecordallpage";
   static String pathTrainingGallery = "/profile/traininggallery";
+  static String pathTrainingGalleryDetail = "/profile/traininggallery/detail";
   static String pathMeCoursePage = "/profile/mecoursepage";
   static String pathMeDownloadVideoCoursePage = "/profile/mecoursepage/medownloadvideocoursepage";
   static String pathVipNotOpenPage = "/profile/vip/notopenpage";
@@ -111,6 +113,7 @@ class AppRouter {
     router.define(pathWeightRecordPage, handler: handlerWeightRecordPage);
     router.define(pathTrainingRecordAllPage, handler: handlerTrainingRecordAllPage);
     router.define(pathTrainingGallery, handler: handlerTrainingGallery);
+    router.define(pathTrainingGalleryDetail, handler: handlerTrainingGalleryDetail);
     router.define(pathMeCoursePage, handler: handlerMeCoursePage);
     router.define(pathMeDownloadVideoCoursePage, handler: handlerMeDownloadVideoCoursePage);
     router.define(pathVipNotOpenPage, handler: handlerVipNotOpen);
@@ -199,8 +202,8 @@ class AppRouter {
     _navigateToPage(context, pathVideoCourseList, {});
   }
 
-  static void navigateToVideoCoursePlay(BuildContext context, Map<String, String> videoPathMap,
-      LiveVideoModel videoCourseModel) {
+  static void navigateToVideoCoursePlay(
+      BuildContext context, Map<String, String> videoPathMap, LiveVideoModel videoCourseModel) {
     Map<String, dynamic> map = Map();
     map["videoPathMap"] = videoPathMap;
     map["videoCourseModel"] = videoCourseModel.toJson();
@@ -290,6 +293,7 @@ class AppRouter {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathSettingAccountSecurity, map);
   }
+
   static void navigateToLoginSucess(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathLoginSucess, map);
@@ -338,8 +342,8 @@ class AppRouter {
     _navigateToPage(context, pathPreviewPhoto, map, callback: callback);
   }
 
-  static void navigateToPreviewVideoPage(BuildContext context, String filePath, SizeInfo sizeInfo,
-      Function(dynamic result) callback) {
+  static void navigateToPreviewVideoPage(
+      BuildContext context, String filePath, SizeInfo sizeInfo, Function(dynamic result) callback) {
     Map<String, dynamic> map = Map();
     map["filePath"] = filePath;
     map["sizeInfo"] = sizeInfo.toJson();
@@ -372,6 +376,16 @@ class AppRouter {
 
   static void navigateToTrainingGalleryPage(BuildContext context) {
     _navigateToPage(context, pathTrainingGallery, {});
+  }
+
+  static void navigateToTrainingGalleryDetailPage(
+      BuildContext context, List<TrainingGalleryDayModel> dataList, Function(dynamic result) callback,
+      {int dayIndex = 0, int imageIndex = 0}) {
+    Map<String, dynamic> map = Map();
+    map["dataList"] = dataList.map((e) => e.toJson()).toList();
+    map["dayIndex"] = dayIndex;
+    map["imageIndex"] = imageIndex;
+    _navigateToPage(context, pathTrainingGalleryDetail, map, callback: callback);
   }
 
   static void navigateToMeCoursePage(BuildContext context) {

@@ -14,11 +14,11 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
-import 'package:mirror/page/profile/training_gallery/training_gallery_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/loading.dart';
 
 /// training_gallery_page
 /// Created by yangjiayi on 2021/1/20.
@@ -209,13 +209,48 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   Widget _buildImage(BuildContext context, int index, int dayIndex) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return TrainingGalleryDetailPage(
-            _dataList,
-            dayIndex: dayIndex,
-            imageIndex: index,
-          );
-        }));
+        AppRouter.navigateToTrainingGalleryDetailPage(context, _dataList, (result) {
+          if (result == null) {
+            return;
+          }
+
+          TrainingGalleryResult galleryResult = result as TrainingGalleryResult;
+          //TODO 目前只处理删除操作结果 还没有同步更新我的页面的相册数量
+          //要确保遍历后再进行增删操作
+          if (galleryResult.operation == -1) {
+            Set<int> deleteImageIdSet = Set<int>();
+            galleryResult.list.forEach((deleteImage) {
+              deleteImageIdSet.add(deleteImage.id);
+            });
+
+            List<TrainingGalleryDayModel> deleteDayList = [];
+            for (TrainingGalleryDayModel day in _dataList) {
+              List<TrainingGalleryImageModel> deleteImageList = [];
+              for (TrainingGalleryImageModel image in day.list) {
+                if (deleteImageIdSet.contains(image.id)) {
+                  deleteImageList.add(image);
+                }
+              }
+              if (deleteImageList.isNotEmpty) {
+                deleteImageList.forEach((deleteImage) {
+                  day.list.remove(deleteImage);
+                });
+                //检查是否列表中还有数据 如果没有则整条要删掉
+                if (day.list.isEmpty) {
+                  deleteDayList.add(day);
+                }
+              }
+            }
+            if (deleteDayList.isNotEmpty) {
+              deleteDayList.forEach((deleteDay) {
+                _dataList.remove(deleteDay);
+              });
+              // 有整条删掉的数据后默认重新更新tag 不做复杂的数据的比较了
+              SuspensionUtil.setShowSuspensionStatus(_dataList);
+            }
+            setState(() {});
+          }
+        }, dayIndex: dayIndex, imageIndex: index);
       },
       child: CachedNetworkImage(
         imageUrl: _dataList[dayIndex].list[index].url,
@@ -237,66 +272,83 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
       return;
     }
 
-    for (MediaFileModel model in files.list) {
-      if (model.croppedImage != null) {
-        print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-        ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
-        print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-        Uint8List picBytes = byteData.buffer.asUint8List();
-        print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
-        model.croppedImageData = picBytes;
-      }
-    }
+    Loading.showLoading(context);
 
-    List<File> fileList = [];
-    String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
-    int i = 0;
-    files.list.forEach((element) async {
-      if (element.croppedImageData == null) {
-        fileList.add(element.file);
-      } else {
-        i++;
-        File imageFile = await FileUtil().writeImageDataToFile(element.croppedImageData, timeStr + i.toString());
-        fileList.add(imageFile);
+    try {
+      for (MediaFileModel model in files.list) {
+        if (model.croppedImage != null) {
+          print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+          ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
+          print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+          Uint8List picBytes = byteData.buffer.asUint8List();
+          print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
+          model.croppedImageData = picBytes;
+        }
       }
-    });
-    UploadResults uploadResults = await FileUtil().uploadPics(fileList, (percent) {
-      print("总进度:$percent");
-    });
 
-    if (uploadResults.isSuccess) {
-      //整理接口入参 调接口
-      List<Map<String, dynamic>> paramList = [];
-      for (int i = 0; i < files.list.length; i++) {
-        MediaFileModel mediaFileModel = files.list[i];
-        paramList.add(TrainingGalleryImageModel(
-                url: uploadResults.resultMap[mediaFileModel.file.path].url,
-                width: mediaFileModel.sizeInfo.width.toDouble(),
-                height: mediaFileModel.sizeInfo.height.toDouble())
-            .toJson());
-      }
-      List<TrainingGalleryImageModel> saveList = await saveAlbum(paramList);
-      if (saveList != null) {
-        //插入数据
-        if (_dataList.isNotEmpty && saveList.first.dateTime == _dataList.first.dateTime) {
-          //如果列表不为空 且第一条的日期和结果相同 则插入已有数据
-          setState(() {
-            _dataList.first.list.insertAll(0, saveList);
-          });
+      List<File> fileList = [];
+      String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
+      int i = 0;
+      files.list.forEach((element) async {
+        if (element.croppedImageData == null) {
+          fileList.add(element.file);
         } else {
-          //插入新数据
-          setState(() {
-            //要把是不是显示月份标签修改了
-            _dataList[0].isShowSuspension = false;
-            _dataList.insert(
-                0, TrainingGalleryDayModel(dateTime: saveList.first.dateTime, list: saveList)..isShowSuspension = true);
-          });
+          i++;
+          File imageFile = await FileUtil().writeImageDataToFile(element.croppedImageData, timeStr + i.toString());
+          fileList.add(imageFile);
+        }
+      });
+      UploadResults uploadResults = await FileUtil().uploadPics(fileList, (percent) {
+        print("总进度:$percent");
+      });
+
+      if (uploadResults.isSuccess) {
+        //整理接口入参 调接口
+        List<Map<String, dynamic>> paramList = [];
+        for (int i = 0; i < files.list.length; i++) {
+          MediaFileModel mediaFileModel = files.list[i];
+          paramList.add(TrainingGalleryImageModel(
+                  url: uploadResults.resultMap[mediaFileModel.file.path].url,
+                  width: mediaFileModel.sizeInfo.width.toDouble(),
+                  height: mediaFileModel.sizeInfo.height.toDouble())
+              .toJson());
+        }
+        List<TrainingGalleryImageModel> saveList = await saveAlbum(paramList);
+        if (saveList != null) {
+          //插入数据
+          if (_dataList.isNotEmpty && saveList.first.dateTime == _dataList.first.dateTime) {
+            //如果列表不为空 且第一条的日期和结果相同 则插入已有数据
+            setState(() {
+              _dataList.first.list.insertAll(0, saveList);
+            });
+          } else {
+            //插入新数据
+            setState(() {
+              if(_dataList.isNotEmpty) {
+                //要把是不是显示月份标签修改了
+                _dataList[0].isShowSuspension = false;
+              }
+              _dataList.insert(0,
+                  TrainingGalleryDayModel(dateTime: saveList.first.dateTime, list: saveList)..isShowSuspension = true);
+            });
+          }
+        } else {
+          ToastShow.show(msg: "保存失败", context: context);
         }
       } else {
-        ToastShow.show(msg: "保存失败", context: context);
+        ToastShow.show(msg: "上传失败", context: context);
       }
-    } else {
-      ToastShow.show(msg: "上传失败", context: context);
+    } catch (e) {
+      print(e);
+      ToastShow.show(msg: "保存失败", context: context);
     }
+
+    Loading.hideLoading(context);
   }
+}
+
+class TrainingGalleryResult {
+  //-1删除 1添加
+  int operation;
+  List<TrainingGalleryImageModel> list;
 }

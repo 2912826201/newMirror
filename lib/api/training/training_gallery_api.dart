@@ -48,3 +48,18 @@ Future<List<TrainingGalleryImageModel>> saveAlbum(List<Map<String, dynamic>> ima
     return null;
   }
 }
+
+Future<bool> deleteAlbum(List<int> ids) async {
+  BaseResponseModel responseModel = await requestApi(DELETEALBUM, {"ids": json.encode(ids)});
+  if (responseModel.isSuccess) {
+    //TODO 这里实际需要将请求结果处理为具体的业务数据
+    bool result = false;
+    if(responseModel.data["state"] == true){
+      result = true;
+    }
+    return result;
+  } else {
+    //TODO 这里实际需要处理失败
+    return null;
+  }
+}

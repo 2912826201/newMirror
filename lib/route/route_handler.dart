@@ -7,6 +7,7 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/page/feed/like.dart';
 import 'package:mirror/page/feed/release_page.dart';
 import 'package:mirror/page/if_page.dart';
@@ -33,6 +34,7 @@ import 'package:mirror/page/profile/setting/blacklist_page.dart';
 import 'package:mirror/page/profile/setting/feedback_page.dart';
 import 'package:mirror/page/profile/setting/notice_setting_page.dart';
 import 'package:mirror/page/profile/setting/setting_home_page.dart';
+import 'package:mirror/page/profile/training_gallery/training_gallery_detail_page.dart';
 import 'package:mirror/page/profile/training_gallery/training_gallery_page.dart';
 import 'package:mirror/page/profile/training_record/training_record_all_page.dart';
 import 'package:mirror/page/profile/training_record/training_record_page.dart';
@@ -301,6 +303,18 @@ var handlerScanCode = Handler(handlerFunc: (BuildContext context, Map<String, Li
 //健身相册页
 var handlerTrainingGallery = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return TrainingGalleryPage();
+});
+
+//健身相册详情页
+var handlerTrainingGalleryDetail = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  List<TrainingGalleryDayModel> dataList = [];
+  data["dataList"].forEach((e){
+    dataList.add(TrainingGalleryDayModel.fromJson(e));
+  });
+  int dayIndex = data["dayIndex"];
+  int imageIndex = data["imageIndex"];
+  return TrainingGalleryDetailPage(dataList, dayIndex: dayIndex, imageIndex: imageIndex);
 });
 
 //我的课程界面
