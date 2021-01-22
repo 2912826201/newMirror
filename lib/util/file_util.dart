@@ -147,7 +147,7 @@ class FileUtil {
     await DownloadDBHelper().clearDownloadByUrl(url);
   }
 
-  Future<String> download(String url, Function(String taskId, int received, int total) onProgressListener) async {
+  Future<DownloadDto> download(String url, Function(String taskId, int received, int total) onProgressListener) async {
     String taskId = Uuid().v4();
     String fileName = url.split("/").last;
     List<String> strs = fileName.split(".");
@@ -157,13 +157,19 @@ class FileUtil {
       fileName = StringUtil.generateMd5(fileName);
     }
     String filePath = "${AppConfig.getAppDownloadDir()}/$fileName";
+
+    DownloadDto dto = DownloadDto();
+    dto.taskId = taskId;
+    dto.url = url;
+    dto.filePath = filePath;
+
     return await Dio().download(url, filePath, deleteOnError: true, onReceiveProgress: (received, total) {
       onProgressListener(taskId, received, total);
     }).then((response) {
       //当下载完成时去更新数据库
       if (response.statusCode == HttpStatus.ok) {
         DownloadDBHelper().insertDownload(taskId, url, filePath);
-        return taskId;
+        return dto;
       } else {
         return null;
       }

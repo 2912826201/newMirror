@@ -1,3 +1,4 @@
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:intl/intl.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -10,6 +11,7 @@ import 'package:mirror/data/dto/download_dto.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/loading.dart';
 import 'package:mirror/widget/scale_view.dart';
 
@@ -37,7 +39,7 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
   String _title = "";
 
   SwiperController _controller = SwiperController();
-  
+
   bool _isRequesting = false;
 
   @override
@@ -172,13 +174,13 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
             behavior: HitTestBehavior.opaque,
             onTap: () async {
               //避免请求过程中继续点击
-              if(_isRequesting){
+              if (_isRequesting) {
                 return;
               }
               _isRequesting = true;
               bool result = await deleteAlbum([image.id]);
               _isRequesting = false;
-              if(result != null && result){
+              if (result != null && result) {
                 Navigator.pop(context);
                 _afterDelete(image.id);
               }
@@ -244,6 +246,10 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
   }
 
   _saveImage(String url) async {
-
+    DownloadDto download = await FileUtil().download(url, (taskId, received, total) {});
+    var result = await ImageGallerySaver.saveFile(download.filePath);
+    if (result["isSuccess"] == true) {
+      ToastShow.show(msg: "保存成功", context: context);
+    }
   }
 }

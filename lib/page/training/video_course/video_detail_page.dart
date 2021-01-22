@@ -1893,7 +1893,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
 
   //开始下载
   void startDownVideo(String downloadUrl) async {
-    String taskId = await FileUtil().download(downloadUrl, _progressListener);
+    String taskId = (await FileUtil().download(downloadUrl, _progressListener))?.taskId;
     print("task的id是：$taskId");
   }
 
