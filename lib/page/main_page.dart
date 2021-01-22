@@ -37,9 +37,6 @@ class MainPageState extends State<MainPage> with SingleTickerProviderStateMixin 
     "images/test/comment-filling1.png",
     "images/test/user-filling1.png",
   ];
-
-  //动画控制器
-  AnimationController controller;
   double _start = 0;
 
   @override
@@ -50,7 +47,7 @@ class MainPageState extends State<MainPage> with SingleTickerProviderStateMixin 
   }
   @override
   void dispose() {
-   controller.dispose();
+   // controller.dispose();
     super.dispose();
   }
   @override
