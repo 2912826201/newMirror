@@ -58,6 +58,7 @@ class CommentBottomListView extends StatelessWidget {
   Widget build(BuildContext context) {
     print(this.model.targetId);
     print('======================父评论build');
+    print('====================${model.replys.length}');
     if(context.watch<FeedMapNotifier>().feedMap[this.feedId].comments[this.index].itemChose){
       Future.delayed(Duration(milliseconds: 2000), () {
         try {

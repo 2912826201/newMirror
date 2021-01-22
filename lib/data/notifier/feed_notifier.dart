@@ -8,7 +8,6 @@ class FeedMapNotifier extends ChangeNotifier {
   // 动态的id加model组成的Map
   Map<int, HomeFeedModel> feedMap = {};
 
-  Map<int, HomeFeedModel> bootomSheetFeedMap = {};
   // 点击评论图标记录此动态的Id用于请求评论列表
   int feedId;
   // 发布动态需要的model
@@ -117,15 +116,10 @@ class FeedMapNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  // 动态评论抽屉赋值
-  void bootomSheetCommensAssignment(int id, List<CommentDtoModel> commentList, int totalCount) {
-    feedMap[id].comments = commentList;
-    feedMap[id].totalCount = totalCount;
-    notifyListeners();
-  }
   // 评论动态的评论
   void commentFeedCom(int id, int index, CommentDtoModel model) {
     feedMap[id].comments[index].replys.insert(0, model);
+    print('provider========================${ feedMap[id].comments[index].replys.toString()}');
     feedMap[id].commentCount += 1;
     feedMap[id].totalCount += 1;
     feedMap[id].comments[index].replyCount += 1;

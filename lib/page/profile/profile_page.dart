@@ -25,17 +25,13 @@ import 'profile_detail_page.dart';
 enum ActionItems { DENGCHU, DENGLU }
 
 class ProfilePage extends StatefulWidget {
-  ProfilePage({Key key, this.panelController}) : super(key: key);
-  PanelController panelController = new PanelController();
+  ProfilePage({Key key}) : super(key: key);
 
   @override
   ProfileState createState() => new ProfileState();
 }
 
 class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin {
-  var bgColor = Color(0xffcccccc);
-  bool _isScroll = false;
-  final String mIconFontFamily = "appIconFonts";
   int uid;
   int followingCount;
   int followerCount;
@@ -48,6 +44,12 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
   @override
   void initState() {
     super.initState();
@@ -304,7 +306,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                         return QueryFollowList(
                           type: 1,
-                          pc: widget.panelController,
                           userId: uid,
                         );
                       }));
@@ -318,7 +319,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                         return QueryFollowList(
                           type: 2,
-                          pc: widget.panelController,
                           userId: uid,
                         );
                       }));
