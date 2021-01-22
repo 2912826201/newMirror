@@ -323,7 +323,7 @@ class AppDialogNotifier extends ChangeNotifier{
   double progress = 0;
 
   void changeProgress(double prs){
-    progress = prs;
-    notifyListeners();
+      progress = prs;
+      notifyListeners();
   }
 }

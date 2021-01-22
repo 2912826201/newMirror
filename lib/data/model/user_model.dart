@@ -26,14 +26,15 @@ class UserModel {
 
   int isPerfect; //0 未完善 1 完善
   int isPhone; // 是否绑定手机号 0-未绑定 1-已绑定
-
+  int  isVip; // 是否是Vip 0-不是 1-是
   int relation; //与用户关系 0-没关系 1-关注 2-粉丝 3-好友
   int mutualFriendCount; //共同好友数
 
   UserModel({
       this.uid = 0, //默认给个uid为0
       this.phone, 
-      this.type, 
+      this.type,
+      this.isVip,
       this.subType, 
       this.nickName, 
       this.avatarUri, 
@@ -67,6 +68,7 @@ class UserModel {
     description = json["description"];
     birthday = json["birthday"];
     sex = json["sex"];
+    isVip = json["isVip"];
     constellation = json["constellation"];
     cityCode = json["cityCode"];
     longitude = json["longitude"];
@@ -96,6 +98,7 @@ class UserModel {
     map["description"] = description;
     map["birthday"] = birthday;
     map["sex"] = sex;
+    map["isVip"] = isVip;
     map["constellation"] = constellation;
     map["cityCode"] = cityCode;
     map["longitude"] = longitude;

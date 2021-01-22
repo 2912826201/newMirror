@@ -3,7 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/page/vip/vip_nameplate_page.dart';
+import 'package:mirror/page/profile/vip/vip_nameplate_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
 class VipNamePlatePageView  extends StatefulWidget{
@@ -59,7 +59,7 @@ class _VipNamePlatePageState extends State<VipNamePlatePageView>{
           controller: widget.pageController,
           children: widgetList,
           onPageChanged: (index){
-                if(index<2){
+                if(index<1){
                   context.read<VipMoveNotifier>().changeListOldIndex(index);
                 }else{
                   context.read<VipMoveNotifier>().changeListOldIndex(index);

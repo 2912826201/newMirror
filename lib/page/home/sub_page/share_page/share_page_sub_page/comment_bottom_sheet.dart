@@ -57,6 +57,7 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
 @override
   void dispose() {
   _controller.dispose();
+  print('================================底部弹窗dispose');
     super.dispose();
   }
   @override

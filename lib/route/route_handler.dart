@@ -37,6 +37,9 @@ import 'package:mirror/page/profile/training_gallery/training_gallery_page.dart'
 import 'package:mirror/page/profile/training_record/training_record_all_page.dart';
 import 'package:mirror/page/profile/training_record/training_record_page.dart';
 import 'package:mirror/page/profile/training_record/weight_record_page.dart';
+import 'package:mirror/page/profile/vip/vip_nameplate_page.dart';
+import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
+import 'package:mirror/page/profile/vip/vip_open_page.dart';
 import 'package:mirror/page/scan_code_page.dart';
 import 'package:mirror/page/profile/setting/blacklist_page.dart';
 import 'package:mirror/page/profile/setting/feedback_page.dart';
@@ -170,6 +173,17 @@ var handlerSettingAbout = Handler(handlerFunc: (BuildContext context, Map<String
 
 var handlerSettingAccountSecurity = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return AccountSecurityPage();
+});
+var handlerVipNotOpen = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return VipNotOpenPage(type:data["vipState"]);
+});
+var handlerVipOpen = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return VipOpenPage();
+});
+var handlerVipNamePlatePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return VipNamePlatePage(index: data["index"],);
 });
 
 var handlerTrainingRecord = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {

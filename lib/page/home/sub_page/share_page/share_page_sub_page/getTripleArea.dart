@@ -17,12 +17,15 @@ import 'package:mirror/widget/feed/feed_comment_popups.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
+typedef backCallBack = void Function();
 class GetTripleArea extends StatefulWidget {
   HomeFeedModel model;
   int index;
   GlobalKey offsetKey;
+  backCallBack back;
   CommentDtoModel comment;
-  GetTripleArea({Key key, this.model,this.index,this.offsetKey,this.comment}) : super(key: key);
+  List<CommentDtoModel> commentDtoModel;
+  GetTripleArea({Key key, this.model,this.index,this.offsetKey,this.comment,this.commentDtoModel,this.back}) : super(key: key);
 
   GetTripleAreaState createState() => GetTripleAreaState();
 }
@@ -209,7 +212,10 @@ class GetTripleAreaState extends State<GetTripleArea> {
                   height: 24,
                 ),
                 onTap: () {
-                  openFeedCommentBottomSheet(context: context, feedId: widget.model.id);
+                  context.read<FeedMapNotifier>().changeCommentList(widget.commentDtoModel);
+                  openFeedCommentBottomSheet(context: context, feedId: widget.model.id,callback: (){
+                    widget.back();
+                  });
                   // SingletonForWholePages.singleton().panelController().open();
                   // context.read<FeedMapNotifier>().changeFeeId(widget.model.id);
                 }))

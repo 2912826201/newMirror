@@ -72,12 +72,13 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
   ///上拉加载
   _onLoadding(){
     followDataPage += 1;
-    _getDynamicData(widget.type);
+    _getDynamicData(widget.type,id: widget.id);
   }
 
   _onRefresh(){
     followDataPage = 1;
-    _getDynamicData(widget.type);
+    followlastTime = null;
+    _getDynamicData(widget.type,id: widget.id);
   }
   @override
   void initState() {

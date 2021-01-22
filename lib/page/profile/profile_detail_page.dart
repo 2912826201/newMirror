@@ -96,6 +96,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   @override
   void initState() {
     super.initState();
+    context.read<ProfilePageNotifier>().setFirstModel(widget.userId);
     _mController = TabController(length: 2, vsync: this);
 
     ///判断是自己的页面还是别人的页面
@@ -104,15 +105,19 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     } else {
       isMselfId = false;
     }
-    _getUserInfo(id: widget.userId);
-    _getFollowCount(id: widget.userId);
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      _getUserInfo(id: widget.userId);
+      _getFollowCount(id: widget.userId);
+    });
     scrollController.addListener(() {
       /* if (scrollController.hasClients) {*/
       if (scrollController.offset >=
-          ScreenUtil.instance.height * 0.41 + _signatureHeight - ScreenUtil.instance.statusBarHeight - 16) {
+          ScreenUtil.instance.height * 0.33 + _signatureHeight) {
         context.read<ProfilePageNotifier>().changeTitleColor(AppColor.bgBlack);
+        context.read<ProfilePageNotifier>().changeOnClick(false);
       } else {
         context.read<ProfilePageNotifier>().changeTitleColor(AppColor.transparent);
+        context.read<ProfilePageNotifier>().changeOnClick(true);
         /*  }*/
       }
     });
@@ -128,7 +133,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     print('====点赞数========================${attentionModel.laudedCount}');
 
     if (attentionModel != null) {
-      context.read<ProfilePageNotifier>().changeAttentionModel(attentionModel);
+      context.read<ProfilePageNotifier>().changeAttentionModel(attentionModel,widget.userId);
     }
   }
 
@@ -155,9 +160,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         }
       });
       if (relation == 0 || relation == 2) {
-        context.read<ProfilePageNotifier>().changeIsFollow(true);
+        context.read<ProfilePageNotifier>().changeIsFollow(true,widget.userId);
       } else if (relation == 1 || relation == 3) {
-        context.read<ProfilePageNotifier>().changeIsFollow(false);
+        context.read<ProfilePageNotifier>().changeIsFollow(false,widget.userId);
       }
     }
   }
@@ -213,7 +218,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             SliverAppBar(
               pinned: true,
               forceElevated: false,
-
+              centerTitle: true,
               title: Text(
                 "$_textName",
                 style: TextStyle(
@@ -251,7 +256,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                             return ProfileDetailsMore(
                               userId: widget.userId,
-                              isFollow: context.watch<ProfilePageNotifier>().isFollow,
+                              isFollow: context.watch<ProfilePageNotifier>().isFollow[widget.userId],
                               userName: _textName,
                             );
                           })).then((value) {
@@ -443,7 +448,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                   InkWell(
                     child: _textAndNumber(
                         "关注",
-                        StringUtil.getNumber(context.read<ProfilePageNotifier>().attentionModel.followingCount),
+                        StringUtil.getNumber(context.read<ProfilePageNotifier>().attentionModel[widget.userId].followingCount),
                         height),
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
@@ -467,13 +472,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       }));
                     },
                     child: _textAndNumber("粉丝",
-                        StringUtil.getNumber(context.read<ProfilePageNotifier>().attentionModel.followerCount), height),
+                        StringUtil.getNumber(context.read<ProfilePageNotifier>().attentionModel[widget.userId].followerCount), height),
                   ),
                   SizedBox(
                     width: 61,
                   ),
                   _textAndNumber("获赞",
-                      StringUtil.getNumber(context.read<ProfilePageNotifier>().attentionModel.laudedCount), height),
+                      StringUtil.getNumber(context.read<ProfilePageNotifier>().attentionModel[widget.userId].laudedCount), height),
                 ],
               ),
             ),
@@ -491,19 +496,23 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   Widget _mineButton(double height) {
     return InkWell(
         onTap: () {
-          if (isMselfId) {
-            ///这里跳转到编辑资料页
-            AppRouter.navigateToEditInfomation(context, (result) {
-              _getUserInfo();
-            });
-          } else {
-            print('isFollow================================${context.read<ProfilePageNotifier>().isFollow}');
-            if (context.read<ProfilePageNotifier>().isFollow) {
-              _getAttention();
+          if(context.read<ProfilePageNotifier>().canOnClick){
+            if (isMselfId) {
+              ///这里跳转到编辑资料页
+              AppRouter.navigateToEditInfomation(context, (result) {
+                _getUserInfo();
+              });
             } else {
-              ///这里跳转到私聊界面
-              jumpChatPageUser(context, userModel);
+              print('isFollow================================${context.read<ProfilePageNotifier>().isFollow}');
+              if (context.read<ProfilePageNotifier>().isFollow[widget.userId]) {
+                _getAttention();
+              } else {
+                ///这里跳转到私聊界面
+                jumpChatPageUser(context, userModel);
+              }
             }
+          }else{
+            return false;
           }
         },
         child: Container(
@@ -511,7 +520,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           width: 72,
           decoration: BoxDecoration(
               color: !isMselfId
-                  ? context.read<ProfilePageNotifier>().isFollow
+                  ? context.read<ProfilePageNotifier>().isFollow[widget.userId]
                       ? AppColor.mainRed
                       : AppColor.transparent
                   : AppColor.transparent,
@@ -536,7 +545,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       children: [
         ///关注按钮
         Opacity(
-          opacity: context.read<ProfilePageNotifier>().isFollow ? 1 : 0,
+          opacity: context.read<ProfilePageNotifier>().isFollow[widget.userId] ? 1 : 0,
           child: Center(
               child: Text(
             "+ 关注",
@@ -546,7 +555,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 
         ///私聊按钮
         Opacity(
-          opacity: context.read<ProfilePageNotifier>().isFollow ? 0 : 1,
+          opacity: context.read<ProfilePageNotifier>().isFollow[widget.userId] ? 0 : 1,
           child: Center(
             child: Row(
               children: [
@@ -611,7 +620,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     int attntionResult = await ProfileAddFollow(widget.userId);
     print('关注监听=========================================$attntionResult');
     if (attntionResult == 1 || attntionResult == 3) {
-      context.read<ProfilePageNotifier>().changeIsFollow(false);
+      context.read<ProfilePageNotifier>().changeIsFollow(false,widget.userId);
       _getFollowCount(id: widget.userId);
       ToastShow.show(msg: "关注成功!", context: context);
     }
@@ -623,19 +632,34 @@ class ProfilePageNotifier extends ChangeNotifier {
 
   String backImage = "images/resource/2.0x/white_return@2x.png";
 
-  ProfileModel attentionModel = ProfileModel();
+  Map<int,ProfileModel> attentionModel = {};
 
-  bool isFollow = false;
+  Map<int,bool> isFollow = {};
 
-  void changeIsFollow(bool bl) {
-    isFollow = bl;
+  bool canOnClick = true;
+
+  void setFirstModel(int id){
+    attentionModel[id] = ProfileModel();
+    isFollow[id] = false;
+    notifyListeners();
+  }
+  void changeIsFollow(bool bl,int id) {
+    isFollow[id] = bl;
     print('changeIsFollow============================$isFollow');
     notifyListeners();
   }
-
-  void changeAttentionModel(ProfileModel model) {
-    attentionModel = model;
+  void changeOnClick(bool canClick){
+    canOnClick = canClick;
     notifyListeners();
+  }
+  void changeAttentionModel(ProfileModel model,int id) {
+    attentionModel[id] = model;
+    notifyListeners();
+  }
+
+  void clearAttentionModel(){
+    attentionModel = null;
+
   }
 
   void changeTitleColor(Color color) {

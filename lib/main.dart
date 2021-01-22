@@ -22,7 +22,7 @@ import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/page/message/message_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
-import 'package:mirror/page/vip/vip_nameplate_page.dart';
+import 'package:mirror/page/profile/vip/vip_nameplate_page.dart';
 import 'package:mirror/widget/address_Picker.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:package_info/package_info.dart';

@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/page/vip/vip_not_open_page.dart';
+import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -192,7 +193,10 @@ class _VipOpenPage extends State<VipOpenPage> {
         InkWell(
           onTap: (){
             Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              return VipNotOpenPage(type: VipState.RENEW,);
+              ///这里传type来告知详情页该怎么展示
+              return VipNotOpenPage(
+                type: VipState.RENEW,
+              );
             }));
           },
           child: Container(

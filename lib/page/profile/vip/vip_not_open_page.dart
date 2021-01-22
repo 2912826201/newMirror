@@ -19,7 +19,6 @@ enum VipState{
 }
 //会员未开通页
 class VipNotOpenPage extends StatefulWidget {
-
   VipState type;
   VipNotOpenPage({this.type});
   @override

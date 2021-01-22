@@ -6,6 +6,7 @@ import 'package:mirror/util/screen_util.dart';
 class EditInformationIntroduction extends StatefulWidget{
   final String introduction;
   EditInformationIntroduction({this.introduction});
+
   @override
   _IntroductionState createState() {
    return _IntroductionState();
@@ -19,6 +20,12 @@ class _IntroductionState extends State<EditInformationIntroduction>{
   int textLength = 0;
   double textHeight;
   FocusNode blankNode = FocusNode();
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+   /* blankNode.unfocus();*/
+  }
   @override
   void initState() {
     super.initState();

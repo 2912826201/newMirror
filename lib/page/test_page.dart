@@ -23,6 +23,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
+import 'package:mirror/widget/loading_progress.dart';
 import 'package:mirror/widget/volume_popup.dart';
 import 'package:provider/provider.dart';
 
@@ -40,6 +41,7 @@ class TestPage extends StatefulWidget {
 }
 
 class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
+  double nowProgress = 0;
   @override
   bool get wantKeepAlive => true; //必须重写
 
@@ -352,16 +354,15 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
       ),
     );
   }
-}
-
-void _getNewVersion(BuildContext context)async{
-  VersionModel model = await getNewVersion();
-  if(model!=null){
-    print('====================版本model有值');
-    if(model.version!=AppConfig.version){
-      ToastShow.show(msg: "当前版本${AppConfig.version}   最新版本${model.version}", context:context);
-    }else{
-      if(model.os==Application.platform){
+  void _getNewVersion(BuildContext context)async{
+    VersionModel model = await getNewVersion();
+    if(model!=null){
+      print('====================版本model有值');
+      if(model.version!=AppConfig.version){
+        ToastShow.show(msg: "当前版本${AppConfig.version}   最新版本${model.version}", context:context);
+      }else{
+        AppConfig.version = model.version;
+        if(model.os==Application.platform&&model.url!=null){
           String path = await FileUtil().getDownloadedPath(model.url);
           if(path!=null){
             showAppDialog(context,
@@ -378,20 +379,24 @@ void _getNewVersion(BuildContext context)async{
               cancel:AppDialogButton("不更新",(){
                 return true;
               }),
-              progress: 7,
+              progress:context.read<AppDialogNotifier>().progress,
               confirm: AppDialogButton("更新",(){
                 FileUtil().download(model.url, (taskId, received, total){
-                });
+                  print('============================${received/total}');
+              });
                 return true;
               }),
             );
           }
+        }
       }
+    }else{
+      print("======================版本model为空");
     }
-  }else{
-    print("======================版本model为空");
   }
 }
+
+
 Future<Map<String, String>> _videoDownloadCheck() async {
   Map<String, String> map = {};
   for (String videoUrl in testVideoUrls) {

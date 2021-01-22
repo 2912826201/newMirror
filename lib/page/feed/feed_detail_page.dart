@@ -91,11 +91,13 @@ class FeedDetailPageState extends State<FeedDetailPage> {
     });
     }
     feedModel = context.read<FeedMapNotifier>().feedMap[widget.model.id];
-      getQueryListByHot();
-      _getChoseComment();
+        getQueryListByHot();
+        _getChoseComment();
+
+    /*  _getChoseComment();*/
     _controller.addListener(() {
-      if(isCanLoading){
         if (_controller.position.pixels == _controller.position.maxScrollExtent) {
+          if(isCanLoading){
           print('==================动态详情刷新');
           dataPage += 1;
           getQueryListByHot();
@@ -115,23 +117,23 @@ class FeedDetailPageState extends State<FeedDetailPage> {
       } else {
         childmodel.isShowInteractiveButton = false;
       }
-      childmodel.itemChose = true;
-      commentModel.insert(0, childmodel);
+        childmodel.itemChose = true;
+        commentModel.insert(0, childmodel);
     }else if(childmodel.type==2){
       print('=========================评论类型为====2');
       CommentDtoModel fsModel = await getComment(childmodel.targetId);
       if(fsModel!=null){
         print('=======================父评论不为空');
-       fsModel.isShowInteractiveButton = true;
-        commentModel.insert(0, fsModel);
-        childmodel.itemChose = true;
-        commentModel[0].replys.insert(0, childmodel);
-        context.read<FeedMapNotifier>().insertChildModel(childmodel);
-      }
-    }
+          fsModel.isShowInteractiveButton = true;
+          commentModel.insert(0, fsModel);
+          childmodel.itemChose = true;
+          commentModel[0].replys.insert(0, childmodel);
+          context.read<FeedMapNotifier>().insertChildModel(childmodel);
+        }
     }
     }
     context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
+    }
   }
   // 获取热门评论
   getQueryListByHot() async {
@@ -198,12 +200,18 @@ class FeedDetailPageState extends State<FeedDetailPage> {
       }
       // commentModel.insert(commentModel.length, CommentDtoModel());
     });
-  /*  context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);*/
+    if(dataPage>1){
+      context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
+    }else{
+     if(widget.comment==null){
+       context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
+     }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    print("动态详情页--${feedModel}");
+    print("动态详情页build---------------------------------------------${feedModel}");
     return Scaffold(
         backgroundColor: AppColor.white,
         appBar: AppBar(
@@ -263,6 +271,10 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                     offsetKey: _key,
                     model: feedModel,
                     comment: widget.comment,
+                    commentDtoModel: commentModel,
+                    back: (){
+                      context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
+                    },
                   ),
                   // 课程信息和地址
                   Offstage(
@@ -318,7 +330,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                   return SizedBox(height: 48 + ScreenUtil.instance.bottomBarHeight + 40) ;
                 } else {
                   print('================${commentModel.length}');
-                          return CommentBottomListView(
+                    return CommentBottomListView(
                     model: commentModel[index],
                     index: index,
                     type: 1,

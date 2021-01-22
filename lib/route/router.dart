@@ -8,6 +8,7 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/route/route_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
@@ -59,6 +60,9 @@ class AppRouter {
   static String pathTrainingGallery = "/profile/traininggallery";
   static String pathMeCoursePage = "/profile/mecoursepage";
   static String pathMeDownloadVideoCoursePage = "/profile/mecoursepage/medownloadvideocoursepage";
+  static String pathVipNotOpenPage = "/profile/vip/notopenpage";
+  static String pathVipOpenPage = "/profile/vip/openpage";
+  static String pathVipNamePlatePage = "/profile/vip/nameplatepage";
 
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
@@ -109,6 +113,9 @@ class AppRouter {
     router.define(pathTrainingGallery, handler: handlerTrainingGallery);
     router.define(pathMeCoursePage, handler: handlerMeCoursePage);
     router.define(pathMeDownloadVideoCoursePage, handler: handlerMeDownloadVideoCoursePage);
+    router.define(pathVipNotOpenPage, handler: handlerVipNotOpen);
+    router.define(pathVipOpenPage, handler: handlerVipOpen);
+    router.define(pathVipNamePlatePage, handler: handlerVipNamePlatePage);
 
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
@@ -298,7 +305,15 @@ class AppRouter {
     map["userId"] = uId;
     _navigateToPage(context, pathProfileDetails, map);
   }
-
+  static void navigateToVipOpenPage(BuildContext context) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathVipOpenPage,map);
+  }
+  static void navigateToVipNamePlatePage(BuildContext context, int index) {
+    Map<String, dynamic> map = Map();
+    map["index"] = index;
+    _navigateToPage(context, pathVipNamePlatePage, map);
+  }
   static void navigateToReleasePage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathRelease, map);

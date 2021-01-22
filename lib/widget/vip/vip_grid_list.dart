@@ -3,7 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/page/vip/vip_nameplate_page.dart';
+import 'package:mirror/page/profile/vip/vip_nameplate_page.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 enum VipType { NOTOPEN, OPEN }
 
@@ -54,9 +55,7 @@ class _VipGridState extends State<VipGridList>{
   List<Widget> _boxitem()=> List.generate(itemName.length, (index){
     return InkWell(
         onTap: (){
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-            return VipNamePlatePage(index: index,);
-          }));
+          AppRouter.navigateToVipNamePlatePage(context, index);
         },
       child:widget.vipType==VipType.NOTOPEN?_notOpenItem(index):_openItem(index));
   });
