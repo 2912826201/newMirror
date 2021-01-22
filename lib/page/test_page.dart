@@ -358,7 +358,7 @@ void _getNewVersion(BuildContext context)async{
   VersionModel model = await getNewVersion();
   if(model!=null){
     print('====================版本model有值');
-    if(model.version==AppConfig.version){
+    if(model.version!=AppConfig.version){
       ToastShow.show(msg: "当前版本${AppConfig.version}   最新版本${model.version}", context:context);
     }else{
       if(model.os==Application.platform){
@@ -381,7 +381,6 @@ void _getNewVersion(BuildContext context)async{
               progress: 7,
               confirm: AppDialogButton("更新",(){
                 FileUtil().download(model.url, (taskId, received, total){
-                    context.watch<AppDialogNotifier>().changeProgress(total/received);
                 });
                 return true;
               }),

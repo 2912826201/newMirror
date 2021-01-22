@@ -330,9 +330,6 @@ class SearchFeeditemState extends State<SearchFeeditem> {
       openBuilder: (BuildContext context, void Function({Object returnValue}) action) {
         ///失去输入框焦点
         focusNode.unfocus();
-        return Item2Page(
-          model: model,
-        );
       },
 
       ///现在显示的页面
@@ -387,13 +384,19 @@ class SearchFeeditemState extends State<SearchFeeditem> {
                   if (focusNode != null) {
                     focusNode.unfocus();
                   }
+                  // list.removeWhere((v) => v == model.id );
+                  List<HomeFeedModel> result = [];
+                  print("点击查看格式");
+                  print(list.length);
                   for (feedModel in list) {
                     feedModel = context.read<FeedMapNotifier>().feedMap[feedModel.id];
-                    if (model.id == feedModel.id) {
-                      list.remove(feedModel);
-                      list.insert(0, model);
+                    if (model.id != feedModel.id) {
+                      result.add(feedModel);
                     }
                   }
+                  result.insert(0, model);
+                  list = result;
+                   print(list.length);
                   Navigator.push(
                     context,
                     new MaterialPageRoute(

@@ -49,10 +49,6 @@ class DynamicListLayout extends StatelessWidget {
     //     builder: (context, _) {
     // print("我要看model的值");
     //  print(model.toString());
-    if(index >= 35) {
-      print("用户￥￥${model.name}");
-      print(model.picUrls.toString());
-    }
     return Column(
       children: [
         // 头部头像时间

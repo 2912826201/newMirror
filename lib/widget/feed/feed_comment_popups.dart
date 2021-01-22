@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_bottom_sheet.dart';
 import 'package:mirror/util/screen_util.dart';
 

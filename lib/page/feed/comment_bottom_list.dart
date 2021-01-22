@@ -58,11 +58,12 @@ class CommentBottomListView extends StatelessWidget {
   Widget build(BuildContext context) {
     print(this.model.targetId);
     print('======================父评论build');
+    print('====================${model.replys.length}');
     if(context.watch<FeedMapNotifier>().feedMap[this.feedId].comments[this.index].itemChose){
       Future.delayed(Duration(milliseconds: 2000), () {
         try {
           print('=========================父评论背景改变');
-          context.read<FeedMapNotifier>().changeItemChose(this.feedId, this.index);
+          context.read<FeedMapNotifier>().changeFatherItemChose(this.feedId, this.index);
         } catch (e) {
         }
       });
@@ -156,15 +157,15 @@ class CommentBottomListView extends StatelessWidget {
             behavior: HitTestBehavior.opaque,
             onTap: () {
               openInputBottomSheet(
-                context: context,
+                buildContext: context,
                 hintText: "回复 ${this.model.name}",
-                voidCallback: (String text, List<Rule> rules, BuildContext context) {
+                voidCallback: (String text, List<Rule> rules) {
                   List<AtUsersModel> atListModel = [];
                   for (Rule rule in rules) {
                     AtUsersModel atModel;
                     atModel.index = rule.startIndex;
                     atModel.len = rule.endIndex;
-                    atModel.uid = 1008611;
+                    atModel.uid = rule.id;
                     atListModel.add(atModel);
                   }
                   // 评论父评论
