@@ -196,6 +196,7 @@ Future<ListModel<LiveVideoModel>> getLearnedCourse(int size, {int lastTime}) asy
     List<LiveVideoModel> list = [];
     listModel.hasNext = responseModel.data["hasNext"];
     listModel.lastTime = responseModel.data["lastTime"];
+    listModel.totalCount = responseModel.data["totalCount"];
     if (responseModel.data["list"] != null) {
       responseModel.data["list"].forEach((e) {
         list.add(LiveVideoModel.fromJson(e));
@@ -223,6 +224,7 @@ Future<ListModel<LiveVideoModel>> getMyCourse(int page, int size, {int lastTime}
     List<LiveVideoModel> list = [];
     listModel.hasNext = responseModel.data["hasNext"];
     listModel.lastTime = responseModel.data["lastTime"];
+    listModel.totalCount = responseModel.data["totalCount"];
     if (responseModel.data["list"] != null) {
       responseModel.data["list"].forEach((e) {
         list.add(LiveVideoModel.fromJson(e));

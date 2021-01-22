@@ -76,6 +76,7 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
   Widget judgeUi() {
     if (loadingStatus == LoadingStatus.STATUS_LOADING) {
       return Container(
+        color: AppColor.white,
         alignment: Alignment.center,
         padding: const EdgeInsets.only(bottom: 100),
         child: UnconstrainedBox(
@@ -94,6 +95,7 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
   //有数据ui
   Widget haveDataUi() {
     return Container(
+      color: AppColor.white,
       child: Column(
         children: [
           Expanded(
@@ -204,22 +206,26 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
       physics: BouncingScrollPhysics(),
       itemCount: courseVideoModelList.length,
       itemBuilder: (context, index) {
-        return GestureDetector(
-          child: getItem(courseVideoModelList[index], index),
-          onTap: () {
-            if (topText == "取消") {
-              if (selectDeleteIndexList.contains(index)) {
-                selectDeleteIndexList.remove(index);
-              } else {
-                selectDeleteIndexList.add(index);
-              }
-              isAllSelect = selectDeleteIndexList.length == courseVideoModelList.length;
-              setState(() {});
-            } else {
-              AppRouter.navigateToVideoDetail(context, courseVideoModelList[index].courseId);
-            }
-          },
-        );
+        return Material(
+            borderRadius: BorderRadius.all(Radius.circular(6)),
+            color: AppColor.white,
+            child: new InkWell(
+              child: getItem(courseVideoModelList[index], index),
+              splashColor: AppColor.textHint,
+              onTap: () {
+                if (topText == "取消") {
+                  if (selectDeleteIndexList.contains(index)) {
+                    selectDeleteIndexList.remove(index);
+                  } else {
+                    selectDeleteIndexList.add(index);
+                  }
+                  isAllSelect = selectDeleteIndexList.length == courseVideoModelList.length;
+                  setState(() {});
+                } else {
+                  AppRouter.navigateToVideoDetail(context, courseVideoModelList[index].courseId);
+                }
+              },
+            ));
       },
     );
   }
@@ -302,6 +308,7 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
   //没有数据的ui
   Widget noHaveDataUi() {
     return Container(
+      color: AppColor.white,
       alignment: Alignment.center,
       padding: const EdgeInsets.only(bottom: 100),
       child: Column(
