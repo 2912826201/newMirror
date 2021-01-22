@@ -147,6 +147,7 @@ class FileUtil {
     await DownloadDBHelper().clearDownloadByUrl(url);
   }
 
+  //todo 之后需要对下载文件类型做路径区分处理
   Future<String> download(String url, Function(String taskId, int received, int total) onProgressListener) async {
     String taskId = Uuid().v4();
     String fileName = url.split("/").last;

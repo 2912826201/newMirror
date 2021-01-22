@@ -596,6 +596,8 @@ class MyPainter extends CustomPainter {
     pointArray.addAll(points);
     if (points.length >= 5) {
       pointArray.add(new Point(maxValue, points[points.length - 1].y));
+    } else {
+      pointArray.add(new Point(points[points.length - 1].x + pointRadius / 2, points[points.length - 1].y));
     }
     _drawSmoothLine(canvas, cirLinePaint, pointArray);
   }

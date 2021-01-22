@@ -111,12 +111,15 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin, WidgetsBi
   void didChangeMetrics() {
     super.didChangeMetrics();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (MediaQuery.of(context).viewInsets.bottom == 0) {
-        //关闭键盘
-      } else {
-        //显示键盘
-        if (Application.keyboardHeight <= MediaQuery.of(context).viewInsets.bottom) {
-          Application.keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+      //fixme 弹起键盘上下文报错
+      if (this.context != null) {
+        if (MediaQuery.of(this.context).viewInsets.bottom == 0) {
+          //关闭键盘
+        } else {
+          //显示键盘
+          if (Application.keyboardHeight <= MediaQuery.of(this.context).viewInsets.bottom) {
+            Application.keyboardHeight = MediaQuery.of(this.context).viewInsets.bottom;
+          }
         }
       }
     });

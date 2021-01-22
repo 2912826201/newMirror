@@ -1204,6 +1204,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
 
     Widget widget3 = Container(
       width: 60,
+      color: AppColor.transparent,
       height: double.infinity,
       margin: marginLeft26Right20,
       child: Column(

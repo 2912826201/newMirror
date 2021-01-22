@@ -151,16 +151,17 @@ class _FriendsPageState extends State<FriendsPage> {
       visible: widget.type == 0,
       child: GestureDetector(
         child: Container(
+          color: AppColor.transparent,
           alignment: Alignment.centerLeft,
           height: 40,
-          width: MediaQuery
-              .of(context)
-              .size
-              .width,
+          width: MediaQuery.of(context).size.width,
           padding: const EdgeInsets.only(left: 16),
           margin: EdgeInsets.only(top: 55),
           child: UnconstrainedBox(
-            child: Text("已加入群聊", style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),),
+            child: Text(
+              "已加入群聊",
+              style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
+            ),
           ),
         ),
         onTap: () {
