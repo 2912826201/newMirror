@@ -11,6 +11,7 @@ import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -111,12 +112,22 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     heroTagArray.clear();
     //不能回放的直播课程
     if (liveModelArray != null && liveModelArray.length > 0) {
+      widgetArray.add(
+        SizedBox(
+          height: 22,
+        ),
+      );
       widgetArray.add(_getLiveBroadcastUI(liveModelArray, false));
     }
 
     if (DateUtil.isToday(dataDate)) {
       //回放的直播课程
       if (liveModelOldArray != null && liveModelOldArray.length > 0) {
+        widgetArray.add(
+          SizedBox(
+            height: 10,
+          ),
+        );
         widgetArray.add(_getOldDataTitle());
         widgetArray.add(
           SizedBox(
@@ -132,9 +143,6 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     ));
     return Column(
       children: [
-        SizedBox(
-          height: 32,
-        ),
         Expanded(
             child: SizedBox(
               child: ScrollConfiguration(
@@ -153,17 +161,18 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   Widget _getOldDataTitle() {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.only(left: 16, right: 16, top: 22),
+      margin: const EdgeInsets.only(left: 16, right: 16),
       child: Column(
         children: [
+          Visibility(
+            visible: liveModelArray != null && liveModelArray.length > 0,
+            child: SizedBox(height: 22),
+          ),
           Container(
             width: double.infinity,
             child: Text(
               "今日可回放课程",
-              style: TextStyle(
-                  fontSize: 18,
-                  color: AppColor.textPrimary1,
-                  fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18, color: AppColor.textPrimary1, fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -489,64 +498,43 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   //   }
   // }
 
-  void _bookLiveCourse(LiveVideoModel value, int index, bool isCalendar) async {
+  void _bookLiveCourse(LiveVideoModel value, int index, bool isAddCalendar) async {
     String alert = "";
-    bool isBook;
-    bool settingTF;
-    if (value.playType == 2) {
-      alert = "预约失败";
-      isBook = true;
-      settingTF = false;
-    } else {
-      alert = "取消预约失败";
-      isBook = false;
-      settingTF = false;
-    }
-    Map<String, dynamic> mapBook =
-        await bookLiveCourse(courseId: value.id, startTime: value.startTime, isBook: value.playType == 2);
-    if (mapBook != null) {
-      if (mapBook["state"]) {
-        if (value.playType == 2) {
-          alert = "预约成功";
-          isBook = true;
-          settingTF = true;
-        } else {
-          alert = "取消预约成功";
-          isBook = false;
-          settingTF = true;
-        }
-      }
-    }
-    if (settingTF) {
-      if (!isCalendar) {
-        onClickMakeAnAppointment(value, alert, isBook);
+    Map<String, dynamic> mapBook = await bookLiveCourse(
+        courseId: value.id, startTime: value.startTime, isBook: value.playType == 2);
+    if (mapBook != null && mapBook["state"] != null && mapBook["state"]) {
+      if (value.playType == 2) {
+        alert = "预约成功";
       } else {
-        if (isBook) {
-          ToastShow.show(
-            msg: "预约成功，但是添加日历提醒失败",
-            context: context,
-          );
-        } else {
-          ToastShow.show(
-            msg: "删除预约成功，但是删除日历提醒失败",
-            context: context,
-          );
-        }
-        liveModelArray.clear();
-        getLiveModelData();
+        alert = "取消预约成功";
       }
     } else {
-      if (isBook) {
-        ToastShow.show(msg:
-        "预约失败",
-          context: context,
-        );
+      if (value.playType == 2) {
+        alert = "预约失败";
       } else {
-        ToastShow.show(msg:
-        "删除预约失败",
-          context: context,
-        );
+        alert = "取消预约失败";
       }
+    }
+    if (isAddCalendar) {
+      onClickMakeAnAppointment(value, alert, value.playType == 2);
+    } else {
+      if (value.playType == 2) {
+        alert += ",添加日历提醒失败";
+      } else {
+        alert += ",删除日历提醒失败";
+      }
+      ToastShow.show(msg: alert, context: context,);
+    }
+
+    if (mapBook != null && mapBook["state"] != null && mapBook["state"]) {
+      if (value.playType == 2) {
+        value.playType = 4;
+      } else {
+        value.playType = 2;
+      }
+      setState(() {
+
+      });
     }
   }
 
@@ -559,26 +547,30 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
     _calendars = calendarsResult?.data;
     if (_calendars == null || _calendars.length < 1) {
-      var result = await _deviceCalendarPlugin.createCalendar(
-        "mirror",
-        localAccountName: "mirror——1",
-      );
+      var result = await _deviceCalendarPlugin.createCalendar("mirror", localAccountName: "mirror——1",);
       if (result.isSuccess) {
-        createEvent(result.data, _deviceCalendarPlugin, value, alert, isBook);
+        if (isBook) {
+          createEvent(result.data, _deviceCalendarPlugin, value, alert);
+        } else {
+          _deleteAlertEvents(result.data, alert, value);
+        }
       } else {
         ToastShow.show(
             msg: alert + "，但是${isBook ? "添加" : "删除"}日历提醒失败", context: context);
       }
     } else {
-      createEvent(
-          _calendars[0].id, _deviceCalendarPlugin, value, alert, isBook);
+      if (isBook) {
+        createEvent(_calendars[0].id, _deviceCalendarPlugin, value, alert);
+      } else {
+        _deleteAlertEvents(_calendars[0].id, alert, value);
+      }
     }
   }
 
   //创建提醒
-  void createEvent(String id, DeviceCalendarPlugin _deviceCalendarPlugin,
-      LiveVideoModel value, String alert, bool isBook) async {
-    Event _event = new Event(id);
+  void createEvent(String calendarId, DeviceCalendarPlugin _deviceCalendarPlugin,
+      LiveVideoModel value, String alert) async {
+    Event _event = new Event(calendarId);
     DateTime startTime = DateUtil.stringToDateTime(value.startTime);
     _event.start = startTime;
     var endTime = DateUtil.stringToDateTime(value.endTime);
@@ -588,49 +580,58 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     _event.title = value.title ?? "直播课程预约";
     _event.description = value.coursewareDto?.name;
     _event.reminders = _reminders;
-    var createEventResult =
-    await _deviceCalendarPlugin.createOrUpdateEvent(_event);
+    var createEventResult = await _deviceCalendarPlugin.createOrUpdateEvent(_event);
     if (createEventResult.isSuccess) {
-      ToastShow.show(
-          msg: alert + "，${isBook ? "添加" : "删除"}日历成功", context: context);
-      // _retrieveCalendarEvents();
+      ToastShow.show(msg: alert + ", 添加日历成功", context: context);
     } else {
-      ToastShow.show(
-          msg: alert + "，${isBook ? "添加" : "删除"}日历失败", context: context);
+      ToastShow.show(msg: alert + ", 添加日历失败", context: context);
     }
   }
 
-  //获取所有的记录
-  // Future _retrieveCalendarEvents() async {
-  //   DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
-  //   final startDate = DateTime.now().add(Duration(days: -30));
-  //   final endDate = DateTime.now().add(Duration(days: 30));
-  //   List<Calendar> _calendars;
-  //   final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
-  //   _calendars = calendarsResult?.data;
-  //   if (_calendars != null && _calendars.length > 0) {
-  //     var calendarEventsResult = await _deviceCalendarPlugin.retrieveEvents(
-  //         _calendars[0].id,
-  //         RetrieveEventsParams(startDate: startDate, endDate: endDate));
-  //     calendarEvents = calendarEventsResult?.data;
-  //     setState(() {});
-  //   }
-  // }
+//  删除日历提醒
+  Future _deleteAlertEvents(String calendarId, String alert, LiveVideoModel value) async {
+    var calendarEvents = <Event>[];
+    DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
+    final startDate = DateTime.now();
+    final endDate = DateTime.now().add(Duration(days: 7));
+    List<Calendar> _calendars;
+    final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
+    _calendars = calendarsResult?.data;
+    if (_calendars != null && _calendars.length > 0) {
+      var calendarEventsResult = await _deviceCalendarPlugin.retrieveEvents(
+          _calendars[0].id,
+          RetrieveEventsParams(startDate: startDate, endDate: endDate));
+      calendarEvents = calendarEventsResult?.data;
+    }
+    if (calendarEvents.length > 0) {
+      DateTime startTime = DateUtil.stringToDateTime(value.startTime);
+      for (Event event in calendarEvents) {
+        if (event.calendarId == calendarId && event.start == startTime) {
+          var createEventResult = await _deviceCalendarPlugin.deleteEvent(calendarId, event.eventId);
+          if (createEventResult.isSuccess) {
+            ToastShow.show(msg: alert + ", 删除日历成功", context: context);
+          } else {
+            ToastShow.show(msg: alert + ", 删除日历失败", context: context);
+          }
+          return;
+        }
+      }
+    }
+    ToastShow.show(msg: alert + ", 删除日历失败", context: context);
+  }
 
 // 获取指定日期的直播日程
   getLiveModelData() async {
     //获取今天可回放的数据
     if (DateUtil.isToday(dataDate)) {
-      Map<String, dynamic> model = await getLiveCoursesByDate(date: "2020-12-31", type: 1);
+      Map<String, dynamic> model = await getLiveCoursesByDate(date: DateUtil.formatDateString(dataDate), type: 1);
       if (model != null && model["list"] != null) {
         model["list"].forEach((v) {
           liveModelOldArray.add(LiveVideoModel.fromJson(v));
         });
       }
     }
-    //todo 这里应该是获取对应的日期 但是现在其他日期没有数据
-    // Map<String, dynamic> model = await getLiveCourses(date: DateUtil.formatDateString(dataDate));
-    Map<String, dynamic> model = await getLiveCoursesByDate(date: "2020-12-31", type: 0);
+    Map<String, dynamic> model = await getLiveCoursesByDate(date: DateUtil.formatDateString(dataDate), type: 0);
     if (model != null && model["list"] != null) {
       model["list"].forEach((v) {
         liveModelArray.add(LiveVideoModel.fromJson(v));
@@ -669,36 +670,23 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
 
   //点击item按钮判断怎么响应
   void onClickItem(LiveVideoModel value, int index) {
-    if (value.playType == 2) {
-      showCupertinoDialog(
-          context: context,
-          builder: (context) {
-            return CupertinoAlertDialog(
-              title: Text('访问日历'),
-              content: Text('程序想访问您的日历，才能添加提醒事项，以便开播前提醒'),
-              actions: <Widget>[
-                CupertinoDialogAction(
-                  child: Text('不允许'),
-                  onPressed: () {
-                    _bookLiveCourse(value, index, false);
-                    Navigator.pop(context);
-                  },
-                ),
-                CupertinoDialogAction(
-                  child: Text('好'),
-                  onPressed: () {
-                    _bookLiveCourse(value, index, true);
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            );
-          });
+    if (value.playType == 2 || value.playType == 4) {
+      showAppDialog(context,
+          title: "访问日历",
+          info: "程序想访问您的日历，才能添加提醒事项，以便开播前提醒",
+          cancel: AppDialogButton("取消", () {
+            _bookLiveCourse(value, index, false);
+            return true;
+          }),
+          confirm: AppDialogButton("确定", () {
+            _bookLiveCourse(value, index, true);
+            return true;
+          }));
     } else if (value.playType == 1) {
       ToastShow.show(msg: "点击-去上课-应该直接去直播间", context: context);
       gotoNavigateToLiveDetail(value, index);
     } else {
-      ToastShow.show(msg: "去直播详情页", context: context);
+      ToastShow.show(msg: "回放--去直播详情页", context: context);
       gotoNavigateToLiveDetail(value, index);
     }
   }
