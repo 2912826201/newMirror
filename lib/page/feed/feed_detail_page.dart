@@ -59,7 +59,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   int hasNext = 0;
   // 列表监听
   ScrollController _controller = new ScrollController();
-  int totalCount;
+  int totalCount = 0;
   bool isCanLoading = false;
   GlobalKey _key = GlobalKey();
   WidgetsBinding widgetsBinding;
@@ -71,6 +71,8 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   @override
   void initState() {
     print("进入详情页");
+
+    print('=============================');
     if(widget.comment!=null){
     WidgetsBinding.instance.addPostFrameCallback((callback){
       print('===============################################====  =build结束');
@@ -90,9 +92,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
     }
     feedModel = context.read<FeedMapNotifier>().feedMap[widget.model.id];
       getQueryListByHot();
-      if(widget.comment!=null){
-        _getChoseComment();
-      }
+      _getChoseComment();
     _controller.addListener(() {
       if(isCanLoading){
         if (_controller.position.pixels == _controller.position.maxScrollExtent) {
@@ -105,7 +105,8 @@ class FeedDetailPageState extends State<FeedDetailPage> {
 
   }
   _getChoseComment()async{
-    print('================================筛选评论');
+    print('================================   筛选评论');
+    if(widget.comment!=null){
     CommentDtoModel childmodel = await getComment(widget.comment.id);
     if(childmodel!=null){
     if(childmodel.type==0){
@@ -116,7 +117,6 @@ class FeedDetailPageState extends State<FeedDetailPage> {
       }
       childmodel.itemChose = true;
       commentModel.insert(0, childmodel);
-    /*  context.read<FeedMapNotifier>().feedPublishComment(childmodel,widget.model.id);*/
     }else if(childmodel.type==2){
       print('=========================评论类型为====2');
       CommentDtoModel fsModel = await getComment(childmodel.targetId);
@@ -126,15 +126,16 @@ class FeedDetailPageState extends State<FeedDetailPage> {
         commentModel.insert(0, fsModel);
         childmodel.itemChose = true;
         commentModel[0].replys.insert(0, childmodel);
-       /* context.read<FeedMapNotifier>().commentFeedCom(widget.model.id,0,childmodel);*/
         context.read<FeedMapNotifier>().insertChildModel(childmodel);
       }
     }
-    context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
     }
+    }
+    context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
   }
   // 获取热门评论
   getQueryListByHot() async {
+    print('============================动态详情评论接口');
     // 评论总数
     if (loadStatus == LoadingStatus.STATUS_IDEL) {
       // 先设置状态，防止下拉就直接加载
@@ -197,7 +198,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
       }
       // commentModel.insert(commentModel.length, CommentDtoModel());
     });
-    context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
+  /*  context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);*/
   }
 
   @override
@@ -261,6 +262,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                   GetTripleArea(
                     offsetKey: _key,
                     model: feedModel,
+                    comment: widget.comment,
                   ),
                   // 课程信息和地址
                   Offstage(
@@ -315,7 +317,8 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                   print("进入了吗$index");
                   return SizedBox(height: 48 + ScreenUtil.instance.bottomBarHeight + 40) ;
                 } else {
-                  return CommentBottomListView(
+                  print('================${commentModel.length}');
+                          return CommentBottomListView(
                     model: commentModel[index],
                     index: index,
                     type: 1,

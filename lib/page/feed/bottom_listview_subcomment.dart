@@ -32,18 +32,20 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
     print(
       "初始化数据了+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     if (widget.commentDtoModel.initCount == null) {
+      print('===========================initCount赋值');
       widget.commentDtoModel.initCount = widget.commentDtoModel.replyCount;
       widget.commentDtoModel.isShowHiddenButtons = false;
       widget.commentDtoModel.isClickHideButton = false;
     }
-    if(widget.comment != null){
-      if(widget.type==1&&!widget.commentDtoModel.isClickHideButton){
-        if(widget.commentDtoModel.id==widget.comment.targetId){
-          loadData();
+      if(widget.comment!=null){
+        if(!widget.commentDtoModel.isClickHideButton){
+          print('=====================子评论列表加载判断2');
+          if(widget.comment.targetId == widget.commentDtoModel.id){
+            print('=====================子评论列表加载判断3');
+            loadData();
+          }
         }
       }
-    }
-
   }
 
   // 隐藏数据
@@ -63,15 +65,17 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
   // 加载数据
       loadData() async {
     pageCount += 1;
+    print('=====================子评论加载数据');
     if(widget.comment!=null){
       if(widget.type==1){
       if(widget.commentDtoModel.isClickHideButton&&pageCount==1){
         if(widget.commentDtoModel.id==widget.comment.targetId){
           widget.replys.insert(0, context.read<FeedMapNotifier>().childModel);
+          widget.commentDtoModel.initCount -=1;
         }
       }
     }
-    }
+      }
     // 总条数大于三每次点击取三条
     if (widget.commentDtoModel.initCount > 4) {
       Map<String, dynamic> model =
@@ -139,6 +143,8 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
 
   @override
   Widget build(BuildContext context) {
+    print('===========================子评论list build');
+    print('==========================${widget.commentDtoModel.replys.length}');
     return Container(
       margin: EdgeInsets.only(top: 12, left: 57),
       padding: EdgeInsets.only(left: 16,right: 16),

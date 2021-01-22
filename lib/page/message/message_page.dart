@@ -40,6 +40,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   void initState() {
     _screenWidth = ScreenUtil.instance.screenWidthDp;
     super.initState();
+    _getUnReadMsgCount();
   }
     _getUnReadMsgCount()async{
       Unreads model = await getUnReads();
@@ -53,7 +54,6 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   @override
   Widget build(BuildContext context) {
     print("消息列表页build");
-    _getUnReadMsgCount();
     super.build(context);
     _listLength =
         context.watch<ConversationNotifier>().topListLength + context.watch<ConversationNotifier>().commonListLength;
@@ -174,7 +174,9 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
             onTap: (){
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                     return InteractiveNoticePage(type: type,);
-                  }));
+                  })).then((value){
+                    _getUnReadMsgCount();
+                  });
 
             },
             child: Stack(

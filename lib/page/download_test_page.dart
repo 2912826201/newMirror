@@ -1,8 +1,6 @@
-import 'dart:ui';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/config/config.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:mirror/data/dto/download_dto.dart';
 import 'package:mirror/page/training/video_course/video_course_play_page.dart';
 import 'package:mirror/util/file_util.dart';
 
@@ -45,8 +43,10 @@ class _DownloadTestState extends State<DownloadTestPage> {
           ),
           RaisedButton(
               onPressed: () async {
-                String taskId = await FileUtil().download(_controller.text, _progressListener);
-                print("task的id是：$taskId");
+                DownloadDto download = await FileUtil().download(_controller.text, _progressListener);
+                if(download != null){
+                  print("task的id是：${download.taskId}");
+                }
               },
               child: Text("开始下载")),
           Text("progress:$_progress"),
@@ -60,7 +60,7 @@ class _DownloadTestState extends State<DownloadTestPage> {
           RaisedButton(
               onPressed: () async {
                 for (String videoUrl in testVideoUrls) {
-                  String taskId = await FileUtil().download(videoUrl, _progressListener);
+                  String taskId = (await FileUtil().download(videoUrl, _progressListener))?.taskId;
                   print("task的id是：$taskId");
                 }
               },

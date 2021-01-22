@@ -121,6 +121,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       // 请求推荐教练
       newRecommendCoach(),
     ]).then((results) {
+      setState(() {
       if (results[0] != null) {
         List<HomeFeedModel> modelList = [];
         DataResponseModel dataModel = results[0];
@@ -135,11 +136,12 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
           }
           recommendModelList.addAll(modelList);
         }
+        hasNext = dataModel.hasNext;
         if( hasNext == 0) {
-          loadStatus = LoadingStatus.STATUS_COMPLETED;
+          print('================================hashnext');
+            loadStatus = LoadingStatus.STATUS_COMPLETED;
           loadText = "";
         }
-        hasNext = dataModel.hasNext;
         // 更新全局监听
         context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
       }
@@ -148,7 +150,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
         print("推荐教练书剑返回");
         print(liveVideoModel.toString());
       }
-      setState(() {});
+     });
     }).catchError((e) {
       print("报错了");
       print(e);

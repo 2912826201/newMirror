@@ -17,13 +17,11 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
 
 class QueryFollowList extends StatefulWidget {
-  PanelController pc;
-
   //传1为关注，传2为粉丝，3为话题
   int type;
   int userId;
 
-  QueryFollowList({this.type, this.pc, this.userId});
+  QueryFollowList({this.type,this.userId});
 
   @override
   State<StatefulWidget> createState() {
@@ -677,8 +675,8 @@ class _FollowItemState extends State<QueryFollowItem> {
           isCanOnclick = true;
         }
       }
-    } //话题列表
-    else {
+      //话题列表
+    }else {
       userName = "#${widget.tpcModel.name}";
       if (widget.tpcModel.description != null) {
         description = widget.tpcModel.description;

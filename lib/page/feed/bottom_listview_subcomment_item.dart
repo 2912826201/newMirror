@@ -32,13 +32,6 @@ class BottomListViewSubCommentListItem extends StatefulWidget{
 
 }
 class BottomListViewSubCommentListItemState extends State<BottomListViewSubCommentListItem> {
-  BottomListViewSubCommentListItemState({this.model,this.feedId,this.mainIndex,this.commentDtoModel,this.subIndex});
-  CommentDtoModel model;
-  int subIndex;
-  int mainIndex;
-  int feedId;
-  CommentDtoModel commentDtoModel;
-
 
   @override
   void dispose() {
@@ -50,16 +43,11 @@ class BottomListViewSubCommentListItemState extends State<BottomListViewSubComme
   void initState() {
     // TODO: implement initState
     super.initState();
-    model = widget.model;
-    subIndex = widget.subIndex;
-    mainIndex = widget.mainIndex;
-    commentDtoModel = widget.commentDtoModel;
-    feedId = widget.feedId;
     if(widget.comment!=null){
-      if(widget.comment.id==model.id){
+      if(widget.comment.id==widget.model.id){
         Future.delayed(Duration(milliseconds: 2000), () {
           try {
-            model.itemChose = false;
+            widget.model.itemChose = false;
             setState(() {
             });
           } catch (e) {
@@ -73,13 +61,13 @@ class BottomListViewSubCommentListItemState extends State<BottomListViewSubComme
   // 点赞
   setUpLuad(BuildContext context, int subIndex, CommentDtoModel models) async {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
-    print("是否点赞了￥${context.read<FeedMapNotifier>().feedMap[feedId].comments[mainIndex].replys[subIndex].isLaud}");
+    print("是否点赞了￥${context.read<FeedMapNotifier>().feedMap[widget.feedId].comments[widget.mainIndex].replys[subIndex].isLaud}");
     if (isLoggedIn) {
       Map<String, dynamic> model = await laudComment(commentId: models.id, laud: models.isLaud == 0 ? 1 : 0);
       // 点赞/取消赞成功
       print("state:${model["state"]}");
       if (model["state"]) {
-        context.read<FeedMapNotifier>().subCommentLaud(models.isLaud, feedId, mainIndex, subIndex);
+        context.read<FeedMapNotifier>().subCommentLaud(models.isLaud, widget.feedId, widget.mainIndex, subIndex);
       } else {
         // 失败
         print("shib ");
@@ -90,12 +78,14 @@ class BottomListViewSubCommentListItemState extends State<BottomListViewSubComme
     }
   }
   Widget build(BuildContext context) {
+    print('===========================子评论itembuild${widget.model.content}');
+    print('-==========================${widget.model.content}');
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
         openInputBottomSheet(
           buildContext: context,
-          hintText: "回复 ${model.name}",
+          hintText: "回复 ${widget.model.name}",
           voidCallback: (String text, List<Rule> rules) {
             List<AtUsersModel> atListModel = [];
             for (Rule rule in rules) {
@@ -107,17 +97,17 @@ class BottomListViewSubCommentListItemState extends State<BottomListViewSubComme
             }
             // 评论子评论
             postComments(
-              targetId: commentDtoModel.id,
+              targetId: widget.commentDtoModel.id,
               targetType: 2,
               content: text,
               atUsers: jsonEncode(atListModel),
-              replyId: model.uid,
-              replyCommentId: model.id,
+              replyId: widget.model.uid,
+              replyCommentId: widget.model.id,
               commentModelCallback: (CommentDtoModel commentModel) {
-                context.read<FeedMapNotifier>().commentFeedCom(feedId, mainIndex, commentModel);
+                context.read<FeedMapNotifier>().commentFeedCom(widget.feedId, widget.mainIndex, commentModel);
                 print("查看一下+++++++++++++++++++++");
-                print(commentDtoModel.replys.toString());
-                print(context.read<FeedMapNotifier>().feedMap[feedId].comments[mainIndex].replys.toString());
+                print(widget.commentDtoModel.replys.toString());
+                print(context.read<FeedMapNotifier>().feedMap[widget.feedId].comments[widget.mainIndex].replys.toString());
                 // 关闭评论输入框
                 // Navigator.of(context).pop(1);
               });
@@ -142,7 +132,7 @@ class BottomListViewSubCommentListItemState extends State<BottomListViewSubComme
                 width: 32,
                 child: ClipOval(
                   child: Image.network(
-                    model.avatarUrl,
+                    widget.model.avatarUrl,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -156,21 +146,21 @@ class BottomListViewSubCommentListItemState extends State<BottomListViewSubComme
                     children: <Widget>[
                       MyRichTextWidget(
                         Text(
-                          model.replyName != null
-                            ? model.name + " 回复 " + model.replyName + " " + model.content
-                            : model.name + " " + model.content,
+                          widget.model.replyName != null
+                            ? widget.model.name + " 回复 " + widget.model.replyName + " " + widget.model.content
+                            : widget.model.name + " " + widget.model.content,
                           overflow: TextOverflow.visible,
                           style: TextStyle(fontSize: 14, color: AppColor.textPrimary1, fontWeight: FontWeight.w400),
                         ),
                         maxLines: 2,
                         textOverflow: TextOverflow.ellipsis,
-                        richTexts: setBaseRichText(model),
+                        richTexts: setBaseRichText(widget.model),
                       ),
                       Container(height: 6),
                       Container(
                         margin: EdgeInsets.only(bottom: 12),
                         child: Text(
-                          "${DateUtil.generateFormatDate(model.createTime)} 回复",
+                          "${DateUtil.generateFormatDate(widget.model.createTime)} 回复",
                           style: TextStyle(
                             fontSize: 12,
                             color: AppColor.textSecondary,
@@ -183,7 +173,7 @@ class BottomListViewSubCommentListItemState extends State<BottomListViewSubComme
               // 点赞
               GestureDetector(
                 onTap: () {
-                  setUpLuad(context, subIndex, model);
+                  setUpLuad(context, widget.subIndex, widget.model);
                 },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -191,7 +181,7 @@ class BottomListViewSubCommentListItemState extends State<BottomListViewSubComme
                     Icon(
                       Icons.favorite,
                       color:
-                      context.watch<FeedMapNotifier>().feedMap[feedId].comments[mainIndex].replys[subIndex].isLaud == 0
+                      context.watch<FeedMapNotifier>().feedMap[widget.feedId].comments[widget.mainIndex].replys[widget.subIndex].isLaud == 0
                         ? Colors.grey
                         : Colors.red,
                     ),
@@ -200,10 +190,10 @@ class BottomListViewSubCommentListItemState extends State<BottomListViewSubComme
                     ),
                     Offstage(
                       offstage:
-                      context.watch<FeedMapNotifier>().feedMap[feedId].comments[mainIndex].replys[subIndex].laudCount ==
+                      context.watch<FeedMapNotifier>().feedMap[widget.feedId].comments[widget.mainIndex].replys[widget.subIndex].laudCount ==
                         0,
                       child: Text(
-                        "${StringUtil.getNumber(context.select((FeedMapNotifier value) => value.feedMap[feedId].comments[mainIndex].replys[subIndex].laudCount))}",
+                        "${StringUtil.getNumber(context.select((FeedMapNotifier value) => value.feedMap[widget.feedId].comments[widget.mainIndex].replys[widget.subIndex].laudCount))}",
                         style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
                       ),
                     ),
