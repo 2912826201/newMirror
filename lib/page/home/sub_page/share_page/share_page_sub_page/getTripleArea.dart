@@ -213,7 +213,6 @@ class GetTripleAreaState extends State<GetTripleArea> {
                   height: 24,
                 ),
                 onTap: () {
-                  context.read<FeedMapNotifier>().changeCommentList(widget.commentDtoModel);
                   openFeedCommentBottomSheet(context: context, feedId: widget.model.id,callback: (){
                     widget.back();
                   });

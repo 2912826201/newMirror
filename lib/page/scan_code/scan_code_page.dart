@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
+import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
@@ -19,6 +21,8 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:scan/scan.dart';
 import 'package:toast/toast.dart';
 import 'package:provider/provider.dart';
+
+import 'my_qrcode_page.dart';
 
 class ScanCodePage extends StatefulWidget {
   @override
@@ -50,6 +54,12 @@ class _ScanCodeState extends State<ScanCodePage> {
     });
   }
 
+    getUserModel(int id)async{
+    UserModel userModel = await getUserInfo(uid: id);
+      if(userModel!=null){
+       AppRouter.navigateToMineDetail(context, userModel.uid);
+      }
+    }
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -102,15 +112,10 @@ class _ScanCodeState extends State<ScanCodePage> {
                   scanAreaScale: .7,
                   scanLineColor: AppColor.white,
                   onCapture: (data) {
-                    setState(() {
-                      if (StringUtil.isURL(data)) {
-                        print('===========================这是一个网址');
-                        print('$data');
-                      } else {
-                        print('===========================这是扫码得到的结果$data');
-                      }
-                      Toast.show("这是扫码得到的结果=============$data", context);
-                    });
+                    print('==扫码得到的结果$data');
+                    if(data!=null){
+                      getUserModel(int.parse(data));
+                    }
                   },
                 ),
               ),
@@ -138,13 +143,20 @@ class _ScanCodeState extends State<ScanCodePage> {
                         Expanded(child: SizedBox()),
                         Column(
                           children: [
-                            Center(
+                            InkWell(
+                              onTap: (){
+                                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                                  return MyQrCodePage();
+                                }));
+                              },
+                              child: Center(
                                 child: QrImage(
                               data: "${context.watch<ProfileNotifier>().profile.uid}",
                               size: 40,
+                              padding: EdgeInsets.zero,
                               backgroundColor: AppColor.white,
                               version: QrVersions.auto,
-                            )),
+                            )),),
                             SizedBox(
                               height: 9,
                             ),

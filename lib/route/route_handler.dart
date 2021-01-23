@@ -42,7 +42,7 @@ import 'package:mirror/page/profile/training_record/weight_record_page.dart';
 import 'package:mirror/page/profile/vip/vip_nameplate_page.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/page/profile/vip/vip_open_page.dart';
-import 'package:mirror/page/scan_code_page.dart';
+import 'file:///F:/HD/AndroidCode4/flutter/mirror/lib/page/scan_code/scan_code_page.dart';
 import 'package:mirror/page/profile/setting/blacklist_page.dart';
 import 'package:mirror/page/profile/setting/feedback_page.dart';
 import 'package:mirror/page/profile/setting/notice_setting_page.dart';
