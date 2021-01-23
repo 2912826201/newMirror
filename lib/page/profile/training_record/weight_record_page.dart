@@ -6,6 +6,7 @@ import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
+import 'package:mirror/widget/left_scroll/left_scroll_list_view.dart';
 
 import 'customize_line_chart.dart';
 
@@ -46,6 +47,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
         children: [
           Container(
             child: CustomScrollView(
+              physics: BouncingScrollPhysics(),
               slivers: <Widget>[
                 getTopUi(),
                 getTargetWeightUi(),
@@ -85,44 +87,64 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
     }
     return SliverList(
       delegate: SliverChildBuilderDelegate((content, index) {
-        DateTime dateTime = DateUtil.stringToDateTime(weightDataMap["recordList"][index]["dateTime"]);
-        String date;
-        try {
-          date = DateUtil.formatDateString(dateTime);
-        } catch (e) {
-          date = "";
-        }
-        return Container(
-          height: 50,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            children: [
-              Container(
-                height: 48,
-                width: MediaQuery.of(context).size.width,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      date,
-                      style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
-                    ),
-                    Text(
-                      "${weightDataMap["recordList"][index]["weight"]} kg",
-                      style: TextStyle(fontSize: 18, color: AppColor.textPrimary1, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                height: 1,
-                width: MediaQuery.of(context).size.width,
-                color: AppColor.bgWhite,
-              ),
-            ],
-          ),
-        );
+        return getLeftDeleteUi(index);
       }, childCount: weightDataMap["recordList"].length),
+    );
+  }
+
+  //获取左滑删除
+  Widget getLeftDeleteUi(int index) {
+    return LeftScrollListView(
+      itemKey: weightDataMap["recordList"][index]["dateTime"],
+      itemTag: "tag",
+      itemIndex: index,
+      itemChild: getItem(index),
+      onClickRightBtn: () {
+        delWeight(weightDataMap["recordList"][index]["id"]);
+        weightDataMap["recordList"].removeAt(index);
+        setState(() {});
+      },
+    );
+  }
+
+  Widget getItem(int index) {
+    DateTime dateTime = DateUtil.stringToDateTime(weightDataMap["recordList"][index]["dateTime"]);
+    String date;
+    try {
+      date = DateUtil.formatDateString(dateTime);
+    } catch (e) {
+      date = "";
+    }
+    return Container(
+      height: 50,
+      color: AppColor.transparent,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: [
+          Container(
+            height: 48,
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  date,
+                  style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+                ),
+                Text(
+                  "${weightDataMap["recordList"][index]["weight"]} kg",
+                  style: TextStyle(fontSize: 18, color: AppColor.textPrimary1, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            height: 1,
+            width: MediaQuery.of(context).size.width,
+            color: AppColor.bgWhite,
+          ),
+        ],
+      ),
     );
   }
 

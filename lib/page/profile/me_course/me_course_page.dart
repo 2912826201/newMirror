@@ -4,6 +4,8 @@ import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/date_util.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 //我的课程
 class MeCoursePage extends StatefulWidget {
@@ -14,8 +16,10 @@ class MeCoursePage extends StatefulWidget {
 class _MeCoursePageState extends State<MeCoursePage> {
   bool _isVideoCourseRequesting = false;
   int _isVideoCourseLastTime;
+  int _isVideoCourseTotalCount = 0;
   bool _videoCourseHasNext = false;
   List<LiveVideoModel> _videoCourseList = [];
+  RefreshController _refreshController = RefreshController();
 
   @override
   void initState() {
@@ -37,21 +41,121 @@ class _MeCoursePageState extends State<MeCoursePage> {
   //主体
   Widget getBodyUi() {
     return Container(
-      height: 500,
-      child: CustomScrollView(
-        slivers: [
-          getTopDownloadCourseBtn(),
-          getLineView(12),
-          getMeLearnCourseTitleUi(),
-          judgeShowUi(),
-        ],
+      color: AppColor.white,
+      child: SmartRefresher(
+        enablePullDown: true,
+        enablePullUp: true,
+        controller: _refreshController,
+        footer: CustomFooter(
+          builder: (BuildContext context, LoadStatus mode) {
+            Widget body;
+            if (mode == LoadStatus.loading) {
+              body = CircularProgressIndicator();
+            } else if (mode == LoadStatus.noMore) {
+              body = Text("没有更多了");
+            } else if (mode == LoadStatus.failed) {
+              body = Text("加载错误,请重试");
+            } else {
+              body = Text(" ");
+            }
+            return Container(
+              child: Center(
+                child: body,
+              ),
+            );
+          },
+        ),
+        header: WaterDropHeader(
+          complete: Text("刷新完成"),
+          failed: Text(" "),
+        ),
+        onRefresh: _onRefresh,
+        onLoading: loadData,
+        child: CustomScrollView(
+          physics: BouncingScrollPhysics(),
+          slivers: [
+            getTopDownloadCourseBtn(),
+            getLineView(12),
+            getMeLearnCourseTitleUi(),
+            judgeShowUi(),
+          ],
+        ),
       ),
     );
   }
 
   //判断显示什么ui
   Widget judgeShowUi() {
-    return noDateUi();
+    if (_videoCourseList.length < 1) {
+      return noDateUi();
+    } else {
+      return getListView();
+    }
+  }
+
+  Widget getListView() {
+    return SliverList(
+      delegate: SliverChildBuilderDelegate((content, index) {
+        return Material(
+            borderRadius: BorderRadius.all(Radius.circular(6)),
+            color: AppColor.white,
+            child: new InkWell(
+              child: getItem(_videoCourseList[index]),
+              splashColor: AppColor.textHint,
+              onTap: () {
+                AppRouter.navigateToVideoDetail(context, _videoCourseList[index].id);
+              },
+            ));
+      }, childCount: _videoCourseList.length),
+    );
+  }
+
+  //每一个item
+  Widget getItem(LiveVideoModel videoModel) {
+    return Container(
+      color: AppColor.transparent,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 18,
+          ),
+          Row(
+            children: [
+              Expanded(
+                  child: SizedBox(
+                child: Text(
+                  videoModel.title,
+                  style: TextStyle(fontSize: 16, color: AppColor.textPrimary1, fontWeight: FontWeight.bold),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              )),
+              SizedBox(width: 15),
+              Text(
+                "总时长${videoModel.times ~/ 1000 ~/ 60}分钟  ${videoModel.calories}千卡",
+                style: TextStyle(fontSize: 12, color: AppColor.textPrimary2),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 6,
+          ),
+          Text(
+            "上次学习${DateUtil.getDateDayString(DateUtil.getDateTimeByMs(videoModel.updateTime))}",
+            style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+          ),
+          SizedBox(
+            height: 18,
+          ),
+          Container(
+            color: AppColor.bgWhite,
+            height: 1,
+          ),
+        ],
+      ),
+    );
   }
 
   //没有数据的ui
@@ -97,7 +201,8 @@ class _MeCoursePageState extends State<MeCoursePage> {
                     children: [
                       Icon(Icons.chevron_right, size: 16, color: AppColor.textHint),
                       SizedBox(width: 6),
-                      Text("共0节课程", style: TextStyle(fontSize: 16, color: AppColor.textSecondary)),
+                      Text("共$_isVideoCourseTotalCount节课程", style: TextStyle(fontSize: 16, color: AppColor
+                          .textSecondary)),
                     ],
                   ),
                 ],
@@ -156,6 +261,12 @@ class _MeCoursePageState extends State<MeCoursePage> {
     );
   }
 
+  _onRefresh() {
+    _videoCourseList.clear();
+    _isVideoCourseLastTime = null;
+    loadData();
+  }
+
   void loadData() {
     _isVideoCourseRequesting = true;
     if (_isVideoCourseLastTime == null) {
@@ -166,12 +277,17 @@ class _MeCoursePageState extends State<MeCoursePage> {
       if (result != null) {
         _videoCourseHasNext = result.hasNext == 1;
         _isVideoCourseLastTime = result.lastTime;
+        _isVideoCourseTotalCount = result.totalCount;
         _videoCourseList.addAll(result.list);
       }
       if (mounted) {
+        _refreshController.loadComplete();
+        _refreshController.refreshCompleted();
         setState(() {});
       }
     }).catchError((error) {
+      _refreshController.loadComplete();
+      _refreshController.refreshCompleted();
       _isVideoCourseRequesting = false;
     });
   }

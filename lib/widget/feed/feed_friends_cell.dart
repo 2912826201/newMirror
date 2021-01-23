@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
@@ -19,17 +20,16 @@ class FriendsCell extends StatelessWidget {
   final bool isSelectSingleChoice;
   int noBottomIndex = 0;
 
-  FriendsCell(
-      {this.imageUrl,
-      this.name,
-      this.imageAssets,
-      this.groupTitle,
-      this.noBottomIndex = 0,
-      this.voidCallback,
-      this.isShowTitle = true,
-      this.isShowSingleChoice = true,
-      this.isSelectSingleChoice = false,
-      this.userId}); //首字母大写
+  FriendsCell({this.imageUrl,
+    this.name,
+    this.imageAssets,
+    this.groupTitle,
+    this.noBottomIndex = 0,
+    this.voidCallback,
+    this.isShowTitle = true,
+    this.isShowSingleChoice = true,
+    this.isSelectSingleChoice = false,
+    this.userId}); //首字母大写
 
   @override
   Widget build(BuildContext context) {
@@ -65,9 +65,9 @@ class FriendsCell extends StatelessWidget {
         color: AppColor.bgWhite,
         child: groupTitle != null
             ? Text(
-                groupTitle,
-                style: TextStyle(fontSize: 14, color: AppColor.textPrimary3),
-              )
+          groupTitle,
+          style: TextStyle(fontSize: 14, color: AppColor.textPrimary3),
+        )
             : null,
       ),
     );
@@ -103,26 +103,96 @@ class FriendsCell extends StatelessWidget {
         height: 24,
         decoration: !isSelectSingleChoice
             ? BoxDecoration(
-                color: isShowSingleChoice && groupTitle != "群成员"
-                    ? AppColor.white
-                    : AppColor.textSecondary.withOpacity(0.65),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(width: 0.5, color: AppColor.textHint),
-              )
+          color: isShowSingleChoice && groupTitle != "群成员"
+              ? AppColor.white
+              : AppColor.textSecondary.withOpacity(0.65),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(width: 0.5, color: AppColor.textHint),
+        )
             : BoxDecoration(
-                color: AppColor.mainRed,
-                borderRadius: BorderRadius.circular(12),
-              ),
+          color: AppColor.mainRed,
+          borderRadius: BorderRadius.circular(12),
+        ),
       ),
     );
   }
 
   //用户头像
   Widget getUserImagePr() {
-    return getUserImage(
-      imageUrl,
-      38,
-      38,
+    List<String> avatarList = imageUrl.split(",");
+    return Container(
+      height: 45,
+      width: 45,
+      child: Stack(
+        children: [
+          avatarList.length == 1
+              ? ClipOval(
+                  child: CachedNetworkImage(
+                    height: 45,
+                    width: 45,
+                    imageUrl: avatarList.first,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Image.asset(
+                      "images/test.png",
+                      fit: BoxFit.cover,
+                    ),
+                    errorWidget: (context, url, error) => Image.asset(
+                      "images/test.png",
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                )
+              : avatarList.length > 1
+                  ? Positioned(
+                      top: 0,
+                      right: 0,
+                      child: ClipOval(
+                        child: CachedNetworkImage(
+                          height: 28,
+                          width: 28,
+                          imageUrl: avatarList.first,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Image.asset(
+                            "images/test.png",
+                            fit: BoxFit.cover,
+                          ),
+                          errorWidget: (context, url, error) => Image.asset(
+                            "images/test.png",
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ))
+                  : Container(),
+          avatarList.length > 1
+              ? Positioned(
+                  bottom: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        //这里的边框颜色需要随背景变化
+                        border: Border.all(width: 3, color: AppColor.white)),
+                    child: ClipOval(
+                      child: CachedNetworkImage(
+                        height: 28,
+                        width: 28,
+                        imageUrl: avatarList[1],
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Image.asset(
+                          "images/test.png",
+                          fit: BoxFit.cover,
+                        ),
+                        errorWidget: (context, url, error) => Image.asset(
+                          "images/test.png",
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              : Container(),
+          Container()
+        ],
+      ),
     );
   }
 

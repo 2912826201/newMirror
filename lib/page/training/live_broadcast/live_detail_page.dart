@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -17,12 +18,14 @@ import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/widget/post_comments.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../widget/comment_input_bottom_bar.dart';
@@ -105,13 +108,16 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   int courseCommentPageSize=3;
 
   //热门当前是第几页
-  int courseCommentPageHot=1;
+  int courseCommentPageHot = 1;
 
   //时间排序当前是第几页
-  int courseCommentPageTime=1;
+  int courseCommentPageTime = 1;
 
   //上拉加载数据
   RefreshController _refreshController = RefreshController(initialRefresh: false);
+
+  //提前多久提醒---15分钟
+  var howEarlyToRemind = 15;
 
   @override
   void initState() {
@@ -1179,7 +1185,6 @@ class LiveDetailPageState extends State<LiveDetailPage> {
 
   //获取底部按钮
   Widget _getBottomBar() {
-    Widget containerWidget;
     bool isLoggedIn;
     context.select((TokenNotifier notifier) => notifier.isLoggedIn ? isLoggedIn = true : isLoggedIn = false);
 
@@ -1187,23 +1192,19 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     bool bindingTerminal = false;
     //todo 判断用户是不是vip
     bool isVip = false;
-    //todo 判断这个课程是不是vip直播
-    bool courseVip = false;
 
-    TextStyle textStyle = const TextStyle(color: AppColor.white, fontSize: 16);
-    TextStyle textStyleVip = const TextStyle(
-        color: AppColor.textVipPrimary1, fontSize: 16);
-    EdgeInsetsGeometry margin_32 = const EdgeInsets.only(left: 32, right: 32);
-    EdgeInsetsGeometry marginLeft32Right16 = const EdgeInsets.only(
-        left: 32, right: 16);
-    EdgeInsetsGeometry marginLeft26Right20 = const EdgeInsets.only(
-        left: 26, right: 20);
-    EdgeInsetsGeometry marginRight32 = const EdgeInsets.only(right: 32);
-    EdgeInsetsGeometry marginRight16 = const EdgeInsets.only(right: 16);
+    var textStyle = const TextStyle(color: AppColor.white, fontSize: 16);
+    var textStyleVip = const TextStyle(color: AppColor.textVipPrimary1, fontSize: 16);
+    var margin_32 = const EdgeInsets.only(left: 32, right: 32);
+    var marginLeft32Right16 = const EdgeInsets.only(left: 32, right: 16);
+    var marginLeft26Right20 = const EdgeInsets.only(left: 26, right: 20);
+    var marginRight32 = const EdgeInsets.only(right: 32);
+    var marginRight16 = const EdgeInsets.only(right: 16);
 
 
     Widget widget3 = Container(
       width: 60,
+      color: AppColor.transparent,
       height: double.infinity,
       margin: marginLeft26Right20,
       child: Column(
@@ -1213,126 +1214,84 @@ class LiveDetailPageState extends State<LiveDetailPage> {
         ],
       ),
     );
-    Widget widget4 = getBtnUi(
-        false, "回放", textStyle, 94, 40, marginLeft32Right16);
-    Widget widget5 = getBtnUi(
-        true, "开通vip使用终端播放", textStyleVip, double.infinity, 40,
-        (liveModel.getGetPlayType() == "回放" ? marginRight32 : marginRight16));
-    Widget widget2 = getBtnUi(
-        false, "登陆终端使用终端播放", textStyle, double.infinity, 40,
-        (liveModel.getGetPlayType() == "回放" ? marginRight32 : marginRight16));
-    Widget widget1 = getBtnUi(false, "使用终端训练", textStyle, double.infinity, 40,
-        (liveModel.getGetPlayType() == "回放" ? marginRight32 : marginRight16));
-    Widget widget6 = getBtnUi(
-        false, liveModel.getGetPlayType(), textStyle, double.infinity, 40,
-        margin_32);
+
+    EdgeInsetsGeometry tempEd = (liveModel.getGetPlayType() == "回放" ? marginRight32 : marginRight16);
+    Widget widget1 = getBtnUi(false, "使用终端训练", textStyle, double.infinity, 40, tempEd);
+    Widget widget2 = getBtnUi(false, "登陆终端使用终端播放", textStyle, double.infinity, 40, tempEd);
+    Widget widget4 = getBtnUi(false, "回放", textStyle, 94, 40, marginLeft32Right16);
+    Widget widget5 = getBtnUi(true, "开通vip使用终端播放", textStyleVip, double.infinity, 40, tempEd);
+    Widget widget6 = getBtnUi(false, liveModel.getGetPlayType(), textStyle, double.infinity, 40, margin_32);
 
     var childrenArray = <Widget>[];
 
+
     if (!isLoggedIn) {
-      print("没有登陆");
-      childrenArray.add(widget6);
-      containerWidget = GestureDetector(
-        child: Container(
-          width: double.infinity,
-          child: Row(
-            children: childrenArray,
-          ),
-        ),
-        onTap: (){
-          ToastShow.show(msg: "去登陆", context: context);
-          // 去登录
-          AppRouter.navigateToLoginPage(context);
-        },
-      );
-    }else{
-      print("登陆了");
-      //todo 取绑定了终端没有
+      //没有登录
+      childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget6, onTap: _login))));
+    } else {
+      //登录了
 
-      if (liveModel.playType == 3) {
-        childrenArray.add(
-          GestureDetector(
-            child: widget4,
-            onTap: (){
-              print("回放");
-              ToastShow.show(msg: liveModel.getGetPlayType(), context: context);
-            },
-          ),
-        );
+      //判断是不是需要预约或者是已预约的课程
+      if (liveModel.playType == 2 || liveModel.playType == 4) {
+        //判断是不是需要预约
+        childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget6, onTap:
+            () => _judgeBookOrCancelBook(bindingTerminal: bindingTerminal, isVip: isVip)))));
       } else {
-        childrenArray.add(
-            GestureDetector(
-              child: widget3,
-              onTap: (){
-                print("试听");
-                ToastShow.show(msg: liveModel.getGetPlayType(), context: context);
-              },
-            )
-        );
-      }
-
-      if(!courseVip||isVip) {
-        if (bindingTerminal) {
-          childrenArray.add(
-              Expanded(child: SizedBox(
-                child: GestureDetector(
-                  child: widget1,
-                  onTap: (){
-                    print("绑定了终端");
-                    ToastShow.show(msg: "使用终端训练", context: context);
-                  },
-                ),
-              ))
-          );
+        if (liveModel.playType == 3) {
+          //回放
+          childrenArray.add(GestureDetector(child: widget4, onTap: _seeVideo));
         } else {
-          childrenArray.add(
-              Expanded(child: SizedBox(
-                  child: GestureDetector(
-                    child: widget2,
-                    onTap: (){
-                      print("没有绑定终端");
-                      ToastShow.show(msg: "登陆终端使用终端播放", context: context);
-                    },
-                  )
-              ))
-          );
+          //试听
+          childrenArray.add(GestureDetector(child: widget3, onTap: _seeVideo));
         }
-      }else{
-        childrenArray.add(
-            Expanded(child: SizedBox(
-                child: GestureDetector(
-                  child: widget5,
-                  onTap: (){
-                    print("vip课程");
-                    ToastShow.show(msg: "开通vip使用终端播放", context: context);
-                  },
-                )
-            ))
-        );
-      }
+        //判断绑定设备没有
+        if (bindingTerminal) {
+          //绑定了终端
 
-      containerWidget = Container(
-        width: double.infinity,
-        child: Row(
-          children: childrenArray,
-        ),
-      );
+          //判断我是不是需要开通vip才能观看
+          //todo 判断这个课程是不是vip直播
+          if (liveModel.playType == 1) {
+            if (isVip) {
+              //不再需要开通vip
+              childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget1, onTap: _useTerminal))));
+            } else {
+              //需要开通vip
+              childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget5, onTap: _openVip))));
+            }
+          } else if (liveModel.playType == 2) {
+            //todo 付费课程--目前写的是开通vip
+            childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget5, onTap: _openVip))));
+          } else {
+            //不再需要开通vip
+            childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget1, onTap: _useTerminal))));
+          }
+        } else {
+          //没有绑定终端
+          childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget2, onTap: _loginTerminal))));
+        }
+      }
     }
 
+
     return Container(
-      width: double.infinity,
-      height: double.infinity,
-      child: containerWidget,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
+      height: 50,
+      child: Row(
+        children: childrenArray,
+      ),
     );
   }
 
 
-  Widget getBtnUi(bool isVip,String text,TextStyle textStyle,double width1,double height1,EdgeInsetsGeometry marginData){
-    var colors=<Color>[];
-    if(isVip){
+  Widget getBtnUi(bool isVip, String text, var textStyle, double width1, double height1, var marginData) {
+    var colors = <Color>[];
+    if (isVip) {
       colors.add(AppColor.bgVip1);
       colors.add(AppColor.bgVip2);
-    }else{
+    } else {
       colors.add(AppColor.textPrimary1);
       colors.add(AppColor.textPrimary1);
     }
@@ -1349,7 +1308,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
         ),
       ),
       child: Center(
-        child: Text(text, style: textStyle,),
+        child: Text(text == "去上课" ? "试听" : text, style: textStyle,),
       ),
     );
   }
@@ -1712,6 +1671,163 @@ class LiveDetailPageState extends State<LiveDetailPage> {
 
       });
     }
+  }
+
+
+  ///预约流程
+  ///
+
+  Future<void> _bookLiveCourse(LiveVideoModel value, int index, bool isAddCalendar) async {
+    Map<String, dynamic> mapBook = await bookLiveCourse(
+        courseId: value.id, startTime: value.startTime, isBook: value.playType == 2);
+    if (isAddCalendar) {
+      onClickMakeAnAppointment(value, "", value.playType == 2);
+    }
+    if (mapBook != null && mapBook["state"] != null && mapBook["state"]) {
+      if (value.playType == 2) {
+        value.playType = 4;
+      } else {
+        value.playType = 2;
+      }
+      setState(() {
+
+      });
+    }
+    return;
+  }
+
+  //点击预约后-查询是否有创建提醒的空间id
+  void onClickMakeAnAppointment(LiveVideoModel value, String alert, bool isBook) async {
+    //todo android 添加日历提醒 测试没有问题-虽然没有全机型测试------ios还未测试
+    await [Permission.calendar].request();
+    DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
+    List<Calendar> _calendars;
+    final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
+    _calendars = calendarsResult?.data;
+    if (_calendars == null || _calendars.length < 1) {
+      var result = await _deviceCalendarPlugin.createCalendar("mirror", localAccountName: "mirror——1",);
+      if (result.isSuccess) {
+        if (isBook) {
+          createEvent(result.data, _deviceCalendarPlugin, value, alert);
+        } else {
+          _deleteAlertEvents(result.data, alert, value);
+        }
+      }
+    } else {
+      if (isBook) {
+        createEvent(_calendars[0].id, _deviceCalendarPlugin, value, alert);
+      } else {
+        _deleteAlertEvents(_calendars[0].id, alert, value);
+      }
+    }
+  }
+
+  //创建提醒
+  void createEvent(String calendarId, DeviceCalendarPlugin _deviceCalendarPlugin,
+      LiveVideoModel value, String alert) async {
+    Event _event = new Event(calendarId);
+    DateTime startTime = DateUtil.stringToDateTime(value.startTime);
+    _event.start = startTime;
+    var endTime = DateUtil.stringToDateTime(value.endTime);
+    List<Reminder> _reminders = <Reminder>[];
+    _reminders.add(new Reminder(minutes: howEarlyToRemind));
+    _event.end = endTime;
+    _event.title = value.title ?? "直播课程预约";
+    _event.description = value.coursewareDto?.name;
+    _event.reminders = _reminders;
+    await _deviceCalendarPlugin.createOrUpdateEvent(_event);
+  }
+
+//  删除日历提醒
+  Future _deleteAlertEvents(String calendarId, String alert, LiveVideoModel value) async {
+    var calendarEvents = <Event>[];
+    DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
+    final startDate = DateTime.now();
+    final endDate = DateTime.now().add(Duration(days: 7));
+    List<Calendar> _calendars;
+    final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
+    _calendars = calendarsResult?.data;
+    if (_calendars != null && _calendars.length > 0) {
+      var calendarEventsResult = await _deviceCalendarPlugin.retrieveEvents(
+          _calendars[0].id,
+          RetrieveEventsParams(startDate: startDate, endDate: endDate));
+      calendarEvents = calendarEventsResult?.data;
+    }
+    if (calendarEvents.length > 0) {
+      DateTime startTime = DateUtil.stringToDateTime(value.startTime);
+      for (Event event in calendarEvents) {
+        if (event.calendarId == calendarId && event.start == startTime) {
+          await _deviceCalendarPlugin.deleteEvent(calendarId, event.eventId);
+          return;
+        }
+      }
+    }
+  }
+
+
+  ///------------------------------底部按钮的所有点击事件  start --------------------------------------------------------
+
+  //去登陆
+  void _login() {
+    ToastShow.show(msg: "请先登陆app!", context: context);
+    // 去登录
+    AppRouter.navigateToLoginPage(context);
+  }
+
+
+  //判断是预约还是取消预约
+  void _judgeBookOrCancelBook({bool bindingTerminal, bool isVip}) {
+    if (liveModel.playType == 2) {
+      if (bindingTerminal) {
+        showAppDialog(context,
+            title: "报名",
+            info: "使用终端观看有机会加入直播小屏，获得教练实时指导，是否报名",
+            cancel: AppDialogButton("仅上课", () {
+              _bookLiveCourse(liveModel, 0, true);
+              return true;
+            }),
+            confirm: AppDialogButton("我要报名", () {
+              applyTerminalTrainingPr();
+              return true;
+            }));
+      } else {
+        _bookLiveCourse(liveModel, 0, true);
+      }
+    } else {
+      _bookLiveCourse(liveModel, 0, true);
+    }
+  }
+
+  //回放和试听--看视频
+  void _seeVideo() {
+    if (liveModel.playType == 3) {
+      ToastShow.show(msg: "回放", context: context);
+    } else {
+      ToastShow.show(msg: "试听", context: context);
+    }
+  }
+
+  //使用终端进行训练
+  void _useTerminal() {
+    ToastShow.show(msg: "使用终端进行训练", context: context);
+  }
+
+  //登陆终端进行训练
+  void _loginTerminal() {
+    ToastShow.show(msg: "登陆终端进行训练", context: context);
+  }
+
+  //开通vip
+  void _openVip() {
+    ToastShow.show(msg: "开通vip", context: context);
+  }
+
+
+  //报名终端
+  void applyTerminalTrainingPr() async {
+    await applyTerminalTraining(courseId: liveModel.id, startTime: liveModel.startTime);
+    await _bookLiveCourse(liveModel, 0, true);
+    ToastShow.show(msg: "已报名，若中选将收到系统消息", context: context);
   }
 }
 

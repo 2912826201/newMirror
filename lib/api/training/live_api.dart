@@ -16,6 +16,9 @@ const String GETVIDEOCOURSEDETAIL = "/sport/web/videoCourse/getVideoCourseDetail
 // 预约直播课程
 const String BOOKLIVECOURSE = "/sport/web/liveCourse/bookLiveCourse";
 
+// 报名终端训练
+const String APPLYTERMINALTRAINING = "/sport/web/liveCourse/applyTerminalTraining";
+
 // 获取视频课程标签库
 const String GETALLTAGS = "/sport/web/tag/getAllTags";
 
@@ -84,9 +87,10 @@ Future<Map> getVideoCourseDetail({@required int courseId}) async {
   }
 }
 
-///直播课程详情
+///预约直播
 ///请求参数
 ///courseId:1
+///startTime:时间
 ///isBook:true
 Future<Map> bookLiveCourse({@required int courseId, @required String startTime, @required bool isBook}) async {
   Map<String, dynamic> params = {};
@@ -94,6 +98,26 @@ Future<Map> bookLiveCourse({@required int courseId, @required String startTime, 
   params["startTime"] = startTime;
   params["type"] = isBook ? 1 : 0;
   BaseResponseModel responseModel = await requestApi(BOOKLIVECOURSE, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
+
+///报名终端
+///请求参数
+///courseId:1
+///startTime:时间
+///isBook:true
+Future<Map> applyTerminalTraining({
+  @required int courseId,
+  @required String startTime,
+}) async {
+  Map<String, dynamic> params = {};
+  params["courseId"] = courseId;
+  params["startTime"] = startTime;
+  BaseResponseModel responseModel = await requestApi(APPLYTERMINALTRAINING, params);
   if (responseModel.isSuccess) {
     return responseModel.data;
   } else {
@@ -196,6 +220,7 @@ Future<ListModel<LiveVideoModel>> getLearnedCourse(int size, {int lastTime}) asy
     List<LiveVideoModel> list = [];
     listModel.hasNext = responseModel.data["hasNext"];
     listModel.lastTime = responseModel.data["lastTime"];
+    listModel.totalCount = responseModel.data["totalCount"];
     if (responseModel.data["list"] != null) {
       responseModel.data["list"].forEach((e) {
         list.add(LiveVideoModel.fromJson(e));
@@ -223,6 +248,7 @@ Future<ListModel<LiveVideoModel>> getMyCourse(int page, int size, {int lastTime}
     List<LiveVideoModel> list = [];
     listModel.hasNext = responseModel.data["hasNext"];
     listModel.lastTime = responseModel.data["lastTime"];
+    listModel.totalCount = responseModel.data["totalCount"];
     if (responseModel.data["list"] != null) {
       responseModel.data["list"].forEach((e) {
         list.add(LiveVideoModel.fromJson(e));
