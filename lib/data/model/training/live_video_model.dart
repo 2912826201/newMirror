@@ -63,11 +63,30 @@ class LiveVideoModel {
     } else if (this.playType == 1) {
       return "去上课";
     } else {
-      if (startTime != null && startTime.isNotEmpty) {
-        DateTime dateTime = DateUtil.stringToDateTime(this.startTime);
-        DateTime endTime = DateUtil.stringToDateTime(this.endTime);
-        var startTime = dateTime.add(new Duration(minutes: -15));
-        if (DateUtil.compareNowDate(startTime)) {
+      DateTime startTime = DateUtil.stringToDateTime(this.startTime);
+      DateTime endTime = DateUtil.stringToDateTime(this.endTime);
+
+      if (coachDto.isLiving == 1) {
+        this.playType = 1;
+        return "去上课";
+      } else {
+        if (startTime != null) {
+          if (DateUtil.compareNowDate(startTime)) {
+            if (this.isBooked == 0) {
+              this.playType = 2;
+              return "预约";
+            } else {
+              this.playType = 4;
+              return "已预约";
+            }
+          } else if (DateUtil.compareNowDate(endTime)) {
+            this.playType = 1;
+            return "去上课";
+          } else {
+            this.playType = 3;
+            return "回放";
+          }
+        } else {
           if (this.isBooked == 0) {
             this.playType = 2;
             return "预约";
@@ -75,20 +94,6 @@ class LiveVideoModel {
             this.playType = 4;
             return "已预约";
           }
-        } else if (DateUtil.compareNowDate(endTime)) {
-          this.playType = 1;
-          return "去上课";
-        } else {
-          this.playType = 3;
-          return "回放";
-        }
-      } else {
-        if (this.isBooked == 0) {
-          this.playType = 2;
-          return "预约";
-        } else {
-          this.playType = 4;
-          return "已预约";
         }
       }
     }

@@ -13,6 +13,7 @@ import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
@@ -1344,10 +1345,11 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     loadingStatusComment = LoadingStatus.STATUS_COMPLETED;
 
     //获取直播详情数据
-    if (liveModel == null || liveModel.coursewareDto?.componentDtos == null) {
+    if (liveModel == null ||
+        liveModel.coursewareDto?.componentDtos == null ||
+        (liveModel.coachDto.isLiving == 1 && DateUtil.compareNowDate(DateUtil.stringToDateTime(liveModel.endTime)))) {
       //加载数据
-      Map<String, dynamic> model =
-      await liveCourseDetail(courseId: liveCourseId, startTime: liveModel.startTime);
+      Map<String, dynamic> model = await liveCourseDetail(courseId: liveCourseId, startTime: liveModel.startTime);
       if (model == null) {
         loadingStatus = LoadingStatus.STATUS_IDEL;
         Future.delayed(Duration(seconds: 1), () {
@@ -1819,14 +1821,31 @@ class LiveDetailPageState extends State<LiveDetailPage> {
 
   //开通vip
   void _openVip() {
-    ToastShow.show(msg: "开通vip", context: context);
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+      return VipNotOpenPage(
+        type: VipState.NOTOPEN,
+      );
+    }));
   }
-
 
   //报名终端
   void applyTerminalTrainingPr() async {
+    Map<String, dynamic> mapBook = await bookLiveCourse(
+        courseId: liveModel.id, startTime: liveModel.startTime, isBook: liveModel.playType == 2);
+    onClickMakeAnAppointment(liveModel, "", liveModel.playType == 2);
+    if (mapBook != null) {
+      if (mapBook["state"] != null && mapBook["state"]) {
+        if (liveModel.playType == 2) {
+          liveModel.playType = 4;
+        } else {
+          liveModel.playType = 2;
+        }
+      }
+      setState(() {
+
+      });
+    }
     await applyTerminalTraining(courseId: liveModel.id, startTime: liveModel.startTime);
-    await _bookLiveCourse(liveModel, 0, true);
     ToastShow.show(msg: "已报名，若中选将收到系统消息", context: context);
   }
 }
