@@ -1320,8 +1320,6 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     bool bindingTerminal = false;
     //todo 判断用户是不是vip
     bool isVip = false;
-    //todo 判断这个课程是不是vip直播
-    bool courseVip = false;
 
     TextStyle textStyle = const TextStyle(color: AppColor.white, fontSize: 16);
     TextStyle textStyleVip = const TextStyle(color: AppColor.textVipPrimary1, fontSize: 16);
@@ -1332,6 +1330,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
 
     Widget widget3 = Container(
       width: 60,
+      color: AppColor.transparent,
       height: double.infinity,
       margin: marginLeft26Right20,
       child: Column(
@@ -1357,18 +1356,8 @@ class VideoDetailPageState extends State<VideoDetailPage> {
           child: widget3,
           onTap: onJudgeIsDownLoadCompleteVideo,
         ));
-        if (!(!courseVip || isVip)) {
-          childrenArray.add(Expanded(
-              child: SizedBox(
-            child: GestureDetector(
-              child: getBtnUi(true, "开通vip使用终端播放", textStyleVip, double.infinity, 40, margin_32),
-              onTap: () {
-                print("vip");
-                ToastShow.show(msg: "开通vip使用终端播放", context: context);
-              },
-            ),
-          )));
-        } else {
+
+        if (videoModel.priceType == 0 || (videoModel.priceType == 1 && isVip)) {
           if (bindingTerminal) {
             childrenArray.add(Expanded(
                 child: SizedBox(
@@ -1383,14 +1372,66 @@ class VideoDetailPageState extends State<VideoDetailPage> {
           } else {
             childrenArray.add(Expanded(
                 child: SizedBox(
-              child: GestureDetector(
-                child: getBtnUi(false, "登陆终端使用终端播放", textStyle, double.infinity, 40, margin_32),
-                onTap: () {
-                  print("没有绑定终端");
-                  ToastShow.show(msg: "登陆终端", context: context);
-                },
-              ),
-            )));
+                  child: GestureDetector(
+                    child: getBtnUi(false, "登陆终端使用终端播放", textStyle, double.infinity, 40, margin_32),
+                    onTap: () {
+                      print("没有绑定终端");
+                      ToastShow.show(msg: "登陆终端", context: context);
+                    },
+                  ),
+                )));
+          }
+        } else if (videoModel.priceType == 2) {
+          //todo 付费视频--目前是开通vip
+          if (bindingTerminal) {
+            childrenArray.add(Expanded(
+                child: SizedBox(
+                  child: GestureDetector(
+                    child: getBtnUi(true, "开通vip使用终端播放", textStyleVip, double.infinity, 40, margin_32),
+                    onTap: () {
+                      print("vip");
+                      ToastShow.show(msg: "开通vip使用终端播放", context: context);
+                    },
+                  ),
+                )));
+          } else {
+            childrenArray.add(Expanded(
+                child: SizedBox(
+                  child: GestureDetector(
+                    child: getBtnUi(false, "登陆终端使用终端播放", textStyle, double.infinity, 40, margin_32),
+                    onTap: () {
+                      print("没有绑定终端");
+                      ToastShow.show(msg: "登陆终端", context: context);
+                    },
+                  ),
+                )));
+          }
+        } else {
+          //需要开通vip
+
+
+          if (bindingTerminal) {
+            childrenArray.add(Expanded(
+                child: SizedBox(
+                  child: GestureDetector(
+                    child: getBtnUi(true, "开通vip使用终端播放", textStyleVip, double.infinity, 40, margin_32),
+                    onTap: () {
+                      print("vip");
+                      ToastShow.show(msg: "开通vip使用终端播放", context: context);
+                    },
+                  ),
+                )));
+          } else {
+            childrenArray.add(Expanded(
+                child: SizedBox(
+                  child: GestureDetector(
+                    child: getBtnUi(false, "登陆终端使用终端播放", textStyle, double.infinity, 40, margin_32),
+                    onTap: () {
+                      print("没有绑定终端");
+                      ToastShow.show(msg: "登陆终端", context: context);
+                    },
+                  ),
+                )));
           }
         }
       }

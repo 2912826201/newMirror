@@ -68,8 +68,13 @@ class LiveVideoModel {
         DateTime endTime = DateUtil.stringToDateTime(this.endTime);
         var startTime = dateTime.add(new Duration(minutes: -15));
         if (DateUtil.compareNowDate(startTime)) {
-          this.playType = 2;
-          return "预约";
+          if (this.isBooked == 0) {
+            this.playType = 2;
+            return "预约";
+          } else {
+            this.playType = 4;
+            return "已预约";
+          }
         } else if (DateUtil.compareNowDate(endTime)) {
           this.playType = 1;
           return "去上课";
@@ -78,8 +83,13 @@ class LiveVideoModel {
           return "回放";
         }
       } else {
-        this.playType = 2;
-        return "预约";
+        if (this.isBooked == 0) {
+          this.playType = 2;
+          return "预约";
+        } else {
+          this.playType = 4;
+          return "已预约";
+        }
       }
     }
   }

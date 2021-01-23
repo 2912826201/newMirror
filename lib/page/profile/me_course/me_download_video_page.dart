@@ -10,6 +10,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/dialog.dart';
+import 'package:mirror/widget/left_scroll/left_scroll_list_view.dart';
 
 class MeDownloadVideoCoursePage extends StatefulWidget {
   @override
@@ -76,6 +77,7 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
   Widget judgeUi() {
     if (loadingStatus == LoadingStatus.STATUS_LOADING) {
       return Container(
+        color: AppColor.white,
         alignment: Alignment.center,
         padding: const EdgeInsets.only(bottom: 100),
         child: UnconstrainedBox(
@@ -94,6 +96,7 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
   //有数据ui
   Widget haveDataUi() {
     return Container(
+      color: AppColor.white,
       child: Column(
         children: [
           Expanded(
@@ -178,8 +181,8 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
                   return;
                 }
                 showAppDialog(context,
-                    title: "确认删除",
-                    info: "你确定删除这些课程吗？",
+                    title: isAllSelect ? "清除下载" : "删除确认",
+                    info: isAllSelect ? "清除全部下载视频后，训练课程时需要重新下载" : "清除下载视频后，训练课程时需要重新下载",
                     cancel: AppDialogButton("取消", () {
                       print("点了取消");
                       return true;
@@ -204,25 +207,46 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
       physics: BouncingScrollPhysics(),
       itemCount: courseVideoModelList.length,
       itemBuilder: (context, index) {
-        return GestureDetector(
-          child: getItem(courseVideoModelList[index], index),
-          onTap: () {
-            if (topText == "取消") {
-              if (selectDeleteIndexList.contains(index)) {
-                selectDeleteIndexList.remove(index);
-              } else {
-                selectDeleteIndexList.add(index);
-              }
-              isAllSelect = selectDeleteIndexList.length == courseVideoModelList.length;
-              setState(() {});
-            } else {
-              AppRouter.navigateToVideoDetail(context, courseVideoModelList[index].courseId);
-            }
-          },
-        );
+        return getLeftDeleteUi(courseVideoModelList[index], index);
       },
     );
   }
+
+  //获取每一个带左滑删除btn的item
+  Widget getLeftDeleteUi(DownloadCourseVideoDto courseVideoDto, int index) {
+    return LeftScrollListView(
+      itemKey: courseVideoDto.courseId.toString(),
+      itemTag: "tag",
+      itemIndex: index,
+      itemChild: getItem(courseVideoDto, index),
+      isDoubleDelete: true,
+      onTap: () {
+        onItemCLick(index);
+      },
+      onClickRightBtn: () {
+        //点击了删除按钮
+        selectDeleteIndexList.clear();
+        selectDeleteIndexList.add(index);
+        deleteVideo();
+      },
+    );
+  }
+
+  //每一个item的点击事件
+  void onItemCLick(int index) {
+    if (topText == "取消") {
+      if (selectDeleteIndexList.contains(index)) {
+        selectDeleteIndexList.remove(index);
+      } else {
+        selectDeleteIndexList.add(index);
+      }
+      isAllSelect = selectDeleteIndexList.length == courseVideoModelList.length;
+      setState(() {});
+    } else {
+      AppRouter.navigateToVideoDetail(context, courseVideoModelList[index].courseId);
+    }
+  }
+
 
   //每一个item
   Widget getItem(DownloadCourseVideoDto courseVideoDto, int index) {
@@ -302,6 +326,7 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
   //没有数据的ui
   Widget noHaveDataUi() {
     return Container(
+      color: AppColor.white,
       alignment: Alignment.center,
       padding: const EdgeInsets.only(bottom: 100),
       child: Column(
@@ -348,6 +373,8 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
         if (filePathCountMap[StringUtil.generateMd5(url)] == null ||
             filePathCountMap[StringUtil.generateMd5(url)] == 1) {
           await FileUtil().removeDownloadTask(url);
+        } else {
+          filePathCountMap[StringUtil.generateMd5(url)] = filePathCountMap[StringUtil.generateMd5(url)] - 1;
         }
         await DownloadVideoCourseDBHelper().remove(courseVideoModelList[index]);
       }
@@ -356,3 +383,4 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
     loadData();
   }
 }
+

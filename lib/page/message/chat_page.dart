@@ -211,8 +211,8 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   @override
   void dispose() {
     _scrollController.dispose();
-    context.read<GroupUserProfileNotifier>().clearAllUser();
     if (Application.appContext != null) {
+      Application.appContext.read<GroupUserProfileNotifier>().clearAllUser();
       Application.appContext.read<VoiceSettingNotifier>().stop();
       Application.appContext.read<ChatMessageProfileNotifier>().clear();
       _textController.text = "";

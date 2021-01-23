@@ -49,6 +49,20 @@ class DateUtil {
     }
   }
 
+  //获取日期-是几天前-今日返回今日
+  static String getDateDayString(DateTime dateTime) {
+    if (DateUtil.isToday(dateTime)) {
+      return "今日";
+    } else {
+      var difference = new DateTime.now().difference(dateTime);
+      if (difference.inHours > new DateTime.now().hour) {
+        return "${difference.inDays + 1}天前";
+      } else {
+        return "${difference.inDays}天前";
+      }
+    }
+  }
+
   //获取今日的日期
   //列如：2020-12-10
   static String formatToDayDateString() {
