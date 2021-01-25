@@ -161,7 +161,7 @@ class FeedSharePopups extends StatelessWidget {
       ),
     );
   }
-  Future<void> _updataImage() async {
+  Future _updataImage() async {
     List<File> fileList = [];
     fileList.add(map["file"]);
     var results = await FileUtil().uploadPics(fileList, (percent) {
