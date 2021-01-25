@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui'as ui;
 import 'dart:ui';
@@ -6,13 +7,17 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/test_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -26,20 +31,29 @@ class MyQrCodePage extends StatefulWidget {
 class _MyQrCodePageState extends State<MyQrCodePage> {
   GlobalKey rootWidgetKey = GlobalKey();
   Uint8List pngBytes;
+ File imageFile;
      _capturePngToByteData() async {
     RenderRepaintBoundary boundary = rootWidgetKey.currentContext
       .findRenderObject();
     double dpr = ui.window.devicePixelRatio; // 获取当前设备的像素比
     ui.Image image = await boundary.toImage(pixelRatio: dpr);
     ByteData _byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-    setState(() {
-      pngBytes = _byteData.buffer.asUint8List();
-    });
+    String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
+    Uint8List pngByte =  _byteData.buffer.asUint8List();
+    pngBytes = pngByte;
+    imageFile = await FileUtil().writeImageDataToFile(pngByte, timeStr);
   }
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Future.delayed(Duration(milliseconds: 200), () {
+        try {
+         _capturePngToByteData();
+        } catch (e) {
+        }
+      });
+    });
   }
       @override
       Widget build(BuildContext context) {
@@ -64,25 +78,19 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
             actions: [
               InkWell(
                 onTap: () {
-                  _capturePngToByteData();
-                  showDialog(
+                  openShareBottomSheet(
                     context: context,
-                    child: Container(
-                      height: 400,
-                      child: Image.memory(
-                        pngBytes,
-                        fit: BoxFit.cover,
-                      ),
-                    )
-                  );
+                    chatTypeModel: ChatTypeModel.MESSAGE_TYPE_IMAGE,
+                    imageFile: imageFile,
+                    sharedType: 2);
               },
-                child: Container(
+                child:Container(
                   margin: EdgeInsets.only(right: 16),
                   child: Image.asset(
                     "images/test/分享.png",
                     width: 24,
                     height: 24,
-                  )),),
+                  )) ,),
             ]),
           body: Selector<ProfileNotifier, ProfileDto>(builder: (context, profileDto, child) {
             return RepaintBoundary(
@@ -120,6 +128,14 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
                             fit: BoxFit.cover,
                           ),),
                       )),
+                    Positioned(
+                      top: ScreenUtil.instance.height*0.73,
+                      left: (ScreenUtil.instance.screenWidthDp-90)/2,
+                      child:Container(
+                        width: 120,
+                        height: 30,
+                        color: AppColor.black,
+                      ) )
                   ],
                 )
               ),
@@ -155,7 +171,7 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
               ),
               Spacer(),
               QrImage(
-                data: "${data.uid}",
+                data: "用户${data.uid}",
                 size: ScreenUtil.instance.height*0.49*0.57,
                 padding: EdgeInsets.zero,
                 backgroundColor: AppColor.white,

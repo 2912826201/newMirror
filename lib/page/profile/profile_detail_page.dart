@@ -239,7 +239,10 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 InkWell(
                   onTap: () {
                     openShareBottomSheet(
-                        context: context, map: userModel.toJson(), chatTypeModel: ChatTypeModel.MESSAGE_TYPE_USER);
+                        context: context,
+                      map: userModel.toJson(),
+                      chatTypeModel: ChatTypeModel.MESSAGE_TYPE_USER,
+                    sharedType: 1);
                   },
                   child: Image.asset(
                     _imgShared,

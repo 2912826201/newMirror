@@ -13,6 +13,7 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -57,6 +58,10 @@ class _ScanCodeState extends State<ScanCodePage> {
     getUserModel(int id)async{
     UserModel userModel = await getUserInfo(uid: id);
       if(userModel!=null){
+      /*  Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (context) {
+          return ProfileDetailPage(userId: userModel.uid,);
+        }), (route)=>route.==null);*/
+        Navigator.pop(context);
        AppRouter.navigateToMineDetail(context, userModel.uid);
       }
     }
@@ -64,8 +69,7 @@ class _ScanCodeState extends State<ScanCodePage> {
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
-    return MaterialApp(
-      home: Scaffold(
+    return Scaffold(
           appBar: AppBar(
             centerTitle: true,
             backgroundColor: AppColor.white,
@@ -112,10 +116,11 @@ class _ScanCodeState extends State<ScanCodePage> {
                   scanAreaScale: .7,
                   scanLineColor: AppColor.white,
                   onCapture: (data) {
-                    print('==扫码得到的结果$data');
-                    if(data!=null){
-                      getUserModel(int.parse(data));
+                    if(data.substring(0,1)=="用户"){
+                      print('=====================这是用户Id');
+                      getUserModel(int.parse(data.substring(1,data.length)));
                     }
+
                   },
                 ),
               ),
@@ -151,7 +156,7 @@ class _ScanCodeState extends State<ScanCodePage> {
                               },
                               child: Center(
                                 child: QrImage(
-                              data: "${context.watch<ProfileNotifier>().profile.uid}",
+                              data: "用户${context.watch<ProfileNotifier>().profile.uid}",
                               size: 40,
                               padding: EdgeInsets.zero,
                               backgroundColor: AppColor.white,
@@ -171,8 +176,7 @@ class _ScanCodeState extends State<ScanCodePage> {
                     ),
                   ))
             ],
-          )),
-    );
+          ));
   }
 
   _getImagePicker() {
@@ -202,11 +206,19 @@ class _ScanCodeState extends State<ScanCodePage> {
           print('===========================这是一个网址');
         } else {
           print('===========================这是扫码得到的结果$result');
+         _goToUserHome(result);
         }
         Toast.show("这是从相册获取到的$result", context);
         setState(() {});
-        print('result=====================================$result');
       }
     });
+  }
+
+
+  _goToUserHome(String result){
+    if(result.substring(0,2)=="用户"){
+      print('===================这是用户${result.substring(2,result.length)}');
+      getUserModel(int.parse(result.substring(2,result.length)));
+    }
   }
 }
