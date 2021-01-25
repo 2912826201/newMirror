@@ -11,6 +11,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import 'currency_msg.dart';
 
+///文本消息
 // ignore: must_be_immutable
 class TextMsg extends StatelessWidget {
   final String text;

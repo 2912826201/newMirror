@@ -14,6 +14,7 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/widget/loading_progress.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
+///私人聊天-更多界面--管家-系统消息
 class PrivateMorePage extends StatefulWidget {
   ///对话用户id
   final String chatUserId;

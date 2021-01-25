@@ -25,6 +25,7 @@ import '../message_chat_page_manager.dart';
 
 typedef VoidCallback = void Function();
 
+///群聊天-更多界面
 class GroupMorePage extends StatefulWidget {
   ///群id
   final String chatGroupId;

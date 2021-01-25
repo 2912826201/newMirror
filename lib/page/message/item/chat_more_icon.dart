@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'commom_button.dart';
 
+///底部按钮是图片还是发送按钮
 //发送和图片按钮--消息界面底部
 class ChatMoreIcon extends StatelessWidget {
   final bool isMore;

@@ -13,6 +13,8 @@ import '../message_chat_page_manager.dart';
 
 typedef StringCallback = void Function(ChatGroupUserModel userModel, int index);
 
+
+///群聊聊天-用户@界面
 class ChatAtUserList extends StatefulWidget {
   final bool isShow;
   final StringCallback onItemClickListener;

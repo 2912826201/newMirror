@@ -10,6 +10,7 @@ import 'package:mirror/util/date_util.dart';
 
 import 'currency_msg.dart';
 
+///直播课程视频课程消息
 // ignore: must_be_immutable
 class LiveVideoCourseMsg extends StatelessWidget {
   final String userUrl;

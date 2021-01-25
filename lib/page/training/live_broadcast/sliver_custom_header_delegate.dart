@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/date_util.dart';
 
-
+///直播详情页的头部滑动
 class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
   final double collapsedHeight;
   final double expandedHeight;

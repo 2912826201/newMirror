@@ -23,10 +23,12 @@ import 'package:provider/provider.dart';
 import 'more_page/group_more_page.dart';
 import 'more_page/private_more_page.dart';
 
+///几乎所有的消息发送添加转发页
+
+//todo 目前没有做这个限制
 //融云每一秒支持发送5条消息
 int imPostSecondNumber = 5;
 
-// typedef VoidCallback = void Function();
 
 //去对应的聊天界面
 //目前是从用户详情页的私聊过来的
