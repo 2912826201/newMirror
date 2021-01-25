@@ -27,6 +27,7 @@ class ImgVideoMsg extends StatelessWidget {
   final bool isShowChatUserName;
   final String name;
   final int status;
+  final int sendTime;
   final int position;
   final ImageMessage imageMessage;
   final bool isCanLongClick;
@@ -36,6 +37,7 @@ class ImgVideoMsg extends StatelessWidget {
 
   ImgVideoMsg(
       {this.isMyself,
+        this.sendTime,
       this.isTemporary,
       this.isImgOrVideo,
       this.isShowChatUserName = false,
@@ -151,6 +153,7 @@ class ImgVideoMsg extends StatelessWidget {
   Widget imgVideoContentBoxLongClick(BuildContext context) {
     List<String> longClickStringList = getLongClickStringList(
         isMySelf: isMyself,
+        sendTime: sendTime,
         contentType: isImgOrVideo ? ChatTypeModel.MESSAGE_TYPE_IMAGE : ChatTypeModel.MESSAGE_TYPE_VIDEO);
     return LongClickPopupMenu(
       onValueChanged: (int value) {
@@ -225,7 +228,7 @@ class ImgVideoMsg extends StatelessWidget {
 
   //获取视频的缺省图
   Widget getVideoShowImage() {
-    if (mediaFileModel != null) {
+    if (mediaFileModel != null&&mediaFileModel.thumb!=null) {
       return Image.memory(
         mediaFileModel.thumb,
         width: width,
@@ -265,7 +268,7 @@ class ImgVideoMsg extends StatelessWidget {
 
   //获取过渡与错误图
   Widget getImageShowImage() {
-    if (mediaFileModel != null) {
+    if (mediaFileModel != null&&(mediaFileModel.file!=null||mediaFileModel.croppedImageData!=null)) {
       return mediaFileModel.croppedImageData == null
           ? Image.file(
               mediaFileModel.file,

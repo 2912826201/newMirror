@@ -22,6 +22,7 @@ class FeedMsg extends StatelessWidget {
   final HomeFeedModel homeFeedMode;
   final int status;
   final int position;
+  final int sendTime;
   final String sendChatUserId;
   final bool isShowChatUserName;
   final bool isCanLongClick;
@@ -31,6 +32,7 @@ class FeedMsg extends StatelessWidget {
   FeedMsg({
     this.userUrl,
     this.name,
+    this.sendTime,
     this.isShowChatUserName = false,
     this.isCanLongClick = true,
     this.sendChatUserId,
@@ -139,8 +141,11 @@ class FeedMsg extends StatelessWidget {
 
   //获取动态的长按事件
   Widget _getFeedUiLongClickUi() {
-    List<String> longClickStringList =
-        getLongClickStringList(isMySelf: isMyself, contentType: ChatTypeModel.MESSAGE_TYPE_FEED);
+    List<String> longClickStringList = getLongClickStringList(
+        isMySelf: isMyself,
+        contentType: ChatTypeModel.MESSAGE_TYPE_FEED,
+        sendTime: sendTime,
+    );
     return LongClickPopupMenu(
       onValueChanged: (int value) {
         voidItemLongClickCallBack(

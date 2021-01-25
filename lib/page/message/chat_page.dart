@@ -321,12 +321,21 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
               //print("-----------------------");
               _focusNode.unfocus();
               ToastShow.show(msg: "点击了更多那妞", context: context);
-              judgeJumpPage(chatTypeId, this.chatUserId, widget.conversation.type, context, chatUserName, () {
-                Application.chatGroupUserModelMap.clear();
-                for (ChatGroupUserModel userModel in context.read<GroupUserProfileNotifier>().chatGroupUserModelList) {
-                  Application.chatGroupUserModelMap[userModel.uid.toString()] = userModel.groupNickName;
+              judgeJumpPage(chatTypeId, this.chatUserId, widget.conversation.type, context, chatUserName, (int type,String name) {
+                //type  0-用户名  1--群名
+                if(type==0) {
+                  //修改了用户名
+                  Application.chatGroupUserModelMap.clear();
+                  for (ChatGroupUserModel userModel in context
+                      .read<GroupUserProfileNotifier>()
+                      .chatGroupUserModelList) {
+                    Application.chatGroupUserModelMap[userModel.uid.toString()] = userModel.groupNickName;
+                  }
+                  delayedSetState();
+                }else{
+                  //修改了群名
+                  _postUpdateGroupName(name);
                 }
-                delayedSetState();
               }, () {
                 //退出群聊
                 MessageManager.removeConversation(
@@ -1044,24 +1053,27 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     );
   }
 
+  //发送修改群名称
+  _postUpdateGroupName(String name){
+    ChatDataModel chatDataModel = new ChatDataModel();
+    chatDataModel.type = ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME;
+    chatDataModel.content = name;
+    chatDataModel.isTemporary = true;
+    chatDataModel.isHaveAnimation = true;
+    judgeAddAlertTime();
+    chatDataList.insert(0, chatDataModel);
+    animateToBottom();
+    setState(() {
+      _timerCount = 0;
+      isHaveTextLen = false;
+    });
+    postGroupUpdateName(chatDataList[0], widget.conversation.conversationId,  () {
+      delayedSetState();
+    });
+  }
+
   ///------------------------------------发送消息  end-----------------------------------------------------------------------///
   ///------------------------------------一些功能 方法  start-----------------------------------------------------------------------///
-
-  //判断最后一个消息是不是时间提示
-  // bool getNewestIsAlertMessage() {
-  //   try {
-  //     bool isTextMessage = chatDataList[0].msg.objectName == TextMessage.objectName;
-  //     if (isTextMessage) {
-  //       TextMessage textMessage = chatDataList[0].msg.content as TextMessage;
-  //       Map<String, dynamic> map = json.decode(textMessage.content);
-  //       bool isAlertTimeMessage = map["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME;
-  //       if (isAlertTimeMessage) {
-  //         return true;
-  //       }
-  //     }
-  //   } catch (e) {}
-  //   return false;
-  // }
 
   //计时
   initTime() {

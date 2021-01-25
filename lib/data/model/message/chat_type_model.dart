@@ -57,6 +57,10 @@ class ChatTypeModel {
   static const String MESSAGE_TYPE_ALERT_INVITE = "IF:AlertInviteMessage";
   static const String MESSAGE_TYPE_ALERT_INVITE_NAME = "邀请消息，该版本较低请升级版本再行查看";
 
+  //自定义消息类型：提示信息-群-修改群名
+  static const String MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME = "IF:AlertUpdateNameMessage";
+  static const String MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME_NAME = "修改群名，该版本较低请升级版本再行查看";
+
   //自定义消息类型：提示信息-移除
   static const String MESSAGE_TYPE_ALERT_REMOVE = "IF:AlertRemoveMessage";
   static const String MESSAGE_TYPE_ALERT_REMOVE_NAME = "移除消息，该版本较低请升级版本再行查看";

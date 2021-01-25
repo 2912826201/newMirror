@@ -23,6 +23,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
   final bool isShowChatUserName;
   final int status;
   final int position;
+  final int sendTime;
   final bool isCanLongClick;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
@@ -31,6 +32,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
       {this.liveVideoModel,
       this.isMyself,
       this.userUrl,
+        this.sendTime,
       this.msgId,
       this.name,
       this.status,
@@ -137,6 +139,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
   Widget _getLiveVideoCourseUiLongClick(BuildContext context) {
     List<String> longClickStringList = getLongClickStringList(
         isMySelf: isMyself,
+        sendTime: sendTime,
         contentType: isLiveOrVideo ? ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE : ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
     return LongClickPopupMenu(
       onValueChanged: (int value) {
