@@ -1699,7 +1699,8 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     openShareBottomSheet(
         context: context,
         map: liveModel.toJson(),
-        chatTypeModel: ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE);
+        chatTypeModel: ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE,
+    sharedType: 1);
   }
 
   ///这是关注的方法
