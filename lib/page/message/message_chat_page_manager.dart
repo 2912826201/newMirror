@@ -157,6 +157,7 @@ Future<Message> postMessageManagerUpdateGroupName(String targetId, String text) 
   textMap["toUserId"] = targetId;
   textMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME;
   textMap["name"] = ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME_NAME;
+  textMap["nickName"] = Application.chatGroupUserModelMap[msg.sendUserInfo.userId.toString()];
   textMap["data"] = text;
   msg.content = jsonEncode(textMap);
   return await postGroupMessageManager(targetId, msg);
