@@ -333,6 +333,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                   }
                   delayedSetState();
                 }else{
+                  chatUserName=name;
                   //修改了群名
                   _postUpdateGroupName(name);
                 }
