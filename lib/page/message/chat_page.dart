@@ -1139,11 +1139,20 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         judgeAddAlertTime();
         chatDataList.insert(0, chatDataModel);
 
-        //判断是不是群通知
         if (message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
+          //判断是不是群通知
+
           if (chatTypeId == RCConversationType.Group) {
             print("--------------------------------");
             getChatGroupUserModelList1(chatUserId, context);
+          }
+        }else if(message.objectName == ChatTypeModel.MESSAGE_TYPE_TEXT){
+          //判断是不是修改群名
+
+          TextMessage textMessage = ((message.content) as TextMessage);
+          Map<String, dynamic> mapModel = json.decode(textMessage.content);
+          if(mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME){
+            chatUserName=mapModel["data"];
           }
         }
         delayedSetState();
