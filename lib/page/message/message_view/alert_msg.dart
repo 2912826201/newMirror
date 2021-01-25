@@ -104,7 +104,11 @@ class AlertMsg extends StatelessWidget {
       //群通知
       Map<String, dynamic> mapGroupModel = json.decode(map["data"]["data"]);
       // print("mapGroupModel:${map["data"]["data"].toString()}");
-      getGroupText(mapGroupModel, context);
+      if(mapGroupModel["subType"] == 1){
+        textArray.clear();
+      }else{
+        getGroupText(mapGroupModel, context);
+      }
     }else if (map["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME) {
       colorArray.add(AppColor.textSecondary);
       colorArray.add(AppColor.mainBlue);
