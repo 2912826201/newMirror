@@ -1134,7 +1134,8 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         if (message.messageUId == chatDataList[0].msg.messageUId) {
           return Container();
         }
-        ChatDataModel chatDataModel = getMessage(message, isHaveAnimation: true);
+        ChatDataModel chatDataModel =
+            getMessage(message, isHaveAnimation: true);
         judgeAddAlertTime();
         chatDataList.insert(0, chatDataModel);
 
@@ -1143,12 +1144,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           if (chatTypeId == RCConversationType.Group) {
             print("--------------------------------");
             getChatGroupUserModelList1(chatUserId, context);
-          } else {
-            delayedSetState();
           }
-        } else {
-          delayedSetState();
         }
+        delayedSetState();
         return Container();
       },
     );

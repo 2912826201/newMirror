@@ -190,7 +190,12 @@ class AlertMsg extends StatelessWidget {
           if (d["uid"] == Application.profile.uid) {
             textArray.add("你");
           } else {
-            textArray.add("${d["groupNickName"]}${userCount >= 3 ? "等" : "、"}");
+            if (mapGroupModel["subType"] == 3) {
+              textArray.add("${d["currentMasterName"]} ");
+            } else {
+              textArray
+                  .add("${d["groupNickName"]}${userCount >= 3 ? "等" : "、"}");
+            }
           }
           isChangColorArray.add(true);
         }
