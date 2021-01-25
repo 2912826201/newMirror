@@ -1830,6 +1830,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       height: double.infinity,
       margin: marginLeft26Right20,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.headset),
           Text("试听"),

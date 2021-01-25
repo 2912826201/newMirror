@@ -1209,6 +1209,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
       height: double.infinity,
       margin: marginLeft26Right20,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.headset),
           Text((liveModel.playType == 3 ? liveModel.getGetPlayType() : "试听")),
@@ -1344,23 +1345,15 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     }
     loadingStatusComment = LoadingStatus.STATUS_COMPLETED;
 
-    //获取直播详情数据
-    if (liveModel == null ||
-        liveModel.coursewareDto?.componentDtos == null ||
-        (liveModel.coachDto.isLiving == 1 && DateUtil.compareNowDate(DateUtil.stringToDateTime(liveModel.endTime)))) {
-      //加载数据
-      Map<String, dynamic> model = await liveCourseDetail(courseId: liveCourseId, startTime: liveModel.startTime);
-      if (model == null) {
-        loadingStatus = LoadingStatus.STATUS_IDEL;
-        Future.delayed(Duration(seconds: 1), () {
-          setState(() {});
-        });
-      } else {
-        liveModel = LiveVideoModel.fromJson(model);
-        loadingStatus = LoadingStatus.STATUS_COMPLETED;
+    //加载数据
+    Map<String, dynamic> model = await liveCourseDetail(courseId: liveCourseId, startTime: liveModel.startTime);
+    if (model == null) {
+      loadingStatus = LoadingStatus.STATUS_IDEL;
+      Future.delayed(Duration(seconds: 1), () {
         setState(() {});
-      }
+      });
     } else {
+      liveModel = LiveVideoModel.fromJson(model);
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
       setState(() {});
     }
@@ -1679,22 +1672,41 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   ///预约流程
   ///
 
-  Future<void> _bookLiveCourse(LiveVideoModel value, int index, bool isAddCalendar) async {
+  Future<void> _bookLiveCourse(LiveVideoModel value, int index, bool isAddCalendar,{bool bindingTerminal=false}) async {
     Map<String, dynamic> mapBook = await bookLiveCourse(
         courseId: value.id, startTime: value.startTime, isBook: value.playType == 2);
-    if (isAddCalendar) {
-      onClickMakeAnAppointment(value, "", value.playType == 2);
-    }
-    if (mapBook != null && mapBook["state"] != null && mapBook["state"]) {
-      if (value.playType == 2) {
-        value.playType = 4;
-      } else {
-        value.playType = 2;
-      }
-      setState(() {
 
-      });
+    if(mapBook!=null&&mapBook["code"]==200) {
+      if (isAddCalendar) {
+        onClickMakeAnAppointment(value, "", value.playType == 2);
+      }
+
+      if (mapBook["state"] != null) {
+        if (value.playType == 2) {
+          value.playType = 4;
+        } else {
+          value.playType = 2;
+        }
+        if(mapBook["state"]&&bindingTerminal){
+          showAppDialog(context,
+              title: "报名",
+              info: "使用终端观看有机会加入直播小屏，获得教练实时指导，是否报名",
+              cancel: AppDialogButton("仅上课", () {
+                return true;
+              }),
+              confirm: AppDialogButton("我要报名", () {
+                applyTerminalTrainingPr();
+                return true;
+              }));
+        }
+        setState(() {
+
+        });
+      }
+    }else if(mapBook!=null){
+      getDataAction();
     }
+
     return;
   }
 
@@ -1780,21 +1792,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   //判断是预约还是取消预约
   void _judgeBookOrCancelBook({bool bindingTerminal, bool isVip}) {
     if (liveModel.playType == 2) {
-      if (bindingTerminal) {
-        showAppDialog(context,
-            title: "报名",
-            info: "使用终端观看有机会加入直播小屏，获得教练实时指导，是否报名",
-            cancel: AppDialogButton("仅上课", () {
-              _bookLiveCourse(liveModel, 0, true);
-              return true;
-            }),
-            confirm: AppDialogButton("我要报名", () {
-              applyTerminalTrainingPr();
-              return true;
-            }));
-      } else {
-        _bookLiveCourse(liveModel, 0, true);
-      }
+      _bookLiveCourse(liveModel, 0, true,bindingTerminal: bindingTerminal);
     } else {
       _bookLiveCourse(liveModel, 0, true);
     }
@@ -1830,22 +1828,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
 
   //报名终端
   void applyTerminalTrainingPr() async {
-    Map<String, dynamic> mapBook = await bookLiveCourse(
-        courseId: liveModel.id, startTime: liveModel.startTime, isBook: liveModel.playType == 2);
-    onClickMakeAnAppointment(liveModel, "", liveModel.playType == 2);
-    if (mapBook != null) {
-      if (mapBook["state"] != null && mapBook["state"]) {
-        if (liveModel.playType == 2) {
-          liveModel.playType = 4;
-        } else {
-          liveModel.playType = 2;
-        }
-      }
-      setState(() {
-
-      });
-    }
-    await applyTerminalTraining(courseId: liveModel.id, startTime: liveModel.startTime);
+    applyTerminalTraining(courseId: liveModel.id, startTime: liveModel.startTime);
     ToastShow.show(msg: "已报名，若中选将收到系统消息", context: context);
   }
 }
