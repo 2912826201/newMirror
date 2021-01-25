@@ -19,6 +19,7 @@ class SelectMsg extends StatelessWidget {
   final String sendChatUserId;
   final bool isShowChatUserName;
   final bool isCanLongClick;
+  final int sendTime;
   final int position;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
@@ -33,6 +34,7 @@ class SelectMsg extends StatelessWidget {
     this.selectListString,
     this.status,
     this.position,
+    this.sendTime,
     this.voidMessageClickCallBack,
     this.voidItemLongClickCallBack,
   });
@@ -187,7 +189,10 @@ class SelectMsg extends StatelessWidget {
   //长按事件
   Widget textContentBoxLongClick(BuildContext context) {
     List<String> longClickStringList =
-        getLongClickStringList(isMySelf: isMyself, contentType: ChatTypeModel.MESSAGE_TYPE_SELECT);
+        getLongClickStringList(
+            isMySelf: isMyself,
+            sendTime: sendTime,
+            contentType: ChatTypeModel.MESSAGE_TYPE_SELECT);
     return LongClickPopupMenu(
       onValueChanged: (int value) {
         voidItemLongClickCallBack(

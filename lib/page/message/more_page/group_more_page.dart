@@ -30,7 +30,7 @@ class GroupMorePage extends StatefulWidget {
   ///群id
   final String chatGroupId;
 
-  final VoidCallback listener;
+  final Function(int type,String name) listener;
   final VoidCallback exitGroupListener;
 
   ///群名字
@@ -83,6 +83,7 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //获取主体
   Widget getBodyUi() {
+    print("groupMeName:${groupMeName}");
     return Container(
       color: AppColor.white,
       child: CustomScrollView(
@@ -368,10 +369,8 @@ class GroupMorePageState extends State<GroupMorePage> {
   //获取我的群昵称
   String getGroupMeName() {
     String name = "还未取名";
-    if (context
-        .watch<GroupUserProfileNotifier>()
-        .loadingStatus == LoadingStatus.STATUS_COMPLETED) {
-      for (int i = 1; i < context
+    if (context.watch<GroupUserProfileNotifier>().loadingStatus == LoadingStatus.STATUS_COMPLETED) {
+      for (int i = 0; i < context
           .watch<GroupUserProfileNotifier>()
           .chatGroupUserModelList
           .length; i++) {
@@ -420,6 +419,9 @@ class GroupMorePageState extends State<GroupMorePage> {
           groupChatId: int.parse(widget.chatGroupId), newName: newName);
       if (model != null && model["state"] != null && model["state"]) {
         groupName = newName;
+        if (widget.listener != null) {
+          widget.listener(1,groupName);
+        }
         setState(() {
 
         });
@@ -467,7 +469,7 @@ class GroupMorePageState extends State<GroupMorePage> {
   void updateUserName() {
     if (isUpdateGroupMeName) {
       if (context
-          .watch<GroupUserProfileNotifier>()
+          .read<GroupUserProfileNotifier>()
           .loadingStatus == LoadingStatus.STATUS_COMPLETED) {
         for (int i = 0; i < context
             .watch<GroupUserProfileNotifier>()
@@ -480,7 +482,7 @@ class GroupMorePageState extends State<GroupMorePage> {
                 .watch<GroupUserProfileNotifier>()
                 .chatGroupUserModelList[i].groupNickName = groupMeName;
             if (widget.listener != null) {
-              widget.listener();
+              widget.listener(0,groupMeName);
             }
           }
         }
