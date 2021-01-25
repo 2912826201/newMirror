@@ -1695,7 +1695,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   void _shareBtnClick() {
     print("分享点击事件视频课");
     openShareBottomSheet(
-        context: context, map: videoModel.toJson(), chatTypeModel: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
+        context: context,sharedType: 1, map: videoModel.toJson(), chatTypeModel: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
   }
 
   //分享的收藏按钮

@@ -15,6 +15,8 @@ import 'package:mirror/page/profile/fitness_information_entry/height_and_weight_
 import 'package:mirror/page/profile/query_list/query_follow_list.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/page/profile/vip/vip_open_page.dart';
+import 'package:mirror/page/scan_code/my_qrcode_page.dart';
+import 'package:mirror/page/scan_code/scan_result_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
@@ -453,10 +455,13 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     } else if("我的订单"== title){
       if(userModel.isVip==0){
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+          return ScanResultPage(type: ScanResultType.LOGIN_COMPLETE,);
+        }));
+     /*   Navigator.of(context).push(MaterialPageRoute(builder: (context) {
           return VipNotOpenPage(
             type: VipState.NOTOPEN,
           );
-        }));
+        }));*/
       }else{
         AppRouter.navigateToVipOpenPage(context);
       }
