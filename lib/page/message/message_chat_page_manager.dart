@@ -78,8 +78,7 @@ Future<bool> jumpShareMessage(
     sizeInfo.height=map["height"];
     sizeInfo.width=map["width"];
     mediaFileModel.sizeInfo=sizeInfo;
-    UploadResultModel uploadResultModel=new UploadResultModel();
-    uploadResultModel.url=map["url"];
+    UploadResultModel uploadResultModel=await onPostImgOrVideoSinge(map["file"]);
     message = await postMessageManagerImgOrVideo(
         conversation.conversationId,
         true,
@@ -486,8 +485,7 @@ void postSelectMessage(ChatDataModel chatDataModel, String targetId,
 void postImgOrVideo(List<ChatDataModel> modelList, String targetId, String type,
     int chatTypeId,
     VoidCallback voidCallback) async {
-  List<UploadResultModel> uploadResultModelList =
-  await onPostImgOrVideo(modelList, type);
+  List<UploadResultModel> uploadResultModelList = await onPostImgOrVideo(modelList, type);
   for (int i = 0; i < modelList.length; i++) {
     int uploadResultModelIndex = -1;
     for (int j = 0; j < uploadResultModelList.length; j++) {
@@ -524,6 +522,24 @@ void postVoice(ChatDataModel chatDataModel, String targetId,
   voidCallback();
 }
 
+Future<UploadResultModel> onPostImgOrVideoSinge(File file)async{
+  List<File> fileList = [];
+  fileList.add(file);
+  UploadResults  results = await FileUtil().uploadPics(fileList, (percent) {});
+  List<UploadResultModel> uploadResultModelList = <UploadResultModel>[];
+  for (int i = 0; i < results.resultMap.length; i++) {
+    UploadResultModel model = results.resultMap.values.elementAt(i);
+    uploadResultModelList.add(model);
+    print("第${i + 1}个上传文件");
+    print(model.isSuccess);
+    print(model.error);
+    print(model.filePath);
+    print(model.url);
+  }
+  return uploadResultModelList[0];
+}
+
+
 //上传图片和视频
 Future<List<UploadResultModel>> onPostImgOrVideo(
     List<ChatDataModel> modelList, String type) async {
@@ -538,8 +554,7 @@ Future<List<UploadResultModel>> onPostImgOrVideo(
         fileList.add(element.mediaFileModel.file);
       } else {
         i++;
-        File imageFile = await FileUtil().writeImageDataToFile(
-            element.mediaFileModel.croppedImageData, timeStr + i.toString());
+        File imageFile = await FileUtil().writeImageDataToFile(element.mediaFileModel.croppedImageData, timeStr + i.toString());
         fileList.add(imageFile);
       }
     });
