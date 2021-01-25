@@ -116,10 +116,15 @@ class AlertMsg extends StatelessWidget {
       if(isMyself){
         textArray.add("你 ");
       }else{
-        textArray.add(chatUserName );
+        String name=Application.chatGroupUserModelMap[map["fromUserId"]];
+        if(name==null){
+          textArray.add(map["fromUserId"]+" ");
+        }else{
+          textArray.add(name+" ");
+        }
       }
       isChangColorArray.add(true);
-      textArray.add("修改群名为\"");
+      textArray.add("修改群名为 \"");
       isChangColorArray.add(false);
       textArray.add(map["data"]);
       isChangColorArray.add(true);
