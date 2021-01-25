@@ -10,6 +10,7 @@ import 'package:mirror/widget/left_scroll/left_scroll_list_view.dart';
 
 import 'customize_line_chart.dart';
 
+///体重记录页--我的体重
 class WeightRecordPage extends StatefulWidget {
   @override
   _WeightRecordPageState createState() => _WeightRecordPageState();
@@ -81,6 +82,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
     );
   }
 
+  //底部list
   Widget listViewUi() {
     if (weightDataMap == null || weightDataMap["recordList"] == null || weightDataMap["recordList"].length < 1) {
       return SliverToBoxAdapter();
@@ -106,7 +108,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
       },
     );
   }
-
+//每一个listview的item
   Widget getItem(int index) {
     DateTime dateTime = DateUtil.stringToDateTime(weightDataMap["recordList"][index]["dateTime"]);
     String date;
@@ -396,6 +398,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
         }));
   }
 
+  //将添加的体重添加到 weightDataMap 中显示
   addWeightData(double userWeight) {
     if (weightDataMap == null) {
       weightDataMap = Map();

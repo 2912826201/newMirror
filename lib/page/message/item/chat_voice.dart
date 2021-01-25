@@ -12,6 +12,8 @@ import 'package:provider/provider.dart';
 
 import 'voice_dialog.dart';
 
+
+///底部语音按钮
 typedef VoiceFile = void Function(String path, int time);
 
 //语音界面

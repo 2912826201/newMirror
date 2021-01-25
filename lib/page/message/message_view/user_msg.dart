@@ -8,6 +8,7 @@ import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 
 import 'currency_msg.dart';
 
+///用户名片消息
 // ignore: must_be_immutable
 class UserMsg extends StatelessWidget {
   final String userUrl;
@@ -18,6 +19,7 @@ class UserMsg extends StatelessWidget {
   final String sendChatUserId;
   final bool isShowChatUserName;
   final bool isCanLongClick;
+  final int sendTime;
   final int position;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
@@ -28,6 +30,7 @@ class UserMsg extends StatelessWidget {
       this.userUrl,
       this.name,
       this.status,
+        this.sendTime,
       this.isShowChatUserName = false,
       this.isCanLongClick = true,
       this.sendChatUserId,
@@ -131,7 +134,10 @@ class UserMsg extends StatelessWidget {
 //长按事件
   Widget _getUserUiLongClick() {
     List<String> longClickStringList =
-        getLongClickStringList(isMySelf: isMyself, contentType: ChatTypeModel.MESSAGE_TYPE_USER);
+        getLongClickStringList(
+            isMySelf: isMyself,
+            sendTime: sendTime,
+            contentType: ChatTypeModel.MESSAGE_TYPE_USER);
     return LongClickPopupMenu(
       onValueChanged: (int value) {
         voidItemLongClickCallBack(

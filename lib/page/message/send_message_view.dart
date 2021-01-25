@@ -24,6 +24,7 @@ import 'message_view/text_msg.dart';
 import 'message_view/user_msg.dart';
 import 'message_view/voice_msg.dart';
 
+///聊天-筛选这个消息的是哪一种消息
 // ignore: must_be_immutable
 class SendMessageView extends StatelessWidget {
   final ChatDataModel model;
@@ -41,6 +42,7 @@ class SendMessageView extends StatelessWidget {
   String userUrl;
   String name;
   int status;
+  int sendTime;
   String sendChatUserId;
 
   @override
@@ -53,12 +55,15 @@ class SendMessageView extends StatelessWidget {
       print("临时的");
       isMyself = true;
       status = RCSentStatus.Sending;
+      sendTime = new DateTime.now().add(new Duration(days: -1)).millisecondsSinceEpoch;
       return temporaryData();
     } else if (Application.profile.uid.toString() == model.msg.senderUserId) {
       isMyself = true;
+      sendTime=model.msg.sentTime;
       status = model.msg.sentStatus;
       return notTemporaryData();
     } else {
+      sendTime=model.msg.sentTime;
       isMyself = false;
       status = model.msg.sentStatus;
       sendChatUserId = model.msg.senderUserId;
@@ -158,6 +163,7 @@ class SendMessageView extends StatelessWidget {
             mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_INVITE ||
             mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_NEW ||
             mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT ||
+            mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME ||
             mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_REMOVE) {
           // return new Text('提示消息');
           return getAlertMsg(map: mapModel);
@@ -260,6 +266,7 @@ class SendMessageView extends StatelessWidget {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        sendTime: sendTime,
         sendChatUserId: sendChatUserId,
         isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
@@ -278,6 +285,7 @@ class SendMessageView extends StatelessWidget {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        sendTime: sendTime,
         sendChatUserId: sendChatUserId,
         isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
@@ -294,6 +302,7 @@ class SendMessageView extends StatelessWidget {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        sendTime: sendTime,
         sendChatUserId: sendChatUserId,
         isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
@@ -318,6 +327,7 @@ class SendMessageView extends StatelessWidget {
         isTemporary: isTemporary,
         userUrl: userUrl,
         name: name,
+        sendTime: sendTime,
         sendChatUserId: sendChatUserId,
         isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
@@ -337,6 +347,7 @@ class SendMessageView extends StatelessWidget {
         userUrl: userUrl,
         name: name,
         msgId: msgId,
+        sendTime: sendTime,
         sendChatUserId: sendChatUserId,
         isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
@@ -354,6 +365,7 @@ class SendMessageView extends StatelessWidget {
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,
+        sendTime: sendTime,
         sendChatUserId: sendChatUserId,
         isCanLongClick: isCanLongClick(),
         isShowChatUserName: isShowChatUserName,
@@ -374,6 +386,7 @@ class SendMessageView extends StatelessWidget {
       userUrl: userUrl,
       name: name,
       status: status,
+      sendTime: sendTime,
       sendChatUserId: sendChatUserId,
       isCanLongClick: isCanLongClick(),
       isTemporary: isTemporary,

@@ -13,6 +13,8 @@ import 'package:provider/provider.dart';
 
 import 'currency_msg.dart';
 
+
+///语音消息
 // ignore: must_be_immutable
 class VoiceMsg extends StatefulWidget {
   final _VoiceMsgState _state = _VoiceMsgState();
@@ -23,6 +25,7 @@ class VoiceMsg extends StatefulWidget {
   final String sendChatUserId;
   final bool isShowChatUserName;
   final bool isTemporary;
+  final int sendTime;
   final bool isCanLongClick;
   final ChatVoiceModel chatVoiceModel;
   final int status;
@@ -33,6 +36,7 @@ class VoiceMsg extends StatefulWidget {
   VoiceMsg(
       {this.chatVoiceModel,
       this.isMyself,
+        this.sendTime,
       this.messageUId,
       this.isShowChatUserName = false,
       this.isCanLongClick = true,
@@ -169,7 +173,10 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
   //长按事件
   Widget _getVoiceUiLongClick() {
     List<String> longClickStringList =
-        getLongClickStringList(isMySelf: widget.isMyself, contentType: ChatTypeModel.MESSAGE_TYPE_VOICE);
+        getLongClickStringList(
+            isMySelf: widget.isMyself,
+            sendTime: widget.sendTime,
+            contentType: ChatTypeModel.MESSAGE_TYPE_VOICE);
     return LongClickPopupMenu(
       onValueChanged: (int value) {
         widget.voidItemLongClickCallBack(

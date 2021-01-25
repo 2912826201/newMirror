@@ -123,6 +123,17 @@ class DateUtil {
     return value.isAfter(dateTime);
   }
 
+  //判断这个时间是不是两分钟内的时间
+  static bool judgeTwoMinuteNewDateTime(DateTime dateTime){
+    if(!compareNowDate(dateTime)){
+      DateTime newDateTime =dateTime.add(new Duration(minutes: 2));
+      if(compareNowDate(newDateTime)){
+        return true;
+      }
+    }
+    return false;
+  }
+
   //将字符串的时间转为dateTime
   static DateTime stringToDateTime(String dateString) {
     try {

@@ -9,9 +9,11 @@ import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/left_scroll/left_scroll_list_view.dart';
 
+///我的课程-下载课程界面
 class MeDownloadVideoCoursePage extends StatefulWidget {
   @override
   _MeDownloadVideoCoursePageState createState() => _MeDownloadVideoCoursePageState();
@@ -54,14 +56,18 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
               ),
             ),
             onTap: () {
-              if (topText == "选择") {
-                topText = "取消";
-              } else {
-                topText = "选择";
+              if(courseVideoModelList!=null&&courseVideoModelList.length>0) {
+                if (topText == "选择") {
+                  topText = "取消";
+                } else {
+                  topText = "选择";
+                }
+                selectDeleteIndexList.clear();
+                isAllSelect = false;
+                setState(() {});
+              }else{
+                ToastShow.show(msg: "暂无课程", context: context);
               }
-              selectDeleteIndexList.clear();
-              isAllSelect = false;
-              setState(() {});
             },
           )
         ],

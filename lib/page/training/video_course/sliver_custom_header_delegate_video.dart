@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/date_util.dart';
 
+///视频课-头部折叠滑动
 class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
   final double collapsedHeight;
   final double expandedHeight;

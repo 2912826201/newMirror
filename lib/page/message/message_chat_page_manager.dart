@@ -23,10 +23,12 @@ import 'package:provider/provider.dart';
 import 'more_page/group_more_page.dart';
 import 'more_page/private_more_page.dart';
 
+///几乎所有的消息发送添加转发页
+
+//todo 目前没有做这个限制
 //融云每一秒支持发送5条消息
 int imPostSecondNumber = 5;
 
-// typedef VoidCallback = void Function();
 
 //去对应的聊天界面
 //目前是从用户详情页的私聊过来的
@@ -69,6 +71,22 @@ Future<bool> jumpShareMessage(
     print("给$name分享了视频课程");
     message = await postMessageManagerVideoCourse(conversation.conversationId,
         map, conversation.getType() == RCConversationType.Private);
+  } else if (chatType == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
+    print("给$name分享了图片");
+    MediaFileModel mediaFileModel=new MediaFileModel();
+    SizeInfo sizeInfo=new SizeInfo();
+    sizeInfo.height=map["height"];
+    sizeInfo.width=map["width"];
+    mediaFileModel.sizeInfo=sizeInfo;
+    UploadResultModel uploadResultModel=new UploadResultModel();
+    uploadResultModel.url=map["url"];
+    message = await postMessageManagerImgOrVideo(
+        conversation.conversationId,
+        true,
+        mediaFileModel,
+        uploadResultModel,
+        conversation.getType() == RCConversationType.Private,
+    );
   } else {
     chatType = ChatTypeModel.NULL_COMMENT;
     print("给$name分享了未知消息");
@@ -128,6 +146,20 @@ Future<Message> postMessageManagerText(String targetId, String text,
   textMap["data"] = text;
   msg.content = jsonEncode(textMap);
   return await (isPrivate ? postPrivateMessageManager : postGroupMessageManager)(targetId, msg);
+}
+
+//发送谁修改群名
+Future<Message> postMessageManagerUpdateGroupName(String targetId, String text) async {
+  TextMessage msg = TextMessage();
+  msg.sendUserInfo = getChatUserInfo();
+  Map<String, dynamic> textMap = Map();
+  textMap["fromUserId"] = msg.sendUserInfo.userId.toString();
+  textMap["toUserId"] = targetId;
+  textMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME;
+  textMap["name"] = ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME_NAME;
+  textMap["data"] = text;
+  msg.content = jsonEncode(textMap);
+  return await postGroupMessageManager(targetId, msg);
 }
 
 //发送可选择的消息
@@ -355,6 +387,13 @@ void postText(ChatDataModel chatDataModel, String targetId, int chatTypeId,
       chatTypeId == RCConversationType.Private);
   chatDataModel.isTemporary = false;
   // print(chatDataModel.msg.toString());
+  voidCallback();
+}
+
+//发送修改群名消息
+void postGroupUpdateName(ChatDataModel chatDataModel, String targetId,VoidCallback voidCallback)async{
+  chatDataModel.msg = await postMessageManagerUpdateGroupName(targetId, chatDataModel.content);
+  chatDataModel.isTemporary = false;
   voidCallback();
 }
 

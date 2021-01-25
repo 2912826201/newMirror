@@ -5,6 +5,7 @@ import 'dart:ui' as ui show TextStyle;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/page/image_preview/image_preview_view.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
@@ -12,6 +13,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'monotonx.dart';
 
+///自定义的折线图
 class CustomizeLineChart extends StatefulWidget {
   final Map<String, dynamic> weightDataMap;
 
@@ -40,6 +42,8 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
   double topHeight = 40.0;
   int pageSize = 5;
   RefreshController _refreshController = RefreshController(initialRefresh: false);
+
+
 
   void initDate() {
     if (widget.weightDataMap["targetWeight"] == null || widget.weightDataMap["targetWeight"] < 1) {
@@ -85,43 +89,11 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
               child: SizedBox(
             child: Stack(
               children: [
-                Container(
-                  width: canvasWidth,
-                  height: double.infinity,
-                  child: CustomPaint(
-                    size: Size(canvasWidth, double.infinity),
-                    painter: MyPainter1(
-                      bottomHeight: bottomHeight,
-                      topHeight: topHeight,
-                      yMaxValue: yMaxValue,
-                      benchmarkValue: benchmarkValue,
-                      benchmarkValueText: benchmarkValueText,
-                    ),
-                  ),
-                ),
+                getBenchMarkLineUi(canvasWidth),
                 ScrollConfiguration(
                   behavior: NoBlueEffectBehavior(),
                   child: NotificationListener<ScrollNotification>(
-                    onNotification: (ScrollNotification notification) {
-                      // 注册通知回调
-                      if (notification is ScrollStartNotification) {
-                        if (isPositionSelectShow) {
-                          isPositionSelectShow = false;
-                          setState(() {});
-                        }
-                        // 滚动开始
-                        // print('滚动开始');
-                      } else if (notification is ScrollUpdateNotification) {
-                        // 滚动位置更新
-                        // print('滚动位置更新');
-                        // 当前位置
-                        // print("当前位置${metrics.pixels}");
-                      } else if (notification is ScrollEndNotification) {
-                        // 滚动结束
-                        // print('滚动结束');
-                      }
-                      return false;
-                    },
+                    onNotification: _onDragNotification,
                     child: SmartRefresher(
                       enablePullDown: false,
                       enablePullUp: !(pageSize >= valueList.length),
@@ -149,54 +121,8 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
                           height: height,
                           child: Stack(
                             children: [
-                              Container(
-                                width: double.infinity,
-                                height: double.infinity,
-                                child: CustomPaint(
-                                  size: Size(double.infinity, double.infinity),
-                                  painter: MyPainter(
-                                    bottomHeight: bottomHeight,
-                                    isPositionSelectShow: isPositionSelectShow,
-                                    topHeight: topHeight,
-                                    itemWidth: canvasWidth / 4,
-                                    valueList: getValueList(),
-                                    yMaxValue: yMaxValue,
-                                    xValueText: getXValueList(),
-                                    positionSelect: positionSelect,
-                                    benchmarkValue: benchmarkValue,
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                  child: ListView.builder(
-                                    itemCount: pageSize,
-                                    scrollDirection: Axis.horizontal,
-                                    itemBuilder: (context, index) {
-                                      double itemWidth = canvasWidth / 4;
-                                      if (index == 0) {
-                                        itemWidth /= 2;
-                                      } else if (index == pageSize - 1) {
-                                        itemWidth /= 2;
-                                      }
-                                      return UnconstrainedBox(
-                                        child: GestureDetector(
-                                          child: Container(
-                                            height: height,
-                                            width: pageSize != 1 ? itemWidth : canvasWidth,
-                                            color: AppColor.transparent,
-                                          ),
-                                          onTap: () {
-                                            print("点击了");
-                                            positionSelect = index;
-                                            isPositionSelectShow = true;
-                                            setState(() {});
-                                          },
-                                        ),
-                                      );
-                                    },
-                                  )),
+                              getPolylineUi(canvasWidth),
+                              getPolylineClickItemUi(canvasWidth),
                             ],
                           ),
                         ),
@@ -211,6 +137,107 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
       ),
     );
   }
+
+  //滑动的回调
+  bool _onDragNotification(ScrollNotification notification) {
+    // 注册通知回调
+    if (notification is ScrollStartNotification) {
+      if (isPositionSelectShow) {
+        isPositionSelectShow = false;
+        setState(() {});
+      }
+      // 滚动开始
+      // print('滚动开始');
+    } else if (notification is ScrollUpdateNotification) {
+      // 滚动位置更新
+      // print('滚动位置更新');
+      // 当前位置
+      // print("当前位置${metrics.pixels}");
+    } else if (notification is ScrollEndNotification) {
+      // 滚动结束
+      // print('滚动结束');
+    }
+    return false;
+  }
+
+
+  //基准线的ui 折线
+  Widget getBenchMarkLineUi(double canvasWidth){
+    return Container(
+      width: canvasWidth,
+      height: double.infinity,
+      child: CustomPaint(
+        size: Size(canvasWidth, double.infinity),
+        painter: MyPainterBenchMarkLine(
+          bottomHeight: bottomHeight,
+          topHeight: topHeight,
+          yMaxValue: yMaxValue,
+          benchmarkValue: benchmarkValue,
+          benchmarkValueText: benchmarkValueText,
+        ),
+      ),
+    );
+  }
+
+
+  //折线图的ui
+  Widget getPolylineUi(double canvasWidth){
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      child: CustomPaint(
+        size: Size(double.infinity, double.infinity),
+        painter: MyPainter(
+          bottomHeight: bottomHeight,
+          isPositionSelectShow: isPositionSelectShow,
+          topHeight: topHeight,
+          itemWidth: canvasWidth / 4,
+          valueList: getValueList(),
+          yMaxValue: yMaxValue,
+          xValueText: getXValueList(),
+          positionSelect: positionSelect,
+          benchmarkValue: benchmarkValue,
+        ),
+      ),
+    );
+  }
+
+  //折线图上层的点击层item
+  Widget getPolylineClickItemUi(double canvasWidth){
+    return Container(
+        width: double.infinity,
+        height: double.infinity,
+        child: ListView.builder(
+          itemCount: pageSize,
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (context, index) {
+            double itemWidth = canvasWidth / 4;
+            if (index == 0) {
+              itemWidth /= 2;
+            } else if (index == pageSize - 1) {
+              itemWidth /= 2;
+            }
+            return UnconstrainedBox(
+              child: GestureDetector(
+                child: Container(
+                  height: height,
+                  width: pageSize != 1 ? itemWidth : canvasWidth,
+                  color: AppColor.transparent,
+                ),
+                onTap: () {
+                  print("点击了");
+                  positionSelect = index;
+                  isPositionSelectShow = true;
+                  setState(() {});
+                },
+              ),
+            );
+          },
+        )
+    );
+  }
+
+
 
   List<double> getValueList() {
     List<double> valueArray = <double>[];
@@ -665,14 +692,15 @@ class MyPainter extends CustomPainter {
   }
 }
 
-class MyPainter1 extends CustomPainter {
+///基准线
+class MyPainterBenchMarkLine extends CustomPainter {
   double bottomHeight;
   double topHeight;
   double benchmarkValue;
   double yMaxValue;
   String benchmarkValueText;
 
-  MyPainter1({
+  MyPainterBenchMarkLine({
     this.bottomHeight,
     this.topHeight,
     this.yMaxValue,

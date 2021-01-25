@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/page/message/item/widget_ver.dart';
+import 'package:mirror/util/date_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+
+///每一种消息 共用的方法 或者ui
 
 //点击事件返回
 typedef VoidMessageClickCallBack = void Function(
@@ -143,10 +146,10 @@ Widget getLiveStateUi() {
 
 //获取长按操作的选项框
 List<String> getLongClickStringList(
-    {@required bool isMySelf, @required String contentType}) {
+    {@required bool isMySelf, @required String contentType,@required int sendTime}) {
   List<String> longClickStringList = <String>[];
   longClickStringList.add("删除");
-  if (isMySelf) {
+  if (isMySelf&&DateUtil.judgeTwoMinuteNewDateTime(DateUtil.getDateTimeByMs(sendTime))) {
     longClickStringList.insert(0, "撤回");
   }
   if (contentType == ChatTypeModel.MESSAGE_TYPE_TEXT) {

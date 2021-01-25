@@ -11,31 +11,53 @@ import 'package:mirror/util/date_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+
+
+///
+/// 训练记录页
 class TrainingRecordPage extends StatefulWidget {
   @override
   _TrainingRecordPageState createState() => _TrainingRecordPageState();
 }
 
 class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTickerProviderStateMixin {
+  //滑动控制
   TabController tabController;
+  //数据是否在加载中
   LoadingStatus loadingStatus = LoadingStatus.STATUS_IDEL;
+  //数据是否在加载中
   RefreshController _refreshController = RefreshController(initialRefresh: false);
 
+  //每一天的数据
   List<TrainingRecordModel> dayModelList = <TrainingRecordModel>[];
+  //每一周的数据--没有具体的数据--有每一天的列表的index索引
   List<TrainingRecordWeekModel> weekModelList = <TrainingRecordWeekModel>[];
+  //每一月的数据--没有具体的数据--有每一天的列表的index索引
   List<TrainingRecordMonthModel> monthModelList = <TrainingRecordMonthModel>[];
+  //当前选中的的是第几个月
   int monthSelectPosition = 0;
+  //当前选中的是第几天
   int daySelectPosition = 0;
+  //当前选中的是第几周
   int weekSelectPosition = 0;
+  //每一个月中最大的值-卡路里
   int monthMaxValue = 0;
+  //每一个天中最大的值-卡路里
   int dayMaxValue = 0;
+  //每一个周中最大的值-卡路里
   int weekMaxValue = 0;
+  //有拿些周
   Map<String, int> weekModelMap = Map();
+  //有哪些月
   Map<String, int> monthModelMap = Map();
+  //总共训练的时长-训练的数据
   Map<String, dynamic> allDataMap = Map();
 
+  //当前是第几页数据
   int pageIndex = 0;
+  //当前数据的起始时间
   int startTime = 0;
+  //当前数据的结束时间
   int endTime = 0;
 
   //每次获取三个月的数据
@@ -83,6 +105,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
     );
   }
 
+  //主体可滑动部分
   TabBarView buildTabBarView() {
     return TabBarView(
       controller: tabController,
@@ -95,6 +118,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
     );
   }
 
+  //顶部tab滑动位置
   PreferredSize buildTabBar() {
     double itemWidth = (MediaQuery.of(context).size.width - 32);
     double itemHeight = 36.0;
@@ -156,6 +180,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
     );
   }
 
+  //头部 折叠部分--状态栏
   FlexibleSpaceBar buildFlexibleSpaceBar() {
     return FlexibleSpaceBar(
       centerTitle: true,
@@ -258,6 +283,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
   }
 
 
+  //总-全部数据页
   Widget getAllTrainingUi() {
     String countString;
     if (allDataMap == null || allDataMap["clockCount"] == null) {

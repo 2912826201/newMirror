@@ -26,37 +26,40 @@ class UserModel {
 
   int isPerfect; //0 未完善 1 完善
   int isPhone; // 是否绑定手机号 0-未绑定 1-已绑定
-  int  isVip; // 是否是Vip 0-不是 1-是
+  int isLiving; // 是否在直播 0-没有直播 1-正在直播
+  int isVip; // 是否是Vip 0-不是 1-是
   int relation; //与用户关系 0-没关系 1-关注 2-粉丝 3-好友
   int mutualFriendCount; //共同好友数
 
   UserModel({
-      this.uid = 0, //默认给个uid为0
-      this.phone, 
-      this.type,
-      this.isVip,
-      this.subType, 
-      this.nickName, 
-      this.avatarUri, 
-      this.description, 
-      this.birthday, 
-      this.sex, 
-      this.constellation, 
-      this.cityCode, 
-      this.longitude, 
-      this.latitude, 
-      this.password, 
-      this.address, 
-      this.source, 
-      this.createTime, 
-      this.updateTime, 
-      this.deletedTime, 
-      this.status, 
-      this.age, 
-      this.isPerfect,
-      this.isPhone,
-      this.relation, 
-      this.mutualFriendCount,});
+    this.uid = 0, //默认给个uid为0
+    this.phone,
+    this.type,
+    this.isVip,
+    this.subType,
+    this.nickName,
+    this.avatarUri,
+    this.description,
+    this.birthday,
+    this.sex,
+    this.constellation,
+    this.cityCode,
+    this.longitude,
+    this.latitude,
+    this.password,
+    this.address,
+    this.source,
+    this.createTime,
+    this.updateTime,
+    this.deletedTime,
+    this.status,
+    this.age,
+    this.isPerfect,
+    this.isPhone,
+    this.relation,
+    this.isLiving,
+    this.mutualFriendCount,
+  });
 
   UserModel.fromJson(Map<String, dynamic> json) {
     uid = json["uid"];
@@ -84,6 +87,7 @@ class UserModel {
     isPerfect = json["isPerfect"];
     isPhone = json["isPhone"];
     relation = json["relation"];
+    isLiving = json["isLiving"];
     mutualFriendCount = json["mutualFriendCount"];
   }
 
@@ -114,6 +118,7 @@ class UserModel {
     map["isPerfect"] = isPerfect;
     map["isPhone"] = isPhone;
     map["relation"] = relation;
+    map["isLiving"] = isLiving;
     map["mutualFriendCount"] = mutualFriendCount;
     return map;
   }
