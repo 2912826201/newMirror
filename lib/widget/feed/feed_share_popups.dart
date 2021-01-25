@@ -18,14 +18,13 @@ Future openShareBottomSheet({
   @required Map<String, dynamic> map,
   @required String chatTypeModel,
   @required int sharedType,
-  @required File imageFile
 }) async {
   await showModalBottomSheet(
       isScrollControlled: true,
       context: context,
       builder: (BuildContext context) {
         return SingleChildScrollView(
-          child: FeedSharePopups(map: map, chatTypeModel: chatTypeModel,sharedType: sharedType,imageFile: imageFile,),
+          child: FeedSharePopups(map: map, chatTypeModel: chatTypeModel,sharedType: sharedType,),
         );
       });
 }
@@ -34,8 +33,7 @@ class FeedSharePopups extends StatelessWidget {
   String chatTypeModel;
   Map<String, dynamic> map;
   int sharedType;
-  File imageFile;
-  FeedSharePopups({this.map, this.chatTypeModel,this.sharedType,this.imageFile});
+  FeedSharePopups({this.map, this.chatTypeModel,this.sharedType});
 
   List<FeedViewModel> feedViewModel = [];
   List<String> name = ["站内好友", "微信好友", "朋友圈", "微博", "QQ好友", "QQ空间"];
@@ -57,6 +55,7 @@ class FeedSharePopups extends StatelessWidget {
       FeedViewModel a = new FeedViewModel(name: "保存本地", image: "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2620161520.webp");
       feedViewModel.insert(0, a);
     }
+    print('map===================${map.toString()}');
     return Container(
       color: AppColor.white,
       width: ScreenUtil.instance.screenWidthDp,
@@ -85,6 +84,9 @@ class FeedSharePopups extends StatelessWidget {
                           Navigator.of(context).pop(1);
                           switch(feedViewModel[index].name){
                             case "站内好友":
+                              if(sharedType!=1){
+                                _updataImage();
+                              }
                               Navigator.push(context, MaterialPageRoute(builder: (_) {
                                 return FriendsPage(voidCallback: (name, userId, type, context) async {
                                   if (await jumpShareMessage(map, chatTypeModel, name, userId, type, context)) {
@@ -96,7 +98,7 @@ class FeedSharePopups extends StatelessWidget {
                               }));
                               break;
                             case "保存本地":
-                              var result = await ImageGallerySaver.saveFile(imageFile.path);
+                              var result = await ImageGallerySaver.saveFile(map["file"].path);
                               if (result["isSuccess"] == true) {
                                 ToastShow.show(msg: "保存成功", context: context);
                               }
@@ -161,11 +163,12 @@ class FeedSharePopups extends StatelessWidget {
   }
   Future<void> _updataImage() async {
     List<File> fileList = [];
-    fileList.add(imageFile);
+    fileList.add(map["file"]);
     var results = await FileUtil().uploadPics(fileList, (percent) {
       print('===========================正在上传');
     });
-
+    print('==========================上传成功');
+    map["url"] = results.resultMap.values.first.url;
   }
 }
 
