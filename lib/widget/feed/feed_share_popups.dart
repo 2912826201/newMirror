@@ -84,9 +84,6 @@ class FeedSharePopups extends StatelessWidget {
                           Navigator.of(context).pop(1);
                           switch(feedViewModel[index].name){
                             case "站内好友":
-                              if(sharedType!=1){
-                                _updataImage();
-                              }
                               Navigator.push(context, MaterialPageRoute(builder: (_) {
                                 return FriendsPage(voidCallback: (name, userId, type, context) async {
                                   if (await jumpShareMessage(map, chatTypeModel, name, userId, type, context)) {
@@ -160,15 +157,6 @@ class FeedSharePopups extends StatelessWidget {
         ],
       ),
     );
-  }
-  Future _updataImage() async {
-    List<File> fileList = [];
-    fileList.add(map["file"]);
-    var results = await FileUtil().uploadPics(fileList, (percent) {
-      print('===========================正在上传');
-    });
-    print('==========================上传成功');
-    map["url"] = results.resultMap.values.first.url;
   }
 }
 
