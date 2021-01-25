@@ -11,6 +11,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import 'currency_msg.dart';
 
+///各种提示消息的item
 // ignore: must_be_immutable
 class AlertMsg extends StatelessWidget {
   final RecallNotificationMessage recallNotificationMessage;

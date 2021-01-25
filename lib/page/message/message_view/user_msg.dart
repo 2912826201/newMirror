@@ -8,6 +8,7 @@ import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 
 import 'currency_msg.dart';
 
+///用户名片消息
 // ignore: must_be_immutable
 class UserMsg extends StatelessWidget {
   final String userUrl;

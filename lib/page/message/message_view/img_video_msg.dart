@@ -15,6 +15,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import 'currency_msg.dart';
 
+///图片视频消息
 // ignore: must_be_immutable
 class ImgVideoMsg extends StatelessWidget {
   final bool isMyself;

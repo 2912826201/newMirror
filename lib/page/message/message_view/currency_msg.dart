@@ -6,6 +6,8 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/page/message/item/widget_ver.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
+///每一种消息 共用的方法 或者ui
+
 //点击事件返回
 typedef VoidMessageClickCallBack = void Function(
     {String contentType, String content, Map<String, dynamic> map, bool isUrl, String msgId, int position});

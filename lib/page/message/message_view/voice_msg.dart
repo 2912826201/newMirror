@@ -13,6 +13,8 @@ import 'package:provider/provider.dart';
 
 import 'currency_msg.dart';
 
+
+///语音消息
 // ignore: must_be_immutable
 class VoiceMsg extends StatefulWidget {
   final _VoiceMsgState _state = _VoiceMsgState();

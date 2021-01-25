@@ -12,6 +12,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'item/chat_system_bottom_bar.dart';
 import 'message_view/currency_msg.dart';
 
+///消息展示body主体 简单进行包装一下
 // ignore: must_be_immutable
 class ChatDetailsBody extends StatelessWidget {
   final ScrollController scrollController;

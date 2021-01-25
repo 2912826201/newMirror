@@ -24,6 +24,7 @@ import 'message_view/text_msg.dart';
 import 'message_view/user_msg.dart';
 import 'message_view/voice_msg.dart';
 
+///聊天-筛选这个消息的是哪一种消息
 // ignore: must_be_immutable
 class SendMessageView extends StatelessWidget {
   final ChatDataModel model;

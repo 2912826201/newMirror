@@ -12,6 +12,8 @@ import 'package:mirror/util/file_util.dart';
 
 import 'currency_msg.dart';
 
+
+///动态消息
 // ignore: must_be_immutable
 class FeedMsg extends StatelessWidget {
   final String userUrl;

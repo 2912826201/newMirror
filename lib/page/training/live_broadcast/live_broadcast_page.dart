@@ -6,7 +6,7 @@ import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'live_broadcast_item_page.dart';
 import 'live_broadcast_title_page.dart';
 
-/// 直播日程页
+/// 直播日程页--框架页
 class LiveBroadcastPage extends StatefulWidget {
 
   @override

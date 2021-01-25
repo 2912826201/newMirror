@@ -1,6 +1,9 @@
 import 'dart:math';
 import 'dart:ui';
 
+
+///
+/// 三次贝塞尔曲线的路径算法
 class MonotoneX {
   static num _sign(num x) {
     return x < 0 ? -1 : 1;

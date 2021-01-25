@@ -12,18 +12,27 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'training_record_page.dart';
 
+///
+/// 所有训练记录页
 class TrainingRecordAllPage extends StatefulWidget {
   @override
   _TrainingRecordAllPageState createState() => _TrainingRecordAllPageState();
 }
 
 class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
+  //加载数据的状态
   LoadingStatus loadingStatus = LoadingStatus.STATUS_LOADING;
+  //加载数据的状态
   RefreshController _refreshController = RefreshController(initialRefresh: false);
+  //每一天的数据
   List<TrainingRecordModel> dayModelList = <TrainingRecordModel>[];
+  //每一个月的数据--没有具体数据-有每一天的索引
   List<TrainingRecordMonthModel> monthModelList = <TrainingRecordMonthModel>[];
+  //哪一个月进行了折叠操作
   Map<String, int> monthUnfoldModelMap = Map();
+  //哪一个月展示全部的数据
   Map<String, int> monthAllModelMap = Map();
+  //总数据的记录
   Map<String, dynamic> allDataMap = Map();
 
   int pageIndex = 0;
@@ -173,6 +182,7 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
     );
   }
 
+  //获取子item
   Widget getSubListView(int index) {
     var widgetArray = <Widget>[];
     int lengthAllCount = 0;

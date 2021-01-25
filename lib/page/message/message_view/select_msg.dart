@@ -8,6 +8,7 @@ import 'package:mirror/widget/dotted_line.dart';
 
 import 'currency_msg.dart';
 
+///能选择的列表 消息
 // ignore: must_be_immutable
 class SelectMsg extends StatelessWidget {
   final String userUrl;
