@@ -116,9 +116,9 @@ class AlertMsg extends StatelessWidget {
       if(isMyself){
         textArray.add("你 ");
       }else{
-        String name=map["nickName"];
+        String name=Application.chatGroupUserModelMap[map["fromUserId"]];
         if(name==null){
-          name=Application.chatGroupUserModelMap[map["fromUserId"]];
+          name=map["nickName"];
         }
         if(name==null){
           textArray.add(map["fromUserId"]+" ");
@@ -209,8 +209,10 @@ class AlertMsg extends StatelessWidget {
       textArray.add("加入群聊");
     } else if (mapGroupModel["subType"] == 1) {
       textArray.add("退出群聊");
-    } else {
+    } else if(mapGroupModel["subType"]==2){
       textArray.add("移除了群聊");
+    }else if(mapGroupModel["subType"]==3){
+      textArray.add("已成为新群主");
     }
     isChangColorArray.add(false);
   }
