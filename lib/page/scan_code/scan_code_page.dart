@@ -31,36 +31,16 @@ class ScanCodePage extends StatefulWidget {
 }
 
 class _ScanCodeState extends State<ScanCodePage> {
-  String _platformVersion = 'Unknown';
   String imagePath = "";
   ScanController controller = ScanController();
-  String qrcode = 'Unknown';
 
   @override
   void initState() {
     super.initState();
   }
-
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    try {
-      platformVersion = await Scan.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
-  }
-
     getUserModel(int id)async{
     UserModel userModel = await getUserInfo(uid: id);
       if(userModel!=null){
-      /*  Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (context) {
-          return ProfileDetailPage(userId: userModel.uid,);
-        }), (route)=>route.==null);*/
         Navigator.pop(context);
        AppRouter.navigateToMineDetail(context, userModel.uid);
       }
@@ -206,7 +186,10 @@ class _ScanCodeState extends State<ScanCodePage> {
           print('===========================这是一个网址');
         } else {
           print('===========================这是扫码得到的结果$result');
-         _goToUserHome(result);
+          if(result.substring(0,2)=="用户"){
+            print('===================这是用户${result.substring(2,result.length)}');
+            getUserModel(int.parse(result.substring(2,result.length)));
+          }
         }
         Toast.show("这是从相册获取到的$result", context);
         setState(() {});

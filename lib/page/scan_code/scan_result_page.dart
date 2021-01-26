@@ -97,7 +97,7 @@ class _ScanResultPageState extends State<ScanResultPage> {
               ? "登录设备成功"
               : widget.type == ScanResultType.LOGIN_EXPIRED
                   ? "登录信息已过期，请重新尝试登录"
-                  : widget.type == ScanResultType.LOGIN_EXPIRED
+                  : widget.type == ScanResultType.CODE_INVALID
                       ? "无效的二维码"
                       : "",
           style: AppStyle.textRegular16,
