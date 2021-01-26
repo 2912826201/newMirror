@@ -52,7 +52,6 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
                   model.croppedImage = await _getImage();
                   model.type = mediaTypeKeyImage;
 
-                  model.sizeInfo = SizeInfo();
                   model.sizeInfo.width = widget.fixedWidth == null ? baseOutSize.toInt() : widget.fixedWidth;
                   model.sizeInfo.height = widget.fixedHeight == null ? baseOutSize.toInt() : widget.fixedHeight;
                   model.sizeInfo.createTime = DateTime.now().millisecondsSinceEpoch;

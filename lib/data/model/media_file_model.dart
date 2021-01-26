@@ -23,7 +23,7 @@ class MediaFileModel {
   SizeInfo sizeInfo = SizeInfo();
 
   String toString() {
-    return "file:${file.path},sizeInfo:{${sizeInfo.toString()}}";
+    return "file:${file?.path},sizeInfo:{${sizeInfo.toString()}}";
   }
 
   String filePath;

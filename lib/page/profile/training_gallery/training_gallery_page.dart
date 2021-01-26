@@ -384,7 +384,8 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
           paramList.add(TrainingGalleryImageModel(
                   url: uploadResults.resultMap[mediaFileModel.file.path].url,
                   width: mediaFileModel.sizeInfo.width.toDouble(),
-                  height: mediaFileModel.sizeInfo.height.toDouble())
+                  height: mediaFileModel.sizeInfo.height.toDouble(),
+                  createTime: mediaFileModel.sizeInfo.createTime)
               .toJson());
         }
         List<TrainingGalleryImageModel> saveList = await saveAlbum(paramList);
