@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -148,6 +149,7 @@ class CameraVideoState extends State<CameraVideoPage> with WidgetsBindingObserve
                             sizeInfo.height = _cameraSize.height.toInt();
                             sizeInfo.duration = _milliDuration ~/ 1000;
                             sizeInfo.videoCroppedRatio = 1.0;
+                            sizeInfo.createTime = File(_filePath).lastModifiedSync().millisecondsSinceEpoch;
                             if (sizeInfo.width > sizeInfo.height) {
                               sizeInfo.offsetRatioX = (sizeInfo.height - sizeInfo.width) / 2 / sizeInfo.width;
                             } else if (sizeInfo.width < sizeInfo.height) {
