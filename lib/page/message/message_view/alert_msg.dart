@@ -112,12 +112,14 @@ class AlertMsg extends StatelessWidget {
       //群通知
       Map<String, dynamic> mapGroupModel = json.decode(map["data"]["data"]);
       // print("mapGroupModel:${map["data"]["data"].toString()}");
-      ChatGroupUserModel chatGroupUserModel = context.read<GroupUserProfileNotifier>().chatGroupUserModelList[0];
-      if(mapGroupModel["subType"] == 1&&!chatGroupUserModel.isGroupLeader()){
+      ChatGroupUserModel chatGroupUserModel =
+          context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[0];
+      if (mapGroupModel["subType"] == 1 &&
+          !chatGroupUserModel.isGroupLeader()) {
         textArray.clear();
-      }else if(mapGroupModel["subType"] == 4){
+      } else if (mapGroupModel["subType"] == 4) {
         updateGroupName(mapGroupModel, context);
-      }else{
+      } else {
         getGroupText(mapGroupModel, context);
       }
     }
@@ -200,8 +202,8 @@ class AlertMsg extends StatelessWidget {
             if (mapGroupModel["subType"] == 3) {
               textArray.add("${d["currentMasterName"]} ");
             } else {
-              textArray
-                  .add("${d["groupNickName"]}${userCount >= 3 ? "等" : "、"}");
+              textArray.add("${d["groupNickName"]}${userCount >= 3 ?
+              "等" : "、"}");
             }
           }
           isChangColorArray.add(true);
