@@ -16,6 +16,7 @@ import 'package:mirror/page/profile/query_list/query_follow_list.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/page/profile/vip/vip_open_page.dart';
 import 'package:mirror/page/scan_code/my_qrcode_page.dart';
+import 'package:mirror/page/scan_code/scan_result_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
@@ -293,7 +294,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             Positioned(
                 left: width * 0.38,
                 bottom: 0,
-                child: Row(children: [
+                child: Row(
+                  children: [
                   InkWell(
                     child: _TextAndNumber("关注",StringUtil.getNumber(followingCount)),
                     onTap: () {
@@ -335,18 +337,22 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       height: height * 0.11,
       child: InkWell(
           onTap: () {
+            Navigator.push(context, ScaleRouter(child: ProfileDetailPage()));
+            /*
             Navigator.of(context).push(MaterialPageRoute(builder: (context) {
               ///这里传type来告知详情页该怎么展示
               return ProfileDetailPage(
-                userId: uid,
+
               );
-            }));
+            }));*/
           },
           child: Stack(
             children: [
               Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
                 print("头像地址:$avatar");
-                return ClipOval(
+                return  Hero(
+                  tag: "我的头像",
+                  child: ClipOval(
                   child: CachedNetworkImage(
                     height: height * 0.11,
                     width: height * 0.11,
@@ -361,7 +367,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                       fit: BoxFit.cover,
                     ),
                   ),
-                );
+                ));
               }, selector: (context, notifier) {
                 return notifier.profile.avatarUri;
               }),
@@ -453,7 +459,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       AppRouter.navigateToMeCoursePage(context);
     } else if("我的订单"== title){
       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-        return MyQrCodePage();
+        return ScanResultPage(type: ScanResultType.CODE_INVALID,);
       }));
       /*if(userModel.isVip==0){
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
@@ -466,4 +472,37 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       }*/
     }
   }
+}
+class Top2BottomRouter<T> extends PageRouteBuilder<T> {
+  final Widget child;
+  final int duration_ms;
+  final Curve curve;
+  Top2BottomRouter({this.child,this.duration_ms=500,this.curve=Curves.fastOutSlowIn})
+    :super(
+    transitionDuration:Duration(milliseconds: duration_ms),
+    pageBuilder:(ctx,a1,a2){return child;},
+    transitionsBuilder:(ctx,a1,a2,Widget child,) {
+      return SlideTransition(
+        position: Tween<Offset>(
+          begin: Offset(0.0,-1.0), end: Offset(0.0, 0.0),).animate(
+          CurvedAnimation(parent: a1, curve: curve)),
+        child:  child
+      );
+    });
+}
+class ScaleRouter<T> extends PageRouteBuilder<T> {
+  final Widget child;
+  final int duration_ms;
+  final Curve curve;
+  ScaleRouter({this.child, this.duration_ms = 500,this.curve=Curves.fastOutSlowIn})
+    : super(
+    pageBuilder: (context, animation, secondaryAnimation) => child,
+    transitionDuration: Duration(milliseconds: duration_ms),
+    transitionsBuilder: (context, a1, a2, child) =>
+      ScaleTransition(
+        scale: Tween(begin: 0.0, end: 1.0).animate(
+          CurvedAnimation(parent: a1, curve: curve)),
+        child: child,
+      ),
+  );
 }

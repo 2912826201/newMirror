@@ -588,14 +588,16 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///头像
   Widget _mineAvatar(double height) {
     return Container(
-        child: ClipOval(
+        child: Hero(
+          tag: "我的头像",
+          child: ClipOval(
       child: CachedNetworkImage(
           height: height * 0.09,
           width: height * 0.09,
           imageUrl: _avatar,
           fit: BoxFit.cover,
           placeholder: (context, url) => CircularProgressIndicator()),
-    ));
+    ),));
   }
 
   ///这是关注粉丝获赞
