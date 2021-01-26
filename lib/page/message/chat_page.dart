@@ -6,10 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/message_page_api.dart';
+import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/media_file_model.dart';
@@ -332,10 +334,13 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                     Application.chatGroupUserModelMap[userModel.uid.toString()] = userModel.groupNickName;
                   }
                   delayedSetState();
-                }else{
+                }else if(type==1){
                   chatUserName=name;
                   //修改了群名
-                  _postUpdateGroupName(name);
+                  // _postUpdateGroupName(name);
+                }else{
+                  //拉黑
+                  _insertBlackMenu();
                 }
               }, () {
                 //退出群聊
@@ -929,7 +934,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     chatDataList.insert(0, chatDataModel);
     animateToBottom();
 
-    if (recallNotificationMessagePosition > 0) {
+    if (recallNotificationMessagePosition >= 0) {
       _updateRecallNotificationMessage();
     } else {
       setState(() {
@@ -1036,15 +1041,16 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       targetId: widget.conversation.conversationId,
       conversationType: chatTypeId,
       sendTime: chatDataList[recallNotificationMessagePosition + 1].msg.sentTime,
+      text: "你撤回了一条消息",
       finished: (Message msg, int code) {
         ChatDataModel chatDataModel = new ChatDataModel();
         chatDataModel.msg = msg;
         chatDataModel.isTemporary = false;
         chatDataModel.isHaveAnimation = false;
         chatDataList.insert(recallNotificationMessagePosition + 1, chatDataModel);
+        RongCloud.init().deleteMessageById(chatDataList[recallNotificationMessagePosition + 2].msg, (code) {});
         chatDataList.removeAt(recallNotificationMessagePosition + 2);
         recallNotificationMessagePosition = -1;
-
         setState(() {
           _timerCount = 0;
           _textController.text = "";
@@ -1069,6 +1075,54 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       isHaveTextLen = false;
     });
     postGroupUpdateName(chatDataList[0], widget.conversation.conversationId,  () {
+      delayedSetState();
+    });
+  }
+
+  //插入加入黑名单的消息
+  void _insertBlackMenu(){
+    getReChatDataModel(
+      targetId: widget.conversation.conversationId,
+      conversationType: chatTypeId,
+      sendTime: new DateTime.now().millisecondsSinceEpoch+1000,
+      text: "你拉黑了这个用户!",
+      finished: (Message msg, int code) {
+        ChatDataModel chatDataModel = new ChatDataModel();
+        chatDataModel.msg = msg;
+        chatDataModel.isTemporary = false;
+        chatDataModel.isHaveAnimation = false;
+        chatDataList.insert(0, chatDataModel);
+        setState(() {
+          recallNotificationMessagePosition = -1;
+          _timerCount = 0;
+          _textController.text = "";
+          isHaveTextLen = false;
+        });
+      },
+    );
+  }
+
+
+  //重新发送消息
+  void _resetPostMessage(int position)async{
+    ChatDataModel chatDataModel = new ChatDataModel();
+    Message message=chatDataList[position].msg;
+    chatDataModel.isTemporary = false;
+    chatDataModel.isHaveAnimation = true;
+    chatDataModel.msg=message;
+    chatDataModel.msg.sentStatus=10;
+    chatDataModel.msg.sentTime=new DateTime.now().millisecondsSinceEpoch;
+    judgeAddAlertTime();
+    chatDataList.removeAt(position);
+    chatDataList.insert(0, chatDataModel);
+    animateToBottom();
+
+    setState(() {
+      _timerCount = 0;
+      isHaveTextLen = false;
+    });
+    resetPostMessage(chatDataList[0],(){
+      // RongCloud.init().deleteMessageById(message, (code)async {});
       delayedSetState();
     });
   }
@@ -1111,6 +1165,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
             Application.appContext.read<ChatMessageProfileNotifier>().setSettingStatus(false);
             int messageId = context.select((ChatMessageProfileNotifier value) => value.messageId);
             int status = context.select((ChatMessageProfileNotifier value) => value.status);
+            print("更新消息状态-----------messageId：$messageId, status:$status");
             if (messageId == null || status == null || chatDataList == null || chatDataList.length < 1) {
               return Container();
             } else {
@@ -1120,6 +1175,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                     return Container();
                   } else {
                     dataModel.msg?.sentStatus = status;
+                    if(status==20){
+                      profileCheckBlack();
+                    }
                     delayedSetState();
                     return Container();
                   }
@@ -1134,21 +1192,18 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         if (message.messageUId == chatDataList[0].msg.messageUId) {
           return Container();
         }
-        ChatDataModel chatDataModel = getMessage(message, isHaveAnimation: true);
+        ChatDataModel chatDataModel =
+            getMessage(message, isHaveAnimation: true);
         judgeAddAlertTime();
         chatDataList.insert(0, chatDataModel);
-
-        //判断是不是群通知
         if (message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
+          //判断是不是群通知
           if (chatTypeId == RCConversationType.Group) {
             print("--------------------------------");
             getChatGroupUserModelList1(chatUserId, context);
-          } else {
-            delayedSetState();
           }
-        } else {
-          delayedSetState();
         }
+        delayedSetState();
         return Container();
       },
     );
@@ -1292,6 +1347,21 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         duration: Duration(milliseconds: milliseconds), curve: Curves.easeInOut);
   }
 
+  //检查黑名单状态
+  void profileCheckBlack()async{
+    if(widget.conversation.type==PRIVATE_TYPE) {
+      BlackModel blackModel = await ProfileCheckBlack(int.parse(chatUserId));
+      String text="";
+      if(blackModel.inYouBlack==1){
+        text="你已经将他拉黑了！";
+      }else if(blackModel.inThisBlack==1){
+        text="他已经将你拉黑了！";
+      }
+      // print("--------------text:$text");
+      ToastShow.show(msg: text, context: context);
+    }
+  }
+
   ///------------------------------------一些功能 方法  end-----------------------------------------------------------------------///
   ///------------------------------------各种点击事件  start-----------------------------------------------------------------------///
 
@@ -1381,14 +1451,14 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     // 获取输入框内的规则
     var rules = context.read<ChatEnterNotifier>().rules;
     // 检测是否添加过
-    // if (rules.isNotEmpty) {
-    //   for (Rule rule in rules) {
-    //     if (rule.clickIndex == index && rule.isAt == true) {
-    //       //print("已经添加过了");
-    //       return;
-    //     }
-    //   }
-    // }
+    if (rules.isNotEmpty) {
+      for (Rule rule in rules) {
+        if (rule.clickIndex == userModel.uid && rule.isAt == true) {
+          //print("已经添加过了");
+          return;
+        }
+      }
+    }
     // 获取@的光标
     int atIndex = context.read<ChatEnterNotifier>().atCursorIndex;
     // 获取实时搜索文本
@@ -1623,6 +1693,11 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       ToastShow.show(msg: "选择列表选择了-底部点击了：$content", context: context);
       // _textController.text=content;
       _postText(content);
+    } else if (contentType == ChatTypeModel.MESSAGE_TYPE_CLICK_ERROR_BTN) {
+      print("点击了发送失败的按钮-重新发送：$position");
+      _resetPostMessage(position);
+      // _textController.text=content;
+      // _postText(content);
     } else {
       //print("暂无此类型");
     }

@@ -172,6 +172,10 @@ Future _initApp() async {
     Application.cameras = [];
   }
 
+  //全局的音频播放器
+  Application.audioPlayer = new AudioPlayer();
+
+  //初始化省市信息
   _initRegionMap();
 
   //todo 获取视频课标签列表 其实在没有登录时无法获取
@@ -180,6 +184,7 @@ Future _initApp() async {
     Application.videoTagModel = VideoTagModel.fromJson(videoCourseTagMap);
   } catch (e) {}
 
+  //TODO ==========================下面是已登录用户获取的信息需要统一在用户登录后获取================================
   //todo 获取有哪些消息是置顶的消息
   try {
     Application.topChatModelList.clear();
@@ -201,8 +206,6 @@ Future _initApp() async {
     }
   } catch (e) {}
 
-  //全局的音频播放器
-  Application.audioPlayer = new AudioPlayer();
 }
 
 //初始化地区数据

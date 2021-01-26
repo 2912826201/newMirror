@@ -138,6 +138,7 @@ class LiveVideoModel {
   int _dataState;
   int _createTime;
   int _updateTime;
+  int _endState;
   double _vipprice;
 
   int get id => _id;
@@ -217,6 +218,7 @@ class LiveVideoModel {
   int get createTime => _createTime;
 
   int get updateTime => _updateTime;
+  int get endState => _endState;
 
   double get vipprice => _vipprice;
 
@@ -260,6 +262,7 @@ class LiveVideoModel {
       int dataState,
       int createTime,
       int updateTime,
+      int endState,
       double vipprice}) {
     _id = id;
     _title = title;
@@ -301,6 +304,7 @@ class LiveVideoModel {
     _createTime = createTime;
     _updateTime = updateTime;
     _vipprice = vipprice;
+    _endState = endState;
     playType = 0;
   }
 
@@ -354,6 +358,7 @@ class LiveVideoModel {
     _dataState = json["dataState"];
     _createTime = json["createTime"];
     _updateTime = json["updateTime"];
+    _endState = json["endState"];
     _vipprice = json["vipprice"];
   }
 
@@ -402,6 +407,7 @@ class LiveVideoModel {
     map["dataState"] = _dataState;
     map["createTime"] = _createTime;
     map["updateTime"] = _updateTime;
+    map["endState"] = _endState;
     map["vipprice"] = _vipprice;
     return map;
   }

@@ -27,7 +27,13 @@ class GroupUserProfileNotifier extends ChangeNotifier {
       return;
     }
     this.chatGroupUserModelList.clear();
-    this.chatGroupUserModelList.addAll(chatGroupUserModelList);
+    for(ChatGroupUserModel chatGroupUserModel in chatGroupUserModelList){
+      if(chatGroupUserModel.isGroupLeader()){
+        this.chatGroupUserModelList.insert(0,chatGroupUserModel);
+      }else{
+        this.chatGroupUserModelList.add(chatGroupUserModel);
+      }
+    }
     loadingStatus = LoadingStatus.STATUS_COMPLETED;
     this.len = len;
     notifyListeners();

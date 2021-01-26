@@ -12,6 +12,9 @@ const String GETLIVECOURSESBYDATE = "/sport/web/liveCourse/getLiveCoursesByDate"
 // 直播课程详情
 const String LIVECOURSEDETAIL = "/sport/web/liveCourse/detail";
 
+// 直播课程详情--根据id获取
+const String GETLATESTLIVEBYID = "/sport/web/liveCourse/getLatestLiveById";
+
 // 视频课程详情
 const String GETVIDEOCOURSEDETAIL = "/sport/web/videoCourse/getVideoCourseDetail";
 
@@ -68,6 +71,21 @@ Future<Map> liveCourseDetail({@required int courseId, @required String startTime
   params["courseId"] = courseId.toString();
   params["startTime"] = startTime;
   BaseResponseModel responseModel = await requestApi(LIVECOURSEDETAIL, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
+
+
+///直播课程详情--根据id获取
+///请求参数
+///courseId:1
+Future<Map> getLatestLiveById({@required int courseId,String startTime}) async {
+  Map<String, dynamic> params = {};
+  params["courseId"] = courseId.toString();
+  BaseResponseModel responseModel = await requestApi(GETLATESTLIVEBYID, params);
   if (responseModel.isSuccess) {
     return responseModel.data;
   } else {
