@@ -225,6 +225,7 @@ var handlerLiveDetail = Handler(handlerFunc: (BuildContext context, Map<String, 
   return LiveDetailPage(
     heroTag: data["heroTag"] == null ? "" : data["heroTag"],
     liveCourseId: data["liveCourseId"],
+    isHaveStartTime: data["isHaveStartTime"],
     liveModel: liveModel,
   );
 });

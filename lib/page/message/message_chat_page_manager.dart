@@ -689,6 +689,7 @@ void judgeJumpPage(
           chatUserId: chatUserId,
           chatType: chatType,
           name: name,
+          listener: listener,
         ),
         false,
         context);

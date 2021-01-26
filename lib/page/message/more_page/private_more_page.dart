@@ -20,11 +20,12 @@ class PrivateMorePage extends StatefulWidget {
   ///对话用户id
   final String chatUserId;
   final String name;
+  final Function(int type,String name) listener;
 
   ///[chatType] 会话类型，参见类型 [OFFICIAL_TYPE]
   final int chatType;
 
-  PrivateMorePage({this.chatUserId, this.chatType, this.name});
+  PrivateMorePage({this.chatUserId, this.chatType, this.name, this.listener});
 
   @override
   createState() => PrivateMorePageState();
@@ -260,6 +261,9 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     if (blackStatus) {
       isBlackList = true;
       ToastShow.show(msg: "拉黑了这个人", context: context);
+      if(widget.listener!=null){
+        widget.listener(2,"拉黑");
+      }
       setState(() {
         dismissProgressDialog();
       });

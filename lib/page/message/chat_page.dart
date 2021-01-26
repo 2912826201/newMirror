@@ -334,10 +334,13 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                     Application.chatGroupUserModelMap[userModel.uid.toString()] = userModel.groupNickName;
                   }
                   delayedSetState();
-                }else{
+                }else if(type==1){
                   chatUserName=name;
                   //修改了群名
                   // _postUpdateGroupName(name);
+                }else{
+                  //拉黑
+                  _insertBlackMenu();
                 }
               }, () {
                 //退出群聊
@@ -1076,6 +1079,29 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     });
   }
 
+  //插入加入黑名单的消息
+  void _insertBlackMenu(){
+    getReChatDataModel(
+      targetId: widget.conversation.conversationId,
+      conversationType: chatTypeId,
+      sendTime: new DateTime.now().millisecondsSinceEpoch+1000,
+      text: "你拉黑了这个用户!",
+      finished: (Message msg, int code) {
+        ChatDataModel chatDataModel = new ChatDataModel();
+        chatDataModel.msg = msg;
+        chatDataModel.isTemporary = false;
+        chatDataModel.isHaveAnimation = false;
+        chatDataList.insert(0, chatDataModel);
+        setState(() {
+          recallNotificationMessagePosition = -1;
+          _timerCount = 0;
+          _textController.text = "";
+          isHaveTextLen = false;
+        });
+      },
+    );
+  }
+
 
   //重新发送消息
   void _resetPostMessage(int position)async{
@@ -1324,42 +1350,15 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   //检查黑名单状态
   void profileCheckBlack()async{
     if(widget.conversation.type==PRIVATE_TYPE) {
-      Future.delayed(Duration(milliseconds: 200), () async {
-        BlackModel blackModel = await ProfileCheckBlack(int.parse(chatUserId));
-        String text="";
-        bool isPostMag=false;
-        if(blackModel.inYouBlack==1){
-          text="你已经将他拉黑了！";
-          isPostMag=true;
-        }else if(blackModel.inThisBlack==1){
-          text="他已经将你拉黑了！";
-          isPostMag=true;
-        }else{
-          isPostMag=false;
-        }
-        ToastShow.show(msg: text, context: context);
-        // if(isPostMag) {
-        //   getReChatDataModel(
-        //     targetId: widget.conversation.conversationId,
-        //     conversationType: chatTypeId,
-        //     sendTime: new DateTime.now().millisecondsSinceEpoch+1000,
-        //     text: text,
-        //     finished: (Message msg, int code) {
-        //       ChatDataModel chatDataModel = new ChatDataModel();
-        //       chatDataModel.msg = msg;
-        //       chatDataModel.isTemporary = false;
-        //       chatDataModel.isHaveAnimation = false;
-        //       chatDataList.insert(0, chatDataModel);
-        //       setState(() {
-        //         recallNotificationMessagePosition = -1;
-        //         _timerCount = 0;
-        //         _textController.text = "";
-        //         isHaveTextLen = false;
-        //       });
-        //     },
-        //   );
-        // }
-      });
+      BlackModel blackModel = await ProfileCheckBlack(int.parse(chatUserId));
+      String text="";
+      if(blackModel.inYouBlack==1){
+        text="你已经将他拉黑了！";
+      }else if(blackModel.inThisBlack==1){
+        text="他已经将你拉黑了！";
+      }
+      // print("--------------text:$text");
+      ToastShow.show(msg: text, context: context);
     }
   }
 

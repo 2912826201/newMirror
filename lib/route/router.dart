@@ -210,9 +210,10 @@ class AppRouter {
     _navigateToPage(context, pathVideoCoursePlay, map);
   }
 
-  static void navigateToLiveDetail(BuildContext context, int liveCourseId, {String heroTag, LiveVideoModel liveModel}) {
+  static void navigateToLiveDetail(BuildContext context, int liveCourseId, {String heroTag,bool isHaveStartTime=true, LiveVideoModel liveModel}) {
     Map<String, dynamic> map = Map();
     map["liveCourseId"] = liveCourseId;
+    map["isHaveStartTime"] = isHaveStartTime;
     if (liveModel != null) {
       map["liveModel"] = liveModel.toJson();
     }
