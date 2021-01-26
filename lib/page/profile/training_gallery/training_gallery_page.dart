@@ -468,8 +468,8 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
                             });
                           },
                           child: Container(
-                            height: 93,
-                            width: 93,
+                            height: ScreenUtil.instance.bottomBarHeight == 0 ? 74 : 93,
+                            width: ScreenUtil.instance.bottomBarHeight == 0 ? 74 : 93,
                             child: Stack(
                               children: [
                                 AspectRatio(
@@ -505,8 +505,8 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
                             });
                           },
                           child: Container(
-                            height: 93,
-                            width: 93,
+                            height: ScreenUtil.instance.bottomBarHeight == 0 ? 74 : 93,
+                            width: ScreenUtil.instance.bottomBarHeight == 0 ? 74 : 93,
                             child: Stack(
                               children: [
                                 AspectRatio(
