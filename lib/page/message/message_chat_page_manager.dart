@@ -408,9 +408,9 @@ ChatDataModel getMessage(Message message, {bool isHaveAnimation = true}) {
 
 //插入撤回消息
 void getReChatDataModel(
-    {String targetId, int conversationType, int chatTypeId, int sendTime, Function(Message msg, int code) finished}) async {
+    {String targetId, int conversationType, int chatTypeId, int sendTime,String text, Function(Message msg, int code) finished}) async {
   postMessageManagerAlertTime(ChatTypeModel.MESSAGE_TYPE_ALERT, ChatTypeModel.MESSAGE_TYPE_ALERT_NAME,
-      "你撤回了一条消息", targetId,
+      text, targetId,
       conversationType, finished, sendTime: sendTime);
 }
 
@@ -521,7 +521,12 @@ void postVoice(ChatDataModel chatDataModel, String targetId,
   chatDataModel.isTemporary = false;
   voidCallback();
 }
-
+//重新发送消息
+void resetPostMessage(ChatDataModel chatDataModel, VoidCallback voidCallback) async {
+  chatDataModel.msg =await Application.rongCloud.sendVoiceMessage(chatDataModel.msg);
+  chatDataModel.isTemporary = false;
+  voidCallback();
+}
 Future<UploadResultModel> onPostImgOrVideoSinge(File file)async{
   List<File> fileList = [];
   fileList.add(file);

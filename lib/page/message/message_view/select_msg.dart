@@ -138,7 +138,7 @@ class SelectMsg extends StatelessWidget {
       ),
       Container(
         margin: isShowChatUserName ? const EdgeInsets.only(top: 16) : null,
-        child: getMessageState(status),
+        child: getMessageState(status,position: position,voidMessageClickCallBack: voidMessageClickCallBack),
       ),
     ];
     if (isMyself) {

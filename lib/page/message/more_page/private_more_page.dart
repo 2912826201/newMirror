@@ -11,6 +11,7 @@ import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/loading_progress.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
@@ -292,7 +293,18 @@ class PrivateMorePageState extends State<PrivateMorePage> {
       return;
     }
     if (title == "拉黑") {
-      addToBlackList();
+      showAppDialog(context,
+          title: "拉黑",
+          info: "确定需要将此人拉黑吗？",
+          cancel: AppDialogButton("取消", () {
+            return true;
+          }),
+          confirm: AppDialogButton("拉黑", () {
+            Future.delayed(Duration(milliseconds: 100),(){
+              addToBlackList();
+            });
+            return true;
+          }));
     } else if (title == "解除拉黑") {
       removeFromBlackList();
     } else if (title == "消息免打扰") {

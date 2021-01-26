@@ -108,7 +108,8 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
       Container(
         margin: widget.isShowChatUserName ? const EdgeInsets.only(top: 16) : null,
         child: getMessageState(widget.status,
-            isRead: widget.chatVoiceModel.read != 0, isMyself: widget.isMyself),
+            isRead: widget.chatVoiceModel.read != 0, isMyself: widget.isMyself
+            ,position: widget.position,voidMessageClickCallBack: widget.voidMessageClickCallBack),
       ),
       Spacer(),
     ];

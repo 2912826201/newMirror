@@ -5,9 +5,12 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:provider/provider.dart';
 
 import 'currency_msg.dart';
 
@@ -101,38 +104,22 @@ class AlertMsg extends StatelessWidget {
       textArray.add(map["data"]);
       isChangColorArray.add(false);
     } else if (map["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP) {
+      //0--加入群聊
+      //1--退出群聊
+      //2--移除群聊
+      //3--群主转移
+      //4--群名改变
       //群通知
       Map<String, dynamic> mapGroupModel = json.decode(map["data"]["data"]);
       // print("mapGroupModel:${map["data"]["data"].toString()}");
-      if(mapGroupModel["subType"] == 1){
+      ChatGroupUserModel chatGroupUserModel = context.read<GroupUserProfileNotifier>().chatGroupUserModelList[0];
+      if(mapGroupModel["subType"] == 1&&!chatGroupUserModel.isGroupLeader()){
         textArray.clear();
+      }else if(mapGroupModel["subType"] == 4){
+        updateGroupName(mapGroupModel, context);
       }else{
         getGroupText(mapGroupModel, context);
       }
-    }else if (map["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME) {
-      colorArray.add(AppColor.textSecondary);
-      colorArray.add(AppColor.mainBlue);
-      isMyself = map["fromUserId"] == Application.profile.uid.toString();
-      if(isMyself){
-        textArray.add("你 ");
-      }else{
-        String name=Application.chatGroupUserModelMap[map["fromUserId"]];
-        if(name==null){
-          name=map["nickName"];
-        }
-        if(name==null){
-          textArray.add(map["fromUserId"]+" ");
-        }else{
-          textArray.add(name+" ");
-        }
-      }
-      isChangColorArray.add(true);
-      textArray.add("修改群名为 \"");
-      isChangColorArray.add(false);
-      textArray.add(map["data"]);
-      isChangColorArray.add(true);
-      textArray.add("\"");
-      isChangColorArray.add(false);
     }
 
     if (textArray.length > 0) {
@@ -141,6 +128,27 @@ class AlertMsg extends StatelessWidget {
       return Container();
     }
   }
+
+  //修改群名
+  void updateGroupName(Map<String, dynamic> mapGroupModel, BuildContext context){
+    colorArray.add(AppColor.textSecondary);
+    colorArray.add(AppColor.textPrimary1);
+
+    if (mapGroupModel["operator"].toString() == Application.profile.uid.toString()) {
+      textArray.add("你 ");
+      isChangColorArray.add(true);
+    } else {
+      textArray.add(mapGroupModel["operatorName"].toString());
+      isChangColorArray.add(true);
+    }
+    textArray.add("修改群名为 \"");
+    isChangColorArray.add(false);
+    textArray.add(mapGroupModel["groupChatName"].toString());
+    isChangColorArray.add(true);
+    textArray.add("\"");
+    isChangColorArray.add(false);
+  }
+
 
   //判断是加入群聊还是退出群聊
   void getGroupText(Map<String, dynamic> mapGroupModel, BuildContext context) {
@@ -182,7 +190,6 @@ class AlertMsg extends StatelessWidget {
         userCount++;
       }
     }
-
     for (dynamic d in users) {
       try {
         if (d != null) {
@@ -214,9 +221,9 @@ class AlertMsg extends StatelessWidget {
       textArray.add("加入群聊");
     } else if (mapGroupModel["subType"] == 1) {
       textArray.add("退出群聊");
-    } else if(mapGroupModel["subType"]==2){
+    } else if (mapGroupModel["subType"] == 2) {
       textArray.add("移除了群聊");
-    }else if(mapGroupModel["subType"]==3){
+    } else if (mapGroupModel["subType"] == 3) {
       textArray.add("已成为新群主");
     }
     isChangColorArray.add(false);
