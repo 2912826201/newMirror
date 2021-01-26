@@ -60,6 +60,7 @@ class AppRouter {
   static String pathTrainingRecordAllPage = "/profile/trainingrecord/trainingrecordallpage";
   static String pathTrainingGallery = "/profile/traininggallery";
   static String pathTrainingGalleryDetail = "/profile/traininggallery/detail";
+  static String pathTrainingGalleryComparison = "/profile/traininggallery/comparison";
   static String pathMeCoursePage = "/profile/mecoursepage";
   static String pathMeDownloadVideoCoursePage = "/profile/mecoursepage/medownloadvideocoursepage";
   static String pathVipNotOpenPage = "/profile/vip/notopenpage";
@@ -114,6 +115,7 @@ class AppRouter {
     router.define(pathTrainingRecordAllPage, handler: handlerTrainingRecordAllPage);
     router.define(pathTrainingGallery, handler: handlerTrainingGallery);
     router.define(pathTrainingGalleryDetail, handler: handlerTrainingGalleryDetail);
+    router.define(pathTrainingGalleryComparison, handler: handlerTrainingGalleryComparison);
     router.define(pathMeCoursePage, handler: handlerMeCoursePage);
     router.define(pathMeDownloadVideoCoursePage, handler: handlerMeDownloadVideoCoursePage);
     router.define(pathVipNotOpenPage, handler: handlerVipNotOpen);
@@ -309,15 +311,18 @@ class AppRouter {
     map["userId"] = uId;
     _navigateToPage(context, pathProfileDetails, map);
   }
+
   static void navigateToVipOpenPage(BuildContext context) {
     Map<String, dynamic> map = Map();
-    _navigateToPage(context, pathVipOpenPage,map);
+    _navigateToPage(context, pathVipOpenPage, map);
   }
+
   static void navigateToVipNamePlatePage(BuildContext context, int index) {
     Map<String, dynamic> map = Map();
     map["index"] = index;
     _navigateToPage(context, pathVipNamePlatePage, map);
   }
+
   static void navigateToReleasePage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathRelease, map);
@@ -386,6 +391,14 @@ class AppRouter {
     map["dayIndex"] = dayIndex;
     map["imageIndex"] = imageIndex;
     _navigateToPage(context, pathTrainingGalleryDetail, map, callback: callback);
+  }
+
+  static void navigateToTrainingGalleryComparisonPage(
+      BuildContext context, TrainingGalleryImageModel image1, TrainingGalleryImageModel image2) {
+    Map<String, dynamic> map = Map();
+    map["image1"] = image1.toJson();
+    map["image2"] = image2.toJson();
+    _navigateToPage(context, pathTrainingGalleryComparison, map);
   }
 
   static void navigateToMeCoursePage(BuildContext context) {

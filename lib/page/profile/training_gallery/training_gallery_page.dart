@@ -98,16 +98,11 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
     _normalModeAppBar = AppBar(
       backgroundColor: AppColor.white,
       brightness: Brightness.light,
-      title: Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "健身相册",
-            style: AppStyle.textMedium18,
-          ),
-        ],
+      title: Text(
+        "健身相册",
+        style: AppStyle.textMedium18,
       ),
+      centerTitle: true,
       leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
@@ -444,7 +439,12 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
                   ),
                   Spacer(),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      if (_selectedImageList.length == _imageMaxSelection) {
+                        AppRouter.navigateToTrainingGalleryComparisonPage(
+                            context, _selectedImageList[0], _selectedImageList[1]);
+                      }
+                    },
                     child: Text(
                       "继续",
                       style: _selectedImageList.length == _imageMaxSelection

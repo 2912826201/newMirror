@@ -34,6 +34,7 @@ import 'package:mirror/page/profile/setting/blacklist_page.dart';
 import 'package:mirror/page/profile/setting/feedback_page.dart';
 import 'package:mirror/page/profile/setting/notice_setting_page.dart';
 import 'package:mirror/page/profile/setting/setting_home_page.dart';
+import 'package:mirror/page/profile/training_gallery/training_gallery_comparison_page.dart';
 import 'package:mirror/page/profile/training_gallery/training_gallery_detail_page.dart';
 import 'package:mirror/page/profile/training_gallery/training_gallery_page.dart';
 import 'package:mirror/page/profile/training_record/training_record_all_page.dart';
@@ -311,6 +312,14 @@ var handlerTrainingGalleryDetail = Handler(handlerFunc: (BuildContext context, M
   int dayIndex = data["dayIndex"];
   int imageIndex = data["imageIndex"];
   return TrainingGalleryDetailPage(dataList, dayIndex: dayIndex, imageIndex: imageIndex);
+});
+
+//健身相册对比图页
+var handlerTrainingGalleryComparison = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  TrainingGalleryImageModel image1 = TrainingGalleryImageModel.fromJson(data["image1"]);
+  TrainingGalleryImageModel image2 = TrainingGalleryImageModel.fromJson(data["image2"]);
+  return TrainingGalleryComparisonPage(image1, image2);
 });
 
 //我的课程界面

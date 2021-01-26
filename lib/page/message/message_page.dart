@@ -65,20 +65,11 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         leading: null,
         backgroundColor: AppColor.white,
         brightness: Brightness.light,
-        title: Row(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 48,
-            ),
-            Text(
-              "消息（${context.watch<RongCloudStatusNotifier>().status}）",
-              style: AppStyle.textMedium18,
-            ),
-          ],
+        title: Text(
+          "消息（${context.watch<RongCloudStatusNotifier>().status}）",
+          style: AppStyle.textMedium18,
         ),
+        centerTitle: true,
         actions: [
           Container(
             alignment: Alignment.center,
