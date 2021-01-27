@@ -88,6 +88,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
           ScrollConfiguration(
               behavior: NoBlueEffectBehavior(),
               child: ListView.builder(
+                physics:BouncingScrollPhysics(),
                   //有个头部 有个尾部
                   itemCount: _videoCourseList.length + 2,
                   itemBuilder: (context, index) {
