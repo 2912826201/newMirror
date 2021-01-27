@@ -214,6 +214,10 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   void dispose() {
     _scrollController.dispose();
     if (Application.appContext != null) {
+      //清聊天未读数
+      MessageManager.clearUnreadCount(Application.appContext, widget.conversation.conversationId,
+          Application.profile.uid, widget.conversation.type);
+      //清其他数据
       Application.appContext.read<GroupUserProfileNotifier>().clearAllUser();
       Application.appContext.read<VoiceSettingNotifier>().stop();
       Application.appContext.read<ChatMessageProfileNotifier>().clear();
@@ -241,9 +245,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           children: [
             (chatDataList != null && chatDataList.length > 0) ? getChatDetailsBody() : Container(),
             ChatAtUserList(
-              isShow: context
-                  .watch<ChatEnterNotifier>()
-                  .keyWord == "@",
+              isShow: context.watch<ChatEnterNotifier>().keyWord == "@",
               onItemClickListener: atListItemClick,
               groupChatId: chatUserId,
             ),
@@ -285,9 +287,8 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       refreshController: _refreshController,
       isHaveAtMeMsg: isHaveAtMeMsg,
       isHaveAtMeMsgIndex: isHaveAtMeMsgIndex,
-      onRefresh: (widget.conversation.getType() != RCConversationType.System)
-          ? _onRefresh
-          : _onRefreshSystemInformation,
+      onRefresh:
+          (widget.conversation.getType() != RCConversationType.System) ? _onRefresh : _onRefreshSystemInformation,
       loadText: loadText,
       loadStatus: loadStatus,
       isShowChatUserName: widget.conversation.getType() == RCConversationType.Group,
@@ -323,22 +324,22 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
               //print("-----------------------");
               _focusNode.unfocus();
               ToastShow.show(msg: "点击了更多那妞", context: context);
-              judgeJumpPage(chatTypeId, this.chatUserId, widget.conversation.type, context, chatUserName, (int type,String name) {
+              judgeJumpPage(chatTypeId, this.chatUserId, widget.conversation.type, context, chatUserName,
+                  (int type, String name) {
                 //type  0-用户名  1--群名
-                if(type==0) {
+                if (type == 0) {
                   //修改了用户名
                   Application.chatGroupUserModelMap.clear();
-                  for (ChatGroupUserModel userModel in context
-                      .read<GroupUserProfileNotifier>()
-                      .chatGroupUserModelList) {
+                  for (ChatGroupUserModel userModel
+                      in context.read<GroupUserProfileNotifier>().chatGroupUserModelList) {
                     Application.chatGroupUserModelMap[userModel.uid.toString()] = userModel.groupNickName;
                   }
                   delayedSetState();
-                }else if(type==1){
-                  chatUserName=name;
+                } else if (type == 1) {
+                  chatUserName = name;
                   //修改了群名
                   // _postUpdateGroupName(name);
-                }else{
+                } else {
                   //拉黑
                   _insertBlackMenu();
                 }
@@ -703,8 +704,8 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   //获取系统消息
   Future<List<ChatDataModel>> getSystemInformationNet() async {
     List<ChatDataModel> dataList = <ChatDataModel>[];
-    Map<String, dynamic> dataListMap = await querySysMsgList(
-        type: widget.conversation.type, size: 20, lastTime: systemLastTime);
+    Map<String, dynamic> dataListMap =
+        await querySysMsgList(type: widget.conversation.type, size: 20, lastTime: systemLastTime);
     try {
       systemLastTime = dataListMap["lastTime"].toString();
     } catch (e) {}
@@ -716,7 +717,6 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     }
     return dataList;
   }
-
 
   //加入时间提示
   void getTimeAlert(List<ChatDataModel> chatDataList) {
@@ -916,18 +916,15 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     mentionedInfo.type = RCMentionedType.Users;
     atUserIdList.clear();
     // 获取输入框内的规则
-    var rules = context
-        .read<ChatEnterNotifier>()
-        .rules;
+    var rules = context.read<ChatEnterNotifier>().rules;
     for (int i = 0; i < rules.length; i++) {
       if (!atUserIdList.contains(rules[i].clickIndex.toString())) {
         atUserIdList.add(rules[i].clickIndex.toString());
       }
     }
     mentionedInfo.userIdList = atUserIdList;
-    mentionedInfo.mentionedContent = gteAtUserName(atUserIdList, context
-        .read<GroupUserProfileNotifier>()
-        .chatGroupUserModelList);
+    mentionedInfo.mentionedContent =
+        gteAtUserName(atUserIdList, context.read<GroupUserProfileNotifier>().chatGroupUserModelList);
     chatDataModel.mentionedInfo = mentionedInfo;
 
     judgeAddAlertTime();
@@ -943,7 +940,6 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         isHaveTextLen = false;
       });
     }
-
 
     postText(chatDataList[0], widget.conversation.conversationId, chatTypeId, mentionedInfo, () {
       context.read<ChatEnterNotifier>().clearRules();
@@ -1061,7 +1057,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   }
 
   //发送修改群名称
-  _postUpdateGroupName(String name){
+  _postUpdateGroupName(String name) {
     ChatDataModel chatDataModel = new ChatDataModel();
     chatDataModel.type = ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME;
     chatDataModel.content = name;
@@ -1074,17 +1070,17 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       _timerCount = 0;
       isHaveTextLen = false;
     });
-    postGroupUpdateName(chatDataList[0], widget.conversation.conversationId,  () {
+    postGroupUpdateName(chatDataList[0], widget.conversation.conversationId, () {
       delayedSetState();
     });
   }
 
   //插入加入黑名单的消息
-  void _insertBlackMenu(){
+  void _insertBlackMenu() {
     getReChatDataModel(
       targetId: widget.conversation.conversationId,
       conversationType: chatTypeId,
-      sendTime: new DateTime.now().millisecondsSinceEpoch+1000,
+      sendTime: new DateTime.now().millisecondsSinceEpoch + 1000,
       text: "你拉黑了这个用户!",
       finished: (Message msg, int code) {
         ChatDataModel chatDataModel = new ChatDataModel();
@@ -1102,16 +1098,15 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     );
   }
 
-
   //重新发送消息
-  void _resetPostMessage(int position)async{
+  void _resetPostMessage(int position) async {
     ChatDataModel chatDataModel = new ChatDataModel();
-    Message message=chatDataList[position].msg;
+    Message message = chatDataList[position].msg;
     chatDataModel.isTemporary = false;
     chatDataModel.isHaveAnimation = true;
-    chatDataModel.msg=message;
-    chatDataModel.msg.sentStatus=10;
-    chatDataModel.msg.sentTime=new DateTime.now().millisecondsSinceEpoch;
+    chatDataModel.msg = message;
+    chatDataModel.msg.sentStatus = 10;
+    chatDataModel.msg.sentTime = new DateTime.now().millisecondsSinceEpoch;
     judgeAddAlertTime();
     chatDataList.removeAt(position);
     chatDataList.insert(0, chatDataModel);
@@ -1121,7 +1116,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       _timerCount = 0;
       isHaveTextLen = false;
     });
-    resetPostMessage(chatDataList[0],(){
+    resetPostMessage(chatDataList[0], () {
       // RongCloud.init().deleteMessageById(message, (code)async {});
       delayedSetState();
     });
@@ -1175,7 +1170,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                     return Container();
                   } else {
                     dataModel.msg?.sentStatus = status;
-                    if(status==20){
+                    if (status == 20) {
                       profileCheckBlack();
                     }
                     delayedSetState();
@@ -1192,8 +1187,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         if (message.messageUId == chatDataList[0].msg.messageUId) {
           return Container();
         }
-        ChatDataModel chatDataModel =
-            getMessage(message, isHaveAnimation: true);
+        ChatDataModel chatDataModel = getMessage(message, isHaveAnimation: true);
         judgeAddAlertTime();
         chatDataList.insert(0, chatDataModel);
         if (message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
@@ -1216,11 +1210,8 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         bool isExitPage = context.select((ChatMessageProfileNotifier value) => value.isExitPage);
         Message message = context.select((ChatMessageProfileNotifier value) => value.exitMessage);
         if (isExitPage) {
-          MessageManager.removeConversation(
-              context, chatUserId, Application.profile.uid, widget.conversation.type);
-          context
-              .watch<ChatMessageProfileNotifier>()
-              .exitMessage = null;
+          MessageManager.removeConversation(context, chatUserId, Application.profile.uid, widget.conversation.type);
+          context.watch<ChatMessageProfileNotifier>().exitMessage = null;
           if (message != null) {
             getChatGroupUserModelList1(chatUserId, context);
             insertExitGroupMsg(message, chatUserId, (Message msg, int code) {
@@ -1236,7 +1227,6 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     );
   }
 
-
   initTextController() {
     _textController.addListener(() {
       // //print("值改变了");
@@ -1244,12 +1234,8 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       // // 每次点击切换光标会进入此监听。需求邀请@和话题光标不可移入其中。
       // //print("::::::$isSwitchCursor");
       if (isSwitchCursor) {
-        List<Rule> rules = context
-            .read<ChatEnterNotifier>()
-            .rules;
-        int atIndex = context
-            .read<ChatEnterNotifier>()
-            .atCursorIndex;
+        List<Rule> rules = context.read<ChatEnterNotifier>().rules;
+        int atIndex = context.read<ChatEnterNotifier>().atCursorIndex;
 
         // 获取光标位置
         int cursorIndex = _textController.selection.baseOffset;
@@ -1348,14 +1334,14 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   }
 
   //检查黑名单状态
-  void profileCheckBlack()async{
-    if(widget.conversation.type==PRIVATE_TYPE) {
+  void profileCheckBlack() async {
+    if (widget.conversation.type == PRIVATE_TYPE) {
       BlackModel blackModel = await ProfileCheckBlack(int.parse(chatUserId));
-      String text="";
-      if(blackModel.inYouBlack==1){
-        text="你已经将他拉黑了！";
-      }else if(blackModel.inThisBlack==1){
-        text="他已经将你拉黑了！";
+      String text = "";
+      if (blackModel.inYouBlack == 1) {
+        text = "你已经将他拉黑了！";
+      } else if (blackModel.inThisBlack == 1) {
+        text = "他已经将你拉黑了！";
       }
       // print("--------------text:$text");
       ToastShow.show(msg: text, context: context);
@@ -1384,10 +1370,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //表情的点击事件
   void onEmojioClick() {
-    if (MediaQuery
-        .of(context)
-        .viewInsets
-        .bottom > 0) {
+    if (MediaQuery.of(context).viewInsets.bottom > 0) {
       _emojiState = false;
     }
     _emojiState = !_emojiState;
@@ -1588,7 +1571,6 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     delayedSetState();
   }
 
-
   //所有的item长按事件
   void onItemLongClickCallBack(
       {int position, String settingType, Map<String, dynamic> map, String contentType, String content}) {
@@ -1631,7 +1613,11 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     // 跳转动态详情页
     Navigator.push(
       context,
-      new MaterialPageRoute(builder: (context) => FeedDetailPage(model: feedModel,type: 1,)),
+      new MaterialPageRoute(
+          builder: (context) => FeedDetailPage(
+                model: feedModel,
+                type: 1,
+              )),
     );
   }
 
@@ -1703,6 +1689,5 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     }
   }
 
-
-///------------------------------------各种点击事件  end-----------------------------------------------------------------------///
+  ///------------------------------------各种点击事件  end-----------------------------------------------------------------------///
 }

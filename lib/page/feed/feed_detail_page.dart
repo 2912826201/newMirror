@@ -20,6 +20,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/comment_input_bottom_bar.dart';
 import 'package:mirror/widget/expandable_text.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
@@ -63,6 +64,9 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   bool isCanLoading = false;
   GlobalKey _key = GlobalKey();
   WidgetsBinding widgetsBinding;
+  int choseIndex = 0;
+  bool isFirstPage = false;
+  double itemHeight = 0;
   @override
   void dispose() {
     _controller.dispose();
@@ -72,68 +76,81 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   void initState() {
     print("进入详情页");
 
-    print('=============================');
-    if(widget.comment!=null){
-    WidgetsBinding.instance.addPostFrameCallback((callback){
+    feedModel = context.read<FeedMapNotifier>().feedMap[widget.model.id];
+    itemHeight  = 124+calculateTextWidth(feedModel.content,AppStyle.textRegular14,ScreenUtil.instance.width,2).height+setAspectRatio(feedModel.picUrls[0].height.toDouble());
+    getQueryListByHot();
+    /*WidgetsBinding.instance.addPostFrameCallback((callback){
       print('===============################################====  =build结束');
       RenderBox box = _key.currentContext.findRenderObject();
       Offset offset = box.localToGlobal(Offset.zero);
-       print('offset=============%%%%%%%%%%%%%%%%%%%%%%%%%%%=======================${offset.dy}');
-      Future.delayed(Duration(milliseconds: 1000), () {
-        try {
-          _controller.animateTo(offset.dy-box.size.height, duration: Duration(milliseconds: 1000), curve: Curves.ease);
-          isCanLoading = true;
-          setState(() {
-          });
-        } catch (e) {
-        }
-      });
-    });
-    }
-    feedModel = context.read<FeedMapNotifier>().feedMap[widget.model.id];
-        getQueryListByHot();
-        _getChoseComment();
-
-    /*  _getChoseComment();*/
+      itemHeight = offset.dy;
+    });*/
     _controller.addListener(() {
         if (_controller.position.pixels == _controller.position.maxScrollExtent) {
-          if(isCanLoading){
           print('==================动态详情刷新');
           dataPage += 1;
           getQueryListByHot();
-        }
       }
     });
 
   }
   _getChoseComment()async{
     print('================================   筛选评论');
-    if(widget.comment!=null){
-    CommentDtoModel childmodel = await getComment(widget.comment.id);
-    if(childmodel!=null){
-    if(childmodel.type==0){
-      if (childmodel.replyCount > 0) {
-        childmodel.isShowInteractiveButton = true;
-      } else {
-        childmodel.isShowInteractiveButton = false;
-      }
-        childmodel.itemChose = true;
-        commentModel.insert(0, childmodel);
-    }else if(childmodel.type==2){
-      print('=========================评论类型为====2');
-      CommentDtoModel fsModel = await getComment(childmodel.targetId);
-      if(fsModel!=null){
-        print('=======================父评论不为空');
-          fsModel.isShowInteractiveButton = true;
-          commentModel.insert(0, fsModel);
+      CommentDtoModel childmodel = await getComment(widget.comment.id);
+      if(childmodel!=null){
+        print("=============_getChoseComment===================1");
+      if(childmodel.type==0){
+        print("=============_getChoseComment===================2");
+          if (childmodel.replyCount > 0) {
+            childmodel.isShowInteractiveButton = true;
+          } else {
+            childmodel.isShowInteractiveButton = false;
+          }
           childmodel.itemChose = true;
-          commentModel[0].replys.insert(0, childmodel);
-          context.read<FeedMapNotifier>().insertChildModel(childmodel);
+          if(isFirstPage){
+            print("=============_getChoseComment===================4");
+            print('=========================$choseIndex');
+          commentModel.insert(choseIndex, childmodel);
+          }else{
+            print("=============_getChoseComment===================5");
+            commentModel.insert(0, childmodel);
+          }
+        }else if(childmodel.type==2){
+          print('=========================评论类型为====2');
+          CommentDtoModel fsModel = await getComment(childmodel.targetId);
+          if(fsModel!=null){
+            print('=======================父评论不为空');
+            fsModel.isShowInteractiveButton = true;
+            if(isFirstPage){
+              commentModel.insert(choseIndex, fsModel);
+            }else{
+              commentModel.insert(0, fsModel);
+            }
+            childmodel.itemChose = true;
+            commentModel[0].replys.insert(0, childmodel);
+            context.read<FeedMapNotifier>().insertChildModel(childmodel);
+          }
         }
-    }
-    }
+      }
     context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
-    }
+      for(int i=0;i<commentModel.length;i++) {
+        print(
+            '=====666666666666666666666666666666666===========================i$i');
+        if (i < choseIndex) {
+          itemHeight += calculateTextWidth(
+              commentModel[i].content, AppStyle.textRegular14,
+              ScreenUtil.instance.width - 75, 2).height + 60;
+        } else if (i == choseIndex) {
+          Future.delayed(Duration(milliseconds: 200), () {
+            try {
+              print(
+                  '===============================================滑动倒计时结束-----开始滚动');
+              _controller.jumpTo(
+                  itemHeight /*, duration: Duration(microseconds: 500), curve: Curves.ease*/);
+            } catch (e) {}
+          });
+        }
+      }
   }
   // 获取热门评论
   getQueryListByHot() async {
@@ -162,11 +179,15 @@ class FeedDetailPageState extends State<FeedDetailPage> {
             }
           }
           if(widget.comment!=null){
-            modelList.forEach((element) {
-              if(element.id!=widget.comment.id&&element.id!=widget.comment.targetId){
-                commentModel.add(element);
+            for(int i=0;i<modelList.length;i++){
+              if(modelList[i].id==widget.comment.id||modelList[i].id==widget.comment.targetId){
+                choseIndex = i;
+                isFirstPage = true;
+                print('==================888888888888888888==88888888888888888===========选中的屁评论在第一页');
+              }else{
+                commentModel.add(modelList[i]);
               }
-            });
+            }
           }else{
            commentModel.addAll(modelList);
           }
@@ -200,15 +221,25 @@ class FeedDetailPageState extends State<FeedDetailPage> {
       }
       // commentModel.insert(commentModel.length, CommentDtoModel());
     });
-    if(dataPage>1){
+    if(widget.comment==null){
       context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
     }else{
-     if(widget.comment==null){
-       context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
-     }
+      if(dataPage==1){
+        _getChoseComment();
+      }else{
+        context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
+      }
+
+    }
+
+  }
+  double setAspectRatio(double height) {
+    if (height == 0) {
+      return ScreenUtil.instance.width;
+    } else {
+      return (ScreenUtil.instance.width / feedModel.picUrls[0].width) * height;
     }
   }
-
   @override
   Widget build(BuildContext context) {
     print("动态详情页build---------------------------------------------${feedModel}");
@@ -238,10 +269,12 @@ class FeedDetailPageState extends State<FeedDetailPage> {
             Container(
               height: ScreenUtil.instance.height,
               child:CustomScrollView(
+                physics:ClampingScrollPhysics(),
                 controller: _controller,
                 slivers: <Widget>[
               SliverToBoxAdapter(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center, children: [
                   // 顶部间距
                   SizedBox(
                     height: 14,

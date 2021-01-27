@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/setting_api/setting_api.dart';
@@ -6,130 +5,103 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/user_notice_model.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/dialog.dart';
+import 'package:notification_permissions/notification_permissions.dart';
+import 'package:provider/provider.dart';
+import 'package:system_setting/system_setting.dart';
 
 
 ///通知设置
-class NoticeSettingPage extends StatefulWidget{
+class NoticeSettingPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     return _NoticeSettingState();
   }
 }
 
-class _NoticeSettingState extends State<NoticeSettingPage> {
-  bool getNoticeIsOpen = false;
-  //未关注私信人
-  bool notFollow = false;
-  //我关注及好友私信
-  bool followBuddy = false;
-  //@我
-  bool mentionedMe = false;
-  //评论
-  bool comment = false;
+class _NoticeSettingState extends State<NoticeSettingPage>
+    with WidgetsBindingObserver {
+  bool getNoticeIsOpen = true;
 
-    //设置用户通知设置
+  bool permissionOpen = false;
+  Future<String> permissionStatusFuture;
+  var permGranted = "granted";
+  var permDenied = "denied";
+  var permUnknown = "unknown";
+  var permProvisional = "provisional";
+
+
+  //设置用户通知设置
   _setUserNotice(int type, int isOpen) async {
     var noticeState = await setUserNotice(type, isOpen);
     if (noticeState != null) {
-      if(noticeState){
-        switch (type) {
-          case 0:
-            if (notFollow) {
-              setState(() {
-                notFollow = false;
-              });
-            } else {
-              setState(() {
-                notFollow = true;
-              });
-            }
-            break;
-          case 1:
-            if (followBuddy) {
-              setState(() {
-                followBuddy = false;
-              });
-            } else {
-              setState(() {
-                followBuddy = true;
-              });
-            }
-            break;
-          case 2:
-            if (mentionedMe) {
-              setState(() {
-                mentionedMe = false;
-              });
-            } else {
-              setState(() {
-                mentionedMe = true;
-              });
-            }
-            break;
-          case 3:
-            if (comment) {
-              setState(() {
-                comment = false;
-              });
-            } else {
-              setState(() {
-                comment = true;
-              });
-            }
-            break;
-        }
+      if (noticeState) {
+        context.read<SettingNotifile>().changeSwitchButton(type+1);
       }
-
     }
   }
-    //获取用户通知设置
+
+  //获取用户通知设置
   _getUserNotice() async {
     UserNoticeModel model = await getUserNotice();
     if (model != null) {
       model.list.forEach((element) {
-        switch (element.type) {
-          case 0:
-            if (element.isOpen == 0) {
-              notFollow = false;
-            } else {
-              notFollow = true;
-            }
-            break;
-          case 1:
-            if (element.isOpen == 0) {
-              followBuddy = false;
-            } else {
-              followBuddy = true;
-            }
-            break;
-          case 2:
-            if (element.isOpen == 0) {
-              mentionedMe = false;
-            } else {
-              mentionedMe = true;
-            }
-            break;
-          case 3:
-            if (element.isOpen == 0) {
-              comment = false;
-            } else {
-              comment = true;
-            }
-        }
-      });
-      setState(() {
+        context.read<SettingNotifile>().setSwitchButton(
+            element.type+1,
+            element.isOpen==0?false:true);
       });
     }
   }
+  ///获取系统通知状态
+  Future<String> getCheckNotificationPermStatus() {
+    return NotificationPermissions.getNotificationPermissionStatus()
+        .then((status) {
+      switch (status) {
+        case PermissionStatus.denied:
+          context.read<SettingNotifile>().changePermision(false);
+          return permDenied;
+        case PermissionStatus.granted:
+          context.read<SettingNotifile>().changePermision(true);
+          return permGranted;
+        case PermissionStatus.unknown:
+          context.read<SettingNotifile>().changePermision(false);
+          return permUnknown;
+        case PermissionStatus.provisional:
+          context.read<SettingNotifile>().changePermision(false);
+          return permProvisional;
+        default:
+          return null;
+      }
+    });
+  }
 
+  @override///监听用户回到app
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      setState(() {
+        permissionStatusFuture = getCheckNotificationPermStatus();
+      });
+    }
+  }
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    //解绑监听
+    WidgetsBinding.instance.removeObserver(this);
+  }
   @override
   void initState() {
     super.initState();
+    //绑定监听
+    WidgetsBinding.instance.addObserver(this);
+    permissionStatusFuture = getCheckNotificationPermStatus();
     _getUserNotice();
   }
 
   @override
   Widget build(BuildContext context) {
+    print('=====================build');
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return Scaffold(
@@ -158,7 +130,11 @@ class _NoticeSettingState extends State<NoticeSettingPage> {
         height: height,
         child: Column(
           children: [
-            _getNotice(),
+            InkWell(
+              onTap: () {
+                SystemSetting.goto(SettingTarget.NOTIFICATION);
+              },
+              child: _getNotice(),),
             Container(
               height: 0.5,
               color: AppColor.bgWhite,
@@ -178,8 +154,8 @@ class _NoticeSettingState extends State<NoticeSettingPage> {
                 ),
               ),
             ),
-            _switchRow(width, 0, notFollow, "未关注私信人"),
-            _switchRow(width, 1, followBuddy, "我关注及好友私信"),
+            _switchRow(width, 0, context.watch<SettingNotifile>().notFollow, "未关注私信人"),
+            _switchRow(width, 1, context.watch<SettingNotifile>().followBuddy, "我关注及好友私信"),
             SizedBox(
               height: 12,
             ),
@@ -194,42 +170,66 @@ class _NoticeSettingState extends State<NoticeSettingPage> {
                 ),
               ),
             ),
-            _switchRow(width, 2, mentionedMe, "@我"),
-            _switchRow(width, 3, comment, "评论"),
+            _switchRow(width, 2, context.watch<SettingNotifile>().mentionedMe, "@我"),
+            _switchRow(width, 3, context.watch<SettingNotifile>().comment, "评论"),
           ],
         ),
-      ),
-    );
+      ))
+    ;
   }
 
   ///接收通知设置
   Widget _getNotice() {
+    print('====================${context.watch<SettingNotifile>().permisionIsOpen}');
     return Container(
       height: 48,
-      child: Center(
-        child: Row(
-          children: [
-            Text(
-              "接收推送通知",
-              style: AppStyle.textRegular16,
+      child: FutureBuilder(
+        future: permissionStatusFuture,
+        builder: (context, snapshot) {
+          return Center(
+            child: Row(
+              children: [
+                Text(
+                  "接收推送通知",
+                  style: AppStyle.textRegular16,
+                ),
+                Expanded(child: Container()),
+                Text(
+                  context.watch<SettingNotifile>().permisionIsOpen? "已开启" : "未开启",
+                  style: AppStyle.textHintRegular16,
+                ),
+                SizedBox(
+                  width: 12,
+                ),
+                Icon(Icons.arrow_forward_ios)
+              ],
             ),
-            Expanded(child: Container()),
-            Text(
-              getNoticeIsOpen ? "已开启" : "未开启",
-              style: AppStyle.textHintRegular16,
-            ),
-            SizedBox(
-              width: 12,
-            ),
-            Icon(Icons.arrow_forward_ios)
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
   Widget _switchRow(double width, int type, bool isOpen, String title) {
-    return Container(
+    return GestureDetector(
+      onTap: (){
+        if(permissionOpen){
+          return false;
+        }else{
+          showAppDialog(
+            context,
+            title: "获取系统通知设置",
+            info: "第一时间获取评论,私信,@,等消息通知",
+              cancel: AppDialogButton("取消",(){
+                return true;
+              }),
+          confirm:AppDialogButton("去打开",(){
+            SystemSetting.goto(SettingTarget.NOTIFICATION);
+            return true;
+          }));
+        }
+      },
+      child: Container(
       height: 48,
       width: width,
       child: Center(
@@ -243,31 +243,86 @@ class _NoticeSettingState extends State<NoticeSettingPage> {
             Transform.scale(
               scale: 0.8,
               child: CupertinoSwitch(
-              activeColor: AppColor.mainRed,
-              value: isOpen,
-              onChanged: (bool value) {
-                setState(() {
-                  switch (type) {
-                    case 0:
-                        _setUserNotice(0, notFollow ? 0 : 1);
-                      break;
-                    case 1:
-                        _setUserNotice(1, followBuddy ? 0 : 1);
-                      break;
-                    case 2:
-                        _setUserNotice(2, mentionedMe ? 0 : 1);
-                      break;
-                    case 3:
-                        _setUserNotice(3, comment ? 0 : 1);
-                      break;
-                  }
-                });
-              },
-            ),
+                  activeColor: AppColor.mainRed,
+                  value: isOpen,
+                  onChanged: context.watch<SettingNotifile>().permisionIsOpen? (bool value) {
+                      switch (type) {
+                        case 0:
+                          _setUserNotice(0, context.read<SettingNotifile>().notFollow ? 0 : 1);
+                          break;
+                        case 1:
+                          _setUserNotice(1, context.read<SettingNotifile>().followBuddy ? 0 : 1);
+                          break;
+                        case 2:
+                          _setUserNotice(2, context.read<SettingNotifile>().mentionedMe ? 0 : 1);
+                          break;
+                        case 3:
+                          _setUserNotice(3, context.read<SettingNotifile>().comment ? 0 : 1);
+                          break;
+                      }
+                  } : null
+              ),
             ),
           ],
         ),
       ),
-    );
+    ),);
+  }
+}
+
+
+class SettingNotifile extends ChangeNotifier{
+  //未关注私信人  1
+  bool notFollow = false;
+
+  //我关注及好友私信  2
+  bool followBuddy = false;
+
+  //@我  3
+  bool mentionedMe = false;
+
+  //评论  4
+  bool comment = false;
+
+  //是否开启权限
+  bool permisionIsOpen = false;
+
+  void changePermision(bool result){
+   permisionIsOpen = result;
+   notifyListeners();
+  }
+  void setSwitchButton(int type,bool result){
+    switch(type){
+      case 1:
+        notFollow = result;
+        break;
+      case 2:
+        followBuddy = result;
+        break;
+      case 3:
+        mentionedMe = result;
+        break;
+      case 4:
+        comment = result;
+        break;
+    }
+    notifyListeners();
+  }
+  void changeSwitchButton(int type){
+    switch(type){
+      case 1:
+        notFollow = !notFollow;
+        break;
+      case 2:
+        followBuddy = !followBuddy;
+        break;
+      case 3:
+        mentionedMe = !mentionedMe;
+        break;
+      case 4:
+        comment = !comment;
+        break;
+    }
+    notifyListeners();
   }
 }

@@ -72,4 +72,9 @@ class ConversationNotifier with ChangeNotifier {
 
     notifyListeners();
   }
+
+  updateConversation(ConversationDto dto) {
+    _conversationMap[dto.id] = dto;
+    notifyListeners();
+  }
 }
