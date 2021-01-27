@@ -400,6 +400,8 @@ class InteractiveNoticeItemState extends StatelessWidget {
                       if(msgModel.commentData!=null){
                         getFeedDetail(context,homeFeedModel.id,comment: msgModel.commentData);
                       }
+                    }else if(msgModel.refType==1){
+
                     }
                   }else{
                     getFeedDetail(context,homeFeedModel.id);
