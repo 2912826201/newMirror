@@ -17,51 +17,54 @@ import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/post_comments.dart';
 import 'package:mirror/widget/rich_text_widget.dart';
 import 'package:provider/provider.dart';
-class BottomListViewSubCommentListItem extends StatefulWidget{
-  BottomListViewSubCommentListItem({this.model, this.subIndex, this.mainIndex, this.feedId, this.commentDtoModel,this.comment});
+
+class BottomListViewSubCommentListItem extends StatefulWidget {
+  BottomListViewSubCommentListItem(
+      {this.model, this.subIndex, this.mainIndex, this.feedId, this.commentDtoModel, this.comment});
+
   CommentDtoModel comment;
   CommentDtoModel model;
   int subIndex;
   int mainIndex;
   int feedId;
   CommentDtoModel commentDtoModel;
+
   @override
   State<StatefulWidget> createState() {
     return BottomListViewSubCommentListItemState();
   }
-
 }
-class BottomListViewSubCommentListItemState extends State<BottomListViewSubCommentListItem> {
 
+class BottomListViewSubCommentListItemState extends State<BottomListViewSubCommentListItem> {
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
     print('========================子评论item销毁');
   }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    if(widget.comment!=null){
-      if(widget.comment.id==widget.model.id){
+    if (widget.comment != null) {
+      if (widget.comment.id == widget.model.id) {
         Future.delayed(Duration(milliseconds: 2000), () {
           try {
             widget.model.itemChose = false;
-            setState(() {
-            });
-          } catch (e) {
-          }
+            setState(() {});
+          } catch (e) {}
         });
       }
     }
-
   }
+
   @override
   // 点赞
   setUpLuad(BuildContext context, int subIndex, CommentDtoModel models) async {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
-    print("是否点赞了￥${context.read<FeedMapNotifier>().feedMap[widget.feedId].comments[widget.mainIndex].replys[subIndex].isLaud}");
+    print(
+        "是否点赞了￥${context.read<FeedMapNotifier>().feedMap[widget.feedId].comments[widget.mainIndex].replys[subIndex].isLaud}");
     if (isLoggedIn) {
       Map<String, dynamic> model = await laudComment(commentId: models.id, laud: models.isLaud == 0 ? 1 : 0);
       // 点赞/取消赞成功
@@ -77,133 +80,150 @@ class BottomListViewSubCommentListItemState extends State<BottomListViewSubComme
       AppRouter.navigateToLoginPage(context);
     }
   }
+
   Widget build(BuildContext context) {
     print('===========================子评论itembuild${widget.model.content}');
     print('-==========================${widget.model.content}');
     return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () {
-        openInputBottomSheet(
-          buildContext: context,
-          hintText: "回复 ${widget.model.name}",
-          voidCallback: (String text, List<Rule> rules) {
-            List<AtUsersModel> atListModel = [];
-            for (Rule rule in rules) {
-              AtUsersModel atModel;
-              atModel.index = rule.startIndex;
-              atModel.len = rule.endIndex;
-              atModel.uid = rule.id;
-              atListModel.add(atModel);
-            }
-            // 评论子评论
-            postComments(
-              targetId: widget.commentDtoModel.id,
-              targetType: 2,
-              content: text,
-              atUsers: jsonEncode(atListModel),
-              replyId: widget.model.uid,
-              replyCommentId: widget.model.id,
-              commentModelCallback: (CommentDtoModel commentModel) {
-                context.read<FeedMapNotifier>().commentFeedCom(widget.feedId, widget.mainIndex, commentModel);
-                print("查看一下+++++++++++++++++++++");
-                print(widget.commentDtoModel.replys.toString());
-                print(context.read<FeedMapNotifier>().feedMap[widget.feedId].comments[widget.mainIndex].replys.toString());
-                // 关闭评论输入框
-                // Navigator.of(context).pop(1);
-              });
-          },
-        );
-      },
-      child: AnimatedPhysicalModel(
-        shape: BoxShape.rectangle,
-        color: widget.model.itemChose ? AppColor.bgWhite: AppColor.white,
-        elevation:0,
-        shadowColor: !widget.model.itemChose ?AppColor.bgWhite: AppColor.white,
-        duration: Duration(seconds: 1),
-        child: Container(
-          padding: EdgeInsets.only(left: 16,right: 16,top: 9,bottom: 8),
-          child: Row(
-            //   // 横轴距定对齐
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // child: Container(
-              Container(
-                height: 32,
-                width: 32,
-                child: ClipOval(
-                  child: Image.network(
-                    widget.model.avatarUrl,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              // ),
-              Expanded(
-                child: Container(
-                  margin: EdgeInsets.only(left: 12, right: 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      MyRichTextWidget(
-                        Text(
-                          widget.model.replyName != null
-                            ? widget.model.name + " 回复 " + widget.model.replyName + " " + widget.model.content
-                            : widget.model.name + " " + widget.model.content,
-                          overflow: TextOverflow.visible,
-                          style: TextStyle(fontSize: 14, color: AppColor.textPrimary1, fontWeight: FontWeight.w400),
-                        ),
-                        maxLines: 2,
-                        textOverflow: TextOverflow.ellipsis,
-                        richTexts: setBaseRichText(widget.model),
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          openInputBottomSheet(
+            buildContext: context,
+            hintText: "回复 ${widget.model.name}",
+            voidCallback: (String text, List<Rule> rules ) {
+              List<AtUsersModel> atListModel = [];
+              for (Rule rule in rules) {
+                AtUsersModel atModel;
+                atModel.index = rule.startIndex;
+                atModel.len = rule.endIndex;
+                atModel.uid = rule.id;
+                atListModel.add(atModel);
+              }
+              // 评论子评论
+              postComments(
+                  targetId: widget.commentDtoModel.id,
+                  targetType: 2,
+                  contentext: text,
+                  atUsers: jsonEncode(atListModel),
+                  replyId: widget.model.uid,
+                  replyCommentId: widget.model.id,
+                  commentModelCallback: (CommentDtoModel commentModel) {
+                    context.read<FeedMapNotifier>().commentFeedCom(widget.feedId, widget.mainIndex, commentModel);
+                    print("查看一下+++++++++++++++++++++");
+                    print(widget.commentDtoModel.replys.toString());
+                    print(context
+                        .read<FeedMapNotifier>()
+                        .feedMap[widget.feedId]
+                        .comments[widget.mainIndex]
+                        .replys
+                        .toString());
+                    // 关闭评论输入框
+                    // Navigator.of(context).pop(1);
+                  });
+            },
+          );
+        },
+        child: AnimatedPhysicalModel(
+            shape: BoxShape.rectangle,
+            color: widget.model.itemChose ? AppColor.bgWhite : AppColor.white,
+            elevation: 0,
+            shadowColor: !widget.model.itemChose ? AppColor.bgWhite : AppColor.white,
+            duration: Duration(seconds: 1),
+            child: Container(
+              padding: EdgeInsets.only(left: 16, right: 16, top: 9, bottom: 8),
+              child: Row(
+                //   // 横轴距定对齐
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // child: Container(
+                  Container(
+                    height: 32,
+                    width: 32,
+                    child: ClipOval(
+                      child: Image.network(
+                        widget.model.avatarUrl,
+                        fit: BoxFit.cover,
                       ),
-                      Container(height: 6),
-                      Container(
-                        margin: EdgeInsets.only(bottom: 12),
-                        child: Text(
-                          "${DateUtil.generateFormatDate(widget.model.createTime)} 回复",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColor.textSecondary,
+                    ),
+                  ),
+                  // ),
+                  Expanded(
+                    child: Container(
+                        margin: EdgeInsets.only(left: 12, right: 12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            MyRichTextWidget(
+                              Text(
+                                widget.model.replyName != null
+                                    ? widget.model.name + " 回复 " + widget.model.replyName + " " + widget.model.content
+                                    : widget.model.name + " " + widget.model.content,
+                                overflow: TextOverflow.visible,
+                                style:
+                                    TextStyle(fontSize: 14, color: AppColor.textPrimary1, fontWeight: FontWeight.w400),
+                              ),
+                              maxLines: 2,
+                              textOverflow: TextOverflow.ellipsis,
+                              richTexts: setBaseRichText(widget.model),
+                            ),
+                            Container(height: 6),
+                            Container(
+                              margin: EdgeInsets.only(bottom: 12),
+                              child: Text(
+                                "${DateUtil.generateFormatDate(widget.model.createTime)} 回复",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: AppColor.textSecondary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        )),
+                  ),
+                  // 点赞
+                  GestureDetector(
+                    onTap: () {
+                      setUpLuad(context, widget.subIndex, widget.model);
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(
+                          Icons.favorite,
+                          color: context
+                                      .watch<FeedMapNotifier>()
+                                      .feedMap[widget.feedId]
+                                      .comments[widget.mainIndex]
+                                      .replys[widget.subIndex]
+                                      .isLaud ==
+                                  0
+                              ? Colors.grey
+                              : Colors.red,
+                        ),
+                        Container(
+                          height: 4,
+                        ),
+                        Offstage(
+                          offstage: context
+                                  .watch<FeedMapNotifier>()
+                                  .feedMap[widget.feedId]
+                                  .comments[widget.mainIndex]
+                                  .replys[widget.subIndex]
+                                  .laudCount ==
+                              0,
+                          child: Text(
+                            "${StringUtil.getNumber(context.select((FeedMapNotifier value) => value.feedMap[widget.feedId].comments[widget.mainIndex].replys[widget.subIndex].laudCount))}",
+                            style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
                           ),
                         ),
-                      ),
-                    ],
-                  )),
+                      ],
+                    ),
+                  )
+                ],
               ),
-              // 点赞
-              GestureDetector(
-                onTap: () {
-                  setUpLuad(context, widget.subIndex, widget.model);
-                },
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(
-                      Icons.favorite,
-                      color:
-                      context.watch<FeedMapNotifier>().feedMap[widget.feedId].comments[widget.mainIndex].replys[widget.subIndex].isLaud == 0
-                        ? Colors.grey
-                        : Colors.red,
-                    ),
-                    Container(
-                      height: 4,
-                    ),
-                    Offstage(
-                      offstage:
-                      context.watch<FeedMapNotifier>().feedMap[widget.feedId].comments[widget.mainIndex].replys[widget.subIndex].laudCount ==
-                        0,
-                      child: Text(
-                        "${StringUtil.getNumber(context.select((FeedMapNotifier value) => value.feedMap[widget.feedId].comments[widget.mainIndex].replys[widget.subIndex].laudCount))}",
-                        style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),))
-      // ),
-    );
+            ))
+        // ),
+        );
   }
 
   setBaseRichText(CommentDtoModel model) {

@@ -6,7 +6,7 @@ typedef CommentModelCallback = void Function(CommentDtoModel model);
 Future postComments({
   @required int targetId,
   @required int targetType,
-  @required String content,
+  @required String contentext,
   @required CommentModelCallback commentModelCallback,
   String picUrl,
   String atUsers,
@@ -14,7 +14,7 @@ Future postComments({
   int replyCommentId,
 }) async {
   CommentDtoModel comModel;
-  Map<String, dynamic> modelMap = await publish(targetId: targetId, targetType: targetType, content: content,picUrl: picUrl,atUsers: atUsers,
+  Map<String, dynamic> modelMap = await publish(targetId: targetId, targetType: targetType, content: contentext,picUrl: picUrl,atUsers: atUsers,
       replyId: replyId,replyCommentId:replyCommentId );
   if (modelMap != null) {
     comModel = (CommentDtoModel.fromJson(modelMap));

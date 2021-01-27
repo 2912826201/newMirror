@@ -19,6 +19,7 @@ import 'package:mirror/widget/rich_text_widget.dart';
 import 'package:provider/provider.dart';
 
 import 'bottom_listview_subcomment.dart';
+
 /*class CommentBottomListView extends StatefulWidget{
 
   @override
@@ -32,7 +33,9 @@ class CommentBottomListView extends StatelessWidget {
   int feedId;
   int type;
   CommentDtoModel comment;
-  CommentBottomListView({this.model,this.type, this.index, this.feedId,this.comment});
+
+  CommentBottomListView({this.model, this.type, this.index, this.feedId, this.comment});
+
   @override
   // 点赞
   setUpLuad(BuildContext context) async {
@@ -57,15 +60,15 @@ class CommentBottomListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print(this.model.targetId);
+    print("评论抽屉组评论GlobalKey￥￥$context");
     print('======================父评论build');
     print('====================${model.replys.length}');
-    if(context.watch<FeedMapNotifier>().feedMap[this.feedId].comments[this.index].itemChose){
+    if (context.watch<FeedMapNotifier>().feedMap[this.feedId].comments[this.index].itemChose) {
       Future.delayed(Duration(milliseconds: 2000), () {
         try {
           print('=========================父评论背景改变');
           context.read<FeedMapNotifier>().changeFatherItemChose(this.feedId, this.index);
-        } catch (e) {
-        }
+        } catch (e) {}
       });
     }
     // 头像
@@ -75,48 +78,48 @@ class CommentBottomListView extends StatelessWidget {
         width: 42,
         child: ClipOval(
           child: this.model.avatarUrl != null
-            ? Image.network(this.model.avatarUrl, fit: BoxFit.cover)
-            : Image.asset("images/test/yxlm1.jpeg", fit: BoxFit.cover),
+              ? Image.network(this.model.avatarUrl, fit: BoxFit.cover)
+              : Image.asset("images/test/yxlm1.jpeg", fit: BoxFit.cover),
         ),
       ),
     );
 
     // 评论
     Widget info = Container(
-      margin: EdgeInsets.only(left: 15, right: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          MyRichTextWidget(
-            Text(
-              this.model.name + " " + this.model.content,
-              overflow: TextOverflow.visible,
-              style: TextStyle(fontSize: 14, color: AppColor.textPrimary1, fontWeight: FontWeight.w400),
-            ),
-            maxLines: 2,
-            textOverflow: TextOverflow.ellipsis,
-            richTexts: [
-              BaseRichText(
-                (this.model.name + " " + this.model.content).substring(0, this.model.name.length),
-                style: TextStyle(color: AppColor.textPrimary1, fontSize: 15, fontWeight: FontWeight.w500),
-                onTap: () {
-                  print(this.model.uid);
-                },
+        margin: EdgeInsets.only(left: 15, right: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            MyRichTextWidget(
+              Text(
+                this.model.name + " " + this.model.content,
+                overflow: TextOverflow.visible,
+                style: TextStyle(fontSize: 14, color: AppColor.textPrimary1, fontWeight: FontWeight.w400),
               ),
-            ],
-          ),
-          Container(height: 6),
-          Container(
-            child: Text(
-              "${DateUtil.generateFormatDate(this.model.createTime)} 回复",
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColor.textSecondary,
+              maxLines: 2,
+              textOverflow: TextOverflow.ellipsis,
+              richTexts: [
+                BaseRichText(
+                  (this.model.name + " " + this.model.content).substring(0, this.model.name.length),
+                  style: TextStyle(color: AppColor.textPrimary1, fontSize: 15, fontWeight: FontWeight.w500),
+                  onTap: () {
+                    print(this.model.uid);
+                  },
+                ),
+              ],
+            ),
+            Container(height: 6),
+            Container(
+              child: Text(
+                "${DateUtil.generateFormatDate(this.model.createTime)} 回复",
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppColor.textSecondary,
+                ),
               ),
             ),
-          ),
-        ],
-      ));
+          ],
+        ));
 
     // 点赞
     Widget right = Column(
@@ -129,10 +132,10 @@ class CommentBottomListView extends StatelessWidget {
           child: Icon(
             Icons.favorite,
             color: context.watch<FeedMapNotifier>().feedMap[this.feedId].comments[this.index].isLaud == 0
-              ? Colors.grey
-              : context.watch<FeedMapNotifier>().feedMap[this.feedId].comments[this.index].isLaud == null
-              ? Colors.grey
-              : Colors.red,
+                ? Colors.grey
+                : context.watch<FeedMapNotifier>().feedMap[this.feedId].comments[this.index].isLaud == null
+                    ? Colors.grey
+                    : Colors.red,
           ),
         ),
         Container(
@@ -159,7 +162,7 @@ class CommentBottomListView extends StatelessWidget {
               openInputBottomSheet(
                 buildContext: context,
                 hintText: "回复 ${this.model.name}",
-                voidCallback: (String text, List<Rule> rules) {
+                voidCallback: (String text, List<Rule> rules ) {
                   List<AtUsersModel> atListModel = [];
                   for (Rule rule in rules) {
                     AtUsersModel atModel;
@@ -170,30 +173,35 @@ class CommentBottomListView extends StatelessWidget {
                   }
                   // 评论父评论
                   postComments(
-                    targetId: this.model.id,
-                    targetType: 2,
-                    content: text,
-                    atUsers: jsonEncode(atListModel),
-                    replyId: this.model.uid,
-                    replyCommentId: this.model.id,
-                    commentModelCallback: (CommentDtoModel commentModel) {
-                      context.read<FeedMapNotifier>().commentFeedCom(this.feedId, this.index, commentModel);
-                      print('${model.replys[0].content}');
-                      print('${context.read<FeedMapNotifier>().feedMap[feedId].comments[index].replys[0]}');
+                      targetId: this.model.id,
+                      targetType: 2,
+                      contentext: text,
+                      atUsers: jsonEncode(atListModel),
+                      replyId: this.model.uid,
+                      replyCommentId: this.model.id,
+                      commentModelCallback: (CommentDtoModel commentModel) {
+                        print(context);
+                        context.read<FeedMapNotifier>().commentFeedCom(this.feedId, this.index, commentModel);
+                        print('${model.replys[0].content}');
+                        print('${context.read<FeedMapNotifier>().feedMap[feedId].comments[index].replys[0]}');
                         // 关闭评论输入框
-                      // Navigator.of(context).pop(1);
-                    });
+                        // Navigator.of(context).pop(1);
+                      });
                 },
               );
             },
-            child:  AnimatedPhysicalModel(
+            child: AnimatedPhysicalModel(
               shape: BoxShape.rectangle,
-              color: context.watch<FeedMapNotifier>().feedMap[feedId].comments[index].itemChose ? AppColor.bgWhite: AppColor.white,
-              elevation:0,
-              shadowColor: !context.watch<FeedMapNotifier>().feedMap[feedId].comments[index].itemChose ?AppColor.bgWhite: AppColor.white,
+              color: context.watch<FeedMapNotifier>().feedMap[feedId].comments[index].itemChose
+                  ? AppColor.bgWhite
+                  : AppColor.white,
+              elevation: 0,
+              shadowColor: !context.watch<FeedMapNotifier>().feedMap[feedId].comments[index].itemChose
+                  ? AppColor.bgWhite
+                  : AppColor.white,
               duration: Duration(seconds: 2),
               child: Container(
-                padding: EdgeInsets.only(left: 16,right: 16,top: 9,bottom: 8),
+                padding: EdgeInsets.only(left: 16, right: 16, top: 9, bottom: 8),
                 child: Row(
                   // 横轴距定对齐
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -202,22 +210,24 @@ class CommentBottomListView extends StatelessWidget {
                     Expanded(child: info),
                     right,
                   ],
-                ),) ,
+                ),
+              ),
             ),
           ),
           // context.select((FeedMapNotifier value) => value.feedMap[feedId].comments[index].replyCount)  != 0
           this.model.replyCount != 0
-            ? BottomListViewSubComment(
-            comment: this.comment,
-            type: this.type,
-            replys:
-            // context.select((FeedMapNotifier value) => value.feedMap[feedId].comments[index].replys),
-            this.model.replys,
-            commentDtoModel: this.model,
-            // context.select((FeedMapNotifier value) => value.feedMap[feedId].comments[index]),
-            listIndex: this.index, feedId: this.feedId,
-          )
-            : Container(),
+              ? BottomListViewSubComment(
+                  comment: this.comment,
+                  type: this.type,
+                  replys:
+                      // context.select((FeedMapNotifier value) => value.feedMap[feedId].comments[index].replys),
+                      this.model.replys,
+                  commentDtoModel: this.model,
+                  // context.select((FeedMapNotifier value) => value.feedMap[feedId].comments[index]),
+                  listIndex: this.index,
+                  feedId: this.feedId,
+                )
+              : Container(),
         ],
       ),
     );

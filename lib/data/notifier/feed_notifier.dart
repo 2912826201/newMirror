@@ -66,6 +66,7 @@ class FeedMapNotifier extends ChangeNotifier {
 
 // //点赞
   void setLaud(int laud, String avatarUrl, int id) {
+    print("点赞了：：：：：：：：");
     if (laud == 0) {
       feedMap[id].laudCount += 1;
       feedMap[id].laudUserInfo.insert(0, avatarUrl);

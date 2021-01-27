@@ -72,7 +72,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
   bool isSwitchCursor = true;
   final VoidCallback voidCallback;
   String hintText;
-  final TextEditingController _textEditingController = TextEditingController();
+  TextEditingController _textEditingController = TextEditingController();
   final FocusNode commentFocus;
   WidgetsBinding widgetsBinding;
 
@@ -115,6 +115,9 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
   // 关注备份数据源
   List<BuddyModel> backupFollowList = [];
 
+  // 是否点击了弹起的@用户列表
+  bool isClickAtUser = false;
+
   @override
   void initState() {
     super.initState();
@@ -138,35 +141,49 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
     });
     _textEditingController.addListener(() {
       // print("值改变了");
-      // print("监听文字光标${_textEditingController.selection}");
-      // // 每次点击切换光标会进入此监听。需求邀请@和话题光标不可移入其中。
-      // print("::::::$isSwitchCursor");
-      if (isSwitchCursor) {
-        List<Rule> rules = context.read<CommentEnterNotifier>().rules;
-        int atIndex = context.read<CommentEnterNotifier>().atCursorIndex;
+      print("监听文字光标${_textEditingController.selection}");
 
-        // 获取光标位置
-        int cursorIndex = _textEditingController.selection.baseOffset;
+      List<Rule> rules = context.read<CommentEnterNotifier>().rules;
+      int atIndex = context.read<CommentEnterNotifier>().atCursorIndex;
+      print("当前值￥${_textEditingController.text}");
+      print(context.read<CommentEnterNotifier>().textFieldStr);
+      // 获取光标位置
+      int cursorIndex = _textEditingController.selection.baseOffset;
+      print("实时光标位置$cursorIndex");
+      // 在每次选择@用户后ios设置光标位置。
+      if (Platform.isIOS && isClickAtUser) {
+        // 设置光标
+        var setCursor = TextSelection(
+          baseOffset: _textEditingController.text.length,
+          extentOffset: _textEditingController.text.length,
+        );
+        _textEditingController.selection = setCursor;
+      }
+      isClickAtUser = false;
+      // // 安卓每次点击切换光标会进入此监听。需求邀请@和话题光标不可移入其中。
+      if (isSwitchCursor && !Platform.isIOS) {
+        // _textEditingController.o
         for (Rule rule in rules) {
           // 是否光标点击到了@区域
           if (cursorIndex >= rule.startIndex && cursorIndex <= rule.endIndex) {
             // 获取中间值用此方法是因为当atRule.startIndex和atRule.endIndex为负数时不会溢出。
             int median = rule.startIndex + (rule.endIndex - rule.startIndex) ~/ 2;
             TextSelection setCursor;
-            if (cursorIndex > median) {
-              setCursor = TextSelection(
-                baseOffset: rule.endIndex,
-                extentOffset: rule.endIndex,
-              );
-            }
             if (cursorIndex <= median) {
               setCursor = TextSelection(
                 baseOffset: rule.startIndex,
                 extentOffset: rule.startIndex,
               );
             }
+            if (cursorIndex > median) {
+              setCursor = TextSelection(
+                baseOffset: rule.endIndex,
+                extentOffset: rule.endIndex,
+              );
+            }
             // 设置光标
             _textEditingController.selection = setCursor;
+            print("设置了光标了++++++++++++++++++++++++++++++++++++${_textEditingController.selection}");
           }
         }
         // 唤起@#后切换光标关闭视图
@@ -182,16 +199,17 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       // @回调
       triggerAtCallback: (String str) async {
         context.read<CommentEnterNotifier>().openAtCallback(str);
+        isClickAtUser = false;
       },
       // 关闭@#视图回调
       shutDownCallback: () async {
         context.read<CommentEnterNotifier>().openAtCallback("");
       },
-      valueChangedCallback:
-          (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr, String topicSearchStr) {
+      valueChangedCallback: (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr,
+          String topicSearchStr, bool add) {
         rules = rules;
-        // print("输入框值回调：$value");
-        // print(rules);
+        print("输入框值回调：$value");
+        print(rules);
         print("搜索字段");
         print(atSearchStr);
         isSwitchCursor = false;
@@ -200,14 +218,18 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
         }
         context.read<CommentEnterNotifier>().setAtSearchStr(atSearchStr);
         context.read<CommentEnterNotifier>().changeCallback(value);
-        if (atSearchStr != null) {
+        if (atSearchStr != null && atSearchStr.isNotEmpty) {
           searchHasNext = null;
           searchDataPage = 1;
+          searchLoadStatus = LoadingStatus.STATUS_IDEL;
+          searchLoadText = "加载中...";
           requestSearchFollowList(atSearchStr);
         } else {
-          setState(() {
-            followList = backupFollowList;
-          });
+          if (backupFollowList.isNotEmpty) {
+            setState(() {
+              followList = backupFollowList;
+            });
+          }
         }
         // 实时搜索
       },
@@ -241,7 +263,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
 
     SearchUserModel model = SearchUserModel();
     if (searchHasNext != 0) {
-      model = await ProfileSearchUser(keyWork, 20,lastTime: searchLastTime);
+      model = await ProfileSearchUser(keyWork, 20, lastTime: searchLastTime);
       if (model.list.isNotEmpty && searchDataPage == 1) {
         model.list.forEach((element) {
           BuddyModel followModel = BuddyModel();
@@ -277,8 +299,12 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
     if (searchDataPage == 1) {
       _scrollController.jumpTo(0);
     }
-    if (searchHasNext == 0) {
+    if (searchHasNext == 0 && searchFollowList.isNotEmpty) {
       searchLoadText = "已加载全部好友";
+      searchLoadStatus = LoadingStatus.STATUS_COMPLETED;
+    }
+    if (searchHasNext == 0 && searchFollowList.isEmpty) {
+      searchLoadText = "";
       searchLoadStatus = LoadingStatus.STATUS_COMPLETED;
     }
     // 获取关注@数据
@@ -375,6 +401,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                           // 点击空白区域响应事件
                           behavior: HitTestBehavior.opaque,
                           onTap: () {
+                            isClickAtUser = true;
                             // At的文字长度
                             int AtLength = followList[index].nickName.length;
                             // 获取输入框内的规则
@@ -399,9 +426,11 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                             print(searchStr);
                             print("controller.text:${_textEditingController.text}");
                             print("atBeforeStr$atBeforeStr");
-                            if (searchStr != "" || searchStr != null) {
+                            // isSwitchCursor = false;
+                            if (searchStr != "" && searchStr != null && searchStr.isNotEmpty) {
                               print("atIndex:$atIndex");
                               print("searchStr:$searchStr");
+                              // isSwitchCursor = false;
                               print("controller.text:${_textEditingController.text}");
                               atRearStr = _textEditingController.text
                                   .substring(atIndex + searchStr.length, _textEditingController.text.length);
@@ -413,9 +442,22 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
 
                             // 拼接修改输入框的值
                             _textEditingController.text = atBeforeStr + followList[index].nickName + atRearStr;
+                            // ios赋值设置了光标后会走addListener监听，但是在监听内打印光标位置 获取为0，安卓不会出现此问题 所有iOS没必要在此设置光标位置。
+                            if (!Platform.isIOS) {
+                              // 设置光标
+                              var setCursor = TextSelection(
+                                baseOffset: _textEditingController.text.length,
+                                extentOffset: _textEditingController.text.length,
+                              );
+                              _textEditingController.selection = setCursor;
+                            }
+                            context
+                                .read<CommentEnterNotifier>()
+                                .changeCallback(atBeforeStr + followList[index].nickName + atRearStr);
+                            // isSwitchCursor = false;
                             print("controller.text:${_textEditingController.text}");
                             // 这是替换输入的文本修改后面输入的@的规则
-                            if (searchStr != "" || searchStr != null) {
+                            if (searchStr != "" && searchStr != null && searchStr.isNotEmpty) {
                               int oldLength = searchStr.length;
                               int newLength = followList[index].nickName.length;
                               int oldStartIndex = atIndex;
@@ -443,13 +485,10 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                             // 存储规则
                             context.read<CommentEnterNotifier>().addRules(Rule(atIndex - 1, atIndex + AtLength,
                                 "@" + followList[index].nickName, index, true, followList[index].uid));
-                            // 设置光标
-                            var setCursor = TextSelection(
-                              baseOffset: _textEditingController.text.length,
-                              extentOffset: _textEditingController.text.length,
-                            );
-                            print("设置光标${setCursor}");
-                            _textEditingController.selection = setCursor;
+
+                            print("设置光标${_textEditingController.selection}");
+
+                            // isSwitchCursor = false;
                             context.read<CommentEnterNotifier>().setAtSearchStr("");
                             // 关闭视图
                             context.read<CommentEnterNotifier>().openAtCallback("");
@@ -509,7 +548,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                               keyboardType: TextInputType.multiline,
                               //不限制行数
                               maxLines: null,
-                             enableInteractiveSelection: true,
+                              enableInteractiveSelection: true,
                               // 光标颜色
                               cursorColor: Color.fromRGBO(253, 137, 140, 1),
                               scrollPadding: EdgeInsets.all(0),
@@ -526,7 +565,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                     rules,
                                   );
                                 } else {
-                                  ToastShow.show(msg: "不能发送空文本", context: context,gravity: Toast.CENTER);
+                                  ToastShow.show(msg: "不能发送空文本", context: context, gravity: Toast.CENTER);
                                 }
                                 Navigator.of(context).pop(1);
                               },
@@ -545,6 +584,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                 isCollapsed: true,
                                 contentPadding: EdgeInsets.only(top: 8, bottom: 8, left: 16),
                               ),
+
                               rangeStyles: getTextFieldStyle(rules),
                               textInputAction: TextInputAction.send,
                               inputFormatters:
