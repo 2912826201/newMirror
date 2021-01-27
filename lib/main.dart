@@ -5,7 +5,6 @@ import 'package:camera/camera.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/data/database/db_helper.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
@@ -19,7 +18,6 @@ import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/rongcloud.dart';
-import 'package:mirror/page/message/message_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/vip/vip_nameplate_page.dart';
@@ -46,20 +44,19 @@ import 'data/model/message/voice_alert_date_model.dart';
 import 'data/model/token_model.dart';
 import 'data/notifier/token_notifier.dart';
 import 'data/notifier/profile_notifier.dart';
+import 'data/notifier/unread_message_notifier.dart';
 import 'im/message_manager.dart';
 import 'route/router.dart';
 
 void main() {
-  SystemUiOverlayStyle systemUiOverlayStyle =
-  SystemUiOverlayStyle(statusBarColor: Colors.transparent);
+  SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
   SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   _initApp().then((value) => runApp(
-    MultiProvider(
-      providers: [
-            ChangeNotifierProvider(
-                create: (_) => TokenNotifier(Application.token)),
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (_) => TokenNotifier(Application.token)),
             ChangeNotifierProvider(create: (_) => ProfileNotifier(Application.profile)),
-          // ValueListenableProvider<FeedMapNotifier>(builder: (_) => {},)
+            // ValueListenableProvider<FeedMapNotifier>(builder: (_) => {},)
             ChangeNotifierProvider(create: (_) => FeedMapNotifier(feedMap: {})),
             ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
             ChangeNotifierProvider(create: (_) => ConversationNotifier()),
@@ -70,14 +67,14 @@ void main() {
             ChangeNotifierProvider(create: (_) => AddressPickerNotifier()),
             ChangeNotifierProvider(create: (_) => FitnessInformationNotifier()),
             ChangeNotifierProvider(create: (_) => ProfilePageNotifier()),
-        ChangeNotifierProvider(create: (_) => GroupUserProfileNotifier()),
-        ChangeNotifierProvider(create: (_) => UnreadMessageNotifier()),
-        ChangeNotifierProvider(create: (_)=>VipMoveNotifier()),
-        ChangeNotifierProvider(create: (_)=>AppDialogNotifier()),
-      ],
-      child: MyApp(),
-    ),
-  ));
+            ChangeNotifierProvider(create: (_) => GroupUserProfileNotifier()),
+            ChangeNotifierProvider(create: (_) => UnreadMessageNotifier()),
+            ChangeNotifierProvider(create: (_) => VipMoveNotifier()),
+            ChangeNotifierProvider(create: (_) => AppDialogNotifier()),
+          ],
+          child: MyApp(),
+        ),
+      ));
 }
 
 //初始化APP
@@ -87,8 +84,7 @@ Future _initApp() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // 强制竖屏
-  SystemChrome.setPreferredOrientations(
-    [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
   //获取版本号
   PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
@@ -205,7 +201,6 @@ Future _initApp() async {
       });
     }
   } catch (e) {}
-
 }
 
 //初始化地区数据
@@ -246,9 +241,7 @@ class MyAppState extends State<MyApp> {
     context.read<VoiceSettingNotifier>().onAudioPositionChanged();
     initAtMesGroupModel();
     //如果已登录
-    if (context
-        .read<TokenNotifier>()
-        .isLoggedIn) {
+    if (context.read<TokenNotifier>().isLoggedIn) {
       // 读取会话数据库
       MessageManager.loadConversationListFromDatabase(context);
       // 连接融云

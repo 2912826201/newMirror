@@ -10,6 +10,7 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/message/message_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
+import 'package:mirror/data/notifier/unread_message_notifier.dart';
 import 'package:mirror/page/profile/Interactive_notification/interactive_notice_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
@@ -474,20 +475,5 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         ],
       ),
     );
-  }
-}
-
-class UnreadMessageNotifier extends ChangeNotifier {
-  int comment;
-  int at;
-  int laud;
-
-  UnreadMessageNotifier({this.comment = 0, this.at = 0, this.laud = 0});
-
-  void changeUnreadMsg({int comments, int ats, int lauds}) {
-    comment = comments;
-    at = ats;
-    laud = lauds;
-    notifyListeners();
   }
 }
