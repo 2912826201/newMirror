@@ -83,6 +83,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
               ),
             ],
           )),
+      backgroundColor: AppColor.white,
       body: Stack(
         children: [
           ScrollConfiguration(
