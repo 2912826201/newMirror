@@ -337,7 +337,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       height: height * 0.11,
       child: InkWell(
           onTap: () {
-            Navigator.push(context, ScaleRouter(child: ProfileDetailPage()));
+            Navigator.push(context, ScaleRouter(child: ProfileDetailPage(userId: uid,)));
             /*
             Navigator.of(context).push(MaterialPageRoute(builder: (context) {
               ///这里传type来告知详情页该怎么展示
