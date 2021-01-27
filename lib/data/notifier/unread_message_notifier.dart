@@ -11,9 +11,21 @@ class UnreadMessageNotifier extends ChangeNotifier {
   UnreadMessageNotifier({this.comment = 0, this.at = 0, this.laud = 0});
 
   void changeUnreadMsg({int comments, int ats, int lauds}) {
-    comment = comments;
-    at = ats;
-    laud = lauds;
-    notifyListeners();
+    bool isChanged = false;
+    if (comments != null && comment != comments) {
+      comment = comments;
+      isChanged = true;
+    }
+    if (ats != null && at != ats) {
+      at = ats;
+      isChanged = true;
+    }
+    if (lauds != null && laud != lauds) {
+      laud = lauds;
+      isChanged = true;
+    }
+    if (isChanged) {
+      notifyListeners();
+    }
   }
 }

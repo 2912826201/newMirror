@@ -1,4 +1,3 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +18,7 @@ import 'package:mirror/widget/rich_text_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
+
 ///消息提醒列表
 class InteractiveNoticePage extends StatefulWidget {
   int type;
@@ -37,6 +37,8 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   int listPage = 1;
   List<QueryModel> msgList = [];
   bool haveData = true;
+
+  int timeStamp;
 
   ///获取互动通知列表
   _getMsgList(int type) async {
@@ -75,19 +77,8 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     print('msglist.length========================${msgList.length}');
   }
 
-  _refreashUnReadMsg({int id})async{
-    var state = await refreashUnReadMsg(widget.type,msgIds:id);
-    if(state!=null){
-      if(state){
-        print('============================已读成功');
-      }else{
-        print('============================已读失败');
-      }
-    }
-  }
-
   //刷新
-  __onRefresh() {
+  _onRefresh() {
     setState(() {
       listPage = 1;
       lastTime = null;
@@ -105,6 +96,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
 
   @override
   void initState() {
+    timeStamp = DateTime.now().millisecondsSinceEpoch;
     super.initState();
     _getMsgList(widget.type);
   }
@@ -113,99 +105,99 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
-    return Scaffold(
-      backgroundColor: AppColor.white,
-      appBar: AppBar(
-        centerTitle: true,
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, timeStamp);
+        return false;
+      },
+      child: Scaffold(
         backgroundColor: AppColor.white,
-        leading: InkWell(
-          child: Container(
-            margin: EdgeInsets.only(left: 16),
-            child: Image.asset("images/resource/2.0x/return2x.png"),
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: AppColor.white,
+          leading: InkWell(
+            child: Container(
+              margin: EdgeInsets.only(left: 16),
+              child: Image.asset("images/resource/2.0x/return2x.png"),
+            ),
+            onTap: () {
+              Navigator.pop(context, timeStamp);
+            },
           ),
-          onTap: () {
-            _refreashUnReadMsg();
-            Navigator.pop(context);
-          },
+          leadingWidth: 44,
+          title: Text(
+            widget.type == 0
+                ? "评论"
+                : widget.type == 1
+                    ? "@我"
+                    : "点赞",
+            style: AppStyle.textMedium18,
+          ),
         ),
-        leadingWidth: 44,
-        title: Text(
-          widget.type == 0
-              ? "评论"
-              : widget.type == 1
-                  ? "@我"
-                  : "点赞",
-          style: AppStyle.textMedium18,
-        ),
-      ),
-      body: Container(
-        width: width,
-        height: height,
-
-        child: haveData
-            ? SmartRefresher(
-                controller: controller,
-                enablePullUp: true,
-                enablePullDown: true,
-                footer: CustomFooter(
-                  builder: (BuildContext context, LoadStatus mode) {
-                    Widget body;
-                    if (mode == LoadStatus.loading) {
-                      body = CircularProgressIndicator();
-                    } else if (mode == LoadStatus.noMore) {
-                      body = Text("没有更多了");
-                    } else if (mode == LoadStatus.failed) {
-                      body = Text("加载错误,请重试");
-                    } else {
-                      body = Text(" ");
-                    }
-                    return Container(
-                      child: Center(
-                        child: body,
+        body: Container(
+          width: width,
+          height: height,
+          child: haveData
+              ? SmartRefresher(
+                  controller: controller,
+                  enablePullUp: true,
+                  enablePullDown: true,
+                  footer: CustomFooter(
+                    builder: (BuildContext context, LoadStatus mode) {
+                      Widget body;
+                      if (mode == LoadStatus.loading) {
+                        body = CircularProgressIndicator();
+                      } else if (mode == LoadStatus.noMore) {
+                        body = Text("没有更多了");
+                      } else if (mode == LoadStatus.failed) {
+                        body = Text("加载错误,请重试");
+                      } else {
+                        body = Text(" ");
+                      }
+                      return Container(
+                        child: Center(
+                          child: body,
+                        ),
+                      );
+                    },
+                  ),
+                  header: WaterDropHeader(
+                    complete: Text("刷新完成"),
+                    failed: Text(" "),
+                  ),
+                  onRefresh: _onRefresh,
+                  onLoading: _onLoading,
+                  child: ListView.builder(
+                      shrinkWrap: true, //解决无限高度问题
+                      physics: AlwaysScrollableScrollPhysics(),
+                      itemCount: msgList.length,
+                      itemBuilder: (context, index) {
+                        return InkWell(onTap: () {}, child: InteractiveNoticeItemState(widget.type, msgList[index]));
+                      }),
+                )
+              : Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: height * 0.22,
                       ),
-                    );
-                  },
+                      Container(
+                        height: width * 0.59,
+                        width: width * 0.59,
+                        color: AppColor.bgWhite,
+                      ),
+                      SizedBox(
+                        height: 16,
+                      ),
+                      Text(
+                        "没有找到你要的东西",
+                        style: AppStyle.textPrimary3Regular14,
+                      )
+                    ],
+                  ),
                 ),
-                header: WaterDropHeader(
-                  complete: Text("刷新完成"),
-                  failed: Text(" "),
-                ),
-                onRefresh: __onRefresh,
-                onLoading: _onLoading,
-                child: ListView.builder(
-                    shrinkWrap: true, //解决无限高度问题
-                    physics: AlwaysScrollableScrollPhysics(),
-                    itemCount: msgList.length,
-                    itemBuilder: (context, index) {
-                      return InkWell(
-                        onTap: (){
-
-                        },
-                        child: InteractiveNoticeItemState(widget.type, msgList[index]));
-                    }),
-              )
-            : Center(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: height * 0.22,
-                    ),
-                    Container(
-                      height: width * 0.59,
-                      width: width * 0.59,
-                      color: AppColor.bgWhite,
-                    ),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    Text(
-                      "没有找到你要的东西",
-                      style: AppStyle.textPrimary3Regular14,
-                    )
-                  ],
-                ),
-              ),
+        ),
       ),
     );
   }
@@ -214,7 +206,9 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
 class InteractiveNoticeItemState extends StatelessWidget {
   int type;
   QueryModel msgModel;
+
   InteractiveNoticeItemState(this.type, this.msgModel);
+
   //评论内容：@和评论拿接口内容，点赞给固定内容
   String comment = "";
 
@@ -237,32 +231,30 @@ class InteractiveNoticeItemState extends StatelessWidget {
   bool commentIsDelete = false;
   String commentState;
 
-
-  _getRefData()async{
-      if(msgModel.refType==0){
-        homeFeedModel = HomeFeedModel.fromJson(msgModel.refData);
-        if(homeFeedModel!=null){
-          feedIsDelete = false;
-        }else{
-          feedIsDelete = true;
-        }
-      }else if(msgModel.refType==2){
-        commentModel = CommentDtoModel.fromJson(msgModel.refData);
-        if(commentModel!=null){
-          homeFeedModel = await feedDetail(id: commentModel.targetId);
-        }
+  _getRefData() async {
+    if (msgModel.refType == 0) {
+      homeFeedModel = HomeFeedModel.fromJson(msgModel.refData);
+      if (homeFeedModel != null) {
+        feedIsDelete = false;
+      } else {
+        feedIsDelete = true;
       }
-
-
+    } else if (msgModel.refType == 2) {
+      commentModel = CommentDtoModel.fromJson(msgModel.refData);
+      if (commentModel != null) {
+        homeFeedModel = await feedDetail(id: commentModel.targetId);
+      }
+    }
   }
+
   List<BaseRichText> _atText(BuildContext context) {
     List<BaseRichText> richList = [];
     atUserList.forEach((element) {
       richList.add(BaseRichText(
         comment.substring(element.index, element.len),
-        style:type == 0 ? AppStyle.textMedium13 : AppStyle.textMediumBlue13,
+        style: type == 0 ? AppStyle.textMedium13 : AppStyle.textMediumBlue13,
         onTap: () {
-          AppRouter.navigateToMineDetail(context,element.uid);
+          AppRouter.navigateToMineDetail(context, element.uid);
         },
       ));
     });
@@ -271,9 +263,9 @@ class InteractiveNoticeItemState extends StatelessWidget {
 
   _textSpanAdd() {
     if (type == 0 || type == 1) {
-      if(commentModel.content==null){
+      if (commentModel.content == null) {
         commentIsDelete = true;
-      }else{
+      } else {
         commentIsDelete = false;
         comment = commentModel.content;
       }
@@ -292,17 +284,17 @@ class InteractiveNoticeItemState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print('-====================消息互动列表页Item  biuld');
-   senderAvatarUrl = msgModel.senderAvatarUrl;
+    senderAvatarUrl = msgModel.senderAvatarUrl;
     senderName = msgModel.senderName;
     commentModel = msgModel.commentData;
     coverImage = msgModel.coverUrl;
     _getRefData();
-    if(type==0){
-    if(msgModel.refType==2){
-    commentState = "回复了  ";
-    }else{
-    commentState = "";
-    }
+    if (type == 0) {
+      if (msgModel.refType == 2) {
+        commentState = "回复了  ";
+      } else {
+        commentState = "";
+      }
     }
     _textSpanAdd();
     if (type == 0) {
@@ -364,23 +356,28 @@ class InteractiveNoticeItemState extends StatelessWidget {
                 Text(
                   "$senderName",
                   maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                  overflow: TextOverflow.ellipsis,
                   style: AppStyle.textMedium15,
                 ),
                 SizedBox(
                   height: 8,
                 ),
-                !commentIsDelete?MyRichTextWidget(
-                  Text(
-                    "$comment",
-                    style: AppStyle.textRegular13,
-                  ),
-                  maxLines: 3,
-                  textOverflow: TextOverflow.ellipsis,
-                  richTexts: _atText(context),
-                  headText: commentState,
-                  headStyle: AppStyle.textMedium13,
-                ):Text("该评论已删除",style:AppStyle.textHintRegular13,),
+                !commentIsDelete
+                    ? MyRichTextWidget(
+                        Text(
+                          "$comment",
+                          style: AppStyle.textRegular13,
+                        ),
+                        maxLines: 3,
+                        textOverflow: TextOverflow.ellipsis,
+                        richTexts: _atText(context),
+                        headText: commentState,
+                        headStyle: AppStyle.textMedium13,
+                      )
+                    : Text(
+                        "该评论已删除",
+                        style: AppStyle.textHintRegular13,
+                      ),
                 SizedBox(
                   height: 7,
                 ),
@@ -394,55 +391,55 @@ class InteractiveNoticeItemState extends StatelessWidget {
           Spacer(),
           !feedIsDelete
               ? InkWell(
-                onTap: (){
-                  if(type==0){
-                    if(msgModel.refType==0||msgModel.refType==2){
-                      if(msgModel.commentData!=null){
-                        getFeedDetail(context,homeFeedModel.id,comment: msgModel.commentData);
+                  onTap: () {
+                    if (type == 0) {
+                      if (msgModel.refType == 0 || msgModel.refType == 2) {
+                        if (msgModel.commentData != null) {
+                          getFeedDetail(context, homeFeedModel.id, comment: msgModel.commentData);
+                        }
                       }
-                    }else if(msgModel.refType==1){
-
+                    } else {
+                      getFeedDetail(context, homeFeedModel.id);
                     }
-                  }else{
-                    getFeedDetail(context,homeFeedModel.id);
-                  }
-                },
-            child: Container(
-                  alignment: Alignment.topRight,
-                  child: ClipRect(
-                    child: CachedNetworkImage(
-                      height: 38,
-                      width: 38,
-                      imageUrl: coverImage!=null?coverImage:"",
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Image.asset(
-                        "images/test.png",
+                  },
+                  child: Container(
+                    alignment: Alignment.topRight,
+                    child: ClipRect(
+                      child: CachedNetworkImage(
+                        height: 38,
+                        width: 38,
+                        imageUrl: coverImage != null ? coverImage : "",
                         fit: BoxFit.cover,
+                        placeholder: (context, url) => Image.asset(
+                          "images/test.png",
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ),
-                ),)
+                )
               : InkWell(
-              onTap:(){
-                Toast.show("该内容已删除", context);
-              },
-            child: Container(
-                  height: 38,
-                  width: 38,
-                  color: AppColor.bgWhite,
-                  child: Center(
-                    child: Text(
-                      "已删除",
-                      style: AppStyle.textHintRegular10,
+                  onTap: () {
+                    Toast.show("该内容已删除", context);
+                  },
+                  child: Container(
+                    height: 38,
+                    width: 38,
+                    color: AppColor.bgWhite,
+                    child: Center(
+                      child: Text(
+                        "已删除",
+                        style: AppStyle.textHintRegular10,
+                      ),
                     ),
                   ),
-                ),)
+                )
         ],
       ),
     );
   }
 
-  getFeedDetail(BuildContext context,int feedId,{CommentDtoModel comment}) async {
+  getFeedDetail(BuildContext context, int feedId, {CommentDtoModel comment}) async {
     HomeFeedModel feedModel = await feedDetail(id: feedId);
     List<HomeFeedModel> list = [];
     list.add(feedModel);
@@ -451,7 +448,12 @@ class InteractiveNoticeItemState extends StatelessWidget {
     // 跳转动态详情页
     Navigator.push(
       context,
-      new MaterialPageRoute(builder: (context) => FeedDetailPage(model: feedModel,comment: comment,type: 2,)),
+      new MaterialPageRoute(
+          builder: (context) => FeedDetailPage(
+                model: feedModel,
+                comment: comment,
+                type: 2,
+              )),
     );
   }
 }

@@ -19,9 +19,11 @@ import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/count_badge.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/widget/create_group_popup.dart';
+import 'package:notification_permissions/notification_permissions.dart';
 import 'package:provider/provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:system_setting/system_setting.dart';
 import 'message_chat_page_manager.dart';
 
 /// message_page
@@ -32,14 +34,14 @@ class MessagePage extends StatefulWidget {
   MessageState createState() => MessageState();
 }
 
-class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin {
+class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   bool isOffline = false;
   StreamSubscription<ConnectivityResult> connectivityListener;
 
+  bool hasNotificationPermission = true;
+
   double _screenWidth = 0.0;
   int _listLength = 0;
-  Unreads unReadMsg;
-  bool isFirst = true;
 
   @override
   bool get wantKeepAlive => true;
@@ -48,10 +50,39 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   void initState() {
     _screenWidth = ScreenUtil.instance.screenWidthDp;
     super.initState();
+    //绑定监听
+    WidgetsBinding.instance.addObserver(this);
+    _checkNotificationPermission();
     _initConnectivity();
-    _getUnReadMsgCount();
+    _getUnreadMsgCount();
   }
 
+  //获取系统通知状态
+  _checkNotificationPermission() {
+    return NotificationPermissions.getNotificationPermissionStatus().then((status) {
+      switch (status) {
+        case PermissionStatus.denied:
+          hasNotificationPermission = false;
+          break;
+        case PermissionStatus.granted:
+          hasNotificationPermission = true;
+          break;
+        case PermissionStatus.unknown:
+          hasNotificationPermission = false;
+          break;
+        case PermissionStatus.provisional:
+          hasNotificationPermission = false;
+          break;
+        default:
+          break;
+      }
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  //获取网络连接状态
   _initConnectivity() async {
     ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile) {
@@ -78,7 +109,8 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     });
   }
 
-  _getUnReadMsgCount() async {
+  //获取未读互动通知数
+  _getUnreadMsgCount() async {
     Unreads model = await getUnReads();
     if (model != null) {
       print('comment============================${model.comment}');
@@ -92,6 +124,15 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   void dispose() {
     super.dispose();
     connectivityListener?.cancel();
+    //解绑监听
+    WidgetsBinding.instance.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkNotificationPermission();
+    }
   }
 
   @override
@@ -126,28 +167,29 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
           ),
         ],
       ),
-      body: ChangeNotifierProvider(
-          create: (_) => UnreadMessageNotifier(),
-          child: ScrollConfiguration(
-              behavior: NoBlueEffectBehavior(),
-              child: ListView.builder(
-                  itemCount: _listLength + 1,
-                  itemBuilder: (context, index) {
-                    if (index == 0) {
-                      return _buildTopView();
-                    } else {
-                      //因为有上方头部视图 所以index要-1
-                      return _buildConversationItem(
-                          index, context.watch<ConversationNotifier>().getConversationInAllList(index - 1));
-                    }
-                  }))),
+      body: ScrollConfiguration(
+        behavior: NoBlueEffectBehavior(),
+        child: ListView.builder(
+          physics: BouncingScrollPhysics(),
+          itemCount: _listLength + 1,
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              return _buildTopView(context.watch<UnreadMessageNotifier>());
+            } else {
+              //因为有上方头部视图 所以index要-1
+              return _buildConversationItem(
+                  index, context.watch<ConversationNotifier>().getConversationInAllList(index - 1));
+            }
+          },
+        ),
+      ),
     );
   }
 
   //消息列表上方的所有部分
-  Widget _buildTopView() {
+  Widget _buildTopView(UnreadMessageNotifier notifier) {
     return Column(
-      children: [_buildConnectionView(), _buildMentionView(), _buildPermissionView(), _buildEmptyView()],
+      children: [_buildConnectionView(), _buildMentionView(notifier), _buildPermissionView(), _buildEmptyView()],
     );
   }
 
@@ -191,22 +233,22 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     }
   }
 
-  Widget _buildMentionView() {
+  Widget _buildMentionView(UnreadMessageNotifier notifier) {
     double size = _screenWidth / 3;
     return Container(
       height: size,
       child: Row(
         children: [
-          _buildMentionItem(size, 0),
-          _buildMentionItem(size, 1),
-          _buildMentionItem(size, 2),
+          _buildMentionItem(size, 0, notifier),
+          _buildMentionItem(size, 1, notifier),
+          _buildMentionItem(size, 2, notifier),
         ],
       ),
     );
   }
 
   //这里暂时不写枚举了 0评论 1@ 2点赞
-  Widget _buildMentionItem(double size, int type) {
+  Widget _buildMentionItem(double size, int type, UnreadMessageNotifier notifier) {
     return Container(
       height: size,
       width: size,
@@ -220,8 +262,23 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                 return InteractiveNoticePage(
                   type: type,
                 );
-              })).then((value) {
-                _getUnReadMsgCount();
+              })).then((result) async {
+                switch (type) {
+                  case 0:
+                    context.read<UnreadMessageNotifier>().changeUnreadMsg(comments: 0);
+                    break;
+                  case 1:
+                    context.read<UnreadMessageNotifier>().changeUnreadMsg(ats: 0);
+                    break;
+                  case 2:
+                    context.read<UnreadMessageNotifier>().changeUnreadMsg(lauds: 0);
+                    break;
+                }
+                //用时间戳清空之前的未读数
+                int timeStamp = result as int;
+                await refreshUnreadMsg(type, timeStamp: timeStamp);
+                //然后获取新的未读数
+                _getUnreadMsgCount();
               });
             },
             child: Stack(
@@ -244,10 +301,10 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                     left: 29.5,
                     child: CountBadge(
                         type == 0
-                            ? context.read<UnreadMessageNotifier>().comment
+                            ? notifier.comment
                             : type == 1
-                                ? context.read<UnreadMessageNotifier>().at
-                                : context.read<UnreadMessageNotifier>().laud,
+                                ? notifier.at
+                                : notifier.laud,
                         false)),
               ],
             ),
@@ -269,13 +326,22 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   }
 
   Widget _buildPermissionView() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-      child: Container(
-        color: AppColor.mainBlue,
-        height: 56,
-      ),
-    );
+    if (hasNotificationPermission) {
+      return Container();
+    } else {
+      return GestureDetector(
+        onTap: () {
+          SystemSetting.goto(SettingTarget.NOTIFICATION);
+        },
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+          child: Container(
+            color: AppColor.mainBlue,
+            height: 56,
+          ),
+        ),
+      );
+    }
   }
 
   Widget _buildEmptyView() {
