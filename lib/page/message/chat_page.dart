@@ -381,6 +381,12 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   //输入框bar内的edit
   Widget edit(context, size) {
     return TextSpanField(
+      textInputAction: TextInputAction.send,
+      onSubmitted: (text) {
+        if (text.isNotEmpty) {
+          _postText(text);
+        }
+      },
       controller: _textController,
       focusNode: _focusNode,
       // 多行展示
@@ -1285,8 +1291,8 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       shutDownCallback: () async {
         context.read<ChatEnterNotifier>().openAtCallback("");
       },
-      valueChangedCallback:
-          (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr, String topicSearchStr, bool isAdd) {
+      valueChangedCallback: (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr,
+          String topicSearchStr, bool isAdd) {
         rules = rules;
         // //print("输入框值回调：$value");
         // //print(rules);
