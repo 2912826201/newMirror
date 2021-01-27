@@ -1504,6 +1504,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     }
   }
 
+  //todo 查询子评论会出现一个问题 当之前发布的子评论 个数过多会出现在下次请求中-去重导致感官-点击没有加载数据
   //获取子评论
   _getSubComment(int targetId, int replyLength, int replyCount, int pullNumber,
       int positionComment) async {
@@ -1539,8 +1540,8 @@ class LiveDetailPageState extends State<LiveDetailPage> {
                     commentDtoModelList[j].id) {
                   commentDtoModelList.removeAt(j);
                   j--;
-                  (isHotOrTime ? courseCommentHot : courseCommentTime)
-                      .list[positionComment].pullNumber--;
+                  (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber--;
+                  (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replyCount++;
                 }
               }
             }
