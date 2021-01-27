@@ -35,11 +35,12 @@ import 'package:provider/provider.dart';
 
 /// 直播详情页
 class LiveDetailPage extends StatefulWidget {
-  const LiveDetailPage({Key key, this.heroTag, this.liveCourseId, this.liveModel}) : super(key: key);
+  const LiveDetailPage({Key key, this.heroTag, this.liveCourseId, this.liveModel, this.isHaveStartTime}) : super(key: key);
 
   final String heroTag;
   final int liveCourseId;
   final LiveVideoModel liveModel;
+  final bool isHaveStartTime;
 
   @override
   createState() {
@@ -1223,57 +1224,62 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     Widget widget4 = getBtnUi(false, "回放", textStyle, 94, 40, marginLeft32Right16);
     Widget widget5 = getBtnUi(true, "开通vip使用终端播放", textStyleVip, double.infinity, 40, tempEd);
     Widget widget6 = getBtnUi(false, liveModel.getGetPlayType(), textStyle, double.infinity, 40, margin_32);
+    Widget widget7 = getBtnUi(false, "已结束", textStyle, double.infinity, 40, margin_32);
 
     var childrenArray = <Widget>[];
 
-
-    if (!isLoggedIn) {
-      //没有登录
-      childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget6, onTap: _login))));
-    } else {
-      //登录了
-
-      //判断是不是需要预约或者是已预约的课程
-      if (liveModel.playType == 2 || liveModel.playType == 4) {
-        //判断是不是需要预约
-        childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget6, onTap:
-            () => _judgeBookOrCancelBook(bindingTerminal: bindingTerminal, isVip: isVip)))));
+    if(liveModel.endState!=null&&liveModel.endState==0){
+      //已结束
+      childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget7, onTap: _login))));
+    }else {
+      if (!isLoggedIn) {
+        //没有登录
+        childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget6, onTap: _login))));
       } else {
-        if (liveModel.playType == 3) {
-          //回放
-          childrenArray.add(GestureDetector(child: widget4, onTap: _seeVideo));
-        } else {
-          //试听
-          childrenArray.add(GestureDetector(child: widget3, onTap: _seeVideo));
-        }
-        //判断绑定设备没有
-        if (bindingTerminal) {
-          //绑定了终端
+        //登录了
 
-          //判断我是不是需要开通vip才能观看
-          //todo 判断这个课程是不是vip直播
-          if (liveModel.playType == 1) {
-            if (isVip) {
+        //判断是不是需要预约或者是已预约的课程
+        if (liveModel.playType == 2 || liveModel.playType == 4) {
+          //判断是不是需要预约
+          childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget6, onTap:
+              () => _judgeBookOrCancelBook(bindingTerminal: bindingTerminal, isVip: isVip)))));
+        } else {
+          if (liveModel.playType == 3) {
+            //回放
+            childrenArray.add(GestureDetector(child: widget4, onTap: _seeVideo));
+          } else {
+            //试听
+            childrenArray.add(GestureDetector(child: widget3, onTap: _seeVideo));
+          }
+          //判断绑定设备没有
+          if (bindingTerminal) {
+            //绑定了终端
+
+            //判断我是不是需要开通vip才能观看
+            //todo 判断这个课程是不是vip直播
+            if (liveModel.playType == 1) {
+              if (isVip) {
+                //不再需要开通vip
+                childrenArray.add(
+                    Expanded(child: SizedBox(child: GestureDetector(child: widget1, onTap: _useTerminal))));
+              } else {
+                //需要开通vip
+                childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget5, onTap: _openVip))));
+              }
+            } else if (liveModel.playType == 2) {
+              //todo 付费课程--目前写的是开通vip
+              childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget5, onTap: _openVip))));
+            } else {
               //不再需要开通vip
               childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget1, onTap: _useTerminal))));
-            } else {
-              //需要开通vip
-              childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget5, onTap: _openVip))));
             }
-          } else if (liveModel.playType == 2) {
-            //todo 付费课程--目前写的是开通vip
-            childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget5, onTap: _openVip))));
           } else {
-            //不再需要开通vip
-            childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget1, onTap: _useTerminal))));
+            //没有绑定终端
+            childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget2, onTap: _loginTerminal))));
           }
-        } else {
-          //没有绑定终端
-          childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget2, onTap: _loginTerminal))));
         }
       }
     }
-
 
     return Container(
       width: MediaQuery
@@ -1345,8 +1351,12 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     }
     loadingStatusComment = LoadingStatus.STATUS_COMPLETED;
 
+    String startTime="";
+    if(liveModel!=null){
+      startTime=liveModel.startTime;
+    }
     //加载数据
-    Map<String, dynamic> model = await liveCourseDetail(courseId: liveCourseId, startTime: liveModel.startTime);
+    Map<String, dynamic> model = await (widget.isHaveStartTime?liveCourseDetail:getLatestLiveById)(courseId: liveCourseId, startTime: startTime);
     if (model == null) {
       loadingStatus = LoadingStatus.STATUS_IDEL;
       Future.delayed(Duration(seconds: 1), () {
@@ -1494,6 +1504,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     }
   }
 
+  //todo 查询子评论会出现一个问题 当之前发布的子评论 个数过多会出现在下次请求中-去重导致感官-点击没有加载数据
   //获取子评论
   _getSubComment(int targetId, int replyLength, int replyCount, int pullNumber,
       int positionComment) async {
@@ -1529,8 +1540,8 @@ class LiveDetailPageState extends State<LiveDetailPage> {
                     commentDtoModelList[j].id) {
                   commentDtoModelList.removeAt(j);
                   j--;
-                  (isHotOrTime ? courseCommentHot : courseCommentTime)
-                      .list[positionComment].pullNumber--;
+                  (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber--;
+                  (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replyCount++;
                 }
               }
             }
