@@ -25,8 +25,6 @@ class NoticeSettingPage extends StatefulWidget {
 }
 
 class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingObserver {
-  bool getNoticeIsOpen = true;
-
   Future<String> permissionStatusFuture;
   var permGranted = "granted";
   var permDenied = "denied";
@@ -63,12 +61,7 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
         case PermissionStatus.denied:
           context.read<SettingNotifile>().changePermision(false);
           if(isFirst){
-            if(Application.platform==0){
               _showDialog();
-            }else{
-              _iosGetNotice();
-            }
-
           }
           return permDenied;
         case PermissionStatus.granted:
@@ -77,23 +70,13 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
         case PermissionStatus.unknown:
           context.read<SettingNotifile>().changePermision(false);
           if(isFirst){
-              if(Application.platform==0){
-                _showDialog();
-              }else{
-                _iosGetNotice();
-              }
-
+           _showDialog();
           }
           return permUnknown;
         case PermissionStatus.provisional:
           context.read<SettingNotifile>().changePermision(false);
           if(isFirst){
-            if(Application.platform==0){
-              _showDialog();
-            }else{
-              _iosGetNotice();
-            }
-
+           _showDialog();
           }
           return permProvisional;
         default:
@@ -106,9 +89,7 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
     NotificationPermissions.requestNotificationPermissions(iosSettings: NotificationSettingsIos(
         sound: true,
         badge: true,
-        alert: true)).then((value){
-      permissionStatusFuture = getCheckNotificationPermStatus(false);
-    });
+        alert: false));
   }
   @override///监听用户回到app
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -167,7 +148,11 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
           children: [
             InkWell(
               onTap: () {
+                if(Application.platform==0){
                   SystemSetting.goto(SettingTarget.NOTIFICATION);
+                }else{
+                  _iosGetNotice();
+                }
               },
               child: _getNotice(),),
             Container(
@@ -254,7 +239,11 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
           return true;
         }),
         confirm:AppDialogButton("去打开",(){
-          SystemSetting.goto(SettingTarget.NOTIFICATION);
+          if(Application.platform == 0){
+            SystemSetting.goto(SettingTarget.NOTIFICATION);
+          }else{
+            _iosGetNotice();
+          }
           return true;
         }));
   }

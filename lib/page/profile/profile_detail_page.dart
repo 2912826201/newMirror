@@ -51,7 +51,8 @@ class ProfileDetailPage extends StatefulWidget {
 }
 
 class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderStateMixin {
-  bool get wantKeepAlive => true;
+
+
   final String _imgShared = "images/test/分享.png";
   final String _imgMore = "images/test/ic_big_dynamic_more.png";
 
