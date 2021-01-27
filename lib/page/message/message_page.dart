@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/message_page_api.dart';
@@ -18,6 +20,7 @@ import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/widget/create_group_popup.dart';
 import 'package:provider/provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:connectivity/connectivity.dart';
 import 'message_chat_page_manager.dart';
 
 /// message_page
@@ -29,6 +32,9 @@ class MessagePage extends StatefulWidget {
 }
 
 class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin {
+  bool isOffline = false;
+  StreamSubscription<ConnectivityResult> connectivityListener;
+
   double _screenWidth = 0.0;
   int _listLength = 0;
   Unreads unReadMsg;
@@ -41,7 +47,34 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   void initState() {
     _screenWidth = ScreenUtil.instance.screenWidthDp;
     super.initState();
+    _initConnectivity();
     _getUnReadMsgCount();
+  }
+
+  _initConnectivity() async {
+    ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile) {
+      isOffline = false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      isOffline = false;
+    } else {
+      isOffline = true;
+    }
+    if (mounted) {
+      setState(() {});
+    }
+    connectivityListener = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.mobile) {
+        isOffline = false;
+      } else if (result == ConnectivityResult.wifi) {
+        isOffline = false;
+      } else {
+        isOffline = true;
+      }
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   _getUnReadMsgCount() async {
@@ -52,6 +85,12 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
       print('at============================${model.at}');
       context.read<UnreadMessageNotifier>().changeUnreadMsg(comments: model.comment, ats: model.at, lauds: model.laud);
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    connectivityListener?.cancel();
   }
 
   @override
@@ -112,39 +151,43 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   }
 
   Widget _buildConnectionView() {
-    return Container(
-      height: 36,
-      color: AppColor.mainRed.withOpacity(0.1),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 16,
-          ),
-          Icon(
-            Icons.error_outline,
-            size: 16,
-            color: AppColor.mainRed,
-          ),
-          SizedBox(
-            width: 6,
-          ),
-          Text(
-            "网络连接已断开，请检查网络设置",
-            style: TextStyle(fontSize: 14, color: AppColor.mainRed),
-          ),
-          Spacer(),
-          Icon(
-            Icons.chevron_right,
-            size: 16,
-            color: AppColor.mainRed,
-          ),
-          SizedBox(
-            width: 16,
-          )
-        ],
-      ),
-    );
+    if (isOffline) {
+      return Container(
+        height: 36,
+        color: AppColor.mainRed.withOpacity(0.1),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 16,
+            ),
+            Icon(
+              Icons.error_outline,
+              size: 16,
+              color: AppColor.mainRed,
+            ),
+            SizedBox(
+              width: 6,
+            ),
+            Text(
+              "网络连接已断开，请检查网络设置",
+              style: TextStyle(fontSize: 14, color: AppColor.mainRed),
+            ),
+            Spacer(),
+            Icon(
+              Icons.chevron_right,
+              size: 16,
+              color: AppColor.mainRed,
+            ),
+            SizedBox(
+              width: 16,
+            )
+          ],
+        ),
+      );
+    } else {
+      return Container();
+    }
   }
 
   Widget _buildMentionView() {
