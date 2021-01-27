@@ -236,6 +236,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     /// 用于迭代的时候不能删除@的处理
     print(rules);
     List<Rule> delRules = [];
+    // 删除部分文字时
     for (int i = 0; i < rules.length; i++) {
       Rule rule = rules[i];
       print(rule);
@@ -259,7 +260,11 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
         print("用来自动覆盖$startIndex,,,,,,,,,,,$endIndex");
       }
     }
-
+    // 一次性全部删除时
+   if(newValue.text.isEmpty) {
+     print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%全部删除了");
+     rules.clear();
+   }
     /// 清除掉不需要的rule
     for (int i = 0; i < delRules.length; i++) {
       rules.remove(delRules[i]);
