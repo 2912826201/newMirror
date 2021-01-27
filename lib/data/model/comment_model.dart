@@ -9,27 +9,14 @@ import 'home/home_feed.dart';
 /// totalCount : 6
 
 class CommentModel {
-  int _hasNext;
-  dynamic _lastTime;
-  dynamic _lastId;
-  dynamic _lastScore;
-  List<CommentDtoModel> _list;
-  dynamic _totalPage;
-  int _totalCount;
+  int hasNext;
+  dynamic lastTime;
+  dynamic lastId;
+  dynamic lastScore;
+  List<CommentDtoModel> list;
+  dynamic totalPage;
+  int totalCount;
 
-  int get hasNext => _hasNext;
-
-  dynamic get lastTime => _lastTime;
-
-  dynamic get lastId => _lastId;
-
-  dynamic get lastScore => _lastScore;
-
-  List<CommentDtoModel> get list => _list;
-
-  dynamic get totalPage => _totalPage;
-
-  int get totalCount => _totalCount;
 
   CommentModel(
       {int hasNext,
@@ -39,41 +26,41 @@ class CommentModel {
       List<CommentDtoModel> list,
       dynamic totalPage,
       int totalCount}) {
-    _hasNext = hasNext;
-    _lastTime = lastTime;
-    _lastId = lastId;
-    _lastScore = lastScore;
-    _list = list;
-    _totalPage = totalPage;
-    _totalCount = totalCount;
+    this.hasNext = hasNext;
+    this.lastTime = lastTime;
+    this.lastId = lastId;
+    this.lastScore = lastScore;
+    this.list = list;
+    this.totalPage = totalPage;
+    this.totalCount = totalCount;
   }
 
   CommentModel.fromJson(dynamic json) {
-    _hasNext = json["hasNext"];
-    _lastTime = json["lastTime"];
-    _lastId = json["lastId"];
-    _lastScore = json["lastScore"];
-    _list = [];
+    this.hasNext = json["hasNext"];
+    this.lastTime = json["lastTime"];
+    this.lastId = json["lastId"];
+    this.lastScore = json["lastScore"];
+    this.list = [];
     if (json["list"] != null) {
       json["list"].forEach((v) {
-        _list.add(CommentDtoModel.fromJson(v));
+        this.list.add(CommentDtoModel.fromJson(v));
       });
     }
-    _totalPage = json["totalPage"];
-    _totalCount = json["totalCount"];
+    this.totalPage = json["totalPage"];
+    this.totalCount = json["totalCount"];
   }
 
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
-    map["hasNext"] = _hasNext;
-    map["lastTime"] = _lastTime;
-    map["lastId"] = _lastId;
-    map["lastScore"] = _lastScore;
-    if (_list != null) {
-      map["list"] = _list.map((v) => v.toJson()).toList();
+    map["hasNext"] = this.hasNext;
+    map["lastTime"] = this.lastTime;
+    map["lastId"] = this.lastId;
+    map["lastScore"] = this.lastScore;
+    if (this.list != null) {
+      map["list"] = this.list.map((v) => v.toJson()).toList();
     }
-    map["totalPage"] = _totalPage;
-    map["totalCount"] = _totalCount;
+    map["totalPage"] = this.totalPage;
+    map["totalCount"] = this.totalCount;
     return map;
   }
 }

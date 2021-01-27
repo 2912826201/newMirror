@@ -15,6 +15,16 @@ const int _RECEIVE_TIMEOUT = 20000;
 //服务端接口返回code
 const int CODE_SUCCESS = 200;
 const int CODE_SERVER_ERROR = 500;
+//直播课程预约失败-时间不对
+const int CODE_BOOK_LIVE_COURSE_ERROR = 321;
+//邀请进入群聊--群聊不在
+const int CODE_INVITE_JOIN_NO_GROUP = 315;
+//邀请进入群聊--你不是群员
+const int CODE_INVITE_JOIN_NO_GROUP_MAN = 305;
+//邀请进入群聊--uids格式不正确
+const int CODE_INVITE_JOIN_UID_ERROR = 300;
+//邀请进入群聊--不是相互关注
+const int CODE_INVITE_JOIN_NO_FRIEND = 347;
 
 //身份认证的类型
 const int AUTH_TYPE_COMMON = 0;
