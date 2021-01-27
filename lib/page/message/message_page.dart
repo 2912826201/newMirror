@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/message_page_api.dart';
@@ -8,6 +10,7 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/message/message_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
+import 'package:mirror/data/notifier/unread_message_notifier.dart';
 import 'package:mirror/page/profile/Interactive_notification/interactive_notice_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
@@ -18,6 +21,7 @@ import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/widget/create_group_popup.dart';
 import 'package:provider/provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:connectivity/connectivity.dart';
 import 'message_chat_page_manager.dart';
 
 /// message_page
@@ -29,6 +33,9 @@ class MessagePage extends StatefulWidget {
 }
 
 class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin {
+  bool isOffline = false;
+  StreamSubscription<ConnectivityResult> connectivityListener;
+
   double _screenWidth = 0.0;
   int _listLength = 0;
   Unreads unReadMsg;
@@ -41,7 +48,34 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   void initState() {
     _screenWidth = ScreenUtil.instance.screenWidthDp;
     super.initState();
+    _initConnectivity();
     _getUnReadMsgCount();
+  }
+
+  _initConnectivity() async {
+    ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile) {
+      isOffline = false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      isOffline = false;
+    } else {
+      isOffline = true;
+    }
+    if (mounted) {
+      setState(() {});
+    }
+    connectivityListener = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.mobile) {
+        isOffline = false;
+      } else if (result == ConnectivityResult.wifi) {
+        isOffline = false;
+      } else {
+        isOffline = true;
+      }
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   _getUnReadMsgCount() async {
@@ -50,8 +84,14 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
       print('comment============================${model.comment}');
       print('laud============================${model.laud}');
       print('at============================${model.at}');
-      context.read<UnReadMessageNotifier>().changeUnReadMsg(comments: model.comment, ats: model.at, lauds: model.laud);
+      context.read<UnreadMessageNotifier>().changeUnreadMsg(comments: model.comment, ats: model.at, lauds: model.laud);
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    connectivityListener?.cancel();
   }
 
   @override
@@ -65,20 +105,11 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         leading: null,
         backgroundColor: AppColor.white,
         brightness: Brightness.light,
-        title: Row(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 48,
-            ),
-            Text(
-              "消息（${context.watch<RongCloudStatusNotifier>().status}）",
-              style: AppStyle.textMedium18,
-            ),
-          ],
+        title: Text(
+          "消息（${context.watch<RongCloudStatusNotifier>().status}）",
+          style: AppStyle.textMedium18,
         ),
+        centerTitle: true,
         actions: [
           Container(
             alignment: Alignment.center,
@@ -96,7 +127,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         ],
       ),
       body: ChangeNotifierProvider(
-          create: (_) => UnReadMessageNotifier(),
+          create: (_) => UnreadMessageNotifier(),
           child: ScrollConfiguration(
               behavior: NoBlueEffectBehavior(),
               child: ListView.builder(
@@ -121,39 +152,43 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   }
 
   Widget _buildConnectionView() {
-    return Container(
-      height: 36,
-      color: AppColor.mainRed.withOpacity(0.1),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 16,
-          ),
-          Icon(
-            Icons.error_outline,
-            size: 16,
-            color: AppColor.mainRed,
-          ),
-          SizedBox(
-            width: 6,
-          ),
-          Text(
-            "网络连接已断开，请检查网络设置",
-            style: TextStyle(fontSize: 14, color: AppColor.mainRed),
-          ),
-          Spacer(),
-          Icon(
-            Icons.chevron_right,
-            size: 16,
-            color: AppColor.mainRed,
-          ),
-          SizedBox(
-            width: 16,
-          )
-        ],
-      ),
-    );
+    if (isOffline) {
+      return Container(
+        height: 36,
+        color: AppColor.mainRed.withOpacity(0.1),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 16,
+            ),
+            Icon(
+              Icons.error_outline,
+              size: 16,
+              color: AppColor.mainRed,
+            ),
+            SizedBox(
+              width: 6,
+            ),
+            Text(
+              "网络连接已断开，请检查网络设置",
+              style: TextStyle(fontSize: 14, color: AppColor.mainRed),
+            ),
+            Spacer(),
+            Icon(
+              Icons.chevron_right,
+              size: 16,
+              color: AppColor.mainRed,
+            ),
+            SizedBox(
+              width: 16,
+            )
+          ],
+        ),
+      );
+    } else {
+      return Container();
+    }
   }
 
   Widget _buildMentionView() {
@@ -209,10 +244,10 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                     left: 29.5,
                     child: CountBadge(
                         type == 0
-                            ? context.read<UnReadMessageNotifier>().comment
+                            ? context.read<UnreadMessageNotifier>().comment
                             : type == 1
-                                ? context.read<UnReadMessageNotifier>().at
-                                : context.read<UnReadMessageNotifier>().laud,
+                                ? context.read<UnreadMessageNotifier>().at
+                                : context.read<UnreadMessageNotifier>().laud,
                         false)),
               ],
             ),
@@ -440,20 +475,5 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         ],
       ),
     );
-  }
-}
-
-class UnReadMessageNotifier extends ChangeNotifier {
-  int comment;
-  int at;
-  int laud;
-
-  UnReadMessageNotifier({this.comment = 0, this.at = 0, this.laud = 0});
-
-  void changeUnReadMsg({int comments, int ats, int lauds}) {
-    comment = comments;
-    at = ats;
-    laud = lauds;
-    notifyListeners();
   }
 }

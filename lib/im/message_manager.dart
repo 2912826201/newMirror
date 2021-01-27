@@ -160,4 +160,18 @@ class MessageManager {
     await ConversationDBHelper().removeConversation(dto.id);
     context.read<ConversationNotifier>().removeConversation([dto]);
   }
+
+  //清零未读数 type是ConversationDto的type 不是Message的
+  static clearUnreadCount(BuildContext context, String conversationId, int uid, int type) async {
+    ConversationDto dto = ConversationDto();
+    dto.conversationId = conversationId;
+    dto.uid = uid;
+    dto.type = type;
+    dto = context.read<ConversationNotifier>().getConversationById(dto.id);
+    if(dto != null){
+      dto.unreadCount = 0;
+      await ConversationDBHelper().updateConversation(dto);
+      context.read<ConversationNotifier>().updateConversation(dto);
+    }
+  }
 }

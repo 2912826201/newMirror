@@ -52,7 +52,7 @@ Widget getUserImage(String imageUrl, double height, double width) {
 //   static const int Received = 40; //对方已接收
 //   static const int Read = 50; //对方已阅读
 //isRead我是否阅读这个消息
-Widget getMessageState(int status, {bool isRead = true, bool isMyself}) {
+Widget getMessageState(int status, {bool isRead = true, bool isMyself,int position,VoidMessageClickCallBack voidMessageClickCallBack}) {
   if (status == RCSentStatus.Sending) {
     //发送中
     return Container(
@@ -65,15 +65,25 @@ Widget getMessageState(int status, {bool isRead = true, bool isMyself}) {
     );
   } else if (status == RCSentStatus.Failed) {
     //发送失败
-    return Container(
-      width: 28.0,
-      height: 28.0,
-      margin: const EdgeInsets.symmetric(horizontal: 6),
-      child: Icon(
-        Icons.sms_failed,
-        size: 28,
-        color: Colors.red,
+    return GestureDetector(
+      child: Container(
+        width: 28.0,
+        height: 28.0,
+        color: Colors.transparent,
+        margin: const EdgeInsets.symmetric(horizontal: 6),
+        child: Icon(
+          Icons.sms_failed,
+          size: 28,
+          color: Colors.red,
+        ),
       ),
+      onTap: (){
+        if(voidMessageClickCallBack!=null&&position!=null){
+          voidMessageClickCallBack(
+              contentType: ChatTypeModel.MESSAGE_TYPE_CLICK_ERROR_BTN,
+              position:position);
+        }
+      },
     );
   } else if (!isRead && !isMyself) {
     //我没有阅读

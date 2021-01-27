@@ -272,7 +272,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                             index: index,
                             model: model,
                             // 可选参数 子Item的个数
-                            key: GlobalObjectKey("recommend$index"),
+                            // key: GlobalObjectKey("recommend$index"),
                             isShowRecommendUser: false);
                       }
                       // } else {

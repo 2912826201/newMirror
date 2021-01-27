@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
@@ -265,21 +266,47 @@ class KeyboardInput extends StatefulWidget {
 
 class KeyboardInputState extends State<KeyboardInput> {
   ReleaseFeedInputFormatter _formatter;
-
+  FocusNode commentFocus;
   // 判断是否只是切换光标
   bool isSwitchCursor = true;
 
   @override
   void initState() {
     widget.controller.addListener(() {
-      // print("值改变了");
-      // print("监听文字光标${widget.controller.selection}");
+      print("值改变了");
+      print("监听文字光标${widget.controller.selection}");
       // // 每次点击切换光标会进入此监听。需求邀请@和话题光标不可移入其中。
       // print("::::::$isSwitchCursor");
-      if (isSwitchCursor) {
-        List<Rule> rules = context.read<ReleaseFeedInputNotifier>().rules;
-        int atIndex = context.read<ReleaseFeedInputNotifier>().atCursorIndex;
-        int topicIndex = context.read<ReleaseFeedInputNotifier>().topicCursorIndex;
+      List<Rule> rules = context.read<ReleaseFeedInputNotifier>().rules;
+      int atIndex = context.read<ReleaseFeedInputNotifier>().atCursorIndex;
+      int topicIndex = context.read<ReleaseFeedInputNotifier>().topicCursorIndex;
+      // 是否点击了@列表
+      bool isClickAtUser = context.read<ReleaseFeedInputNotifier>().isClickAtUser;
+      // 是否点击了话题列表
+      bool isClickTopic =  context.read<ReleaseFeedInputNotifier>().isClickTopic;
+
+      // 在每次选择@用户后ios设置光标位置。
+      if (Platform.isIOS && isClickAtUser ) {
+        print("@改光标");
+        // 设置光标
+        var setCursor = TextSelection(
+          baseOffset: widget.controller.text.length,
+          extentOffset: widget.controller.text.length,
+        );
+        widget.controller.selection = setCursor;
+      }
+      context.read<ReleaseFeedInputNotifier>().setClickAtUser(false);
+      if (Platform.isIOS && isClickTopic ) {
+        // 设置光标
+        var setCursor = TextSelection(
+          baseOffset: widget.controller.text.length,
+          extentOffset: widget.controller.text.length,
+        );
+        widget.controller.selection = setCursor;
+      }
+      print("监听文字光标${widget.controller.selection}");
+      context.read<ReleaseFeedInputNotifier>().setClickTopic(false);
+      if (isSwitchCursor && !Platform.isIOS) {
         // 获取光标位置
         int cursorIndex = widget.controller.selection.baseOffset;
         for (Rule rule in rules) {
@@ -330,8 +357,8 @@ class KeyboardInputState extends State<KeyboardInput> {
         shutDownCallback: () async {
           context.read<ReleaseFeedInputNotifier>().changeCallback("");
         },
-        valueChangedCallback:
-            (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr, String topicSearchStr) {
+        valueChangedCallback: (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr,
+            String topicSearchStr, bool isAdd) {
           rules = rules;
           // print("输入框值回调：$value");
           // print(rules);
@@ -354,26 +381,37 @@ class KeyboardInputState extends State<KeyboardInput> {
           context.read<ReleaseFeedInputNotifier>().getInputText(value);
           // @布局页面
           if (context.read<ReleaseFeedInputNotifier>().keyWord == "@") {
-            if (atSearchStr.isNotEmpty) {
+            if (atSearchStr.isNotEmpty && atSearchStr != null) {
               // 调用搜索全局用户第一页
               requestSearchFollowList(atSearchStr);
             } else {
-              // 使用备份的关注用户数据
-              context
+              if (context
                   .read<ReleaseFeedInputNotifier>()
-                  .setFollowList(context.read<ReleaseFeedInputNotifier>().backupFollowList);
+                  .backupFollowList
+                  .isNotEmpty) {
+                // 使用备份的关注用户数据
+                context
+                    .read<ReleaseFeedInputNotifier>()
+                    .setFollowList(context
+                    .read<ReleaseFeedInputNotifier>()
+                    .backupFollowList);
+              }
             }
           }
           // 话题布局页面
           if (context.read<ReleaseFeedInputNotifier>().keyWord == "#") {
-            if (topicSearchStr.isNotEmpty) {
+            if (topicSearchStr.isNotEmpty && topicSearchStr != null) {
               // 调用搜索话题第一页
               requestSearchTopicList(topicSearchStr);
             } else {
-              // 使用备份的推荐话题数据
-              context
-                  .read<ReleaseFeedInputNotifier>()
-                  .setTopicList(context.read<ReleaseFeedInputNotifier>().backupTopicList);
+              if (context.read<ReleaseFeedInputNotifier>().backupTopicList.isNotEmpty) {
+                // 使用备份的推荐话题数据
+                context
+                    .read<ReleaseFeedInputNotifier>()
+                    .setTopicList(context
+                    .read<ReleaseFeedInputNotifier>()
+                    .backupTopicList);
+              }
             }
           }
         });
@@ -486,7 +524,7 @@ class KeyboardInputState extends State<KeyboardInput> {
       width: ScreenUtil.instance.screenWidthDp,
       child: TextSpanField(
         // 管理焦点
-        focusNode: FocusNode(),
+        focusNode: commentFocus,
         controller: widget.controller,
         // 多行展示
         keyboardType: TextInputType.multiline,
@@ -677,6 +715,7 @@ class TopicListState extends State<TopicList> {
                       // 点击空白区域响应事件
                       behavior: HitTestBehavior.opaque,
                       onTap: () {
+                        context.read<ReleaseFeedInputNotifier>().setClickTopic(true);
                         // #的文字长度
                         int topicLength = list[index].name.length - 1;
                         // 获取比较规则
@@ -994,6 +1033,7 @@ class AtListState extends State<AtList> {
                     // 点击空白区域响应事件
                     behavior: HitTestBehavior.opaque,
                     onTap: () {
+                      context.read<ReleaseFeedInputNotifier>().setClickAtUser(true);
                       // At的文字长度
                       int AtLength = list[index].nickName.length;
                       // 获取输入框内的规则
@@ -1031,6 +1071,16 @@ class AtListState extends State<AtList> {
 
                       // 拼接修改输入框的值
                       widget.controller.text = atBeforeStr + list[index].nickName + atRearStr;
+                      // 设置光标
+                      if (!Platform.isIOS) {
+                        var setCursor = TextSelection(
+                          baseOffset: widget.controller.text.length,
+                          extentOffset: widget.controller.text.length,
+                        );
+                        print("设置光标${setCursor}");
+                        widget.controller.selection = setCursor;
+                      }
+
                       print("controller.text:${widget.controller.text}");
                       context.read<ReleaseFeedInputNotifier>().getInputText(widget.controller.text);
                       // 这是替换输入的文本修改后面输入的@的规则
@@ -1062,13 +1112,7 @@ class AtListState extends State<AtList> {
                       // 存储规则
                       context.read<ReleaseFeedInputNotifier>().addRules(Rule(
                           atIndex - 1, atIndex + AtLength, "@" + list[index].nickName, index, true, list[index].uid));
-                      // 设置光标
-                      var setCursor = TextSelection(
-                        baseOffset: widget.controller.text.length,
-                        extentOffset: widget.controller.text.length,
-                      );
-                      print("设置光标${setCursor}");
-                      widget.controller.selection = setCursor;
+
                       context.read<ReleaseFeedInputNotifier>().setAtSearchStr("");
                       // 关闭视图
                       context.read<ReleaseFeedInputNotifier>().changeCallback("");
@@ -1424,6 +1468,12 @@ class ReleaseFeedInputNotifier extends ChangeNotifier {
   // 发布动态选择的图片视频
   SelectedMediaFiles selectedMediaFiles;
 
+  // 是否点击了弹起的@用户列表
+  bool isClickAtUser = false;
+
+  // 是否点击了弹起的话题列表
+  bool isClickTopic = false;
+
   /*
   搜索全局用户的字段
  */
@@ -1568,5 +1618,12 @@ class ReleaseFeedInputNotifier extends ChangeNotifier {
   setTopScrollController(ScrollController controller) {
     this.topScrollController = controller;
     notifyListeners();
+  }
+  setClickAtUser(bool at) {
+    this.isClickAtUser = at;
+  }
+  // 是否点击了弹起的话题列表
+  setClickTopic (bool top) {
+    this.isClickTopic = top;
   }
 }

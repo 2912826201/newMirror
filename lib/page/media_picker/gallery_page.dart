@@ -508,6 +508,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                       mediaFileModel.croppedImage = notifier.imageMap[orderedEntity.entity.id];
                       mediaFileModel.sizeInfo.height = mediaFileModel.croppedImage.height;
                       mediaFileModel.sizeInfo.width = mediaFileModel.croppedImage.width;
+                      mediaFileModel.sizeInfo.createTime = DateTime.now().millisecondsSinceEpoch;
                       break;
                     case AssetType.video:
                       mediaFileModel.file = _fileMap[orderedEntity.entity.id];
@@ -515,6 +516,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                       mediaFileModel.sizeInfo.height = orderedEntity.entity.height;
                       mediaFileModel.sizeInfo.width = orderedEntity.entity.width;
                       mediaFileModel.sizeInfo.duration = orderedEntity.entity.duration;
+                      mediaFileModel.sizeInfo.createTime = orderedEntity.entity.createDtSecond * 1000;
                       SizeInfo sizeInfo = notifier.offsetMap[mediaFileModel.file.path];
                       if (sizeInfo != null) {
                         mediaFileModel.sizeInfo.offsetRatioX = sizeInfo.offsetRatioX;
@@ -533,6 +535,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                   mediaFileModel.sizeInfo.height = orderedEntity.entity.height;
                   mediaFileModel.sizeInfo.width = orderedEntity.entity.width;
                   mediaFileModel.sizeInfo.duration = orderedEntity.entity.duration;
+                  mediaFileModel.sizeInfo.createTime = orderedEntity.entity.createDtSecond * 1000;
                 }
               }
               // 赋值并退出页面

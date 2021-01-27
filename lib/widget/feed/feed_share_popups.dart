@@ -81,9 +81,9 @@ class FeedSharePopups extends StatelessWidget {
                        return GestureDetector(
                         onTap: () async {
                           print("点击了￥${feedViewModel[index].name}");
-                          Navigator.of(context).pop(1);
                           switch(feedViewModel[index].name){
                             case "站内好友":
+                              Navigator.of(context).pop(1);
                               Navigator.push(context, MaterialPageRoute(builder: (_) {
                                 return FriendsPage(voidCallback: (name, userId, type, context) async {
                                   if (await jumpShareMessage(map, chatTypeModel, name, userId, type, context)) {
@@ -99,16 +99,25 @@ class FeedSharePopups extends StatelessWidget {
                               if (result["isSuccess"] == true) {
                                 ToastShow.show(msg: "保存成功", context: context);
                               }
+                              Navigator.of(context).pop(1);
                               break;
                             case "微信好友":
+                              Navigator.of(context).pop(1);
                               break;
                             case "朋友圈":
+                              Navigator.of(context).pop(1);
                               break;
                             case "微博":
+                              Navigator.of(context).pop(1);
                               break;
                             case "QQ好友":
+                              Navigator.of(context).pop(1);
                               break;
                             case "QQ空间":
+                              Navigator.of(context).pop(1);
+                              break;
+                            default:
+                              Navigator.of(context).pop(1);
                               break;
                           }
                         },

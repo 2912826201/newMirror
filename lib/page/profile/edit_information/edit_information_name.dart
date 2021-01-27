@@ -149,6 +149,7 @@ class _EditInformationNameState extends State<EditInformationName>{
         hintStyle:TextStyle(fontSize: 16,color: AppColor.textHint),
         border: InputBorder.none,),
         onChanged: (value){
+        print("回调了几次");
         setState(() {
           _EditText = value;
           textLength = value.length;
