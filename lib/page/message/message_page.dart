@@ -131,6 +131,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
           child: ScrollConfiguration(
               behavior: NoBlueEffectBehavior(),
               child: ListView.builder(
+                physics: BouncingScrollPhysics(),
                   itemCount: _listLength + 1,
                   itemBuilder: (context, index) {
                     if (index == 0) {
