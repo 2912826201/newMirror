@@ -24,6 +24,7 @@
 	<true/>
 	<key>NSCalendarsUsageDescription</key>
 	<string>App正在征用日历，快点同意，否则自爆</string>
+	
 	<key>NSCameraUsageDescription</key>
 	<string>App正在征用相机，快点同意，否则自爆</string>
 	<key>NSMicrophoneUsageDescription</key>
