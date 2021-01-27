@@ -278,7 +278,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                   ),
                   // 课程信息和地址
                   Offstage(
-                    offstage: (feedModel.address == null),
+                    offstage: (feedModel.address == null && feedModel.courseDto == null),
                     child: Container(
                       margin: EdgeInsets.only(left: 16, right: 16),
                       // color: Colors.orange,
@@ -356,7 +356,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   Widget getCourseInfo(HomeFeedModel model) {
     List<String> tags = [];
     if (model.courseDto != null) {
-      tags.add(model.courseDto.name);
+      tags.add(model.courseDto.title);
     }
     if (model.address != null) {
       tags.add(model.address);

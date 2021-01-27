@@ -243,9 +243,7 @@ class DynamicListLayout extends StatelessWidget {
   Widget getCourseInfo(HomeFeedModel model) {
     List<String> tags = [];
     if (model.courseDto != null) {
-      tags.add(model.courseDto.name);
-    } else {
-      tags.add("瑜伽课");
+      tags.add(model.courseDto.title);
     }
     if (model.address != null) {
       tags.add(model.address);
