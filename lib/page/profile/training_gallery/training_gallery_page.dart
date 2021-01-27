@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:azlistview/azlistview.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mirror/api/training/training_gallery_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
@@ -28,11 +29,13 @@ class TrainingGalleryPage extends StatefulWidget {
   _TrainingGalleryState createState() => _TrainingGalleryState();
 }
 
+// 在插入新数据时 要根据时间日期插入到相应位置 所以循环分页加载直至加载全部数据
 class _TrainingGalleryState extends State<TrainingGalleryPage> {
   final int _imageMaxSelection = 2;
+  final int _pageSize = 100;
 
-  bool hasNext;
-  int lastTime;
+  bool _hasNext = true;
+  int _lastTime;
 
   List<TrainingGalleryDayModel> _dataList = [];
 
@@ -40,17 +43,25 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   AppBar _normalModeAppBar;
   AppBar _selectionModeAppBar;
   final List<TrainingGalleryImageModel> _selectedImageList = [];
+  final DateFormat _dateTimeFormat = DateFormat('yyyy-MM-dd');
 
   _initData() async {
-    ListModel<TrainingGalleryDayModel> listModel = await getAlbum(20);
-    hasNext = listModel.hasNext == 1;
-    lastTime = listModel.lastTime;
-    _dataList.addAll(listModel.list);
+    await _requestDataList();
 
     SuspensionUtil.setShowSuspensionStatus(_dataList);
 
     if (mounted) {
       setState(() {});
+    }
+  }
+
+  _requestDataList() async {
+    ListModel<TrainingGalleryDayModel> listModel = await getAlbum(_pageSize, lastTime: _lastTime);
+    _hasNext = listModel.hasNext == 1;
+    _lastTime = listModel.lastTime;
+    _dataList.addAll(listModel.list);
+    if (_hasNext) {
+      await _requestDataList();
     }
   }
 
@@ -389,24 +400,12 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
               .toJson());
         }
         List<TrainingGalleryImageModel> saveList = await saveAlbum(paramList);
+
         if (saveList != null) {
-          //插入数据
-          if (_dataList.isNotEmpty && saveList.first.dateTime == _dataList.first.dateTime) {
-            //如果列表不为空 且第一条的日期和结果相同 则插入已有数据
-            setState(() {
-              _dataList.first.list.insertAll(0, saveList);
-            });
-          } else {
-            //插入新数据
-            setState(() {
-              if (_dataList.isNotEmpty) {
-                //要把是不是显示月份标签修改了
-                _dataList[0].isShowSuspension = false;
-              }
-              _dataList.insert(0,
-                  TrainingGalleryDayModel(dateTime: saveList.first.dateTime, list: saveList)..isShowSuspension = true);
-            });
-          }
+          saveList.forEach((saveImage) {
+            _insertImageToDataList(saveImage);
+          });
+          setState(() {});
         } else {
           ToastShow.show(msg: "保存失败", context: context);
         }
@@ -442,8 +441,16 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
                   GestureDetector(
                     onTap: () {
                       if (_selectedImageList.length == _imageMaxSelection) {
-                        AppRouter.navigateToTrainingGalleryComparisonPage(
-                            context, _selectedImageList[0], _selectedImageList[1]);
+                        //按时间排序入参
+                        DateTime time0 = _dateTimeFormat.parse(_selectedImageList[0].dateTime);
+                        DateTime time1 = _dateTimeFormat.parse(_selectedImageList[1].dateTime);
+                        if (time1.isBefore(time0)) {
+                          AppRouter.navigateToTrainingGalleryComparisonPage(
+                              context, _selectedImageList[1], _selectedImageList[0]);
+                        } else {
+                          AppRouter.navigateToTrainingGalleryComparisonPage(
+                              context, _selectedImageList[0], _selectedImageList[1]);
+                        }
                       }
                     },
                     child: Text(
@@ -558,6 +565,49 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
           ),
         ),
       );
+    }
+  }
+
+  _insertImageToDataList(TrainingGalleryImageModel saveImage) {
+    if (_dataList.isNotEmpty) {
+      DateTime imageTime = _dateTimeFormat.parse(saveImage.dateTime);
+      for (int i = 0; i < _dataList.length; i++) {
+        TrainingGalleryDayModel dayModel = _dataList[i];
+        DateTime dayTime = _dateTimeFormat.parse(dayModel.dateTime);
+        //时间倒序排列 所以当日期等于dayModel的值时插入该dayModel的list 小于时继续遍历 大于时新建并插入dayModel 小于最后一条也新建
+        if (imageTime.isAtSameMomentAs(dayTime)) {
+          dayModel.list.add(saveImage);
+          //倒序排列
+          dayModel.list.sort((a, b) => b.createTime.compareTo(a.createTime));
+          //插入imageList并不影响日期标签
+          //一定要break 不然可能会无限添加
+          break;
+        } else if (imageTime.isAfter(dayTime)) {
+          TrainingGalleryDayModel newDayModel = TrainingGalleryDayModel();
+          newDayModel.dateTime = saveImage.dateTime;
+          newDayModel.list = [saveImage];
+          _dataList.insert(i, newDayModel);
+          //新建并插入dayModel可能会影响日期标签 所以重新设置
+          SuspensionUtil.setShowSuspensionStatus(_dataList);
+          //一定要break 不然可能会无限添加
+          break;
+        } else if (i == _dataList.length - 1 && imageTime.isBefore(dayTime)) {
+          TrainingGalleryDayModel newDayModel = TrainingGalleryDayModel();
+          newDayModel.dateTime = saveImage.dateTime;
+          newDayModel.list = [saveImage];
+          _dataList.add(newDayModel);
+          //新建并插入dayModel可能会影响日期标签 所以重新设置
+          SuspensionUtil.setShowSuspensionStatus(_dataList);
+          //一定要break 不然可能会无限添加
+          break;
+        }
+      }
+    } else {
+      TrainingGalleryDayModel newDayModel = TrainingGalleryDayModel();
+      newDayModel.dateTime = saveImage.dateTime;
+      newDayModel.list = [saveImage];
+      _dataList.add(newDayModel);
+      SuspensionUtil.setShowSuspensionStatus(_dataList);
     }
   }
 }
