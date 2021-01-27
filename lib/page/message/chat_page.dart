@@ -1286,7 +1286,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         context.read<ChatEnterNotifier>().openAtCallback("");
       },
       valueChangedCallback:
-          (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr, String topicSearchStr) {
+          (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr, String topicSearchStr, bool isAdd) {
         rules = rules;
         // //print("输入框值回调：$value");
         // //print(rules);

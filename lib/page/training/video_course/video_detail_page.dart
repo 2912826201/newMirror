@@ -1479,7 +1479,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     await postComments(
       targetId: targetId,
       targetType: targetType,
-      content: text,
+      contentext: text,
       atUsers: jsonEncode(atListModel),
       replyId: replyId > 0 ? replyId : null,
       replyCommentId: replyCommentId > 0 ? replyCommentId : null,
