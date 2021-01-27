@@ -1,6 +1,11 @@
+
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/setting_api/setting_api.dart';
+import 'package:mirror/config/application.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/user_notice_model.dart';
@@ -22,7 +27,6 @@ class NoticeSettingPage extends StatefulWidget {
 class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingObserver {
   bool getNoticeIsOpen = true;
 
-  bool permissionOpen = false;
   Future<String> permissionStatusFuture;
   var permGranted = "granted";
   var permDenied = "denied";
@@ -52,21 +56,45 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
     }
   }
   ///获取系统通知状态
-  Future<String> getCheckNotificationPermStatus() {
+  Future<String> getCheckNotificationPermStatus(bool isFirst) {
     return NotificationPermissions.getNotificationPermissionStatus()
         .then((status) {
       switch (status) {
         case PermissionStatus.denied:
           context.read<SettingNotifile>().changePermision(false);
+          if(isFirst){
+            if(Application.platform==0){
+              _showDialog();
+            }else{
+              _iosGetNotice();
+            }
+
+          }
           return permDenied;
         case PermissionStatus.granted:
           context.read<SettingNotifile>().changePermision(true);
           return permGranted;
         case PermissionStatus.unknown:
           context.read<SettingNotifile>().changePermision(false);
+          if(isFirst){
+              if(Application.platform==0){
+                _showDialog();
+              }else{
+                _iosGetNotice();
+              }
+
+          }
           return permUnknown;
         case PermissionStatus.provisional:
           context.read<SettingNotifile>().changePermision(false);
+          if(isFirst){
+            if(Application.platform==0){
+              _showDialog();
+            }else{
+              _iosGetNotice();
+            }
+
+          }
           return permProvisional;
         default:
           return null;
@@ -74,11 +102,19 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
     });
   }
 
+  void _iosGetNotice(){
+    NotificationPermissions.requestNotificationPermissions(iosSettings: NotificationSettingsIos(
+        sound: true,
+        badge: true,
+        alert: true)).then((value){
+      permissionStatusFuture = getCheckNotificationPermStatus(false);
+    });
+  }
   @override///监听用户回到app
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       setState(() {
-        permissionStatusFuture = getCheckNotificationPermStatus();
+        permissionStatusFuture = getCheckNotificationPermStatus(false);
       });
     }
   }
@@ -94,7 +130,7 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
     super.initState();
     //绑定监听
     WidgetsBinding.instance.addObserver(this);
-    permissionStatusFuture = getCheckNotificationPermStatus();
+    permissionStatusFuture = getCheckNotificationPermStatus(true);
     _getUserNotice();
   }
 
@@ -131,7 +167,7 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
           children: [
             InkWell(
               onTap: () {
-                SystemSetting.goto(SettingTarget.NOTIFICATION);
+                  SystemSetting.goto(SettingTarget.NOTIFICATION);
               },
               child: _getNotice(),),
             Container(
@@ -209,23 +245,27 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
     );
   }
 
+  Widget _showDialog(){
+    return showAppDialog(
+        context,
+        title: "获取系统通知设置",
+        info: "第一时间获取评论,私信,@,等消息通知",
+        cancel: AppDialogButton("取消",(){
+          return true;
+        }),
+        confirm:AppDialogButton("去打开",(){
+          SystemSetting.goto(SettingTarget.NOTIFICATION);
+          return true;
+        }));
+  }
+
   Widget _switchRow(double width, int type, bool isOpen, String title) {
     return GestureDetector(
       onTap: (){
-        if(permissionOpen){
+        if(context.read<SettingNotifile>().permisionIsOpen){
           return false;
         }else{
-          showAppDialog(
-            context,
-            title: "获取系统通知设置",
-            info: "第一时间获取评论,私信,@,等消息通知",
-              cancel: AppDialogButton("取消",(){
-                return true;
-              }),
-          confirm:AppDialogButton("去打开",(){
-            SystemSetting.goto(SettingTarget.NOTIFICATION);
-            return true;
-          }));
+          _showDialog();
         }
       },
       child: Container(

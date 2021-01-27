@@ -37,7 +37,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   int listPage = 1;
   List<QueryModel> msgList = [];
   bool haveData = true;
-  
+
   int timeStamp;
 
   ///获取互动通知列表
