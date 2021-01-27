@@ -22,8 +22,6 @@ class FeedMapNotifier extends ChangeNotifier {
 
   CommentDtoModel childModel;
 
-  int fatherId;
-
   void changeFatherItemChose(int id, int index) {
     feedMap[id].comments[index].itemChose = false;
     notifyListeners();

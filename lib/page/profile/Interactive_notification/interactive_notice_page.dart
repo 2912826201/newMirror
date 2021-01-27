@@ -210,18 +210,6 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     );
   }
 }
-/*
-class InteractiveNoticeItem extends StatefulWidget {
-  int type;
-  QueryModel model;
-
-  InteractiveNoticeItem(this.type, this.model);
-
-  @override
-  State<StatefulWidget> createState() {
-    return _InteractiveNoticeItemState();
-  }
-}*/
 
 class InteractiveNoticeItemState extends StatelessWidget {
   int type;

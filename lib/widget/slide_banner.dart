@@ -133,7 +133,7 @@ class _SlideBannerState extends State<SlideBanner> {
   }
 
   /// 列表中的每个条目的Widget
-  /// [index] 列表条目对应的索引
+  /// [choseIndex] 列表条目对应的索引
   // buildOpenContainerItem(int index) {
   //   return OpenContainer(
   //     // 动画时长

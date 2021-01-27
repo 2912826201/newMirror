@@ -25,7 +25,13 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
 
   // 记录initCount的初始值；
   int initNum;
-
+    @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    print('=========================ziitem dispos');
+    widget.commentDtoModel.replys.clear();
+  }
   @override
   // 初始化赋值
   void initState() {
@@ -48,6 +54,8 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
       }
   }
 
+
+
   // 隐藏数据
   hideData() {
     widget.commentDtoModel.replys.clear();
@@ -66,7 +74,7 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
       loadData() async {
     pageCount += 1;
     print('=====================子评论加载数据');
-    if(widget.comment!=null){
+    /*if(widget.comment!=null){
       if(widget.type==1){
       if(widget.commentDtoModel.isClickHideButton&&pageCount==1){
         if(widget.commentDtoModel.id==widget.comment.targetId){
@@ -75,7 +83,7 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
         }
       }
     }
-      }
+      }*/
     // 总条数大于三每次点击取三条
     if (widget.commentDtoModel.initCount > 4) {
       Map<String, dynamic> model =
