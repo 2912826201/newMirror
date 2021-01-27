@@ -23,7 +23,7 @@ class MediaFileModel {
   SizeInfo sizeInfo = SizeInfo();
 
   String toString() {
-    return "file:${file.path},sizeInfo:{${sizeInfo.toString()}}";
+    return "file:${file?.path},sizeInfo:{${sizeInfo.toString()}}";
   }
 
   String filePath;
@@ -78,11 +78,13 @@ class SizeInfo {
   double offsetRatioX = 0.0;
   double offsetRatioY = 0.0;
   int duration = 0; //时长，只有音视频有用，图片此值为0，单位秒
+  int createTime = 0; //文件创建时间
 
   SizeInfo();
 
   String toString() {
-    return "height:${height},width:${width},offsetRatioX:${offsetRatioX},offsetRatioY:${offsetRatioY},duration:${duration},videoCroppedRatio:${videoCroppedRatio},";
+    return "height:$height,width:$width,offsetRatioX:$offsetRatioX,offsetRatioY:$offsetRatioY"
+        ",duration:$duration,videoCroppedRatio:$videoCroppedRatio,createTime：$createTime,";
   }
 
   SizeInfo.fromJson(Map<String, dynamic> json) {
@@ -92,6 +94,7 @@ class SizeInfo {
     offsetRatioY = json["offsetRatioY"];
     duration = json["duration"];
     videoCroppedRatio = json["videoCroppedRatio"];
+    createTime = json["createTime"];
   }
 
   Map<String, dynamic> toJson() {
@@ -102,6 +105,7 @@ class SizeInfo {
     map["offsetRatioY"] = offsetRatioY;
     map["duration"] = duration;
     map["videoCroppedRatio"] = videoCroppedRatio;
+    map["createTime"] = createTime;
     return map;
   }
 }

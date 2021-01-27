@@ -5,12 +5,15 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
+import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -20,42 +23,33 @@ import 'package:scan/scan.dart';
 import 'package:toast/toast.dart';
 import 'package:provider/provider.dart';
 
+import 'my_qrcode_page.dart';
+
 class ScanCodePage extends StatefulWidget {
   @override
   _ScanCodeState createState() => _ScanCodeState();
 }
 
 class _ScanCodeState extends State<ScanCodePage> {
-  String _platformVersion = 'Unknown';
   String imagePath = "";
   ScanController controller = ScanController();
-  String qrcode = 'Unknown';
 
   @override
   void initState() {
     super.initState();
   }
-
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    try {
-      platformVersion = await Scan.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
+    getUserModel(int id)async{
+    UserModel userModel = await getUserInfo(uid: id);
+      if(userModel!=null){
+        Navigator.pop(context);
+       AppRouter.navigateToMineDetail(context, userModel.uid);
+      }
     }
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
-    return MaterialApp(
-      home: Scaffold(
+    return Scaffold(
           appBar: AppBar(
             centerTitle: true,
             backgroundColor: AppColor.white,
@@ -102,15 +96,11 @@ class _ScanCodeState extends State<ScanCodePage> {
                   scanAreaScale: .7,
                   scanLineColor: AppColor.white,
                   onCapture: (data) {
-                    setState(() {
-                      if (StringUtil.isURL(data)) {
-                        print('===========================这是一个网址');
-                        print('$data');
-                      } else {
-                        print('===========================这是扫码得到的结果$data');
-                      }
-                      Toast.show("这是扫码得到的结果=============$data", context);
-                    });
+                    if(data.substring(0,1)=="用户"){
+                      print('=====================这是用户Id');
+                      getUserModel(int.parse(data.substring(1,data.length)));
+                    }
+
                   },
                 ),
               ),
@@ -138,13 +128,20 @@ class _ScanCodeState extends State<ScanCodePage> {
                         Expanded(child: SizedBox()),
                         Column(
                           children: [
-                            Center(
+                            InkWell(
+                              onTap: (){
+                                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                                  return MyQrCodePage();
+                                }));
+                              },
+                              child: Center(
                                 child: QrImage(
-                              data: "${context.watch<ProfileNotifier>().profile.uid}",
+                              data: "用户${context.watch<ProfileNotifier>().profile.uid}",
                               size: 40,
+                              padding: EdgeInsets.zero,
                               backgroundColor: AppColor.white,
                               version: QrVersions.auto,
-                            )),
+                            )),),
                             SizedBox(
                               height: 9,
                             ),
@@ -159,8 +156,7 @@ class _ScanCodeState extends State<ScanCodePage> {
                     ),
                   ))
             ],
-          )),
-    );
+          ));
   }
 
   _getImagePicker() {
@@ -190,11 +186,22 @@ class _ScanCodeState extends State<ScanCodePage> {
           print('===========================这是一个网址');
         } else {
           print('===========================这是扫码得到的结果$result');
+          if(result.substring(0,2)=="用户"){
+            print('===================这是用户${result.substring(2,result.length)}');
+            getUserModel(int.parse(result.substring(2,result.length)));
+          }
         }
         Toast.show("这是从相册获取到的$result", context);
         setState(() {});
-        print('result=====================================$result');
       }
     });
+  }
+
+
+  _goToUserHome(String result){
+    if(result.substring(0,2)=="用户"){
+      print('===================这是用户${result.substring(2,result.length)}');
+      getUserModel(int.parse(result.substring(2,result.length)));
+    }
   }
 }

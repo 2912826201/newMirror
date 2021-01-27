@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/page/message/item/widget_ver.dart';
+import 'package:mirror/util/date_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+
+///每一种消息 共用的方法 或者ui
 
 //点击事件返回
 typedef VoidMessageClickCallBack = void Function(
@@ -49,7 +52,7 @@ Widget getUserImage(String imageUrl, double height, double width) {
 //   static const int Received = 40; //对方已接收
 //   static const int Read = 50; //对方已阅读
 //isRead我是否阅读这个消息
-Widget getMessageState(int status, {bool isRead = true, bool isMyself}) {
+Widget getMessageState(int status, {bool isRead = true, bool isMyself,int position,VoidMessageClickCallBack voidMessageClickCallBack}) {
   if (status == RCSentStatus.Sending) {
     //发送中
     return Container(
@@ -62,15 +65,25 @@ Widget getMessageState(int status, {bool isRead = true, bool isMyself}) {
     );
   } else if (status == RCSentStatus.Failed) {
     //发送失败
-    return Container(
-      width: 28.0,
-      height: 28.0,
-      margin: const EdgeInsets.symmetric(horizontal: 6),
-      child: Icon(
-        Icons.sms_failed,
-        size: 28,
-        color: Colors.red,
+    return GestureDetector(
+      child: Container(
+        width: 28.0,
+        height: 28.0,
+        color: Colors.transparent,
+        margin: const EdgeInsets.symmetric(horizontal: 6),
+        child: Icon(
+          Icons.sms_failed,
+          size: 28,
+          color: Colors.red,
+        ),
       ),
+      onTap: (){
+        if(voidMessageClickCallBack!=null&&position!=null){
+          voidMessageClickCallBack(
+              contentType: ChatTypeModel.MESSAGE_TYPE_CLICK_ERROR_BTN,
+              position:position);
+        }
+      },
     );
   } else if (!isRead && !isMyself) {
     //我没有阅读
@@ -143,10 +156,10 @@ Widget getLiveStateUi() {
 
 //获取长按操作的选项框
 List<String> getLongClickStringList(
-    {@required bool isMySelf, @required String contentType}) {
+    {@required bool isMySelf, @required String contentType,@required int sendTime}) {
   List<String> longClickStringList = <String>[];
   longClickStringList.add("删除");
-  if (isMySelf) {
+  if (isMySelf&&DateUtil.judgeTwoMinuteNewDateTime(DateUtil.getDateTimeByMs(sendTime))) {
     longClickStringList.insert(0, "撤回");
   }
   if (contentType == ChatTypeModel.MESSAGE_TYPE_TEXT) {

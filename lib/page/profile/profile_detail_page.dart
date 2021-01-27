@@ -239,7 +239,10 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 InkWell(
                   onTap: () {
                     openShareBottomSheet(
-                        context: context, map: userModel.toJson(), chatTypeModel: ChatTypeModel.MESSAGE_TYPE_USER);
+                        context: context,
+                      map: userModel.toJson(),
+                      chatTypeModel: ChatTypeModel.MESSAGE_TYPE_USER,
+                    sharedType: 1);
                   },
                   child: Image.asset(
                     _imgShared,
@@ -585,14 +588,16 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///头像
   Widget _mineAvatar(double height) {
     return Container(
-        child: ClipOval(
+        child: Hero(
+          tag: "我的头像",
+          child: ClipOval(
       child: CachedNetworkImage(
           height: height * 0.09,
           width: height * 0.09,
           imageUrl: _avatar,
           fit: BoxFit.cover,
           placeholder: (context, url) => CircularProgressIndicator()),
-    ));
+    ),));
   }
 
   ///这是关注粉丝获赞

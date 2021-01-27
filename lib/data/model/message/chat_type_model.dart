@@ -13,11 +13,11 @@ class ChatTypeModel {
   static const String MESSAGE_TYPE_IMAGE = "RC:ImgMsg";
   static const String MESSAGE_TYPE_IMAGE_NAME = "图片消息，该版本较低请升级版本再行查看";
 
-  //语音HQVCMsg
+  //语音
   static const String MESSAGE_TYPE_VOICE = "RC:HQVCMsg";
   static const String MESSAGE_TYPE_VOICE_NAME = "语音消息，该版本较低请升级版本再行查看";
 
-  //自定义消息类型：短视频
+  //自定义消息类型：视频
   static const String MESSAGE_TYPE_VIDEO = "IF:VideoMessage";
   static const String MESSAGE_TYPE_VIDEO_NAME = "视频消息，该版本较低请升级版本再行查看";
 
@@ -57,6 +57,10 @@ class ChatTypeModel {
   static const String MESSAGE_TYPE_ALERT_INVITE = "IF:AlertInviteMessage";
   static const String MESSAGE_TYPE_ALERT_INVITE_NAME = "邀请消息，该版本较低请升级版本再行查看";
 
+  //自定义消息类型：提示信息-群-修改群名
+  static const String MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME = "IF:AlertUpdateNameMessage";
+  static const String MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME_NAME = "修改群名，该版本较低请升级版本再行查看";
+
   //自定义消息类型：提示信息-移除
   static const String MESSAGE_TYPE_ALERT_REMOVE = "IF:AlertRemoveMessage";
   static const String MESSAGE_TYPE_ALERT_REMOVE_NAME = "移除消息，该版本较低请升级版本再行查看";
@@ -81,6 +85,10 @@ class ChatTypeModel {
   static const String MESSAGE_TYPE_CMD = "RC:CmdNtf";
   static const String MESSAGE_TYPE_CMD_NAME = "通知消息-私聊，该版本较低请升级版本再行查看";
 
+  //消息列表-消息发送失败-点击了失败按钮-----和消息类型没啥关系
+  static const String MESSAGE_TYPE_CLICK_ERROR_BTN = "if:ClickMessageErrorBtn";
+  static const String MESSAGE_TYPE_CLICK_ERROR_BTN_NAME = "消息列表-消息发送失败-点击了失败按钮";
+
   //判断这个消息是不是提示消息
   static bool getIsAlertMessage(String chatTypeModel) {
     if (chatTypeModel == MESSAGE_TYPE_ALERT) {
@@ -92,6 +100,12 @@ class ChatTypeModel {
     } else if (chatTypeModel == MESSAGE_TYPE_ALERT_REMOVE) {
       return true;
     } else if (chatTypeModel == MESSAGE_TYPE_ALERT_NEW) {
+      return true;
+    } else if (chatTypeModel == MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME) {
+      return true;
+    } else if (chatTypeModel == MESSAGE_TYPE_GRPNTF) {
+      return true;
+    } else if (chatTypeModel == MESSAGE_TYPE_CMD) {
       return true;
     } else if (chatTypeModel == RecallNotificationMessage.objectName) {
       return true;

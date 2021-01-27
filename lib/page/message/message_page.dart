@@ -33,6 +33,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   int _listLength = 0;
   Unreads unReadMsg;
   bool isFirst = true;
+
   @override
   bool get wantKeepAlive => true;
 
@@ -42,15 +43,17 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     super.initState();
     _getUnReadMsgCount();
   }
-    _getUnReadMsgCount()async{
-      Unreads model = await getUnReads();
-        if(model!=null){
-          print('comment============================${model.comment}');
-          print('laud============================${model.laud}');
-          print('at============================${model.at}');
-          context.read<UnReadMessageNotifier>().changeUnReadMsg(comments:model.comment,ats:model.at,lauds: model.laud);
-          }
+
+  _getUnReadMsgCount() async {
+    Unreads model = await getUnReads();
+    if (model != null) {
+      print('comment============================${model.comment}');
+      print('laud============================${model.laud}');
+      print('at============================${model.at}');
+      context.read<UnReadMessageNotifier>().changeUnReadMsg(comments: model.comment, ats: model.at, lauds: model.laud);
     }
+  }
+
   @override
   Widget build(BuildContext context) {
     print("消息列表页build");
@@ -58,26 +61,21 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     _listLength =
         context.watch<ConversationNotifier>().topListLength + context.watch<ConversationNotifier>().commonListLength;
     return Scaffold(
-        appBar: AppBar(
-          leading: null,
-          backgroundColor: AppColor.white,
-          brightness: Brightness.light,
-          title: Row(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: 48,
-              ),
-              Text(
-                "消息（${context.watch<RongCloudStatusNotifier>().status}）",
-                style: AppStyle.textMedium18,
-              ),
-            ],
-          ),
-          actions: [
-            IconButton(
+      appBar: AppBar(
+        leading: null,
+        backgroundColor: AppColor.white,
+        brightness: Brightness.light,
+        title: Text(
+          "消息（${context.watch<RongCloudStatusNotifier>().status}）",
+          style: AppStyle.textMedium18,
+        ),
+        centerTitle: true,
+        actions: [
+          Container(
+            alignment: Alignment.center,
+            //TODO 这里为了保证和左边返回按钮一样宽 之后要改
+            width: 56,
+            child: IconButton(
                 icon: Icon(
                   Icons.group_add,
                   color: AppColor.black,
@@ -85,23 +83,25 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                 onPressed: () async {
                   showCreateGroupPopup(context);
                 }),
-          ],
-        ),
-        body: ChangeNotifierProvider(
-          create:(_)=> UnReadMessageNotifier(),
+          ),
+        ],
+      ),
+      body: ChangeNotifierProvider(
+          create: (_) => UnReadMessageNotifier(),
           child: ScrollConfiguration(
-            behavior: NoBlueEffectBehavior(),
-            child: ListView.builder(
-                itemCount: _listLength + 1,
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return _buildTopView();
-                  } else {
-                    //因为有上方头部视图 所以index要-1
-                    return _buildConversationItem(
-                        index, context.watch<ConversationNotifier>().getConversationInAllList(index - 1));
-                  }
-                }))),);
+              behavior: NoBlueEffectBehavior(),
+              child: ListView.builder(
+                  itemCount: _listLength + 1,
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return _buildTopView();
+                    } else {
+                      //因为有上方头部视图 所以index要-1
+                      return _buildConversationItem(
+                          index, context.watch<ConversationNotifier>().getConversationInAllList(index - 1));
+                    }
+                  }))),
+    );
   }
 
   //消息列表上方的所有部分
@@ -171,41 +171,43 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           InkWell(
-            onTap: (){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                    return InteractiveNoticePage(type: type,);
-                  })).then((value){
-                    _getUnReadMsgCount();
-                  });
-
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                return InteractiveNoticePage(
+                  type: type,
+                );
+              })).then((value) {
+                _getUnReadMsgCount();
+              });
             },
             child: Stack(
-            overflow: Overflow.visible,
-            children: [
-              Container(
-                height: 45,
-                width: 45,
-                color: AppColor.mainBlue,
-              ),
-              Positioned(
-                  left: 6.5,
-                  top: 6.5,
-                  child: Container(
-                    height: 32,
-                    width: 32,
-                    color: AppColor.bgBlack,
-                  )),
-              Positioned(
-                  left: 29.5,
-                  child: CountBadge(
-                      type == 0
-                          ? context.read<UnReadMessageNotifier>().comment
-                          : type == 1
-                              ? context.read<UnReadMessageNotifier>().at
-                              :context.read<UnReadMessageNotifier>().laud,
-                      false)),
-            ],
-          ),),
+              overflow: Overflow.visible,
+              children: [
+                Container(
+                  height: 45,
+                  width: 45,
+                  color: AppColor.mainBlue,
+                ),
+                Positioned(
+                    left: 6.5,
+                    top: 6.5,
+                    child: Container(
+                      height: 32,
+                      width: 32,
+                      color: AppColor.bgBlack,
+                    )),
+                Positioned(
+                    left: 29.5,
+                    child: CountBadge(
+                        type == 0
+                            ? context.read<UnReadMessageNotifier>().comment
+                            : type == 1
+                                ? context.read<UnReadMessageNotifier>().at
+                                : context.read<UnReadMessageNotifier>().laud,
+                        false)),
+              ],
+            ),
+          ),
           SizedBox(
             height: 5,
           ),
@@ -431,19 +433,18 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     );
   }
 }
-class UnReadMessageNotifier extends ChangeNotifier{
 
+class UnReadMessageNotifier extends ChangeNotifier {
   int comment;
   int at;
   int laud;
 
-  UnReadMessageNotifier({this.comment = 0,this.at = 0,this.laud = 0});
+  UnReadMessageNotifier({this.comment = 0, this.at = 0, this.laud = 0});
 
-  void changeUnReadMsg({int comments,int ats,int lauds}){
+  void changeUnReadMsg({int comments, int ats, int lauds}) {
     comment = comments;
     at = ats;
     laud = lauds;
     notifyListeners();
   }
-
 }

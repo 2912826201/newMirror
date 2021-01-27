@@ -4,6 +4,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 
+///直播日程-title页
 // ignore: must_be_immutable
 class LiveBroadcastTitlePage extends StatefulWidget {
   final List<DateTime> dates;

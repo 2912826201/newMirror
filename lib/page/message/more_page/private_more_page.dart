@@ -11,18 +11,21 @@ import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/loading_progress.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
+///私人聊天-更多界面--管家-系统消息
 class PrivateMorePage extends StatefulWidget {
   ///对话用户id
   final String chatUserId;
   final String name;
+  final Function(int type,String name) listener;
 
   ///[chatType] 会话类型，参见类型 [OFFICIAL_TYPE]
   final int chatType;
 
-  PrivateMorePage({this.chatUserId, this.chatType, this.name});
+  PrivateMorePage({this.chatUserId, this.chatType, this.name, this.listener});
 
   @override
   createState() => PrivateMorePageState();
@@ -258,6 +261,9 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     if (blackStatus) {
       isBlackList = true;
       ToastShow.show(msg: "拉黑了这个人", context: context);
+      if(widget.listener!=null){
+        widget.listener(2,"拉黑");
+      }
       setState(() {
         dismissProgressDialog();
       });
@@ -291,7 +297,18 @@ class PrivateMorePageState extends State<PrivateMorePage> {
       return;
     }
     if (title == "拉黑") {
-      addToBlackList();
+      showAppDialog(context,
+          title: "拉黑",
+          info: "确定需要将此人拉黑吗？",
+          cancel: AppDialogButton("取消", () {
+            return true;
+          }),
+          confirm: AppDialogButton("拉黑", () {
+            Future.delayed(Duration(milliseconds: 100),(){
+              addToBlackList();
+            });
+            return true;
+          }));
     } else if (title == "解除拉黑") {
       removeFromBlackList();
     } else if (title == "消息免打扰") {

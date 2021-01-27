@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:azlistview/azlistview.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mirror/api/training/training_gallery_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
@@ -28,17 +29,24 @@ class TrainingGalleryPage extends StatefulWidget {
   _TrainingGalleryState createState() => _TrainingGalleryState();
 }
 
+// 在插入新数据时 要根据时间日期插入到相应位置 所以循环分页加载直至加载全部数据
 class _TrainingGalleryState extends State<TrainingGalleryPage> {
-  bool hasNext;
-  int lastTime;
+  final int _imageMaxSelection = 2;
+  final int _pageSize = 100;
+
+  bool _hasNext = true;
+  int _lastTime;
 
   List<TrainingGalleryDayModel> _dataList = [];
 
+  bool _isSelectionMode = false;
+  AppBar _normalModeAppBar;
+  AppBar _selectionModeAppBar;
+  final List<TrainingGalleryImageModel> _selectedImageList = [];
+  final DateFormat _dateTimeFormat = DateFormat('yyyy-MM-dd');
+
   _initData() async {
-    ListModel<TrainingGalleryDayModel> listModel = await getAlbum(20);
-    hasNext = listModel.hasNext == 1;
-    lastTime = listModel.lastTime;
-    _dataList.addAll(listModel.list);
+    await _requestDataList();
 
     SuspensionUtil.setShowSuspensionStatus(_dataList);
 
@@ -47,38 +55,79 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _initData();
+  _requestDataList() async {
+    ListModel<TrainingGalleryDayModel> listModel = await getAlbum(_pageSize, lastTime: _lastTime);
+    _hasNext = listModel.hasNext == 1;
+    _lastTime = listModel.lastTime;
+    _dataList.addAll(listModel.list);
+    if (_hasNext) {
+      await _requestDataList();
+    }
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColor.white,
-        brightness: Brightness.light,
-        title: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "健身相册",
-              style: AppStyle.textMedium18,
+  void initState() {
+    super.initState();
+    _initAppBar();
+    _initData();
+  }
+
+  _initAppBar() {
+    _selectionModeAppBar = AppBar(
+      backgroundColor: AppColor.white,
+      brightness: Brightness.light,
+      title: Stack(
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "健身相册",
+                style: AppStyle.textMedium18,
+              ),
+            ],
+          ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _isSelectionMode = false;
+                });
+              },
+              child: Text(
+                "取消",
+                style: AppStyle.textPrimary2Medium16,
+              ),
             ),
-          ],
-        ),
-        leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: AppColor.black,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            }),
-        actions: [
-          IconButton(
+          )
+        ],
+      ),
+      automaticallyImplyLeading: false,
+    );
+    _normalModeAppBar = AppBar(
+      backgroundColor: AppColor.white,
+      brightness: Brightness.light,
+      title: Text(
+        "健身相册",
+        style: AppStyle.textMedium18,
+      ),
+      centerTitle: true,
+      leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: AppColor.black,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          }),
+      actions: [
+        Container(
+          alignment: Alignment.center,
+          //TODO 这里为了保证和左边返回按钮一样宽 之后要改
+          width: 56,
+          child: IconButton(
               icon: Icon(
                 Icons.camera_alt_outlined,
                 color: AppColor.black,
@@ -87,8 +136,15 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
                 AppRouter.navigateToMediaPickerPage(
                     context, 1, typeImage, false, startPageGallery, false, false, _uploadImage);
               }),
-        ],
-      ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: _isSelectionMode ? _selectionModeAppBar : _normalModeAppBar,
       body: _buildBody(),
     );
   }
@@ -131,21 +187,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
               data: _dataList,
               indexBarData: [],
             )),
-            GestureDetector(
-              onTap: () {
-                print("制作对比图");
-              },
-              child: Container(
-                padding: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
-                height: 48 + ScreenUtil.instance.bottomBarHeight,
-                color: AppColor.textPrimary2,
-                alignment: Alignment.center,
-                child: Text(
-                  "制作对比图",
-                  style: AppStyle.whiteRegular16,
-                ),
-              ),
-            )
+            _buildBottomView(),
           ],
         ),
       );
@@ -207,54 +249,97 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   }
 
   Widget _buildImage(BuildContext context, int index, int dayIndex) {
+    TrainingGalleryImageModel imageModel = _dataList[dayIndex].list[index];
+    bool isSelected = false;
+    if (_isSelectionMode) {
+      for (TrainingGalleryImageModel selected in _selectedImageList) {
+        if (selected.id == imageModel.id) {
+          isSelected = true;
+          break;
+        }
+      }
+    }
     return GestureDetector(
       onTap: () {
-        AppRouter.navigateToTrainingGalleryDetailPage(context, _dataList, (result) {
-          if (result == null) {
-            return;
-          }
-
-          TrainingGalleryResult galleryResult = result as TrainingGalleryResult;
-          //TODO 目前只处理删除操作结果 还没有同步更新我的页面的相册数量
-          //要确保遍历后再进行增删操作
-          if (galleryResult.operation == -1) {
-            Set<int> deleteImageIdSet = Set<int>();
-            galleryResult.list.forEach((deleteImage) {
-              deleteImageIdSet.add(deleteImage.id);
+        if (_isSelectionMode) {
+          if (isSelected) {
+            //已选中 取消选择
+            setState(() {
+              _selectedImageList.remove(imageModel);
             });
-
-            List<TrainingGalleryDayModel> deleteDayList = [];
-            for (TrainingGalleryDayModel day in _dataList) {
-              List<TrainingGalleryImageModel> deleteImageList = [];
-              for (TrainingGalleryImageModel image in day.list) {
-                if (deleteImageIdSet.contains(image.id)) {
-                  deleteImageList.add(image);
-                }
-              }
-              if (deleteImageList.isNotEmpty) {
-                deleteImageList.forEach((deleteImage) {
-                  day.list.remove(deleteImage);
-                });
-                //检查是否列表中还有数据 如果没有则整条要删掉
-                if (day.list.isEmpty) {
-                  deleteDayList.add(day);
-                }
-              }
-            }
-            if (deleteDayList.isNotEmpty) {
-              deleteDayList.forEach((deleteDay) {
-                _dataList.remove(deleteDay);
-              });
-              // 有整条删掉的数据后默认重新更新tag 不做复杂的数据的比较了
-              SuspensionUtil.setShowSuspensionStatus(_dataList);
-            }
-            setState(() {});
+          } else if (_selectedImageList.length < _imageMaxSelection) {
+            //未选中 且未达到最大数量 添加选择
+            setState(() {
+              _selectedImageList.add(imageModel);
+            });
           }
-        }, dayIndex: dayIndex, imageIndex: index);
+        } else {
+          AppRouter.navigateToTrainingGalleryDetailPage(context, _dataList, (result) {
+            if (result == null) {
+              return;
+            }
+
+            TrainingGalleryResult galleryResult = result as TrainingGalleryResult;
+            //TODO 目前只处理删除操作结果 还没有同步更新我的页面的相册数量
+            //要确保遍历后再进行增删操作
+            if (galleryResult.operation == -1) {
+              Set<int> deleteImageIdSet = Set<int>();
+              galleryResult.list.forEach((deleteImage) {
+                deleteImageIdSet.add(deleteImage.id);
+              });
+
+              List<TrainingGalleryDayModel> deleteDayList = [];
+              for (TrainingGalleryDayModel day in _dataList) {
+                List<TrainingGalleryImageModel> deleteImageList = [];
+                for (TrainingGalleryImageModel image in day.list) {
+                  if (deleteImageIdSet.contains(image.id)) {
+                    deleteImageList.add(image);
+                  }
+                }
+                if (deleteImageList.isNotEmpty) {
+                  deleteImageList.forEach((deleteImage) {
+                    day.list.remove(deleteImage);
+                  });
+                  //检查是否列表中还有数据 如果没有则整条要删掉
+                  if (day.list.isEmpty) {
+                    deleteDayList.add(day);
+                  }
+                }
+              }
+              if (deleteDayList.isNotEmpty) {
+                deleteDayList.forEach((deleteDay) {
+                  _dataList.remove(deleteDay);
+                });
+                // 有整条删掉的数据后默认重新更新tag 不做复杂的数据的比较了
+                SuspensionUtil.setShowSuspensionStatus(_dataList);
+              }
+              setState(() {});
+            }
+          }, dayIndex: dayIndex, imageIndex: index);
+        }
       },
-      child: CachedNetworkImage(
-        imageUrl: _dataList[dayIndex].list[index].url,
-        fit: BoxFit.cover,
+      child: Stack(
+        children: [
+          AspectRatio(
+            aspectRatio: 1,
+            child: CachedNetworkImage(
+              imageUrl: imageModel.url,
+              fit: BoxFit.cover,
+            ),
+          ),
+          isSelected
+              ? Container(
+                  padding: const EdgeInsets.all(6),
+                  alignment: Alignment.bottomRight,
+                  color: AppColor.textPrimary2.withOpacity(0.35),
+                  child: Icon(
+                    Icons.check_circle,
+                    color: AppColor.mainRed,
+                    size: 24,
+                  ),
+                )
+              : Container()
+        ],
       ),
     );
   }
@@ -310,28 +395,17 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
           paramList.add(TrainingGalleryImageModel(
                   url: uploadResults.resultMap[mediaFileModel.file.path].url,
                   width: mediaFileModel.sizeInfo.width.toDouble(),
-                  height: mediaFileModel.sizeInfo.height.toDouble())
+                  height: mediaFileModel.sizeInfo.height.toDouble(),
+                  createTime: mediaFileModel.sizeInfo.createTime)
               .toJson());
         }
         List<TrainingGalleryImageModel> saveList = await saveAlbum(paramList);
+
         if (saveList != null) {
-          //插入数据
-          if (_dataList.isNotEmpty && saveList.first.dateTime == _dataList.first.dateTime) {
-            //如果列表不为空 且第一条的日期和结果相同 则插入已有数据
-            setState(() {
-              _dataList.first.list.insertAll(0, saveList);
-            });
-          } else {
-            //插入新数据
-            setState(() {
-              if(_dataList.isNotEmpty) {
-                //要把是不是显示月份标签修改了
-                _dataList[0].isShowSuspension = false;
-              }
-              _dataList.insert(0,
-                  TrainingGalleryDayModel(dateTime: saveList.first.dateTime, list: saveList)..isShowSuspension = true);
-            });
-          }
+          saveList.forEach((saveImage) {
+            _insertImageToDataList(saveImage);
+          });
+          setState(() {});
         } else {
           ToastShow.show(msg: "保存失败", context: context);
         }
@@ -344,6 +418,197 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
     }
 
     Loading.hideLoading(context);
+  }
+
+  Widget _buildBottomView() {
+    if (_isSelectionMode) {
+      return Container(
+        padding: EdgeInsets.fromLTRB(16, 0, 16, ScreenUtil.instance.bottomBarHeight),
+        height: 145 + ScreenUtil.instance.bottomBarHeight,
+        color: AppColor.textPrimary2,
+        child: Column(
+          children: [
+            SizedBox(
+              height: 48,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "已选择${_selectedImageList.length}/$_imageMaxSelection张照片",
+                    style: TextStyle(color: AppColor.white.withOpacity(0.65), fontSize: 14),
+                  ),
+                  Spacer(),
+                  GestureDetector(
+                    onTap: () {
+                      if (_selectedImageList.length == _imageMaxSelection) {
+                        //按时间排序入参
+                        DateTime time0 = _dateTimeFormat.parse(_selectedImageList[0].dateTime);
+                        DateTime time1 = _dateTimeFormat.parse(_selectedImageList[1].dateTime);
+                        if (time1.isBefore(time0)) {
+                          AppRouter.navigateToTrainingGalleryComparisonPage(
+                              context, _selectedImageList[1], _selectedImageList[0]);
+                        } else {
+                          AppRouter.navigateToTrainingGalleryComparisonPage(
+                              context, _selectedImageList[0], _selectedImageList[1]);
+                        }
+                      }
+                    },
+                    child: Text(
+                      "继续",
+                      style: _selectedImageList.length == _imageMaxSelection
+                          ? TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 14)
+                          : TextStyle(color: AppColor.white.withOpacity(0.85 * 0.24), fontSize: 14),
+                    ),
+                  )
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 97,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _selectedImageList.length > 0
+                      ? GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedImageList.removeAt(0);
+                            });
+                          },
+                          child: Container(
+                            height: ScreenUtil.instance.bottomBarHeight == 0 ? 74 : 93,
+                            width: ScreenUtil.instance.bottomBarHeight == 0 ? 74 : 93,
+                            child: Stack(
+                              children: [
+                                AspectRatio(
+                                  aspectRatio: 1,
+                                  child: CachedNetworkImage(
+                                    imageUrl: _selectedImageList[0].url,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(6),
+                                  alignment: Alignment.bottomRight,
+                                  color: AppColor.textPrimary2.withOpacity(0.35),
+                                  child: Icon(
+                                    Icons.remove_circle,
+                                    color: AppColor.mainRed,
+                                    size: 24,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        )
+                      : Container(),
+                  SizedBox(
+                    width: 12,
+                  ),
+                  _selectedImageList.length > 1
+                      ? GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedImageList.removeAt(1);
+                            });
+                          },
+                          child: Container(
+                            height: ScreenUtil.instance.bottomBarHeight == 0 ? 74 : 93,
+                            width: ScreenUtil.instance.bottomBarHeight == 0 ? 74 : 93,
+                            child: Stack(
+                              children: [
+                                AspectRatio(
+                                  aspectRatio: 1,
+                                  child: CachedNetworkImage(
+                                    imageUrl: _selectedImageList[1].url,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(6),
+                                  alignment: Alignment.bottomRight,
+                                  color: AppColor.textPrimary2.withOpacity(0.35),
+                                  child: Icon(
+                                    Icons.remove_circle,
+                                    color: AppColor.mainRed,
+                                    size: 24,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        )
+                      : Container(),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return GestureDetector(
+        onTap: () {
+          print("制作对比图");
+          setState(() {
+            _selectedImageList.clear();
+            _isSelectionMode = true;
+          });
+        },
+        child: Container(
+          padding: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
+          height: 48 + ScreenUtil.instance.bottomBarHeight,
+          color: AppColor.textPrimary2,
+          alignment: Alignment.center,
+          child: Text(
+            "制作对比图",
+            style: AppStyle.whiteRegular16,
+          ),
+        ),
+      );
+    }
+  }
+
+  _insertImageToDataList(TrainingGalleryImageModel saveImage) {
+    if (_dataList.isNotEmpty) {
+      DateTime imageTime = _dateTimeFormat.parse(saveImage.dateTime);
+      for (int i = 0; i < _dataList.length; i++) {
+        TrainingGalleryDayModel dayModel = _dataList[i];
+        DateTime dayTime = _dateTimeFormat.parse(dayModel.dateTime);
+        //时间倒序排列 所以当日期等于dayModel的值时插入该dayModel的list 小于时继续遍历 大于时新建并插入dayModel 小于最后一条也新建
+        if (imageTime.isAtSameMomentAs(dayTime)) {
+          dayModel.list.add(saveImage);
+          //倒序排列
+          dayModel.list.sort((a, b) => b.createTime.compareTo(a.createTime));
+          //插入imageList并不影响日期标签
+          //一定要break 不然可能会无限添加
+          break;
+        } else if (imageTime.isAfter(dayTime)) {
+          TrainingGalleryDayModel newDayModel = TrainingGalleryDayModel();
+          newDayModel.dateTime = saveImage.dateTime;
+          newDayModel.list = [saveImage];
+          _dataList.insert(i, newDayModel);
+          //新建并插入dayModel可能会影响日期标签 所以重新设置
+          SuspensionUtil.setShowSuspensionStatus(_dataList);
+          //一定要break 不然可能会无限添加
+          break;
+        } else if (i == _dataList.length - 1 && imageTime.isBefore(dayTime)) {
+          TrainingGalleryDayModel newDayModel = TrainingGalleryDayModel();
+          newDayModel.dateTime = saveImage.dateTime;
+          newDayModel.list = [saveImage];
+          _dataList.add(newDayModel);
+          //新建并插入dayModel可能会影响日期标签 所以重新设置
+          SuspensionUtil.setShowSuspensionStatus(_dataList);
+          //一定要break 不然可能会无限添加
+          break;
+        }
+      }
+    } else {
+      TrainingGalleryDayModel newDayModel = TrainingGalleryDayModel();
+      newDayModel.dateTime = saveImage.dateTime;
+      newDayModel.list = [saveImage];
+      _dataList.add(newDayModel);
+      SuspensionUtil.setShowSuspensionStatus(_dataList);
+    }
   }
 }
 

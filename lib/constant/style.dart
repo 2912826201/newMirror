@@ -60,6 +60,10 @@ class AppStyle {
   static const textPrimary3Medium16 =
       TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColor.textPrimary3);
 
+  // Medium primary2 黑色
+  static const textPrimary2Medium16 =
+      TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColor.textPrimary2);
+
   //红色
   static const redRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.mainRed);
   static const redRegular13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.mainRed);
@@ -77,7 +81,7 @@ class AppStyle {
 
   //纯黑色
   static const blackBold21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w700, color: AppColor.black);
-  
+
   //不在规范内style
   static const textMediumBlue13 = TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.urlText);
   static const textDeleteHintRegular12 = TextStyle(

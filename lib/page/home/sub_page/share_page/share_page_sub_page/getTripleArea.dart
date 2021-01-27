@@ -195,7 +195,8 @@ class GetTripleAreaState extends State<GetTripleArea> {
                 openShareBottomSheet(
                     context: context,
                     map: widget.model.toJson(),
-                    chatTypeModel: ChatTypeModel.MESSAGE_TYPE_FEED);
+                    chatTypeModel: ChatTypeModel.MESSAGE_TYPE_FEED,
+                  sharedType: 1);
               },
               child: Image.asset(
                 "images/test/分享.png",
@@ -213,7 +214,6 @@ class GetTripleAreaState extends State<GetTripleArea> {
                   height: 24,
                 ),
                 onTap: () {
-                  context.read<FeedMapNotifier>().changeCommentList(widget.commentDtoModel);
                   openFeedCommentBottomSheet(context: context, feedId: widget.model.id,callback: (){
                     widget.back();
                   });

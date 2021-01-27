@@ -70,7 +70,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
     super.build(context);
     return Scaffold(
       appBar: AppBar(
-          leading: null,
+          automaticallyImplyLeading: false,
           backgroundColor: AppColor.white,
           brightness: Brightness.light,
           title: Row(

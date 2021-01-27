@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 const double _kMenuScreenPadding = 8.0;
 
-//绘制三角形
+//绘制三角形-长按提示框的三角形
 class TrianglePainter extends CustomPainter {
   Paint _paint;
   final Color color;

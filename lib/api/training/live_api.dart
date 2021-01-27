@@ -1,14 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/api/api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/list_model.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/util/toast_util.dart';
 
 // 根据日期获取直播课程列表
 const String GETLIVECOURSESBYDATE = "/sport/web/liveCourse/getLiveCoursesByDate";
 
 // 直播课程详情
 const String LIVECOURSEDETAIL = "/sport/web/liveCourse/detail";
+
+// 直播课程详情--根据id获取
+const String GETLATESTLIVEBYID = "/sport/web/liveCourse/getLatestLiveById";
 
 // 视频课程详情
 const String GETVIDEOCOURSEDETAIL = "/sport/web/videoCourse/getVideoCourseDetail";
@@ -73,6 +78,21 @@ Future<Map> liveCourseDetail({@required int courseId, @required String startTime
   }
 }
 
+
+///直播课程详情--根据id获取
+///请求参数
+///courseId:1
+Future<Map> getLatestLiveById({@required int courseId,String startTime}) async {
+  Map<String, dynamic> params = {};
+  params["courseId"] = courseId.toString();
+  BaseResponseModel responseModel = await requestApi(GETLATESTLIVEBYID, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
+
 ///视频课程详情
 ///请求参数
 ///courseId:1
@@ -99,7 +119,15 @@ Future<Map> bookLiveCourse({@required int courseId, @required String startTime, 
   params["type"] = isBook ? 1 : 0;
   BaseResponseModel responseModel = await requestApi(BOOKLIVECOURSE, params);
   if (responseModel.isSuccess) {
-    return responseModel.data;
+    if(responseModel.code==200) {
+      params.clear();
+      params.addAll(responseModel.data);
+      params["code"]=200;
+    }else if(responseModel.code==321){
+      params.clear();
+      params["code"]=321;
+    }
+    return params;
   } else {
     return null;
   }

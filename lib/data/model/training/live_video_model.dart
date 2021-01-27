@@ -63,11 +63,30 @@ class LiveVideoModel {
     } else if (this.playType == 1) {
       return "去上课";
     } else {
-      if (startTime != null && startTime.isNotEmpty) {
-        DateTime dateTime = DateUtil.stringToDateTime(this.startTime);
-        DateTime endTime = DateUtil.stringToDateTime(this.endTime);
-        var startTime = dateTime.add(new Duration(minutes: -15));
-        if (DateUtil.compareNowDate(startTime)) {
+      DateTime startTime = DateUtil.stringToDateTime(this.startTime);
+      DateTime endTime = DateUtil.stringToDateTime(this.endTime);
+
+      if (coachDto.isLiving == 1) {
+        this.playType = 1;
+        return "去上课";
+      } else {
+        if (startTime != null) {
+          if (DateUtil.compareNowDate(startTime)) {
+            if (this.isBooked == 0) {
+              this.playType = 2;
+              return "预约";
+            } else {
+              this.playType = 4;
+              return "已预约";
+            }
+          } else if (DateUtil.compareNowDate(endTime)) {
+            this.playType = 1;
+            return "去上课";
+          } else {
+            this.playType = 3;
+            return "回放";
+          }
+        } else {
           if (this.isBooked == 0) {
             this.playType = 2;
             return "预约";
@@ -75,20 +94,6 @@ class LiveVideoModel {
             this.playType = 4;
             return "已预约";
           }
-        } else if (DateUtil.compareNowDate(endTime)) {
-          this.playType = 1;
-          return "去上课";
-        } else {
-          this.playType = 3;
-          return "回放";
-        }
-      } else {
-        if (this.isBooked == 0) {
-          this.playType = 2;
-          return "预约";
-        } else {
-          this.playType = 4;
-          return "已预约";
         }
       }
     }
@@ -133,6 +138,7 @@ class LiveVideoModel {
   int _dataState;
   int _createTime;
   int _updateTime;
+  int _endState;
   double _vipprice;
 
   int get id => _id;
@@ -212,6 +218,7 @@ class LiveVideoModel {
   int get createTime => _createTime;
 
   int get updateTime => _updateTime;
+  int get endState => _endState;
 
   double get vipprice => _vipprice;
 
@@ -255,6 +262,7 @@ class LiveVideoModel {
       int dataState,
       int createTime,
       int updateTime,
+      int endState,
       double vipprice}) {
     _id = id;
     _title = title;
@@ -296,6 +304,7 @@ class LiveVideoModel {
     _createTime = createTime;
     _updateTime = updateTime;
     _vipprice = vipprice;
+    _endState = endState;
     playType = 0;
   }
 
@@ -349,6 +358,7 @@ class LiveVideoModel {
     _dataState = json["dataState"];
     _createTime = json["createTime"];
     _updateTime = json["updateTime"];
+    _endState = json["endState"];
     _vipprice = json["vipprice"];
   }
 
@@ -397,6 +407,7 @@ class LiveVideoModel {
     map["dataState"] = _dataState;
     map["createTime"] = _createTime;
     map["updateTime"] = _updateTime;
+    map["endState"] = _endState;
     map["vipprice"] = _vipprice;
     return map;
   }

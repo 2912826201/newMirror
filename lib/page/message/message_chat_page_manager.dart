@@ -23,10 +23,12 @@ import 'package:provider/provider.dart';
 import 'more_page/group_more_page.dart';
 import 'more_page/private_more_page.dart';
 
+///几乎所有的消息发送添加转发页
+
+//todo 目前没有做这个限制
 //融云每一秒支持发送5条消息
 int imPostSecondNumber = 5;
 
-// typedef VoidCallback = void Function();
 
 //去对应的聊天界面
 //目前是从用户详情页的私聊过来的
@@ -69,6 +71,21 @@ Future<bool> jumpShareMessage(
     print("给$name分享了视频课程");
     message = await postMessageManagerVideoCourse(conversation.conversationId,
         map, conversation.getType() == RCConversationType.Private);
+  } else if (chatType == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
+    print("给$name分享了图片");
+    MediaFileModel mediaFileModel=new MediaFileModel();
+    SizeInfo sizeInfo=new SizeInfo();
+    sizeInfo.height=map["height"];
+    sizeInfo.width=map["width"];
+    mediaFileModel.sizeInfo=sizeInfo;
+    UploadResultModel uploadResultModel=await onPostImgOrVideoSinge(map["file"]);
+    message = await postMessageManagerImgOrVideo(
+        conversation.conversationId,
+        true,
+        mediaFileModel,
+        uploadResultModel,
+        conversation.getType() == RCConversationType.Private,
+    );
   } else {
     chatType = ChatTypeModel.NULL_COMMENT;
     print("给$name分享了未知消息");
@@ -128,6 +145,21 @@ Future<Message> postMessageManagerText(String targetId, String text,
   textMap["data"] = text;
   msg.content = jsonEncode(textMap);
   return await (isPrivate ? postPrivateMessageManager : postGroupMessageManager)(targetId, msg);
+}
+
+//发送谁修改群名
+Future<Message> postMessageManagerUpdateGroupName(String targetId, String text) async {
+  TextMessage msg = TextMessage();
+  msg.sendUserInfo = getChatUserInfo();
+  Map<String, dynamic> textMap = Map();
+  textMap["fromUserId"] = msg.sendUserInfo.userId.toString();
+  textMap["toUserId"] = targetId;
+  textMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME;
+  textMap["name"] = ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME_NAME;
+  textMap["nickName"] = Application.chatGroupUserModelMap[msg.sendUserInfo.userId.toString()];
+  textMap["data"] = text;
+  msg.content = jsonEncode(textMap);
+  return await postGroupMessageManager(targetId, msg);
 }
 
 //发送可选择的消息
@@ -358,6 +390,13 @@ void postText(ChatDataModel chatDataModel, String targetId, int chatTypeId,
   voidCallback();
 }
 
+//发送修改群名消息
+void postGroupUpdateName(ChatDataModel chatDataModel, String targetId,VoidCallback voidCallback)async{
+  chatDataModel.msg = await postMessageManagerUpdateGroupName(targetId, chatDataModel.content);
+  chatDataModel.isTemporary = false;
+  voidCallback();
+}
+
 //生成消息的model
 ChatDataModel getMessage(Message message, {bool isHaveAnimation = true}) {
   ChatDataModel chatDataModel = new ChatDataModel();
@@ -369,9 +408,9 @@ ChatDataModel getMessage(Message message, {bool isHaveAnimation = true}) {
 
 //插入撤回消息
 void getReChatDataModel(
-    {String targetId, int conversationType, int chatTypeId, int sendTime, Function(Message msg, int code) finished}) async {
+    {String targetId, int conversationType, int chatTypeId, int sendTime,String text, Function(Message msg, int code) finished}) async {
   postMessageManagerAlertTime(ChatTypeModel.MESSAGE_TYPE_ALERT, ChatTypeModel.MESSAGE_TYPE_ALERT_NAME,
-      "你撤回了一条消息", targetId,
+      text, targetId,
       conversationType, finished, sendTime: sendTime);
 }
 
@@ -446,8 +485,7 @@ void postSelectMessage(ChatDataModel chatDataModel, String targetId,
 void postImgOrVideo(List<ChatDataModel> modelList, String targetId, String type,
     int chatTypeId,
     VoidCallback voidCallback) async {
-  List<UploadResultModel> uploadResultModelList =
-  await onPostImgOrVideo(modelList, type);
+  List<UploadResultModel> uploadResultModelList = await onPostImgOrVideo(modelList, type);
   for (int i = 0; i < modelList.length; i++) {
     int uploadResultModelIndex = -1;
     for (int j = 0; j < uploadResultModelList.length; j++) {
@@ -483,6 +521,29 @@ void postVoice(ChatDataModel chatDataModel, String targetId,
   chatDataModel.isTemporary = false;
   voidCallback();
 }
+//重新发送消息
+void resetPostMessage(ChatDataModel chatDataModel, VoidCallback voidCallback) async {
+  chatDataModel.msg =await Application.rongCloud.sendVoiceMessage(chatDataModel.msg);
+  chatDataModel.isTemporary = false;
+  voidCallback();
+}
+Future<UploadResultModel> onPostImgOrVideoSinge(File file)async{
+  List<File> fileList = [];
+  fileList.add(file);
+  UploadResults  results = await FileUtil().uploadPics(fileList, (percent) {});
+  List<UploadResultModel> uploadResultModelList = <UploadResultModel>[];
+  for (int i = 0; i < results.resultMap.length; i++) {
+    UploadResultModel model = results.resultMap.values.elementAt(i);
+    uploadResultModelList.add(model);
+    print("第${i + 1}个上传文件");
+    print(model.isSuccess);
+    print(model.error);
+    print(model.filePath);
+    print(model.url);
+  }
+  return uploadResultModelList[0];
+}
+
 
 //上传图片和视频
 Future<List<UploadResultModel>> onPostImgOrVideo(
@@ -498,8 +559,7 @@ Future<List<UploadResultModel>> onPostImgOrVideo(
         fileList.add(element.mediaFileModel.file);
       } else {
         i++;
-        File imageFile = await FileUtil().writeImageDataToFile(
-            element.mediaFileModel.croppedImageData, timeStr + i.toString());
+        File imageFile = await FileUtil().writeImageDataToFile(element.mediaFileModel.croppedImageData, timeStr + i.toString());
         fileList.add(imageFile);
       }
     });
@@ -629,6 +689,7 @@ void judgeJumpPage(
           chatUserId: chatUserId,
           chatType: chatType,
           name: name,
+          listener: listener,
         ),
         false,
         context);

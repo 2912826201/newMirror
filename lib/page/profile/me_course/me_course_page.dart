@@ -7,7 +7,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-//我的课程
+///我的课程
 class MeCoursePage extends StatefulWidget {
   @override
   _MeCoursePageState createState() => _MeCoursePageState();

@@ -14,6 +14,7 @@ import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/page/training/video_course/sliver_custom_header_delegate_video.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
@@ -1311,154 +1312,6 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     return textSpanList;
   }
 
-  //获取底部按钮
-  Widget _getBottomBar() {
-    bool isLoggedIn;
-    context.select((TokenNotifier notifier) => notifier.isLoggedIn ? isLoggedIn = true : isLoggedIn = false);
-
-    //todo 判断是否链接了终端
-    bool bindingTerminal = false;
-    //todo 判断用户是不是vip
-    bool isVip = false;
-
-    TextStyle textStyle = const TextStyle(color: AppColor.white, fontSize: 16);
-    TextStyle textStyleVip = const TextStyle(color: AppColor.textVipPrimary1, fontSize: 16);
-    EdgeInsetsGeometry margin_32 = const EdgeInsets.only(left: 32, right: 32);
-    EdgeInsetsGeometry marginLeft26Right20 = const EdgeInsets.only(left: 26, right: 20);
-
-    var childrenArray = <Widget>[];
-
-    Widget widget3 = Container(
-      width: 60,
-      color: AppColor.transparent,
-      height: double.infinity,
-      margin: marginLeft26Right20,
-      child: Column(
-        children: [
-          Icon(Icons.headset),
-          Text("试听"),
-        ],
-      ),
-    );
-
-    if (!isDownLoading) {
-      if (!isLoggedIn) {
-        childrenArray.add(Expanded(
-            child: SizedBox(
-          child: GestureDetector(
-            child: getBtnUi(false, "试听", textStyle, double.infinity, 40, margin_32),
-            onTap: onNoLoginClickListener,
-          ),
-        )));
-      } else {
-        //试听图片
-        childrenArray.add(GestureDetector(
-          child: widget3,
-          onTap: onJudgeIsDownLoadCompleteVideo,
-        ));
-
-        if (videoModel.priceType == 0 || (videoModel.priceType == 1 && isVip)) {
-          if (bindingTerminal) {
-            childrenArray.add(Expanded(
-                child: SizedBox(
-              child: GestureDetector(
-                child: getBtnUi(false, "使用终端训练", textStyle, double.infinity, 40, margin_32),
-                onTap: () {
-                  print("绑定了终端");
-                  ToastShow.show(msg: "使用终端训练", context: context);
-                },
-              ),
-            )));
-          } else {
-            childrenArray.add(Expanded(
-                child: SizedBox(
-                  child: GestureDetector(
-                    child: getBtnUi(false, "登陆终端使用终端播放", textStyle, double.infinity, 40, margin_32),
-                    onTap: () {
-                      print("没有绑定终端");
-                      ToastShow.show(msg: "登陆终端", context: context);
-                    },
-                  ),
-                )));
-          }
-        } else if (videoModel.priceType == 2) {
-          //todo 付费视频--目前是开通vip
-          if (bindingTerminal) {
-            childrenArray.add(Expanded(
-                child: SizedBox(
-                  child: GestureDetector(
-                    child: getBtnUi(true, "开通vip使用终端播放", textStyleVip, double.infinity, 40, margin_32),
-                    onTap: () {
-                      print("vip");
-                      ToastShow.show(msg: "开通vip使用终端播放", context: context);
-                    },
-                  ),
-                )));
-          } else {
-            childrenArray.add(Expanded(
-                child: SizedBox(
-                  child: GestureDetector(
-                    child: getBtnUi(false, "登陆终端使用终端播放", textStyle, double.infinity, 40, margin_32),
-                    onTap: () {
-                      print("没有绑定终端");
-                      ToastShow.show(msg: "登陆终端", context: context);
-                    },
-                  ),
-                )));
-          }
-        } else {
-          //需要开通vip
-
-
-          if (bindingTerminal) {
-            childrenArray.add(Expanded(
-                child: SizedBox(
-                  child: GestureDetector(
-                    child: getBtnUi(true, "开通vip使用终端播放", textStyleVip, double.infinity, 40, margin_32),
-                    onTap: () {
-                      print("vip");
-                      ToastShow.show(msg: "开通vip使用终端播放", context: context);
-                    },
-                  ),
-                )));
-          } else {
-            childrenArray.add(Expanded(
-                child: SizedBox(
-                  child: GestureDetector(
-                    child: getBtnUi(false, "登陆终端使用终端播放", textStyle, double.infinity, 40, margin_32),
-                    onTap: () {
-                      print("没有绑定终端");
-                      ToastShow.show(msg: "登陆终端", context: context);
-                    },
-                  ),
-                )));
-          }
-        }
-      }
-    } else {
-      childrenArray.add(Expanded(
-          child: SizedBox(
-        child: GestureDetector(
-          child: getDownloadingUi(_progress == 0.0 ? "下载准备中" : "下载中 ${formatProgress(_progress)}%"),
-          onTap: () {
-            print("下载中");
-            ToastShow.show(msg: "下载中", context: context);
-          },
-        ),
-      )));
-    }
-
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      child: Container(
-        width: double.infinity,
-        child: Row(
-          children: childrenArray,
-        ),
-      ),
-    );
-  }
 
   //获取下载中的ui
   Widget getDownloadingUi(String text) {
@@ -1714,6 +1567,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     }
   }
 
+  //todo 查询子评论会出现一个问题 当之前发布的子评论 个数过多会出现在下次请求中-去重导致感官-点击没有加载数据
   //获取子评论
   _getSubComment(int targetId, int replyLength, int replyCount, int pullNumber, int positionComment) async {
     int subCommentPageSize = 3;
@@ -1742,6 +1596,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                   commentDtoModelList.removeAt(j);
                   j--;
                   (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber--;
+                  (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replyCount++;
                 }
               }
             }
@@ -1842,7 +1697,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   void _shareBtnClick() {
     print("分享点击事件视频课");
     openShareBottomSheet(
-        context: context, map: videoModel.toJson(), chatTypeModel: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
+        context: context,sharedType: 1, map: videoModel.toJson(), chatTypeModel: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
   }
 
   //分享的收藏按钮
@@ -1952,6 +1807,161 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       videoModel.coachDto?.relation = 1;
       setState(() {});
     }
+  }
+
+  //获取底部按钮
+  Widget _getBottomBar() {
+    bool isLoggedIn;
+    context.select((TokenNotifier notifier) => notifier.isLoggedIn ? isLoggedIn = true : isLoggedIn = false);
+
+    //todo 判断是否链接了终端
+    bool bindingTerminal = false;
+    //todo 判断用户是不是vip
+    bool isVip = false;
+
+    TextStyle textStyle = const TextStyle(color: AppColor.white, fontSize: 16);
+    TextStyle textStyleVip = const TextStyle(color: AppColor.textVipPrimary1, fontSize: 16);
+    EdgeInsetsGeometry margin_32 = const EdgeInsets.only(left: 32, right: 32);
+    EdgeInsetsGeometry marginLeft26Right20 = const EdgeInsets.only(left: 26, right: 20);
+
+    var childrenArray = <Widget>[];
+
+    Widget widget3 = Container(
+      width: 60,
+      color: AppColor.transparent,
+      height: double.infinity,
+      margin: marginLeft26Right20,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.headset),
+          Text("试听"),
+        ],
+      ),
+    );
+
+    if (!isDownLoading) {
+      if (!isLoggedIn) {
+        childrenArray.add(Expanded(
+            child: SizedBox(
+          child: GestureDetector(
+            child: getBtnUi(false, "试听", textStyle, double.infinity, 40, margin_32),
+            onTap: onNoLoginClickListener,
+          ),
+        )));
+      } else {
+        //试听图片
+        childrenArray.add(GestureDetector(
+          child: widget3,
+          onTap: onJudgeIsDownLoadCompleteVideo,
+        ));
+
+        if (videoModel.priceType == 0 || (videoModel.priceType == 1 && isVip)) {
+          if (bindingTerminal) {
+            childrenArray.add(Expanded(
+                child: SizedBox(
+              child: GestureDetector(
+                child: getBtnUi(false, "使用终端训练", textStyle, double.infinity, 40, margin_32),
+                onTap: () {
+                  print("绑定了终端");
+                  ToastShow.show(msg: "使用终端训练", context: context);
+                },
+              ),
+            )));
+          } else {
+            childrenArray.add(Expanded(
+                child: SizedBox(
+              child: GestureDetector(
+                child: getBtnUi(false, "登陆终端使用终端播放", textStyle, double.infinity, 40, margin_32),
+                onTap: () {
+                  print("没有绑定终端");
+                  ToastShow.show(msg: "登陆终端", context: context);
+                },
+              ),
+            )));
+          }
+        } else if (videoModel.priceType == 2) {
+          //todo 付费视频--目前是开通vip
+          if (bindingTerminal) {
+            childrenArray.add(Expanded(
+                child: SizedBox(
+              child: GestureDetector(
+                child: getBtnUi(true, "开通vip使用终端播放", textStyleVip, double.infinity, 40, margin_32),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                    return VipNotOpenPage(
+                      type: VipState.NOTOPEN,
+                    );
+                  }));
+                },
+              ),
+            )));
+          } else {
+            childrenArray.add(Expanded(
+                child: SizedBox(
+              child: GestureDetector(
+                child: getBtnUi(false, "登陆终端使用终端播放", textStyle, double.infinity, 40, margin_32),
+                onTap: () {
+                  print("没有绑定终端");
+                  ToastShow.show(msg: "登陆终端", context: context);
+                },
+              ),
+            )));
+          }
+        } else {
+          //需要开通vip
+
+          if (bindingTerminal) {
+            childrenArray.add(Expanded(
+                child: SizedBox(
+              child: GestureDetector(
+                child: getBtnUi(true, "开通vip使用终端播放", textStyleVip, double.infinity, 40, margin_32),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                    return VipNotOpenPage(
+                      type: VipState.NOTOPEN,
+                    );
+                  }));
+                },
+              ),
+            )));
+          } else {
+            childrenArray.add(Expanded(
+                child: SizedBox(
+              child: GestureDetector(
+                child: getBtnUi(false, "登陆终端使用终端播放", textStyle, double.infinity, 40, margin_32),
+                onTap: () {
+                  print("没有绑定终端");
+                  ToastShow.show(msg: "登陆终端", context: context);
+                },
+              ),
+            )));
+          }
+        }
+      }
+    } else {
+      childrenArray.add(Expanded(
+          child: SizedBox(
+        child: GestureDetector(
+          child: getDownloadingUi(_progress == 0.0 ? "下载准备中" : "下载中 ${formatProgress(_progress)}%"),
+          onTap: () {
+            print("下载中");
+            ToastShow.show(msg: "下载中", context: context);
+          },
+        ),
+      )));
+    }
+
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      child: Container(
+        width: double.infinity,
+        child: Row(
+          children: childrenArray,
+        ),
+      ),
+    );
   }
 }
 

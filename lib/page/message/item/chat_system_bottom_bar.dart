@@ -4,6 +4,8 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/page/message/message_view/currency_msg.dart';
 
+
+///管家界面-底部可操作列表
 class ChatSystemBottomBar extends StatelessWidget {
   final List<String> alertList = [
     "获取个人数据",
