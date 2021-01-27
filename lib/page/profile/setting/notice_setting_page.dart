@@ -19,8 +19,7 @@ class NoticeSettingPage extends StatefulWidget {
   }
 }
 
-class _NoticeSettingState extends State<NoticeSettingPage>
-    with WidgetsBindingObserver {
+class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingObserver {
   bool getNoticeIsOpen = true;
 
   bool permissionOpen = false;

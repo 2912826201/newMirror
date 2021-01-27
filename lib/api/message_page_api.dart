@@ -302,12 +302,13 @@ Future<Map> queryNoPromptUidList() async {
     return null;
   }
 }
-Future<bool> refreashUnReadMsg(int type,{int msgIds})async{
+
+Future<bool> refreshUnreadMsg(int type, {int timeStamp})async{
   Map<String,dynamic> map = Map();
-  if(msgIds!=null){
-    map["msgIds"] = msgIds;
-  }
   map["type"] = type;
+  if(timeStamp != null){
+    map["timeStamp"] = timeStamp;
+  }
   BaseResponseModel responseModel = await requestApi(REFREASHMSGUNREAD, map);
   Map<String, dynamic> result = responseModel.data;
   bool state;
