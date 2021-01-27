@@ -71,7 +71,7 @@ void main() {
             ChangeNotifierProvider(create: (_) => FitnessInformationNotifier()),
             ChangeNotifierProvider(create: (_) => ProfilePageNotifier()),
         ChangeNotifierProvider(create: (_) => GroupUserProfileNotifier()),
-        ChangeNotifierProvider(create: (_) => UnReadMessageNotifier()),
+        ChangeNotifierProvider(create: (_) => UnreadMessageNotifier()),
         ChangeNotifierProvider(create: (_)=>VipMoveNotifier()),
         ChangeNotifierProvider(create: (_)=>AppDialogNotifier()),
       ],

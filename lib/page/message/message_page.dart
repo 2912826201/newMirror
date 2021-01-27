@@ -50,7 +50,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
       print('comment============================${model.comment}');
       print('laud============================${model.laud}');
       print('at============================${model.at}');
-      context.read<UnReadMessageNotifier>().changeUnReadMsg(comments: model.comment, ats: model.at, lauds: model.laud);
+      context.read<UnreadMessageNotifier>().changeUnreadMsg(comments: model.comment, ats: model.at, lauds: model.laud);
     }
   }
 
@@ -87,7 +87,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         ],
       ),
       body: ChangeNotifierProvider(
-          create: (_) => UnReadMessageNotifier(),
+          create: (_) => UnreadMessageNotifier(),
           child: ScrollConfiguration(
               behavior: NoBlueEffectBehavior(),
               child: ListView.builder(
@@ -200,10 +200,10 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                     left: 29.5,
                     child: CountBadge(
                         type == 0
-                            ? context.read<UnReadMessageNotifier>().comment
+                            ? context.read<UnreadMessageNotifier>().comment
                             : type == 1
-                                ? context.read<UnReadMessageNotifier>().at
-                                : context.read<UnReadMessageNotifier>().laud,
+                                ? context.read<UnreadMessageNotifier>().at
+                                : context.read<UnreadMessageNotifier>().laud,
                         false)),
               ],
             ),
@@ -434,14 +434,14 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   }
 }
 
-class UnReadMessageNotifier extends ChangeNotifier {
+class UnreadMessageNotifier extends ChangeNotifier {
   int comment;
   int at;
   int laud;
 
-  UnReadMessageNotifier({this.comment = 0, this.at = 0, this.laud = 0});
+  UnreadMessageNotifier({this.comment = 0, this.at = 0, this.laud = 0});
 
-  void changeUnReadMsg({int comments, int ats, int lauds}) {
+  void changeUnreadMsg({int comments, int ats, int lauds}) {
     comment = comments;
     at = ats;
     laud = lauds;
