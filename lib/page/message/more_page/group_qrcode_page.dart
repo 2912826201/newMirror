@@ -244,7 +244,7 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
   Widget _centerQr() {
     return Container(
         width: MediaQuery.of(context).size.width - (37.5 * 2),
-        margin: const EdgeInsets.symmetric(horizontal: 37.5),
+        margin: const EdgeInsets.only(left: 37.5,right: 37.5,bottom: 50),
         decoration: BoxDecoration(
           color: AppColor.white,
           borderRadius: BorderRadius.all(Radius.circular(10)),

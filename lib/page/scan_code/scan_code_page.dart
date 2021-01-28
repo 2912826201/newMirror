@@ -13,6 +13,7 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
+import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
@@ -224,7 +225,19 @@ class _ScanCodeState extends State<ScanCodePage> {
         String code=dataString;
         code=code.substring(code.indexOf("code")+5,code.length);
         Map<String, dynamic> joinMap = await joinGroupChatUnrestricted(code);
-        print("joinMap:"+joinMap.toString());
+        // print("joinMap:"+joinMap.toString());
+        if(joinMap!=null&&joinMap["id"]!=null){
+          String name="";
+          if(joinMap["modifiedName"]!=null){
+            name=joinMap["modifiedName"];
+          }else if(joinMap["name"]!=null){
+            name=joinMap["name"];
+          }else{
+            name=joinMap["id"].toString();
+          }
+          Navigator.of(context).pop();
+          jumpGroupPage(context,name,joinMap["id"]);
+        }
       }else{
         print("未知指令");
       }
