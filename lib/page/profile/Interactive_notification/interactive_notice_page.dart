@@ -1,13 +1,17 @@
+import 'dart:js';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/message_page_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/query_msglist_model.dart';
+import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/feed/feed_detail_page.dart';
 import 'package:mirror/route/router.dart';
@@ -225,13 +229,14 @@ class InteractiveNoticeItemState extends StatelessWidget {
   int index;
   CommentDtoModel commentModel;
   HomeFeedModel homeFeedModel;
+  LiveVideoModel liveVideoModel;
   List<AtUsersModel> atUserList = [];
   String coverImage;
   bool feedIsDelete = false;
   bool commentIsDelete = false;
   String commentState;
 
-  _getRefData() async {
+  _getRefData(BuildContext context) async {
     if (msgModel.refType == 0) {
       homeFeedModel = HomeFeedModel.fromJson(msgModel.refData);
       if (homeFeedModel != null) {
@@ -242,8 +247,20 @@ class InteractiveNoticeItemState extends StatelessWidget {
     } else if (msgModel.refType == 2) {
       commentModel = CommentDtoModel.fromJson(msgModel.refData);
       if (commentModel != null) {
-        homeFeedModel = await feedDetail(id: commentModel.targetId);
+        if(commentModel.type==0){
+          homeFeedModel = await feedDetail(id: commentModel.targetId);
+        }else if(commentModel.type == 1){
+          AppRouter.navigateToLiveDetail(context,commentModel.targetId,isHaveStartTime: false);
+        }else if(commentModel.type == 3){
+          AppRouter.navigateToVideoDetail(context, commentModel.targetId);
+        }
       }
+    }else if(msgModel.refType == 1){
+      liveVideoModel = LiveVideoModel.fromJson(msgModel.refData);
+      AppRouter.navigateToLiveDetail(context,liveVideoModel.id,isHaveStartTime: false);
+    }else{
+      liveVideoModel = LiveVideoModel.fromJson(msgModel.refData);
+      AppRouter.navigateToVideoDetail(context, commentModel.targetId);
     }
   }
 
@@ -288,7 +305,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
     senderName = msgModel.senderName;
     commentModel = msgModel.commentData;
     coverImage = msgModel.coverUrl;
-    _getRefData();
+    _getRefData(context);
     if (type == 0) {
       if (msgModel.refType == 2) {
         commentState = "回复了  ";
@@ -393,10 +410,12 @@ class InteractiveNoticeItemState extends StatelessWidget {
               ? InkWell(
                   onTap: () {
                     if (type == 0) {
-                      if (msgModel.refType == 0 || msgModel.refType == 2) {
+                      if (msgModel.refType == 0) {
                         if (msgModel.commentData != null) {
                           getFeedDetail(context, homeFeedModel.id, comment: msgModel.commentData);
                         }
+                      }else if(msgModel.refType == 2){
+
                       }
                     } else {
                       getFeedDetail(context, homeFeedModel.id);

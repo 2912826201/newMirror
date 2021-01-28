@@ -106,7 +106,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   bool isBouncingScrollPhysics=false;
 
   //每次请求的评论个数
-  int courseCommentPageSize=3;
+  int courseCommentPageSize=20;
 
   //热门当前是第几页
   int courseCommentPageHot = 1;
