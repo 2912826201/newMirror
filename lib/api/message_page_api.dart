@@ -1,8 +1,11 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
 import 'package:mirror/api/api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/message/message_model.dart';
+import 'package:mirror/data/notifier/unread_message_notifier.dart';
 
 const String GET_UNREAD_COUNT = "/appuser/web/message/getUnreadMsgCount";
 const String CREATE_GROUP_CHAT = "/appuser/web/groupChat/create";
@@ -47,7 +50,16 @@ Future<Unreads> getUnReads() async {
   BaseResponseModel responseModel = await requestApi(GET_UNREAD_COUNT, {});
   if (responseModel.isSuccess) {
     //TODO 这里实际需要将请求结果处理为具体的业务数据
-    return Unreads.fromJson(responseModel.data);
+    Unreads model = Unreads.fromJson(responseModel.data);
+    if (model != null) {
+      // print('comment============================${model.comment}');
+      // print('laud============================${model.laud}');
+      // print('at============================${model.at}');
+      Application.appContext
+          .read<UnreadMessageNotifier>()
+          .changeUnreadMsg(comments: model.comment, ats: model.at, lauds: model.laud);
+    }
+    return model;
   } else {
     //TODO 这里实际需要处理失败
     return null;
@@ -111,8 +123,7 @@ Future<Map> getGroupChatByIds({@required int id}) async {
 ///请求参数
 ///groupChatId:群id
 ///newName:新群名
-Future<Map> modify(
-    {@required int groupChatId, @required String newName}) async {
+Future<Map> modify({@required int groupChatId, @required String newName}) async {
   Map<String, dynamic> params = {};
   params["groupChatId"] = groupChatId;
   params["newName"] = newName;
@@ -195,13 +206,13 @@ Future<Map> inviteJoin({int groupChatId, String uids}) async {
   params["groupChatId"] = groupChatId;
   BaseResponseModel responseModel = await requestApi(INVITEJOIN, params);
   if (responseModel.isSuccess) {
-    if(responseModel.code==CODE_SUCCESS) {
+    if (responseModel.code == CODE_SUCCESS) {
       params.clear();
       params.addAll(responseModel.data);
-      params["code"]=CODE_SUCCESS;
-    }else{
+      params["code"] = CODE_SUCCESS;
+    } else {
       params.clear();
-      params["code"]=responseModel.code;
+      params["code"] = responseModel.code;
     }
   } else {
     return null;
@@ -310,23 +321,22 @@ Future<Map> queryNoPromptUidList() async {
   }
 }
 
-Future<bool> refreshUnreadMsg(int type, {int timeStamp})async{
-  Map<String,dynamic> map = Map();
+Future<bool> refreshUnreadMsg(int type, {int timeStamp}) async {
+  Map<String, dynamic> map = Map();
   map["type"] = type;
-  if(timeStamp != null){
+  if (timeStamp != null) {
     map["timeStamp"] = timeStamp;
   }
   BaseResponseModel responseModel = await requestApi(REFREASHMSGUNREAD, map);
   Map<String, dynamic> result = responseModel.data;
   bool state;
-  if(responseModel.isSuccess){
+  if (responseModel.isSuccess) {
     state = result["state"];
     return state;
-  }else{
+  } else {
     return null;
   }
 }
-
 
 ///获取系统消息
 ///请求参数

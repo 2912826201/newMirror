@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/api/message_page_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/home/home_page.dart';
@@ -7,7 +8,6 @@ import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/page/message/message_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/widget/image_cropper.dart';
 import 'package:provider/provider.dart';
 
 import 'profile/profile_page.dart';
@@ -172,6 +172,8 @@ class MainPageState extends State<MainPage> with SingleTickerProviderStateMixin 
                         _start = itemWidth + itemWidth * 0.4;
                       }
                       if (index == 2) {
+                        //在切换到消息页时 请求未读互动通知数
+                        getUnReads();
                         _start = 2 * itemWidth + itemWidth * 0.64;
                       }
                       if (index == 3) {

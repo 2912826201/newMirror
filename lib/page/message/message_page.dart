@@ -56,7 +56,8 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     WidgetsBinding.instance.addObserver(this);
     _checkNotificationPermission();
     _initConnectivity();
-    _getUnreadMsgCount();
+    // 已在点击tab按钮时请求
+    // _getUnreadMsgCount();
   }
 
   //获取系统通知状态
@@ -114,12 +115,6 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   //获取未读互动通知数
   _getUnreadMsgCount() async {
     Unreads model = await getUnReads();
-    if (model != null) {
-      print('comment============================${model.comment}');
-      print('laud============================${model.laud}');
-      print('at============================${model.at}');
-      context.read<UnreadMessageNotifier>().changeUnreadMsg(comments: model.comment, ats: model.at, lauds: model.laud);
-    }
   }
 
   @override
