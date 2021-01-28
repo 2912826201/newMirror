@@ -161,6 +161,7 @@ class MainPageState extends State<MainPage> with SingleTickerProviderStateMixin 
                 if ((index == 2 || index == 3) && !context.read<TokenNotifier>().isLoggedIn) {
                   AppRouter.navigateToLoginPage(context);
                 } else {
+                  context.read<SelectedbottomNavigationBarNotifier>().changeIndex(index);
                   if (currentIndex != index) {
                     setState(() {
                       currentIndex = index;
@@ -189,3 +190,18 @@ class MainPageState extends State<MainPage> with SingleTickerProviderStateMixin 
   }
 }
 
+// 底部bottomNavigationBar item点击监听。
+class SelectedbottomNavigationBarNotifier extends ChangeNotifier {
+  SelectedbottomNavigationBarNotifier(this.selectedIndex);
+
+  int selectedIndex;
+
+  changeIndex(int index) {
+    print("changeIndex $index");
+    this.selectedIndex = index;
+    SingletonForWholePages.singleton().index = index;
+    SingletonForWholePages.singleton().IfPagekey.currentState.setState(() {});
+    //控制panel的控制器对象
+    notifyListeners();
+  }
+}
