@@ -56,45 +56,21 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin, WidgetsBi
         value: SystemUiOverlayStyle.dark,
         child: Scaffold(
             body: Container(
-                child: Stack(children: [
-              SlidingUpPanel(
-                  panel: Container(
-                    margin: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
-                    child: SingletonForWholePages.singleton().panelWidget(context),
-                  ),
-                  onPanelClosed: () {
-                    context.read<FeedMapNotifier>().clearTotalCount();
-                    // 关闭视图后清空动态Id
-                    context.read<FeedMapNotifier>().changeFeeId(null);
-                  },
-                  maxHeight: ScreenUtil.instance.height * 0.75,
-                  backdropEnabled: true,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10.0),
-                    topRight: Radius.circular(10.0),
-                  ),
-                  controller: SingletonForWholePages.singleton().panelController(),
-                  minHeight: 0,
-                  body: ChangeNotifierProvider(
-                      create: (_) => SelectedbottomNavigationBarNotifier(0),
-                      builder: (context, _) {
-                        return UnionOuterTabBarView(
-                          physics: context.watch<SelectedbottomNavigationBarNotifier>().selectedIndex == 0
-                              ? BouncingScrollPhysics()
-                              : NeverScrollableScrollPhysics(),
-                          controller: _controller,
-                          children: _createTabContent(),
-                        );
-                      })),
-            ]))));
+          child: Stack(children: [
+            UnionOuterTabBarView(
+              physics: BouncingScrollPhysics(),
+              controller: _controller,
+              children: _createTabContent(),
+            )
+          ]),
+        )));
   }
 
   List<Widget> _createTabContent() {
     List<Widget> tabContent = List();
     //四个常规业务tabBar
     tabContent.add(MediaPickerPage(9, typeImageAndVideo, true, startPagePhoto, false, true));
-    tabContent.add(MainPage(
-    ));
+    tabContent.add(MainPage());
     return tabContent;
   }
 
@@ -166,11 +142,13 @@ class SingletonForWholePages {
   PanelController panelController() {
     return ifPagePc;
   }
+
   // 打开
   openPanelController() {
-   /* ifPagePc.open();*/
+    /* ifPagePc.open();*/
     ifPagePc.isPanelOpen();
   }
+
   // 关闭
   closePanelController() {
     /*ifPagePc.close();*/

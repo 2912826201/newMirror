@@ -93,8 +93,6 @@ class CommentLayout extends StatelessWidget {
               return GestureDetector(
                 onTap: () {
                   openFeedCommentBottomSheet(context: context, feedId: model.id);
-                  // SingletonForWholePages.singleton().openPanelController();
-                  // context.read<FeedMapNotifier>().changeFeeId(model.id);
                 },
                 child: Text("共${StringUtil.getNumber(commentCount)}条评论", style: AppStyle.textHintRegular12),
               );
@@ -106,8 +104,6 @@ class CommentLayout extends StatelessWidget {
           GestureDetector(
             onTap: () {
               openFeedCommentBottomSheet(context: context, feedId: model.id);
-              // SingletonForWholePages.singleton().openPanelController();
-              // context.read<FeedMapNotifier>().changeFeeId(model.id);
             },
               child: Container(
             child: model.comments.length > 0
@@ -128,8 +124,6 @@ class CommentLayout extends StatelessWidget {
           GestureDetector(
               onTap: () {
                 openFeedCommentBottomSheet(context: context, feedId: model.id);
-                // SingletonForWholePages.singleton().openPanelController();
-                // context.read<FeedMapNotifier>().changeFeeId(model.id);
               },
               child: Container(
             margin: EdgeInsets.only(top: 4, bottom: 4),

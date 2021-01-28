@@ -186,7 +186,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           panel: Container(
             child: context.watch<FeedMapNotifier>().feedId != null
                 ? CommentBottomSheet(
-                    /*pc: SingletonForWholePages.singleton().panelController(),*/
                     feedId: context.select((FeedMapNotifier value) => value.feedId),
                   )
                 : Container(),
