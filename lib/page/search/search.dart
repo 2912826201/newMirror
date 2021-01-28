@@ -171,7 +171,8 @@ class SearchHeaderState extends State<SearchHeader> {
               ],
             ),
           ),
-          Spacer(),
+          Spacer(
+          ),
           TextBtn(
             title: "取消",
             fontsize: 16,
@@ -213,19 +214,23 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
       // 请求热门课程
     ]).then((results) {
       print("历史记录（（（（（（（））））））$searchHistoryList");
-      DataResponseModel  model = results[0];
-      if (model.list.isNotEmpty) {
-        model.list.forEach((v) {
-          topicList.add(TopicDtoModel.fromJson(v));
-        });
+      if (results[0] != null) {
+        DataResponseModel model = results[0];
+        if (model.list.isNotEmpty) {
+          model.list.forEach((v) {
+            topicList.add(TopicDtoModel.fromJson(v));
+          });
+        }
       }
       if (context.read<TokenNotifier>().isLoggedIn) {
         searchHistoryList = results[1];
       }
       List<LiveVideoModel> liveList = [];
-      liveList = results[2];
-      if (liveList.isNotEmpty) {
-        liveVideoList.addAll(liveList);
+      if (results[2] != null) {
+        liveList = results[2];
+        if (liveList.isNotEmpty) {
+          liveVideoList.addAll(liveList);
+        }
       }
       setState(() {});
     }).catchError((e) {

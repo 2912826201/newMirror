@@ -269,7 +269,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                                   list: feedList,
                                   index: index,
                                   focusNode: widget.focusNode,
-                                  isComplex: true,
+                                  pageName: "searchComplex",
                                 );
                               }
                             },

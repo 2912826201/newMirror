@@ -19,10 +19,11 @@ import 'package:provider/provider.dart';
 
 // 轮播图
 class SlideBanner extends StatefulWidget {
-  SlideBanner({Key key, this.height, this.model, this.isComplex, this.isDynamicDetails = false}) : super(key: key);
+  SlideBanner({Key key, this.height, this.model,this.pageName, this.isDynamicDetails = false}) : super(key: key);
   HomeFeedModel model;
   double height;
-  bool isComplex;
+  String pageName;
+
   bool isDynamicDetails;
 
   @override
@@ -270,7 +271,7 @@ class _SlideBannerState extends State<SlideBanner> {
                               setAspectRatio(widget.height),
                             )
                           : Hero(
-                              tag: widget.isComplex ? "complex${widget.model.id}" : "${widget.model.id}",
+                              tag: widget.pageName + "${widget.model.id}",
                               child: buildShowItemContainer(
                                 index,
                                 setAspectRatio(widget.height),

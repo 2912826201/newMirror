@@ -72,7 +72,7 @@ class TopicRecommendState extends State<TopicRecommend> with AutomaticKeepAliveC
                         model: model,
                         list: widget.topicList,
                         index: index,
-                        isComplex: false,
+                        pageName: "topicRecommend",
                       );
                     }
                   },
