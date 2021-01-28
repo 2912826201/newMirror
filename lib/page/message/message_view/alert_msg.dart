@@ -5,6 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
@@ -112,15 +113,25 @@ class AlertMsg extends StatelessWidget {
       //群通知
       Map<String, dynamic> mapGroupModel = json.decode(map["data"]["data"]);
       // print("mapGroupModel:${map["data"]["data"].toString()}");
-      ChatGroupUserModel chatGroupUserModel =
-          context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[0];
-      if (mapGroupModel["subType"] == 1 &&
-          !chatGroupUserModel.isGroupLeader()) {
-        textArray.clear();
-      } else if (mapGroupModel["subType"] == 4) {
+      if (mapGroupModel["subType"] == 4) {
         updateGroupName(mapGroupModel, context);
       } else {
-        getGroupText(mapGroupModel, context);
+        if(context.watch<GroupUserProfileNotifier>().loadingStatus==LoadingStatus.STATUS_COMPLETED) {
+          ChatGroupUserModel chatGroupUserModel = context
+              .watch<GroupUserProfileNotifier>()
+              .chatGroupUserModelList[0];
+          if (mapGroupModel["subType"] == 1 && !chatGroupUserModel.isGroupLeader()) {
+            textArray.clear();
+          } else {
+            getGroupText(mapGroupModel, context);
+          }
+        }else{
+          if (mapGroupModel["subType"] == 1) {
+            textArray.clear();
+          } else {
+            getGroupText(mapGroupModel, context);
+          }
+        }
       }
     }
 

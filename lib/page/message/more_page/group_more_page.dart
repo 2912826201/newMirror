@@ -108,7 +108,7 @@ class GroupMorePageState extends State<GroupMorePage> {
             ),
           ),
           getContainer(),
-          getListItem(text: "群聊名称", subtitle: groupName ?? widget.groupName),
+          getListItem(text: "群聊名称", subtitle: groupName ?? "未命名"),
           getListItem(text: "群聊二维码", isRightIcon: true),
           getContainer(height: 12, horizontal: 0),
           getListItem(
@@ -400,7 +400,7 @@ class GroupMorePageState extends State<GroupMorePage> {
       if (model != null && model["list"] != null) {
         model["list"].forEach((v) {
           groupInformationMap = v;
-          groupName = groupInformationMap["name"];
+          groupName = groupInformationMap["modifiedName"];
         });
         await getConversationNotificationStatus();
       }

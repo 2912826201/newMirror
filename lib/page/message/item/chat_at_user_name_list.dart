@@ -47,12 +47,6 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
           onTap: () {
             context.read<ChatEnterNotifier>().openAtCallback("");
           },
-          onTapDown: (v) {
-            context.read<ChatEnterNotifier>().openAtCallback("");
-          },
-          onTapUp: (v) {
-            context.read<ChatEnterNotifier>().openAtCallback("");
-          },
         ),
       );
     } else {

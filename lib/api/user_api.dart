@@ -10,6 +10,10 @@ const String PERFECT_USERINFO = "/ucenter/web/user/perfectUserInfo";
 const String GET_USERINFO = "/appuser/web/user/getUserInfo";
 ///获取所有备注
 const String GET_REMARKBYUID = "/appuser/web/user/getRemarkByUid";
+///二维码加入群聊
+const String JOINGROUPCHATUNRESTRICTED = "/appuser/web/groupChat/joinGroupChatUnrestricted";
+
+
 ///完善用户信息
 Future<bool> perfectUserInfo(String nickName, String avatarUri) async {
   print("perfectUserInfo $nickName");
@@ -36,6 +40,32 @@ Future<UserModel> getUserInfo({int uid}) async {
     return UserModel.fromJson(responseModel.data);
   } else {
     //TODO 这里实际需要处理失败
+    return null;
+  }
+}
+
+
+///解析短连接
+///请求参数
+///type:0-登录机器、1-激活机器、2-加入群聊
+Future<Map> resolveShortConnections({String path}) async {
+  Map<String, dynamic> params = {};
+  BaseResponseModel responseModel = await requestApi(path, params,requestMethod:METHOD_GET);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
+
+//二维码加入群聊
+Future<Map> joinGroupChatUnrestricted(String code) async {
+  Map<String, dynamic> params = {};
+  params["code"] = code;
+  BaseResponseModel responseModel = await requestApi(JOINGROUPCHATUNRESTRICTED, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
     return null;
   }
 }

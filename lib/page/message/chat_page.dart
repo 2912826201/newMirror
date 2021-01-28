@@ -163,6 +163,10 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   String systemLastTime;
   int systemPage = 0;
 
+  //是否可以显示头部关注box
+  bool isShowTopAttentionUi=false;
+
+
   @override
   void initState() {
     super.initState();
@@ -250,6 +254,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           fit: StackFit.expand,
           children: [
             (chatDataList != null && chatDataList.length > 0) ? getChatDetailsBody() : Container(),
+            getTopAttentionUi(),
             ChatAtUserList(
               isShow: context.watch<ChatEnterNotifier>().keyWord == "@",
               onItemClickListener: atListItemClick,
@@ -362,6 +367,91 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           ),
         )
       ],
+    );
+  }
+
+  //头部显示关注遮挡
+  Widget getTopAttentionUi(){
+    if (widget.conversation.type != PRIVATE_TYPE) {
+      isShowTopAttentionUi=false;
+    }
+    return Visibility(
+      visible: isShowTopAttentionUi,
+      child: UnconstrainedBox(
+        alignment: Alignment.topCenter,
+        child: Container(
+          height: 48,
+          padding: const EdgeInsets.only(right: 16),
+          width: MediaQuery.of(context).size.width,
+          color: AppColor.colorb9b9b9,
+          child: Row(
+            children: [
+              GestureDetector(
+                child: Container(
+                  height: 48,
+                  width: 48,
+                  color: AppColor.transparent,
+                  child: Icon(Icons.close,size: 16,color: AppColor.textSecondary),
+                ),
+                onTap: (){
+                  isShowTopAttentionUi=false;
+                  setState(() {
+
+                  });
+                },
+              ),
+              Expanded(child: SizedBox(child:  Text("点击关注,及时看到对方动态",
+                  style: TextStyle(color: AppColor.textPrimary1,fontSize: 16),
+                  maxLines: 1,overflow: TextOverflow.ellipsis,))),
+              GestureDetector(
+                child: Container(
+                  width: 60,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: AppColor.transparent,
+                    border: Border.all(width: 1,color: AppColor.textPrimary1),
+                    borderRadius: BorderRadius.circular(13),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.add,size: 16,color: AppColor.textPrimary1),
+                      SizedBox(width: 3),
+                      Text("关注",style: TextStyle(color: AppColor.textPrimary1,fontSize: 14,fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ),
+                onTap: ()async{
+                  if (widget.conversation.type == PRIVATE_TYPE) {
+                    BlackModel blackModel = await ProfileCheckBlack(int.parse(chatUserId));
+                    String text = "";
+                    if (blackModel.inYouBlack == 1) {
+                      text = "关注失败，你已将对方加入黑名单";
+                    } else if (blackModel.inThisBlack == 1) {
+                      text = "关注失败，你已被对方加入黑名单";
+                    }else{
+                      int attntionResult = await ProfileAddFollow(int.parse(chatUserId));
+                      if (attntionResult == 1 || attntionResult == 3) {
+                        text="关注成功!";
+                        isShowTopAttentionUi=false;
+                        setState(() {
+
+                        });
+                      }
+                    }
+                    ToastShow.show(msg: text, context: context);
+                  }else{
+                    isShowTopAttentionUi=false;
+                    setState(() {
+
+                    });
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -1291,7 +1381,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
       // 唤起@#后切换光标关闭视图
       if (cursorIndex != atIndex) {
-        context.read<ChatEnterNotifier>().openAtCallback("");
+        Future.delayed(Duration(milliseconds: 100),(){
+          context.read<ChatEnterNotifier>().openAtCallback("");
+        });
       }
     }
     isSwitchCursor = true;
@@ -1551,9 +1643,11 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     // );
     //print("设置光标$setCursor");
     // _textController.selection = setCursor;
-    context.read<ChatEnterNotifier>().setAtSearchStr("");
-    // 关闭视图
-    context.read<ChatEnterNotifier>().openAtCallback("");
+    Future.delayed(Duration(milliseconds: 100),(){
+      context.read<ChatEnterNotifier>().setAtSearchStr("");
+      // 关闭视图
+      context.read<ChatEnterNotifier>().openAtCallback("");
+    });
   }
 
   //刷新数据--加载更多以前的数据

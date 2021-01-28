@@ -33,19 +33,22 @@ const int AUTH_TYPE_TEMP = 2;
 const String METHOD_GET = "get";
 const String METHOD_POST = "post";
 
-Dio _dio;
+Dio _dioGet;
+Dio _dioPost;
 
 //通用的请求api的方法，请在具体的子api中进行入参封装和结果处理 authType只在特定的接口中赋值
 Future<BaseResponseModel> requestApi(String path, Map<String, dynamic> queryParameters,
     {int authType = AUTH_TYPE_COMMON, String requestMethod = METHOD_POST}) async {
   BaseResponseModel responseModel;
   try {
-    _setHeaders(authType);
     Response response;
     if(requestMethod == METHOD_GET) {
-      response = await _getDioInstance().get(path, queryParameters: queryParameters);
+      _setHeaders(authType, _getDioGetInstance());
+      response = await _getDioGetInstance().get(path, queryParameters: queryParameters);
+      print("response：${response.toString()}");
     }else{
-      response = await _getDioInstance().post(path, queryParameters: queryParameters);
+      _setHeaders(authType, _getDioPostInstance());
+      response = await _getDioPostInstance().post(path, queryParameters: queryParameters);
     }
     responseModel = BaseResponseModel.fromJson(json.decode(response.toString()));
     //要注意 只有服务端系统错误500被视为失败 其他错误码要在具体业务中处理
@@ -63,25 +66,37 @@ Future<BaseResponseModel> requestApi(String path, Map<String, dynamic> queryPara
 }
 
 //获取dio单例
-Dio _getDioInstance() {
-  if (_dio == null) {
-    _dio = Dio();
-    _dio.options.baseUrl = AppConfig.getApiHost();
-    _dio.options.connectTimeout = _CONNECT_TIMEOUT;
-    _dio.options.receiveTimeout = _RECEIVE_TIMEOUT;
+Dio _getDioPostInstance() {
+  if (_dioPost == null) {
+    _dioPost = Dio();
+    _dioPost.options.baseUrl = AppConfig.getApiHost();
+    _dioPost.options.connectTimeout = _CONNECT_TIMEOUT;
+    _dioPost.options.receiveTimeout = _RECEIVE_TIMEOUT;
     //TODO 还需要更多详细的参数
     //设置拦截器用于打印log
-    _dio.interceptors.add(_LogInterceptors());
+    _dioPost.interceptors.add(_LogInterceptors());
   }
-  return _dio;
+  return _dioPost;
+}
+
+Dio _getDioGetInstance() {
+  if (_dioGet == null) {
+    _dioGet = Dio();
+    _dioGet.options.connectTimeout = _CONNECT_TIMEOUT;
+    _dioGet.options.receiveTimeout = _RECEIVE_TIMEOUT;
+    //TODO 还需要更多详细的参数
+    //设置拦截器用于打印log
+    _dioGet.interceptors.add(_LogInterceptors());
+  }
+  return _dioGet;
 }
 
 //因为APP运行过程中 headers的参数可能发生变化 所以不能在初始化时写死
 //TODO 每次请求时都要设置headers是否会降低网络请求效率有待测试对比
 //FIXME 如果token已过期或即将过期则需要做刷新token或重新获取token的操作
-void _setHeaders(int authType) {
+void _setHeaders(int authType, Dio dio) {
   //TODO 操作系统和版本号渠道号暂时写死
-  _getDioInstance().options.headers["aimy-drivers"] = "{\"os\":${Application.platform},\"clientVersion\":\"${AppConfig.version}\",\"channel\":0}";
+  dio.options.headers["aimy-drivers"] = "{\"os\":${Application.platform},\"clientVersion\":\"${AppConfig.version}\",\"channel\":0}";
   //授权认证信息根据个别请求不同取不同的token
   String auth;
   switch (authType) {
@@ -97,7 +112,8 @@ void _setHeaders(int authType) {
     default:
       auth = "";
   }
-  _getDioInstance().options.headers["Authorization"] = auth;
+  dio.options.headers["Authorization"] = auth;
+  dio.options.headers["user-agent"] = "IFITNESS";
 }
 
 //用于print log的拦截器

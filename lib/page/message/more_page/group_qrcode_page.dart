@@ -45,6 +45,8 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
   double width;
   double height;
   String qrImageString;
+  //过期时间
+  int expirationTime;
   _capturePngToByteData() async {
 
     RenderRepaintBoundary boundary = rootWidgetKey.currentContext.findRenderObject();
@@ -139,10 +141,6 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
                     child: _centerQr(),
                 ),
                 Positioned(
-                    left: (ScreenUtil.instance.screenWidthDp - 64) / 2,
-                    top: ScreenUtil.instance.height * 0.17 - 32,
-                    child: getUserImagePr()),
-                Positioned(
                     top: ScreenUtil.instance.height * 0.73,
                     child: Container(
                       width: 120,
@@ -170,8 +168,8 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
           avatarList.length == 1
               ? ClipOval(
             child: CachedNetworkImage(
-              height: 45,
-              width: 45,
+              height: 50,
+              width: 50,
               imageUrl: avatarList.first,
               fit: BoxFit.cover,
               placeholder: (context, url) => Image.asset(
@@ -192,11 +190,11 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     //这里的边框颜色需要随背景变化
-                    border: Border.all(width: 3, color: AppColor.white)),
+                    border: Border.all(width: 0, color: AppColor.white)),
                 child: ClipOval(
                   child: CachedNetworkImage(
-                    height: 28,
-                    width: 28,
+                    height: 32,
+                    width: 32,
                     imageUrl: avatarList.first,
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Image.asset(
@@ -221,8 +219,8 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
                   border: Border.all(width: 3, color: AppColor.white)),
               child: ClipOval(
                 child: CachedNetworkImage(
-                  height: 28,
-                  width: 28,
+                  height: 32,
+                  width: 32,
                   imageUrl: avatarList[1],
                   fit: BoxFit.cover,
                   placeholder: (context, url) => Image.asset(
@@ -254,19 +252,19 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(
-              height: 64 / 2,
+            SizedBox(height: 15),
+            getUserImagePr(),
+            SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.only(left: 24,right: 24),
+              child: Text(
+                widget.name,
+                style: TextStyle(fontSize: 18,color: AppColor.textPrimary1,fontWeight: FontWeight.bold),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-            Text(
-              widget.name,
-              style: AppStyle.textMedium18,
-            ),
-            Spacer(),
-            Text(
-              "",
-              style: AppStyle.textPrimary3Regular14,
-            ),
-            Spacer(),
+            SizedBox(height: 16),
             QrImage(
               data: qrImageString==null?"用户${widget.groupId}":qrImageString,
               size: ScreenUtil.instance.height * 0.49 * 0.57,
@@ -275,7 +273,7 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
               version: QrVersions.auto,
             ),
             Spacer(),
-            Text("扫一扫二维码,加入群聊!"),
+            Text("此二维码${DateUtil.formatSecondToDay(expirationTime)}内有效"),
             Spacer(),
           ],
         ));
@@ -285,6 +283,7 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
     Map<String, dynamic> map = await getShortUrl(type: 2, targetId:int.parse(widget.groupId));
     if(map!=null&&map["url"]!=null){
       qrImageString=map["url"];
+      expirationTime=map["expireTime"];
       setState(() {
 
       });
