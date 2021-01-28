@@ -173,17 +173,17 @@ class AppRouter {
   // needCrop 是否需要裁剪 false的情况没有裁剪预览框
   // startPage 起始页 startPageGallery或startPagePhoto
   // cropOnlySquare 是否只切正方形 只有needCrop为true时这个值才生效
-  // isGoToPublish 是否在操作完成后跳转到发布页
+  // publishMode 是否在操作完成后跳转到发布页 0关闭页面不跳转到发布页 1关闭页面跳转到发布页 2不关闭页面跳转到发布页
   static void navigateToMediaPickerPage(BuildContext context, int maxImageAmount, int mediaType, bool needCrop,
-      int startPage, bool cropOnlySquare, bool isGoToPublish, Function(dynamic result) callback,
-      {int fixedWidth, int fixedHeight}) {
+      int startPage, bool cropOnlySquare, Function(dynamic result) callback,
+      {int publishMode = 0, int fixedWidth, int fixedHeight}) {
     Map<String, dynamic> map = Map();
     map["maxImageAmount"] = maxImageAmount;
     map["mediaType"] = mediaType;
     map["needCrop"] = needCrop;
     map["startPage"] = startPage;
     map["cropOnlySquare"] = cropOnlySquare;
-    map["isGoToPublish"] = isGoToPublish;
+    map["publishMode"] = publishMode;
     map["fixedWidth"] = fixedWidth;
     map["fixedHeight"] = fixedHeight;
     _navigateToPage(context, pathMediaPicker, map, callback: callback);

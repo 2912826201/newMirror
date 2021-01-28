@@ -32,7 +32,7 @@ class GalleryPage extends StatefulWidget {
       this.requestType = RequestType.common,
       this.needCrop = false,
       this.cropOnlySquare = false,
-      this.isGoToPublish = false,
+      this.publishMode = 0,
       this.fixedWidth,
       this.fixedHeight})
       : super(key: key);
@@ -41,7 +41,7 @@ class GalleryPage extends StatefulWidget {
   final int maxVideoAmount = 1;
   final bool needCrop;
   final bool cropOnlySquare;
-  final bool isGoToPublish;
+  final int publishMode;
   final int fixedWidth;
   final int fixedHeight;
 
@@ -573,10 +573,13 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
 
               Application.selectedMediaFiles = files;
 
-              Navigator.pop(context, true);
-
-              if (widget.isGoToPublish) {
+              if (widget.publishMode == 1) {
+                Navigator.pop(context, true);
                 AppRouter.navigateToReleasePage(context);
+              } else if (widget.publishMode == 2) {
+                AppRouter.navigateToReleasePage(context);
+              } else {
+                Navigator.pop(context, true);
               }
             },
             child: Container(

@@ -31,9 +31,8 @@ class _TopTabState extends State<HomeTopTab> {
               height: 28,
             ),
             onTap: () {
-              print("点击了客服");
               AppRouter.navigateToMediaPickerPage(
-                  context, 9, typeImageAndVideo, true, startPageGallery, false, true, (result) {});
+                  context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {}, publishMode: 1);
             },
           ),
         ),

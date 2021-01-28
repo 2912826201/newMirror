@@ -134,7 +134,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
               ),
               onPressed: () {
                 AppRouter.navigateToMediaPickerPage(
-                    context, 1, typeImage, false, startPageGallery, false, false, _uploadImage);
+                    context, 1, typeImage, false, startPageGallery, false, _uploadImage);
               }),
         ),
       ],
