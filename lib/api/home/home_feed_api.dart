@@ -49,7 +49,9 @@ Future<DataResponseModel> getPullList({@required int type, @required int size, i
   if (targetId != null) {
     params["targetId"] = targetId;
   }
-  params["lastTime"] = lastTime;
+  if(lastTime!=null) {
+    params["lastTime"] = lastTime;
+  }
   BaseResponseModel responseModel = await requestApi(PULLLISTFEED, params);
   if (responseModel.isSuccess) {
     DataResponseModel dataResponseModel;
@@ -220,11 +222,13 @@ Future<Map> publish(
 
 // 获取评论列表热度
 Future<Map> queryListByHot2(
-    {@required int targetId, @required int targetType, @required int page, @required int size}) async {
+    {@required int targetId, @required int targetType, int page, int lastId, @required int size}) async {
   Map<String, dynamic> params = {};
   params["targetId"] = targetId;
   params["targetType"] = targetType;
-  params["page"] = page;
+  if(lastId!=null) {
+    params["lastId"] = lastId;
+  }
   params["size"] = size;
   BaseResponseModel responseModel = await requestApi(QUERYLISTBYHOT, params);
   if (responseModel.isSuccess) {
@@ -271,11 +275,13 @@ Future<List> queryListByHot(
 
 // 获取评论列表时间
 Future<Map> queryListByTime(
-    {@required int targetId, @required int targetType, @required int page, @required int size}) async {
+    {@required int targetId, @required int targetType, int page, int lastId, @required int size}) async {
   Map<String, dynamic> params = {};
   params["targetId"] = targetId;
   params["targetType"] = targetType;
-  params["page"] = page;
+  if(lastId!=null) {
+    params["lastId"] = lastId;
+  }
   params["size"] = size;
   BaseResponseModel responseModel = await requestApi(QUERYLISTBYTIME, params);
   if (responseModel.isSuccess) {

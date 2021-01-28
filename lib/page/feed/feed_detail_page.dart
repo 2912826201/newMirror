@@ -123,12 +123,15 @@ class FeedDetailPageState extends State<FeedDetailPage> {
           fsModel.isShowInteractiveButton = true;
           if (isFirstPage) {
             commentModel.insert(choseIndex, fsModel);
+            childmodel.itemChose = true;
+            commentModel[choseIndex].replys.insert(0, childmodel);
           } else {
             commentModel.insert(0, fsModel);
+            childmodel.itemChose = true;
+            commentModel[0].replys.insert(0, childmodel);
           }
-          childmodel.itemChose = true;
-          commentModel[0].replys.insert(0, childmodel);
-          context.read<FeedMapNotifier>().insertChildModel(childmodel);
+
+         /* context.read<FeedMapNotifier>().insertChildModel(childmodel);*/
         }
       }
     }

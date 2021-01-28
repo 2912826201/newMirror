@@ -195,7 +195,14 @@ Future<Map> inviteJoin({int groupChatId, String uids}) async {
   params["groupChatId"] = groupChatId;
   BaseResponseModel responseModel = await requestApi(INVITEJOIN, params);
   if (responseModel.isSuccess) {
-    return responseModel.data;
+    if(responseModel.code==CODE_SUCCESS) {
+      params.clear();
+      params.addAll(responseModel.data);
+      params["code"]=CODE_SUCCESS;
+    }else{
+      params.clear();
+      params["code"]=responseModel.code;
+    }
   } else {
     return null;
   }

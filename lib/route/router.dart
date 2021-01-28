@@ -33,9 +33,10 @@ class AppRouter {
   static String pathPreviewPhoto = "/previewphoto";
   static String pathPreviewVideo = "/previewvideo";
   static String pathLiveBroadcast = "/training/livebroadcast";
-  static String pathLiveDetail = "/training/livedetail";
-  static String pathVideoDetail = "/training/videodetail";
+  static String pathLiveDetail = "/training/livebroadcast/livedetail";
   static String pathVideoCourseList = "/training/videocourselist";
+  static String pathVideoDetail = "/training/videocourselist/videodetail";
+  static String pathOtherCompleteCourse = "/training/videocourselist/videodetail/pathOtherCompleteCoursePage";
   static String pathVideoCoursePlay = "/training/videocourseplay";
   static String pathScanCode = "/scancode";
   static String pathMineDetails = "/minedetails";
@@ -118,6 +119,7 @@ class AppRouter {
     router.define(pathTrainingGalleryComparison, handler: handlerTrainingGalleryComparison);
     router.define(pathMeCoursePage, handler: handlerMeCoursePage);
     router.define(pathMeDownloadVideoCoursePage, handler: handlerMeDownloadVideoCoursePage);
+    router.define(pathOtherCompleteCourse, handler: handlerOtherCompleteCourse);
     router.define(pathVipNotOpenPage, handler: handlerVipNotOpen);
     router.define(pathVipOpenPage, handler: handlerVipOpen);
     router.define(pathVipNamePlatePage, handler: handlerVipNamePlatePage);
@@ -408,5 +410,11 @@ class AppRouter {
 
   static void navigateToMeDownloadVideoCoursePage(BuildContext context) {
     _navigateToPage(context, pathMeDownloadVideoCoursePage, {});
+  }
+
+  static void navigateToOtherCompleteCoursePage(BuildContext context,int liveCourseId) {
+    Map<String, dynamic> map = Map();
+    map["liveCourseId"] = liveCourseId;
+    _navigateToPage(context, pathOtherCompleteCourse, map);
   }
 }

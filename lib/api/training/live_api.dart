@@ -119,13 +119,13 @@ Future<Map> bookLiveCourse({@required int courseId, @required String startTime, 
   params["type"] = isBook ? 1 : 0;
   BaseResponseModel responseModel = await requestApi(BOOKLIVECOURSE, params);
   if (responseModel.isSuccess) {
-    if(responseModel.code==200) {
+    if(responseModel.code==CODE_SUCCESS) {
       params.clear();
       params.addAll(responseModel.data);
-      params["code"]=200;
-    }else if(responseModel.code==321){
+      params["code"]=CODE_SUCCESS;
+    }else if(responseModel.code==CODE_BOOK_LIVE_COURSE_ERROR){
       params.clear();
-      params["code"]=321;
+      params["code"]=CODE_BOOK_LIVE_COURSE_ERROR;
     }
     return params;
   } else {

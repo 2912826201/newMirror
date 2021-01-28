@@ -326,7 +326,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
               ToastShow.show(msg: "点击了更多那妞", context: context);
               judgeJumpPage(chatTypeId, this.chatUserId, widget.conversation.type, context, chatUserName,
                   (int type, String name) {
-                //type  0-用户名  1--群名
+                //type  0-用户名  1--群名 2--拉黑 3--邀请不是相互关注-进行提醒
                 if (type == 0) {
                   //修改了用户名
                   Application.chatGroupUserModelMap.clear();
@@ -339,9 +339,12 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                   chatUserName = name;
                   //修改了群名
                   // _postUpdateGroupName(name);
-                } else {
+                }else if(type==2){
                   //拉黑
-                  _insertBlackMenu();
+                  _insertMessageMenu("你拉黑了这个用户!");
+                }else{
+                  //不是还有关系不能邀请进群
+                  _insertMessageMenu("你和 $name 不是互相关注的关系,不能邀请进群!");
                 }
               }, () {
                 //退出群聊
@@ -1082,12 +1085,12 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   }
 
   //插入加入黑名单的消息
-  void _insertBlackMenu() {
+  void _insertMessageMenu(String text){
     getReChatDataModel(
       targetId: widget.conversation.conversationId,
       conversationType: chatTypeId,
       sendTime: new DateTime.now().millisecondsSinceEpoch + 1000,
-      text: "你拉黑了这个用户!",
+      text: text,
       finished: (Message msg, int code) {
         ChatDataModel chatDataModel = new ChatDataModel();
         chatDataModel.msg = msg;
