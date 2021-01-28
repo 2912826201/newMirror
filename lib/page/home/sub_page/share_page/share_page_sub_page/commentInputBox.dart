@@ -9,6 +9,7 @@ import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/comment_input_bottom_bar.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/post_comments.dart';
@@ -102,7 +103,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
                     postComments(
                         targetId: widget.feedModel.id,
                         targetType: 0,
-                        contentext: text,
+                        contentext: StringUtil.breakWord(text),
                         atUsers: jsonEncode(atListModel),
                         commentModelCallback: (CommentDtoModel commentModel) {
                           if (commentModel != null) {
