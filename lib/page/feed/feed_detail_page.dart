@@ -24,6 +24,7 @@ import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/comment_input_bottom_bar.dart';
 import 'package:mirror/widget/expandable_text.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
+import 'package:mirror/widget/loading.dart';
 import 'package:mirror/widget/post_comments.dart';
 import 'package:mirror/widget/rich_text_widget.dart';
 import 'package:mirror/widget/slide_banner.dart';
@@ -33,11 +34,13 @@ import 'comment_bottom_list.dart';
 
 // 动态详情页
 class FeedDetailPage extends StatefulWidget {
-  FeedDetailPage({Key key, this.model,this.type, this.index,this.comment});
+  FeedDetailPage({Key key, this.model, this.type, this.index, this.comment});
+
   CommentDtoModel comment;
   HomeFeedModel model;
   int index;
   int type;
+
   @override
   FeedDetailPageState createState() => FeedDetailPageState();
 }
@@ -56,102 +59,103 @@ class FeedDetailPageState extends State<FeedDetailPage> {
 
 //  数据源
   List<CommentDtoModel> commentModel = [];
+
   // 请求下一页
   int hasNext = 0;
+
   // 列表监听
   ScrollController _controller = new ScrollController();
   int totalCount = 0;
-  bool isCanLoading = false;
   GlobalKey _key = GlobalKey();
-  WidgetsBinding widgetsBinding;
   int choseIndex = 0;
   bool isFirstPage = false;
   double itemHeight = 0;
+
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
+
   @override
   void initState() {
     print("进入详情页");
-
     feedModel = context.read<FeedMapNotifier>().feedMap[widget.model.id];
-    itemHeight  = 124+calculateTextWidth(feedModel.content,AppStyle.textRegular14,ScreenUtil.instance.width,2).height+setAspectRatio(feedModel.picUrls[0].height.toDouble());
+    itemHeight = 124 +
+        calculateTextWidth(feedModel.content, AppStyle.textRegular14, ScreenUtil.instance.width, 2).height +
+        setAspectRatio(feedModel.picUrls[0].height.toDouble());
     getQueryListByHot();
-    /*WidgetsBinding.instance.addPostFrameCallback((callback){
-      print('===============################################====  =build结束');
-      RenderBox box = _key.currentContext.findRenderObject();
-      Offset offset = box.localToGlobal(Offset.zero);
-      itemHeight = offset.dy;
-    });*/
     _controller.addListener(() {
-        if (_controller.position.pixels == _controller.position.maxScrollExtent) {
-          print('==================动态详情刷新');
-          dataPage += 1;
-          getQueryListByHot();
+      if (_controller.position.pixels == _controller.position.maxScrollExtent) {
+        print('==================动态详情刷新');
+        dataPage += 1;
+        getQueryListByHot();
       }
     });
-
   }
-  _getChoseComment()async{
+
+  _getChoseComment() async {
     print('================================   筛选评论');
-      CommentDtoModel childmodel = await getComment(widget.comment.id);
-      if(childmodel!=null){
-        print("=============_getChoseComment===================1");
-      if(childmodel.type==0){
+    CommentDtoModel childmodel = await getComment(widget.comment.id);
+    if (childmodel != null) {
+      print("=============_getChoseComment===================1");
+      if (childmodel.type == 0) {
         print("=============_getChoseComment===================2");
-          if (childmodel.replyCount > 0) {
-            childmodel.isShowInteractiveButton = true;
-          } else {
-            childmodel.isShowInteractiveButton = false;
-          }
-          childmodel.itemChose = true;
-          if(isFirstPage){
-            print("=============_getChoseComment===================4");
-            print('=========================$choseIndex');
+        if (childmodel.replyCount > 0) {
+          childmodel.isShowInteractiveButton = true;
+        } else {
+          childmodel.isShowInteractiveButton = false;
+        }
+        childmodel.itemChose = true;
+        if (isFirstPage) {
+          print("=============_getChoseComment===================4");
+          print('=========================$choseIndex');
           commentModel.insert(choseIndex, childmodel);
-          }else{
-            print("=============_getChoseComment===================5");
-            commentModel.insert(0, childmodel);
-          }
-        }else if(childmodel.type==2){
-          print('=========================评论类型为====2');
-          CommentDtoModel fsModel = await getComment(childmodel.targetId);
-          if(fsModel!=null){
-            print('=======================父评论不为空');
-            fsModel.isShowInteractiveButton = true;
-            if(isFirstPage){
-              commentModel.insert(choseIndex, fsModel);
-            }else{
-              commentModel.insert(0, fsModel);
-            }
+        } else {
+          print("=============_getChoseComment===================5");
+          commentModel.insert(0, childmodel);
+        }
+      } else if (childmodel.type == 2) {
+        print('=========================评论类型为====2');
+        CommentDtoModel fsModel = await getComment(childmodel.targetId);
+        if (fsModel != null) {
+          print('=======================父评论不为空');
+          fsModel.isShowInteractiveButton = true;
+          if (isFirstPage) {
+            commentModel.insert(choseIndex, fsModel);
+            childmodel.itemChose = true;
+            commentModel[choseIndex].replys.insert(0, childmodel);
+          } else {
+            commentModel.insert(0, fsModel);
             childmodel.itemChose = true;
             commentModel[0].replys.insert(0, childmodel);
-            context.read<FeedMapNotifier>().insertChildModel(childmodel);
           }
+
+         /* context.read<FeedMapNotifier>().insertChildModel(childmodel);*/
         }
       }
+    }
     context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
-      for(int i=0;i<commentModel.length;i++) {
-        print(
-            '=====666666666666666666666666666666666===========================i$i');
-        if (i < choseIndex) {
-          itemHeight += calculateTextWidth(
-              commentModel[i].content, AppStyle.textRegular14,
-              ScreenUtil.instance.width - 75, 2).height + 60;
-        } else if (i == choseIndex) {
-          Future.delayed(Duration(milliseconds: 200), () {
-            try {
-              print(
-                  '===============================================滑动倒计时结束-----开始滚动');
-              _controller.jumpTo(
-                  itemHeight /*, duration: Duration(microseconds: 500), curve: Curves.ease*/);
-            } catch (e) {}
-          });
-        }
+    for (int i = 0; i < commentModel.length; i++) {
+      print('=====666666666666666666666666666666666===========================i$i');
+      if (i < choseIndex) {
+        itemHeight +=
+            calculateTextWidth(commentModel[i].content, AppStyle.textRegular14, ScreenUtil.instance.width - 75, 2)
+                    .height +
+                60;
+      } else if (i == choseIndex) {
+
+        Future.delayed(Duration(milliseconds: 200), () {
+          try {
+            print('===============================================滑动倒计时结束-----开始滚动');
+            _controller.jumpTo(itemHeight /*, duration: Duration(microseconds: 500), curve: Curves.ease*/);
+
+          } catch (e) {}
+        });
       }
+    }
   }
+
   // 获取热门评论
   getQueryListByHot() async {
     print('============================动态详情评论接口');
@@ -178,18 +182,18 @@ class FeedDetailPageState extends State<FeedDetailPage> {
               model.isShowInteractiveButton = false;
             }
           }
-          if(widget.comment!=null){
-            for(int i=0;i<modelList.length;i++){
-              if(modelList[i].id==widget.comment.id||modelList[i].id==widget.comment.targetId){
+          if (widget.comment != null) {
+            for (int i = 0; i < modelList.length; i++) {
+              if (modelList[i].id == widget.comment.id || modelList[i].id == widget.comment.targetId) {
                 choseIndex = i;
                 isFirstPage = true;
                 print('==================888888888888888888==88888888888888888===========选中的屁评论在第一页');
-              }else{
+              } else {
                 commentModel.add(modelList[i]);
               }
             }
-          }else{
-           commentModel.addAll(modelList);
+          } else {
+            commentModel.addAll(modelList);
           }
           print("数据长度${commentModel.length}");
         }
@@ -202,13 +206,13 @@ class FeedDetailPageState extends State<FeedDetailPage> {
             model.isShowInteractiveButton = false;
           }
         }
-        if(widget.comment!=null){
+        if (widget.comment != null) {
           modelList.forEach((element) {
-            if(element.id!=widget.comment.id&&element.id!=widget.comment.targetId){
+            if (element.id != widget.comment.id && element.id != widget.comment.targetId) {
               commentModel.add(element);
             }
           });
-        }else{
+        } else {
           commentModel.addAll(modelList);
         }
         print("数据长度${commentModel.length}");
@@ -221,18 +225,17 @@ class FeedDetailPageState extends State<FeedDetailPage> {
       }
       // commentModel.insert(commentModel.length, CommentDtoModel());
     });
-    if(widget.comment==null){
+    if (widget.comment == null) {
       context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
-    }else{
-      if(dataPage==1){
+    } else {
+      if (dataPage == 1) {
         _getChoseComment();
-      }else{
+      } else {
         context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
       }
-
     }
-
   }
+
   double setAspectRatio(double height) {
     if (height == 0) {
       return ScreenUtil.instance.width;
@@ -240,6 +243,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
       return (ScreenUtil.instance.width / feedModel.picUrls[0].width) * height;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     print("动态详情页build---------------------------------------------${feedModel}");
@@ -268,111 +272,109 @@ class FeedDetailPageState extends State<FeedDetailPage> {
           children: [
             Container(
               height: ScreenUtil.instance.height,
-              child:CustomScrollView(
-                physics:ClampingScrollPhysics(),
-                controller: _controller,
-                slivers: <Widget>[
-              SliverToBoxAdapter(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center, children: [
-                  // 顶部间距
-                  SizedBox(
-                    height: 14,
-                  ),
-                  // 头部布局
-                  HeadView(
-                      model: feedModel,
-                      deleteFeedChanged: (id) {
-                        // deleteFeedChanged(id);
-                      },
-                      removeFollowChanged: (m) {
-                        // removeFollowChanged(m);
-                      }),
-                  // 图片区域
-                  feedModel.picUrls.isNotEmpty
-                      ? SlideBanner(
-                          height: feedModel?.picUrls[0]?.height?.toDouble(),
-                          model: feedModel,
-                          isComplex: true,
-                          isDynamicDetails: true,
-                        )
-                      : Container(),
-                  // 视频区域
-                  feedModel.videos.isNotEmpty ? Container() : Container(),
-                  // 点赞，转发，评论三连区域 getTripleArea
-                  GetTripleArea(
-                    offsetKey: _key,
-                    model: feedModel,
-                    comment: widget.comment,
-                    commentDtoModel: commentModel,
-                    back: (){
-                      context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
-                    },
-                  ),
-                  // 课程信息和地址
-                  Offstage(
-                    offstage: (feedModel.address == null && feedModel.courseDto == null),
-                    child: Container(
-                      margin: EdgeInsets.only(left: 16, right: 16),
-                      // color: Colors.orange,
-                      width: ScreenUtil.instance.width,
-                      child: getCourseInfo(feedModel),
+              child: CustomScrollView(physics: ClampingScrollPhysics(), controller: _controller, slivers: <Widget>[
+                SliverToBoxAdapter(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                    // 顶部间距
+                    SizedBox(
+                      height: 14,
                     ),
-                  ),
-                  // // 文本文案
-                  Offstage(
-                    offstage: feedModel.content.length == 0,
-                    child: Container(
-                      margin: EdgeInsets.only(left: 16, right: 16, top: 12),
-                      width: ScreenUtil.instance.width,
-                      child: ExpandableText(
-                        text: feedModel.content,
+                    // 头部布局
+                    HeadView(
                         model: feedModel,
-                        maxLines: 2,
-                        style: TextStyle(fontSize: 14, color: AppColor.textPrimary1),
+                        deleteFeedChanged: (id) {
+                          // deleteFeedChanged(id);
+                        },
+                        removeFollowChanged: (m) {
+                          // removeFollowChanged(m);
+                        }),
+                    // 图片区域
+                    feedModel.picUrls.isNotEmpty
+                        ? SlideBanner(
+                            height: feedModel?.picUrls[0]?.height?.toDouble(),
+                            model: feedModel,
+                            isComplex: true,
+                            isDynamicDetails: true,
+                          )
+                        : Container(),
+                    // 视频区域
+                    feedModel.videos.isNotEmpty ? Container() : Container(),
+                    // 点赞，转发，评论三连区域 getTripleArea
+                    GetTripleArea(
+                      offsetKey: _key,
+                      model: feedModel,
+                      comment: widget.comment,
+                      commentDtoModel: commentModel,
+                      back: () {
+                        context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
+                      },
+                    ),
+                    // 课程信息和地址
+                    Offstage(
+                      offstage: (feedModel.address == null && feedModel.courseDto == null),
+                      child: Container(
+                        margin: EdgeInsets.only(left: 16, right: 16),
+                        // color: Colors.orange,
+                        width: ScreenUtil.instance.width,
+                        child: getCourseInfo(feedModel),
                       ),
                     ),
-                  ),
-                  context.watch<FeedMapNotifier>().feedMap[feedModel.id].totalCount != -1
-                      ? Container(
-                          margin: EdgeInsets.only(top: 18, left: 16),
-                          alignment: Alignment(-1, 0),
-                          child:
-                              // context.watch<FeedMapNotifier>().feedMap[feedModel.id].totalCount != -1
-                              //     ?
-                              // DynamicModelNotifier
-                              Selector<FeedMapNotifier, int>(builder: (context, totalCount, child) {
-                            return Text(
-                              "共${StringUtil.getNumber(totalCount)}条评论",
-                              style: AppStyle.textRegular16,
-                            );
-                          }, selector: (context, notifier) {
-                            return notifier.feedMap[feedModel.id].totalCount;
-                          }))
-                      : Container(),
-                ]),
-              ),
-              context.watch<FeedMapNotifier>().feedMap[feedModel.id].totalCount != -1 ?
-              SliverList(
-                delegate: SliverChildBuilderDelegate((content, index) {
-              // return Container(
-                print(index);
-                print(commentModel.length);
-                if (index == commentModel.length) {
-                  print("进入了吗$index");
-                  return SizedBox(height: 48 + ScreenUtil.instance.bottomBarHeight + 40) ;
-                } else {
-                  print('================${commentModel.length}');
-                    return CommentBottomListView(
-                    model: commentModel[index],
-                    index: index,
-                    type: 1,
-                    feedId: feedModel.id,
-                    comment: widget.comment,
-                  );
-                }
-              },childCount:commentModel.length + 1)) :  SliverToBoxAdapter()
-            ]) ,),
+                    // // 文本文案
+                    Offstage(
+                      offstage: feedModel.content.length == 0,
+                      child: Container(
+                        margin: EdgeInsets.only(left: 16, right: 16, top: 12),
+                        width: ScreenUtil.instance.width,
+                        child: ExpandableText(
+                          text: feedModel.content,
+                          model: feedModel,
+                          maxLines: 2,
+                          style: TextStyle(fontSize: 14, color: AppColor.textPrimary1),
+                        ),
+                      ),
+                    ),
+                    context.watch<FeedMapNotifier>().feedMap[feedModel.id].totalCount != -1
+                        ? Container(
+                            margin: EdgeInsets.only(top: 18, left: 16),
+                            alignment: Alignment(-1, 0),
+                            child:
+                                // context.watch<FeedMapNotifier>().feedMap[feedModel.id].totalCount != -1
+                                //     ?
+                                // DynamicModelNotifier
+                                Selector<FeedMapNotifier, int>(builder: (context, totalCount, child) {
+                              return Text(
+                                "共${StringUtil.getNumber(totalCount)}条评论",
+                                style: AppStyle.textRegular16,
+                              );
+                            }, selector: (context, notifier) {
+                              return notifier.feedMap[feedModel.id].totalCount;
+                            }))
+                        : Container(),
+                  ]),
+                ),
+                context.watch<FeedMapNotifier>().feedMap[feedModel.id].totalCount != -1
+                    ? SliverList(
+                        delegate: SliverChildBuilderDelegate((content, index) {
+                        // return Container(
+                        print(index);
+                        print(commentModel.length);
+                        if (index == commentModel.length) {
+                          print("进入了吗$index");
+                          return SizedBox(height: 48 + ScreenUtil.instance.bottomBarHeight + 40);
+                        } else {
+                          print('================${commentModel.length}');
+                          return CommentBottomListView(
+                            model: commentModel[index],
+                            index: index,
+                            type: 1,
+                            feedId: feedModel.id,
+                            comment: widget.comment,
+                          );
+                        }
+                      }, childCount: commentModel.length + 1))
+                    : SliverToBoxAdapter()
+              ]),
+            ),
             Positioned(
               bottom: 0,
               child: CommentInputBox(
