@@ -89,7 +89,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
           ScrollConfiguration(
               behavior: NoBlueEffectBehavior(),
               child: ListView.builder(
-                physics:BouncingScrollPhysics(),
+                  physics: BouncingScrollPhysics(),
                   //有个头部 有个尾部
                   itemCount: _videoCourseList.length + 2,
                   itemBuilder: (context, index) {
@@ -322,73 +322,79 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
             ],
           ),
           _liveList.length > 0
-              ? Container(
-                  margin: const EdgeInsets.only(top: 12),
-                  height: _screenWidth * 151 / 343,
-                  child: Stack(
-                    children: [
-                      CachedNetworkImage(
-                        imageUrl: _liveList.first.picUrl,
-                        width: _screenWidth,
-                        height: _screenWidth * 151 / 343,
-                        fit: BoxFit.cover,
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
+              ? GestureDetector(
+                  onTap: () {
+                    AppRouter.navigateToLiveDetail(context, _liveList.first.id, liveModel: _liveList.first);
+                  },
+                  child: Container(
+                      margin: const EdgeInsets.only(top: 12),
+                      height: _screenWidth * 151 / 343,
+                      child: Stack(
+                        children: [
+                          CachedNetworkImage(
+                            imageUrl: _liveList.first.picUrl,
+                            width: _screenWidth,
+                            height: _screenWidth * 151 / 343,
+                            fit: BoxFit.cover,
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Container(
-                                  height: 16,
-                                  width: 44,
-                                  color: AppColor.mainRed,
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      height: 16,
+                                      width: 44,
+                                      color: AppColor.mainRed,
+                                    ),
+                                    SizedBox(
+                                      width: 8,
+                                    ),
+                                    Text(
+                                      "${_parseLiveTime(_liveList.first.startTime)} - ${_parseLiveTime(_liveList.first.endTime)}",
+                                      style:
+                                          TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.white),
+                                    )
+                                  ],
+                                ),
+                                Spacer(),
+                                Text(
+                                  "${_liveList.first.coursewareDto.name}",
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.white),
                                 ),
                                 SizedBox(
-                                  width: 8,
+                                  height: 8,
                                 ),
-                                Text(
-                                  "${_parseLiveTime(_liveList.first.startTime)} - ${_parseLiveTime(_liveList.first.endTime)}",
-                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.white),
-                                )
-                              ],
-                            ),
-                            Spacer(),
-                            Text(
-                              "${_liveList.first.coursewareDto.name}",
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.white),
-                            ),
-                            SizedBox(
-                              height: 8,
-                            ),
-                            Row(
-                              children: [
-                                Text(
-                                  "${_liveList.first.coursewareDto.targetDto.name}·${_liveList.first.coursewareDto.calories}Kcal",
-                                  style: TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w400,
-                                      color: AppColor.white.withOpacity(0.85)),
-                                ),
-                                SizedBox(
-                                  width: 8,
-                                ),
-                                Text(
-                                  "${_liveList.first.coachDto.nickName}",
-                                  style: TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w400,
-                                      color: AppColor.white.withOpacity(0.85)),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "${_liveList.first.coursewareDto.targetDto.name}·${_liveList.first.coursewareDto.calories}Kcal",
+                                      style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w400,
+                                          color: AppColor.white.withOpacity(0.85)),
+                                    ),
+                                    SizedBox(
+                                      width: 8,
+                                    ),
+                                    Text(
+                                      "${_liveList.first.coachDto.nickName}",
+                                      style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w400,
+                                          color: AppColor.white.withOpacity(0.85)),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ))
+                          )
+                        ],
+                      )),
+                )
               : Container(),
         ],
       ),
