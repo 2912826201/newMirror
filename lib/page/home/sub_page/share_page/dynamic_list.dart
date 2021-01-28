@@ -24,14 +24,14 @@ class DynamicListLayout extends StatelessWidget {
       this.index,
       this.isShowRecommendUser,
       this.model,
-      this.isComplex = false,
+      this.pageName,
       this.deleteFeedChanged,
       this.removeFollowChanged})
       : super(key: key);
   final index;
   bool isShowRecommendUser;
   HomeFeedModel model;
-  bool isComplex;
+  String pageName;
 
   // 删除动态
   ValueChanged<int> deleteFeedChanged;
@@ -67,7 +67,7 @@ class DynamicListLayout extends StatelessWidget {
         SlideBanner(
                 height: model.picUrls[0].height.toDouble(),
                 model: model,
-                isComplex: isComplex,
+                pageName:pageName,
               )
             : Container(),
         // 视频区域

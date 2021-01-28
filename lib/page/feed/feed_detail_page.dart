@@ -293,7 +293,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                         ? SlideBanner(
                             height: feedModel?.picUrls[0]?.height?.toDouble(),
                             model: feedModel,
-                            isComplex: true,
+                            pageName: "FeedDetailPage",
                             isDynamicDetails: true,
                           )
                         : Container(),

@@ -271,6 +271,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                         return DynamicListLayout(
                             index: index,
                             model: model,
+                            pageName: "recommendPage",
                             // 可选参数 子Item的个数
                             // key: GlobalObjectKey("recommend$index"),
                             isShowRecommendUser: false);

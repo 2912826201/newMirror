@@ -211,7 +211,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
                             list: feedList,
                             index: index,
                             focusNode: widget.focusNode,
-                            isComplex: false,
+                            pageName: "searchFeed",
                           );
                         }
                         // }
@@ -249,13 +249,13 @@ class SearchFeeditem extends StatefulWidget {
   HomeFeedModel model;
   List<HomeFeedModel> list;
   int index;
-  bool isComplex;
+  String pageName;
 
-  SearchFeeditem({this.model, this.list, this.index, this.focusNode, this.isComplex});
+  SearchFeeditem({this.model, this.list, this.index, this.focusNode, this.pageName});
 
   @override
   SearchFeeditemState createState() =>
-      SearchFeeditemState(model: model, list: list, index: index, focusNode: focusNode, isComplex: isComplex);
+      SearchFeeditemState(model: model, list: list, index: index, focusNode: focusNode, pageName: pageName);
 // [index] 列表条目对应的索引
 // buildOpenContainerItem() {
 // return OpenContainer(
@@ -304,9 +304,9 @@ class SearchFeeditem extends StatefulWidget {
 }
 
 class SearchFeeditemState extends State<SearchFeeditem> {
-  SearchFeeditemState({this.focusNode, this.model, this.list, this.index, this.isComplex});
+  SearchFeeditemState({this.focusNode, this.model, this.list, this.index, this.pageName});
 
-  bool isComplex;
+  String pageName;
   FocusNode focusNode;
   List<HomeFeedModel> list;
   HomeFeedModel model;
@@ -402,12 +402,12 @@ class SearchFeeditemState extends State<SearchFeeditem> {
                     new MaterialPageRoute(
                         builder: (context) => FeedFlow(
                               feedList: list,
-                              isComplex: widget.isComplex,
+                          pageName: widget.pageName,
                             )),
                   );
                 },
                 child: Hero(
-                  tag: isComplex ? "complex${model.id}" : "${model.id}",
+                  tag: pageName + "${model.id}",
                   child: buildShowItemContainer(),
                 ),
               )
