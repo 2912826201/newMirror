@@ -45,7 +45,8 @@ class AppRouter {
   static String pathEditInformation = "/profile/editinformation";
   static String pathEditInformationName = "/profile/editinformation/name";
   static String pathEditInformationIntroduction = "/profile/editinformation/introduction";
-  static String pathChatPage = "/chatPage";
+  static String pathChatPage = "/profile/chatPage";
+  static String pathGroupQrCodePage = "/profile/chatPage/groupMorePage/groupQrCodePage";
   static String pathSettingHomePage = "/profile/settinghomepage";
   static String pathSettingFeedBack = "/profile/settingfeedback";
   static String pathSettingBlackList = "/profile/settingblacklist";
@@ -86,6 +87,7 @@ class AppRouter {
     router.define(pathPerfectUserPage, handler: handlerPerfectUserPage);
     router.define(pathLoginSucess, handler: handlerLoginSucessPagePage);
     router.define(pathChatPage, handler: handlerChatPage);
+    router.define(pathGroupQrCodePage, handler: handlerGroupQrCodePage);
     router.define(pathPreviewPhoto, handler: handlerPreviewPhoto);
     router.define(pathPreviewVideo, handler: handlerPreviewVideo);
     router.define(pathLiveBroadcast, handler: handlerLiveBroadcast);
@@ -339,6 +341,15 @@ class AppRouter {
     }
     Application.shareMessage = shareMessage;
     _navigateToPage(context, pathChatPage, map);
+  }
+
+  static void navigateToGroupQrCodePage(
+      {@required BuildContext context, @required String imageUrl,@required String name,@required String groupId}) {
+    Map<String, dynamic> map = Map();
+    map["imageUrl"] = imageUrl;
+    map["name"] = name;
+    map["groupId"] = groupId;
+    _navigateToPage(context, pathGroupQrCodePage, map);
   }
 
   static void navigateToPreviewPhotoPage(BuildContext context, String filePath, Function(dynamic result) callback,

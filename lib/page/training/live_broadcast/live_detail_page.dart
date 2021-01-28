@@ -576,6 +576,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     bool isVip = false;
 
     var textStyle = const TextStyle(color: AppColor.white, fontSize: 16);
+    var textStyleEnd = const TextStyle(color: AppColor.black, fontSize: 16);
     var textStyleVip = const TextStyle(color: AppColor.textVipPrimary1, fontSize: 16);
     var margin_32 = const EdgeInsets.only(left: 32, right: 32);
     var marginLeft32Right16 = const EdgeInsets.only(left: 32, right: 16);
@@ -604,7 +605,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     Widget widget4 = getBtnUi(false, "回放", textStyle, 94, 40, marginLeft32Right16);
     Widget widget5 = getBtnUi(true, "开通vip使用终端播放", textStyleVip, double.infinity, 40, tempEd);
     Widget widget6 = getBtnUi(false, liveModel.getGetPlayType(), textStyle, double.infinity, 40, margin_32);
-    Widget widget7 = getBtnUi(false, "已结束", textStyle, double.infinity, 40, margin_32);
+    Widget widget7 = getBtnUi(false, "已结束", textStyleEnd, double.infinity, 40, margin_32);
 
     var childrenArray = <Widget>[];
 
@@ -679,7 +680,10 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     if (isVip) {
       colors.add(AppColor.bgVip1);
       colors.add(AppColor.bgVip2);
-    } else {
+    } else if(text=="已结束"){
+      colors.add(AppColor.bgWhite);
+      colors.add(AppColor.bgWhite);
+    }else{
       colors.add(AppColor.textPrimary1);
       colors.add(AppColor.textPrimary1);
     }

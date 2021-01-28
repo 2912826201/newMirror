@@ -101,7 +101,7 @@ class ChatDetailsBody extends StatelessWidget {
               controller: scrollController,
               padding: EdgeInsets.symmetric(horizontal: 16),
               reverse: true,
-              shrinkWrap: chatData.length < 10,
+              shrinkWrap: chatData.length < 15,
               childrenDelegate: FirstEndItemChildrenDelegate((BuildContext context, int index) {
                 if (index == chatData.length - 1) {
                   print("------------");

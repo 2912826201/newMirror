@@ -11,10 +11,32 @@ class GroupUserProfileNotifier extends ChangeNotifier {
 
   int len = -1;
 
+  String searchText="";
+
   setLen(int len) {
     this.len = len;
     notifyListeners();
   }
+
+  setSearchText(String searchText){
+    this.searchText=searchText;
+    notifyListeners();
+  }
+
+  List<ChatGroupUserModel> getSearchUserModelList(){
+    if(searchText==null||searchText==""){
+      return chatGroupUserModelList;
+    }else{
+      List<ChatGroupUserModel> modelList = <ChatGroupUserModel>[];
+      for(ChatGroupUserModel model in chatGroupUserModelList){
+        if(model.nickName.contains(searchText)){
+          modelList.add(model);
+        }
+      }
+      return modelList;
+    }
+  }
+
 
   clearAllUser() {
     chatGroupUserModelList.clear();

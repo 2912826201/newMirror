@@ -521,7 +521,7 @@ class GroupMorePageState extends State<GroupMorePage> {
           type: 3,
           groupChatId: int.parse(widget.chatGroupId),
           voidCallback: (name, userId, type, context) {
-            if(type==CODE_INVITE_JOIN_NO_FRIEND){
+            if(name!="邀请成功"&&name!="邀请失败"){
               if (widget.listener != null) {
                 widget.listener(3,name);
               }
@@ -682,6 +682,17 @@ class GroupMorePageState extends State<GroupMorePage> {
             return true;
           }));
       // ToastShow.show(msg: "点击了：$title", context: context);
+    } else if (title == "群聊二维码") {
+      if(groupInformationMap==null){
+        ToastShow.show(msg: "获取群聊信息失败", context: context);
+      }else{
+        AppRouter.navigateToGroupQrCodePage(
+            context: context,
+            imageUrl: groupInformationMap["coverUrl"],
+            name: groupInformationMap["name"],
+            groupId: groupInformationMap["id"].toString(),
+        );
+      }
     } else {
       ToastShow.show(msg: "点击了：$title", context: context);
     }

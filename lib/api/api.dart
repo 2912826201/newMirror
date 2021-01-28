@@ -23,8 +23,6 @@ const int CODE_INVITE_JOIN_NO_GROUP = 315;
 const int CODE_INVITE_JOIN_NO_GROUP_MAN = 305;
 //邀请进入群聊--uids格式不正确
 const int CODE_INVITE_JOIN_UID_ERROR = 300;
-//邀请进入群聊--不是相互关注
-const int CODE_INVITE_JOIN_NO_FRIEND = 347;
 
 //身份认证的类型
 const int AUTH_TYPE_COMMON = 0;

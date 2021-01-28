@@ -40,6 +40,9 @@ const String QUERYNOPROMPTUIDLIST = "/appuser/web/black/queryNoPromptUidList";
 //更新未读消息为已读
 const String REFREASHMSGUNREAD = "/appuser/web/message/updateUnreadMsgToRead";
 
+//获取短链接
+const String GETSHORTURL = "/third/web/url/getShortUrl";
+
 //获取系统消息
 const String QUERYSYSMSGLIST = "/appuser/web/message/querySysMsgList";
 
@@ -195,14 +198,7 @@ Future<Map> inviteJoin({int groupChatId, String uids}) async {
   params["groupChatId"] = groupChatId;
   BaseResponseModel responseModel = await requestApi(INVITEJOIN, params);
   if (responseModel.isSuccess) {
-    if(responseModel.code==CODE_SUCCESS) {
-      params.clear();
-      params.addAll(responseModel.data);
-      params["code"]=CODE_SUCCESS;
-    }else{
-      params.clear();
-      params["code"]=responseModel.code;
-    }
+    return responseModel.data;
   } else {
     return null;
   }
@@ -339,6 +335,23 @@ Future<Map> querySysMsgList({int type, int size, String lastTime}) async {
     params["lastTime"] = lastTime;
   }
   BaseResponseModel responseModel = await requestApi(QUERYSYSMSGLIST, params);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
+    return null;
+  }
+}
+
+
+///获取短链接
+///请求参数
+///type:0-登录机器、1-激活机器、2-加入群聊
+///targetId:对应的id，机器端填mid，app端填可能会对应的用户id、动态id或群聊id
+Future<Map> getShortUrl({int type, int targetId}) async {
+  Map<String, dynamic> params = {};
+  params["type"] = type;
+  params["targetId"] = targetId;
+  BaseResponseModel responseModel = await requestApi(GETSHORTURL, params);
   if (responseModel.isSuccess) {
     return responseModel.data;
   } else {
