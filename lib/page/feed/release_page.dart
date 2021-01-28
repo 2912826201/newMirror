@@ -1288,6 +1288,12 @@ class SeletedPhotoState extends State<SeletedPhoto> {
           } else if (widget.selectedMediaFiles.type == mediaTypeKeyImage) {
             type = typeImage;
           }
+          int fixedWidth;
+          int fixedHeight;
+          if( widget.selectedMediaFiles.list.isNotEmpty){
+            fixedWidth = widget.selectedMediaFiles.list.first.sizeInfo.width;
+            fixedHeight = widget.selectedMediaFiles.list.first.sizeInfo.height;
+          }
           AppRouter.navigateToMediaPickerPage(
               context, 9 - widget.selectedMediaFiles.list.length, type, true, startPageGallery, false,
               (result) async {
@@ -1314,7 +1320,7 @@ class SeletedPhotoState extends State<SeletedPhoto> {
             widget.selectedMediaFiles.list.addAll(files.list);
             context.read<ReleaseFeedInputNotifier>().setSelectedMediaFiles(widget.selectedMediaFiles);
             setState(() {});
-          });
+          },fixedWidth:fixedWidth,fixedHeight: fixedHeight);
         },
         child: Container(
           margin: EdgeInsets.only(left: 10, top: 9, right: 16),
