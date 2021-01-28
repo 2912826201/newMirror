@@ -17,6 +17,33 @@ class RongCloudStatusNotifier with ChangeNotifier {
 
   int get status => _status;
 
+  String get statusString {
+    switch(_status){
+      case -1:
+        return "（未连接）";
+      case 0:
+        return "";
+      case 1:
+        return "（连接中...）";
+      case 2:
+        return "（连接已断开）";
+      case 3:
+        return "（连接已断开）";
+      case 4:
+        return "（连接已断开）";
+      case 5:
+        return "（连接已断开）";
+      case 6:
+        return "（连接已断开）";
+      case 13:
+        return "（连接已断开）";
+      case 14:
+        return "（连接超时）";
+      default:
+        return "（未知错误）";
+    }
+  }
+
   //触发通知的行为
   void setStatus(int status) {
     _status = status;
