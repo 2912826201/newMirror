@@ -144,7 +144,7 @@ class VideoDetailPage2State extends State<VideoDetailPage2> {
   @override
   void initState() {
     super.initState();
-    print("====heroTag:${heroTag}");
+    print("====heroTag:$heroTag");
     courseCommentHot = null;
     courseCommentTime = null;
     loadingStatusComment = LoadingStatus.STATUS_LOADING;
@@ -1493,7 +1493,7 @@ class VideoDetailPage2State extends State<VideoDetailPage2> {
     await postComments(
       targetId: targetId,
       targetType: targetType,
-      content: text,
+      contentext: text,
       atUsers: jsonEncode(atListModel),
       replyId: replyId > 0 ? replyId : null,
       replyCommentId: replyCommentId > 0 ? replyCommentId : null,

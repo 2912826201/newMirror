@@ -1087,7 +1087,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   //输入框评论点击事件
   onEditBoxClickBtn(){
     targetId = liveModel.id;
-    targetType = 3;
+    targetType = 1;
     replyId = -1;
     replyCommentId = -1;
 
