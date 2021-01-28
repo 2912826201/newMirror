@@ -46,6 +46,7 @@ import 'package:mirror/page/rc_test_page.dart';
 import 'package:mirror/page/scan_code/scan_code_page.dart';
 import 'package:mirror/page/test_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_broadcast_page.dart';
+import 'package:mirror/page/training/live_broadcast/live_detail_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_detail_page2.dart';
 import 'package:mirror/page/training/machine/connection_info_page.dart';
 import 'package:mirror/page/training/machine/machine_setting_page.dart';
@@ -224,7 +225,7 @@ var handlerLiveDetail = Handler(handlerFunc: (BuildContext context, Map<String, 
   if (data["liveModel"] != null) {
     liveModel = LiveVideoModel.fromJson(data["liveModel"]);
   }
-  return LiveDetailPage2(
+  return LiveDetailPage(
     heroTag: data["heroTag"] == null ? "" : data["heroTag"],
     liveCourseId: data["liveCourseId"],
     isHaveStartTime: data["isHaveStartTime"],
