@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
@@ -520,8 +521,11 @@ class GroupMorePageState extends State<GroupMorePage> {
           type: 3,
           groupChatId: int.parse(widget.chatGroupId),
           voidCallback: (name, userId, type, context) {
-            print("添加用户：$name进群");
-
+            if(type==CODE_INVITE_JOIN_NO_FRIEND){
+              if (widget.listener != null) {
+                widget.listener(3,name);
+              }
+            }
             setState(() {});
           });
     }));

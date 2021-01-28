@@ -13,6 +13,7 @@ class IntegerUtil {
     }
   }
 
+  //点赞的数量
   static String formatIntegerEn(int data) {
     if (data > 10000) {
       int title = data ~/ 10000;
