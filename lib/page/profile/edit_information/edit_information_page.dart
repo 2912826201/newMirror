@@ -174,7 +174,7 @@ class _EditInformationState extends State<EditInformation> {
                         child: _avatar(context, height,width),
                         onTap: () {
                           AppRouter.navigateToMediaPickerPage(
-                              context, 1, typeImage, true, startPageGallery, true, false, (result) async {
+                              context, 1, typeImage, true, startPageGallery, true, (result) async {
                             SelectedMediaFiles files = Application.selectedMediaFiles;
                             if (result != true || files == null) {
                               print('===============================值为空退回');

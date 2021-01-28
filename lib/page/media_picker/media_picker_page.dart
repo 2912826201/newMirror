@@ -26,8 +26,8 @@ int startPagePhoto = _photoIndex;
 
 class MediaPickerPage extends StatefulWidget {
   MediaPickerPage(
-      this.maxImageAmount, this.mediaType, this.needCrop, this.startPage, this.cropOnlySquare, this.isGoToPublish,
-      {Key key, this.fixedWidth, this.fixedHeight})
+      this.maxImageAmount, this.mediaType, this.needCrop, this.startPage, this.cropOnlySquare,
+      {Key key, this.publishMode, this.fixedWidth, this.fixedHeight})
       : super(key: key);
 
   final int maxImageAmount;
@@ -35,7 +35,7 @@ class MediaPickerPage extends StatefulWidget {
   final bool needCrop;
   final int startPage;
   final bool cropOnlySquare;
-  final bool isGoToPublish;
+  final int publishMode;
   final int fixedWidth;
   final int fixedHeight;
 
@@ -63,18 +63,18 @@ class _MediaPickerState extends State<MediaPickerPage> {
               requestType: widget.mediaType == typeImageAndVideo ? RequestType.common : RequestType.image,
               needCrop: widget.needCrop,
               cropOnlySquare: widget.cropOnlySquare,
-              isGoToPublish: widget.isGoToPublish,
+              publishMode: widget.publishMode,
               fixedHeight: widget.fixedHeight,
               fixedWidth: widget.fixedWidth,
             )));
     _pageList.add(CameraPhotoPage(
-      isGoToPublish: widget.isGoToPublish,
+      publishMode: widget.publishMode,
       fixedHeight: widget.fixedHeight,
       fixedWidth: widget.fixedWidth,
     ));
     if (widget.mediaType == typeImageAndVideo) {
       _pageList.add(CameraVideoPage(
-        isGoToPublish: widget.isGoToPublish,
+        publishMode: widget.publishMode,
       ));
     }
   }

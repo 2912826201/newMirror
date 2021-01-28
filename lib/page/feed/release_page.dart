@@ -1289,7 +1289,7 @@ class SeletedPhotoState extends State<SeletedPhoto> {
             type = typeImage;
           }
           AppRouter.navigateToMediaPickerPage(
-              context, 9 - widget.selectedMediaFiles.list.length, type, true, startPageGallery, false, false,
+              context, 9 - widget.selectedMediaFiles.list.length, type, true, startPageGallery, false,
               (result) async {
             SelectedMediaFiles files = Application.selectedMediaFiles;
             if (true != result || files == null) {

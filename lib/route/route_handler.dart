@@ -102,7 +102,7 @@ var handlerMediaPicker = Handler(handlerFunc: (BuildContext context, Map<String,
     data["needCrop"],
     data["startPage"],
     data["cropOnlySquare"],
-    data["isGoToPublish"],
+    publishMode: data["publishMode"],
     fixedWidth: data["fixedWidth"],
     fixedHeight: data["fixedHeight"],
   );

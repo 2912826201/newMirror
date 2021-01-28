@@ -1398,7 +1398,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     //print("=====图片的点击事件");
     _focusNode.unfocus();
     SelectedMediaFiles selectedMediaFiles = new SelectedMediaFiles();
-    AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, false, startPageGallery, false, false,
+    AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, false, startPageGallery, false,
         (result) async {
       SelectedMediaFiles files = Application.selectedMediaFiles;
       if (true != result || files == null) {
