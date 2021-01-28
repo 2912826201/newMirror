@@ -278,9 +278,9 @@ class AlertMsg extends StatelessWidget {
       isChangColorArray.add(true);
       textArray.add(" 通过扫描 ");
       isChangColorArray.add(false);
-      if(mapGroupModel["operatorName"]==Application.profile.uid){
+      if (mapGroupModel["operator"] == Application.profile.uid) {
         textArray.add("你");
-      }else {
+      } else {
         textArray.add(mapGroupModel["operatorName"]);
       }
       isChangColorArray.add(true);
