@@ -283,8 +283,8 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
 
   void loadData()async {
     Map<String, dynamic> map = await getShortUrl(type: 2, targetId:int.parse(widget.groupId));
-    if(map!=null&&map["data"]!=null){
-      qrImageString=map["data"];
+    if(map!=null&&map["url"]!=null){
+      qrImageString=map["url"];
       setState(() {
 
       });
