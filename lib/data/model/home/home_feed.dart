@@ -19,7 +19,7 @@ class HomeFeedModel {
   int pushId; //发布人id
   String name; //发布者name
   String avatarUrl; //用户头像地址
-  int commentCount; //评论数
+  int commentCount = 0; //评论数
   int laudCount = 0; // 点赞数
   int shareCount; // 分享数
   int readCount; // 动态阅读数
@@ -479,7 +479,7 @@ class CommentDtoModel {
   String name;
   String avatarUrl;
   List<CommentDtoModel> replys = [];
-  int replyCount;
+  int replyCount = 0;
   int laudCount;
   int isLaud;
   int top;
