@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
-import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -17,7 +16,6 @@ import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
-import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
@@ -28,6 +26,7 @@ import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/widget/post_comments.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:mirror/page/training/currency/currency_page.dart';
 
 import '../../../widget/comment_input_bottom_bar.dart';
 import 'sliver_custom_header_delegate.dart';
@@ -115,6 +114,9 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   //时间排序当前是第几页
   int courseCommentPageTime = 1;
 
+  Map<String,int> subCommentLastIdHot=Map();
+  Map<String,int> subCommentLastIdTime=Map();
+
   //上拉加载数据
   RefreshController _refreshController = RefreshController(initialRefresh: false);
 
@@ -153,10 +155,8 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     if (loadingStatus == LoadingStatus.STATUS_COMPLETED) {
       return _buildSuggestionsComplete();
     } else {
-      widgetArray.add(SizedBox(
-        height: 40,
-      ));
-      widgetArray.add(_getNoCompleteTitle());
+      widgetArray.add(SizedBox(height: 40));
+      widgetArray.add(getNoCompleteTitle(context,"直播课程详情页"));
       //在加载中
       if (loadingStatus == LoadingStatus.STATUS_LOADING) {
         widgetArray.add(Expanded(
@@ -187,563 +187,97 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     }
   }
 
-  //当没有加载完成或者没有加载成功时的title
-  Widget _getNoCompleteTitle() {
-    return Container(
-      height: 40,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios,
-              color: Colors.black,
-            ),
-            onPressed: () => Navigator.pop(context),
-          ),
-          Text(
-            "直播课程详情页",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
-              color: AppColor.textPrimary1,
-            ),
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.share,
-              color: Colors.black,
-            ),
-            onPressed: () {},
-          ),
-        ],
-      ),
-    );
-  }
-
-  //
-  // //加载数据成功时的布局
-  // Widget _buildSuggestionsComplete1() {
-  //   return GestureDetector(
-  //     child: Container(
-  //       width: MediaQuery.of(context).size.width,
-  //       height: MediaQuery.of(context).size.height,
-  //       child: SingleChildScrollView(
-  //         child: Column(
-  //           children: [
-  //
-  //             Container(
-  //               width: double.infinity,
-  //               height: MediaQuery.of(context).size.height-50,
-  //               color: Colors.redAccent,
-  //             ),
-  //
-  //             Container(
-  //               width: double.infinity,
-  //               height: 50,
-  //               color: AppColor.white,
-  //               child:_getBottomBar(),
-  //             ),
-  //
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //     onTap: (){
-  //       openInputBottomSheet(
-  //         context: this.context,
-  //         hintText: "回复 ",
-  //         voidCallback: (String text,
-  //             BuildContext context) {
-  //         },
-  //       );
-  //     },
-  //   );
-  // }
-
   //加载数据成功时的布局
   Widget _buildSuggestionsComplete() {
-    String imageUrl;
-    if (liveModel.picUrl != null) {
-      imageUrl = liveModel.picUrl;
-    } else if (liveModel.coursewareDto?.picUrl != null) {
-      imageUrl = liveModel.coursewareDto?.picUrl;
-    } else if (liveModel.coursewareDto?.previewVideoUrl != null) {
-      imageUrl = liveModel.coursewareDto?.previewVideoUrl;
-    }
-
-    Widget widget = Container(
-      color: AppColor.white,
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
-      height: MediaQuery
-          .of(context)
-          .size
-          .height,
-      child: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            height: MediaQuery.of(context).size.height - 50,
-            child: ScrollConfiguration(
-              behavior: NoBlueEffectBehavior(),
-              child: NotificationListener<ScrollNotification>(
-                onNotification: (ScrollNotification notification) {
-                  ScrollMetrics metrics = notification.metrics;
-                  if (metrics.pixels < 10) {
-                    if(isBouncingScrollPhysics) {
-                      isBouncingScrollPhysics = false;
-                      setState(() {
-
-                      });
-                    }
-                  } else {
-                    if(!isBouncingScrollPhysics) {
-                      isBouncingScrollPhysics = true;
-                      setState(() {
-
-                      });
-                    }
-                  }
-                  return false;
-                },
-                child:SmartRefresher(
-                  enablePullDown: false,
-                  enablePullUp: true,
-                  footer: CustomFooter(
-                    builder: (BuildContext context, LoadStatus mode) {
-                      Widget body;
-                      if (mode == LoadStatus.idle) {
-                        body = Text("");
-                      } else if (mode == LoadStatus.loading) {
-                        body = Container(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(),
-                        );
-                      } else if (mode == LoadStatus.failed) {
-                        body = Text("");
-                      } else if (mode == LoadStatus.canLoading) {
-                        body = Text("");
-                      } else {
-                        body = Text("");
-                      }
-                      return Container(
-                        height: 55.0,
-                        child: Center(child: body),
-                      );
-                    },
-                  ),
-                  controller: _refreshController,
-                  onLoading: _onLoading,
-                  child: CustomScrollView(
-                    physics: isBouncingScrollPhysics?BouncingScrollPhysics():ClampingScrollPhysics(),
-                    slivers: <Widget>[
-                      // header,
-                      SliverPersistentHeader(
-                        pinned: true,
-                        delegate: SliverCustomHeaderDelegate(
-                          title: liveModel.title ?? "",
-                          collapsedHeight: 40,
-                          expandedHeight: 300,
-                          paddingTop: MediaQuery
-                              .of(context)
-                              .padding
-                              .top,
-                          coverImgUrl: imageUrl,
-                          heroTag: heroTag,
-                          startTime: liveModel.startTime,
-                          endTime: liveModel.endTime,
-                          shareBtnClick: _shareBtnClick,
-                        ),
-                      ),
-                      _getTitleWidget(),
-                      _getCoachItem(),
-                      _getLineView(),
-                      _getActionUi(),
-                      _getLineView(),
-                      _getCourseCommentUi(),
-                      SliverToBoxAdapter(
-                        child: SizedBox(height: 15,),
-                      )
-                    ],
-                  ),
+    return SingleChildScrollView(
+      physics: NeverScrollableScrollPhysics(),
+      child: Container(
+        color: AppColor.white,
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              height: MediaQuery.of(context).size.height - 50,
+              child: ScrollConfiguration(
+                behavior: NoBlueEffectBehavior(),
+                child: NotificationListener<ScrollNotification>(
+                  onNotification: _onDragNotification,
+                  child:getSmartRefresher(),
                 ),
               ),
             ),
+            Container(
+              width: double.infinity,
+              height: 50,
+              color: AppColor.white,
+              child: _getBottomBar(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  //获取上拉下拉加载
+  Widget getSmartRefresher(){
+    return SmartRefresher(
+      enablePullDown: false,
+      enablePullUp: true,
+      footer: footerWidget(),
+      controller: _refreshController,
+      onLoading: _onLoading,
+      child: CustomScrollView(
+        physics: isBouncingScrollPhysics?BouncingScrollPhysics():ClampingScrollPhysics(),
+        slivers: <Widget>[
+          // header,
+          SliverPersistentHeader(
+            pinned: true,
+            delegate: SliverCustomHeaderDelegate(
+              title: liveModel.title ?? "",
+              collapsedHeight: 40,
+              expandedHeight: 300,
+              paddingTop: MediaQuery.of(context).padding.top,
+              coverImgUrl: getCourseShowImage(liveModel),
+              heroTag: heroTag,
+              startTime: liveModel.startTime,
+              endTime: liveModel.endTime,
+              shareBtnClick: _shareBtnClick,
+            ),
           ),
-          Container(
-            width: double.infinity,
-            height: 50,
-            color: AppColor.white,
-            child: _getBottomBar(),
-          ),
+          getTitleWidget(liveModel,context),
+          getCoachItem(liveModel,context,onClickAttention,onClickCoach),
+          getLineView(),
+          getActionUi(liveModel,context,titleTextStyle),
+          getLineView(),
+          _getCourseCommentUi(),
+          SliverToBoxAdapter(
+            child: SizedBox(height: 15,),
+          )
         ],
       ),
     );
-
-    return SingleChildScrollView(
-      physics: NeverScrollableScrollPhysics(),
-      child: widget,
-    );
   }
 
-
-  //获取训练数据ui
-  Widget _getTitleWidget() {
-    var widgetArray = <Widget>[];
-    var titleArray=[liveModel.totalTrainingTime.toString(),liveModel.totalCalories.toString(),liveModel.coursewareDto?.levelDto?.ename];
-    var subTitleArray=["分钟","千卡",liveModel.coursewareDto?.levelDto?.name];
-    var tagArray=["时间","消耗","难度"];
-
-    for(int i=0;i<titleArray.length;i++){
-      widgetArray.add(
-          Container(
-            child: Column(
-              children: [
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    verticalDirection: VerticalDirection.down,
-                    children: [
-                      Text(titleArray[i],
-                        style: TextStyle(fontSize: 23,color: AppColor.black,fontWeight: FontWeight.bold),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      SizedBox(width: 2,),
-                      Container(
-                        child: Text(subTitleArray[i], style:  TextStyle(fontSize: 12,color: AppColor.textPrimary3),),
-                        margin: const EdgeInsets.only(top: 4),
-                      )
-                    ],
-                  ),
-                ),
-                SizedBox(height: 6,),
-                Text(tagArray[i], style:  TextStyle(fontSize: 12,color: AppColor.textHint),),
-              ],
-            ),
-            width: (MediaQuery.of(context).size.width-1)/3,
-          )
-      );
-      if(i<titleArray.length-1){
-        widgetArray.add(
-            Container(
-              width: 0.5,
-              height: 18,
-              color: AppColor.textHint,
-            )
-        );
-      }
-    }
-    return SliverToBoxAdapter(
-      child: Container(
-        width: double.infinity,
-        color: AppColor.white,
-        padding: const EdgeInsets.only(top: 14,bottom: 14),
-        child: Row(
-          children: widgetArray,
-        ),
-      ),
-    );
-  }
-
-  //获取教练的名字
-  Widget _getCoachItem() {
-    return SliverToBoxAdapter(
-        child: GestureDetector(
-          child: Container(
-            padding:
-            const EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 20),
-            color: AppColor.white,
-            width: double.infinity,
-            child: Row(
-              children: [
-                Container(
-                  height: 32,
-                  width: 32,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    // border: Border.all(width: 0.0, color: Colors.black),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(30),
-                    child: Image.network(
-                      liveModel.coachDto?.avatarUri ?? "",
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 12,
-                ),
-                Container(
-                  child: Text(
-                    // ignore: null_aware_before_operator
-                    liveModel.coachDto?.nickName,
-                    style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColor.textPrimary2,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Expanded(child: SizedBox()),
-
-                ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(100)),
-                  child: Material(
-                      borderRadius: BorderRadius.all(Radius.circular(100)),
-                  color: liveModel.coachDto?.relation == 1 || liveModel.coachDto?.relation == 3
-                      ? AppColor.white
-                      : AppColor.black,
-                  child: InkWell(
-                    splashColor: AppColor.textHint,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(100)),
-                        border: Border.all(
-                            width: liveModel.coachDto?.relation == 1 || liveModel.coachDto?.relation == 3 ? 1 : 0.0,
-                            color: AppColor.textHint),
-                      ),
-                      padding: const EdgeInsets.only(left: 16, right: 16, top: 5, bottom: 5),
-                      child: Text(
-                        liveModel.coachDto?.relation == 1 || liveModel.coachDto?.relation == 3 ? "已关注" : "关注",
-                        style: TextStyle(
-                            color: liveModel.coachDto?.relation == 1 || liveModel.coachDto?.relation == 3
-                                ? AppColor.textHint
-                                : AppColor.white,
-                            fontSize: 11),
-                      ),
-                    ),
-                        onTap: () {
-                          if (!(liveModel.coachDto?.relation == 1 || liveModel.coachDto?.relation == 3)) {
-                            _getAttention(liveModel.coachDto?.uid);
-                          }
-                        },
-                      )
-                  ),
-                )
-              ],
-            ),
-          ),
-          onTap: () {
-            AppRouter.navigateToMineDetail(context, liveModel.coachDto?.uid);
-          },
-        )
-    );
-  }
-
-  //获取横线
-  Widget _getLineView() {
-    return SliverToBoxAdapter(
-      child: Container(
-        width: double.infinity,
-        height: 12,
-        color: AppColor.bgWhite.withOpacity(0.65),
-      ),
-    );
-  }
-
-  //获取动作的ui
-  Widget _getActionUi() {
-    // ignore: null_aware_before_operator
-    if (liveModel.coursewareDto?.actionMapList == null ||
-        // ignore: null_aware_before_operator
-        liveModel.coursewareDto?.actionMapList?.length < 1) {
-      return SliverToBoxAdapter();
-    }
-    var widgetArray = <Widget>[];
-    widgetArray.add(Container(
-      padding: const EdgeInsets.only(left: 16, top: 24, bottom: 11.5),
-      width: double.infinity,
-      child: Text(
-        "动作${liveModel.coursewareDto?.actionMapList?.length}个",
-        style: titleTextStyle,
-      ),
-    ));
-
-    for (int i = 0; i < liveModel.coursewareDto?.actionMapList?.length; i++) {
-      widgetArray.add(Container(
-        width: double.infinity,
-        height: 0.5,
-        margin: const EdgeInsets.only(left: 16, right: 16),
-        color: AppColor.bgWhite,
-      ));
-
-      String timeString = "";
-      int longTime = 0;
-      try {
-        longTime = liveModel.coursewareDto?.actionMapList[i]["endTime"] -
-            liveModel.coursewareDto?.actionMapList[i]["startTime"];
-      } catch (e) {
-        longTime = 0;
-      }
-      if (longTime > 0) {
-        timeString = DateUtil.formatSecondToStringNum1(longTime ~/ 1000) + "'${((longTime % 1000) ~/ 10)}'";
-      }
-
-      widgetArray.add(
-        Container(
-          width: double.infinity,
-          margin: const EdgeInsets.only(left: 16, right: 16),
-          padding: const EdgeInsets.only(top: 13.5, bottom: 13),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                liveModel.coursewareDto?.actionMapList[i]["name"] ?? "未知动作",
-                style: TextStyle(fontSize: 16, color: AppColor.textPrimary2),
-              ),
-              Text(
-                timeString,
-                style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return SliverToBoxAdapter(
-      child: Container(
-        width: double.infinity,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: widgetArray,
-        ),
-      ),
-    );
-  }
 
   //课程评论的框架--头部的数据
   Widget _getCourseCommentUi() {
-    List<Widget> widgetArray = <Widget>[];
-    //评论头部title
-    widgetArray.add(Container(
-      padding: const EdgeInsets.only(left: 20, top: 10, bottom: 10),
-      width: double.infinity,
-      child: Text(
-        "课程评论",
-        style: titleTextStyle,
-      ),
-    ));
-    //评论数量等等
-    widgetArray.add(Container(
-      width: double.infinity,
-      padding: const EdgeInsets.only(left: 16.5, right: 16, top: 8),
-      child: Row(
-        children: [
-          Text(
-            "${isHotOrTime ? (courseCommentHot?.totalCount) : (courseCommentTime
-                ?.totalCount)}评论",
-            style: TextStyle(fontSize: 16,color: AppColor.textPrimary1),
-          ),
-          Expanded(child: SizedBox()),
-          InkWell(
-            child: Text(
-              "按热度",
-              style: TextStyle(
-                fontSize: 14,
-                color: isHotOrTime?AppColor.textPrimary1:AppColor.textSecondary,
-                fontWeight: isHotOrTime?FontWeight.bold:FontWeight.normal,
-              ),
-            ),
-            splashColor: AppColor.textHint1,
-            onTap: () {
-              if(!isHotOrTime) {
-                _refreshController.loadComplete();
-                isHotOrTime = !isHotOrTime;
-                getDataAction(isFold: true);
-              }
-            },
-          ),
-          SizedBox(width: 7,),
-          Container(
-            width: 0.5,
-            height: 15.5,
-            color: AppColor.textHint1,
-          ),
-          SizedBox(width: 7,),
-          InkWell(
-            child: Text(
-              "按时间",
-              style: TextStyle(
-                fontSize: 14,
-                color: !isHotOrTime?AppColor.textPrimary1:AppColor.textSecondary,
-                fontWeight: !isHotOrTime?FontWeight.bold:FontWeight.normal,
-              ),
-            ),
-            splashColor: AppColor.textHint1,
-            onTap: () {
-              if(isHotOrTime) {
-                _refreshController.loadComplete();
-                isHotOrTime = !isHotOrTime;
-                getDataAction(isFold: true);
-              }
-            },
-          ),
-
-        ],
-      ),
-    ),);
-    widgetArray.add(SizedBox(height: 12,));
-    //点击写评论
-    widgetArray.add(Center(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            margin: EdgeInsets.only(left: 20),
-            width: 28,
-            height: 28,
-            decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                    image: NetworkImage(Application.profile.avatarUri),
-                    fit: BoxFit.cover)),
-          ),
-          GestureDetector(
-            child: Container(
-              width: ScreenUtil.instance.screenWidthDp - 32 - 40,
-              height: 28,
-              margin: EdgeInsets.only(left: 12),
-              padding: EdgeInsets.only(left: 16),
-              alignment: Alignment(-1, 0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(14)),
-                color: AppColor.bgWhite.withOpacity(0.65),
-              ),
-              child: Text("说点什么吧~",
-                  style: TextStyle(
-                      fontSize: 14, color: AppColor.textHint)),
-            ),
-            onTap: () {
-              targetId = liveModel.id;
-              targetType = 1;
-              replyId = -1;
-              replyCommentId = -1;
-
-              openInputBottomSheet(
-                buildContext: this.context,
-                voidCallback: _publishComment,
-              );
-            },
-          ),
-        ],
-      ),
-    ));
-    //评论主体
-    widgetArray.add(_getCommentItemUi());
-
+    int count=isHotOrTime ? (courseCommentHot?.totalCount) : (courseCommentTime?.totalCount);
+    if(count==null){
+      count=0;
+    }
     return SliverToBoxAdapter(
       child: Container(
         width: double.infinity,
         child: Column(
-          children: widgetArray,
+          children: [
+            getCourseTopText(titleTextStyle),
+            getCourseTopNumber(isHotOrTime,count,onHotCommentTitleClickBtn,onTimeCommentTitleClickBtn),
+            SizedBox(height: 12),
+            getCourseTopEdit(onEditBoxClickBtn),
+            _getCommentItemUi(),
+          ],
         ),
       ),
     );
@@ -752,156 +286,86 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   //评论列表的外层的评论
   Widget _getCommentItemUi() {
     var widgetArray = <Widget>[];
-
     widgetArray.add(SizedBox(height: 23,));
     if (loadingStatusComment == LoadingStatus.STATUS_LOADING) {
       widgetArray.add(Container());
     } else {
       if ((isHotOrTime ? (courseCommentHot) : (courseCommentTime)) == null) {
-        widgetArray.add(Container(
-          child: Column(
-            children: [
-              Image.asset("images/test/bg.png", fit: BoxFit.cover,
-                width: 224,
-                height: 224,),
-              SizedBox(height: 16,),
-              Text("偷偷逆袭中，还没有人来冒泡呢",
-                style: TextStyle(fontSize: 14, color: AppColor.textSecondary),)
-            ],
-          ),
-        ));
+        widgetArray.add(getCommentNoData());
       } else {
-        for (int i = 0; i <
-            (isHotOrTime ? (courseCommentHot) : (courseCommentTime))?.list
-                ?.length; i++) {
-          CommentDtoModel value = (isHotOrTime
-              ? (courseCommentHot)
-              : (courseCommentTime)).list[i];
-          var subCommentCompleteTitle =
-          // ignore: null_aware_before_operator
-          (value.replys?.length < value.replyCount + value.pullNumber
-              ? "查看"
-              : (commentListSubSettingList[i].isFold ? "查看" : "隐藏"));
-          var subCommentComplete =
-          // ignore: null_aware_before_operator
-          subCommentCompleteTitle +
-              // ignore: null_aware_before_operator
-              "${value.replys?.length >= value.replyCount + value.pullNumber
-                  ? value.replyCount
-                  : (value.replyCount + value.pullNumber -
-                  value.replys?.length)}条回复";
-          if (subCommentCompleteTitle == "隐藏") {
-            subCommentComplete = "隐藏回复";
-          }
-          var subCommentLoading = "正在加载。。。";
-
-
-          widgetArray.add(Container(
-            width: double.infinity,
-            padding: const EdgeInsets.only(left: 20, right: 20),
-            child: Column(
-              children: [
-                _getCommentUi(value, false, value.id),
-                SizedBox(height: 13,),
-                Offstage(
-                  offstage: value.replyCount + value.pullNumber < 1,
-                  child: Container(
-                    width: double.infinity,
-                    child: Column(
-                      children: [
-                        _getSubCommentItemUi(value, i),
-                        Offstage(
-                          offstage: value.replyCount < 1,
-                          child: Container(
-                            width: double.infinity,
-                            child: GestureDetector(
-                              child: Row(
-                                children: [
-                                  SizedBox(width: 57,),
-                                  Container(
-                                    width: 40,
-                                    height: 0.5,
-                                    color: AppColor.textSecondary,
-                                  ),
-                                  SizedBox(width: 4,),
-                                  Container(
-                                    child: Text(commentLoadingStatusList[i] ==
-                                        LoadingStatus.STATUS_COMPLETED
-                                        ? subCommentComplete
-                                        : subCommentLoading,
-                                      style: TextStyle(color: Colors.grey),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              onTap: () {
-                                // ignore: null_aware_before_operator
-                                if (value.replys?.length >=
-                                    value.replyCount + value.pullNumber) {
-                                  (isHotOrTime
-                                      ? courseCommentHot.list[i].replys
-                                      : courseCommentTime.list[i].replys)
-                                      .clear();
-                                  if (isHotOrTime) {
-                                    courseCommentHot.list[i].replyCount +=
-                                        courseCommentHot.list[i].pullNumber;
-                                    courseCommentHot.list[i].pullNumber = 0;
-                                  } else {
-                                    courseCommentTime.list[i].replyCount +=
-                                        courseCommentTime.list[i].pullNumber;
-                                    courseCommentTime.list[i].pullNumber = 0;
-                                  }
-                                  courseCommentPageHot = 1;
-                                  courseCommentPageTime = 1;
-                                  setState(() {});
-                                  // if (commentListSubSettingList[i].subCommentAllHeight == null) {
-                                  //   commentListSubSettingList[i]
-                                  //       .subCommentAllHeight =
-                                  //       commentListSubSettingList[i].globalKey
-                                  //           .currentContext.size.height;
-                                  //   setState(() {
-                                  //
-                                  //   });
-                                  //   Future.delayed(Duration(milliseconds: 100), () {
-                                  //     commentListSubSettingList[i].isFold =
-                                  //     !commentListSubSettingList[i].isFold;
-                                  //     setState(() {});
-                                  //   });
-                                  // } else {
-                                  //   commentListSubSettingList[i].isFold = !commentListSubSettingList[i].isFold;
-                                  //   setState(() {});
-                                  // }
-                                } else {
-                                  commentListSubSettingList[i].isFold = false;
-                                  commentLoadingStatusList[i] =
-                                      LoadingStatus.STATUS_LOADING;
-                                  setState(() {
-
-                                  });
-                                  _getSubComment(value.id, value.replys?.length,
-                                      value.replyCount, value.pullNumber, i);
-                                }
-                              },
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 13,),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ));
-        }
+        widgetArray.addAll(getBigCommentList());
       }
     }
-
-
     return Container(
       width: double.infinity,
       child: Column(
         children: widgetArray,
+      ),
+    );
+  }
+
+  //外部的item--for
+  List<Widget> getBigCommentList(){
+    var widgetArray = <Widget>[];
+    for (int i = 0; i < (isHotOrTime ? (courseCommentHot) : (courseCommentTime))?.list?.length; i++) {
+      widgetArray.add(bigBoxItem((isHotOrTime ? (courseCommentHot) : (courseCommentTime)).list[i],i));
+    }
+    return widgetArray;
+  }
+
+  //外部的item
+  Widget bigBoxItem(CommentDtoModel value,int index){
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.only(left: 16, right: 16),
+      child: Column(
+        children: [
+          _getCommentUi(value, false, value.id),
+          SizedBox(height: 13,),
+          getSubItemAll(value,index),
+        ],
+      ),
+    );
+  }
+  //每一个item的子item
+  Widget getSubItemAll(CommentDtoModel value,int index){
+    return Offstage(
+      offstage: value.replyCount + value.pullNumber < 1,
+      child: Container(
+        width: double.infinity,
+        child: Column(
+          children: [
+            _getSubCommentItemUi(value, index),
+            getCommentBottomAlertText(value,index),
+            SizedBox(
+              height: 13,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  //每一个评论的item底部提示文字
+  Widget getCommentBottomAlertText(CommentDtoModel value,int index){
+    var subComplete = getSubCommentComplete(value,commentListSubSettingList[index].isFold);
+    var subLoading = "正在加载。。。";
+    String alertText= commentLoadingStatusList[index] == LoadingStatus.STATUS_COMPLETED ? subComplete : subLoading;
+    return Offstage(
+      offstage: value.replyCount < 1,
+      child: Container(
+        width: double.infinity,
+        child: GestureDetector(
+          child: Row(
+            children: [
+              SizedBox(width: 57,),
+              Container(width: 40, height: 0.5, color: AppColor.textSecondary),
+              SizedBox(width: 4,),
+              Container(child: Text(alertText,style: TextStyle(color: Colors.grey))),
+            ],
+          ),
+          onTap: ()=>onClickAddSubComment(value,index),
+        ),
       ),
     );
   }
@@ -911,54 +375,124 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     var widgetArray = <Widget>[];
     if (value.replys != null && value.replys.length > 0) {
       for (int i = 0; i < value.replys.length; i++) {
-        widgetArray.add(_getCommentUi(value.replys[i], true,value.id));
-        widgetArray.add(SizedBox(height: 13,));
+        widgetArray.add(_getCommentUi(value.replys[i], true, value.id));
+        widgetArray.add(SizedBox(
+          height: 13,
+        ));
       }
     }
-
-    Widget widget=Container(
-      key: commentListSubSettingList[index].globalKey,
-      width: double.infinity,
-      padding: const EdgeInsets.only(left: 55),
-      child: SingleChildScrollView(
-        physics: NeverScrollableScrollPhysics(),
-        child: Column(
-          children: widgetArray,
+    return Offstage(
+      offstage: commentListSubSettingList[index].isFold,
+      child: Container(
+        key: commentListSubSettingList[index].globalKey,
+        width: double.infinity,
+        padding: const EdgeInsets.only(left: 55),
+        child: SingleChildScrollView(
+          physics: NeverScrollableScrollPhysics(),
+          child: Column(
+            children: widgetArray,
+          ),
         ),
       ),
     );
-
-    return Offstage(
-      offstage: commentListSubSettingList[index].isFold,
-      child: widget,
-    );
-    // if(commentListSubSettingList[index].subCommentAllHeight==null||commentListSubSettingList[index].subCommentAllHeight<0) {
-    //   return Offstage(
-    //     offstage: commentListSubSettingList[index].isFold,
-    //     child: widget,
-    //   );
-    // }else{
-    //   return AnimatedContainer(
-    //     height: commentListSubSettingList[index].isFold?0.0:commentListSubSettingList[index].subCommentAllHeight,
-    //     duration: Duration(milliseconds: animationTime),
-    //     child: widget,
-    //   );
-    // }
   }
 
   //获取评论的item--每一个item
-  Widget _getCommentUi(CommentDtoModel value, bool isSubComment,int _targetId) {
-    var textSpanList=<TextSpan>[];
+  Widget _getCommentUi(CommentDtoModel value, bool isSubComment, int _targetId) {
+    return IntrinsicHeight(
+      child: Row(
+        verticalDirection: VerticalDirection.up,
+        children: [
+          getUserImage(value.avatarUrl, 42, 42),
+          SizedBox(width: 15),
+          // //中间信息
+          Expanded(child: SizedBox(
+            child: GestureDetector(
+              child: Container(
+                width: double.infinity,
+                color: AppColor.transparent,
+                child: Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      child: RichText(
+                        text: TextSpan(
+                          children: getSubCommentText(value,isSubComment,_targetId),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 6),
+                    Container(
+                        width: double.infinity,
+                        child: Row(
+                          children: [
+                            Container(
+                              child: Text(
+                                DateUtil.formatDateNoYearString(DateUtil.getDateTimeByMs(value.createTime)),
+                                style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                              ),
+                            ),
+                            SizedBox(width: 12),
+                            Container(
+                              child: Text(
+                                "回复",
+                                style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 12,
+                            ),
+                          ],
+                        )
+                    ),
+                  ],
+                ),
+              ),
+              onTap: ()=>onPostComment(_targetId,2,value.uid, value.id,hintText: "回复 " + value.name),
+            ),
+          )),
+          SizedBox(width: 16),
+          Container(
+            child: GestureDetector(
+              child: Column(
+                children: [
+                  Icon(
+                    value.isLaud == 1 ? Icons.favorite : Icons.favorite_border,
+                    color: value.isLaud == 1 ? Colors.red : Colors.grey,
+                    size: 18,
+                  ),
+                  SizedBox(
+                    height: 7,
+                  ),
+                  Text(
+                    IntegerUtil.formatIntegerEn(value.laudCount),
+                    style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                  ),
+                ],
+              ),
+              onTap: () {
+                _laudComment(value.id, value.isLaud == 0);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  //获取子评论的文字
+  List<TextSpan> getSubCommentText(CommentDtoModel value, bool isSubComment, int _targetId){
+    var textSpanList = <TextSpan>[];
     textSpanList.add(TextSpan(
-      text: value.name+" ",
+      text: value.name + " ",
       style: TextStyle(
         fontSize: 15,
         color: AppColor.textPrimary1,
         fontWeight: FontWeight.bold,
       ),
     ));
-    if(isSubComment){
-      if(value.replyId!=null&&value.replyId>0){
+    if (isSubComment) {
+      if (value.replyId != null && value.replyId > 0) {
         textSpanList.add(TextSpan(
           text: "回复 ",
           style: TextStyle(
@@ -988,161 +522,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
         ),
       ));
     }
-
-
-    return IntrinsicHeight(
-      child: Row(
-        verticalDirection: VerticalDirection.up,
-        children: [
-          //头像
-          Container(
-            padding: const EdgeInsets.only(top: 2),
-            child: Column(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
-                  child: Image.network(
-                    value.avatarUrl,
-                    fit: BoxFit.cover,
-                    width: 42,
-                    height: 42,
-                  ),
-                )
-              ],
-            ),
-          ),
-          //间隔
-          SizedBox(
-            width: 15,
-          ),
-          // //中间信息
-          Expanded(
-              child: SizedBox(
-                child: GestureDetector(
-                  child: Container(
-                    width: double.infinity,
-                    color: AppColor.transparent,
-                    child: Column(
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          child: RichText(
-                            text: TextSpan(
-                              children: textSpanList,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 6,
-                        ),
-                        Container(
-                            width: double.infinity,
-                            child: Row(
-                              children: [
-                                Container(
-                                  child: Text(
-                                    DateUtil.formatDateNoYearString(
-                                        DateUtil.getDateTimeByMs(
-                                            value.createTime)),
-                                    style: TextStyle(fontSize: 12,
-                                        color: AppColor.textSecondary),
-                                  ),
-                                ),
-                                SizedBox(width: 12,),
-                                Container(
-                                  child: Text("回复",
-                                    style: TextStyle(fontSize: 12,
-                                        color: AppColor.textSecondary),
-                                  ),
-                                ),
-                                SizedBox(width: 12,),
-                                Offstage(
-                                  // offstage: uId!=value.uid,
-                                  offstage: true,
-                                  child: InkWell(
-                                    child: Container(
-                                      child: Text("删除",
-                                        style: TextStyle(fontSize: 12,
-                                            color: AppColor.textSecondary),
-                                      ),
-                                    ),
-                                    onTap: () {
-                                      ToastShow.show(
-                                          msg: "点击删除", context: context);
-                                      showCupertinoDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return CupertinoAlertDialog(
-                                              title: Text('删除评论'),
-                                              content: Text('是否删除评论'),
-                                              actions: <Widget>[
-                                                CupertinoDialogAction(
-                                                  child: Text('不删除'),
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                  },
-                                                ),
-                                                CupertinoDialogAction(
-                                                  child: Text('删除'),
-                                                  onPressed: () {
-                                                    _deleteComment(
-                                                        value.id);
-                                                    Navigator.pop(context);
-                                                  },
-                                                ),
-                                              ],
-                                            );
-                                          });
-                                    },
-                                  ),
-                                )
-                              ],
-                            )
-                        ),
-                      ],
-                    ),
-                  ),
-                  onTap: () {
-                    targetId = _targetId;
-                    targetType = 2;
-                    replyId = value.uid;
-                    replyCommentId = value.id;
-                    openInputBottomSheet(
-                      buildContext: this.context,
-                      hintText: "回复 " + value.name,
-                      voidCallback: _publishComment,
-                    );
-                  },
-                ),
-              )
-          ),
-          SizedBox(width: 16,),
-          //点赞
-          Container(
-            child: GestureDetector(
-              child: Column(
-                children: [
-                  Icon(
-                    value.isLaud == 1 ? Icons.favorite : Icons.favorite_border,
-                    color: value.isLaud == 1 ? Colors.red : Colors.grey,
-                    size: 18,
-                  ),
-                  SizedBox(height: 7,),
-                  Text(
-                    IntegerUtil.formatIntegerEn(value.laudCount),
-                    style: TextStyle(
-                        fontSize: 12, color: AppColor.textSecondary),
-                  ),
-                ],
-              ),
-              onTap: () {
-                _laudComment(value.id, value.isLaud == 0);
-              },
-            ),
-          ),
-        ],
-      ),
-    );
+    return textSpanList;
   }
 
   List<TextSpan> getAtUserTextSpan(CommentDtoModel value) {
@@ -1322,53 +702,23 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   }
 
 
-  //加载网络数据
-  void getDataAction({bool isFold = false}) async {
-    //获取评论
-    if (isHotOrTime) {
-      if (courseCommentHot == null) {
-        Map<String, dynamic> commentModel = await queryListByHot2(
-            targetId: liveCourseId, targetType: 1, page: courseCommentPageHot, size: courseCommentPageSize);
-        if (commentModel != null) {
-          courseCommentHot = CommentModel.fromJson(commentModel);
-          courseCommentPageHot++;
-        }
-      }
-      setCommentListSubSetting(courseCommentHot, isFold: isFold);
-    } else {
-      if (courseCommentTime == null) {
-        Map<String, dynamic> commentModel = await queryListByTime(
-            targetId: liveCourseId,
-            targetType: 1,
-            page: courseCommentPageTime,
-            size: courseCommentPageSize);
-        if (commentModel != null) {
-          courseCommentTime = CommentModel.fromJson(commentModel);
-          courseCommentPageTime++;
-        }
-      }
-      setCommentListSubSetting(courseCommentTime, isFold: isFold);
-    }
-    loadingStatusComment = LoadingStatus.STATUS_COMPLETED;
 
-    String startTime="";
-    if(liveModel!=null){
-      startTime=liveModel.startTime;
-    }
-    //加载数据
-    Map<String, dynamic> model = await (widget.isHaveStartTime?liveCourseDetail:getLatestLiveById)(courseId: liveCourseId, startTime: startTime);
-    if (model == null) {
-      loadingStatus = LoadingStatus.STATUS_IDEL;
-      Future.delayed(Duration(seconds: 1), () {
+  //滑动的回调
+  bool _onDragNotification(ScrollNotification notification) {
+    ScrollMetrics metrics = notification.metrics;
+    if (metrics.pixels < 10) {
+      if (isBouncingScrollPhysics) {
+        isBouncingScrollPhysics = false;
         setState(() {});
-      });
+      }
     } else {
-      liveModel = LiveVideoModel.fromJson(model);
-      loadingStatus = LoadingStatus.STATUS_COMPLETED;
-      setState(() {});
+      if (!isBouncingScrollPhysics) {
+        isBouncingScrollPhysics = true;
+        setState(() {});
+      }
     }
+    return false;
   }
-
   //设置评论的动画类
   void setCommentListSubSetting(CommentModel commentModel,
       {bool isFold = false}) {
@@ -1453,151 +803,6 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   }
 
 
-  //删除评论
-  _deleteComment(int commentId) async {
-    Map<String, dynamic> model = await deleteComment(commentId: commentId);
-    print(model);
-    if (model != null && model["state"] == true) {
-      _deleteCommentData(courseCommentHot, commentId, true);
-      _deleteCommentData(courseCommentTime, commentId, false);
-      ToastShow.show(msg: "删除成功", context: context);
-      setState(() {
-
-      });
-    } else {
-      ToastShow.show(msg: "删除失败，只能删除自己的评论", context: context);
-    }
-  }
-
-  _deleteCommentData(CommentModel commentModel, int commentId,
-      bool isHotOrTime) {
-    if (commentModel != null) {
-      for (int i = 0; i < commentModel.list.length; i++) {
-        if (commentModel.list[i].id == commentId) {
-          commentModel.list.removeAt(i);
-          break;
-        }
-        int judge = 0;
-        for (int j = 0; j < commentModel.list[i].replys.length; j++) {
-          if (commentModel.list[i].replys[j].id == commentId) {
-            commentModel.list[i].replys.removeAt(j);
-            (isHotOrTime ? courseCommentHot : courseCommentTime).list[i]
-                .replyCount--;
-            if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[i]
-                .pullNumber > 0) {
-              (isHotOrTime ? courseCommentHot : courseCommentTime).list[i]
-                  .replyCount +=
-                  (isHotOrTime ? courseCommentHot : courseCommentTime).list[i]
-                      .pullNumber;
-              (isHotOrTime ? courseCommentHot : courseCommentTime).list[i]
-                  .pullNumber = 0;
-            }
-            commentListSubSettingList[i].subCommentAllHeight = null;
-            judge = 1;
-            break;
-          }
-        }
-        if (judge == 1) {
-          break;
-        }
-      }
-    }
-  }
-
-  //todo 查询子评论会出现一个问题 当之前发布的子评论 个数过多会出现在下次请求中-去重导致感官-点击没有加载数据
-  //获取子评论
-  _getSubComment(int targetId, int replyLength, int replyCount, int pullNumber,
-      int positionComment) async {
-    int subCommentPageSize = 3;
-    // int subCommentAllPage=replyCount%subCommentPageSize>0?(replyCount~/subCommentPageSize)+1:(replyCount~/subCommentPageSize);
-    int nowSubCommentPage = (replyLength - pullNumber) % subCommentPageSize > 0
-        ? ((replyLength - pullNumber) ~/ subCommentPageSize) + 1
-        : ((replyLength - pullNumber) ~/ subCommentPageSize);
-    int page = nowSubCommentPage + 1;
-
-    try {
-      Map<String, dynamic> commentModel = await (isHotOrTime ? queryListByHot2 : queryListByTime)(targetId: targetId,
-          targetType: 2,
-          page: page,
-          size: subCommentPageSize);
-
-      if (commentModel != null) {
-        List<CommentDtoModel> commentDtoModelList = <CommentDtoModel>[];
-        commentDtoModelList.addAll(CommentModel
-            .fromJson(commentModel)
-            .list);
-
-        if ((isHotOrTime ? courseCommentHot : courseCommentTime)
-            .list[positionComment].replys != null) {
-          if ((isHotOrTime ? courseCommentHot : courseCommentTime)
-              .list[positionComment].pullNumber > 0) {
-            for (int i = 0; i <
-                (isHotOrTime ? courseCommentHot : courseCommentTime)
-                    .list[positionComment].replys.length; i++) {
-              for (int j = 0; j < commentDtoModelList.length; j++) {
-                if ((isHotOrTime ? courseCommentHot : courseCommentTime)
-                    .list[positionComment].replys[i].id ==
-                    commentDtoModelList[j].id) {
-                  commentDtoModelList.removeAt(j);
-                  j--;
-                  (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber--;
-                  (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replyCount++;
-                }
-              }
-            }
-          }
-          commentDtoModelList.insertAll(0,
-              (isHotOrTime ? courseCommentHot : courseCommentTime)
-                  .list[positionComment].replys);
-        }
-
-        (isHotOrTime ? courseCommentHot : courseCommentTime)
-            .list[positionComment].replys = commentDtoModelList;
-        if (commentDtoModelList.length >
-            (isHotOrTime ? courseCommentHot : courseCommentTime)
-                .list[positionComment].replyCount) {
-          (isHotOrTime ? courseCommentHot : courseCommentTime)
-              .list[positionComment].replyCount = commentDtoModelList.length;
-        }
-      }
-    }catch(e){
-
-    }
-
-    commentLoadingStatusList[positionComment]=LoadingStatus.STATUS_COMPLETED;
-    setState(() {
-
-    });
-  }
-
-  //加载更多的评论
-  void _onLoading() async {
-    Future.delayed(Duration(milliseconds: 500), () async{
-      Map<String, dynamic> mapModel = await (isHotOrTime
-          ? queryListByHot2
-          : queryListByTime)(targetId: liveCourseId,
-          targetType: 1,
-          page: (isHotOrTime ? courseCommentPageHot : courseCommentPageTime),
-          size: courseCommentPageSize);
-      if (mapModel != null) {
-        CommentModel commentModel = CommentModel.fromJson(mapModel);
-        if (commentModel == null || commentModel.list == null ||
-            commentModel.list.length < 1) {
-          _refreshController.loadNoData();
-        } else {
-          (isHotOrTime ? courseCommentHot : courseCommentTime).list.addAll(
-              commentModel.list);
-          setCommentListSubSetting(
-              (isHotOrTime ? courseCommentHot : courseCommentTime));
-          isHotOrTime ? courseCommentPageHot++ : courseCommentPageTime++;
-          _refreshController.loadComplete();
-        }
-      } else {
-        _refreshController.loadNoData();
-      }
-      setState(() {});
-    });
-  }
 
   //点赞-取消点赞
   _laudComment(int commentId, bool laud) async {
@@ -1668,17 +873,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     sharedType: 1);
   }
 
-  ///这是关注的方法
-  _getAttention(int userId) async {
-    int attntionResult = await ProfileAddFollow(userId);
-    print('关注监听=========================================$attntionResult');
-    if (attntionResult == 1 || attntionResult == 3) {
-      liveModel.coachDto?.relation = 1;
-      setState(() {
 
-      });
-    }
-  }
 
 
   ///预约流程
@@ -1843,6 +1038,313 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     applyTerminalTraining(courseId: liveModel.id, startTime: liveModel.startTime);
     ToastShow.show(msg: "已报名，若中选将收到系统消息", context: context);
   }
+
+
+
+  ///这是关注的方法
+  onClickAttention() {
+    if (!(liveModel.coachDto?.relation == 1 || liveModel.coachDto?.relation == 3)) {
+      _getAttention(liveModel.coachDto?.uid);
+    }
+  }
+
+  ///这是关注的方法
+  _getAttention(int userId) async {
+    int attntionResult = await ProfileAddFollow(userId);
+    print('关注监听=========================================$attntionResult');
+    if (attntionResult == 1 || attntionResult == 3) {
+      liveModel.coachDto?.relation = 1;
+      setState(() {
+
+      });
+    }
+  }
+
+  ///点击了教练
+  onClickCoach() {
+    AppRouter.navigateToMineDetail(context, liveModel.coachDto?.uid);
+  }
+  ///点击了他人刚刚训练完成
+  onClickOtherComplete() {
+    AppRouter.navigateToOtherCompleteCoursePage(context,liveModel.id);
+  }
+  //热门评论点击
+  onHotCommentTitleClickBtn(){
+    if (!isHotOrTime) {
+      _refreshController.loadComplete();
+      isHotOrTime = !isHotOrTime;
+      getDataAction(isFold: true);
+    }
+  }
+  //时间评论点击
+  onTimeCommentTitleClickBtn(){
+    if (isHotOrTime) {
+      _refreshController.loadComplete();
+      isHotOrTime = !isHotOrTime;
+      getDataAction(isFold: true);
+    }
+  }
+  //输入框评论点击事件
+  onEditBoxClickBtn(){
+    targetId = liveModel.id;
+    targetType = 3;
+    replyId = -1;
+    replyCommentId = -1;
+
+    openInputBottomSheet(
+      buildContext: this.context,
+      voidCallback: _publishComment,
+    );
+  }
+
+  //输入框评论点击事件
+  onPostComment(int targetId,int targetType,int replyId,int replyCommentId,{String hintText}){
+    this.targetId = targetId;
+    this.targetType = targetType;
+    this.replyId = replyId;
+    this.replyCommentId = replyCommentId;
+    openInputBottomSheet(
+      buildContext: this.context,
+      hintText: hintText,
+      voidCallback: _publishComment,
+    );
+  }
+
+  //判断加载子评论
+  onClickAddSubComment(CommentDtoModel value,int index){
+    if(commentLoadingStatusList[index] == LoadingStatus.STATUS_COMPLETED) {
+      // ignore: null_aware_before_operator
+      if (value.replys?.length >= value.replyCount + value.pullNumber) {
+        (isHotOrTime ? courseCommentHot.list[index].replys : courseCommentTime.list[index].replys)
+            .clear();
+        if (isHotOrTime) {
+          courseCommentHot.list[index].replyCount += courseCommentHot.list[index].pullNumber;
+          courseCommentHot.list[index].pullNumber = 0;
+        } else {
+          courseCommentTime.list[index].replyCount += courseCommentTime.list[index].pullNumber;
+          courseCommentTime.list[index].pullNumber = 0;
+        }
+        courseCommentPageHot = 1;
+        courseCommentPageTime = 1;
+        setState(() {});
+      } else {
+        commentListSubSettingList[index].isFold = false;
+        commentLoadingStatusList[index] = LoadingStatus.STATUS_LOADING;
+        setState(() {});
+        _getSubComment(value.id, value.replys?.length, value.replyCount, value.pullNumber, index);
+      }
+    }
+  }
+
+
+  //加载网络数据
+  void getDataAction({bool isFold = false}) async {
+    //获取评论
+    if (isHotOrTime) {
+      if (courseCommentHot == null) {
+        Map<String, dynamic> commentModel = await queryListByHot2(
+            targetId: liveCourseId, targetType: 1, lastId: courseCommentHot?.lastId??null, size: courseCommentPageSize);
+        if (commentModel != null) {
+          courseCommentHot = CommentModel.fromJson(commentModel);
+          courseCommentPageHot++;
+        }
+      }
+      setCommentListSubSetting(courseCommentHot, isFold: isFold);
+    } else {
+      if (courseCommentTime == null) {
+        Map<String, dynamic> commentModel = await queryListByTime(
+            targetId: liveCourseId,
+            targetType: 1,
+            lastId: courseCommentTime?.lastId??null,
+            size: courseCommentPageSize);
+        if (commentModel != null) {
+          courseCommentTime = CommentModel.fromJson(commentModel);
+          courseCommentPageTime++;
+        }
+      }
+      setCommentListSubSetting(courseCommentTime, isFold: isFold);
+    }
+    loadingStatusComment = LoadingStatus.STATUS_COMPLETED;
+
+    String startTime="";
+    if(liveModel!=null){
+      startTime=liveModel.startTime;
+    }
+    //加载数据
+    Map<String, dynamic> model = await (widget.isHaveStartTime?liveCourseDetail:getLatestLiveById)(courseId: liveCourseId, startTime: startTime);
+    if (model == null) {
+      loadingStatus = LoadingStatus.STATUS_IDEL;
+      Future.delayed(Duration(seconds: 1), () {
+        setState(() {});
+      });
+    } else {
+      liveModel = LiveVideoModel.fromJson(model);
+      loadingStatus = LoadingStatus.STATUS_COMPLETED;
+      setState(() {});
+    }
+  }
+
+  //todo 查询子评论会出现一个问题 当之前发布的子评论 个数过多会出现在下次请求中-去重导致感官-点击没有加载数据
+  //获取子评论
+  _getSubComment(int targetId, int replyLength, int replyCount, int pullNumber,
+      int positionComment) async {
+    int subCommentPageSize = 3;
+    if(replyLength==0){
+      (isHotOrTime?subCommentLastIdHot:subCommentLastIdTime)["$targetId"]=null;
+    }
+    int lastId=(isHotOrTime?subCommentLastIdHot:subCommentLastIdTime)["$targetId"];
+    print("刚开始加载子评论");
+    if(replyLength>0&&lastId==null&&(isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber<=0){
+      print("有数量，但是null为空，表示没有数据了");
+      commentLoadingStatusList[positionComment] = LoadingStatus.STATUS_COMPLETED;
+      setState(() {});
+      return;
+    }
+
+    try {
+      print("加载子评论---isHotOrTime:$isHotOrTime,targetId:$targetId, lastId:$lastId, subCommentPageSize:$subCommentPageSize");
+      Map<String, dynamic> model = await (isHotOrTime ? queryListByHot2 : queryListByTime)(
+          targetId: targetId, targetType: 2, lastId: lastId, size: subCommentPageSize);
+
+      print("获取到了数据model:${model.toString()}");
+      if (model != null) {
+        print("获取到了数据不为空");
+        CommentModel commentModel = CommentModel.fromJson(model);
+        if (!(commentModel == null || commentModel.list == null || commentModel.list.length < 1)) {
+
+          print("获取到了commentModel不为空");
+          List<CommentDtoModel> commentDtoModelList = <CommentDtoModel>[];
+          commentDtoModelList.addAll(commentModel.list);
+
+          print("获取到了length:${commentDtoModelList.length}条数据， commentModel.lastId：${commentModel.lastId}");
+          (isHotOrTime?subCommentLastIdHot:subCommentLastIdTime)["$targetId"]=commentModel.lastId;
+          int subCount=0;
+          if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys != null) {
+            if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber > 0) {
+              for (int i = 0; i < (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys.length; i++) {
+                for (int j = 0; j < commentDtoModelList.length; j++) {
+                  if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys[i].id ==
+                      commentDtoModelList[j].id) {
+                    commentDtoModelList.removeAt(j);
+
+                    j--;
+                    subCount++;
+                    print("删除了$subCount条重复记录");
+                    (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber--;
+                    print("-pullNumber:${(isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber}");
+                    // (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replyCount++;
+                  }
+                }
+              }
+            }
+
+            if(subCount>0) {
+              print("填补删除的条数");
+              commentDtoModelList.addAll(await getSubCommentOne(subCount, positionComment));
+            }else{
+              (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber-=subCommentPageSize;
+              if((isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber<0){
+                (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber=0;
+              }
+            }
+            print("加上以前的数据");
+            commentDtoModelList.insertAll(0, (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys);
+            print("commentDtoModelList。length:${commentDtoModelList.length}");
+          }
+
+          (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys = commentDtoModelList;
+
+          if (commentDtoModelList.length > (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replyCount) {
+            (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replyCount = commentDtoModelList.length;
+          }
+        }
+      }
+    }catch(e){
+
+    }
+
+    commentLoadingStatusList[positionComment]=LoadingStatus.STATUS_COMPLETED;
+    setState(() {
+
+    });
+  }
+  //获取了一条数据子评论
+  Future<List<CommentDtoModel>> getSubCommentOne(int count,int positionComment)async{
+    int lastId=(isHotOrTime?subCommentLastIdHot:subCommentLastIdTime)["$targetId"];
+    List<CommentDtoModel> commentDtoModelList = <CommentDtoModel>[];
+    try {
+      Map<String, dynamic> model = await (isHotOrTime ? queryListByHot2 : queryListByTime)(
+          targetId: targetId, targetType: 2, lastId: lastId, size: count);
+      if (model != null) {
+        CommentModel commentModel = CommentModel.fromJson(model);
+        if (!(commentModel == null || commentModel.list == null || commentModel.list.length < 1)) {
+          commentDtoModelList.addAll(commentModel.list);
+          int subCount=0;
+          (isHotOrTime?subCommentLastIdHot:subCommentLastIdTime)["$targetId"]=commentModel.lastId;
+          if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys != null) {
+            if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber > 0) {
+              for (int i = 0; i < (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys.length; i++) {
+                for (int j = 0; j < commentDtoModelList.length; j++) {
+                  if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys[i].id ==
+                      commentDtoModelList[j].id) {
+                    commentDtoModelList.removeAt(j);
+                    j--;
+                    subCount++;
+                    (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber--;
+                    print("-pullNumber:${(isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber}");
+                    // (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replyCount++;
+                  }
+                }
+              }
+            }
+          }
+          if(subCount>0) {
+            commentDtoModelList.addAll(await getSubCommentOne(subCount, positionComment));
+          }
+        }
+      }
+    } catch (e) {}
+    return commentDtoModelList;
+  }
+
+
+  //加载更多的评论
+  void _onLoading() async {
+    Future.delayed(Duration(milliseconds: 500), () async{
+      if(isHotOrTime&&courseCommentPageHot>0&&courseCommentHot.lastId==null){
+        _refreshController.loadNoData();
+        return;
+      }
+      if(!isHotOrTime&&courseCommentPageTime>0&&courseCommentTime.lastId==null){
+        _refreshController.loadNoData();
+        return;
+      }
+      Map<String, dynamic> mapModel = await (isHotOrTime
+          ? queryListByHot2
+          : queryListByTime)(targetId: liveCourseId,
+          targetType: 1,
+          lastId: (isHotOrTime ? courseCommentHot.lastId : courseCommentTime.lastId),
+          size: courseCommentPageSize);
+      if (mapModel != null) {
+        CommentModel commentModel = CommentModel.fromJson(mapModel);
+        if (commentModel == null || commentModel.list == null ||
+            commentModel.list.length < 1) {
+          _refreshController.loadNoData();
+        } else {
+          (isHotOrTime ? courseCommentHot : courseCommentTime).list.addAll(
+              commentModel.list);
+          setCommentListSubSetting(
+              (isHotOrTime ? courseCommentHot : courseCommentTime));
+          isHotOrTime ? courseCommentPageHot++ : courseCommentPageTime++;
+          _refreshController.loadComplete();
+        }
+      } else {
+        _refreshController.loadNoData();
+      }
+      setState(() {});
+    });
+  }
+
 }
 
 class CommentListSubSetting {

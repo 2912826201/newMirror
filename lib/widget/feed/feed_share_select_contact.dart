@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lpinyin/lpinyin.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/api/message_page_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
@@ -555,11 +556,15 @@ class _FriendsPageState extends State<FriendsPage> {
     Map<String, dynamic> model = await inviteJoin(groupChatId: widget.groupChatId, uids: uids);
 
     selectUserUsIdList.clear();
+
     if (model != null && model["state"]) {
       ToastShow.show(msg: "添加成功", context: context);
       // await getChatGroupUserModelList(widget.groupChatId.toString(), context);
       widget.voidCallback("添加成功", 0, -1, context);
-    } else {
+    } else if(model!=null&&model["code"]==CODE_INVITE_JOIN_NO_FRIEND){
+      ToastShow.show(msg: "添加失败", context: context);
+      widget.voidCallback("失败的用户名字", 0, CODE_INVITE_JOIN_NO_FRIEND, context);
+    }else{
       ToastShow.show(msg: "添加失败", context: context);
       widget.voidCallback("添加失败", 0, -1, context);
     }
