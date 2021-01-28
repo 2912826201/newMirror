@@ -366,8 +366,8 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
               entity.type == AssetType.video
                   ? "${DateFormat("MM:ss").format(DateTime.fromMillisecondsSinceEpoch(entity.duration * 1000))}"
                   : entity.type == AssetType.image
-                  ? ""
-                  : "",
+                      ? ""
+                      : "",
               style: TextStyle(color: AppColor.white, fontSize: 9),
             ),
           ),
@@ -394,10 +394,16 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                         shape: BoxShape.circle,
                         border: Border.all(color: AppColor.mainRed, width: 1),
                       ),
-                      child: Text(
-                        notifier.selectedMap[entity.id].order.toString(),
-                        style: TextStyle(color: AppColor.white, fontSize: 16),
-                      ),
+                      child: widget.maxImageAmount == 1
+                          ? Icon(
+                              Icons.check,
+                              color: AppColor.white,
+                              size: 16,
+                            )
+                          : Text(
+                              notifier.selectedMap[entity.id].order.toString(),
+                              style: TextStyle(color: AppColor.white, fontSize: 16),
+                            ),
                     )
                   : Container(
                       height: 20,
