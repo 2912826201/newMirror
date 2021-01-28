@@ -9,7 +9,7 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
-import 'package:mirror/util/Image_util.dart';
+import 'package:mirror/util/image_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 

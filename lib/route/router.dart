@@ -168,6 +168,12 @@ class AppRouter {
     _navigateToPage(context, pathLoginTest, map);
   }
 
+  // maxImageAmount 最大图片数量
+  // mediaType 媒体文件类型 目前的类型有typeImage和typeImageAndVideo
+  // needCrop 是否需要裁剪 false的情况没有裁剪预览框
+  // startPage 起始页 startPageGallery或startPagePhoto
+  // cropOnlySquare 是否只切正方形 只有needCrop为true时这个值才生效
+  // isGoToPublish 是否在操作完成后跳转到发布页
   static void navigateToMediaPickerPage(BuildContext context, int maxImageAmount, int mediaType, bool needCrop,
       int startPage, bool cropOnlySquare, bool isGoToPublish, Function(dynamic result) callback,
       {int fixedWidth, int fixedHeight}) {

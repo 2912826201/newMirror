@@ -1,12 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 // import 'dart:js';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
-import 'package:mirror/api/message_page_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
-import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
