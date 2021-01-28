@@ -1,6 +1,7 @@
 
 import 'dart:io';
 
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/setting_api/setting_api.dart';
@@ -86,10 +87,12 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
   }
 
   void _iosGetNotice(){
-    NotificationPermissions.requestNotificationPermissions(iosSettings: NotificationSettingsIos(
+    print("tiaozzzvzzczczc");
+    NotificationPermissions.requestNotificationPermissions(iosSettings:const NotificationSettingsIos(
         sound: true,
         badge: true,
-        alert: false));
+        alert: true),
+    openSettings: true);
   }
   @override///监听用户回到app
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -148,11 +151,12 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
           children: [
             InkWell(
               onTap: () {
-                if(Application.platform==0){
-                  SystemSetting.goto(SettingTarget.NOTIFICATION);
-                }else{
-                  _iosGetNotice();
-                }
+                // if(!Platform.isIOS){
+                //   SystemSetting.goto(SettingTarget.NOTIFICATION);
+                // }else{
+                  AppSettings.openAppSettings();
+                  // _iosGetNotice();
+                // }
               },
               child: _getNotice(),),
             Container(
