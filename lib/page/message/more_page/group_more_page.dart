@@ -17,7 +17,7 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/loading_progress.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_share_select_contact.dart';
-import 'package:mirror/api/message_page_api.dart';
+import 'package:mirror/api/message_api.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:provider/provider.dart';

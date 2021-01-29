@@ -1,9 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/api/api.dart';
+import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -155,10 +154,8 @@ class _ScanCodeResultState extends State<ScanCodeResultPage> {
           height: 63,
         ),
         _button("确认登录", () async {
-          Map<String, dynamic> map = {};
-          map["machineId"] = int.parse(widget.resultModel.data["mid"]);
-          BaseResponseModel response = await requestApi("/appuser/web/machine/login", map);
-          if (response.code == 200) {
+          bool loginResult = await loginMachine(int.parse(widget.resultModel.data["mid"]));
+          if (loginResult) {
             setState(() {
               isLoginSuccess = true;
             });

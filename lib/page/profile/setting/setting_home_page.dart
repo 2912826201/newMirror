@@ -2,6 +2,7 @@
 import 'dart:io';
 
 import 'package:mirror/config/config.dart';
+import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/page/profile/setting/blacklist_page.dart';
 import 'package:mirror/page/profile/setting/feedback_page.dart';
 import 'package:mirror/page/profile/setting/notice_setting_page.dart';
@@ -150,6 +151,7 @@ class _SettingHomePageState extends State<SettingHomePage>{
           context.read<TokenNotifier>().setToken(tokenDto);
           await ProfileDBHelper().clearProfile();
           context.read<ProfileNotifier>().setProfile(ProfileDto.fromUserModel(UserModel()));
+          context.read<MachineNotifier>().setMachine(null);
           // 登出融云
           Application.rongCloud.disconnect();
           //TODO 处理登出后需要清掉的用户数据
