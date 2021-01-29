@@ -194,7 +194,7 @@ class _ScanCodeState extends State<ScanCodePage> {
         print('imageFile==============================$imageFile');
         String result = await Scan.parse(imageFile.path);
         if(result!=null){
-          resolveShortConnectionsPr(result);
+          resolveScanResult(result);
         }
       }
     });
