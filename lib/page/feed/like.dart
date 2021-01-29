@@ -34,14 +34,16 @@ class LikeState extends State<Like> {
   }
   requestFeedLuadList() async {
     DataResponseModel model = await getFeedLaudList(targetId: widget.model.id);
-    setState(() {
+    if (mounted) {
+      setState(() {
         if (model.list.isNotEmpty) {
           model.list.forEach((v) {
             laudListModel.add(FeedLaudListModel.fromJson(v));
           });
           laudListModel.insert(0, FeedLaudListModel());
         }
-    });
+      });
+    }
   }
   @override
   Widget build(BuildContext context) {

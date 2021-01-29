@@ -121,36 +121,38 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       // 请求推荐教练
       newRecommendCoach(),
     ]).then((results) {
-      setState(() {
-      if (results[0] != null) {
-        List<HomeFeedModel> modelList = [];
-        DataResponseModel dataModel = results[0];
-        if (dataModel.list.isNotEmpty) {
-          dataModel.list.forEach((v) {
-            modelList.add(HomeFeedModel.fromJson(v));
-          });
-        }
-        if (modelList.isNotEmpty) {
-          for (HomeFeedModel model in modelList) {
-            recommendIdList.add(model.id);
+      if (mounted) {
+        setState(() {
+          if (results[0] != null) {
+            List<HomeFeedModel> modelList = [];
+            DataResponseModel dataModel = results[0];
+            if (dataModel.list.isNotEmpty) {
+              dataModel.list.forEach((v) {
+                modelList.add(HomeFeedModel.fromJson(v));
+              });
+            }
+            if (modelList.isNotEmpty) {
+              for (HomeFeedModel model in modelList) {
+                recommendIdList.add(model.id);
+              }
+              recommendModelList.addAll(modelList);
+            }
+            hasNext = dataModel.hasNext;
+            if (hasNext == 0) {
+              print('================================hashnext');
+              loadStatus = LoadingStatus.STATUS_COMPLETED;
+              loadText = "";
+            }
+            // 更新全局监听
+            context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
           }
-          recommendModelList.addAll(modelList);
-        }
-        hasNext = dataModel.hasNext;
-        if( hasNext == 0) {
-          print('================================hashnext');
-            loadStatus = LoadingStatus.STATUS_COMPLETED;
-          loadText = "";
-        }
-        // 更新全局监听
-        context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
+          if (results[1] != null) {
+            liveVideoModel = results[1];
+            print("推荐教练书剑返回");
+            print(liveVideoModel.toString());
+          }
+        });
       }
-      if (results[1] != null) {
-        liveVideoModel = results[1];
-        print("推荐教练书剑返回");
-        print(liveVideoModel.toString());
-      }
-     });
     }).catchError((e) {
       print("报错了");
       print(e);
@@ -170,6 +172,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     if (hasNext != 0) {
       // 请求推荐接口
       dataModel = await getHotList(size: 20);
+      hasNext = dataModel.hasNext;
       if (dataModel.list.isNotEmpty) {
         dataModel.list.forEach((v) {
           modelList.add(HomeFeedModel.fromJson(v));
@@ -187,9 +190,9 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       loadText = "已加载全部动态";
       loadStatus = LoadingStatus.STATUS_COMPLETED;
     }
-    hasNext = dataModel.hasNext;
-    setState(() {
-    });
+    if (mounted) {
+      setState(() {});
+    }
     // 更新全局监听
     context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
   }
