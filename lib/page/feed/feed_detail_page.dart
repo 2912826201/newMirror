@@ -70,7 +70,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   int choseIndex = 0;
   bool isFirstPage = false;
   double itemHeight = 0;
-
+  bool isFrisrtScroll = true;
   @override
   void dispose() {
     _controller.dispose();
@@ -128,23 +128,6 @@ class FeedDetailPageState extends State<FeedDetailPage> {
       context.read<FeedMapNotifier>().insertChildModel(childmodel);
     }
     context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
-    for (int i = 0; i < commentModel.length; i++) {
-      if (i < choseIndex) {
-        itemHeight +=
-            calculateTextWidth(commentModel[i].content, AppStyle.textRegular14, ScreenUtil.instance.width - 75, 2)
-                    .height +
-                60;
-      } else if (i == choseIndex) {
-
-        Future.delayed(Duration(milliseconds: 500), () {
-          try {
-            print('===============================================滑动倒计时结束-----开始滚动');
-            _controller.animateTo(itemHeight , duration: Duration(microseconds: 1000), curve: Curves.easeInOut);
-
-          } catch (e) {}
-        });
-      }
-    }
   }
 
   // 获取热门评论
@@ -238,6 +221,24 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   @override
   Widget build(BuildContext context) {
     print("动态详情页build---------------------------------------------${feedModel}");
+    if(isFrisrtScroll){
+      for (int i = 0; i < commentModel.length; i++) {
+        if (i < choseIndex) {
+          itemHeight +=
+              calculateTextWidth(commentModel[i].content, AppStyle.textRegular14, ScreenUtil.instance.width - 75, 2)
+                  .height +
+                  60;
+        } else{
+          isFrisrtScroll = false;
+          Future.delayed(Duration(milliseconds: 500), () {
+            try {
+              print('===============================================滑动倒计时结束-----开始滚动');
+              _controller.animateTo(itemHeight , duration: Duration(microseconds: 1000), curve: Curves.easeInOut);
+            } catch (e) {}
+          });
+        }
+      }
+    }
     return Scaffold(
         backgroundColor: AppColor.white,
         appBar: AppBar(

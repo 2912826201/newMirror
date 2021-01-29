@@ -49,7 +49,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
       return;
     }
     QueryListModel model = await queryMsgList(type, 20, lastTime);
-    setState(() {
+
       if (listPage == 1) {
         if (model.list != null) {
           haveData = true;
@@ -75,7 +75,9 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
           controller.loadNoData();
         }
       }
-    });
+      if(mounted) {
+        setState(() {});
+      }
     print('msglist.length========================${msgList.length}');
   }
 
@@ -310,7 +312,11 @@ class InteractiveNoticeItemState extends StatelessWidget {
       padding: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
       child: Row(
         children: [
-          Container(
+          InkWell(
+            onTap: (){
+              AppRouter.navigateToMineDetail(context, msgModel.senderId);
+            },
+            child: Container(
               alignment: Alignment.topLeft,
               child: Stack(
                 children: [
@@ -341,9 +347,13 @@ class InteractiveNoticeItemState extends StatelessWidget {
                         )
                       : Container()
                 ],
-              )),
+              )),),
           Spacer(),
-          Container(
+          InkWell(
+            onTap: (){
+              _jumpToDetailPage(context);
+            },
+            child: Container(
             alignment: Alignment.centerLeft,
             width: ScreenUtil.instance.screenWidthDp * 0.64,
             child: Column(
@@ -383,32 +393,13 @@ class InteractiveNoticeItemState extends StatelessWidget {
                 )
               ],
             ),
-          ),
+          ),),
           Spacer(),
           !feedIsDelete
               ? InkWell(
                   onTap: () {
                     print('========================点击了${msgModel.refId}');
-                    if (msgModel.refType == 0) {
-                      print('=====================动态');
-                          getFeedDetail(context,feedModel.id, comment:type==0?msgModel.commentData:null);
-                      }else if(msgModel.refType == 2){
-                          if(fatherCommentModel.type==0){
-                            getFeedDetail(context, fatherCommentModel.targetId, comment: type==0?msgModel.commentData:null);
-                          }else if(fatherCommentModel.type==1){
-                        AppRouter.navigateToLiveDetail(context, fatherCommentModel.targetId,isHaveStartTime: false,commentDtoModel:
-                        msgModel.commentData,fatherComment: fatherCommentModel);
-                          }else if(fatherCommentModel.type==3){
-                            AppRouter.navigateToVideoDetail(context, fatherCommentModel.targetId,commentDtoModel:
-                            msgModel.commentData,fatherComment: fatherCommentModel);
-                          }
-                      }else if(msgModel.refType==1){
-                        AppRouter.navigateToLiveDetail(context, liveVideoModel.id,isHaveStartTime: false,commentDtoModel:
-                        msgModel.commentData);
-                      }else{
-                        AppRouter.navigateToVideoDetail(context, liveVideoModel.id,commentDtoModel:
-                        msgModel.commentData);
-                      }
+                   _jumpToDetailPage(context);
                   },
                   child: Container(
                     alignment: Alignment.topRight,
@@ -447,6 +438,29 @@ class InteractiveNoticeItemState extends StatelessWidget {
     );
   }
 
+    //跳转判断
+  _jumpToDetailPage(BuildContext context){
+    if (msgModel.refType == 0) {
+      print('=====================动态');
+      getFeedDetail(context,feedModel.id, comment:type==0?msgModel.commentData:null);
+    }else if(msgModel.refType == 2){
+      if(fatherCommentModel.type==0){
+        getFeedDetail(context, fatherCommentModel.targetId, comment: type==0?msgModel.commentData:null);
+      }else if(fatherCommentModel.type==1){
+        AppRouter.navigateToLiveDetail(context, fatherCommentModel.targetId,isHaveStartTime: false,commentDtoModel:
+        type==0?msgModel.commentData:null,fatherComment: fatherCommentModel);
+      }else if(fatherCommentModel.type==3){
+        AppRouter.navigateToVideoDetail(context, fatherCommentModel.targetId,commentDtoModel:
+        type==0?msgModel.commentData:null,fatherComment: fatherCommentModel);
+      }
+    }else if(msgModel.refType==1){
+      AppRouter.navigateToLiveDetail(context, liveVideoModel.id,isHaveStartTime: false,commentDtoModel:
+      msgModel.commentData);
+    }else{
+      AppRouter.navigateToVideoDetail(context, liveVideoModel.id,commentDtoModel:
+      msgModel.commentData);
+    }
+  }
   getFeedDetail(BuildContext context, int feedId, {CommentDtoModel comment}) async {
     HomeFeedModel feedModel = await feedDetail(id: feedId);
     List<HomeFeedModel> list = [];

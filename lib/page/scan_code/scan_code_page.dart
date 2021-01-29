@@ -47,10 +47,11 @@ class _ScanCodeState extends State<ScanCodePage> {
     if(map!=null){
       codeData = map["url"];
       print('==================这是用户二维码$codeData');
+      if(mounted){
       setState(() {
       });
     }
-  }
+  }}
 
   @override
   Widget build(BuildContext context) {

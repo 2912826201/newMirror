@@ -77,7 +77,6 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
       if(widget.type==1&&pageCount==1&&widget.commentDtoModel.isClickHideButton){
         if(widget.commentDtoModel.id==widget.comment.targetId){
           widget.replys.insert(0, context.read<FeedMapNotifier>().childModel);
-          widget.commentDtoModel.initCount -=1;
         }
     }
       }

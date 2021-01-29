@@ -69,7 +69,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
           'followingCount============================${attentionModel.followingCount}'
           'feedCount==========${attentionModel.feedCount}'
           'followerCount=======${attentionModel.followerCount}');
-      setState(() {
+
         uid = attentionModel.uid;
         followingCount = attentionModel.followingCount;
         followerCount = attentionModel.followerCount;
@@ -78,7 +78,10 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         trainingSeconds = extraInfoModel.trainingSeconds;
         weight = extraInfoModel.weight;
         albumNum = extraInfoModel.albumNum;
-      });
+        if(mounted){
+          setState(() {
+          });
+        }
     }
   }
 
@@ -458,10 +461,10 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     } else if ("我的课程" == title) {
       AppRouter.navigateToMeCoursePage(context);
     } else if("我的订单"== title){
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+    /*  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
         return ScanResultPage(type: ScanResultType.CODE_INVALID,);
-      }));
-      /*if(userModel.isVip==0){
+      }));*/
+      if(userModel.isVip==0){
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
           return VipNotOpenPage(
             type: VipState.NOTOPEN,
@@ -469,7 +472,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         }));
       }else{
         AppRouter.navigateToVipOpenPage(context);
-      }*/
+      }
     }
   }
 }

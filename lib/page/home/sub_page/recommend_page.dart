@@ -168,6 +168,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     DataResponseModel dataModel = DataResponseModel();
     List<HomeFeedModel> modelList = [];
     if (hasNext != 0) {
+      print('=============88888888888888888888888888888888=====加载动态$hasNext');
       // 请求推荐接口
       dataModel = await getHotList(size: 20);
       if (dataModel.list.isNotEmpty) {
@@ -188,6 +189,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       loadStatus = LoadingStatus.STATUS_COMPLETED;
     }
     hasNext = dataModel.hasNext;
+    print('=====================7777777 ${dataModel.hasNext}');
     setState(() {
     });
     // 更新全局监听
