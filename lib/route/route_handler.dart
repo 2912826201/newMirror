@@ -19,6 +19,7 @@ import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/media_picker/preview_photo_page.dart';
 import 'package:mirror/page/media_picker/preview_video_page.dart';
 import 'package:mirror/page/message/chat_page.dart';
+import 'package:mirror/page/message/more_page/group_qrcode_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/login_success_page.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_introduction.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_name.dart';
@@ -288,6 +289,12 @@ var handlerChatPage = Handler(handlerFunc: (BuildContext context, Map<String, Li
   Message shareMessage = Application.shareMessage;
   Application.shareMessage = null;
   return ChatPage(conversation: conversation, shareMessage: shareMessage);
+});
+
+//群聊二维码界面
+var handlerGroupQrCodePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return GroupQrCodePage(imageUrl:  data["imageUrl"], name: data["name"],groupId: data["groupId"]);
 });
 
 //机器遥控界面

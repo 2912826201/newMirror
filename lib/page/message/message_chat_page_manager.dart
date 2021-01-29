@@ -111,6 +111,16 @@ void jumpChatPageConversationDto(
       context: context, conversation: conversation, shareMessage: null);
 }
 
+//去群聊界面
+void jumpGroupPage(BuildContext context,String name,int groupId){
+  ConversationDto conversation = new ConversationDto();
+  conversation.name = name;
+  conversation.conversationId = groupId.toString();
+  conversation.uid = Application.profile.uid;
+  conversation.type = GROUP_TYPE;
+  jumpChatPageConversationDto(context,conversation);
+}
+
 //去测试界面
 void jumpChatPageTest(BuildContext context) {
   _jumpChatPage(
@@ -619,7 +629,7 @@ Future<void> getChatGroupUserModelList(String groupChatId, BuildContext context)
   context.read<GroupUserProfileNotifier>().clearAllUser();
   List<ChatGroupUserModel> chatGroupUserModelList = [];
   Map<String, dynamic> model = await getMembers(groupChatId: int.parse(groupChatId));
-  print("------model:${model.toString()}");
+  // print("------model:${model.toString()}");
   if (model != null && model["list"] != null) {
     model["list"].forEach((v) {
       chatGroupUserModelList.add(ChatGroupUserModel.fromJson(v));
@@ -630,7 +640,7 @@ Future<void> getChatGroupUserModelList(String groupChatId, BuildContext context)
     context.read<GroupUserProfileNotifier>().setLen(chatGroupUserModelList.length);
   }
 
-  print("------len:${chatGroupUserModelList.length}");
+  // print("------len:${chatGroupUserModelList.length}");
 }
 
 //获取群成员信息

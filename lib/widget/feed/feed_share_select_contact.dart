@@ -552,24 +552,29 @@ class _FriendsPageState extends State<FriendsPage> {
 
   //添加这些用户
   void addUserGroup(String uids) async {
-    print("添加这些用户");
     Map<String, dynamic> model = await inviteJoin(groupChatId: widget.groupChatId, uids: uids);
-
     selectUserUsIdList.clear();
-
-    if (model != null && model["state"]) {
-      ToastShow.show(msg: "添加成功", context: context);
-      // await getChatGroupUserModelList(widget.groupChatId.toString(), context);
-      widget.voidCallback("添加成功", 0, -1, context);
-    } else if(model!=null&&model["code"]==CODE_INVITE_JOIN_NO_FRIEND){
-      ToastShow.show(msg: "添加失败", context: context);
-      widget.voidCallback("失败的用户名字", 0, CODE_INVITE_JOIN_NO_FRIEND, context);
+    print("---model:${model.toString()}");
+    if(model!=null){
+      if(model["NotFriendList"]!=null&&model["NotFriendList"].length>0){
+        String name="";
+        for(int i=0;i<model["NotFriendList"].length;i++){
+          if(i==0){
+            name+=model["NotFriendList"][i]["nickName"];
+          }else{
+            name+=","+model["NotFriendList"][i]["nickName"];
+          }
+        }
+        widget.voidCallback(name, 0, -1, context);
+        ToastShow.show(msg: name, context: context);
+      }else{
+        ToastShow.show(msg: "邀请成功", context: context);
+        widget.voidCallback("邀请成功", 0, -1, context);
+      }
     }else{
-      ToastShow.show(msg: "添加失败", context: context);
-      widget.voidCallback("添加失败", 0, -1, context);
+      ToastShow.show(msg: "邀请失败", context: context);
+      widget.voidCallback("邀请失败", 0, -1, context);
     }
-
-
     Future.delayed(Duration(milliseconds: 200), () {
       Navigator.of(context).pop();
     });
