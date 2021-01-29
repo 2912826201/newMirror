@@ -6,6 +6,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
@@ -16,6 +17,8 @@ import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
+import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
@@ -34,16 +37,21 @@ import 'package:provider/provider.dart';
 
 /// 直播详情页
 class LiveDetailPage extends StatefulWidget {
-  const LiveDetailPage({Key key, this.heroTag, this.liveCourseId, this.liveModel, this.isHaveStartTime}) : super(key: key);
+  const LiveDetailPage({Key key, this.heroTag,this.commentDtoModel,this.fatherComment, this.liveCourseId, this
+      .liveModel, this
+      .isHaveStartTime}) : super
+      (key: key);
 
   final String heroTag;
   final int liveCourseId;
   final LiveVideoModel liveModel;
   final bool isHaveStartTime;
-
+  final CommentDtoModel commentDtoModel;
+  final CommentDtoModel fatherComment;
   @override
   createState() {
-    return LiveDetailPageState(heroTag: heroTag, liveCourseId: liveCourseId, liveModel: liveModel);
+    return LiveDetailPageState(heroTag: heroTag, liveCourseId: liveCourseId, liveModel: liveModel,commentDtoModel:
+    commentDtoModel,fatherComment: fatherComment);
   }
 }
 
@@ -51,8 +59,14 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   LiveDetailPageState({Key key,
     this.heroTag,
     this.liveCourseId,
-    this.liveModel});
+    this.liveModel,
+  this.commentDtoModel,
+  this.fatherComment});
+//互动通知列表带过来的评论内容
+  CommentDtoModel commentDtoModel;
 
+  //父评论内容
+  CommentDtoModel fatherComment;
   //头部hero的标签
   String heroTag;
 
@@ -123,10 +137,39 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   //提前多久提醒---15分钟
   var howEarlyToRemind = 15;
 
+  //粘合剂控件滚动控制
+  ScrollController scrollController = ScrollController();
+
+  //选中评论是否在第一页
+  bool choseItemInFrist = false;
+
+  //选中的index
+  int choseIndex = 0;
+
+  //选中item之上的高度
+  double itemTotalHeight = 0;
+
+  //防止滚动多次
+  bool isFristScroll = true;
   @override
   void initState() {
     super.initState();
-
+    itemTotalHeight = 68 + 300 + 62 + 34 + (ScreenUtil.instance.screenWidthDp - 16 * 3) / 3 + 124;
+    if (commentDtoModel != null) {
+      Future.delayed(Duration(milliseconds: 4500), () {
+        try {
+          if (courseCommentHot.list[choseIndex].id == commentDtoModel.id) {
+            print('==================父评论倒计时结束');
+            courseCommentHot.list[choseIndex].itemChose = false;
+            setState(() {});
+          } else if (courseCommentHot.list[choseIndex].id == commentDtoModel.targetId) {
+            print('==================子评论倒计时结束');
+            courseCommentHot.list[choseIndex].replys[0].itemChose = false;
+            setState(() {});
+          }
+        } catch (e) {}
+      });
+    }
     courseCommentHot = null;
     courseCommentTime = null;
     loadingStatusComment = LoadingStatus.STATUS_LOADING;
@@ -153,6 +196,29 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     var widgetArray = <Widget>[];
     //有数据
     if (loadingStatus == LoadingStatus.STATUS_COMPLETED) {
+      if (commentDtoModel != null) {
+        if (isFristScroll) {
+          List<CommentDtoModel> model = courseCommentHot.list;
+          for (int i = 0; i < model.length; i++) {
+            if (i < choseIndex) {
+              itemTotalHeight +=
+                  calculateTextWidth(model[i].content, AppStyle.textMedium18, ScreenUtil.instance.screenWidthDp - 76, 3)
+                      .height
+                      .toDouble() +
+                      30;
+            } else {
+              Future.delayed(Duration(milliseconds: 500), () {
+                print('====================倒计时结束，滚动开始');
+                try {
+                  scrollController.animateTo(itemTotalHeight,
+                      duration: Duration(milliseconds: 1000), curve: Curves.easeInOut);
+                } catch (e) {}
+              });
+            }
+          }
+          isFristScroll = false;
+        }
+      }
       return _buildSuggestionsComplete();
     } else {
       widgetArray.add(SizedBox(height: 40));
@@ -229,6 +295,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
       controller: _refreshController,
       onLoading: _onLoading,
       child: CustomScrollView(
+        controller: scrollController,
         physics: isBouncingScrollPhysics?BouncingScrollPhysics():ClampingScrollPhysics(),
         slivers: <Widget>[
           // header,
@@ -400,7 +467,13 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   //获取评论的item--每一个item
   Widget _getCommentUi(CommentDtoModel value, bool isSubComment, int _targetId) {
     return IntrinsicHeight(
-      child: Row(
+      child: AnimatedPhysicalModel(
+        shape: BoxShape.rectangle,
+        color: value.itemChose ? AppColor.bgWhite : AppColor.white,
+        elevation: 0,
+        shadowColor: !value.itemChose ? AppColor.bgWhite : AppColor.white,
+        duration: Duration(seconds: 1),
+        child: Row(
         verticalDirection: VerticalDirection.up,
         children: [
           getUserImage(value.avatarUrl, 42, 42),
@@ -476,7 +549,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
             ),
           ),
         ],
-      ),
+      )),
     );
   }
 
@@ -1150,10 +1223,41 @@ class LiveDetailPageState extends State<LiveDetailPage> {
             targetId: liveCourseId, targetType: 1, lastId: courseCommentHot?.lastId??null, size: courseCommentPageSize);
         if (commentModel != null) {
           courseCommentHot = CommentModel.fromJson(commentModel);
+          if (commentDtoModel != null) {
+            for (int i = 0; i < courseCommentHot.list.length; i++) {
+              if (courseCommentHot.list[i].id == commentDtoModel.id) {
+                print('=====================在第一页的父评论');
+                choseItemInFrist = true;
+                choseIndex = i;
+                courseCommentHot.list[i].itemChose = true;
+              } else if (courseCommentHot.list[i].id == commentDtoModel.targetId) {
+                print('=====================在第一页的子评论');
+                choseItemInFrist = true;
+                choseIndex = i;
+                commentDtoModel.itemChose = true;
+                courseCommentHot.list[i].replys.insert(0, commentDtoModel);
+                courseCommentHot.list[i].pullNumber = 1;
+              }
+            }
+            if (!choseItemInFrist) {
+              if (fatherComment != null) {
+                print('=================不在第一页的子评论');
+                courseCommentHot.list.insert(0, fatherComment);
+                commentDtoModel.itemChose = true;
+                courseCommentHot.list[0].replys.insert(0, commentDtoModel);
+                courseCommentHot.list[0].pullNumber = 1;
+              } else {
+                print('=================不在第一页的父评论');
+                commentDtoModel.itemChose = true;
+                courseCommentHot.list.insert(0, commentDtoModel);
+              }
+            }
+          }
           courseCommentPageHot++;
         }
       }
       setCommentListSubSetting(courseCommentHot, isFold: isFold);
+      onClickAddSubComment(courseCommentHot.list[choseIndex], choseIndex);
     } else {
       if (courseCommentTime == null) {
         Map<String, dynamic> commentModel = await queryListByTime(
@@ -1335,6 +1439,14 @@ class LiveDetailPageState extends State<LiveDetailPage> {
             commentModel.list.length < 1) {
           _refreshController.loadNoData();
         } else {
+          if(fatherComment!=null){
+            for(int i=0;i<commentModel.list.length;i++) {
+              if(commentModel.list[i].id==fatherComment.id){
+                commentModel.list.removeAt(i);
+                break;
+              }
+            }
+          }
           (isHotOrTime ? courseCommentHot : courseCommentTime).list.addAll(
               commentModel.list);
           setCommentListSubSetting(

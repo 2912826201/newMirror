@@ -36,35 +36,42 @@ import 'package:provider/provider.dart';
 
 /// 视频详情页
 class VideoDetailPage extends StatefulWidget {
-  const VideoDetailPage({Key key, this.heroTag,this.commentDtoModel, this.fatherComment,this.liveCourseId, this
-      .videoModel}) : super
-      (key: key);
+  const VideoDetailPage(
+      {Key key, this.heroTag, this.commentDtoModel, this.fatherComment, this.liveCourseId, this.videoModel})
+      : super(key: key);
 
   final String heroTag;
   final int liveCourseId;
   final LiveVideoModel videoModel;
   final CommentDtoModel commentDtoModel;
   final CommentDtoModel fatherComment;
+
   @override
   createState() {
-    return VideoDetailPageState(heroTag: heroTag,commentDtoModel: commentDtoModel, videoCourseId: liveCourseId, videoModel:
-    videoModel,fatherComment: fatherComment);
+    return VideoDetailPageState(
+        heroTag: heroTag,
+        commentDtoModel: commentDtoModel,
+        videoCourseId: liveCourseId,
+        videoModel: videoModel,
+        fatherComment: fatherComment);
   }
 }
 
 class VideoDetailPageState extends State<VideoDetailPage> {
-  VideoDetailPageState({Key key, this.commentDtoModel,this.fatherComment,this.heroTag, this.videoCourseId, this
-      .videoModel});
+  VideoDetailPageState(
+      {Key key, this.commentDtoModel, this.fatherComment, this.heroTag, this.videoCourseId, this.videoModel});
+
   //互动通知列表带过来的评论内容
   CommentDtoModel commentDtoModel;
+
   //父评论内容
   CommentDtoModel fatherComment;
+
   //头部hero的标签
   String heroTag;
 
   //视频课程的id
   int videoCourseId;
-
 
   //当前视频课程的model
   LiveVideoModel videoModel;
@@ -124,8 +131,8 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   //时间排序当前是第几页
   int courseCommentPageTime = 1;
 
-  Map<String,int> subCommentLastIdHot=Map();
-  Map<String,int> subCommentLastIdTime=Map();
+  Map<String, int> subCommentLastIdHot = Map();
+  Map<String, int> subCommentLastIdTime = Map();
 
   //上拉加载数据
   RefreshController _refreshController = RefreshController(initialRefresh: false);
@@ -156,32 +163,37 @@ class VideoDetailPageState extends State<VideoDetailPage> {
 
   //粘合剂控件滚动控制
   ScrollController scrollController = ScrollController();
+
   //选中评论是否在第一页
   bool choseItemInFrist = false;
+
   //选中的index
   int choseIndex = 0;
+
   //选中item之上的高度
   double itemTotalHeight = 0;
+
   //防止滚动多次
   bool isFristScroll = true;
+
   @override
   void initState() {
     super.initState();
     courseCommentHot = null;
     courseCommentTime = null;
-      itemTotalHeight = 68+300+62+34+211+(ScreenUtil.instance.screenWidthDp - 16 * 3) / 3+124;
-    if(commentDtoModel!=null){
+    itemTotalHeight = 68 + 300 + 62 + 34 + 211 + (ScreenUtil.instance.screenWidthDp - 16 * 3) / 3 + 124;
+    if (commentDtoModel != null) {
       Future.delayed(Duration(milliseconds: 4500), () {
         try {
-            if( courseCommentHot.list[choseIndex].id==commentDtoModel.id){
-              print('==================父评论倒计时结束');
+          if (courseCommentHot.list[choseIndex].id == commentDtoModel.id) {
+            print('==================父评论倒计时结束');
             courseCommentHot.list[choseIndex].itemChose = false;
-              setState(() {});
-            }else if(courseCommentHot.list[choseIndex].id==commentDtoModel.targetId){
-              print('==================子评论倒计时结束');
+            setState(() {});
+          } else if (courseCommentHot.list[choseIndex].id == commentDtoModel.targetId) {
+            print('==================子评论倒计时结束');
             courseCommentHot.list[choseIndex].replys[0].itemChose = false;
-              setState(() {});
-            }
+            setState(() {});
+          }
         } catch (e) {}
       });
     }
@@ -209,20 +221,22 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   Widget _buildSuggestions() {
     var widgetArray = <Widget>[];
     if (loadingStatus == LoadingStatus.STATUS_COMPLETED) {
-        if(commentDtoModel!=null){
-          if(isFristScroll){
+      if (commentDtoModel != null) {
+        if (isFristScroll) {
           List<CommentDtoModel> model = courseCommentHot.list;
-          for(int i=0;i<model.length;i++){
-            if(i<choseIndex){
-              itemTotalHeight += calculateTextWidth(model[i].content,AppStyle.textMedium18,ScreenUtil.instance
-                  .screenWidthDp-76,3).height.toDouble()+30;
-            }else{
+          for (int i = 0; i < model.length; i++) {
+            if (i < choseIndex) {
+              itemTotalHeight +=
+                  calculateTextWidth(model[i].content, AppStyle.textMedium18, ScreenUtil.instance.screenWidthDp - 76, 3)
+                          .height
+                          .toDouble() +
+                      30;
+            } else {
               Future.delayed(Duration(milliseconds: 500), () {
                 try {
                   scrollController.animateTo(itemTotalHeight,
                       duration: Duration(milliseconds: 1000), curve: Curves.easeInOut);
                 } catch (e) {}
-
               });
             }
           }
@@ -233,14 +247,14 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       return _buildSuggestionsComplete();
     } else {
       widgetArray.add(SizedBox(height: 40));
-      widgetArray.add(getNoCompleteTitle(context,"视频课程详情页"));
+      widgetArray.add(getNoCompleteTitle(context, "视频课程详情页"));
       //在加载中
       if (loadingStatus == LoadingStatus.STATUS_LOADING) {
         widgetArray.add(Expanded(
             child: SizedBox(
-              child: Center(
-                child: CircularProgressIndicator(),
-              ))));
+                child: Center(
+          child: CircularProgressIndicator(),
+        ))));
       } else {
         //加载失败
         widgetArray.add(Expanded(
@@ -297,7 +311,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   }
 
   //获取上拉下拉加载
-  Widget getSmartRefresher(){
+  Widget getSmartRefresher() {
     return SmartRefresher(
       enablePullDown: false,
       enablePullUp: true,
@@ -325,12 +339,12 @@ class VideoDetailPageState extends State<VideoDetailPage> {
               isFavor: isFavor,
             ),
           ),
-          getTitleWidget(videoModel,context),
-          getCoachItem(videoModel,context,onClickAttention,onClickCoach),
+          getTitleWidget(videoModel, context),
+          getCoachItem(videoModel, context, onClickAttention, onClickCoach),
           getLineView(),
-          getTrainingEquipmentUi(videoModel,context,titleTextStyle),
-          getActionUi(videoModel,context,titleTextStyle),
-          getOtherUsersUi(recommendTopicList,context,titleTextStyle,onClickOtherComplete),
+          getTrainingEquipmentUi(videoModel, context, titleTextStyle),
+          getActionUi(videoModel, context, titleTextStyle),
+          getOtherUsersUi(recommendTopicList, context, titleTextStyle, onClickOtherComplete),
           getLineView(),
           _getCourseCommentUi(),
           SliverToBoxAdapter(
@@ -343,12 +357,11 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     );
   }
 
-
   //课程评论的框架--头部的数据
   Widget _getCourseCommentUi() {
-    int count=isHotOrTime ? (courseCommentHot?.totalCount) : (courseCommentTime?.totalCount);
-    if(count==null){
-      count=0;
+    int count = isHotOrTime ? (courseCommentHot?.totalCount) : (courseCommentTime?.totalCount);
+    if (count == null) {
+      count = 0;
     }
     return SliverToBoxAdapter(
       child: Container(
@@ -356,7 +369,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
         child: Column(
           children: [
             getCourseTopText(titleTextStyle),
-            getCourseTopNumber(isHotOrTime,count,onHotCommentTitleClickBtn,onTimeCommentTitleClickBtn),
+            getCourseTopNumber(isHotOrTime, count, onHotCommentTitleClickBtn, onTimeCommentTitleClickBtn),
             SizedBox(height: 12),
             getCourseTopEdit(onEditBoxClickBtn),
             _getCommentItemUi(),
@@ -369,7 +382,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   //评论列表的外层的评论
   Widget _getCommentItemUi() {
     var widgetArray = <Widget>[];
-    widgetArray.add(SizedBox(height: 23,));
+    widgetArray.add(SizedBox(
+      height: 23,
+    ));
     if (loadingStatusComment == LoadingStatus.STATUS_LOADING) {
       widgetArray.add(Container());
     } else {
@@ -388,30 +403,33 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   }
 
   //外部的item--for
-  List<Widget> getBigCommentList(){
+  List<Widget> getBigCommentList() {
     var widgetArray = <Widget>[];
     for (int i = 0; i < (isHotOrTime ? (courseCommentHot) : (courseCommentTime))?.list?.length; i++) {
-      widgetArray.add(bigBoxItem((isHotOrTime ? (courseCommentHot) : (courseCommentTime)).list[i],i));
+      widgetArray.add(bigBoxItem((isHotOrTime ? (courseCommentHot) : (courseCommentTime)).list[i], i));
     }
     return widgetArray;
   }
 
   //外部的item
-  Widget bigBoxItem(CommentDtoModel value,int index){
+  Widget bigBoxItem(CommentDtoModel value, int index) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.only(left: 16, right: 16),
       child: Column(
         children: [
           _getCommentUi(value, false, value.id),
-          SizedBox(height: 13,),
-          getSubItemAll(value,index),
+          SizedBox(
+            height: 13,
+          ),
+          getSubItemAll(value, index),
         ],
       ),
     );
   }
+
   //每一个item的子item
-  Widget getSubItemAll(CommentDtoModel value,int index){
+  Widget getSubItemAll(CommentDtoModel value, int index) {
     return Offstage(
       offstage: value.replyCount + value.pullNumber < 1,
       child: Container(
@@ -419,7 +437,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
         child: Column(
           children: [
             _getSubCommentItemUi(value, index),
-            getCommentBottomAlertText(value,index),
+            getCommentBottomAlertText(value, index),
             SizedBox(
               height: 13,
             ),
@@ -430,10 +448,10 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   }
 
   //每一个评论的item底部提示文字
-  Widget getCommentBottomAlertText(CommentDtoModel value,int index){
-    var subComplete = getSubCommentComplete(value,commentListSubSettingList[index].isFold);
+  Widget getCommentBottomAlertText(CommentDtoModel value, int index) {
+    var subComplete = getSubCommentComplete(value, commentListSubSettingList[index].isFold);
     var subLoading = "正在加载。。。";
-    String alertText= commentLoadingStatusList[index] == LoadingStatus.STATUS_COMPLETED ? subComplete : subLoading;
+    String alertText = commentLoadingStatusList[index] == LoadingStatus.STATUS_COMPLETED ? subComplete : subLoading;
     return Offstage(
       offstage: value.replyCount < 1,
       child: Container(
@@ -441,13 +459,17 @@ class VideoDetailPageState extends State<VideoDetailPage> {
         child: GestureDetector(
           child: Row(
             children: [
-              SizedBox(width: 57,),
+              SizedBox(
+                width: 57,
+              ),
               Container(width: 40, height: 0.5, color: AppColor.textSecondary),
-              SizedBox(width: 4,),
-              Container(child: Text(alertText,style: TextStyle(color: Colors.grey))),
+              SizedBox(
+                width: 4,
+              ),
+              Container(child: Text(alertText, style: TextStyle(color: Colors.grey))),
             ],
           ),
-          onTap: ()=>onClickAddSubComment(value,index),
+          onTap: () => onClickAddSubComment(value, index),
         ),
       ),
     );
@@ -484,97 +506,97 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   Widget _getCommentUi(CommentDtoModel value, bool isSubComment, int _targetId) {
     return IntrinsicHeight(
       child: AnimatedPhysicalModel(
-        shape: BoxShape.rectangle,
-        color: value.itemChose ? AppColor.bgWhite : AppColor.white,
-        elevation: 0,
-        shadowColor: !value.itemChose ? AppColor.bgWhite : AppColor.white,
-        duration: Duration(seconds: 1),
-        child: Row(
-        verticalDirection: VerticalDirection.up,
-        children: [
-          getUserImage(value.avatarUrl, 42, 42),
-          SizedBox(width: 15),
-          // //中间信息
-          Expanded(child: SizedBox(
-            child: GestureDetector(
-              child: Container(
-                width: double.infinity,
-                color: AppColor.transparent,
-                child: Column(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      child: RichText(
-                        text: TextSpan(
-                          children: getSubCommentText(value,isSubComment,_targetId),
+          shape: BoxShape.rectangle,
+          color: value.itemChose ? AppColor.bgWhite : AppColor.white,
+          elevation: 0,
+          shadowColor: !value.itemChose ? AppColor.bgWhite : AppColor.white,
+          duration: Duration(seconds: 1),
+          child: Row(
+            verticalDirection: VerticalDirection.up,
+            children: [
+              getUserImage(value.avatarUrl, 42, 42),
+              SizedBox(width: 15),
+              // //中间信息
+              Expanded(
+                  child: SizedBox(
+                child: GestureDetector(
+                  child: Container(
+                    width: double.infinity,
+                    color: AppColor.transparent,
+                    child: Column(
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          child: RichText(
+                            text: TextSpan(
+                              children: getSubCommentText(value, isSubComment, _targetId),
+                            ),
+                          ),
                         ),
+                        SizedBox(height: 6),
+                        Container(
+                            width: double.infinity,
+                            child: Row(
+                              children: [
+                                Container(
+                                  child: Text(
+                                    DateUtil.formatDateNoYearString(DateUtil.getDateTimeByMs(value.createTime)),
+                                    style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                                  ),
+                                ),
+                                SizedBox(width: 12),
+                                Container(
+                                  child: Text(
+                                    "回复",
+                                    style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 12,
+                                ),
+                              ],
+                            )),
+                      ],
+                    ),
+                  ),
+                  onTap: () => onPostComment(_targetId, 2, value.uid, value.id, hintText: "回复 " + value.name),
+                ),
+              )),
+              SizedBox(width: 16),
+              Container(
+                child: GestureDetector(
+                  child: Column(
+                    children: [
+                      Icon(
+                        value.isLaud == 1 ? Icons.favorite : Icons.favorite_border,
+                        color: value.isLaud == 1 ? Colors.red : Colors.grey,
+                        size: 18,
                       ),
-                    ),
-                    SizedBox(height: 6),
-                    Container(
-                        width: double.infinity,
-                        child: Row(
-                          children: [
-                            Container(
-                              child: Text(
-                                DateUtil.formatDateNoYearString(DateUtil.getDateTimeByMs(value.createTime)),
-                                style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
-                              ),
-                            ),
-                            SizedBox(width: 12),
-                            Container(
-                              child: Text(
-                                "回复",
-                                style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 12,
-                            ),
-                          ],
-                        )
-                    ),
-                  ],
+                      SizedBox(
+                        height: 7,
+                      ),
+                      Text(
+                        IntegerUtil.formatIntegerEn(value.laudCount),
+                        style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    _laudComment(value.id, value.isLaud == 0);
+                  },
                 ),
               ),
-              onTap: ()=>onPostComment(_targetId,2,value.uid, value.id,hintText: "回复 " + value.name),
-            ),
+            ],
           )),
-          SizedBox(width: 16),
-          Container(
-            child: GestureDetector(
-              child: Column(
-                children: [
-                  Icon(
-                    value.isLaud == 1 ? Icons.favorite : Icons.favorite_border,
-                    color: value.isLaud == 1 ? Colors.red : Colors.grey,
-                    size: 18,
-                  ),
-                  SizedBox(
-                    height: 7,
-                  ),
-                  Text(
-                    IntegerUtil.formatIntegerEn(value.laudCount),
-                    style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
-                  ),
-                ],
-              ),
-              onTap: () {
-                _laudComment(value.id, value.isLaud == 0);
-              },
-            ),
-          ),
-        ],
-      )),
     );
   }
 
   //获取子评论的文字
-  List<TextSpan> getSubCommentText(CommentDtoModel value, bool isSubComment, int _targetId){
+  List<TextSpan> getSubCommentText(CommentDtoModel value, bool isSubComment, int _targetId) {
     var textSpanList = <TextSpan>[];
     print("value：${value}");
     textSpanList.add(TextSpan(
-      text: value.name??" ",
+      text: value.name ?? " ",
       style: TextStyle(
         fontSize: 15,
         color: AppColor.textPrimary1,
@@ -592,7 +614,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
         ));
 
         textSpanList.add(TextSpan(
-          text: value.replyName ??" ",
+          text: value.replyName ?? " ",
           style: TextStyle(
             fontSize: 15,
             color: AppColor.textPrimary1,
@@ -614,7 +636,6 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     }
     return textSpanList;
   }
-
 
   List<TextSpan> getAtUserTextSpan(CommentDtoModel value) {
     var textSpanList = <TextSpan>[];
@@ -655,7 +676,6 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     }
     return textSpanList;
   }
-
 
   //获取下载中的ui
   Widget getDownloadingUi(String text) {
@@ -744,6 +764,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     }
     return false;
   }
+
   //设置评论的动画类
   void setCommentListSubSetting(CommentModel commentModel, {bool isFold = false}) {
     commentListSubSettingList.clear();
@@ -826,7 +847,6 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     );
   }
 
-
   //点赞-取消点赞
   _laudComment(int commentId, bool laud) async {
     Map<String, dynamic> model = await laudComment(commentId: commentId, laud: laud ? 1 : 0);
@@ -881,7 +901,10 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   void _shareBtnClick() {
     print("分享点击事件视频课");
     openShareBottomSheet(
-        context: context,sharedType: 1, map: videoModel.toJson(), chatTypeModel: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
+        context: context,
+        sharedType: 1,
+        map: videoModel.toJson(),
+        chatTypeModel: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
   }
 
   //分享的收藏按钮
@@ -890,9 +913,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     Map<String, dynamic> map = await (!isFavor ? addToMyCourse : deleteFromMyCourse)(videoModel.id);
     if (map != null && map["state"] != null && map["state"]) {
       isFavor = !isFavor;
-      setState(() {
-
-      });
+      setState(() {});
     }
   }
 
@@ -982,7 +1003,6 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     int value = (progress * 10000) ~/ 1;
     return "${value ~/ 100}.${value % 100}";
   }
-
 
   //获取底部按钮
   Widget _getBottomBar() {
@@ -1139,56 +1159,63 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     );
   }
 
-
-
   //加载网络数据
   void getDataAction({bool isFold = false}) async {
     // //获取评论
     if (isHotOrTime) {
       if (courseCommentHot == null) {
         Map<String, dynamic> commentModel = await queryListByHot2(
-            targetId: videoCourseId, targetType: 3, lastId: courseCommentHot?.lastId??null, size: courseCommentPageSize);
+            targetId: videoCourseId,
+            targetType: 3,
+            lastId: courseCommentHot?.lastId ?? null,
+            size: courseCommentPageSize);
         courseCommentHot = CommentModel.fromJson(commentModel);
-        if (commentDtoModel != null) {
-          for(int i=0;i<courseCommentHot.list.length;i++){
-              if(courseCommentHot.list[i].id==commentDtoModel.id){
+        if (commentModel != null) {
+          if (commentDtoModel != null&&isFristScroll) {
+            for (int i = 0; i < courseCommentHot.list.length; i++) {
+              if (courseCommentHot.list[i].id == commentDtoModel.id) {
                 print('=====================在第一页的父评论');
                 choseItemInFrist = true;
                 choseIndex = i;
                 courseCommentHot.list[i].itemChose = true;
-            }else if(courseCommentHot.list[i].id==commentDtoModel.targetId){
+              } else if (courseCommentHot.list[i].id == commentDtoModel.targetId) {
                 print('=====================在第一页的子评论');
                 choseItemInFrist = true;
                 choseIndex = i;
                 commentDtoModel.itemChose = true;
-                courseCommentHot.list[i].replys.insert(0,commentDtoModel);
-                courseCommentHot.list[i].pullNumber=1;
+                courseCommentHot.list[i].replys.insert(0, commentDtoModel);
+                courseCommentHot.list[i].pullNumber = 1;
               }
-          }
-          if(!choseItemInFrist){
-            if(fatherComment!=null){
-              print('=================不在第一页的子评论');
-              courseCommentHot.list.insert(0, fatherComment);
-              commentDtoModel.itemChose = true;
-              courseCommentHot.list[0].replys.insert(0, commentDtoModel);
-              courseCommentHot.list[0].pullNumber=1;
-          }else{
-              print('=================不在第一页的父评论');
-                fatherComment.itemChose = true;
+            }
+            if (!choseItemInFrist) {
+              if (fatherComment != null) {
+                print('=================不在第一页的子评论');
+                courseCommentHot.list.insert(0, fatherComment);
+                commentDtoModel.itemChose = true;
+                courseCommentHot.list[0].replys.insert(0, commentDtoModel);
+                courseCommentHot.list[0].pullNumber = 1;
+              } else {
+                print('=================不在第一页的父评论');
+                commentDtoModel.itemChose = true;
                 courseCommentHot.list.insert(0, commentDtoModel);
+              }
+            }
           }
-          }
-          setState(() {
-          });
+          setState(() {});
+          courseCommentPageHot++;
         }
-        courseCommentPageHot++;
       }
       setCommentListSubSetting(courseCommentHot, isFold: isFold);
-      onClickAddSubComment(courseCommentHot.list[choseIndex],choseIndex);
+      if(commentDtoModel != null&&isFristScroll){
+      onClickAddSubComment(courseCommentHot.list[choseIndex], choseIndex);
+      }
     } else {
       if (courseCommentTime == null) {
         Map<String, dynamic> commentModel = await queryListByTime(
-            targetId: videoCourseId, targetType: 3, lastId: courseCommentTime?.lastId??null, size: courseCommentPageSize);
+            targetId: videoCourseId,
+            targetType: 3,
+            lastId: courseCommentTime?.lastId ?? null,
+            size: courseCommentPageSize);
         if (commentModel != null) {
           courseCommentTime = CommentModel.fromJson(commentModel);
           courseCommentPageTime++;
@@ -1200,9 +1227,13 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     loadingStatusComment = LoadingStatus.STATUS_COMPLETED;
 
     //其他人完成训练
-    if (recommendTopicList == null||recommendTopicList.length<1) {
-      dataResponseModel = await getPullList(type: 7,size: 3,targetId: widget.liveCourseId,);
-      if (dataResponseModel!=null&&dataResponseModel.list!=null&&dataResponseModel.list.length>0) {
+    if (recommendTopicList == null || recommendTopicList.length < 1) {
+      dataResponseModel = await getPullList(
+        type: 7,
+        size: 3,
+        targetId: widget.liveCourseId,
+      );
+      if (dataResponseModel != null && dataResponseModel.list != null && dataResponseModel.list.length > 0) {
         dataResponseModel.list.forEach((v) {
           recommendTopicList.add(HomeFeedModel.fromJson(v));
         });
@@ -1233,19 +1264,22 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   //获取子评论
   _getSubComment(int targetId, int replyLength, int replyCount, int pullNumber, int positionComment) async {
     int subCommentPageSize = 3;
-    if(replyLength==0){
-      (isHotOrTime?subCommentLastIdHot:subCommentLastIdTime)["$targetId"]=null;
+    if (replyLength == 0) {
+      (isHotOrTime ? subCommentLastIdHot : subCommentLastIdTime)["$targetId"] = null;
     }
-    int lastId=(isHotOrTime?subCommentLastIdHot:subCommentLastIdTime)["$targetId"];
+    int lastId = (isHotOrTime ? subCommentLastIdHot : subCommentLastIdTime)["$targetId"];
     print("刚开始加载子评论");
-    if(replyLength>0&&lastId==null&&(isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber<=0){
+    if (replyLength > 0 &&
+        lastId == null &&
+        (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber <= 0) {
       print("有数量，但是null为空，表示没有数据了");
       commentLoadingStatusList[positionComment] = LoadingStatus.STATUS_COMPLETED;
       setState(() {});
       return;
     }
-    try{
-      print("加载子评论---isHotOrTime:$isHotOrTime,targetId:$targetId, lastId:$lastId, subCommentPageSize:$subCommentPageSize");
+    try {
+      print(
+          "加载子评论---isHotOrTime:$isHotOrTime,targetId:$targetId, lastId:$lastId, subCommentPageSize:$subCommentPageSize");
       Map<String, dynamic> model = await (isHotOrTime ? queryListByHot2 : queryListByTime)(
           targetId: targetId, targetType: 2, lastId: lastId, size: subCommentPageSize);
 
@@ -1254,17 +1288,18 @@ class VideoDetailPageState extends State<VideoDetailPage> {
         print("获取到了数据不为空");
         CommentModel commentModel = CommentModel.fromJson(model);
         if (!(commentModel == null || commentModel.list == null || commentModel.list.length < 1)) {
-
           print("获取到了commentModel不为空");
           List<CommentDtoModel> commentDtoModelList = <CommentDtoModel>[];
           commentDtoModelList.addAll(commentModel.list);
 
           print("获取到了length:${commentDtoModelList.length}条数据， commentModel.lastId：${commentModel.lastId}");
-          (isHotOrTime?subCommentLastIdHot:subCommentLastIdTime)["$targetId"]=commentModel.lastId;
-          int subCount=0;
+          (isHotOrTime ? subCommentLastIdHot : subCommentLastIdTime)["$targetId"] = commentModel.lastId;
+          int subCount = 0;
           if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys != null) {
             if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber > 0) {
-              for (int i = 0; i < (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys.length; i++) {
+              for (int i = 0;
+                  i < (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys.length;
+                  i++) {
                 for (int j = 0; j < commentDtoModelList.length; j++) {
                   if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys[i].id ==
                       commentDtoModelList[j].id) {
@@ -1273,35 +1308,40 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                     subCount++;
                     print("删除了$subCount条重复记录");
                     (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber--;
-                    print("-pullNumber:${(isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber}");
+                    print(
+                        "-pullNumber:${(isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber}");
                     // (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replyCount++;
                   }
                 }
               }
             }
 
-            if(subCount>0) {
+            if (subCount > 0) {
               print("填补删除的条数");
               commentDtoModelList.addAll(await getSubCommentOne(subCount, positionComment));
-            }else{
-              (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber-=subCommentPageSize;
-              if((isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber<0){
-                (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber=0;
+            } else {
+              (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber -=
+                  subCommentPageSize;
+              if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber < 0) {
+                (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber = 0;
               }
             }
             print("加上以前的数据");
-            commentDtoModelList.insertAll(0, (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys);
+            commentDtoModelList.insertAll(
+                0, (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys);
             print("commentDtoModelList。length:${commentDtoModelList.length}");
           }
 
           (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys = commentDtoModelList;
 
-          if (commentDtoModelList.length > (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replyCount) {
-            (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replyCount = commentDtoModelList.length;
+          if (commentDtoModelList.length >
+              (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replyCount) {
+            (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replyCount =
+                commentDtoModelList.length;
           }
         }
       }
-    }catch(e){
+    } catch (e) {
       print("报错了");
     }
 
@@ -1311,10 +1351,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     });
   }
 
-
   //获取了一条数据子评论
-  Future<List<CommentDtoModel>> getSubCommentOne(int count,int positionComment)async{
-    int lastId=(isHotOrTime?subCommentLastIdHot:subCommentLastIdTime)["$targetId"];
+  Future<List<CommentDtoModel>> getSubCommentOne(int count, int positionComment) async {
+    int lastId = (isHotOrTime ? subCommentLastIdHot : subCommentLastIdTime)["$targetId"];
     List<CommentDtoModel> commentDtoModelList = <CommentDtoModel>[];
     try {
       Map<String, dynamic> model = await (isHotOrTime ? queryListByHot2 : queryListByTime)(
@@ -1323,11 +1362,13 @@ class VideoDetailPageState extends State<VideoDetailPage> {
         CommentModel commentModel = CommentModel.fromJson(model);
         if (!(commentModel == null || commentModel.list == null || commentModel.list.length < 1)) {
           commentDtoModelList.addAll(commentModel.list);
-          int subCount=0;
-          (isHotOrTime?subCommentLastIdHot:subCommentLastIdTime)["$targetId"]=commentModel.lastId;
+          int subCount = 0;
+          (isHotOrTime ? subCommentLastIdHot : subCommentLastIdTime)["$targetId"] = commentModel.lastId;
           if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys != null) {
             if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber > 0) {
-              for (int i = 0; i < (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys.length; i++) {
+              for (int i = 0;
+                  i < (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys.length;
+                  i++) {
                 for (int j = 0; j < commentDtoModelList.length; j++) {
                   if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replys[i].id ==
                       commentDtoModelList[j].id) {
@@ -1335,14 +1376,15 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                     j--;
                     subCount++;
                     (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber--;
-                    print("-pullNumber:${(isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber}");
+                    print(
+                        "-pullNumber:${(isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber}");
                     // (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replyCount++;
                   }
                 }
               }
             }
           }
-          if(subCount>0) {
+          if (subCount > 0) {
             commentDtoModelList.addAll(await getSubCommentOne(subCount, positionComment));
           }
         }
@@ -1351,15 +1393,14 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     return commentDtoModelList;
   }
 
-
   //加载更多的评论
   void _onLoading() async {
     Future.delayed(Duration(milliseconds: 500), () async {
-      if(isHotOrTime&&courseCommentPageHot>0&&courseCommentHot.lastId==null){
+      if (isHotOrTime && courseCommentPageHot > 0 && courseCommentHot.lastId == null) {
         _refreshController.loadNoData();
         return;
       }
-      if(!isHotOrTime&&courseCommentPageTime>0&&courseCommentTime.lastId==null){
+      if (!isHotOrTime && courseCommentPageTime > 0 && courseCommentTime.lastId == null) {
         _refreshController.loadNoData();
         return;
       }
@@ -1373,8 +1414,16 @@ class VideoDetailPageState extends State<VideoDetailPage> {
         if (commentModel == null || commentModel.list == null || commentModel.list.length < 1) {
           _refreshController.loadNoData();
         } else {
+          if(fatherComment!=null){
+            for(int i=0;i<commentModel.list.length;i++) {
+              if(commentModel.list[i].id==fatherComment.id){
+                commentModel.list.removeAt(i);
+                break;
+              }
+            }
+          }
           (isHotOrTime ? courseCommentHot : courseCommentTime)?.list?.addAll(commentModel.list);
-          (isHotOrTime ? courseCommentHot : courseCommentTime)?.lastId=commentModel.lastId;
+          (isHotOrTime ? courseCommentHot : courseCommentTime)?.lastId = commentModel.lastId;
           setCommentListSubSetting((isHotOrTime ? courseCommentHot : courseCommentTime));
           isHotOrTime ? courseCommentPageHot++ : courseCommentPageTime++;
           _refreshController.loadComplete();
@@ -1385,9 +1434,6 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       setState(() {});
     });
   }
-
-
-
 
   ///这是关注的方法
   onClickAttention() {
@@ -1410,28 +1456,32 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   onClickCoach() {
     AppRouter.navigateToMineDetail(context, videoModel.coachDto?.uid);
   }
+
   ///点击了他人刚刚训练完成
   onClickOtherComplete() {
-    AppRouter.navigateToOtherCompleteCoursePage(context,videoModel.id);
+    AppRouter.navigateToOtherCompleteCoursePage(context, videoModel.id);
   }
+
   //热门评论点击
-  onHotCommentTitleClickBtn(){
+  onHotCommentTitleClickBtn() {
     if (!isHotOrTime) {
       _refreshController.loadComplete();
       isHotOrTime = !isHotOrTime;
       getDataAction(isFold: true);
     }
   }
+
   //时间评论点击
-  onTimeCommentTitleClickBtn(){
+  onTimeCommentTitleClickBtn() {
     if (isHotOrTime) {
       _refreshController.loadComplete();
       isHotOrTime = !isHotOrTime;
       getDataAction(isFold: true);
     }
   }
+
   //输入框评论点击事件
-  onEditBoxClickBtn(){
+  onEditBoxClickBtn() {
     targetId = videoModel.id;
     targetType = 3;
     replyId = -1;
@@ -1444,7 +1494,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   }
 
   //输入框评论点击事件
-  onPostComment(int targetId,int targetType,int replyId,int replyCommentId,{String hintText}){
+  onPostComment(int targetId, int targetType, int replyId, int replyCommentId, {String hintText}) {
     this.targetId = targetId;
     this.targetType = targetType;
     this.replyId = replyId;
@@ -1457,12 +1507,11 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   }
 
   //判断加载子评论
-  onClickAddSubComment(CommentDtoModel value,int index){
-    if(commentLoadingStatusList[index] == LoadingStatus.STATUS_COMPLETED) {
+  onClickAddSubComment(CommentDtoModel value, int index) {
+    if (commentLoadingStatusList[index] == LoadingStatus.STATUS_COMPLETED) {
       // ignore: null_aware_before_operator
       if (value.replys?.length >= value.replyCount + value.pullNumber) {
-        (isHotOrTime ? courseCommentHot.list[index].replys : courseCommentTime.list[index].replys)
-            .clear();
+        (isHotOrTime ? courseCommentHot.list[index].replys : courseCommentTime.list[index].replys).clear();
         if (isHotOrTime) {
           courseCommentHot.list[index].replyCount += courseCommentHot.list[index].pullNumber;
           courseCommentHot.list[index].pullNumber = 0;
