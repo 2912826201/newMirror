@@ -92,8 +92,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   // 加载状态
   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
 
-  // 数据加载页数
-  int dataPage = 1;
 @override
   void dispose() {
     _controller.dispose();
@@ -105,7 +103,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     mergeRequest();
     _controller.addListener(() {
       if (_controller.position.pixels == _controller.position.maxScrollExtent) {
-        dataPage += 1;
         getRecommendFeed();
       }
     });
@@ -172,6 +169,10 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     if (hasNext != 0) {
       // 请求推荐接口
       dataModel = await getHotList(size: 20);
+      if (dataModel == null) {
+        loadText = "";
+        loadStatus = LoadingStatus.STATUS_COMPLETED;
+      }
       hasNext = dataModel.hasNext;
       if (dataModel.list.isNotEmpty) {
         dataModel.list.forEach((v) {
@@ -186,7 +187,8 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       }
       loadStatus = LoadingStatus.STATUS_IDEL;
       loadText = "加载中...";
-    } else {
+    }
+    if (hasNext == 0){
       loadText = "已加载全部动态";
       loadStatus = LoadingStatus.STATUS_COMPLETED;
     }
