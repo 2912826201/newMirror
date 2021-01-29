@@ -466,11 +466,9 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     } else if ("我的课程" == title) {
       AppRouter.navigateToMeCoursePage(context);
     } else if ("我的订单" == title) {
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-        ScanCodeResultModel model = ScanCodeResultModel();
-        model.type = ScanCodeResultType.CODE_INVALID;
-        return ScanCodeResultPage(model);
-      }));
+      ScanCodeResultModel model = ScanCodeResultModel();
+      model.type = ScanCodeResultType.CODE_INVALID;
+      AppRouter.navigateToScanCodeResultPage(context, model);
       /*if(userModel.isVip==0){
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
           return VipNotOpenPage(

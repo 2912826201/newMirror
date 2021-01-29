@@ -24,6 +24,7 @@ import 'package:toast/toast.dart';
 import 'package:provider/provider.dart';
 
 import 'my_qrcode_page.dart';
+import 'scan_result_page.dart';
 
 class ScanCodePage extends StatefulWidget {
   @override
@@ -38,124 +39,133 @@ class _ScanCodeState extends State<ScanCodePage> {
   void initState() {
     super.initState();
   }
-    getUserModel(int id)async{
+
+  @override
+  void dispose() {
+    controller?.pause();
+    controller = null;
+    super.dispose();
+  }
+
+  getUserModel(int id) async {
     UserModel userModel = await getUserInfo(uid: id);
-      if(userModel!=null){
-        Navigator.pop(context);
-        AppRouter.navigateToMineDetail(context, userModel.uid);
-      }
+    if (userModel != null) {
+      Navigator.pop(context);
+      AppRouter.navigateToMineDetail(context, userModel.uid);
     }
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return Scaffold(
-          appBar: AppBar(
-            centerTitle: true,
-            backgroundColor: AppColor.white,
-            brightness: Brightness.light,
-            leading: InkWell(
-              child: Container(
-                margin: EdgeInsets.only(left: 16),
-                child: Image.asset("images/resource/2.0x/return2x.png"),
-              ),
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: AppColor.white,
+          brightness: Brightness.light,
+          leading: InkWell(
+            child: Container(
+              margin: EdgeInsets.only(left: 16),
+              child: Image.asset("images/resource/2.0x/return2x.png"),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          leadingWidth: 44,
+          title: Text(
+            "扫描二维码",
+            style: AppStyle.textMedium18,
+          ),
+          actions: [
+            InkWell(
               onTap: () {
-                Navigator.pop(context);
+                _getImagePicker();
+                /*getImage();*/
               },
-            ),
-            leadingWidth: 44,
-            title: Text(
-              "扫描二维码",
-              style: AppStyle.textMedium18,
-            ),
-            actions: [
-              InkWell(
-                onTap: () {
-                  _getImagePicker();
-                  /*getImage();*/
-                },
-                child: Center(
-                  child: Container(
-                    padding: EdgeInsets.only(right: 17, top: 12, bottom: 12),
-                    child: Text(
-                      "相册",
-                      style: AppStyle.textRegular14,
-                    ),
+              child: Center(
+                child: Container(
+                  padding: EdgeInsets.only(right: 17, top: 12, bottom: 12),
+                  child: Text(
+                    "相册",
+                    style: AppStyle.textRegular14,
                   ),
                 ),
-              )
-            ],
-          ),
-          body: Stack(
-            children: [
-              Container(
-                width: width,
-                height: height,
-                child: ScanView(
-                  controller: controller,
-                  scanAreaScale: .7,
-                  scanLineColor: AppColor.white,
-                  onCapture: (data) {
-                    print("+-------------------"+data.toString());
-
-                    resolveScanResult(data);
-
-                  },
-                ),
               ),
-              Positioned(
-                  bottom: height * 0.21,
-                  child: Container(
-                    width: width,
-                    child: Row(
-                      children: [
-                        Expanded(child: SizedBox()),
-                        Text(
-                          "将二维码放入框中,即可自动扫描",
-                          style: TextStyle(fontSize: 14, color: AppColor.white),
-                        ),
-                        Expanded(child: SizedBox()),
-                      ],
-                    ),
-                  )),
-              Positioned(
-                  bottom: height * 0.064,
-                  child: Container(
-                    width: width,
-                    child: Row(
-                      children: [
-                        Expanded(child: SizedBox()),
-                        Column(
-                          children: [
-                            InkWell(
-                              onTap: (){
-                                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                                  return MyQrCodePage();
-                                }));
-                              },
-                              child: Center(
+            )
+          ],
+        ),
+        body: Stack(
+          children: [
+            Container(
+              width: width,
+              height: height,
+              child: ScanView(
+                controller: controller,
+                scanAreaScale: .7,
+                scanLineColor: AppColor.white,
+                onCapture: (data) {
+                  print("+-------------------" + data.toString());
+
+                  resolveScanResult(data);
+                },
+              ),
+            ),
+            Positioned(
+                bottom: height * 0.21,
+                child: Container(
+                  width: width,
+                  child: Row(
+                    children: [
+                      Expanded(child: SizedBox()),
+                      Text(
+                        "将二维码放入框中,即可自动扫描",
+                        style: TextStyle(fontSize: 14, color: AppColor.white),
+                      ),
+                      Expanded(child: SizedBox()),
+                    ],
+                  ),
+                )),
+            Positioned(
+                bottom: height * 0.064,
+                child: Container(
+                  width: width,
+                  child: Row(
+                    children: [
+                      Expanded(child: SizedBox()),
+                      Column(
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                                return MyQrCodePage();
+                              }));
+                            },
+                            child: Center(
                                 child: QrImage(
                               data: "用户${context.watch<ProfileNotifier>().profile.uid}",
                               size: 40,
                               padding: EdgeInsets.zero,
                               backgroundColor: AppColor.white,
                               version: QrVersions.auto,
-                            )),),
-                            SizedBox(
-                              height: 9,
-                            ),
-                            Text(
-                              "我的二维码",
-                              style: TextStyle(fontSize: 12, color: AppColor.white),
-                            )
-                          ],
-                        ),
-                        Expanded(child: SizedBox()),
-                      ],
-                    ),
-                  ))
-            ],
-          ));
+                            )),
+                          ),
+                          SizedBox(
+                            height: 9,
+                          ),
+                          Text(
+                            "我的二维码",
+                            style: TextStyle(fontSize: 12, color: AppColor.white),
+                          )
+                        ],
+                      ),
+                      Expanded(child: SizedBox()),
+                    ],
+                  ),
+                ))
+          ],
+        ));
   }
 
   _getImagePicker() {
@@ -185,9 +195,9 @@ class _ScanCodeState extends State<ScanCodePage> {
           print('===========================这是一个网址');
         } else {
           print('===========================这是扫码得到的结果$result');
-          if(result.substring(0,2)=="用户"){
-            print('===================这是用户${result.substring(2,result.length)}');
-            getUserModel(int.parse(result.substring(2,result.length)));
+          if (result.substring(0, 2) == "用户") {
+            print('===================这是用户${result.substring(2, result.length)}');
+            getUserModel(int.parse(result.substring(2, result.length)));
           }
         }
         Toast.show("这是从相册获取到的$result", context);
@@ -196,18 +206,17 @@ class _ScanCodeState extends State<ScanCodePage> {
     });
   }
 
-
-  _goToUserHome(String result){
-    if(result.substring(0,2)=="用户"){
-      print('===================这是用户${result.substring(2,result.length)}');
-      getUserModel(int.parse(result.substring(2,result.length)));
+  _goToUserHome(String result) {
+    if (result.substring(0, 2) == "用户") {
+      print('===================这是用户${result.substring(2, result.length)}');
+      getUserModel(int.parse(result.substring(2, result.length)));
     }
   }
 
   //解析这个短链接
   void resolveScanResult(String result) async {
     //TODO 判断二维码短链接的语句之后要换
-    if(result.startsWith("http://ifdev.aimymusic.com/third/web/url/fitness")){
+    if (result.startsWith("http://ifdev.aimymusic.com/third/web/url/fitness")) {
       //是我们自己的短链接 要用get请求获取其中的uri
       String uri = await resolveShortUrl(result);
       _resolveUri(uri);
@@ -217,24 +226,30 @@ class _ScanCodeState extends State<ScanCodePage> {
   }
 
   _resolveUri(String uri) async {
-    if(uri == null){
+    if (uri == null) {
       ToastShow.show(msg: "不支持的二维码", context: context);
       return;
-    } else if(uri.startsWith("if://")){
+    } else if (uri.startsWith("if://")) {
       //是我们app的指令 解析并执行指令 一般为if://XXXXX?AAA=bbb&CCC=ddd的格式
       List<String> strs = uri.split("?");
       String command = strs.first;
       Map<String, String> params = {};
-      if(strs.length > 1){
+      if (strs.length > 1) {
         List<String> paramsStrs = strs.last.split("&");
         paramsStrs.forEach((str) {
           params[str.split("=").first] = str.split("=").last;
         });
       }
 
-      switch(command){
+      switch (command) {
         case "if://loginTerminal":
           print("登录终端指令");
+          ScanCodeResultModel model = ScanCodeResultModel();
+          model.type = ScanCodeResultType.LOGIN_MACHINE;
+          model.data = {};
+          model.data["mid"] = params["mid"];
+          Navigator.pop(context);
+          AppRouter.navigateToScanCodeResultPage(context, model);
           break;
         case "if://activeTerminal":
           print("激活终端指令");
@@ -243,7 +258,7 @@ class _ScanCodeState extends State<ScanCodePage> {
           print("加入群聊指令");
           Map<String, dynamic> joinMap = await joinGroupChatUnrestricted(params["code"]);
           // print("joinMap:"+joinMap.toString());
-          if(joinMap != null && joinMap["id"] != null) {
+          if (joinMap != null && joinMap["id"] != null) {
             String name = "";
             if (joinMap["modifiedName"] != null) {
               name = joinMap["modifiedName"];
@@ -257,22 +272,28 @@ class _ScanCodeState extends State<ScanCodePage> {
           }
           break;
         case "if://userProfile":
-            int uid = int.parse(params["uid"]);
-            Navigator.of(context).pop();
-            AppRouter.navigateToMineDetail(context, uid);
-            break;
+          int uid = int.parse(params["uid"]);
+          Navigator.of(context).pop();
+          AppRouter.navigateToMineDetail(context, uid);
+          break;
         default:
-          ToastShow.show(msg: "不支持的二维码", context: context);
+          ScanCodeResultModel model = ScanCodeResultModel();
+          model.type = ScanCodeResultType.CODE_INVALID;
+          Navigator.pop(context);
+          AppRouter.navigateToScanCodeResultPage(context, model);
           break;
       }
-    } else if(uri.startsWith("http://") || uri.startsWith("https://")){
+    } else if (uri.startsWith("http://") || uri.startsWith("https://")) {
       //网页 需要再细致区分处理 暂时先不处理
-      ToastShow.show(msg: "不支持的二维码", context: context);
-      return;
+      ScanCodeResultModel model = ScanCodeResultModel();
+      model.type = ScanCodeResultType.CODE_INVALID;
+      Navigator.pop(context);
+      AppRouter.navigateToScanCodeResultPage(context, model);
     } else {
-      ToastShow.show(msg: "不支持的二维码", context: context);
-      return;
+      ScanCodeResultModel model = ScanCodeResultModel();
+      model.type = ScanCodeResultType.CODE_INVALID;
+      Navigator.pop(context);
+      AppRouter.navigateToScanCodeResultPage(context, model);
     }
   }
-
 }

@@ -1,8 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:provider/provider.dart';
@@ -10,9 +13,6 @@ import 'package:provider/provider.dart';
 class ScanCodeResultType {
   //登录设备
   static const int LOGIN_MACHINE = 0;
-
-  //登录完成
-  static const int LOGIN_COMPLETE = 1;
 
   //二维码已过期
   static const int CODE_EXPIRED = -1;
@@ -35,10 +35,13 @@ class ScanCodeResultPage extends StatefulWidget {
 class _ScanCodeResultState extends State<ScanCodeResultPage> {
   String name = "机器名";
 
+  bool isLoginSuccess = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        brightness: Brightness.light,
         backgroundColor: AppColor.white,
         leading: InkWell(
           child: Container(
@@ -57,28 +60,9 @@ class _ScanCodeResultState extends State<ScanCodeResultPage> {
         centerTitle: true,
       ),
       body: Container(
-        height: ScreenUtil.instance.height,
-        width: ScreenUtil.instance.screenWidthDp,
-        child: Stack(
-          children: [
-            Opacity(
-              opacity: widget.resultModel.type != ScanCodeResultType.LOGIN_MACHINE ? 1 : 0,
-              child: Container(
-                height: ScreenUtil.instance.height,
-                width: ScreenUtil.instance.screenWidthDp,
-                child: _squareFrameWidget(),
-              ),
-            ),
-            Opacity(
-              opacity: widget.resultModel.type == ScanCodeResultType.LOGIN_MACHINE ? 1 : 0,
-              child: Container(
-                height: ScreenUtil.instance.height,
-                width: ScreenUtil.instance.screenWidthDp,
-                child: _roundFrameWidget(),
-              ),
-            )
-          ],
-        ),
+        child: widget.resultModel.type == ScanCodeResultType.LOGIN_MACHINE && !isLoginSuccess
+            ? _roundFrameWidget()
+            : _squareFrameWidget(),
       ),
     );
   }
@@ -99,7 +83,7 @@ class _ScanCodeResultState extends State<ScanCodeResultPage> {
           height: 16,
         ),
         Text(
-          widget.resultModel.type == ScanCodeResultType.LOGIN_COMPLETE
+          widget.resultModel.type == ScanCodeResultType.LOGIN_MACHINE && isLoginSuccess
               ? "登录设备成功"
               : widget.resultModel.type == ScanCodeResultType.CODE_EXPIRED
                   ? "二维码已过期"
@@ -112,7 +96,7 @@ class _ScanCodeResultState extends State<ScanCodeResultPage> {
           height: 6,
         ),
         Opacity(
-          opacity: widget.resultModel.type == ScanCodeResultType.LOGIN_COMPLETE ? 1 : 0,
+          opacity: widget.resultModel.type == ScanCodeResultType.LOGIN_MACHINE && isLoginSuccess ? 1 : 0,
           child: Text("当前账号登录$name成功"),
         ),
         SizedBox(
@@ -120,11 +104,16 @@ class _ScanCodeResultState extends State<ScanCodeResultPage> {
         ),
         Opacity(
           opacity: widget.resultModel.type == ScanCodeResultType.CODE_INVALID ? 0 : 1,
-          child: _button(widget.resultModel.type == ScanCodeResultType.CODE_EXPIRED
-              ? "重新扫描"
-              : widget.resultModel.type == ScanCodeResultType.LOGIN_COMPLETE
-                  ? "完成"
-                  : ""),
+          child: widget.resultModel.type == ScanCodeResultType.CODE_EXPIRED
+              ? _button("重新扫描", () {
+                  Navigator.pop(context);
+                  AppRouter.navigateToScanCodePage(context);
+                })
+              : widget.resultModel.type == ScanCodeResultType.LOGIN_MACHINE && isLoginSuccess
+                  ? _button("完成", () {
+                      Navigator.pop(context);
+                    })
+                  : Container(),
         )
       ],
     );
@@ -165,16 +154,27 @@ class _ScanCodeResultState extends State<ScanCodeResultPage> {
         SizedBox(
           height: 63,
         ),
-        _button("确认登录"),
+        _button("确认登录", () async {
+          Map<String, dynamic> map = {};
+          map["machineId"] = int.parse(widget.resultModel.data["mid"]);
+          BaseResponseModel response = await requestApi("/appuser/web/machine/login", map);
+          if (response.code == 200) {
+            setState(() {
+              isLoginSuccess = true;
+            });
+          }
+        }),
         SizedBox(
           height: 12,
         ),
-        _button("取消登录", color: AppColor.transparent)
+        _button("取消登录", () {
+          Navigator.pop(context);
+        }, color: AppColor.transparent)
       ],
     );
   }
 
-  Widget _button(String title, {Color color}) {
+  Widget _button(String title, Function() onTap, {Color color}) {
     return Container(
       padding: EdgeInsets.only(left: 41, right: 41),
       child: ClickLineBtn(
@@ -186,22 +186,7 @@ class _ScanCodeResultState extends State<ScanCodeResultPage> {
         fontSize: 16,
         backColor: color == null ? AppColor.bgBlack : color,
         color: color == null ? AppColor.transparent : AppColor.bgBlack,
-        onTap: () {
-          switch (widget.resultModel.type) {
-            case ScanCodeResultType.LOGIN_COMPLETE:
-              // TODO: Handle this case.
-              break;
-            case ScanCodeResultType.LOGIN_MACHINE:
-              // TODO: Handle this case.
-              break;
-            case ScanCodeResultType.CODE_EXPIRED:
-              // TODO: Handle this case.
-              break;
-            case ScanCodeResultType.CODE_INVALID:
-              // TODO: Handle this case.
-              break;
-          }
-        },
+        onTap: onTap,
       ),
     );
   }
