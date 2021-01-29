@@ -50,8 +50,8 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
   // 滑动控制器
   ScrollController _scrollController = new ScrollController();
 
-  // 数据加载页数
-  int dataPage = 1;
+  // 是否存在下一页
+  int hasNext;
 
 // 加载中默认文字
   String loadText = "加载中...";
@@ -77,7 +77,6 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
     // 上拉加载
     _scrollController.addListener(() {
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        dataPage += 1;
         requestFeednIterface();
       }
     });
@@ -92,7 +91,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
           if (feedList.isNotEmpty) {
             feedList.clear();
             lastTime = null;
-            dataPage = 1;
+            hasNext = null;
           }
           requestFeednIterface();
         }
@@ -106,6 +105,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
   void dispose() {
     print("销毁了页面");
     _scrollController.dispose();
+
     ///取消延时任务
     timer.cancel();
     super.dispose();
@@ -113,45 +113,34 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
 
   // 请求动态接口
   requestFeednIterface() async {
-    if (loadStatus == LoadingStatus.STATUS_IDEL) {
-      // 先设置状态，防止下拉就直接加载
-      setState(() {
-        loadStatus = LoadingStatus.STATUS_LOADING;
-      });
-    }
-    if (dataPage > 1 && lastTime == null) {
-      loadText = "已加载全部动态";
-      print("返回不请求数据");
-      return;
-    }
-    DataResponseModel model = await searchFeed(key: widget.keyWord, size: 20, lastTime: lastTime);
-
-    setState(() {
-      print("dataPage:  ￥￥$dataPage");
-      if (dataPage == 1) {
-        if (model.list.isNotEmpty) {
-          print(model.list.length);
-          model.list.forEach((v) {
-            feedList.add(HomeFeedModel.fromJson(v));
-          });
-        }
-      } else if (dataPage > 1 && lastTime != null) {
-        if (model.list.isNotEmpty) {
-          model.list.forEach((v) {
-            feedList.add(HomeFeedModel.fromJson(v));
-          });
-          loadStatus = LoadingStatus.STATUS_IDEL;
-          loadText = "加载中...";
-        } else {
-          // 加载完毕
-          loadText = "已加载全部动态";
-          loadStatus = LoadingStatus.STATUS_COMPLETED;
-        }
+    if (hasNext != 0) {
+      if (loadStatus == LoadingStatus.STATUS_IDEL) {
+        // 先设置状态，防止下拉就直接加载
+        setState(() {
+          loadStatus = LoadingStatus.STATUS_LOADING;
+        });
       }
-    });
-    lastTime = model.lastTime;
-    // 更新全局监听
-    context.read<FeedMapNotifier>().updateFeedMap(feedList);
+      DataResponseModel model = await searchFeed(key: widget.keyWord, size: 20, lastTime: lastTime);
+      lastTime = model.lastTime;
+      hasNext = model.hasNext;
+      if (model.list.isNotEmpty) {
+        model.list.forEach((v) {
+          feedList.add(HomeFeedModel.fromJson(v));
+        });
+        loadStatus = LoadingStatus.STATUS_IDEL;
+        loadText = "加载中...";
+      }
+      // 更新全局监听
+      context.read<FeedMapNotifier>().updateFeedMap(feedList);
+    }
+    if (hasNext == 0) {
+      // 加载完毕
+      loadText = "已加载全部动态";
+      loadStatus = LoadingStatus.STATUS_COMPLETED;
+    }
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -165,7 +154,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
               onRefresh: () async {
                 feedList.clear();
                 lastTime = null;
-                dataPage = 1;
+                hasNext = null;
                 loadStatus = LoadingStatus.STATUS_LOADING;
                 loadText = "加载中...";
                 requestFeednIterface();
@@ -396,13 +385,13 @@ class SearchFeeditemState extends State<SearchFeeditem> {
                   }
                   result.insert(0, model);
                   list = result;
-                   print(list.length);
+                  print(list.length);
                   Navigator.push(
                     context,
                     new MaterialPageRoute(
                         builder: (context) => FeedFlow(
                               feedList: list,
-                          pageName: widget.pageName,
+                              pageName: widget.pageName,
                             )),
                   );
                 },

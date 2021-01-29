@@ -70,7 +70,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
           'followingCount============================${attentionModel.followingCount}'
           'feedCount==========${attentionModel.feedCount}'
           'followerCount=======${attentionModel.followerCount}');
-      setState(() {
+
         uid = attentionModel.uid;
         followingCount = attentionModel.followingCount;
         followerCount = attentionModel.followerCount;
@@ -79,7 +79,10 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         trainingSeconds = extraInfoModel.trainingSeconds;
         weight = extraInfoModel.weight;
         albumNum = extraInfoModel.albumNum;
-      });
+        if(mounted){
+          setState(() {
+          });
+        }
     }
   }
 

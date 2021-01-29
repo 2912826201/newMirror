@@ -232,7 +232,9 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
           liveVideoList.addAll(liveList);
         }
       }
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     }).catchError((e) {
       print("报错了");
       print(e);

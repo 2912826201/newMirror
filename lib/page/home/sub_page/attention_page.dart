@@ -111,46 +111,50 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     print("postFeedModel%%%%%%%$widget.postFeedModel");
     print("开始请求动态数据");
     if (dataPage > 1 && lastTime == null) {
-      loadText = "已加载全部动态";
-      loadStatus = LoadingStatus.STATUS_COMPLETED;
-      print("返回不请求数据");
+      setState(() {
+        loadText = "已加载全部动态";
+        loadStatus = LoadingStatus.STATUS_COMPLETED;
+        print("返回不请求数据");
+      });
       return;
     }
     DataResponseModel model = await getPullList(type: 0, size: 20, lastTime: lastTime);
-    setState(() {
-      print("dataPage:  ￥￥$dataPage");
-      if (dataPage == 1) {
-        if (model.list.isNotEmpty) {
-          model.list.forEach((v) {
-            attentionIdList.add(HomeFeedModel.fromJson(v).id);
-            attentionModelList.add(HomeFeedModel.fromJson(v));
-            print("接口赶回");
-            print(HomeFeedModel.fromJson(v).comments);
-          });
-          if (model.hasNext == 0) {
-            loadText = "";
-            loadStatus = LoadingStatus.STATUS_IDEL;
+    if (mounted) {
+      setState(() {
+        print("dataPage:  ￥￥$dataPage");
+        if (dataPage == 1) {
+          if (model.list.isNotEmpty) {
+            model.list.forEach((v) {
+              attentionIdList.add(HomeFeedModel.fromJson(v).id);
+              attentionModelList.add(HomeFeedModel.fromJson(v));
+              print("接口赶回");
+              print(HomeFeedModel.fromJson(v).comments);
+            });
+            if (model.hasNext == 0) {
+              loadText = "";
+              loadStatus = LoadingStatus.STATUS_IDEL;
+            }
+            attentionIdList.insert(0, -1);
+            status = Status.concern;
+          } else {
+            status = Status.noConcern;
           }
-          attentionIdList.insert(0, -1);
-          status = Status.concern;
-        } else {
-          status = Status.noConcern;
+        } else if (dataPage > 1 && lastTime != null) {
+          if (model.list.isNotEmpty) {
+            model.list.forEach((v) {
+              attentionIdList.add(HomeFeedModel.fromJson(v).id);
+              attentionModelList.add(HomeFeedModel.fromJson(v));
+            });
+            loadStatus = LoadingStatus.STATUS_IDEL;
+            loadText = "加载中...";
+          } else {
+            // 加载完毕
+            loadText = "已加载全部动态";
+            loadStatus = LoadingStatus.STATUS_COMPLETED;
+          }
         }
-      } else if (dataPage > 1 && lastTime != null) {
-        if (model.list.isNotEmpty) {
-          model.list.forEach((v) {
-            attentionIdList.add(HomeFeedModel.fromJson(v).id);
-            attentionModelList.add(HomeFeedModel.fromJson(v));
-          });
-          loadStatus = LoadingStatus.STATUS_IDEL;
-          loadText = "加载中...";
-        } else {
-          // 加载完毕
-          loadText = "已加载全部动态";
-          loadStatus = LoadingStatus.STATUS_COMPLETED;
-        }
-      }
-    });
+      });
+    }
     lastTime = model.lastTime;
     isRequestInterface = false;
     // 更新全局监听
@@ -199,9 +203,13 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       } else if (postModel.selectedMediaFiles.type == mediaTypeKeyVideo) {
         postModel.selectedMediaFiles.list.forEach((element) {
           fileList.add(element.file);
-          videos.add(VideosModel(width: element.sizeInfo.width, height: element.sizeInfo.height,
-              duration: element.sizeInfo.duration, videoCroppedRatio: element.sizeInfo.videoCroppedRatio,
-              offsetRatioX: element.sizeInfo.offsetRatioX, offsetRatioY: element.sizeInfo.offsetRatioY));
+          videos.add(VideosModel(
+              width: element.sizeInfo.width,
+              height: element.sizeInfo.height,
+              duration: element.sizeInfo.duration,
+              videoCroppedRatio: element.sizeInfo.videoCroppedRatio,
+              offsetRatioX: element.sizeInfo.offsetRatioX,
+              offsetRatioY: element.sizeInfo.offsetRatioY));
         });
         results = await FileUtil().uploadMedias(fileList, (percent) {
           context.read<FeedMapNotifier>().getPostPlannedSpeed(percent);
@@ -214,49 +222,55 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         }
       }
       print("数据请求发不打印${postModel.content}");
-      Map<String, dynamic> feedModel = await publishFeed(
-          type: 0,
-          content: postModel.content,
-          picUrls: jsonEncode(picUrls),
-          videos: jsonEncode(videos),
-          atUsers: jsonEncode(postModel.atUsersModel),
-          address: postModel.address,
-          latitude: postModel.latitude,
-          longitude: postModel.longitude,
-          cityCode: postModel.cityCode,
-          topics: jsonEncode(postModel.topics));
-      print("发不接受发布结束：feedModel$feedModel");
-      // 清空发布model
-      context.read<FeedMapNotifier>().setPublishFeedModel(null);
-      if (feedModel != null) {
-        _process = 1.0;
-        context.read<FeedMapNotifier>().getPostPlannedSpeed(_process);
-        // 设置可发布
-        context.read<FeedMapNotifier>().setPublish(true);
-        status = Status.concern;
-        // 发布完成
-        // 延迟器:
-        new Future.delayed(Duration(seconds: 1), () {
-          widget.postFeedModel = null;
-          postModel = null;
-          //还原进度条
-          _process = 0.0;
+      if (mounted) {
+        Map<String, dynamic> feedModel = await publishFeed(
+            type: 0,
+            content: postModel.content,
+            picUrls: jsonEncode(picUrls),
+            videos: jsonEncode(videos),
+            atUsers: jsonEncode(postModel.atUsersModel),
+            address: postModel.address,
+            latitude: postModel.latitude,
+            longitude: postModel.longitude,
+            cityCode: postModel.cityCode,
+            topics: jsonEncode(postModel.topics));
+        print("发不接受发布结束：feedModel$feedModel");
+        // 清空发布model
+        context.read<FeedMapNotifier>().setPublishFeedModel(null);
+        if (feedModel != null) {
+          _process = 1.0;
           context.read<FeedMapNotifier>().getPostPlannedSpeed(_process);
-          // 插入数据
-          attentionIdList.insert(1, HomeFeedModel.fromJson(feedModel).id);
-          context
-              .read<FeedMapNotifier>()
-              .PublishInsertData(HomeFeedModel.fromJson(feedModel).id, HomeFeedModel.fromJson(feedModel));
-        });
-      } else {
-        // 发布失败
-        print('================================发布失败');
-        // 设置不可发布
-        context.read<FeedMapNotifier>().setPublish(false);
-        context.read<FeedMapNotifier>().setPublishFeedModel(postModel);
-        _process = -1.0;
-        context.read<FeedMapNotifier>().getPostPlannedSpeed(_process);
-        context.read<FeedMapNotifier>().setPublish(true);
+          // 设置可发布
+          context.read<FeedMapNotifier>().setPublish(true);
+          status = Status.concern;
+          // 发布完成
+          // 延迟器:
+          new Future.delayed(Duration(seconds: 1), () {
+            widget.postFeedModel = null;
+            postModel = null;
+            //还原进度条
+            _process = 0.0;
+            context.read<FeedMapNotifier>().getPostPlannedSpeed(_process);
+            // 插入数据
+            attentionIdList.insert(1, HomeFeedModel
+                .fromJson(feedModel)
+                .id);
+            context
+                .read<FeedMapNotifier>()
+                .PublishInsertData(HomeFeedModel
+                .fromJson(feedModel)
+                .id, HomeFeedModel.fromJson(feedModel));
+          });
+        } else {
+          // 发布失败
+          print('================================发布失败');
+          // 设置不可发布
+          context.read<FeedMapNotifier>().setPublish(false);
+          context.read<FeedMapNotifier>().setPublishFeedModel(postModel);
+          _process = -1.0;
+          context.read<FeedMapNotifier>().getPostPlannedSpeed(_process);
+          context.read<FeedMapNotifier>().setPublish(true);
+        }
       }
     }
   }
@@ -552,7 +566,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         }
       }
       // 回到顶部，加这个判断是没加载过关注页时_controller并未绑定直接调用会崩溃。
-      if(_controller.hasClients) {
+      if (_controller.hasClients) {
         _controller.jumpTo(0);
       }
       pulishFeed();

@@ -70,10 +70,11 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
 
   _getShortUrl()async{
     Map<String,dynamic> map = await getShortUrl(type:3,targetId:context.read<ProfileNotifier>().profile.uid);
-      if(map!=null){
+      if(map!=null) {
         codeData = map["url"];
-        setState(() {
-        });
+        if (mounted) {
+          setState(() {});
+        }
       }
   }
   @override

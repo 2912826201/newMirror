@@ -10,6 +10,8 @@ import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/model/profile/topic_list_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
+import 'package:mirror/page/topic/topic_detail.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -98,8 +100,9 @@ class _QueryFollowState extends State<QueryFollowList> {
         _refreshController.loadNoData();
       }
     }
+    if(mounted){
     setState(() {});
-  }
+  }}
 
   ///搜索关注用户
   _getSearchUser(String text) async {
@@ -175,7 +178,7 @@ class _QueryFollowState extends State<QueryFollowList> {
     }
     print('====================粉丝页请求接口');
     BuddyListModel model = await GetFansList(_lastTime, 15, uid: widget.userId);
-    setState(() {
+
       if (listPage == 1 && _lastTime == null) {
         _refreshController.loadComplete();
         buddyList.clear();
@@ -203,7 +206,9 @@ class _QueryFollowState extends State<QueryFollowList> {
           _refreshController.loadNoData();
         }
       }
-    });
+      if(mounted) {
+        setState(() {});
+      }
   }
 
   ///获取关注话题列表
@@ -214,7 +219,7 @@ class _QueryFollowState extends State<QueryFollowList> {
     }
     print('====================话题页请求接口');
     TopicListModel model = await GetTopicList(_lastTime, 20, uid: widget.userId);
-    setState(() {
+
       if (listPage == 1) {
         _refreshController.loadComplete();
         topicList.clear();
@@ -239,7 +244,10 @@ class _QueryFollowState extends State<QueryFollowList> {
           _refreshController.loadNoData();
         }
       }
-    });
+      if(mounted){
+        setState(() {
+        });
+      }
   }
 
   //搜索关注话题
@@ -695,12 +703,13 @@ class _FollowItemState extends State<QueryFollowItem> {
           InkWell(
               onTap: () {
                 if (widget.type == 1 || widget.type == 2) {
+                  AppRouter.navigateToMineDetail(context, uid);
+                } else {
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                    return ProfileDetailPage(
-                      userId: uid,
+                    return TopicDetail(
+                     topicId: widget.tpcModel.id,
                     );
                   }));
-                } else {
                   ///这里处理话题跳转
                 }
               },

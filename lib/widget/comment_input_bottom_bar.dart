@@ -27,7 +27,7 @@ Future openInputBottomSheet({
   @required BuildContext buildContext,
   @required VoidCallback voidCallback,
   String hintText,
-  bool isShowAt=true,
+  bool isShowAt = true,
 }) async {
   await showModalBottomSheet(
       isScrollControlled: true,
@@ -53,7 +53,8 @@ Future openInputBottomSheet({
 }
 
 class CommentInputBottomBar extends StatefulWidget {
-  CommentInputBottomBar({Key key, this.voidCallback, this.hintText, this.commentFocus, this.isShowAt}) : super(key: key);
+  CommentInputBottomBar({Key key, this.voidCallback, this.hintText, this.commentFocus, this.isShowAt})
+      : super(key: key);
   final VoidCallback voidCallback;
   String hintText;
   final bool isShowAt;
@@ -88,9 +89,6 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
   // 是否存在下页
   int hasNext;
 
-  // 数据加载页数
-  int dataPage = 1;
-
   // 加载中默认文字
   String loadText = "加载中...";
 
@@ -102,9 +100,6 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
 
   // 搜索是否存在下页
   int searchHasNext;
-
-  // 搜索数据加载页数
-  int searchDataPage = 1;
 
   // 搜索加载中默认文字
   String searchLoadText = "加载中...";
@@ -128,11 +123,9 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
     _scrollController.addListener(() {
       String atStr = context.read<CommentEnterNotifier>().atSearchStr;
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        if (atStr != null) {
-          searchDataPage += 1;
+        if (atStr != null && atStr.isNotEmpty) {
           requestSearchFollowList(atStr);
         } else {
-          dataPage += 1;
           requestBothFollowList();
         }
       }
@@ -226,7 +219,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
         context.read<CommentEnterNotifier>().changeCallback(value);
         if (atSearchStr != null && atSearchStr.isNotEmpty) {
           searchHasNext = null;
-          searchDataPage = 1;
+          searchLastTime = null;
           searchLoadStatus = LoadingStatus.STATUS_IDEL;
           searchLoadText = "加载中...";
           requestSearchFollowList(atSearchStr);
@@ -260,116 +253,90 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
   requestSearchFollowList(String keyWork) async {
     print("搜索字段：：：：：：：：$keyWork");
     List<BuddyModel> searchFollowList = [];
-    if (searchLoadStatus == LoadingStatus.STATUS_IDEL) {
-      // 先设置状态，防止下拉就直接加载
+    // 列表回到顶部，不然无法上拉加载下一页
+    if (searchHasNext == null) {
       setState(() {
-        searchLoadStatus = LoadingStatus.STATUS_LOADING;
+        _scrollController.jumpTo(0);
       });
     }
-
-    SearchUserModel model = SearchUserModel();
     if (searchHasNext != 0) {
+      if (searchLoadStatus == LoadingStatus.STATUS_IDEL) {
+        // 先设置状态，防止下拉就直接加载
+        setState(() {
+          searchLoadStatus = LoadingStatus.STATUS_LOADING;
+        });
+      }
+
+      SearchUserModel model = SearchUserModel();
       model = await ProfileSearchUser(keyWork, 20, lastTime: searchLastTime);
-      if (model.list.isNotEmpty && searchDataPage == 1) {
-        model.list.forEach((element) {
+      searchLastTime = model.lastTime;
+      searchHasNext = model.hasNext;
+      if (model.list.isNotEmpty) {
+        model.list.forEach((v) {
           BuddyModel followModel = BuddyModel();
-          followModel.nickName = element.nickName + " ";
-          followModel.uid = element.uid;
-          followModel.avatarUri = element.avatarUri;
+          followModel.nickName = v.nickName + " ";
+          followModel.uid = v.uid;
+          followModel.avatarUri = v.avatarUri;
           searchFollowList.add(followModel);
         });
-        if (model.hasNext == 0) {
-          searchLoadText = "";
-          searchLoadStatus = LoadingStatus.STATUS_COMPLETED;
-        }
+        searchLoadStatus = LoadingStatus.STATUS_IDEL;
+        searchLoadText = "加载中...";
       }
-      if (searchDataPage > 1 && searchLastTime != null) {
-        if (model.list.isNotEmpty) {
-          model.list.forEach((v) {
-            BuddyModel followModel = BuddyModel();
-            followModel.nickName = v.nickName + " ";
-            followModel.uid = v.uid;
-            followModel.avatarUri = v.avatarUri;
-            searchFollowList.add(followModel);
-          });
-          searchLoadStatus = LoadingStatus.STATUS_IDEL;
-          searchLoadText = "加载中...";
+      // 获取关注@数据
+      List<BuddyModel> follow = [];
+      backupFollowList.forEach((v) {
+        if (v.nickName.contains(keyWork)) {
+          follow.add(v);
         }
-      }
+      });
+      // 筛选全局的@用户数据
+      List<BuddyModel> filterFollowList = followModelarrayDate(searchFollowList, follow);
+      filterFollowList.insertAll(0, follow);
+      followList = filterFollowList;
     }
-    // 记录搜索状态
-    searchLastTime = model.lastTime;
-    searchHasNext = model.hasNext;
-
-    // 列表回到顶部，不然无法上拉加载下一页
-    if (searchDataPage == 1) {
-      _scrollController.jumpTo(0);
-    }
-    if (searchHasNext == 0 && searchFollowList.isNotEmpty) {
+    if (searchHasNext == 0) {
       searchLoadText = "已加载全部好友";
       searchLoadStatus = LoadingStatus.STATUS_COMPLETED;
     }
-    if (searchHasNext == 0 && searchFollowList.isEmpty) {
-      searchLoadText = "";
-      searchLoadStatus = LoadingStatus.STATUS_COMPLETED;
+    if (mounted) {
+      setState(() {});
     }
-    // 获取关注@数据
-    List<BuddyModel> follow = [];
-    backupFollowList.forEach((v) {
-      if (v.nickName.contains(keyWork)) {
-        follow.add(v);
-      }
-    });
-    // 筛选全局的@用户数据
-    List<BuddyModel> filterFollowList = followModelarrayDate(searchFollowList, follow);
-    filterFollowList.insertAll(0, follow);
-    followList = filterFollowList;
-    setState(() {});
   }
 
   // 请求好友列表
   requestBothFollowList() async {
-    if (loadStatus == LoadingStatus.STATUS_IDEL) {
-      // 先设置状态，防止下拉就直接加载
-      setState(() {
-        loadStatus = LoadingStatus.STATUS_LOADING;
-      });
-    }
-    BuddyListModel model = BuddyListModel();
     if (hasNext != 0) {
-      model = await GetFollowList(20, lastTime: lastTime);
-      if (dataPage == 1) {
-        if (model.list.isNotEmpty) {
-          followList = model.list;
-          followList.forEach((element) {
-            element.nickName = element.nickName + " ";
-          });
-          if (model.hasNext == 0) {
-            loadText = "";
-            loadStatus = LoadingStatus.STATUS_COMPLETED;
-          }
-        }
-      } else if (dataPage > 1 && lastTime != null) {
-        if (model.list.isNotEmpty) {
-          model.list.forEach((v) {
-            v.nickName = v.nickName + " ";
-          });
-          followList.addAll(model.list);
-          loadStatus = LoadingStatus.STATUS_IDEL;
-          loadText = "加载中...";
-        }
+      if (loadStatus == LoadingStatus.STATUS_IDEL) {
+        // 先设置状态，防止下拉就直接加载
+        setState(() {
+          loadStatus = LoadingStatus.STATUS_LOADING;
+        });
       }
+      BuddyListModel model = BuddyListModel();
+
+      model = await GetFollowList(20, lastTime: lastTime);
+      lastTime = model.lastTime;
+      hasNext = model.hasNext;
+      if (model.list.isNotEmpty) {
+        model.list.forEach((v) {
+          v.nickName = v.nickName + " ";
+        });
+        followList.addAll(model.list);
+        loadStatus = LoadingStatus.STATUS_IDEL;
+        loadText = "加载中...";
+      }
+
       // 备份字段赋值
       backupFollowList = followList;
     }
-    lastTime = model.lastTime;
-    hasNext = model.hasNext;
     if (hasNext == 0) {
       loadText = "已加载全部好友";
       loadStatus = LoadingStatus.STATUS_COMPLETED;
       print("返回不请求数据");
     }
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -397,8 +364,8 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                     itemBuilder: (context, index) {
                       if (index == followList.length) {
                         return LoadingView(
-                          loadText: atStr != null ? searchLoadText : loadText,
-                          loadStatus: atStr != null ? searchLoadStatus : loadStatus,
+                          loadText: atStr != null && atStr.isNotEmpty ? searchLoadText : loadText,
+                          loadStatus: atStr != null && atStr.isNotEmpty ? searchLoadStatus : loadStatus,
                         );
                       } else if (index == followList.length + 1) {
                         return Container();
@@ -600,22 +567,23 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                           Positioned(
                               right: 16,
                               bottom: 6,
-                            child: GestureDetector(
-                                onTap: () {
-                                  isClickAtUser = true;
-                                  // 输入的文字
-                                 String text = _textEditingController.text;
-                                  // 获取光标位置
-                                  int cursorIndex = _textEditingController.selection.baseOffset;
-                                  _textEditingController.text = text.substring(0,cursorIndex) + "@" + text.substring(cursorIndex,text.length);
-                                  context.read<CommentEnterNotifier>().getAtCursorIndex(cursorIndex + 1);
-                                  context.read<CommentEnterNotifier>().openAtCallback("@");
-                                },
-                              child: Container(
-                                width: 24,
-                                height: 24,
-                                color: Colors.redAccent,
-                              ))),
+                              child: GestureDetector(
+                                  onTap: () {
+                                    isClickAtUser = true;
+                                    // 输入的文字
+                                    String text = _textEditingController.text;
+                                    // 获取光标位置
+                                    int cursorIndex = _textEditingController.selection.baseOffset;
+                                    _textEditingController.text =
+                                        text.substring(0, cursorIndex) + "@" + text.substring(cursorIndex, text.length);
+                                    context.read<CommentEnterNotifier>().getAtCursorIndex(cursorIndex + 1);
+                                    context.read<CommentEnterNotifier>().openAtCallback("@");
+                                  },
+                                  child: Container(
+                                    width: 24,
+                                    height: 24,
+                                    color: Colors.redAccent,
+                                  ))),
                           // MyIconBtn()
                         ],
                       ),
