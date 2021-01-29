@@ -224,7 +224,7 @@ class _ScanCodeState extends State<ScanCodePage> {
       //是我们app的指令 解析并执行指令 一般为if://XXXXX?AAA=bbb&CCC=ddd的格式
       List<String> strs = uri.split("?");
       String command = strs.first;
-      Map<String, dynamic> params = {};
+      Map<String, String> params = {};
       if(strs.length > 1){
         List<String> paramsStrs = strs.last.split("&");
         paramsStrs.forEach((str) {
@@ -256,6 +256,11 @@ class _ScanCodeState extends State<ScanCodePage> {
             jumpGroupPage(context, name, joinMap["id"]);
           }
           break;
+        case "if://userProfile":
+            int uid = int.parse(params["uid"]);
+            Navigator.of(context).pop();
+            AppRouter.navigateToMineDetail(context, uid);
+            break;
         default:
           ToastShow.show(msg: "不支持的二维码", context: context);
           break;
