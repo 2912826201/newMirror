@@ -228,6 +228,8 @@ class InteractiveNoticeItemState extends StatelessWidget {
   String senderAvatarUrl;
   int index;
   CommentDtoModel fatherCommentModel;
+  HomeFeedModel feedModel;
+  LiveVideoModel liveVideoModel;
   List<AtUsersModel> atUserList = [];
   String coverImage;
   bool feedIsDelete = false;
@@ -254,12 +256,13 @@ class InteractiveNoticeItemState extends StatelessWidget {
     if(msgModel.refData==null){
       feedIsDelete = true;
     }
-   if(msgModel.refType == 2){
+    if(msgModel.refType==0){
+      feedModel = HomeFeedModel.fromJson(msgModel.refData);
+    } else if(msgModel.refType == 2){
      fatherCommentModel = CommentDtoModel.fromJson(msgModel.refData);
-     print('=====type====================${msgModel.refType}');
-     print('=====id====================${fatherCommentModel.targetId}');
-
-   }
+   }else if(msgModel.refType==1||msgModel.refType==3){
+      liveVideoModel = LiveVideoModel.fromJson(msgModel.refData);
+    }
   }
 
   List<BaseRichText> _atText(BuildContext context) {
@@ -281,8 +284,10 @@ class InteractiveNoticeItemState extends StatelessWidget {
     print('-====================消息互动列表页Item  biuld');
     senderAvatarUrl = msgModel.senderAvatarUrl;
     senderName = msgModel.senderName;
-    msgModel.commentData.name = senderName;
-    msgModel.commentData.replyName = context.watch<ProfileNotifier>().profile.nickName;
+    if(type==0){
+      msgModel.commentData.name = senderName;
+      msgModel.commentData.replyName = context.watch<ProfileNotifier>().profile.nickName;
+    }
     coverImage = msgModel.coverUrl;
     _getRefData(context);
     if (type == 0) {
@@ -385,24 +390,25 @@ class InteractiveNoticeItemState extends StatelessWidget {
           !feedIsDelete
               ? InkWell(
                   onTap: () {
-                    print('========================点击了');
-                    print('===============================${fatherCommentModel.targetId}');
+                    print('========================点击了${msgModel.refId}');
                     if (msgModel.refType == 0) {
                       print('=====================动态');
-                          getFeedDetail(context, int.parse(msgModel.refId), comment:type==0?msgModel.commentData:null);
+                          getFeedDetail(context,feedModel.id, comment:type==0?msgModel.commentData:null);
                       }else if(msgModel.refType == 2){
                           if(fatherCommentModel.type==0){
                             getFeedDetail(context, fatherCommentModel.targetId, comment: type==0?msgModel.commentData:null);
                           }else if(fatherCommentModel.type==1){
-                        AppRouter.navigateToLiveDetail(context, fatherCommentModel.targetId,isHaveStartTime: false);
+                        AppRouter.navigateToLiveDetail(context, fatherCommentModel.targetId,isHaveStartTime: false,commentDtoModel:
+                        msgModel.commentData,fatherComment: fatherCommentModel);
                           }else if(fatherCommentModel.type==3){
                             AppRouter.navigateToVideoDetail(context, fatherCommentModel.targetId,commentDtoModel:
                             msgModel.commentData,fatherComment: fatherCommentModel);
                           }
                       }else if(msgModel.refType==1){
-                        AppRouter.navigateToLiveDetail(context, int.parse(msgModel.refId),isHaveStartTime: false);
+                        AppRouter.navigateToLiveDetail(context, liveVideoModel.id,isHaveStartTime: false,commentDtoModel:
+                        msgModel.commentData);
                       }else{
-                        AppRouter.navigateToVideoDetail(context, int.parse(msgModel.refId),commentDtoModel:
+                        AppRouter.navigateToVideoDetail(context, liveVideoModel.id,commentDtoModel:
                         msgModel.commentData);
                       }
                   },

@@ -232,7 +232,8 @@ var handlerLiveDetail = Handler(handlerFunc: (BuildContext context, Map<String, 
     liveCourseId: data["liveCourseId"],
     isHaveStartTime: data["isHaveStartTime"],
     liveModel: liveModel,
-
+    commentDtoModel: data["commentDtoModel"]==null?null:CommentDtoModel.fromJson(data["commentDtoModel"]),
+    fatherComment: data["fatherComment"]==null?null:CommentDtoModel.fromJson(data["fatherComment"]),
   );
 });
 

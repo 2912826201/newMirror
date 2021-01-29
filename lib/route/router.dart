@@ -216,7 +216,7 @@ class AppRouter {
   }
 
   static void navigateToLiveDetail(BuildContext context, int liveCourseId, {String heroTag,bool isHaveStartTime=true,
-    LiveVideoModel liveModel,CommentDtoModel commentDtoModel}) {
+    LiveVideoModel liveModel,CommentDtoModel commentDtoModel,CommentDtoModel fatherComment}) {
     Map<String, dynamic> map = Map();
     map["liveCourseId"] = liveCourseId;
     map["isHaveStartTime"] = isHaveStartTime;
@@ -227,7 +227,10 @@ class AppRouter {
       map["heroTag"] = heroTag;
     }
     if(commentDtoModel!=null){
-      map["commentDtoModel"] = commentDtoModel;
+      map["commentDtoModel"] = commentDtoModel.toJson();
+    }
+    if(fatherComment!=null){
+      map["fatherComment"] = fatherComment.toJson();
     }
     _navigateToPage(context, pathLiveDetail, map);
   }
