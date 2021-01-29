@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
+import 'package:mirror/api/message_page_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
@@ -34,18 +35,23 @@ class ScanCodePage extends StatefulWidget {
 class _ScanCodeState extends State<ScanCodePage> {
   String imagePath = "";
   ScanController controller = ScanController();
-
+  String codeData;
   @override
   void initState() {
     super.initState();
+    _getShortUrl();
   }
-    getUserModel(int id)async{
-    UserModel userModel = await getUserInfo(uid: id);
-      if(userModel!=null){
-        Navigator.pop(context);
-       AppRouter.navigateToMineDetail(context, userModel.uid);
-      }
+
+  _getShortUrl()async{
+    Map<String,dynamic> map = await getShortUrl(type:3,targetId:context.read<ProfileNotifier>().profile.uid);
+    if(map!=null){
+      codeData = map["url"];
+      print('==================这是用户二维码$codeData');
+      setState(() {
+      });
     }
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -98,13 +104,7 @@ class _ScanCodeState extends State<ScanCodePage> {
                   scanLineColor: AppColor.white,
                   onCapture: (data) {
                     print("+-------------------"+data.toString());
-                    if(data.substring(0,1)=="用户"){
-                      print('=====================这是用户Id');
-                      getUserModel(int.parse(data.substring(1,data.length)));
-                    }else{
                       resolveShortConnectionsPr(data);
-                    }
-
                   },
                 ),
               ),
@@ -140,7 +140,7 @@ class _ScanCodeState extends State<ScanCodePage> {
                               },
                               child: Center(
                                 child: QrImage(
-                              data: "用户${context.watch<ProfileNotifier>().profile.uid}",
+                              data: codeData!=null?codeData:"",
                               size: 40,
                               padding: EdgeInsets.zero,
                               backgroundColor: AppColor.white,
@@ -164,7 +164,7 @@ class _ScanCodeState extends State<ScanCodePage> {
   }
 
   _getImagePicker() {
-    AppRouter.navigateToMediaPickerPage(context, 1, typeImage, false, startPageGallery, true, (result) async {
+    AppRouter.navigateToMediaPickerPage(context, 1, typeImage, true, startPageGallery, true, (result) async {
       SelectedMediaFiles files = Application.selectedMediaFiles;
       if (result != true || files == null) {
         print('===============================值为空退回');
@@ -186,28 +186,13 @@ class _ScanCodeState extends State<ScanCodePage> {
         File imageFile = await FileUtil().writeImageDataToFile(model.croppedImageData, timeStr);
         print('imageFile==============================$imageFile');
         String result = await Scan.parse(imageFile.path);
-        if (StringUtil.isURL(result)) {
-          print('===========================这是一个网址');
-        } else {
-          print('===========================这是扫码得到的结果$result');
-          if(result.substring(0,2)=="用户"){
-            print('===================这是用户${result.substring(2,result.length)}');
-            getUserModel(int.parse(result.substring(2,result.length)));
-          }
+        if(result!=null){
+          resolveShortConnectionsPr(result);
         }
-        Toast.show("这是从相册获取到的$result", context);
-        setState(() {});
       }
     });
   }
 
-
-  _goToUserHome(String result){
-    if(result.substring(0,2)=="用户"){
-      print('===================这是用户${result.substring(2,result.length)}');
-      getUserModel(int.parse(result.substring(2,result.length)));
-    }
-  }
 
   //解析这个短链接
   void resolveShortConnectionsPr(String pathUrl)async{
@@ -238,6 +223,10 @@ class _ScanCodeState extends State<ScanCodePage> {
           Navigator.of(context).pop();
           jumpGroupPage(context,name,joinMap["id"]);
         }
+      }else if(dataString.contains("userProfile")&&dataString.contains("uid=")){
+        int uid = int.parse(dataString.substring(dataString.indexOf("=")+1,dataString.length));
+        Navigator.of(context).pop();
+        AppRouter.navigateToMineDetail(context, uid);
       }else{
         print("未知指令");
       }
