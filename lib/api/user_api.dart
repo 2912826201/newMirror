@@ -46,13 +46,15 @@ Future<UserModel> getUserInfo({int uid}) async {
 
 
 ///解析短连接
-///请求参数
-///type:0-登录机器、1-激活机器、2-加入群聊
-Future<Map> resolveShortConnections({String path}) async {
+Future<String> resolveShortUrl(String url) async {
   Map<String, dynamic> params = {};
-  BaseResponseModel responseModel = await requestApi(path, params,requestMethod:METHOD_GET);
+  BaseResponseModel responseModel = await requestApi(url, params,requestMethod:METHOD_GET);
   if (responseModel.isSuccess) {
-    return responseModel.data;
+    if(responseModel.code == CODE_SUCCESS){
+      return responseModel.data["uri"];
+    } else {
+      return null;
+    }
   } else {
     return null;
   }

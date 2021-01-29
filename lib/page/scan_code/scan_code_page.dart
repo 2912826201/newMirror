@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
+import 'package:mirror/api/message_page_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
@@ -14,17 +15,18 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
-import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:scan/scan.dart';
 import 'package:toast/toast.dart';
 import 'package:provider/provider.dart';
 
 import 'my_qrcode_page.dart';
+import 'scan_result_page.dart';
 
 class ScanCodePage extends StatefulWidget {
   @override
@@ -34,18 +36,29 @@ class ScanCodePage extends StatefulWidget {
 class _ScanCodeState extends State<ScanCodePage> {
   String imagePath = "";
   ScanController controller = ScanController();
-
+  String codeData;
   @override
   void initState() {
     super.initState();
+    _getShortUrl();
   }
-    getUserModel(int id)async{
-    UserModel userModel = await getUserInfo(uid: id);
-      if(userModel!=null){
-        Navigator.pop(context);
-       AppRouter.navigateToMineDetail(context, userModel.uid);
-      }
+  @override
+  void dispose() {
+    controller?.pause();
+    controller = null;
+    super.dispose();
+  }
+  _getShortUrl()async{
+    Map<String,dynamic> map = await getShortUrl(type:3,targetId:context.read<ProfileNotifier>().profile.uid);
+    if(map!=null){
+      codeData = map["url"];
+      print('==================这是用户二维码$codeData');
+      if(mounted){
+      setState(() {
+      });
     }
+  }}
+
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -98,13 +111,7 @@ class _ScanCodeState extends State<ScanCodePage> {
                   scanLineColor: AppColor.white,
                   onCapture: (data) {
                     print("+-------------------"+data.toString());
-                    if(data.substring(0,1)=="用户"){
-                      print('=====================这是用户Id');
-                      getUserModel(int.parse(data.substring(1,data.length)));
-                    }else{
-                      resolveShortConnectionsPr(data);
-                    }
-
+                    resolveScanResult(data);
                   },
                 ),
               ),
@@ -140,7 +147,7 @@ class _ScanCodeState extends State<ScanCodePage> {
                               },
                               child: Center(
                                 child: QrImage(
-                              data: "用户${context.watch<ProfileNotifier>().profile.uid}",
+                              data: codeData!=null?codeData:"",
                               size: 40,
                               padding: EdgeInsets.zero,
                               backgroundColor: AppColor.white,
@@ -164,7 +171,7 @@ class _ScanCodeState extends State<ScanCodePage> {
   }
 
   _getImagePicker() {
-    AppRouter.navigateToMediaPickerPage(context, 1, typeImage, false, startPageGallery, true, (result) async {
+    AppRouter.navigateToMediaPickerPage(context, 1, typeImage, true, startPageGallery, true, (result) async {
       SelectedMediaFiles files = Application.selectedMediaFiles;
       if (result != true || files == null) {
         print('===============================值为空退回');
@@ -186,64 +193,95 @@ class _ScanCodeState extends State<ScanCodePage> {
         File imageFile = await FileUtil().writeImageDataToFile(model.croppedImageData, timeStr);
         print('imageFile==============================$imageFile');
         String result = await Scan.parse(imageFile.path);
-        if (StringUtil.isURL(result)) {
-          print('===========================这是一个网址');
-        } else {
-          print('===========================这是扫码得到的结果$result');
-          if(result.substring(0,2)=="用户"){
-            print('===================这是用户${result.substring(2,result.length)}');
-            getUserModel(int.parse(result.substring(2,result.length)));
-          }
+        if(result!=null){
+          resolveScanResult(result);
         }
-        Toast.show("这是从相册获取到的$result", context);
-        setState(() {});
       }
     });
   }
 
 
-  _goToUserHome(String result){
-    if(result.substring(0,2)=="用户"){
-      print('===================这是用户${result.substring(2,result.length)}');
-      getUserModel(int.parse(result.substring(2,result.length)));
-    }
-  }
-
   //解析这个短链接
-  void resolveShortConnectionsPr(String pathUrl)async{
-    print("解析这个短链接");
-    Map<String, dynamic> map = await resolveShortConnections(path: pathUrl);
-    print("map:${map.toString()}");
-    if(map!=null){
-      String dataString=map["uri"];
-      if(dataString.contains("loginTerminal")){
-        print("登录终端指令");
-      }else if(dataString.contains("activeTerminal")){
-        print("激活终端指令");
-      }else if(dataString.contains("joinGroup")&&dataString.contains("code")){
-        print("加入群聊指令");
-        String code=dataString;
-        code=code.substring(code.indexOf("code")+5,code.length);
-        Map<String, dynamic> joinMap = await joinGroupChatUnrestricted(code);
-        // print("joinMap:"+joinMap.toString());
-        if(joinMap!=null&&joinMap["id"]!=null){
-          String name="";
-          if(joinMap["modifiedName"]!=null){
-            name=joinMap["modifiedName"];
-          }else if(joinMap["name"]!=null){
-            name=joinMap["name"];
-          }else{
-            name=joinMap["id"].toString();
-          }
-          Navigator.of(context).pop();
-          jumpGroupPage(context,name,joinMap["id"]);
-        }
-      }else{
-        print("未知指令");
-      }
-    }else{
-      print("二维码有问题");
+  void resolveScanResult(String result) async {
+    //TODO 判断二维码短链接的语句之后要换
+    if (result.startsWith("http://ifdev.aimymusic.com/third/web/url/fitness")) {
+      //是我们自己的短链接 要用get请求获取其中的uri
+      String uri = await resolveShortUrl(result);
+      _resolveUri(uri);
+    } else {
+      _resolveUri(result);
     }
   }
 
+  _resolveUri(String uri) async {
+    if (uri == null) {
+      ToastShow.show(msg: "不支持的二维码", context: context);
+      return;
+    } else if (uri.startsWith("if://")) {
+      //是我们app的指令 解析并执行指令 一般为if://XXXXX?AAA=bbb&CCC=ddd的格式
+      List<String> strs = uri.split("?");
+      String command = strs.first;
+      Map<String, String> params = {};
+      if (strs.length > 1) {
+        List<String> paramsStrs = strs.last.split("&");
+        paramsStrs.forEach((str) {
+          params[str.split("=").first] = str.split("=").last;
+        });
+      }
+
+      switch (command) {
+        case "if://loginTerminal":
+          print("登录终端指令");
+          ScanCodeResultModel model = ScanCodeResultModel();
+          model.type = ScanCodeResultType.LOGIN_MACHINE;
+          model.data = {};
+          model.data["mid"] = params["mid"];
+          Navigator.pop(context);
+          AppRouter.navigateToScanCodeResultPage(context, model);
+          break;
+        case "if://activeTerminal":
+          print("激活终端指令");
+          break;
+        case "if://joinGroup":
+          print("加入群聊指令");
+          Map<String, dynamic> joinMap = await joinGroupChatUnrestricted(params["code"]);
+          // print("joinMap:"+joinMap.toString());
+          if (joinMap != null && joinMap["id"] != null) {
+            String name = "";
+            if (joinMap["modifiedName"] != null) {
+              name = joinMap["modifiedName"];
+            } else if (joinMap["name"] != null) {
+              name = joinMap["name"];
+            } else {
+              name = joinMap["id"].toString();
+            }
+            Navigator.of(context).pop();
+            jumpGroupPage(context, name, joinMap["id"]);
+          }
+          break;
+        case "if://userProfile":
+          int uid = int.parse(params["uid"]);
+          Navigator.of(context).pop();
+          AppRouter.navigateToMineDetail(context, uid);
+          break;
+        default:
+          ScanCodeResultModel model = ScanCodeResultModel();
+          model.type = ScanCodeResultType.CODE_INVALID;
+          Navigator.pop(context);
+          AppRouter.navigateToScanCodeResultPage(context, model);
+          break;
+      }
+    } else if (uri.startsWith("http://") || uri.startsWith("https://")) {
+      //网页 需要再细致区分处理 暂时先不处理
+      ScanCodeResultModel model = ScanCodeResultModel();
+      model.type = ScanCodeResultType.CODE_INVALID;
+      Navigator.pop(context);
+      AppRouter.navigateToScanCodeResultPage(context, model);
+    } else {
+      ScanCodeResultModel model = ScanCodeResultModel();
+      model.type = ScanCodeResultType.CODE_INVALID;
+      Navigator.pop(context);
+      AppRouter.navigateToScanCodeResultPage(context, model);
+    }
+  }
 }

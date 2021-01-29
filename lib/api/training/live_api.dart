@@ -123,9 +123,9 @@ Future<Map> bookLiveCourse({@required int courseId, @required String startTime, 
       params.clear();
       params.addAll(responseModel.data);
       params["code"]=CODE_SUCCESS;
-    }else if(responseModel.code==CODE_BOOK_LIVE_COURSE_ERROR){
+    }else if(responseModel.code==CODE_DATA_EXCEPTION){
       params.clear();
-      params["code"]=CODE_BOOK_LIVE_COURSE_ERROR;
+      params["code"]=CODE_DATA_EXCEPTION;
     }
     return params;
   } else {

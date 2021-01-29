@@ -27,6 +27,7 @@ Future openInputBottomSheet({
   @required BuildContext buildContext,
   @required VoidCallback voidCallback,
   String hintText,
+  bool isShowAt=true,
 }) async {
   await showModalBottomSheet(
       isScrollControlled: true,
@@ -42,6 +43,7 @@ Future openInputBottomSheet({
                 padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom), // !important
                 child: CommentInputBottomBar(
                   hintText: hintText,
+                  isShowAt: isShowAt,
                   voidCallback: voidCallback,
                   commentFocus: _commentFocus,
                 ),
@@ -51,9 +53,10 @@ Future openInputBottomSheet({
 }
 
 class CommentInputBottomBar extends StatefulWidget {
-  CommentInputBottomBar({Key key, this.voidCallback, this.hintText, this.commentFocus}) : super(key: key);
+  CommentInputBottomBar({Key key, this.voidCallback, this.hintText, this.commentFocus, this.isShowAt}) : super(key: key);
   final VoidCallback voidCallback;
   String hintText;
+  final bool isShowAt;
   final FocusNode commentFocus;
 
   @override
@@ -198,8 +201,11 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       rules: context.read<CommentEnterNotifier>().rules,
       // @回调
       triggerAtCallback: (String str) async {
-        context.read<CommentEnterNotifier>().openAtCallback(str);
-        isClickAtUser = false;
+        if (widget.isShowAt) {
+          context.read<CommentEnterNotifier>().openAtCallback(str);
+          isClickAtUser = false;
+        }
+        return "";
       },
       // 关闭@#视图回调
       shutDownCallback: () async {

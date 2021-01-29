@@ -197,10 +197,11 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
     if(blackStatus==true){
       _checkBlackStatus();
       if(widget.isFollow){
-        setState(() {
           isNoChange = false;
-        });
-
+          if(mounted){
+            setState(() {
+            });
+          }
       }
     }
   }
@@ -223,8 +224,10 @@ class _detailsMoreState extends State<ProfileDetailsMore>{
         }else{
           isBlack = false;
         }
-        setState(() {
-        });
+        if(mounted){
+          setState(() {
+          });
+        }
     }
   }
   ///举报

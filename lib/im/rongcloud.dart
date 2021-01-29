@@ -38,11 +38,9 @@ class RongCloud {
     if (_receiveManager == null) {
       _receiveManager = RongCloudReceiveManager.init(context);
 
-      RongIMClient.onMessageReceivedWrapper =
-          _receiveManager.onMessageReceivedWrapper;
+      RongIMClient.onMessageReceivedWrapper = _receiveManager.onMessageReceivedWrapper;
       RongIMClient.onMessageSend = _receiveManager.onMessageSend;
-      RongIMClient.onRecallMessageReceived =
-          _receiveManager.onRecallMessageReceived;
+      RongIMClient.onRecallMessageReceived = _receiveManager.onRecallMessageReceived;
     }
 
     return _receiveManager;
@@ -78,14 +76,12 @@ class RongCloud {
 
   //todo 现在没有加 每一秒只发送5条数据的限制
   Future<Message> sendGroupMessage(String targetId, MessageContent content) {
-    return RongIMClient.sendMessage(
-        RCConversationType.Group, targetId, content);
+    return RongIMClient.sendMessage(RCConversationType.Group, targetId, content);
   }
 
   //todo 现在没有加 每一秒只发送5条数据的限制
   Future<Message> sendPrivateMessage(String targetId, MessageContent content) {
-    return RongIMClient.sendMessage(
-        RCConversationType.Private, targetId, content);
+    return RongIMClient.sendMessage(RCConversationType.Private, targetId, content);
   }
 
   //todo 现在没有加 每一秒只发送5条数据的限制
@@ -111,17 +107,15 @@ class RongCloud {
   ///[afterCount] 指定消息的后部分消息数量
   ///
   ///[return] 获取到的消息列表
-  Future<List> getHistoryMessages(int conversationType, String targetId,
-      int sentTime, int beforeCount, int afterCount) async {
-    return await RongIMClient.getHistoryMessages(
-        conversationType, targetId, sentTime, beforeCount, afterCount);
+  Future<List> getHistoryMessages(
+      int conversationType, String targetId, int sentTime, int beforeCount, int afterCount) async {
+    return await RongIMClient.getHistoryMessages(conversationType, targetId, sentTime, beforeCount, afterCount);
   }
 
   /// 批量删除消息
   ///
   /// [messages] 需要删除的 messages List
-  void deleteMessageByIds(
-      List<Message> messages, Function(int code) finished) async {
+  void deleteMessageByIds(List<Message> messages, Function(int code) finished) async {
     List<int> messageIds = <int>[];
     if (messages == null || messages.length < 1) {
       return;
@@ -157,8 +151,7 @@ class RongCloud {
   }
 
   //更新消息
-  void updateMessage(
-      Map expansionDic, String messageUId, Function(int code) finished) {
+  void updateMessage(Map expansionDic, String messageUId, Function(int code) finished) {
     RongIMClient.updateMessageExpansion(expansionDic, messageUId, finished);
   }
 

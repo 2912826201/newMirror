@@ -11,6 +11,7 @@ import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
+import 'package:mirror/page/scan_code/scan_result_page.dart';
 import 'package:mirror/route/route_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
@@ -40,6 +41,7 @@ class AppRouter {
   static String pathOtherCompleteCourse = "/training/videocourselist/videodetail/pathOtherCompleteCoursePage";
   static String pathVideoCoursePlay = "/training/videocourseplay";
   static String pathScanCode = "/scancode";
+  static String pathScanCodeResult = "/scancode/result";
   static String pathMineDetails = "/minedetails";
   static String pathProfileDetails = "/profile/details";
   static String pathProfileDetailsMore = "/profile/details/more";
@@ -95,7 +97,8 @@ class AppRouter {
     router.define(pathLiveDetail, handler: handlerLiveDetail);
     router.define(pathVideoDetail, handler: handlerVideoDetail);
     router.define(pathScanCode, handler: handlerScanCode);
-    router.define(pathProfileDetails, handler: handlermineDetails);
+    router.define(pathScanCodeResult, handler: handlerScanCodeResult);
+    router.define(pathProfileDetails, handler: handlerMineDetails);
     router.define(pathVideoCourseList, handler: handlerVideoCourseList);
     router.define(pathVideoCoursePlay, handler: handlerVideoCoursePlay);
     router.define(pathProfileDetailsMore, handler: handlerProfileDetailMore);
@@ -224,7 +227,7 @@ class AppRouter {
   }
 
   static void navigateToLiveDetail(BuildContext context, int liveCourseId, {String heroTag,bool isHaveStartTime=true,
-    LiveVideoModel liveModel,CommentDtoModel commentDtoModel}) {
+    LiveVideoModel liveModel,CommentDtoModel commentDtoModel,CommentDtoModel fatherComment}) {
     Map<String, dynamic> map = Map();
     map["liveCourseId"] = liveCourseId;
     map["isHaveStartTime"] = isHaveStartTime;
@@ -235,7 +238,10 @@ class AppRouter {
       map["heroTag"] = heroTag;
     }
     if(commentDtoModel!=null){
-      map["commentDtoModel"] = commentDtoModel;
+      map["commentDtoModel"] = commentDtoModel.toJson();
+    }
+    if(fatherComment!=null){
+      map["fatherComment"] = fatherComment.toJson();
     }
     _navigateToPage(context, pathLiveDetail, map);
   }
@@ -261,6 +267,12 @@ class AppRouter {
 
   static void navigateToScanCodePage(BuildContext context) {
     _navigateToPage(context, pathScanCode, {});
+  }
+
+  static void navigateToScanCodeResultPage(BuildContext context, ScanCodeResultModel resultModel) {
+    Map<String, dynamic> map = Map();
+    map["resultModel"] = resultModel.toJson();
+    _navigateToPage(context, pathScanCodeResult, map);
   }
 
   static void navigateToProfileDetailMore(BuildContext context) {

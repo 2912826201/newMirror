@@ -47,17 +47,16 @@ import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/page/profile/vip/vip_open_page.dart';
 import 'package:mirror/page/rc_test_page.dart';
 import 'package:mirror/page/scan_code/scan_code_page.dart';
+import 'package:mirror/page/scan_code/scan_result_page.dart';
 import 'package:mirror/page/test_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_broadcast_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_detail_page.dart';
-import 'package:mirror/page/training/live_broadcast/live_detail_page2.dart';
 import 'package:mirror/page/training/machine/connection_info_page.dart';
 import 'package:mirror/page/training/machine/machine_setting_page.dart';
 import 'package:mirror/page/training/machine/remote_controller_page.dart';
 import 'package:mirror/page/training/video_course/other_complete_course_page.dart';
 import 'package:mirror/page/training/video_course/video_course_list_page.dart';
 import 'package:mirror/page/training/video_course/video_course_play_page.dart';
-import 'package:mirror/page/training/video_course/video_detail_page2.dart';
 import 'package:mirror/page/training/video_course/video_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -122,7 +121,7 @@ var handlerLike = Handler(handlerFunc: (BuildContext context, Map<String, List<S
   return Like();
 });
 
-var handlermineDetails = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+var handlerMineDetails = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return ProfileDetailPage(
     userId: data["userId"],
@@ -233,7 +232,8 @@ var handlerLiveDetail = Handler(handlerFunc: (BuildContext context, Map<String, 
     liveCourseId: data["liveCourseId"],
     isHaveStartTime: data["isHaveStartTime"],
     liveModel: liveModel,
-
+    commentDtoModel: data["commentDtoModel"]==null?null:CommentDtoModel.fromJson(data["commentDtoModel"]),
+    fatherComment: data["fatherComment"]==null?null:CommentDtoModel.fromJson(data["fatherComment"]),
   );
 });
 
@@ -319,6 +319,12 @@ var handlerMachineSetting = Handler(handlerFunc: (BuildContext context, Map<Stri
 //扫描二维码页
 var handlerScanCode = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return ScanCodePage();
+});
+
+//扫描二维码结果页
+var handlerScanCodeResult = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return ScanCodeResultPage(ScanCodeResultModel.fromJson(data["resultModel"]));
 });
 
 //健身相册页

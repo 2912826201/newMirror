@@ -38,7 +38,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
       return;
     }
     DataResponseModel model = await getPullList(type: type, size: 20, targetId: id, lastTime: followlastTime);
-    setState(() {
+
       if (followDataPage == 1) {
         followModel.clear();
         _followListId.clear();
@@ -65,7 +65,10 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
       } else {
         _refreshController.loadNoData();
       }
-    });
+      if(mounted){
+        setState(() {
+        });
+      }
     followlastTime = model.lastTime;
     context.read<FeedMapNotifier>().updateFeedMap(followModel);
   }

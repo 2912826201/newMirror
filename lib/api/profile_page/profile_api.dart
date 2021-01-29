@@ -51,6 +51,9 @@ const String SEARCH_USER = "/appuser/web/user/searchUser";
 ///关注列表
 const String FOLLOW_LIST = "/appuser/web/user/follow/QueryFollowingList";
 
+///查询用户关系
+const String RELATION = "/appuser/web/user/follow/relation";
+
 ///好友列表--互相关注列表
 const String FOLLOW_BOTH_LIST = "/appuser/web/user/follow/queryBothFollowList";
 
@@ -416,6 +419,19 @@ Future<QueryListModel> queryMsgList(int type,int size ,int lastTime) async {
     return model;
   } else {
     print('用户通知消息接口请求失败============================================');
+    return null;
+  }
+}
+
+//查询用户关系
+Future<Map> relation(int uid,int targetId) async {
+  Map<String, dynamic> map = Map();
+  map["uid"] = uid;
+  map["targetId"] = targetId;
+  BaseResponseModel responseModel = await requestApi(RELATION, map);
+  if (responseModel.isSuccess) {
+    return responseModel.data;
+  } else {
     return null;
   }
 }

@@ -49,7 +49,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
       return;
     }
     QueryListModel model = await queryMsgList(type, 20, lastTime);
-    setState(() {
+
       if (listPage == 1) {
         if (model.list != null) {
           haveData = true;
@@ -75,7 +75,9 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
           controller.loadNoData();
         }
       }
-    });
+      if(mounted) {
+        setState(() {});
+      }
     print('msglist.length========================${msgList.length}');
   }
 
@@ -226,6 +228,8 @@ class InteractiveNoticeItemState extends StatelessWidget {
   String senderAvatarUrl;
   int index;
   CommentDtoModel fatherCommentModel;
+  HomeFeedModel feedModel;
+  LiveVideoModel liveVideoModel;
   List<AtUsersModel> atUserList = [];
   String coverImage;
   bool feedIsDelete = false;
@@ -252,12 +256,13 @@ class InteractiveNoticeItemState extends StatelessWidget {
     if(msgModel.refData==null){
       feedIsDelete = true;
     }
-   if(msgModel.refType == 2){
+    if(msgModel.refType==0){
+      feedModel = HomeFeedModel.fromJson(msgModel.refData);
+    } else if(msgModel.refType == 2){
      fatherCommentModel = CommentDtoModel.fromJson(msgModel.refData);
-     print('=====type====================${msgModel.refType}');
-     print('=====id====================${fatherCommentModel.targetId}');
-
-   }
+   }else if(msgModel.refType==1||msgModel.refType==3){
+      liveVideoModel = LiveVideoModel.fromJson(msgModel.refData);
+    }
   }
 
   List<BaseRichText> _atText(BuildContext context) {
@@ -279,8 +284,10 @@ class InteractiveNoticeItemState extends StatelessWidget {
     print('-====================消息互动列表页Item  biuld');
     senderAvatarUrl = msgModel.senderAvatarUrl;
     senderName = msgModel.senderName;
-    msgModel.commentData.name = senderName;
-    msgModel.commentData.replyName = context.watch<ProfileNotifier>().profile.nickName;
+    if(type==0){
+      msgModel.commentData.name = senderName;
+      msgModel.commentData.replyName = context.watch<ProfileNotifier>().profile.nickName;
+    }
     coverImage = msgModel.coverUrl;
     _getRefData(context);
     if (type == 0) {
@@ -305,7 +312,11 @@ class InteractiveNoticeItemState extends StatelessWidget {
       padding: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
       child: Row(
         children: [
-          Container(
+          InkWell(
+            onTap: (){
+              AppRouter.navigateToMineDetail(context, msgModel.senderId);
+            },
+            child: Container(
               alignment: Alignment.topLeft,
               child: Stack(
                 children: [
@@ -336,9 +347,13 @@ class InteractiveNoticeItemState extends StatelessWidget {
                         )
                       : Container()
                 ],
-              )),
+              )),),
           Spacer(),
-          Container(
+          InkWell(
+            onTap: (){
+              _jumpToDetailPage(context);
+            },
+            child: Container(
             alignment: Alignment.centerLeft,
             width: ScreenUtil.instance.screenWidthDp * 0.64,
             child: Column(
@@ -378,31 +393,13 @@ class InteractiveNoticeItemState extends StatelessWidget {
                 )
               ],
             ),
-          ),
+          ),),
           Spacer(),
           !feedIsDelete
               ? InkWell(
                   onTap: () {
-                    print('========================点击了');
-                    print('===============================${fatherCommentModel.targetId}');
-                    if (msgModel.refType == 0) {
-                      print('=====================动态');
-                          getFeedDetail(context, int.parse(msgModel.refId), comment:type==0?msgModel.commentData:null);
-                      }else if(msgModel.refType == 2){
-                          if(fatherCommentModel.type==0){
-                            getFeedDetail(context, fatherCommentModel.targetId, comment: type==0?msgModel.commentData:null);
-                          }else if(fatherCommentModel.type==1){
-                        AppRouter.navigateToLiveDetail(context, fatherCommentModel.targetId,isHaveStartTime: false);
-                          }else if(fatherCommentModel.type==3){
-                            AppRouter.navigateToVideoDetail(context, fatherCommentModel.targetId,commentDtoModel:
-                            msgModel.commentData,fatherComment: fatherCommentModel);
-                          }
-                      }else if(msgModel.refType==1){
-                        AppRouter.navigateToLiveDetail(context, int.parse(msgModel.refId),isHaveStartTime: false);
-                      }else{
-                        AppRouter.navigateToVideoDetail(context, int.parse(msgModel.refId),commentDtoModel:
-                        msgModel.commentData);
-                      }
+                    print('========================点击了${msgModel.refId}');
+                   _jumpToDetailPage(context);
                   },
                   child: Container(
                     alignment: Alignment.topRight,
@@ -441,6 +438,29 @@ class InteractiveNoticeItemState extends StatelessWidget {
     );
   }
 
+    //跳转判断
+  _jumpToDetailPage(BuildContext context){
+    if (msgModel.refType == 0) {
+      print('=====================动态');
+      getFeedDetail(context,feedModel.id, comment:type==0?msgModel.commentData:null);
+    }else if(msgModel.refType == 2){
+      if(fatherCommentModel.type==0){
+        getFeedDetail(context, fatherCommentModel.targetId, comment: type==0?msgModel.commentData:null);
+      }else if(fatherCommentModel.type==1){
+        AppRouter.navigateToLiveDetail(context, fatherCommentModel.targetId,isHaveStartTime: false,commentDtoModel:
+        type==0?msgModel.commentData:null,fatherComment: fatherCommentModel);
+      }else if(fatherCommentModel.type==3){
+        AppRouter.navigateToVideoDetail(context, fatherCommentModel.targetId,commentDtoModel:
+        type==0?msgModel.commentData:null,fatherComment: fatherCommentModel);
+      }
+    }else if(msgModel.refType==1){
+      AppRouter.navigateToLiveDetail(context, liveVideoModel.id,isHaveStartTime: false,commentDtoModel:
+      msgModel.commentData);
+    }else{
+      AppRouter.navigateToVideoDetail(context, liveVideoModel.id,commentDtoModel:
+      msgModel.commentData);
+    }
+  }
   getFeedDetail(BuildContext context, int feedId, {CommentDtoModel comment}) async {
     HomeFeedModel feedModel = await feedDetail(id: feedId);
     List<HomeFeedModel> list = [];

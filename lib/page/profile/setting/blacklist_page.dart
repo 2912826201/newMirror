@@ -34,8 +34,11 @@ class _BlackListState extends State<BlackListPage>{
         print('黑名單頭像--------------------------${element.avatarUri}');
       });
     }
-    setState(() {
-    });
+    if(mounted){
+      setState(() {
+      });
+    }
+
   }
   @override
   void initState() {
