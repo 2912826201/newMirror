@@ -594,11 +594,22 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                           Positioned(
                               right: 16,
                               bottom: 6,
+                            child: GestureDetector(
+                                onTap: () {
+                                  isClickAtUser = true;
+                                  // 输入的文字
+                                 String text = _textEditingController.text;
+                                  // 获取光标位置
+                                  int cursorIndex = _textEditingController.selection.baseOffset;
+                                  _textEditingController.text = text.substring(0,cursorIndex) + "@" + text.substring(cursorIndex,text.length);
+                                  context.read<CommentEnterNotifier>().getAtCursorIndex(cursorIndex + 1);
+                                  context.read<CommentEnterNotifier>().openAtCallback("@");
+                                },
                               child: Container(
                                 width: 24,
                                 height: 24,
                                 color: Colors.redAccent,
-                              )),
+                              ))),
                           // MyIconBtn()
                         ],
                       ),
