@@ -43,16 +43,17 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   double weight;
   int albumNum;
   UserModel userModel;
+
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
-
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
   }
+
   @override
   void initState() {
     super.initState();
@@ -62,7 +63,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   getProfileModel() async {
     ProfileModel attentionModel = await ProfileFollowCount();
     UserExtraInfoModel extraInfoModel = await ProfileGetExtraInfo();
-     userModel = await getUserInfo();
+    userModel = await getUserInfo();
     print('resultModel============================${attentionModel == null}');
     if (attentionModel != null || extraInfoModel != null) {
       print('uid========================${attentionModel.uid}'
@@ -117,25 +118,28 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                       width: width * 0.27,
                       alignment: Alignment.centerLeft,
                       child: Text(
-                      "训练计划",
-                      style: AppStyle.textRegular12,
-                    ),),
-                    Expanded(child: Container()),
-                 Container(
-                   width: width * 0.27,
-                   alignment: Alignment.centerLeft,
-                   child:Text(
-                      "体重记录",
-                      style: AppStyle.textRegular12,
-                    ) ,),
+                        "训练计划",
+                        style: AppStyle.textRegular12,
+                      ),
+                    ),
                     Expanded(child: Container()),
                     Container(
                       width: width * 0.27,
                       alignment: Alignment.centerLeft,
-                      child:Text(
-                      "健身相册",
-                      style: AppStyle.textRegular12,
-                    ) ,),
+                      child: Text(
+                        "体重记录",
+                        style: AppStyle.textRegular12,
+                      ),
+                    ),
+                    Expanded(child: Container()),
+                    Container(
+                      width: width * 0.27,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "健身相册",
+                        style: AppStyle.textRegular12,
+                      ),
+                    ),
                   ],
                 ),
                 SizedBox(
@@ -145,7 +149,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   children: [
                     _secondData(Icons.access_alarms_sharp, trainingSeconds, "训练记录", height, width),
                     Expanded(child: Container()),
-                    _secondData(Icons.access_alarms_sharp, weight ,"体重记录", height, width),
+                    _secondData(Icons.access_alarms_sharp, weight, "体重记录", height, width),
                     Expanded(child: Container()),
                     _secondData(Icons.access_alarms_sharp, albumNum, "健身相册", height, width),
                   ],
@@ -223,16 +227,15 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
           child: Row(
         children: [
           InkWell(
-              onTap: () async {
-                AppRouter.navigateToScanCodePage(context);
-              },
-              child: Container(
-                height: 20,
-                width: 20,
-                child: Icon(Icons.settings_overscan),
-              ),
+            onTap: () async {
+              AppRouter.navigateToScanCodePage(context);
+            },
+            child: Container(
+              height: 20,
+              width: 20,
+              child: Icon(Icons.settings_overscan),
             ),
-
+          ),
           Expanded(child: SizedBox()),
           InkWell(
             onTap: () {
@@ -294,10 +297,9 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             Positioned(
                 left: width * 0.38,
                 bottom: 0,
-                child: Row(
-                  children: [
+                child: Row(children: [
                   InkWell(
-                    child: _TextAndNumber("关注",StringUtil.getNumber(followingCount)),
+                    child: _TextAndNumber("关注", StringUtil.getNumber(followingCount)),
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                         return QueryFollowList(
@@ -337,7 +339,12 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       height: height * 0.11,
       child: InkWell(
           onTap: () {
-            Navigator.push(context, ScaleRouter(child: ProfileDetailPage(userId: uid,)));
+            Navigator.push(
+                context,
+                ScaleRouter(
+                    child: ProfileDetailPage(
+                  userId: uid,
+                )));
             /*
             Navigator.of(context).push(MaterialPageRoute(builder: (context) {
               ///这里传type来告知详情页该怎么展示
@@ -350,24 +357,24 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
             children: [
               Selector<ProfileNotifier, String>(builder: (context, avatar, child) {
                 print("头像地址:$avatar");
-                return  Hero(
-                  tag: "我的头像",
-                  child: ClipOval(
-                  child: CachedNetworkImage(
-                    height: height * 0.11,
-                    width: height * 0.11,
-                    imageUrl: avatar == null ? "" : avatar,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Image.asset(
-                      "images/test.png",
-                      fit: BoxFit.cover,
-                    ),
-                    errorWidget: (context, url, error) => Image.asset(
-                      "images/test.png",
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ));
+                return Hero(
+                    tag: "我的头像",
+                    child: ClipOval(
+                      child: CachedNetworkImage(
+                        height: height * 0.11,
+                        width: height * 0.11,
+                        imageUrl: avatar == null ? "" : avatar,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Image.asset(
+                          "images/test.png",
+                          fit: BoxFit.cover,
+                        ),
+                        errorWidget: (context, url, error) => Image.asset(
+                          "images/test.png",
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ));
               }, selector: (context, notifier) {
                 return notifier.profile.avatarUri;
               }),
@@ -407,6 +414,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       ],
     );
   }
+
   ///这里是训练计划，体重记录，健身相册的
   ///                这是中间的图标| 这是数值   |这是title
   Widget _secondData(IconData icon, number, String text, double height, double width) {
@@ -457,9 +465,11 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       AppRouter.navigateToTrainingGalleryPage(context);
     } else if ("我的课程" == title) {
       AppRouter.navigateToMeCoursePage(context);
-    } else if("我的订单"== title){
+    } else if ("我的订单" == title) {
       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-        return ScanResultPage(type: ScanResultType.CODE_INVALID,);
+        ScanCodeResultModel model = ScanCodeResultModel();
+        model.type = ScanCodeResultType.CODE_INVALID;
+        return ScanCodeResultPage(model);
       }));
       /*if(userModel.isVip==0){
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
@@ -473,36 +483,45 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     }
   }
 }
+
 class Top2BottomRouter<T> extends PageRouteBuilder<T> {
   final Widget child;
   final int duration_ms;
   final Curve curve;
-  Top2BottomRouter({this.child,this.duration_ms=500,this.curve=Curves.fastOutSlowIn})
-    :super(
-    transitionDuration:Duration(milliseconds: duration_ms),
-    pageBuilder:(ctx,a1,a2){return child;},
-    transitionsBuilder:(ctx,a1,a2,Widget child,) {
-      return SlideTransition(
-        position: Tween<Offset>(
-          begin: Offset(0.0,-1.0), end: Offset(0.0, 0.0),).animate(
-          CurvedAnimation(parent: a1, curve: curve)),
-        child:  child
-      );
-    });
+
+  Top2BottomRouter({this.child, this.duration_ms = 500, this.curve = Curves.fastOutSlowIn})
+      : super(
+            transitionDuration: Duration(milliseconds: duration_ms),
+            pageBuilder: (ctx, a1, a2) {
+              return child;
+            },
+            transitionsBuilder: (
+              ctx,
+              a1,
+              a2,
+              Widget child,
+            ) {
+              return SlideTransition(
+                  position: Tween<Offset>(
+                    begin: Offset(0.0, -1.0),
+                    end: Offset(0.0, 0.0),
+                  ).animate(CurvedAnimation(parent: a1, curve: curve)),
+                  child: child);
+            });
 }
+
 class ScaleRouter<T> extends PageRouteBuilder<T> {
   final Widget child;
   final int duration_ms;
   final Curve curve;
-  ScaleRouter({this.child, this.duration_ms = 500,this.curve=Curves.fastOutSlowIn})
-    : super(
-    pageBuilder: (context, animation, secondaryAnimation) => child,
-    transitionDuration: Duration(milliseconds: duration_ms),
-    transitionsBuilder: (context, a1, a2, child) =>
-      ScaleTransition(
-        scale: Tween(begin: 0.0, end: 1.0).animate(
-          CurvedAnimation(parent: a1, curve: curve)),
-        child: child,
-      ),
-  );
+
+  ScaleRouter({this.child, this.duration_ms = 500, this.curve = Curves.fastOutSlowIn})
+      : super(
+          pageBuilder: (context, animation, secondaryAnimation) => child,
+          transitionDuration: Duration(milliseconds: duration_ms),
+          transitionsBuilder: (context, a1, a2, child) => ScaleTransition(
+            scale: Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: a1, curve: curve)),
+            child: child,
+          ),
+        );
 }
