@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 class RongCloudReceiveManager {
   BuildContext _context;
   static RongCloudReceiveManager _manager;
+  List<Message> _receivedMsgList = [];
 
   static RongCloudReceiveManager init(BuildContext context) {
     if (_manager == null) {
@@ -31,15 +32,17 @@ class RongCloudReceiveManager {
       return;
     }
 
-    MessageManager.updateConversationByMessage(_context, msg);
     MessageManager.judgeIsHaveAtUserMes(msg);
 
-    switch (offline) {
-      case true:
-      // _processOffLineRawMsg(msg, left, hasPackage);
-        break;
-      default:
-      // _processCurrentRawMsg(msg,left);
+    //存在list中
+    _manager._receivedMsgList.add(msg);
+
+    //当剩余消息量为0时 统一进行处理
+    if (left == 0) {
+      List<Message> list = [];
+      list.addAll(_manager._receivedMsgList);
+      _manager._receivedMsgList.clear();
+      MessageManager.updateConversationByMessageList(_context, list);
     }
   }
 

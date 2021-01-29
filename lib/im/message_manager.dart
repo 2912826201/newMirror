@@ -31,6 +31,13 @@ class MessageManager {
     context.read<ConversationNotifier>().insertCommonList(commonConversationList);
   }
 
+  static updateConversationByMessageList(BuildContext context, List<Message> msgList) async {
+    //TODO 需要对list进行一次处理 各会话只保留最新的一条 但需要计算未读数
+    for(Message msg in msgList) {
+      await updateConversationByMessage(context, msg);
+    }
+  }
+
   //TODO 这里应该解析转一下格式 暂时先用融云原数据 先处理数据库再更新通知器
   static updateConversationByMessage(BuildContext context, Message msg) async {
     ConversationDto dto = _convertMsgToConversation(msg);
