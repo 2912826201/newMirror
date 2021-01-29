@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
@@ -19,6 +20,7 @@ import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/media_picker/preview_photo_page.dart';
 import 'package:mirror/page/media_picker/preview_video_page.dart';
 import 'package:mirror/page/message/chat_page.dart';
+import 'package:mirror/page/message/more_page/group_qrcode_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/login_success_page.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_introduction.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_name.dart';
@@ -231,6 +233,7 @@ var handlerLiveDetail = Handler(handlerFunc: (BuildContext context, Map<String, 
     liveCourseId: data["liveCourseId"],
     isHaveStartTime: data["isHaveStartTime"],
     liveModel: liveModel,
+
   );
 });
 
@@ -245,6 +248,8 @@ var handlerVideoDetail = Handler(handlerFunc: (BuildContext context, Map<String,
     heroTag: data["heroTag"] == null ? "" : data["heroTag"],
     liveCourseId: data["videoCourseId"],
     videoModel: videoModel,
+    commentDtoModel: data["commentDtoModel"]==null?null:CommentDtoModel.fromJson(data["commentDtoModel"]),
+    fatherComment: data["fatherComment"]==null?null:CommentDtoModel.fromJson(data["fatherComment"]),
   );
 });
 
@@ -288,6 +293,12 @@ var handlerChatPage = Handler(handlerFunc: (BuildContext context, Map<String, Li
   Message shareMessage = Application.shareMessage;
   Application.shareMessage = null;
   return ChatPage(conversation: conversation, shareMessage: shareMessage);
+});
+
+//群聊二维码界面
+var handlerGroupQrCodePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return GroupQrCodePage(imageUrl:  data["imageUrl"], name: data["name"],groupId: data["groupId"]);
 });
 
 //机器遥控界面

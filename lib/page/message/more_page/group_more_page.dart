@@ -108,7 +108,7 @@ class GroupMorePageState extends State<GroupMorePage> {
             ),
           ),
           getContainer(),
-          getListItem(text: "群聊名称", subtitle: groupName ?? widget.groupName),
+          getListItem(text: "群聊名称", subtitle: groupName ?? "未命名"),
           getListItem(text: "群聊二维码", isRightIcon: true),
           getContainer(height: 12, horizontal: 0),
           getListItem(
@@ -400,7 +400,7 @@ class GroupMorePageState extends State<GroupMorePage> {
       if (model != null && model["list"] != null) {
         model["list"].forEach((v) {
           groupInformationMap = v;
-          groupName = groupInformationMap["name"];
+          groupName = groupInformationMap["modifiedName"];
         });
         await getConversationNotificationStatus();
       }
@@ -521,7 +521,7 @@ class GroupMorePageState extends State<GroupMorePage> {
           type: 3,
           groupChatId: int.parse(widget.chatGroupId),
           voidCallback: (name, userId, type, context) {
-            if(type==CODE_INVITE_JOIN_NO_FRIEND){
+            if(name!="邀请成功"&&name!="邀请失败"){
               if (widget.listener != null) {
                 widget.listener(3,name);
               }
@@ -682,6 +682,17 @@ class GroupMorePageState extends State<GroupMorePage> {
             return true;
           }));
       // ToastShow.show(msg: "点击了：$title", context: context);
+    } else if (title == "群聊二维码") {
+      if(groupInformationMap==null){
+        ToastShow.show(msg: "获取群聊信息失败", context: context);
+      }else{
+        AppRouter.navigateToGroupQrCodePage(
+            context: context,
+            imageUrl: groupInformationMap["coverUrl"],
+            name: groupInformationMap["name"],
+            groupId: groupInformationMap["id"].toString(),
+        );
+      }
     } else {
       ToastShow.show(msg: "点击了：$title", context: context);
     }

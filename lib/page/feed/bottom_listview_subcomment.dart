@@ -30,7 +30,6 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
     // TODO: implement dispose
     super.dispose();
     print('=========================ziitem dispos');
-    widget.commentDtoModel.replys.clear();
   }
   @override
   // 初始化赋值
@@ -74,18 +73,17 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
       loadData() async {
     pageCount += 1;
     print('=====================子评论加载数据');
-    /*if(widget.comment!=null){
-      if(widget.type==1){
-      if(widget.commentDtoModel.isClickHideButton&&pageCount==1){
+    if(widget.comment!=null){
+      if(widget.type==1&&pageCount==1&&widget.commentDtoModel.isClickHideButton){
         if(widget.commentDtoModel.id==widget.comment.targetId){
           widget.replys.insert(0, context.read<FeedMapNotifier>().childModel);
           widget.commentDtoModel.initCount -=1;
         }
-      }
     }
-      }*/
+      }
     // 总条数大于三每次点击取三条
     if (widget.commentDtoModel.initCount > 4) {
+      print('==========================总条数大于4');
       Map<String, dynamic> model =
       await queryListByHot2(targetId: widget.commentDtoModel.id, targetType: 2, page: this.pageCount, size: 4);
       if (model["list"] != null) {
@@ -104,6 +102,7 @@ class BottomListViewSubCommentState extends State<BottomListViewSubComment> {
       }
     } else {
       // 总条数不足三条把剩下条数取完，切换按钮
+      print('==========================总条数小于4');
       if (widget.commentDtoModel.initCount > 0) {
         Map<String, dynamic> model = await queryListByHot2(
           targetId: widget.commentDtoModel.id,

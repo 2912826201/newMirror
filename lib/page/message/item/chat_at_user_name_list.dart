@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/data/model/message/chat_enter_notifier.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/page/message/message_view/currency_msg.dart';
@@ -44,14 +45,7 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
             ),
           ),
           onTap: () {
-            print("取消弹窗");
-            ToastShow.show(msg: "取消弹窗", context: context);
-          },
-          onTapDown: (v) {
-            print("取消弹窗");
-          },
-          onTapUp: (v) {
-            print("取消弹窗");
+            context.read<ChatEnterNotifier>().openAtCallback("");
           },
         ),
       );
@@ -62,20 +56,25 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
 
   //动画部分
   Widget getAnimatedContainer() {
-    return AnimatedContainer(
-      height: widget.isShow ? 5 * 48.0 : 0.0,
-      duration: Duration(milliseconds: 300),
-      child: Container(
-        height: 5 * 48.0,
-        width: MediaQuery.of(context).size.width,
-        padding: const EdgeInsets.only(top: 10),
-        decoration: BoxDecoration(
-          color: AppColor.white,
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(6), topRight: Radius.circular(6)),
-        ),
-        child: listViewUi(),
-      ),
+    return Consumer<GroupUserProfileNotifier>(
+        builder: (context, notifier, child) {
+          int count=context.watch<GroupUserProfileNotifier>().getSearchUserModelList().length;
+          return AnimatedContainer(
+            height: widget.isShow ? (count<2?2:count>5?5:count)*48.0 : 0.0,
+            duration: Duration(milliseconds: 300),
+            child: Container(
+              height: (count<2?2:count>5?5:count)*48.0,
+              width: MediaQuery.of(context).size.width,
+              padding: const EdgeInsets.only(top: 10),
+              decoration: BoxDecoration(
+                color: AppColor.white,
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(6), topRight: Radius.circular(6)),
+              ),
+              child: listViewUi(),
+            ),
+          );
+        },
     );
   }
 
@@ -86,9 +85,9 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
         if (context.watch<GroupUserProfileNotifier>().loadingStatus == LoadingStatus.STATUS_COMPLETED) {
           return ListView.builder(
             physics: BouncingScrollPhysics(),
-            itemCount: context.watch<GroupUserProfileNotifier>().chatGroupUserModelList.length,
+            itemCount: context.watch<GroupUserProfileNotifier>().getSearchUserModelList().length,
             itemBuilder: (context, index) {
-              return item(context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[index], index);
+              return item(context.watch<GroupUserProfileNotifier>().getSearchUserModelList()[index], index);
             },
           );
         } else if (context.watch<GroupUserProfileNotifier>().len >= 0) {

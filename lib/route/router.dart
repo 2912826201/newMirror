@@ -6,6 +6,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 
 import 'package:mirror/data/dto/profile_dto.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
@@ -45,7 +46,8 @@ class AppRouter {
   static String pathEditInformation = "/profile/editinformation";
   static String pathEditInformationName = "/profile/editinformation/name";
   static String pathEditInformationIntroduction = "/profile/editinformation/introduction";
-  static String pathChatPage = "/chatPage";
+  static String pathChatPage = "/profile/chatPage";
+  static String pathGroupQrCodePage = "/profile/chatPage/groupMorePage/groupQrCodePage";
   static String pathSettingHomePage = "/profile/settinghomepage";
   static String pathSettingFeedBack = "/profile/settingfeedback";
   static String pathSettingBlackList = "/profile/settingblacklist";
@@ -86,6 +88,7 @@ class AppRouter {
     router.define(pathPerfectUserPage, handler: handlerPerfectUserPage);
     router.define(pathLoginSucess, handler: handlerLoginSucessPagePage);
     router.define(pathChatPage, handler: handlerChatPage);
+    router.define(pathGroupQrCodePage, handler: handlerGroupQrCodePage);
     router.define(pathPreviewPhoto, handler: handlerPreviewPhoto);
     router.define(pathPreviewVideo, handler: handlerPreviewVideo);
     router.define(pathLiveBroadcast, handler: handlerLiveBroadcast);
@@ -220,7 +223,8 @@ class AppRouter {
     _navigateToPage(context, pathVideoCoursePlay, map);
   }
 
-  static void navigateToLiveDetail(BuildContext context, int liveCourseId, {String heroTag,bool isHaveStartTime=true, LiveVideoModel liveModel}) {
+  static void navigateToLiveDetail(BuildContext context, int liveCourseId, {String heroTag,bool isHaveStartTime=true,
+    LiveVideoModel liveModel,CommentDtoModel commentDtoModel}) {
     Map<String, dynamic> map = Map();
     map["liveCourseId"] = liveCourseId;
     map["isHaveStartTime"] = isHaveStartTime;
@@ -230,11 +234,14 @@ class AppRouter {
     if (heroTag != null) {
       map["heroTag"] = heroTag;
     }
+    if(commentDtoModel!=null){
+      map["commentDtoModel"] = commentDtoModel;
+    }
     _navigateToPage(context, pathLiveDetail, map);
   }
 
   static void navigateToVideoDetail(BuildContext context, int liveCourseId,
-      {String heroTag, LiveVideoModel videoModel}) {
+      {String heroTag, LiveVideoModel videoModel,CommentDtoModel commentDtoModel,CommentDtoModel fatherComment}) {
     Map<String, dynamic> map = Map();
     map["videoCourseId"] = liveCourseId;
     if (videoModel != null) {
@@ -242,6 +249,12 @@ class AppRouter {
     }
     if (heroTag != null) {
       map["heroTag"] = heroTag;
+    }
+    if(commentDtoModel!=null){
+      map["commentDtoModel"] = commentDtoModel.toJson();
+    }
+    if(fatherComment!=null){
+      map["fatherComment"] = fatherComment.toJson();
     }
     _navigateToPage(context, pathVideoDetail, map);
   }
@@ -345,6 +358,15 @@ class AppRouter {
     }
     Application.shareMessage = shareMessage;
     _navigateToPage(context, pathChatPage, map);
+  }
+
+  static void navigateToGroupQrCodePage(
+      {@required BuildContext context, @required String imageUrl,@required String name,@required String groupId}) {
+    Map<String, dynamic> map = Map();
+    map["imageUrl"] = imageUrl;
+    map["name"] = name;
+    map["groupId"] = groupId;
+    _navigateToPage(context, pathGroupQrCodePage, map);
   }
 
   static void navigateToPreviewPhotoPage(BuildContext context, String filePath, Function(dynamic result) callback,

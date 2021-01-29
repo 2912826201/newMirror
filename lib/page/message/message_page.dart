@@ -25,7 +25,7 @@ import 'package:notification_permissions/notification_permissions.dart';
 import 'package:provider/provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:connectivity/connectivity.dart';
-import 'package:system_setting/system_setting.dart';
+import 'package:app_settings/app_settings.dart';
 import 'message_chat_page_manager.dart';
 
 /// message_page
@@ -56,7 +56,8 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     WidgetsBinding.instance.addObserver(this);
     _checkNotificationPermission();
     _initConnectivity();
-    _getUnreadMsgCount();
+    // 已在点击tab按钮时请求
+    // _getUnreadMsgCount();
   }
 
   //获取系统通知状态
@@ -114,12 +115,6 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
   //获取未读互动通知数
   _getUnreadMsgCount() async {
     Unreads model = await getUnReads();
-    if (model != null) {
-      print('comment============================${model.comment}');
-      print('laud============================${model.laud}');
-      print('at============================${model.at}');
-      context.read<UnreadMessageNotifier>().changeUnreadMsg(comments: model.comment, ats: model.at, lauds: model.laud);
-    }
   }
 
   @override
@@ -142,20 +137,14 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     print("消息列表页build");
     super.build(context);
     _listLength =
-        context
-            .watch<ConversationNotifier>()
-            .topListLength + context
-            .watch<ConversationNotifier>()
-            .commonListLength;
+        context.watch<ConversationNotifier>().topListLength + context.watch<ConversationNotifier>().commonListLength;
     return Scaffold(
       appBar: AppBar(
         leading: null,
         backgroundColor: AppColor.white,
         brightness: Brightness.light,
         title: Text(
-          "消息（${context
-              .watch<RongCloudStatusNotifier>()
-              .status}）",
+          "消息${context.watch<RongCloudStatusNotifier>().statusString}",
           style: AppStyle.textMedium18,
         ),
         centerTitle: true,
@@ -312,8 +301,8 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                         type == 0
                             ? notifier.comment
                             : type == 1
-                            ? notifier.at
-                            : notifier.laud,
+                                ? notifier.at
+                                : notifier.laud,
                         false)),
               ],
             ),
@@ -325,8 +314,8 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
             type == 0
                 ? "评论"
                 : type == 1
-                ? "@我"
-                : "点赞",
+                    ? "@我"
+                    : "点赞",
             style: AppStyle.textRegular16,
           )
         ],
@@ -340,7 +329,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     } else {
       return GestureDetector(
         onTap: () {
-          SystemSetting.goto(SettingTarget.NOTIFICATION);
+          AppSettings.openNotificationSettings();
         },
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
@@ -357,28 +346,28 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     return _listLength > 0
         ? Container()
         : Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        SizedBox(
-          height: 28,
-        ),
-        Container(
-          width: 224,
-          height: 224,
-          color: AppColor.mainBlue,
-        ),
-        SizedBox(
-          height: 16,
-        ),
-        Text(
-          "这里空空如也，去推荐看看吧",
-          style: AppStyle.textSecondaryRegular14,
-        ),
-        SizedBox(
-          height: 28,
-        ),
-      ],
-    );
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 28,
+              ),
+              Container(
+                width: 224,
+                height: 224,
+                color: AppColor.mainBlue,
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                "这里空空如也，去推荐看看吧",
+                style: AppStyle.textSecondaryRegular14,
+              ),
+              SizedBox(
+                height: 28,
+              ),
+            ],
+          );
   }
 
   Widget _buildConversationItem(int index, ConversationDto conversation) {
@@ -430,87 +419,81 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
               children: [
                 avatarList.length == 1
                     ? ClipOval(
-                  child: CachedNetworkImage(
-                    height: 45,
-                    width: 45,
-                    imageUrl: avatarList.first,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) =>
-                        Image.asset(
-                          "images/test.png",
+                        child: CachedNetworkImage(
+                          height: 45,
+                          width: 45,
+                          imageUrl: avatarList.first,
                           fit: BoxFit.cover,
+                          placeholder: (context, url) => Image.asset(
+                            "images/test.png",
+                            fit: BoxFit.cover,
+                          ),
+                          errorWidget: (context, url, error) => Image.asset(
+                            "images/test.png",
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                    errorWidget: (context, url, error) =>
-                        Image.asset(
-                          "images/test.png",
-                          fit: BoxFit.cover,
-                        ),
-                  ),
-                )
+                      )
                     : avatarList.length > 1
-                    ? Positioned(
-                    top: 0,
-                    right: 0,
-                    child: ClipOval(
-                      child: CachedNetworkImage(
-                        height: 28,
-                        width: 28,
-                        imageUrl: avatarList.first,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) =>
-                            Image.asset(
-                              "images/test.png",
-                              fit: BoxFit.cover,
-                            ),
-                        errorWidget: (context, url, error) =>
-                            Image.asset(
-                              "images/test.png",
-                              fit: BoxFit.cover,
-                            ),
-                      ),
-                    ))
-                    : Container(),
+                        ? Positioned(
+                            top: 0,
+                            right: 0,
+                            child: ClipOval(
+                              child: CachedNetworkImage(
+                                height: 28,
+                                width: 28,
+                                imageUrl: avatarList.first,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) => Image.asset(
+                                  "images/test.png",
+                                  fit: BoxFit.cover,
+                                ),
+                                errorWidget: (context, url, error) => Image.asset(
+                                  "images/test.png",
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ))
+                        : Container(),
                 avatarList.length > 1
                     ? Positioned(
-                  bottom: 0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        //这里的边框颜色需要随背景变化
-                        border: Border.all(
-                            width: 3, color: conversation.isTop == 1 ? AppColor.textHint : AppColor.white)),
-                    child: ClipOval(
-                      child: CachedNetworkImage(
-                        height: 28,
-                        width: 28,
-                        imageUrl: avatarList[1],
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) =>
-                            Image.asset(
-                              "images/test.png",
+                        bottom: 0,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              //这里的边框颜色需要随背景变化
+                              border: Border.all(
+                                  width: 3, color: conversation.isTop == 1 ? AppColor.textHint : AppColor.white)),
+                          child: ClipOval(
+                            child: CachedNetworkImage(
+                              height: 28,
+                              width: 28,
+                              imageUrl: avatarList[1],
                               fit: BoxFit.cover,
+                              placeholder: (context, url) => Image.asset(
+                                "images/test.png",
+                                fit: BoxFit.cover,
+                              ),
+                              errorWidget: (context, url, error) => Image.asset(
+                                "images/test.png",
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                        errorWidget: (context, url, error) =>
-                            Image.asset(
-                              "images/test.png",
-                              fit: BoxFit.cover,
-                            ),
-                      ),
-                    ),
-                  ),
-                )
+                          ),
+                        ),
+                      )
                     : Container(),
                 conversation.type == OFFICIAL_TYPE ||
-                    conversation.type == LIVE_TYPE ||
-                    conversation.type == TRAINING_TYPE
+                        conversation.type == LIVE_TYPE ||
+                        conversation.type == TRAINING_TYPE
                     ? Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: Container(
-                      height: 16,
-                      width: 16,
-                      color: AppColor.bgBlack,
-                    ))
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          height: 16,
+                          width: 16,
+                          color: AppColor.bgBlack,
+                        ))
                     : Container()
               ],
             ),
@@ -526,11 +509,11 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                   children: [
                     Expanded(
                         child: Text(
-                          StringUtil.strNoEmpty(conversation.name) ? conversation.name : conversation.conversationId,
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: false,
-                          style: AppStyle.textRegular14,
-                        )),
+                      StringUtil.strNoEmpty(conversation.name) ? conversation.name : conversation.conversationId,
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: false,
+                      style: AppStyle.textRegular14,
+                    )),
                     Text(
                       DateUtil.formatDateTimeString(DateTime.fromMillisecondsSinceEpoch(conversation.updateTime)),
                       style: AppStyle.textHintRegular12,
@@ -543,17 +526,17 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                   children: [
                     isMentioned
                         ? Text(
-                      "[有人@你]",
-                      style: AppStyle.redRegular13,
-                    )
+                            "[有人@你]",
+                            style: AppStyle.redRegular13,
+                          )
                         : Container(),
                     Expanded(
                         child: Text(
-                          "${conversation.content}",
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: false,
-                          style: AppStyle.textSecondaryRegular13,
-                        )),
+                      "${conversation.content}",
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: false,
+                      style: AppStyle.textSecondaryRegular13,
+                    )),
                     SizedBox(
                       width: 12,
                     ),

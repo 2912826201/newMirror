@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -117,6 +118,11 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   ///是不是私人管家
   bool isPersonalButler;
 
+
+  // 是否点击了弹起的@用户列表
+  bool isClickAtUser = false;
+
+
   ///计时
   Timer _timer;
   int _timerCount = 0;
@@ -156,6 +162,10 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   String systemLastTime;
   int systemPage = 0;
+
+  //是否可以显示头部关注box
+  bool isShowTopAttentionUi=false;
+
 
   @override
   void initState() {
@@ -244,6 +254,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           fit: StackFit.expand,
           children: [
             (chatDataList != null && chatDataList.length > 0) ? getChatDetailsBody() : Container(),
+            getTopAttentionUi(),
             ChatAtUserList(
               isShow: context.watch<ChatEnterNotifier>().keyWord == "@",
               onItemClickListener: atListItemClick,
@@ -344,7 +355,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                   _insertMessageMenu("你拉黑了这个用户!");
                 }else{
                   //不是还有关系不能邀请进群
-                  _insertMessageMenu("你和 $name 不是互相关注的关系,不能邀请进群!");
+                  _insertMessageMenu(name+" 邀请失败!");
                 }
               }, () {
                 //退出群聊
@@ -356,6 +367,91 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           ),
         )
       ],
+    );
+  }
+
+  //头部显示关注遮挡
+  Widget getTopAttentionUi(){
+    if (widget.conversation.type != PRIVATE_TYPE) {
+      isShowTopAttentionUi=false;
+    }
+    return Visibility(
+      visible: isShowTopAttentionUi,
+      child: UnconstrainedBox(
+        alignment: Alignment.topCenter,
+        child: Container(
+          height: 48,
+          padding: const EdgeInsets.only(right: 16),
+          width: MediaQuery.of(context).size.width,
+          color: AppColor.colorb9b9b9,
+          child: Row(
+            children: [
+              GestureDetector(
+                child: Container(
+                  height: 48,
+                  width: 48,
+                  color: AppColor.transparent,
+                  child: Icon(Icons.close,size: 16,color: AppColor.textSecondary),
+                ),
+                onTap: (){
+                  isShowTopAttentionUi=false;
+                  setState(() {
+
+                  });
+                },
+              ),
+              Expanded(child: SizedBox(child:  Text("点击关注,及时看到对方动态",
+                  style: TextStyle(color: AppColor.textPrimary1,fontSize: 16),
+                  maxLines: 1,overflow: TextOverflow.ellipsis,))),
+              GestureDetector(
+                child: Container(
+                  width: 60,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: AppColor.transparent,
+                    border: Border.all(width: 1,color: AppColor.textPrimary1),
+                    borderRadius: BorderRadius.circular(13),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.add,size: 16,color: AppColor.textPrimary1),
+                      SizedBox(width: 3),
+                      Text("关注",style: TextStyle(color: AppColor.textPrimary1,fontSize: 14,fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ),
+                onTap: ()async{
+                  if (widget.conversation.type == PRIVATE_TYPE) {
+                    BlackModel blackModel = await ProfileCheckBlack(int.parse(chatUserId));
+                    String text = "";
+                    if (blackModel.inYouBlack == 1) {
+                      text = "关注失败，你已将对方加入黑名单";
+                    } else if (blackModel.inThisBlack == 1) {
+                      text = "关注失败，你已被对方加入黑名单";
+                    }else{
+                      int attntionResult = await ProfileAddFollow(int.parse(chatUserId));
+                      if (attntionResult == 1 || attntionResult == 3) {
+                        text="关注成功!";
+                        isShowTopAttentionUi=false;
+                        setState(() {
+
+                        });
+                      }
+                    }
+                    ToastShow.show(msg: text, context: context);
+                  }else{
+                    isShowTopAttentionUi=false;
+                    setState(() {
+
+                    });
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -1237,46 +1333,60 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   }
 
   initTextController() {
-    _textController.addListener(() {
-      // //print("值改变了");
-      // //print("监听文字光标${_textController.selection}");
-      // // 每次点击切换光标会进入此监听。需求邀请@和话题光标不可移入其中。
-      // //print("::::::$isSwitchCursor");
-      if (isSwitchCursor) {
-        List<Rule> rules = context.read<ChatEnterNotifier>().rules;
-        int atIndex = context.read<ChatEnterNotifier>().atCursorIndex;
+    // print("值改变了");
+    print("监听文字光标${_textController.selection}");
 
-        // 获取光标位置
-        int cursorIndex = _textController.selection.baseOffset;
-        for (Rule rule in rules) {
-          // 是否光标点击到了@区域
-          if (cursorIndex >= rule.startIndex && cursorIndex <= rule.endIndex) {
-            // 获取中间值用此方法是因为当atRule.startIndex和atRule.endIndex为负数时不会溢出。
-            int median = rule.startIndex + (rule.endIndex - rule.startIndex) ~/ 2;
-            TextSelection setCursor;
-            if (cursorIndex > median) {
-              setCursor = TextSelection(
-                baseOffset: rule.endIndex,
-                extentOffset: rule.endIndex,
-              );
-            }
-            if (cursorIndex <= median) {
-              setCursor = TextSelection(
-                baseOffset: rule.startIndex,
-                extentOffset: rule.startIndex,
-              );
-            }
-            // 设置光标
-            _textController.selection = setCursor;
+    List<Rule> rules = context.read<ChatEnterNotifier>().rules;
+    int atIndex = context.read<ChatEnterNotifier>().atCursorIndex;
+    print("当前值￥${_textController.text}");
+    print(context.read<ChatEnterNotifier>().textFieldStr);
+    // 获取光标位置
+    int cursorIndex = _textController.selection.baseOffset;
+    print("实时光标位置$cursorIndex");
+    // 在每次选择@用户后ios设置光标位置。
+    if (Platform.isIOS && isClickAtUser) {
+      // 设置光标
+      var setCursor = TextSelection(
+        baseOffset: _textController.text.length,
+        extentOffset: _textController.text.length,
+      );
+      _textController.selection = setCursor;
+    }
+    isClickAtUser = false;
+    // // 安卓每次点击切换光标会进入此监听。需求邀请@和话题光标不可移入其中。
+    if (isSwitchCursor && !Platform.isIOS) {
+      // _textEditingController.o
+      for (Rule rule in rules) {
+        // 是否光标点击到了@区域
+        if (cursorIndex >= rule.startIndex && cursorIndex <= rule.endIndex) {
+          // 获取中间值用此方法是因为当atRule.startIndex和atRule.endIndex为负数时不会溢出。
+          int median = rule.startIndex + (rule.endIndex - rule.startIndex) ~/ 2;
+          TextSelection setCursor;
+          if (cursorIndex <= median) {
+            setCursor = TextSelection(
+              baseOffset: rule.startIndex,
+              extentOffset: rule.startIndex,
+            );
           }
-        }
-        // 唤起@#后切换光标关闭视图
-        if (cursorIndex != atIndex) {
-          context.read<ChatEnterNotifier>().openAtCallback("");
+          if (cursorIndex > median) {
+            setCursor = TextSelection(
+              baseOffset: rule.endIndex,
+              extentOffset: rule.endIndex,
+            );
+          }
+          // 设置光标
+          _textController.selection = setCursor;
         }
       }
-      isSwitchCursor = true;
-    });
+
+      // 唤起@#后切换光标关闭视图
+      if (cursorIndex != atIndex) {
+        Future.delayed(Duration(milliseconds: 100),(){
+          context.read<ChatEnterNotifier>().openAtCallback("");
+        });
+      }
+    }
+    isSwitchCursor = true;
   }
 
   initReleaseFeedInputFormatter() {
@@ -1288,6 +1398,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       triggerAtCallback: (String str) async {
         if (chatTypeId == RCConversationType.Group) {
           context.read<ChatEnterNotifier>().openAtCallback(str);
+          isClickAtUser = false;
         }
       },
       // 关闭@#视图回调
@@ -1305,6 +1416,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         }
         context.read<ChatEnterNotifier>().setAtSearchStr(atSearchStr);
         context.read<ChatEnterNotifier>().changeCallback(value);
+        context.read<GroupUserProfileNotifier>().setSearchText(atSearchStr);
         // 实时搜索
       },
     );
@@ -1437,6 +1549,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //at 了那个用户
   void atListItemClick(ChatGroupUserModel userModel, int index) {
+    isClickAtUser = true;
     // //print("+++++++++++++++++++++++++++++++++++++++++++++++++++" + content);
     // At的文字长度
     int atLength = userModel.nickName.length + 1;
@@ -1467,7 +1580,8 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     //print(searchStr);
     //print("controller.text:${_textController.text}");
     //print("atBeforeStr$atBeforeStr");
-    if (searchStr != "" || searchStr.isNotEmpty) {
+    // isSwitchCursor = false;
+    if (searchStr != "" && searchStr != null && searchStr.isNotEmpty) {
       //print("atIndex:$atIndex");
       //print("searchStr:$searchStr");
       //print("controller.text:${_textController.text}");
@@ -1479,9 +1593,22 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
     // 拼接修改输入框的值
     _textController.text = atBeforeStr + userModel.nickName + " " + atRearStr;
+    // ios赋值设置了光标后会走addListener监听，但是在监听内打印光标位置 获取为0，安卓不会出现此问题 所有iOS没必要在此设置光标位置。
+    if (!Platform.isIOS) {
+      // 设置光标
+      var setCursor = TextSelection(
+        baseOffset: _textController.text.length,
+        extentOffset: _textController.text.length,
+      );
+      _textController.selection = setCursor;
+    }
+    context
+        .read<ChatEnterNotifier>()
+        .changeCallback(atBeforeStr + userModel.nickName + atRearStr);
+    // isSwitchCursor = false;
     //print("controller.text:${_textController.text}");
     // 这是替换输入的文本修改后面输入的@的规则
-    if (searchStr != "" || searchStr.isNotEmpty) {
+    if (searchStr != "" && searchStr != null && searchStr.isNotEmpty) {
       int oldLength = searchStr.length;
       int newLength = userModel.nickName.length + 1;
       int oldStartIndex = atIndex;
@@ -1510,15 +1637,17 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         .read<ChatEnterNotifier>()
         .addRules(Rule(atIndex - 1, atIndex + atLength, "@" + userModel.nickName + " ", userModel.uid, true));
     // 设置光标
-    var setCursor = TextSelection(
-      baseOffset: _textController.text.length,
-      extentOffset: _textController.text.length,
-    );
+    // var setCursor = TextSelection(
+    //   baseOffset: _textController.text.length,
+    //   extentOffset: _textController.text.length,
+    // );
     //print("设置光标$setCursor");
-    _textController.selection = setCursor;
-    context.read<ChatEnterNotifier>().setAtSearchStr("");
-    // 关闭视图
-    context.read<ChatEnterNotifier>().openAtCallback("");
+    // _textController.selection = setCursor;
+    Future.delayed(Duration(milliseconds: 100),(){
+      context.read<ChatEnterNotifier>().setAtSearchStr("");
+      // 关闭视图
+      context.read<ChatEnterNotifier>().openAtCallback("");
+    });
   }
 
   //刷新数据--加载更多以前的数据

@@ -1,6 +1,5 @@
-import 'package:cached_network_image/cached_network_image.dart';
-// import 'dart:js';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
@@ -11,6 +10,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/query_msglist_model.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/feed/feed_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
@@ -225,41 +225,39 @@ class InteractiveNoticeItemState extends StatelessWidget {
   String senderName;
   String senderAvatarUrl;
   int index;
-  CommentDtoModel commentModel;
-  HomeFeedModel homeFeedModel;
-  LiveVideoModel liveVideoModel;
+  CommentDtoModel fatherCommentModel;
   List<AtUsersModel> atUserList = [];
   String coverImage;
   bool feedIsDelete = false;
   bool commentIsDelete = false;
   String commentState;
 
-  _getRefData(BuildContext context) async {
-    if (msgModel.refType == 0) {
-      homeFeedModel = HomeFeedModel.fromJson(msgModel.refData);
-      if (homeFeedModel != null) {
-        feedIsDelete = false;
-      } else {
-        feedIsDelete = true;
+  _getRefData(BuildContext context){
+    if (type == 0 || type == 1) {
+      atUserList = msgModel.commentData.atUsers;
+      if(msgModel.commentData==null){
+        commentIsDelete = true;
+      }else{
+        comment = msgModel.commentData.content;
       }
-    } else if (msgModel.refType == 2) {
-      commentModel = CommentDtoModel.fromJson(msgModel.refData);
-      if (commentModel != null) {
-        if(commentModel.type==0){
-          homeFeedModel = await feedDetail(id: commentModel.targetId);
-        }else if(commentModel.type == 1){
-          AppRouter.navigateToLiveDetail(context,commentModel.targetId,isHaveStartTime: false);
-        }else if(commentModel.type == 3){
-          AppRouter.navigateToVideoDetail(context, commentModel.targetId);
-        }
+    } else {
+      if (msgModel.refType == 0) {
+        comment = "赞了你的动态";
+      } else if (msgModel.refType == 1) {
+        comment = "赞了你的课程";
+      } else if (msgModel.refType == 2) {
+        comment = "赞了你的评论";
       }
-    }else if(msgModel.refType == 1){
-      liveVideoModel = LiveVideoModel.fromJson(msgModel.refData);
-      AppRouter.navigateToLiveDetail(context,liveVideoModel.id,isHaveStartTime: false);
-    }else{
-      liveVideoModel = LiveVideoModel.fromJson(msgModel.refData);
-      AppRouter.navigateToVideoDetail(context, commentModel.targetId);
     }
+    if(msgModel.refData==null){
+      feedIsDelete = true;
+    }
+   if(msgModel.refType == 2){
+     fatherCommentModel = CommentDtoModel.fromJson(msgModel.refData);
+     print('=====type====================${msgModel.refType}');
+     print('=====id====================${fatherCommentModel.targetId}');
+
+   }
   }
 
   List<BaseRichText> _atText(BuildContext context) {
@@ -276,32 +274,13 @@ class InteractiveNoticeItemState extends StatelessWidget {
     return richList;
   }
 
-  _textSpanAdd() {
-    if (type == 0 || type == 1) {
-      if (commentModel.content == null) {
-        commentIsDelete = true;
-      } else {
-        commentIsDelete = false;
-        comment = commentModel.content;
-      }
-      atUserList = commentModel.atUsers;
-    } else {
-      if (msgModel.refType == 0) {
-        comment = "赞了你的动态";
-      } else if (msgModel.refType == 1) {
-        comment = "赞了你的课程";
-      } else if (msgModel.refType == 2) {
-        comment = "赞了你的评论";
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     print('-====================消息互动列表页Item  biuld');
     senderAvatarUrl = msgModel.senderAvatarUrl;
     senderName = msgModel.senderName;
-    commentModel = msgModel.commentData;
+    msgModel.commentData.name = senderName;
+    msgModel.commentData.replyName = context.watch<ProfileNotifier>().profile.nickName;
     coverImage = msgModel.coverUrl;
     _getRefData(context);
     if (type == 0) {
@@ -310,9 +289,6 @@ class InteractiveNoticeItemState extends StatelessWidget {
       } else {
         commentState = "";
       }
-    }
-    _textSpanAdd();
-    if (type == 0) {
       ///判断文字的高度，动态改变
       TextPainter testSize = calculateTextWidth(
           "$commentState$comment", AppStyle.textRegular13, ScreenUtil.instance.screenWidthDp * 0.64, 3);
@@ -407,17 +383,26 @@ class InteractiveNoticeItemState extends StatelessWidget {
           !feedIsDelete
               ? InkWell(
                   onTap: () {
-                    if (type == 0) {
-                      if (msgModel.refType == 0) {
-                        if (msgModel.commentData != null) {
-                          getFeedDetail(context, homeFeedModel.id, comment: msgModel.commentData);
-                        }
+                    print('========================点击了');
+                    print('===============================${fatherCommentModel.targetId}');
+                    if (msgModel.refType == 0) {
+                      print('=====================动态');
+                          getFeedDetail(context, int.parse(msgModel.refId), comment:type==0?msgModel.commentData:null);
                       }else if(msgModel.refType == 2){
-
+                          if(fatherCommentModel.type==0){
+                            getFeedDetail(context, fatherCommentModel.targetId, comment: type==0?msgModel.commentData:null);
+                          }else if(fatherCommentModel.type==1){
+                        AppRouter.navigateToLiveDetail(context, fatherCommentModel.targetId,isHaveStartTime: false);
+                          }else if(fatherCommentModel.type==3){
+                            AppRouter.navigateToVideoDetail(context, fatherCommentModel.targetId,commentDtoModel:
+                            msgModel.commentData,fatherComment: fatherCommentModel);
+                          }
+                      }else if(msgModel.refType==1){
+                        AppRouter.navigateToLiveDetail(context, int.parse(msgModel.refId),isHaveStartTime: false);
+                      }else{
+                        AppRouter.navigateToVideoDetail(context, int.parse(msgModel.refId),commentDtoModel:
+                        msgModel.commentData);
                       }
-                    } else {
-                      getFeedDetail(context, homeFeedModel.id);
-                    }
                   },
                   child: Container(
                     alignment: Alignment.topRight,

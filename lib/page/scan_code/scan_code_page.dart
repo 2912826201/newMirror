@@ -13,6 +13,7 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
+import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
@@ -96,9 +97,12 @@ class _ScanCodeState extends State<ScanCodePage> {
                   scanAreaScale: .7,
                   scanLineColor: AppColor.white,
                   onCapture: (data) {
+                    print("+-------------------"+data.toString());
                     if(data.substring(0,1)=="用户"){
                       print('=====================这是用户Id');
                       getUserModel(int.parse(data.substring(1,data.length)));
+                    }else{
+                      resolveShortConnectionsPr(data);
                     }
 
                   },
@@ -204,4 +208,42 @@ class _ScanCodeState extends State<ScanCodePage> {
       getUserModel(int.parse(result.substring(2,result.length)));
     }
   }
+
+  //解析这个短链接
+  void resolveShortConnectionsPr(String pathUrl)async{
+    print("解析这个短链接");
+    Map<String, dynamic> map = await resolveShortConnections(path: pathUrl);
+    print("map:${map.toString()}");
+    if(map!=null){
+      String dataString=map["uri"];
+      if(dataString.contains("loginTerminal")){
+        print("登录终端指令");
+      }else if(dataString.contains("activeTerminal")){
+        print("激活终端指令");
+      }else if(dataString.contains("joinGroup")&&dataString.contains("code")){
+        print("加入群聊指令");
+        String code=dataString;
+        code=code.substring(code.indexOf("code")+5,code.length);
+        Map<String, dynamic> joinMap = await joinGroupChatUnrestricted(code);
+        // print("joinMap:"+joinMap.toString());
+        if(joinMap!=null&&joinMap["id"]!=null){
+          String name="";
+          if(joinMap["modifiedName"]!=null){
+            name=joinMap["modifiedName"];
+          }else if(joinMap["name"]!=null){
+            name=joinMap["name"];
+          }else{
+            name=joinMap["id"].toString();
+          }
+          Navigator.of(context).pop();
+          jumpGroupPage(context,name,joinMap["id"]);
+        }
+      }else{
+        print("未知指令");
+      }
+    }else{
+      print("二维码有问题");
+    }
+  }
+
 }

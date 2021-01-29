@@ -730,6 +730,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
       print("videoModelArray.length1111:${videoModelArray.length}");
       model["list"].forEach((v) {
         videoModelArray.add(LiveVideoModel.fromJson(v));
+        print('8888888888888888888888888888888888888------${v["id"]}');
       });
 
       print("videoModelArray.length222222:${videoModelArray.length}");
