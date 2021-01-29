@@ -512,7 +512,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
           shadowColor: !value.itemChose ? AppColor.bgWhite : AppColor.white,
           duration: Duration(seconds: 1),
           child: Row(
-            verticalDirection: VerticalDirection.up,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               getUserImage(value.avatarUrl, 42, 42),
               SizedBox(width: 15),
@@ -1260,7 +1260,6 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     }
   }
 
-  //todo 查询子评论会出现一个问题 当之前发布的子评论 个数过多会出现在下次请求中-去重导致感官-点击没有加载数据
   //获取子评论
   _getSubComment(int targetId, int replyLength, int replyCount, int pullNumber, int positionComment) async {
     int subCommentPageSize = 3;
@@ -1286,6 +1285,10 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       print("获取到了数据model:${model.toString()}");
       if (model != null) {
         print("获取到了数据不为空");
+
+        (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber=0;
+        (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replyCount=model["totalCount"];
+
         CommentModel commentModel = CommentModel.fromJson(model);
         if (!(commentModel == null || commentModel.list == null || commentModel.list.length < 1)) {
           print("获取到了commentModel不为空");
@@ -1306,11 +1309,6 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                     commentDtoModelList.removeAt(j);
                     j--;
                     subCount++;
-                    print("删除了$subCount条重复记录");
-                    (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber--;
-                    print(
-                        "-pullNumber:${(isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber}");
-                    // (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replyCount++;
                   }
                 }
               }
@@ -1359,6 +1357,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       Map<String, dynamic> model = await (isHotOrTime ? queryListByHot2 : queryListByTime)(
           targetId: targetId, targetType: 2, lastId: lastId, size: count);
       if (model != null) {
+
+        (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber=0;
+        (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replyCount=model["totalCount"];
         CommentModel commentModel = CommentModel.fromJson(model);
         if (!(commentModel == null || commentModel.list == null || commentModel.list.length < 1)) {
           commentDtoModelList.addAll(commentModel.list);
@@ -1375,10 +1376,6 @@ class VideoDetailPageState extends State<VideoDetailPage> {
                     commentDtoModelList.removeAt(j);
                     j--;
                     subCount++;
-                    (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber--;
-                    print(
-                        "-pullNumber:${(isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber}");
-                    // (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].replyCount++;
                   }
                 }
               }
@@ -1490,6 +1487,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     openInputBottomSheet(
       buildContext: this.context,
       voidCallback: _publishComment,
+      isShowAt: false,
     );
   }
 
@@ -1503,6 +1501,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       buildContext: this.context,
       hintText: hintText,
       voidCallback: _publishComment,
+      isShowAt: false,
     );
   }
 
