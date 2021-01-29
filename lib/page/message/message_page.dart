@@ -25,7 +25,7 @@ import 'package:notification_permissions/notification_permissions.dart';
 import 'package:provider/provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:connectivity/connectivity.dart';
-import 'package:system_setting/system_setting.dart';
+import 'package:app_settings/app_settings.dart';
 import 'message_chat_page_manager.dart';
 
 /// message_page
@@ -340,7 +340,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     } else {
       return GestureDetector(
         onTap: () {
-          SystemSetting.goto(SettingTarget.NOTIFICATION);
+          AppSettings.openNotificationSettings();
         },
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),

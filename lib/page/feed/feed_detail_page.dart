@@ -98,9 +98,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
     print('================================   筛选评论');
     CommentDtoModel childmodel = await getComment(widget.comment.id);
     if (childmodel != null) {
-      print("=============_getChoseComment===================1");
       if (childmodel.type == 0) {
-        print("=============_getChoseComment===================2");
         if (childmodel.replyCount > 0) {
           childmodel.isShowInteractiveButton = true;
         } else {
@@ -108,18 +106,13 @@ class FeedDetailPageState extends State<FeedDetailPage> {
         }
         childmodel.itemChose = true;
         if (isFirstPage) {
-          print("=============_getChoseComment===================4");
-          print('=========================$choseIndex');
           commentModel.insert(choseIndex, childmodel);
         } else {
-          print("=============_getChoseComment===================5");
           commentModel.insert(0, childmodel);
         }
       } else if (childmodel.type == 2) {
-        print('=========================评论类型为====2');
         CommentDtoModel fsModel = await getComment(childmodel.targetId);
         if (fsModel != null) {
-          print('=======================父评论不为空');
           fsModel.isShowInteractiveButton = true;
           if (isFirstPage) {
             commentModel.insert(choseIndex, fsModel);
@@ -130,14 +123,12 @@ class FeedDetailPageState extends State<FeedDetailPage> {
             childmodel.itemChose = true;
             commentModel[0].replys.insert(0, childmodel);
           }
-
-         /* context.read<FeedMapNotifier>().insertChildModel(childmodel);*/
         }
       }
+      context.read<FeedMapNotifier>().insertChildModel(childmodel);
     }
     context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
     for (int i = 0; i < commentModel.length; i++) {
-      print('=====666666666666666666666666666666666===========================i$i');
       if (i < choseIndex) {
         itemHeight +=
             calculateTextWidth(commentModel[i].content, AppStyle.textRegular14, ScreenUtil.instance.width - 75, 2)
@@ -145,10 +136,10 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                 60;
       } else if (i == choseIndex) {
 
-        Future.delayed(Duration(milliseconds: 200), () {
+        Future.delayed(Duration(milliseconds: 500), () {
           try {
             print('===============================================滑动倒计时结束-----开始滚动');
-            _controller.jumpTo(itemHeight /*, duration: Duration(microseconds: 500), curve: Curves.ease*/);
+            _controller.animateTo(itemHeight , duration: Duration(microseconds: 1000), curve: Curves.easeInOut);
 
           } catch (e) {}
         });

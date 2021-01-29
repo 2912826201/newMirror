@@ -6,6 +6,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 
 import 'package:mirror/data/dto/profile_dto.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
@@ -214,7 +215,8 @@ class AppRouter {
     _navigateToPage(context, pathVideoCoursePlay, map);
   }
 
-  static void navigateToLiveDetail(BuildContext context, int liveCourseId, {String heroTag,bool isHaveStartTime=true, LiveVideoModel liveModel}) {
+  static void navigateToLiveDetail(BuildContext context, int liveCourseId, {String heroTag,bool isHaveStartTime=true,
+    LiveVideoModel liveModel,CommentDtoModel commentDtoModel}) {
     Map<String, dynamic> map = Map();
     map["liveCourseId"] = liveCourseId;
     map["isHaveStartTime"] = isHaveStartTime;
@@ -224,11 +226,14 @@ class AppRouter {
     if (heroTag != null) {
       map["heroTag"] = heroTag;
     }
+    if(commentDtoModel!=null){
+      map["commentDtoModel"] = commentDtoModel;
+    }
     _navigateToPage(context, pathLiveDetail, map);
   }
 
   static void navigateToVideoDetail(BuildContext context, int liveCourseId,
-      {String heroTag, LiveVideoModel videoModel}) {
+      {String heroTag, LiveVideoModel videoModel,CommentDtoModel commentDtoModel,CommentDtoModel fatherComment}) {
     Map<String, dynamic> map = Map();
     map["videoCourseId"] = liveCourseId;
     if (videoModel != null) {
@@ -236,6 +241,12 @@ class AppRouter {
     }
     if (heroTag != null) {
       map["heroTag"] = heroTag;
+    }
+    if(commentDtoModel!=null){
+      map["commentDtoModel"] = commentDtoModel.toJson();
+    }
+    if(fatherComment!=null){
+      map["fatherComment"] = fatherComment.toJson();
     }
     _navigateToPage(context, pathVideoDetail, map);
   }

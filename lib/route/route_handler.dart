@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
@@ -231,6 +232,7 @@ var handlerLiveDetail = Handler(handlerFunc: (BuildContext context, Map<String, 
     liveCourseId: data["liveCourseId"],
     isHaveStartTime: data["isHaveStartTime"],
     liveModel: liveModel,
+
   );
 });
 
@@ -245,6 +247,8 @@ var handlerVideoDetail = Handler(handlerFunc: (BuildContext context, Map<String,
     heroTag: data["heroTag"] == null ? "" : data["heroTag"],
     liveCourseId: data["videoCourseId"],
     videoModel: videoModel,
+    commentDtoModel: data["commentDtoModel"]==null?null:CommentDtoModel.fromJson(data["commentDtoModel"]),
+    fatherComment: data["fatherComment"]==null?null:CommentDtoModel.fromJson(data["fatherComment"]),
   );
 });
 
