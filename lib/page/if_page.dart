@@ -35,13 +35,12 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin, WidgetsBi
   @override
   Widget build(BuildContext context) {
     // 获取屏幕宽度，只能在home内才可调用。
-    double screen_top = MediaQuery.of(context).padding.top;
     double screen_bottom = MediaQuery.of(context).padding.bottom;
     Size screen_size = MediaQuery.of(context).size;
-    double inputHeight = MediaQuery.of(context).viewInsets.bottom;
+    if (context.watch<FeedMapNotifier>().postFeedModel != null) {
+      _controller.index = 1;
+    }
     print("获取一下底部安全间距");
-    // print(screen_bottom);
-    // print(inputHeight);
     // 初始化获取屏幕数据
     if (isInit == false) {
       ScreenUtil.init(
@@ -56,45 +55,39 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin, WidgetsBi
         value: SystemUiOverlayStyle.dark,
         child: Scaffold(
             body: Container(
-                child: Stack(children: [
-              SlidingUpPanel(
-                  panel: Container(
-                    margin: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
-                    child: SingletonForWholePages.singleton().panelWidget(context),
-                  ),
-                  onPanelClosed: () {
-                    context.read<FeedMapNotifier>().clearTotalCount();
-                    // 关闭视图后清空动态Id
-                    context.read<FeedMapNotifier>().changeFeeId(null);
-                  },
-                  maxHeight: ScreenUtil.instance.height * 0.75,
-                  backdropEnabled: true,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10.0),
-                    topRight: Radius.circular(10.0),
-                  ),
-                  controller: SingletonForWholePages.singleton().panelController(),
-                  minHeight: 0,
-                  body: ChangeNotifierProvider(
-                      create: (_) => SelectedbottomNavigationBarNotifier(0),
-                      builder: (context, _) {
-                        return UnionOuterTabBarView(
-                          physics: context.watch<SelectedbottomNavigationBarNotifier>().selectedIndex == 0
-                              ? BouncingScrollPhysics()
-                              : NeverScrollableScrollPhysics(),
-                          controller: _controller,
-                          children: _createTabContent(),
-                        );
-                      })),
-            ]))));
+          child: Stack(children: [
+            // TabBarView(
+            //   physics: BouncingScrollPhysics(),
+            //   controller: _controller,
+            //   children:
+            //   _createTabContent(),)
+            ChangeNotifierProvider(
+                create: (_) => SelectedbottomNavigationBarNotifier(0),
+                builder: (context, _) {
+                  return UnionOuterTabBarView(
+                    physics: context.watch<SelectedbottomNavigationBarNotifier>().selectedIndex == 0
+                        ? BouncingScrollPhysics()
+                        : NeverScrollableScrollPhysics(),
+                    controller: _controller,
+                    children: _createTabContent(),
+                  );
+                })
+          ]),
+        )));
   }
 
   List<Widget> _createTabContent() {
     List<Widget> tabContent = List();
     //四个常规业务tabBar
-    tabContent.add(MediaPickerPage(9, typeImageAndVideo, true, startPagePhoto, false, true));
-    tabContent.add(MainPage(
+    tabContent.add(MediaPickerPage(
+      9,
+      typeImageAndVideo,
+      true,
+      startPagePhoto,
+      false,
+      publishMode: 2,
     ));
+    tabContent.add(MainPage());
     return tabContent;
   }
 
@@ -166,11 +159,13 @@ class SingletonForWholePages {
   PanelController panelController() {
     return ifPagePc;
   }
+
   // 打开
   openPanelController() {
-   /* ifPagePc.open();*/
+    /* ifPagePc.open();*/
     ifPagePc.isPanelOpen();
   }
+
   // 关闭
   closePanelController() {
     /*ifPagePc.close();*/

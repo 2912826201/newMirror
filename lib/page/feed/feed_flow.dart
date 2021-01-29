@@ -5,12 +5,12 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 
 class FeedFlow extends StatefulWidget {
-  FeedFlow({Key key, this.feedList, this.isComplex}) : super(key: key);
+  FeedFlow({Key key, this.feedList, this.pageName}) : super(key: key);
 
   @override
   FeedFlowState createState() => FeedFlowState();
   List<HomeFeedModel> feedList;
-  bool isComplex;
+  String pageName;
 }
 
 class FeedFlowState extends State<FeedFlow> {
@@ -44,7 +44,7 @@ class FeedFlowState extends State<FeedFlow> {
                 delegate: SliverChildBuilderDelegate((content, index) {
                   return DynamicListLayout(
                     index: index,
-                    isComplex: widget.isComplex,
+                    pageName: widget.pageName,
                     isShowRecommendUser: false,
                     model: widget.feedList[index],
                     // 可选参数 子Item的个数

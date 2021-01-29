@@ -430,7 +430,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
           body: Column(
             children: <Widget>[
               Container(
-                padding: const EdgeInsets.only(left: 129, right: 129),
+                padding:  EdgeInsets.only(left: ScreenUtil.instance.width * 0.32, right:  ScreenUtil.instance.width * 0.32),
                 color: AppColor.white,
                 child: TabBar(
                   // isScrollable: false,

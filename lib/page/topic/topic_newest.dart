@@ -70,7 +70,7 @@ class TopicNewestState extends State<TopicNewest> with AutomaticKeepAliveClientM
                         model: model,
                         list: widget.topicList,
                         index: index,
-                        isComplex: false,
+                        pageName: "topicNewest",
                       );
                     }
                   },

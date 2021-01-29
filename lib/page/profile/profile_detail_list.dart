@@ -133,7 +133,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
               );
             } else {
               return DynamicListLayout(
-                index: index, isShowRecommendUser: false, model: model, key: GlobalObjectKey("attention$index"));
+                index: index,pageName: "profileDetails", isShowRecommendUser: false, model: model, key: GlobalObjectKey("attention$index"));
             }
           }),
       ),

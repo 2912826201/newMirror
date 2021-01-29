@@ -32,7 +32,7 @@ class UserModel {
   int mutualFriendCount; //共同好友数
 
   UserModel({
-    this.uid = 0, //默认给个uid为0
+    this.uid = -1, //默认给个uid为-1
     this.phone,
     this.type,
     this.isVip,

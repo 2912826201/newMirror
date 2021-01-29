@@ -146,7 +146,7 @@ Future _initApp() async {
       await ProfileDBHelper().insertProfile(profile);
     }
   } else {
-    //匿名用户时 给个uid为0的其他信息为空的用户
+    //匿名用户时 给个uid为-1的其他信息为空的用户
     profile = ProfileDto.fromUserModel(UserModel());
   }
   Application.profile = profile;
@@ -183,26 +183,28 @@ Future _initApp() async {
   } catch (e) {}
 
   //TODO ==========================下面是已登录用户获取的信息需要统一在用户登录后获取================================
-  //todo 获取有哪些消息是置顶的消息
-  try {
-    Application.topChatModelList.clear();
-    Map<String, dynamic> topChatModelMap = await getTopChatList();
-    if (topChatModelMap != null && topChatModelMap["list"] != null) {
-      topChatModelMap["list"].forEach((v) {
-        Application.topChatModelList.add(TopChatModel.fromJson(v));
-      });
-    }
-  } catch (e) {}
-  //todo 获取有哪些消息是免打扰的消息
-  try {
-    Application.queryNoPromptUidList.clear();
-    Map<String, dynamic> queryNoPromptUidListMap = await queryNoPromptUidList();
-    if (queryNoPromptUidListMap != null && queryNoPromptUidListMap["list"] != null) {
-      queryNoPromptUidListMap["list"].forEach((v) {
-        Application.queryNoPromptUidList.add(NoPromptUidModel.fromJson(v));
-      });
-    }
-  } catch (e) {}
+  if (Application.token.anonymous == 0) {
+    //todo 获取有哪些消息是置顶的消息
+    try {
+      Application.topChatModelList.clear();
+      Map<String, dynamic> topChatModelMap = await getTopChatList();
+      if (topChatModelMap != null && topChatModelMap["list"] != null) {
+        topChatModelMap["list"].forEach((v) {
+          Application.topChatModelList.add(TopChatModel.fromJson(v));
+        });
+      }
+    } catch (e) {}
+    //todo 获取有哪些消息是免打扰的消息
+    try {
+      Application.queryNoPromptUidList.clear();
+      Map<String, dynamic> queryNoPromptUidListMap = await queryNoPromptUidList();
+      if (queryNoPromptUidListMap != null && queryNoPromptUidListMap["list"] != null) {
+        queryNoPromptUidListMap["list"].forEach((v) {
+          Application.queryNoPromptUidList.add(NoPromptUidModel.fromJson(v));
+        });
+      }
+    } catch (e) {}
+  }
 }
 
 //初始化地区数据

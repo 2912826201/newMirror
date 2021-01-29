@@ -217,8 +217,6 @@ class GetTripleAreaState extends State<GetTripleArea> {
                   openFeedCommentBottomSheet(context: context, feedId: widget.model.id,callback: (){
                     widget.back();
                   });
-                  // SingletonForWholePages.singleton().panelController().open();
-                  // context.read<FeedMapNotifier>().changeFeeId(widget.model.id);
                 }))
       ],
     );

@@ -214,7 +214,7 @@ Widget _addImageItem(){
     //从相册获取照片
   _getImage(){
     AppRouter.navigateToMediaPickerPage(
-      context, 9, typeImage, true, startPageGallery, false, false, (result) {
+      context, 9, typeImage, false, startPageGallery, false, (result) {
       SelectedMediaFiles files = Application.selectedMediaFiles;
       if (!result|| files == null) {
         print('===============================值为空退回');

@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
@@ -7,11 +6,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mirror/api/basic_api.dart';
+import 'package:mirror/api/message_page_api.dart';
 import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
+import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/page/login/login_base_page_state.dart';
@@ -32,6 +34,7 @@ import 'package:mirror/data/model/token_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:toast/toast.dart';
+
 ///这是完善资料页
 
 class PerfectUserPage extends StatefulWidget {
@@ -43,6 +46,7 @@ class PerfectUserPage extends StatefulWidget {
 
 class _PerfectUserState extends LoginBasePageState {
   final inputCotroller = TextEditingController();
+
   //输入的最长字符
   final maxTextLength = 15;
   final _hintText = "戳这里输入昵称";
@@ -50,59 +54,64 @@ class _PerfectUserState extends LoginBasePageState {
   int textLength = 0;
   Uint8List imageData;
   List<File> fileList = [];
+
   @override
   void initState() {
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return Scaffold(
+      backgroundColor: AppColor.white,
+      appBar: AppBar(
         backgroundColor: AppColor.white,
-        appBar: AppBar(
-          backgroundColor: AppColor.white,
-          leading: InkWell(
-            child: Container(
-              margin: EdgeInsets.only(left: 16),
-              child: Image.asset("images/resource/2.0x/return2x.png"),),
-            onTap: (){
-              Navigator.pop(context);
-            },
+        leading: InkWell(
+          child: Container(
+            margin: EdgeInsets.only(left: 16),
+            child: Image.asset("images/resource/2.0x/return2x.png"),
           ),
-          leadingWidth: 44,
+          onTap: () {
+            Navigator.pop(context);
+          },
         ),
-        body: Container(
-                  width: width,
-                  height: height,
-                child:Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ///头像
-                    SizedBox(height: 40,),
-                    Center(
-                      child:_avatarWidget(),
-                    ),
-                    SizedBox(height: 48),
-                    Container(
-                      padding: EdgeInsets.only(left: 41,right: 41),
-                      child:Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          ///输入框
-                          _inputWidget(),
-                          SizedBox(height: 32,),
-                          ///完成按钮
-                          _perfectUserBtn(width)
-                        ],
-                      )
-                    )
-                  ],
-                )
-            ),
-      );
-  }
+        leadingWidth: 44,
+      ),
+      body: Container(
+          width: width,
+          height: height,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ///头像
+              SizedBox(
+                height: 40,
+              ),
+              Center(
+                child: _avatarWidget(),
+              ),
+              SizedBox(height: 48),
+              Container(
+                  padding: EdgeInsets.only(left: 41, right: 41),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      ///输入框
+                      _inputWidget(),
+                      SizedBox(
+                        height: 32,
+                      ),
 
+                      ///完成按钮
+                      _perfectUserBtn(width)
+                    ],
+                  ))
+            ],
+          )),
+    );
+  }
 
   Widget _avatarWidget() {
     return Container(
@@ -110,8 +119,7 @@ class _PerfectUserState extends LoginBasePageState {
         height: 90,
         child: InkWell(
             onTap: () {
-              AppRouter.navigateToMediaPickerPage(
-                context, 1, typeImage, true, startPageGallery, true, false, (result) async {
+              AppRouter.navigateToMediaPickerPage(context, 1, typeImage, true, startPageGallery, true, (result) async {
                 SelectedMediaFiles files = Application.selectedMediaFiles;
                 if (result != true || files == null) {
                   print('===============================值为空退回');
@@ -123,7 +131,7 @@ class _PerfectUserState extends LoginBasePageState {
                 Application.selectedMediaFiles = null;
                 MediaFileModel model = files.list.first;
                 print(
-                  'model croppedImageData 1=========================${model.croppedImageData}  ${model.croppedImage}   ${model.file}');
+                    'model croppedImageData 1=========================${model.croppedImageData}  ${model.croppedImage}   ${model.file}');
                 if (model != null) {
                   print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
                   ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
@@ -153,14 +161,15 @@ class _PerfectUserState extends LoginBasePageState {
                   height: 90,
                   width: 90,
                   child: ClipOval(
-                  child: imageData != null
-                    ? Image.memory(
-                    imageData,
-                    fit: BoxFit.cover,
-                  ) : Container(
-                    color: AppColor.black,
-                  )
-                ),),
+                      child: imageData != null
+                          ? Image.memory(
+                              imageData,
+                              fit: BoxFit.cover,
+                            )
+                          : Container(
+                              color: AppColor.black,
+                            )),
+                ),
                 Positioned(
                     bottom: 0,
                     right: 6,
@@ -181,35 +190,31 @@ class _PerfectUserState extends LoginBasePageState {
               ],
             )));
   }
-      ///输入框
-    Widget _inputWidget(){
-        return TextField(
-          maxLength: maxTextLength,
-          controller: inputCotroller,
-          showCursor: true,
-          cursorColor: AppColor.black,
-          decoration: InputDecoration(
-            hintText:_hintText,
-            counterText: "",
-            hintStyle: AppStyle.textHintRegular16,
-            suffixText:"$textLength/$maxTextLength",
-              enabledBorder: UnderlineInputBorder(
-                borderSide:BorderSide(width: 0.5,color: AppColor.bgWhite)
-              ),
-              focusedBorder:UnderlineInputBorder(
-                borderSide:BorderSide(width: 0.5,color: AppColor.bgWhite)
-              )
-          ),
-          onChanged: (value){
-             setState(() {
-               textLength = value.length;
-               username = value;
-             });
 
-        },
-        );
-    }
-    ///完成按钮
+  ///输入框
+  Widget _inputWidget() {
+    return TextField(
+      maxLength: maxTextLength,
+      controller: inputCotroller,
+      showCursor: true,
+      cursorColor: AppColor.black,
+      decoration: InputDecoration(
+          hintText: _hintText,
+          counterText: "",
+          hintStyle: AppStyle.textHintRegular16,
+          suffixText: "$textLength/$maxTextLength",
+          enabledBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite)),
+          focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite))),
+      onChanged: (value) {
+        setState(() {
+          textLength = value.length;
+          username = value;
+        });
+      },
+    );
+  }
+
+  ///完成按钮
   Widget _perfectUserBtn(double width) {
     FocusNode blankNode = FocusNode();
     return Container(
@@ -218,19 +223,18 @@ class _PerfectUserState extends LoginBasePageState {
         title: "下一步",
         height: 44.0,
         width: width,
-        circular:3.0,
-        textColor: fileList.isNotEmpty&&username!=""?AppColor.white:AppColor.textSecondary,
+        circular: 3.0,
+        textColor: fileList.isNotEmpty && username != "" ? AppColor.white : AppColor.textSecondary,
         fontSize: 16,
-        backColor: fileList.isNotEmpty&&username!=""?AppColor.bgBlack:AppColor.bgWhite,
+        backColor: fileList.isNotEmpty && username != "" ? AppColor.bgBlack : AppColor.bgWhite,
         color: AppColor.transparent,
-        onTap: (){
-          if(fileList.isNotEmpty&&username!=""){
+        onTap: () {
+          if (fileList.isNotEmpty && username != "") {
             FocusScope.of(context).requestFocus(blankNode);
             _upDataUserInfo();
-          }else{
+          } else {
             Toast.show("昵称和头像不能为空", context);
           }
-
         },
       ),
     );
@@ -238,30 +242,30 @@ class _PerfectUserState extends LoginBasePageState {
 
   _upDataUserInfo() async {
     String avataruri = "";
-      print('=============================开始上传图片');
-      var results = await FileUtil().uploadPics(fileList, (percent) {
-        print('===========================正在上传');
-      });
-     avataruri = results.resultMap.values.first.url;
-    _perfectUserInfo(context,avataruri,username);
-
+    print('=============================开始上传图片');
+    var results = await FileUtil().uploadPics(fileList, (percent) {
+      print('===========================正在上传');
+    });
+    avataruri = results.resultMap.values.first.url;
+    _perfectUserInfo(context, avataruri, username);
   }
+
   //TODO 这个是临时的方法,完善信息(只是简单地传入了名字，头像的信息没有传入)
-  _perfectUserInfo(BuildContext context,String portrait,String name) async{
+  _perfectUserInfo(BuildContext context, String portrait, String name) async {
     bool perfectResult = await perfectUserInfo(name, portrait);
-    if(perfectResult){
+    if (perfectResult) {
       //登录成功之后则要清除掉计数
       Application.smsCodeSendTime = null;
       print("完善用户资料成功");
       //成功后重新刷新token
       TokenModel token = await login("refresh_token", null, null, Application.tempToken.refreshToken);
-      if(token != null){
+      if (token != null) {
         print("刷新用户token成功");
         await _afterLogin(token, context);
-      }else{
+      } else {
         print("刷新用户token失败");
       }
-    }else{
+    } else {
       print("完善用户资料失败");
       Navigator.of(context).pushNamedAndRemoveUntil(
         '/', (route) => false,
@@ -270,8 +274,9 @@ class _PerfectUserState extends LoginBasePageState {
       );
     }
   }
+
   //TODO 完整的用户的处理方法 这个方法在登录页 绑定手机号页 完善资料页都会用到 需要单独提出来
-  _afterLogin(TokenModel token, BuildContext context) async{
+  _afterLogin(TokenModel token, BuildContext context) async {
     TokenDto tokenDto = TokenDto.fromTokenModel(token);
     await TokenDBHelper().insertToken(tokenDto);
     context.read<TokenNotifier>().setToken(tokenDto);
@@ -280,12 +285,37 @@ class _PerfectUserState extends LoginBasePageState {
     ProfileDto profile = ProfileDto.fromUserModel(user);
     await ProfileDBHelper().insertProfile(profile);
     context.read<ProfileNotifier>().setProfile(profile);
-    Map<String, dynamic> videoCourseTagMap = await getAllTags();
-    Application.videoTagModel = VideoTagModel.fromJson(videoCourseTagMap);
     //连接融云
     Application.rongCloud.connect();
     //TODO 处理登录完成后的数据加载
     MessageManager.loadConversationListFromDatabase(context);
+
+    //一些非关键数据获取
+    _getMoreInfo();
+
     AppRouter.navigateToLoginSucess(context);
+  }
+
+  _getMoreInfo() async {
+    //todo 获取有哪些消息是置顶的消息
+    try {
+      Application.topChatModelList.clear();
+      Map<String, dynamic> topChatModelMap = await getTopChatList();
+      if (topChatModelMap != null && topChatModelMap["list"] != null) {
+        topChatModelMap["list"].forEach((v) {
+          Application.topChatModelList.add(TopChatModel.fromJson(v));
+        });
+      }
+    } catch (e) {}
+    //todo 获取有哪些消息是免打扰的消息
+    try {
+      Application.queryNoPromptUidList.clear();
+      Map<String, dynamic> queryNoPromptUidListMap = await queryNoPromptUidList();
+      if (queryNoPromptUidListMap != null && queryNoPromptUidListMap["list"] != null) {
+        queryNoPromptUidListMap["list"].forEach((v) {
+          Application.queryNoPromptUidList.add(NoPromptUidModel.fromJson(v));
+        });
+      }
+    } catch (e) {}
   }
 }

@@ -8,8 +8,7 @@ import 'package:crypto/crypto.dart';
 class StringUtil {
   //TODO 这个正则表达式需要可以更新
   static bool matchPhoneNumber(String phoneNum) {
-    RegExp exp = RegExp(
-        r"^(((\+86)|(86))?((13[0-9])|(14[0-9])|(15[0-9])|(16[0-9])|(19[0-9])|(17[0-9])|(18[0-9]))\d{8}"
+    RegExp exp = RegExp(r"^(((\+86)|(86))?((13[0-9])|(14[0-9])|(15[0-9])|(16[0-9])|(19[0-9])|(17[0-9])|(18[0-9]))\d{8}"
         r"\,)*(((\+86)|(86))?((13[0-9])|(14[0-9])|(15[0-9])|(16[0-9])|(19[0-9])|(17[0-9])|(18[0-9]))\d{8})$");
     return exp.hasMatch(phoneNum);
   }
@@ -29,11 +28,9 @@ class StringUtil {
     return hex.encode(digest.bytes);
   }
 
-  static RegExp _ipv4Maybe =
-      new RegExp(r'^(\d?\d?\d)\.(\d?\d?\d)\.(\d?\d?\d)\.(\d?\d?\d)$');
+  static RegExp _ipv4Maybe = new RegExp(r'^(\d?\d?\d)\.(\d?\d?\d)\.(\d?\d?\d)\.(\d?\d?\d)$');
 
-  static RegExp _ipv6 =
-      new RegExp(r'^::|^::1|^([a-fA-F0-9]{1,4}::?){1,7}([a-fA-F0-9]{1,4})$');
+  static RegExp _ipv6 = new RegExp(r'^::|^::1|^([a-fA-F0-9]{1,4}::?){1,7}([a-fA-F0-9]{1,4})$');
 
   /// check if the string [str] is a URL
   ///
@@ -45,29 +42,16 @@ class StringUtil {
   /// * [hostBlacklist] 设置不允许的主机列表
   static bool isURL(String str,
       {List<String> protocols = const ['http', 'https', 'ftp'],
-        bool requireTld = true,
-        bool requireProtocol = false,
-        bool allowUnderscore = false,
-        List<String> hostWhitelist = const [],
-        List<String> hostBlacklist = const []}) {
-    if (str == null ||
-        str.length == 0 ||
-        str.length > 2083 ||
-        str.startsWith('mailto:')) {
+      bool requireTld = true,
+      bool requireProtocol = false,
+      bool allowUnderscore = false,
+      List<String> hostWhitelist = const [],
+      List<String> hostBlacklist = const []}) {
+    if (str == null || str.length == 0 || str.length > 2083 || str.startsWith('mailto:')) {
       return false;
     }
 
-    var protocol,
-        user,
-        auth,
-        host,
-        hostname,
-        port,
-        port_str,
-        path,
-        query,
-        hash,
-        split;
+    var protocol, user, auth, host, hostname, port, port_str, path, query, hash, split;
 
     // check protocol
     split = str.split('://');
@@ -132,16 +116,13 @@ class StringUtil {
       } catch (e) {
         return false;
       }
-      if (!new RegExp(r'^[0-9]+$').hasMatch(port_str) ||
-          port <= 0 ||
-          port > 65535) {
+      if (!new RegExp(r'^[0-9]+$').hasMatch(port_str) || port <= 0 || port > 65535) {
         return false;
       }
     }
 
     if (!isIP(host) &&
-        !isFQDN(host,
-            requireTld: requireTld, allowUnderscores: allowUnderscore) &&
+        !isFQDN(host, requireTld: requireTld, allowUnderscores: allowUnderscore) &&
         host != 'localhost') {
       return false;
     }
@@ -185,8 +166,7 @@ class StringUtil {
   }
 
   /// 检查字符串[str]是否为完全限定的域名（例如domain.com）
-  static bool isFQDN(String str,
-      {bool requireTld = true, bool allowUnderscores = false}) {
+  static bool isFQDN(String str, {bool requireTld = true, bool allowUnderscores = false}) {
     var parts = str.split('.');
     if (requireTld) {
       var tld = parts.removeLast();
@@ -204,14 +184,13 @@ class StringUtil {
       if (!new RegExp(r'^[a-z\\u00a1-\\uffff0-9-]+$').hasMatch(part)) {
         return false;
       }
-      if (part[0] == '-' ||
-          part[part.length - 1] == '-' ||
-          part.indexOf('---') >= 0) {
+      if (part[0] == '-' || part[part.length - 1] == '-' || part.indexOf('---') >= 0) {
         return false;
       }
     }
     return true;
   }
+
   /*
   评论、分享、点赞数值显示规则：
 
@@ -224,31 +203,49 @@ class StringUtil {
   大于10000，则显示为w，采取末位舍去法保留小数点后一位，如：60400显示为6w，63500显示为6.3w
    */
   static String getNumber(int number) {
-    if(number==0||number==null){
+    if (number == 0 || number == null) {
       return 0.toString();
     }
     if (number < 10000) {
-      if(number<1000){
+      if (number < 1000) {
         return number.toString();
-      }else{
+      } else {
         String db = "${(number / 1000).toString()}";
-        if(int.parse(db.substring(db.indexOf(".")+1,db.indexOf(".")+2))!=0){
-          String doubleText = db.substring(0, db.indexOf(".")+2);
+        if (int.parse(db.substring(db.indexOf(".") + 1, db.indexOf(".") + 2)) != 0) {
+          String doubleText = db.substring(0, db.indexOf(".") + 2);
           return doubleText + "k";
-        }else{
+        } else {
           String intText = db.substring(0, db.indexOf("."));
-          return intText +"k";
+          return intText + "k";
         }
       }
     } else {
       String db = "${(number / 10000).toString()}";
-      if(int.parse(db.substring(db.indexOf(".")+1,db.indexOf(".")+2))!=0){
-        String doubleText = db.substring(0, db.indexOf(".")+2);
+      if (int.parse(db.substring(db.indexOf(".") + 1, db.indexOf(".") + 2)) != 0) {
+        String doubleText = db.substring(0, db.indexOf(".") + 2);
         return doubleText + "W";
-      }else{
+      } else {
         String intText = db.substring(0, db.indexOf("."));
-        return intText +"W";
+        return intText + "W";
       }
     }
+  }
+
+  /*
+   overflow: TextOverflow.ellipsis,
+   缺陷： 会将长字母、数字串整体显示省略
+   现象： 分组-12333333333333333333333333，可能会显示成：分组-1…
+   解决办法： 将每个字符串之间插入零宽空格
+  */
+  static String breakWord(String word) {
+    if (word == null || word.isEmpty) {
+      return word;
+    }
+    String breakWord = ' ';
+    word.runes.forEach((element) {
+      breakWord += String.fromCharCode(element);
+      breakWord += '\u200B';
+    });
+    return breakWord;
   }
 }

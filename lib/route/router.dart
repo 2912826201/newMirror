@@ -46,7 +46,8 @@ class AppRouter {
   static String pathEditInformation = "/profile/editinformation";
   static String pathEditInformationName = "/profile/editinformation/name";
   static String pathEditInformationIntroduction = "/profile/editinformation/introduction";
-  static String pathChatPage = "/chatPage";
+  static String pathChatPage = "/profile/chatPage";
+  static String pathGroupQrCodePage = "/profile/chatPage/groupMorePage/groupQrCodePage";
   static String pathSettingHomePage = "/profile/settinghomepage";
   static String pathSettingFeedBack = "/profile/settingfeedback";
   static String pathSettingBlackList = "/profile/settingblacklist";
@@ -87,6 +88,7 @@ class AppRouter {
     router.define(pathPerfectUserPage, handler: handlerPerfectUserPage);
     router.define(pathLoginSucess, handler: handlerLoginSucessPagePage);
     router.define(pathChatPage, handler: handlerChatPage);
+    router.define(pathGroupQrCodePage, handler: handlerGroupQrCodePage);
     router.define(pathPreviewPhoto, handler: handlerPreviewPhoto);
     router.define(pathPreviewVideo, handler: handlerPreviewVideo);
     router.define(pathLiveBroadcast, handler: handlerLiveBroadcast);
@@ -169,16 +171,22 @@ class AppRouter {
     _navigateToPage(context, pathLoginTest, map);
   }
 
+  // maxImageAmount 最大图片数量
+  // mediaType 媒体文件类型 目前的类型有typeImage和typeImageAndVideo
+  // needCrop 是否需要裁剪 false的情况没有裁剪预览框
+  // startPage 起始页 startPageGallery或startPagePhoto
+  // cropOnlySquare 是否只切正方形 只有needCrop为true时这个值才生效
+  // publishMode 是否在操作完成后跳转到发布页 0关闭页面不跳转到发布页 1关闭页面跳转到发布页 2不关闭页面跳转到发布页
   static void navigateToMediaPickerPage(BuildContext context, int maxImageAmount, int mediaType, bool needCrop,
-      int startPage, bool cropOnlySquare, bool isGoToPublish, Function(dynamic result) callback,
-      {int fixedWidth, int fixedHeight}) {
+      int startPage, bool cropOnlySquare, Function(dynamic result) callback,
+      {int publishMode = 0, int fixedWidth, int fixedHeight}) {
     Map<String, dynamic> map = Map();
     map["maxImageAmount"] = maxImageAmount;
     map["mediaType"] = mediaType;
     map["needCrop"] = needCrop;
     map["startPage"] = startPage;
     map["cropOnlySquare"] = cropOnlySquare;
-    map["isGoToPublish"] = isGoToPublish;
+    map["publishMode"] = publishMode;
     map["fixedWidth"] = fixedWidth;
     map["fixedHeight"] = fixedHeight;
     _navigateToPage(context, pathMediaPicker, map, callback: callback);
@@ -350,6 +358,15 @@ class AppRouter {
     }
     Application.shareMessage = shareMessage;
     _navigateToPage(context, pathChatPage, map);
+  }
+
+  static void navigateToGroupQrCodePage(
+      {@required BuildContext context, @required String imageUrl,@required String name,@required String groupId}) {
+    Map<String, dynamic> map = Map();
+    map["imageUrl"] = imageUrl;
+    map["name"] = name;
+    map["groupId"] = groupId;
+    _navigateToPage(context, pathGroupQrCodePage, map);
   }
 
   static void navigateToPreviewPhotoPage(BuildContext context, String filePath, Function(dynamic result) callback,

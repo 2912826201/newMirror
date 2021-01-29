@@ -76,7 +76,7 @@ class _MediaTestState extends State<MediaTestPage> {
               RaisedButton(
                 onPressed: () {
                   AppRouter.navigateToMediaPickerPage(
-                      context, 9, typeImageAndVideo, false, startPageGallery, false, false, (result) async {
+                      context, 9, typeImageAndVideo, false, startPageGallery, false, (result) async {
                     SelectedMediaFiles files = Application.selectedMediaFiles;
                     if (true != result || files == null) {
                       print("没有选择媒体文件");
@@ -109,7 +109,7 @@ class _MediaTestState extends State<MediaTestPage> {
               RaisedButton(
                 onPressed: () {
                   AppRouter.navigateToMediaPickerPage(
-                      context, 9, typeImageAndVideo, true, startPageGallery, false, false, (result) async {
+                      context, 9, typeImageAndVideo, true, startPageGallery, false, (result) async {
                     SelectedMediaFiles files = Application.selectedMediaFiles;
                     if (true != result || files == null) {
                       print("没有选择媒体文件");
@@ -136,7 +136,7 @@ class _MediaTestState extends State<MediaTestPage> {
               ),
               RaisedButton(
                 onPressed: () {
-                  AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, true, startPagePhoto, false, false,
+                  AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, true, startPagePhoto, false,
                       (result) async {
                     SelectedMediaFiles files = Application.selectedMediaFiles;
                     if (true != result || files == null) {
@@ -170,14 +170,14 @@ class _MediaTestState extends State<MediaTestPage> {
               RaisedButton(
                 onPressed: () {
                   AppRouter.navigateToMediaPickerPage(
-                      context, 9, typeImageAndVideo, true, startPageGallery, false, true, (result) {});
+                      context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {}, publishMode: 1);
                 },
                 child: Text("裁剪后去发布0"),
               ),
               RaisedButton(
                 onPressed: () {
                   AppRouter.navigateToMediaPickerPage(
-                      context, 9, typeImageAndVideo, true, startPagePhoto, false, true, (result) {});
+                      context, 9, typeImageAndVideo, true, startPagePhoto, false, (result) {}, publishMode: 1);
                 },
                 child: Text("裁剪后去发布1"),
               ),

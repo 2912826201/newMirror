@@ -269,6 +269,20 @@ class DateUtil {
     }
   }
 
+  //将秒数转换为天数
+  static String formatSecondToDay(int ms){
+    if(ms==null){
+      return "今天";
+    }
+    int daySecond=60*60*24;
+    int day=ms%daySecond>0?ms~/daySecond+1:ms~/daySecond;
+    if(day<=1){
+      return "今天";
+    }
+    return "${day}天";
+  }
+
+
   /// 将秒转换为数字 01:12
   static String formatSecondToStringNum1(int ms) {
     if (ms < 60) {

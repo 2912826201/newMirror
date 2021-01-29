@@ -16,6 +16,7 @@ class MeCoursePage extends StatefulWidget {
 class _MeCoursePageState extends State<MeCoursePage> {
   bool _isVideoCourseRequesting = false;
   int _isVideoCourseLastTime;
+  int _isVideoCoursePage=0;
   int _isVideoCourseTotalCount = 0;
   bool _videoCourseHasNext = false;
   List<LiveVideoModel> _videoCourseList = [];
@@ -24,6 +25,7 @@ class _MeCoursePageState extends State<MeCoursePage> {
   @override
   void initState() {
     super.initState();
+    _isVideoCoursePage=0;
     loadData();
   }
 
@@ -179,7 +181,7 @@ class _MeCoursePageState extends State<MeCoursePage> {
     return SliverToBoxAdapter(
       child: Container(
         color: AppColor.transparent,
-        height: 69.0,
+        height: 75.0,
         margin: const EdgeInsets.only(left: 16, top: 12, right: 16),
         padding: const EdgeInsets.symmetric(vertical: 12),
         child: Row(
@@ -264,13 +266,14 @@ class _MeCoursePageState extends State<MeCoursePage> {
   _onRefresh() {
     _videoCourseList.clear();
     _isVideoCourseLastTime = null;
+    _isVideoCoursePage=0;
     loadData();
   }
 
   void loadData() {
     _isVideoCourseRequesting = true;
-    if (_isVideoCourseLastTime == null) {
-      _videoCourseList.clear();
+    if(_isVideoCoursePage>0&&_isVideoCourseLastTime==null){
+      return;
     }
     getLearnedCourse(10, lastTime: _isVideoCourseLastTime).then((result) {
       _isVideoCourseRequesting = false;

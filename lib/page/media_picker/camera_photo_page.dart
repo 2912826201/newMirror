@@ -12,9 +12,9 @@ import 'package:permission_handler/permission_handler.dart';
 
 //相机拍照页
 class CameraPhotoPage extends StatefulWidget {
-  CameraPhotoPage({Key key, this.isGoToPublish = false, this.fixedWidth, this.fixedHeight}) : super(key: key);
+  CameraPhotoPage({Key key, this.publishMode = 0, this.fixedWidth, this.fixedHeight}) : super(key: key);
 
-  final bool isGoToPublish;
+  final int publishMode;
   final int fixedWidth;
   final int fixedHeight;
 
@@ -119,9 +119,13 @@ class CameraPhotoState extends State<CameraPhotoPage> with WidgetsBindingObserve
                       if (filePath != null) {
                         AppRouter.navigateToPreviewPhotoPage(context, filePath, (result) {
                           if (result != null) {
-                            Navigator.pop(context, result);
-                            if (widget.isGoToPublish) {
+                            if (widget.publishMode == 1) {
+                              Navigator.pop(context, result);
                               AppRouter.navigateToReleasePage(context);
+                            } else if (widget.publishMode == 2) {
+                              AppRouter.navigateToReleasePage(context);
+                            } else {
+                              Navigator.pop(context, result);
                             }
                           }
                         }, fixedWidth: widget.fixedWidth, fixedHeight: widget.fixedHeight);
@@ -188,7 +192,7 @@ class CameraPhotoState extends State<CameraPhotoPage> with WidgetsBindingObserve
     });
 
     try {
-      while(Application.isCameraInUse){
+      while (Application.isCameraInUse) {
         await Future.delayed(Duration(milliseconds: 100));
       }
       await _controller.initialize();

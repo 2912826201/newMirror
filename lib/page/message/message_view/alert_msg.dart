@@ -5,6 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
@@ -109,18 +110,31 @@ class AlertMsg extends StatelessWidget {
       //2--移除群聊
       //3--群主转移
       //4--群名改变
+      //4--扫码加入群聊
       //群通知
       Map<String, dynamic> mapGroupModel = json.decode(map["data"]["data"]);
-      // print("mapGroupModel:${map["data"]["data"].toString()}");
-      ChatGroupUserModel chatGroupUserModel =
-          context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[0];
-      if (mapGroupModel["subType"] == 1 &&
-          !chatGroupUserModel.isGroupLeader()) {
-        textArray.clear();
-      } else if (mapGroupModel["subType"] == 4) {
+      if (mapGroupModel["subType"] == 5) {
+        // print("mapGroupModel:${map["data"]["data"].toString()}");
+        getGroupEntryByQRCode(mapGroupModel, context);
+      }else if (mapGroupModel["subType"] == 4) {
         updateGroupName(mapGroupModel, context);
       } else {
-        getGroupText(mapGroupModel, context);
+        if(context.watch<GroupUserProfileNotifier>().loadingStatus==LoadingStatus.STATUS_COMPLETED) {
+          ChatGroupUserModel chatGroupUserModel = context
+              .watch<GroupUserProfileNotifier>()
+              .chatGroupUserModelList[0];
+          if (mapGroupModel["subType"] == 1 && !chatGroupUserModel.isGroupLeader()) {
+            textArray.clear();
+          } else {
+            getGroupText(mapGroupModel, context);
+          }
+        }else{
+          if (mapGroupModel["subType"] == 1) {
+            textArray.clear();
+          } else {
+            getGroupText(mapGroupModel, context);
+          }
+        }
       }
     }
 
@@ -229,6 +243,50 @@ class AlertMsg extends StatelessWidget {
       textArray.add("已成为新群主");
     }
     isChangColorArray.add(false);
+  }
+
+  //扫码进入群聊
+  void getGroupEntryByQRCode(Map<String, dynamic> mapGroupModel, BuildContext context) {
+    colorArray.add(AppColor.textSecondary);
+    colorArray.add(AppColor.textPrimary1);
+
+    List<dynamic> users = mapGroupModel["users"];
+    if (users == null || users.length < 1) {
+      textArray.clear();
+      isChangColorArray.clear();
+      colorArray.clear();
+      return;
+    }
+
+    bool isMe=false;
+    String name="";
+    for (dynamic d in users) {
+      if (d != null) {
+        if (d["uid"] == Application.profile.uid) {
+          isMe=true;
+          break;
+        } else {
+          name=d["groupNickName"];
+        }
+      }
+    }
+    if(isMe){
+      textArray.add("你通过二维码扫描加入群聊");
+      isChangColorArray.add(false);
+    }else{
+      textArray.add(name);
+      isChangColorArray.add(true);
+      textArray.add(" 通过扫描 ");
+      isChangColorArray.add(false);
+      if (mapGroupModel["operator"] == Application.profile.uid) {
+        textArray.add("你");
+      } else {
+        textArray.add(mapGroupModel["operatorName"]);
+      }
+      isChangColorArray.add(true);
+      textArray.add(" 分享的二维码加入群聊 ");
+      isChangColorArray.add(false);
+    }
   }
 
 
