@@ -372,9 +372,12 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //头部显示关注遮挡
   Widget getTopAttentionUi(){
+    print("开始判断显示不显示关注按钮");
     if (widget.conversation.type != PRIVATE_TYPE) {
+      print("不是私聊界面-不显示");
       isShowTopAttentionUi=false;
     }
+    print("isShowTopAttentionUi：$isShowTopAttentionUi");
     return Visibility(
       visible: isShowTopAttentionUi,
       child: UnconstrainedBox(
@@ -786,6 +789,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     //获取有没有at我的消息
     judgeIsHaveAtMeMsg();
 
+    //判断有没有显示关注按钮
+    await getRelation();
+
     //获取表情的数据
     emojiModelList = await EmojiManager.getEmojiModelList();
     Future.delayed(Duration(milliseconds: 200), () {
@@ -794,6 +800,21 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       });
     });
   }
+
+  //查询我是不是关注了对方
+  Future<void> getRelation()async{
+    if (widget.conversation.type != PRIVATE_TYPE) {
+      isShowTopAttentionUi=false;
+    }else{
+      Map<String, dynamic> map = await relation(Application.profile.uid,int.parse(chatUserId));
+      if(map==null||map["relation"]==null||map["relation"]==1||map["relation"]==3){
+        isShowTopAttentionUi=false;
+      }else{
+        isShowTopAttentionUi=true;
+      }
+    }
+  }
+
 
   //获取系统消息
   void getSystemInformation() async {
@@ -1194,6 +1215,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         chatDataModel.isHaveAnimation = false;
         chatDataList.insert(0, chatDataModel);
         setState(() {
+          isShowTopAttentionUi=true;
           recallNotificationMessagePosition = -1;
           _timerCount = 0;
           _textController.text = "";

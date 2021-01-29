@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mirror/api/message_page_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
@@ -35,8 +36,8 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
   SharedImageModel model = SharedImageModel();
   double width;
   double height;
+  String codeData;
   _capturePngToByteData() async {
-
       RenderRepaintBoundary boundary = rootWidgetKey.currentContext.findRenderObject();
       double dpr = ui.window.devicePixelRatio; // 获取当前设备的像素比
       ui.Image image = await boundary.toImage(pixelRatio: dpr);
@@ -57,6 +58,7 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
   @override
   void initState() {
     super.initState();
+      _getShortUrl();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Future.delayed(Duration(milliseconds: 1000), () {
         try {
@@ -66,6 +68,14 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
     });
   }
 
+  _getShortUrl()async{
+    Map<String,dynamic> map = await getShortUrl(type:3,targetId:context.read<ProfileNotifier>().profile.uid);
+      if(map!=null){
+        codeData = map["url"];
+        setState(() {
+        });
+      }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,7 +156,7 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
                       )),
                   Positioned(
                       top: ScreenUtil.instance.height * 0.73,
-                      left: (ScreenUtil.instance.screenWidthDp - 90) / 2,
+                      left: (ScreenUtil.instance.screenWidthDp - 120) / 2,
                       child: Container(
                         width: 120,
                         height: 30,
@@ -186,7 +196,7 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
             ),
             Spacer(),
             QrImage(
-              data: "用户${data.uid}",
+              data: codeData!=null?codeData:"没有数据",
               size: ScreenUtil.instance.height * 0.49 * 0.57,
               padding: EdgeInsets.zero,
               backgroundColor: AppColor.white,
