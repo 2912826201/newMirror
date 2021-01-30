@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:intl/intl.dart';
+import 'package:mirror/config/application.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -161,7 +162,11 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
           ),
           GestureDetector(
               onTap: () {
-                AppRouter.navigateToScanCodePage(context);
+                if (Application.token.anonymous == 0) {
+                  AppRouter.navigateToScanCodePage(context);
+                } else {
+                  AppRouter.navigateToLoginPage(context);
+                }
               },
               child: Container(
                 margin: const EdgeInsets.only(top: 12),
@@ -259,9 +264,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
                               width: 4,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: notifier.machine.status == 0
-                                    ? AppColor.mainRed
-                                    : AppColor.lightGreen,
+                                color: notifier.machine.status == 0 ? AppColor.mainRed : AppColor.lightGreen,
                               ),
                             ),
                           ),
