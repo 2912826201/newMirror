@@ -92,7 +92,6 @@ class SearchHeaderState extends State<SearchHeader> {
   void initState() {
     context.read<SearchEnterNotifier>().EditTextController(controller);
     _formatter = InputFormatter(
-      controller: controller,
       inputChangedCallback: (String value) {
         context.read<SearchEnterNotifier>().changeCallback(value);
       },
@@ -232,7 +231,9 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
           liveVideoList.addAll(liveList);
         }
       }
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     }).catchError((e) {
       print("报错了");
       print(e);

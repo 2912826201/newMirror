@@ -6,15 +6,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mirror/api/basic_api.dart';
-import 'package:mirror/api/message_page_api.dart';
+import 'package:mirror/api/machine_api.dart';
+import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
+import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/page/login/login_base_page_state.dart';
 import 'package:mirror/constant/style.dart';
@@ -297,6 +300,15 @@ class _PerfectUserState extends LoginBasePageState {
   }
 
   _getMoreInfo() async {
+    //todo 获取登录的机器信息
+    try {
+      List<MachineModel> machineList = await getMachineStatusInfo();
+      if (machineList != null && machineList.isNotEmpty) {
+        context.read<MachineNotifier>().setMachine(machineList.first);
+      } else {
+        context.read<MachineNotifier>().setMachine(null);
+      }
+    } catch (e) {}
     //todo 获取有哪些消息是置顶的消息
     try {
       Application.topChatModelList.clear();

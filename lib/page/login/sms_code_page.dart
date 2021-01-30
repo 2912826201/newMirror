@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mirror/api/message_page_api.dart';
+import 'package:mirror/api/machine_api.dart';
+import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
@@ -11,10 +12,12 @@ import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
+import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
+import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
@@ -314,6 +317,15 @@ class _SmsCodePageState extends LoginBasePageState {
   }
 
   _getMoreInfo() async {
+    //todo 获取登录的机器信息
+    try {
+      List<MachineModel> machineList = await getMachineStatusInfo();
+      if (machineList != null && machineList.isNotEmpty) {
+        context.read<MachineNotifier>().setMachine(machineList.first);
+      } else {
+        context.read<MachineNotifier>().setMachine(null);
+      }
+    } catch (e) {}
     //todo 获取有哪些消息是置顶的消息
     try {
       Application.topChatModelList.clear();

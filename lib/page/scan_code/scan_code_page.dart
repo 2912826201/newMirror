@@ -2,27 +2,23 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'dart:async';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
-import 'package:mirror/api/message_page_api.dart';
+import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/media_file_model.dart';
-import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:scan/scan.dart';
-import 'package:toast/toast.dart';
 import 'package:provider/provider.dart';
 
 import 'my_qrcode_page.dart';

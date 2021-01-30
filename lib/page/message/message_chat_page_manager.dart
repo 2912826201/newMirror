@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/api/message_page_api.dart';
+import 'package:mirror/api/message_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/media_file_model.dart';

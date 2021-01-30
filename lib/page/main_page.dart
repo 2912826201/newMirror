@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mirror/api/message_page_api.dart';
+import 'package:mirror/api/message_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/home/home_page.dart';

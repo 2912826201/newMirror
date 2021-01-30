@@ -35,9 +35,6 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
   // 滑动控制器
   ScrollController _scrollController = new ScrollController();
 
-  // 数据加载页数
-  int dataPage = 1;
-
   // 请求下一页
   int lastTime;
 
@@ -57,7 +54,6 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
     // 上拉加载
     _scrollController.addListener(() {
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        dataPage += 1;
         requestSearchCourse();
       }
     });
@@ -72,7 +68,7 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
           if (liveVideoList.isNotEmpty) {
             liveVideoList.clear();
             lastTime = null;
-            dataPage = 1;
+            hasNext = null;
           }
           requestSearchCourse();
         }
@@ -94,44 +90,32 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
 
   // 请求搜索课程接口
   requestSearchCourse() async {
-    if (loadStatus == LoadingStatus.STATUS_IDEL) {
-      // 先设置状态，防止下拉就直接加载
-      setState(() {
-        loadStatus = LoadingStatus.STATUS_LOADING;
-      });
-    }
-    DataResponseModel model = DataResponseModel();
     if (hasNext != 0) {
-      model = await searchCourse(key: widget.keyWord, size: 20, lastTime: lastTime);
-      if (dataPage == 1) {
-        if (model.list.isNotEmpty) {
-          print(model.list.length);
-          model.list.forEach((v) {
-            liveVideoList.add(LiveVideoModel.fromJson(v));
-          });
-          if (model.hasNext == 0) {
-            loadText = "";
-            loadStatus = LoadingStatus.STATUS_COMPLETED;
-          }
-        }
-      } else if (dataPage > 1 && lastTime != null) {
-        if (model.list.isNotEmpty) {
-          model.list.forEach((v) {
-            liveVideoList.add(LiveVideoModel.fromJson(v));
-          });
-          loadStatus = LoadingStatus.STATUS_IDEL;
-          loadText = "加载中...";
-        }
+      if (loadStatus == LoadingStatus.STATUS_IDEL) {
+        // 先设置状态，防止下拉就直接加载
+        setState(() {
+          loadStatus = LoadingStatus.STATUS_LOADING;
+        });
+      }
+      DataResponseModel model = await searchCourse(key: widget.keyWord, size: 20, lastTime: lastTime);
+      lastTime = model.lastTime;
+      hasNext = model.hasNext;
+      if (model.list.isNotEmpty) {
+        model.list.forEach((v) {
+          liveVideoList.add(LiveVideoModel.fromJson(v));
+        });
+        loadStatus = LoadingStatus.STATUS_IDEL;
+        loadText = "加载中...";
       }
     }
-    lastTime = model.lastTime;
-    hasNext = model.hasNext;
     if (hasNext == 0) {
       loadText = "已加载全部课程";
       loadStatus = LoadingStatus.STATUS_COMPLETED;
       print("返回不请求数据");
     }
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -142,7 +126,7 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
               onRefresh: () async {
                 liveVideoList.clear();
                 lastTime = null;
-                dataPage = 1;
+                hasNext = null;
                 loadStatus = LoadingStatus.STATUS_LOADING;
                 loadText = "加载中...";
                 requestSearchCourse();

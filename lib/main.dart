@@ -6,6 +6,7 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/basic_api.dart';
+import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/data/database/db_helper.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/database/region_db_helper.dart';
@@ -28,13 +29,14 @@ import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 
 import 'api/training/live_api.dart';
-import 'api/message_page_api.dart';
+import 'api/message_api.dart';
 import 'api/user_api.dart';
 import 'config/application.dart';
 import 'config/config.dart';
 import 'config/shared_preferences.dart';
 import 'data/dto/profile_dto.dart';
 import 'data/dto/token_dto.dart';
+import 'data/model/machine_model.dart';
 import 'data/model/message/chat_enter_notifier.dart';
 import 'data/model/message/chat_message_profile_notifier.dart';
 import 'data/model/message/chat_voice_setting.dart';
@@ -43,6 +45,7 @@ import 'data/model/message/no_prompt_uid_model.dart';
 import 'data/model/message/top_chat_model.dart';
 import 'data/model/message/voice_alert_date_model.dart';
 import 'data/model/token_model.dart';
+import 'data/notifier/machine_notifier.dart';
 import 'data/notifier/token_notifier.dart';
 import 'data/notifier/profile_notifier.dart';
 import 'data/notifier/unread_message_notifier.dart';
@@ -57,6 +60,7 @@ void main() {
           providers: [
             ChangeNotifierProvider(create: (_) => TokenNotifier(Application.token)),
             ChangeNotifierProvider(create: (_) => ProfileNotifier(Application.profile)),
+            ChangeNotifierProvider(create: (_) => MachineNotifier(Application.machine)),
             // ValueListenableProvider<FeedMapNotifier>(builder: (_) => {},)
             ChangeNotifierProvider(create: (_) => FeedMapNotifier(feedMap: {})),
             ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
@@ -121,10 +125,21 @@ Future _initApp() async {
 
   //从数据库获取已登录的用户token或匿名用户token
   TokenDto token = await TokenDBHelper().queryToken();
+  bool isTokenValid = false;
   if (token == null ||
       (token.anonymous == 0 && (token.isPerfect == 0 || token.isPhone == 0)) ||
       DateTime.now().second + token.expiresIn > (token.createTime / 1000)) {
-    //如果token是空的 或者token非匿名但未完善资料 或者已过期 那么需要先去取一个匿名token
+    //如果token是空的 或者token非匿名但未完善资料
+    isTokenValid = false;
+  } else {
+    //通过一个小接口校验token是否可用（已过期或被清除时需要视为未登录，重新获取匿名token）
+    //无论是否有效 先赋值 不然请求是不会带上token的
+    Application.token = token;
+    isTokenValid = await checkToken();
+  }
+
+  if(!isTokenValid) {
+    Application.token = null;
     TokenModel tokenModel = await login("anonymous", null, null, null);
     if (tokenModel != null) {
       token = TokenDto.fromTokenModel(tokenModel);
@@ -184,6 +199,13 @@ Future _initApp() async {
 
   //TODO ==========================下面是已登录用户获取的信息需要统一在用户登录后获取================================
   if (Application.token.anonymous == 0) {
+    //todo 获取登录的机器信息
+    try {
+      List<MachineModel> machineList = await getMachineStatusInfo();
+      if (machineList != null && machineList.isNotEmpty) {
+        Application.machine = machineList.first;
+      }
+    } catch (e) {}
     //todo 获取有哪些消息是置顶的消息
     try {
       Application.topChatModelList.clear();

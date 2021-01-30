@@ -21,6 +21,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
   String startTime;
   String endTime;
   final VoidCallback shareBtnClick;
+  final GlobalKey globalKey;
 
   SliverCustomHeaderDelegate({
     this.collapsedHeight,
@@ -34,6 +35,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
     this.startTime,
     this.endTime,
     this.shareBtnClick,
+    this.globalKey,
   });
 
   @override
@@ -133,6 +135,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     this.updateStatusBarBrightness(shrinkOffset);
     return Container(
+      key: globalKey,
       height: this.maxExtent,
       width: MediaQuery.of(context).size.width,
       child: Stack(

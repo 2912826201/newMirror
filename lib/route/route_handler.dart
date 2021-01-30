@@ -246,7 +246,7 @@ var handlerVideoDetail = Handler(handlerFunc: (BuildContext context, Map<String,
   }
   return VideoDetailPage(
     heroTag: data["heroTag"] == null ? "" : data["heroTag"],
-    liveCourseId: data["videoCourseId"],
+    videoCourseId: data["videoCourseId"],
     videoModel: videoModel,
     commentDtoModel: data["commentDtoModel"]==null?null:CommentDtoModel.fromJson(data["commentDtoModel"]),
     fatherComment: data["fatherComment"]==null?null:CommentDtoModel.fromJson(data["fatherComment"]),

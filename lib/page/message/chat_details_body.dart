@@ -55,6 +55,7 @@ class ChatDetailsBody extends StatelessWidget {
       this.voidItemLongClickCallBack});
 
   List<ChatDataModel> chatData = <ChatDataModel>[];
+  int pageCount=15;
 
 
   @override
@@ -101,7 +102,7 @@ class ChatDetailsBody extends StatelessWidget {
               controller: scrollController,
               padding: EdgeInsets.symmetric(horizontal: 16),
               reverse: true,
-              shrinkWrap: chatData.length < 15,
+              shrinkWrap: chatData.length < pageCount,
               childrenDelegate: FirstEndItemChildrenDelegate((BuildContext context, int index) {
                 if (index == chatData.length - 1) {
                   print("------------");
@@ -185,7 +186,7 @@ class ChatDetailsBody extends StatelessWidget {
 
   //判断有没有动画
   Widget judgeStartAnimation(ChatDataModel model, int position) {
-    if (model.isHaveAnimation && chatData.length > 10) {
+    if (model.isHaveAnimation && chatData.length > pageCount) {
       AnimationController animationController = AnimationController(
         duration: new Duration(milliseconds: 200),
         vsync: vsync,

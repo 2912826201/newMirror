@@ -15,7 +15,7 @@ import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 
 class SearchTopic extends StatefulWidget {
-  SearchTopic({Key key, this.keyWord, this.focusNode,this.textController}) : super(key: key);
+  SearchTopic({Key key, this.keyWord, this.focusNode, this.textController}) : super(key: key);
   FocusNode focusNode;
   TextEditingController textController;
   String keyWord;
@@ -36,8 +36,8 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
   // 滑动控制器
   ScrollController _scrollController = new ScrollController();
 
-  // 数据加载页数
-  int dataPage = 1;
+  // 是否存在下一页
+  int hasNext;
 
 // 加载中默认文字
   String loadText = "加载中...";
@@ -58,7 +58,6 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
     // 上拉加载
     _scrollController.addListener(() {
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        dataPage += 1;
         requestFeednIterface();
       }
     });
@@ -74,7 +73,7 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
             print("333333333333333333333");
             topicList.clear();
             lastScore = null;
-            dataPage = 1;
+            hasNext = null;
           }
           requestFeednIterface();
         }
@@ -88,6 +87,7 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
   void dispose() {
     print("话题页销毁了页面");
     _scrollController.dispose();
+
     ///取消延时任务
     timer.cancel();
     super.dispose();
@@ -95,95 +95,77 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
 
   // 请求动态接口
   requestFeednIterface() async {
-    if (loadStatus == LoadingStatus.STATUS_IDEL) {
-      // 先设置状态，防止下拉就直接加载
-      setState(() {
-        loadStatus = LoadingStatus.STATUS_LOADING;
-      });
-    }
-    if (dataPage > 1 && lastScore == null) {
-      loadText = "已加载全部动态";
-      print("返回不请求数据");
-      return;
-    }
-    DataResponseModel model = await searchTopic(key: widget.keyWord, size: 20, lastScore: lastScore);
-
-    setState(() {
-      print("dataPage:  ￥￥$dataPage");
-      if (dataPage == 1) {
-        if (model.list.isNotEmpty) {
-          print(model.list.length);
-          model.list.forEach((v) {
-            topicList.add(TopicDtoModel.fromJson(v));
-          });
-          if (model.hasNext == 0) {
-            loadText = "";
-            loadStatus = LoadingStatus.STATUS_COMPLETED;
-          }
-        }
-      } else if (dataPage > 1 && lastScore != null) {
-        if (model.list.isNotEmpty) {
-          model.list.forEach((v) {
-            topicList.add(TopicDtoModel.fromJson(v));
-          });
-          loadStatus = LoadingStatus.STATUS_IDEL;
-          loadText = "加载中...";
-        } else {
-          // 加载完毕
-          loadText = "已加载全部动态";
-          loadStatus = LoadingStatus.STATUS_COMPLETED;
-        }
+    if (hasNext != 0) {
+      if (loadStatus == LoadingStatus.STATUS_IDEL) {
+        // 先设置状态，防止下拉就直接加载
+        setState(() {
+          loadStatus = LoadingStatus.STATUS_LOADING;
+        });
       }
-    });
-    lastScore = model.lastScore;
+      DataResponseModel model = await searchTopic(key: widget.keyWord, size: 20, lastScore: lastScore);
+      lastScore = model.lastScore;
+      hasNext = model.hasNext;
+      if (model.list.isNotEmpty) {
+        model.list.forEach((v) {
+          topicList.add(TopicDtoModel.fromJson(v));
+        });
+        loadStatus = LoadingStatus.STATUS_IDEL;
+        loadText = "加载中...";
+      }
+    }
+    if (hasNext == 0) {
+      // 加载完毕
+      loadText = "已加载全部动态";
+      loadStatus = LoadingStatus.STATUS_COMPLETED;
+    }
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-
     if (topicList.isNotEmpty) {
       return Container(
           child: RefreshIndicator(
               onRefresh: () async {
                 topicList.clear();
                 lastScore = null;
-                dataPage = 1;
+                hasNext = null;
                 loadStatus = LoadingStatus.STATUS_LOADING;
                 loadText = "加载中...";
                 requestFeednIterface();
               },
               child:
-                  CustomScrollView(controller: _scrollController, physics: AlwaysScrollableScrollPhysics(), slivers: [
+              CustomScrollView(controller: _scrollController, physics: AlwaysScrollableScrollPhysics(), slivers: [
                 SliverToBoxAdapter(
                     child: Container(
-                  margin: EdgeInsets.only(left: 16, right: 16),
-                  child: MediaQuery.removePadding(
-                      removeTop: true,
-                      context: context,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        primary: false,
-                        itemCount: topicList.length + 1,
-                        itemBuilder: (context, index) {
-                          // if (feedList.isNotEmpty) {
-                          if (index == topicList.length) {
-
-                            return LoadingView(
-                              loadText: loadText,
-                              loadStatus: loadStatus,
-                            );
-                          } else if (index == topicList.length + 1) {
-                            return Container();
-                          } else {
-
-                            return SearchTopiciItem(
-                              model: topicList[index],
-                            );
-                          }
-                          // }
-                        },
-                      )),
-                ))
+                      margin: EdgeInsets.only(left: 16, right: 16),
+                      child: MediaQuery.removePadding(
+                          removeTop: true,
+                          context: context,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            primary: false,
+                            itemCount: topicList.length + 1,
+                            itemBuilder: (context, index) {
+                              // if (feedList.isNotEmpty) {
+                              if (index == topicList.length) {
+                                return LoadingView(
+                                  loadText: loadText,
+                                  loadStatus: loadStatus,
+                                );
+                              } else if (index == topicList.length + 1) {
+                                return Container();
+                              } else {
+                                return SearchTopiciItem(
+                                  model: topicList[index],
+                                );
+                              }
+                              // }
+                            },
+                          )),
+                    ))
               ])));
     } else {
       return Container(
@@ -214,7 +196,7 @@ class SearchTopiciItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  GestureDetector(
+    return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
@@ -224,7 +206,7 @@ class SearchTopiciItem extends StatelessWidget {
       child: Container(
         width: ScreenUtil.instance.width,
         margin: EdgeInsets.only(left: 16, right: 16),
-        padding: EdgeInsets.only(top: 6,bottom: 6),
+        padding: EdgeInsets.only(top: 6, bottom: 6),
         // height: 54,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
