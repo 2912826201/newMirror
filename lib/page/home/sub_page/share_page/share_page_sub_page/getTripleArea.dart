@@ -23,9 +23,7 @@ class GetTripleArea extends StatefulWidget {
   int index;
   GlobalKey offsetKey;
   backCallBack back;
-  CommentDtoModel comment;
-  List<CommentDtoModel> commentDtoModel;
-  GetTripleArea({Key key, this.model,this.index,this.offsetKey,this.comment,this.commentDtoModel,this.back}) : super(key: key);
+  GetTripleArea({Key key, this.model,this.index,this.offsetKey,this.back}) : super(key: key);
 
   GetTripleAreaState createState() => GetTripleAreaState();
 }
