@@ -7,6 +7,7 @@ import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/token_model.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
@@ -45,6 +46,7 @@ class LoginTestPage extends StatelessWidget {
                 context.read<TokenNotifier>().setToken(tokenDto);
                 await ProfileDBHelper().clearProfile();
                 context.read<ProfileNotifier>().setProfile(ProfileDto.fromUserModel(UserModel()));
+                context.read<MachineNotifier>().setMachine(null);
                 // 登出融云
                 Application.rongCloud.disconnect();
                 //TODO 处理登出后需要清掉的用户数据

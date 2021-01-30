@@ -54,12 +54,14 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
 
   // 列表监听
   ScrollController _controller = new ScrollController();
-@override
+
+  @override
   void dispose() {
-  _controller.dispose();
-  print('================================底部弹窗dispose');
+    _controller.dispose();
+    print('================================底部弹窗dispose');
     super.dispose();
   }
+
   @override
   void initState() {
     print("请求接口吗");
@@ -86,6 +88,7 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
         await queryListByHot(targetId: widget.feedId, targetType: 0, page: this.dataPage, size: 20);
 
     print("打印返回值￥%${modelList.isNotEmpty}");
+
     setState(() {
       totalCount = modelList[0].totalCount;
       modelList.removeAt(0);
@@ -148,29 +151,52 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
       return Expanded(
           // ListView头部有一段空白区域，是因为当ListView没有和AppBar一起使用时，头部会有一个padding，为了去掉padding，可以使用MediaQuery.removePadding
           child: MediaQuery.removePadding(
-        removeTop: true,
-        context: context,
-        child: ListView.builder(
-            itemCount: commentModel.length,
-            controller: _controller,
-            itemBuilder: (context, index) {
-              print(index);
-              print(commentModel.length);
-              if (index == commentModel.length) {
-                return LoadingView(
-                  loadText: loadText,
-                  loadStatus: loadStatus,
-                );
-              } else {
-                return CommentBottomListView(
-                  model: commentModel[index],
-                  index: index,
-                  type: 2,
-                  feedId: widget.feedId,
-                );
-              }
-            }),
-      ));
+              removeTop: true,
+              context: context,
+              child: ListView(
+                controller: _controller,
+                children: List.generate(commentModel.length + 1, (index) {
+                  if (index == commentModel.length) {
+                    return LoadingView(
+                      loadText: loadText,
+                      loadStatus: loadStatus,
+                    );
+                  } else if (index == commentModel.length + 1) {
+                    return Container();
+                  } else {
+                    return CommentBottomListView(
+                      model: commentModel[index],
+                      index: index,
+                      type: 2,
+                      feedId: widget.feedId,
+                    );
+                  }
+                }),
+              )
+              // child: ListView.builder(
+              //     itemCount: commentModel.length + 1,
+              //     controller: _controller,
+              //     itemBuilder: (context, index) {
+              //       print(index);
+              //       print(commentModel.length);
+              //       if (index == commentModel.length) {
+              //         return LoadingView(
+              //           loadText: loadText,
+              //           loadStatus: loadStatus,
+              //         );
+              //       }  else if(index == commentModel.length + 1) {
+              //         return Container();
+              //       }
+              //       else {
+              //         return CommentBottomListView(
+              //           model: commentModel[index],
+              //           index: index,
+              //           type: 2,
+              //           feedId: widget.feedId,
+              //         );
+              //       }
+              //     }),
+              ));
     }
   }
 
@@ -223,7 +249,9 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
             isUnderline: true,
             feedModel: context.watch<FeedMapNotifier>().feedMap[widget.feedId],
           ),
-          SizedBox(height: ScreenUtil.instance.bottomHeight,)
+          SizedBox(
+            height: ScreenUtil.instance.bottomHeight,
+          )
         ],
       ),
     );

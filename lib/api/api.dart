@@ -12,17 +12,19 @@ import '../config/config.dart';
 const int _CONNECT_TIMEOUT = 10000;
 const int _RECEIVE_TIMEOUT = 20000;
 
-//服务端接口返回code
+///服务端接口返回code
+//成功
 const int CODE_SUCCESS = 200;
+//无法描述无法应对的服务端异常
 const int CODE_SERVER_ERROR = 500;
-//直播课程预约失败-时间不对
-const int CODE_BOOK_LIVE_COURSE_ERROR = 321;
-//邀请进入群聊--群聊不在
-const int CODE_INVITE_JOIN_NO_GROUP = 315;
-//邀请进入群聊--你不是群员
-const int CODE_INVITE_JOIN_NO_GROUP_MAN = 305;
-//邀请进入群聊--uids格式不正确
-const int CODE_INVITE_JOIN_UID_ERROR = 300;
+//数据异常：直播课程预约失败-时间不对
+const int CODE_DATA_EXCEPTION = 321;
+//群聊不存在
+const int CODE_GROUP_NOT_EXISTS = 315;
+//无权限：邀请进入群聊--你不是群员
+const int CODE_NO_AUTH = 305;
+//入参错误
+const int CODE_PARAMETER_ERROR = 300;
 
 //身份认证的类型
 const int AUTH_TYPE_COMMON = 0;

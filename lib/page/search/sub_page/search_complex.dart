@@ -55,14 +55,16 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
   // 滑动控制器
   ScrollController _scrollController = new ScrollController();
 
-  // 数据加载页数
-  int dataPage = 1;
-
 // 加载中默认文字
   String loadText = "加载中...";
 
   // 加载状态
   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
+
+  // 是否存在下一页
+  int hasNext;
+
+  // 下一页
   int lastTime;
 
   @override
@@ -95,7 +97,6 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
     // 上拉加载
     _scrollController.addListener(() {
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        dataPage += 1;
         requestFeednIterface();
       }
     });
@@ -136,11 +137,19 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
         feedModel.list.forEach((v) {
           feedList.add(HomeFeedModel.fromJson(v));
           lastTime = feedModel.lastTime;
+          hasNext = feedModel.hasNext;
+          if (hasNext == 0) {
+            // 加载完毕
+            loadText = "已加载全部动态";
+            loadStatus = LoadingStatus.STATUS_COMPLETED;
+          }
         });
+        // 更新全局监听
+        context.read<FeedMapNotifier>().updateFeedMap(feedList);
       }
-      // 更新全局监听
-      context.read<FeedMapNotifier>().updateFeedMap(feedList);
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     }).catchError((e) {
       print("报错了");
       print(e);
@@ -149,45 +158,36 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
 
   // 请求动态接口
   requestFeednIterface() async {
-    if (loadStatus == LoadingStatus.STATUS_IDEL) {
-      // 先设置状态，防止下拉就直接加载
-      setState(() {
-        loadStatus = LoadingStatus.STATUS_LOADING;
-      });
-    }
-    if (dataPage > 1 && lastTime == null) {
-      loadText = "已加载全部动态";
-      print("返回不请求数据");
-      return;
-    }
-    DataResponseModel model = await searchFeed(key: widget.keyWord, size: 20, lastTime: lastTime);
-
-    setState(() {
-      print("dataPage:  ￥￥$dataPage");
-      if (dataPage == 1) {
-        if (model.list.isNotEmpty) {
-          print(model.list.length);
-          model.list.forEach((v) {
-            feedList.add(HomeFeedModel.fromJson(v));
-          });
-        }
-      } else if (dataPage > 1 && lastTime != null) {
+    if (hasNext != 0) {
+      if (loadStatus == LoadingStatus.STATUS_IDEL) {
+        // 先设置状态，防止下拉就直接加载
+        setState(() {
+          loadStatus = LoadingStatus.STATUS_LOADING;
+        });
+      }
+      DataResponseModel model = await searchFeed(key: widget.keyWord, size: 20, lastTime: lastTime);
+      hasNext = model.hasNext;
+      lastTime = model.lastTime;
+      if (hasNext != 0) {
         if (model.list.isNotEmpty) {
           model.list.forEach((v) {
             feedList.add(HomeFeedModel.fromJson(v));
           });
           loadStatus = LoadingStatus.STATUS_IDEL;
           loadText = "加载中...";
-        } else {
-          // 加载完毕
-          loadText = "已加载全部动态";
-          loadStatus = LoadingStatus.STATUS_COMPLETED;
         }
+        // 更新全局监听
+        context.read<FeedMapNotifier>().updateFeedMap(feedList);
       }
-    });
-    lastTime = model.lastTime;
-    // 更新全局监听
-    context.read<FeedMapNotifier>().updateFeedMap(feedList);
+      if (hasNext == 0)  {
+        // 加载完毕
+        loadText = "已加载全部动态";
+        loadStatus = LoadingStatus.STATUS_COMPLETED;
+      }
+      if (mounted) {
+        setState(() {});
+      }
+    }
   }
 
   @override

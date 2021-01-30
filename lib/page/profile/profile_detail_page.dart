@@ -132,7 +132,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     print('====关注数========================${attentionModel.followingCount}');
     print('====粉丝数========================${attentionModel.followerCount}');
     print('====点赞数========================${attentionModel.laudedCount}');
-
     if (attentionModel != null) {
       context.read<ProfilePageNotifier>().changeAttentionModel(attentionModel,widget.userId);
     }
@@ -144,13 +143,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     if (userModel != null) {
       print('获取relation=============================${userModel.relation}');
       print('获取用户签名==============================${userModel.description}');
-      setState(() {
+
         _avatar = userModel.avatarUri;
         _id = userModel.uid;
         _signature = userModel.description;
         if (_signature != null) {
           ///判断文字的高度，动态改变
-          TextPainter testSize = calculateTextWidth(_signature, AppStyle.textRegular14, 255, 5);
+          TextPainter testSize = calculateTextWidth(_signature, AppStyle.textRegular14, 255, 10);
           _signatureHeight = testSize.height;
           print('textHeight==============================$_signatureHeight');
         }
@@ -159,7 +158,10 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         if (!isMselfId) {
           print('判断relation=====================$relation');
         }
-      });
+        if(mounted){
+          setState(() {
+          });
+        }
       if (relation == 0 || relation == 2) {
         context.read<ProfilePageNotifier>().changeIsFollow(true,widget.userId);
       } else if (relation == 1 || relation == 3) {
@@ -407,10 +409,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 children: [_mineAvatar(height), Positioned(right: 0, top: 24, child: _mineButton(height))],
               ),
             ),
-            SizedBox(
-              height: height * 0.02,
-            ),
-
+            Spacer(),
             ///昵称
             Container(
               padding: EdgeInsets.only(left: 16, right: 16),
@@ -419,19 +418,14 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 style: AppStyle.textMedium18,
               ),
             ),
-            SizedBox(
-              height: height * 0.02,
-            ),
+            Spacer(),
 
             ///id
             Container(
               padding: EdgeInsets.only(left: 16, right: 16),
               child: Text("ID: $_id"),
             ),
-            SizedBox(
-              height: height * 0.007,
-            ),
-
+            Spacer(),
             ///签名
             Container(
               height: _signatureHeight,
@@ -439,10 +433,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               width: width * 0.7,
               child: Text(_signature != null ? _signature : "      ", softWrap: true, style: AppStyle.textRegular14),
             ),
-            SizedBox(
-              height: height * 0.01,
-            ),
-
+           Spacer(),
             ///关注，获赞，粉丝
             Container(
               padding: EdgeInsets.only(left: 16, right: 16),

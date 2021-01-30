@@ -1,12 +1,14 @@
 import 'dart:math';
 
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -94,7 +96,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
                   itemCount: _videoCourseList.length + 2,
                   itemBuilder: (context, index) {
                     if (index == 0) {
-                      return _buildTopView();
+                      return _buildTopView(context.watch<MachineNotifier>());
                     } else if (index == _videoCourseList.length + 1) {
                       return SizedBox(
                         height: 40,
@@ -114,12 +116,11 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
   }
 
   //我的课程列表上方的所有部分
-  Widget _buildTopView() {
+  Widget _buildTopView(MachineNotifier notifier) {
     return Column(
       children: [
         _buildBanner(),
-        _buildConnection(),
-        _buildEquipment(),
+        notifier.machine == null ? _buildConnection() : _buildEquipment(),
         _buildLive(),
         _buildCourseTitle(),
         _buildPlaceHolder()

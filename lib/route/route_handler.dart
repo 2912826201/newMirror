@@ -47,6 +47,7 @@ import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/page/profile/vip/vip_open_page.dart';
 import 'package:mirror/page/rc_test_page.dart';
 import 'package:mirror/page/scan_code/scan_code_page.dart';
+import 'package:mirror/page/scan_code/scan_result_page.dart';
 import 'package:mirror/page/test_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_broadcast_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_detail_page.dart';
@@ -120,7 +121,7 @@ var handlerLike = Handler(handlerFunc: (BuildContext context, Map<String, List<S
   return Like();
 });
 
-var handlermineDetails = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+var handlerMineDetails = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return ProfileDetailPage(
     userId: data["userId"],
@@ -318,6 +319,12 @@ var handlerMachineSetting = Handler(handlerFunc: (BuildContext context, Map<Stri
 //扫描二维码页
 var handlerScanCode = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return ScanCodePage();
+});
+
+//扫描二维码结果页
+var handlerScanCodeResult = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return ScanCodeResultPage(ScanCodeResultModel.fromJson(data["resultModel"]));
 });
 
 //健身相册页

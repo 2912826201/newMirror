@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/region_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
+import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
@@ -109,4 +110,7 @@ class Application {
 
   //那些消息是免打扰的
   static List<NoPromptUidModel> queryNoPromptUidList = [];
+
+  //用户所登录的机器
+  static MachineModel machine;
 }
