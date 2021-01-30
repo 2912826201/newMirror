@@ -35,6 +35,7 @@ class CurrencyCommentPage extends StatefulWidget {
   final ScrollController scrollController;
   final int externalScrollHeight;
   final List<GlobalKey> globalKeyList;
+  final double externalBoxHeight;
 
 
   CurrencyCommentPage({
@@ -47,6 +48,7 @@ class CurrencyCommentPage extends StatefulWidget {
     this.externalScrollHeight=0,
     this.pageCommentSize=20,
     this.pageSubCommentSize=3,
+    this.externalBoxHeight=0,
     this.isShowHotOrTime=false,
     this.isShowAt=true,
     this.fatherComment,
@@ -127,16 +129,16 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
 
   @override
   Widget build(BuildContext context) {
-    print("waawawawa");
-    if(!widget.isShowHotOrTime && courseCommentHot != null) {
-      print("11111111111111111111111");
-      courseCommentHot.list = context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments;
-      print("222222222222222222222");
-      commentListSubSettingList.clear();
-      commentLoadingStatusList.clear();
-      setCommentListSubSetting(courseCommentHot);
 
+    if(!widget.isShowHotOrTime && courseCommentHot != null&&
+        context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments!=null&&
+        context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length>0) {
+      if(context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length!=courseCommentHot.list.length) {
+        courseCommentHot.list = context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments;
+        resetSubSetting(courseCommentHot);
+      }
     }
+
     int count = isHotOrTime ? (courseCommentHot?.totalCount) : (courseCommentTime?.totalCount);
     if (count == null) {
       count = 0;
@@ -507,6 +509,46 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
     commentLoadingStatusList.addAll(loadingStatusList);
   }
 
+  //重置数据-但是需要以前的数据
+  void resetSubSetting(CommentModel commentModel, {bool isFold = false}) {
+    if (commentModel == null||commentModel.list==null||commentModel.list.length<1) {
+      commentListSubSettingList.clear();
+      commentLoadingStatusList.clear();
+      return;
+    }
+    var settingList = <CommentListSubSetting>[];
+    var loadingStatusList = <LoadingStatus>[];
+    for (int i = 0; i < commentModel.list.length; i++) {
+      int isHaveIndex=-1;
+      for(int j=0;j<commentListSubSettingList.length;j++){
+        if(commentListSubSettingList[i].commentId==commentModel.list[i].id){
+          isHaveIndex=j;
+          break;
+        }
+      }
+      if(isHaveIndex>=0){
+        CommentListSubSetting commentListSubSetting = new CommentListSubSetting();
+        commentListSubSetting.commentId = commentListSubSettingList[isHaveIndex].commentId;
+        commentListSubSetting.isFold = commentListSubSettingList[isHaveIndex].isFold;
+        commentListSubSetting.globalKey = GlobalKey();
+        settingList.add(commentListSubSetting);
+      }else{
+        CommentListSubSetting commentListSubSetting = new CommentListSubSetting();
+        commentListSubSetting.commentId = commentModel.list[i].id;
+        commentListSubSetting.isFold = isFold;
+        commentListSubSetting.globalKey = GlobalKey();
+        settingList.add(commentListSubSetting);
+      }
+      //每一个加载评论的加载子评论的状态
+      LoadingStatus commentLoadingStatus = LoadingStatus.STATUS_COMPLETED;
+      loadingStatusList.add(commentLoadingStatus);
+    }
+    commentListSubSettingList.clear();
+    commentLoadingStatusList.clear();
+    commentListSubSettingList.addAll(settingList);
+    commentLoadingStatusList.addAll(loadingStatusList);
+  }
+
   //设置评论的动画类
   void setCommentListSubSettingSingle(int commentId,
       {bool isFold = false}) {
@@ -622,19 +664,37 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
           });
           scrollHeight+=24;
         }
-        if(widget.isShowHotOrTime){
-          scrollHeight+=300;
-        }
-
         print("targetId:$targetId, widget.targetId:${widget.targetId},"
             " commentListSubSettingList[i].commentId:${commentListSubSettingList[index].commentId},"
             "index:$index,count:$count");
 
-        widget.scrollController.animateTo(
-          widget.externalScrollHeight+scrollHeight+120-(MediaQuery.of(context).size.height),
-          duration: Duration(milliseconds: 1000),
-          curve: Curves.easeInOut,
-        );
+        scrollHeight+=widget.externalScrollHeight;
+        scrollHeight+=120;
+
+        if(widget.isShowHotOrTime){
+          scrollHeight+=300;
+          scrollHeight-=MediaQuery.of(context).size.height;
+        }else if(widget.externalBoxHeight>0){
+          scrollHeight+=50;
+          if(scrollHeight>widget.externalBoxHeight) {
+            scrollHeight -= widget.externalBoxHeight;
+          }else{
+            scrollHeight=0;
+          }
+        }else{
+          scrollHeight+=100;
+          scrollHeight-=MediaQuery.of(context).size.height;
+        }
+
+        print("srcollHeight:${scrollHeight}");
+
+        if(scrollHeight>0) {
+          widget.scrollController.animateTo(
+            scrollHeight,
+            duration: Duration(milliseconds: 1000),
+            curve: Curves.easeInOut,
+          );
+        }
       }
     });
   }
@@ -686,10 +746,8 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
           courseCommentPageHot++;
         }
         if (!widget.isShowHotOrTime) {
-          print("(((((((((((((((((((((((((((((((((((((((((((((((((((((((((");
           context.read<FeedMapNotifier>().commensAssignment(
               widget.targetId, courseCommentHot.list, courseCommentHot.totalCount);
-          print("0000000000000000000000000000000000000000000000000000000000000000000");
         }
       }
       setCommentListSubSetting(courseCommentHot, isFold: isFold);
@@ -916,22 +974,16 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
 
   //输入框评论点击事件
   onEditBoxClickBtn() {
-    // targetId = widget.targetId;
-    // targetType = widget.targetType;
-    // replyId = -1;
-    // replyCommentId = -1;
-    //
-    // openInputBottomSheet(
-    //   buildContext: this.context,
-    //   voidCallback: _publishComment,
-    //   isShowAt: widget.isShowAt,
-    // );
+    targetId = widget.targetId;
+    targetType = widget.targetType;
+    replyId = -1;
+    replyCommentId = -1;
 
-
-    for(int i=0;i<commentListSubSettingList.length;i++){
-      print("$i-------------${commentListSubSettingList[i].globalKey.currentContext.size.height}");
-    }
-
+    openInputBottomSheet(
+      buildContext: this.context,
+      voidCallback: _publishComment,
+      isShowAt: widget.isShowAt,
+    );
   }
 
   //输入框评论点击事件

@@ -170,6 +170,7 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
                   targetType: 0,
                   pageCommentSize: 20,
                   pageSubCommentSize: 3,
+                  externalBoxHeight:MediaQuery.of(context).size.height*0.75,
                 ),
               )
             ])));
