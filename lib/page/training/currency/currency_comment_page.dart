@@ -283,7 +283,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
   }
 
   //判断有没有动画
-  Widget judgeStartAnimation(CommentDtoModel value,int id){
+  Widget judgeStartAnimation(CommentDtoModel value,int _targetId){
     if (value.isHaveAnimation) {
       AnimationController animationController = AnimationController(
         duration: new Duration(milliseconds: 100),
@@ -298,12 +298,12 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
           axisAlignment: 0.0,
           child: Container(
             margin: const EdgeInsets.only(bottom: 13),
-            child: _getCommentUi(value, true, value.id),
+            child: _getCommentUi(value, true, _targetId),
           ));
     } else {
       return Container(
         margin: const EdgeInsets.only(bottom: 13),
-        child: _getCommentUi(value, true, value.id),
+        child: _getCommentUi(value, true, _targetId),
       );
     }
   }
@@ -336,7 +336,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
                               width: double.infinity,
                               child: RichText(
                                 text: TextSpan(
-                                  children: getSubCommentText(value, isSubComment, _targetId),
+                                  children: getSubCommentText(value, isSubComment),
                                 ),
                               ),
                             ),
@@ -400,9 +400,8 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
 
 
   //获取子评论的文字
-  List<TextSpan> getSubCommentText(CommentDtoModel value, bool isSubComment, int _targetId) {
+  List<TextSpan> getSubCommentText(CommentDtoModel value, bool isSubComment) {
     var textSpanList = <TextSpan>[];
-    print("value：$value");
     textSpanList.add(TextSpan(
       text: value.name ?? " ",
       style: TextStyle(
@@ -582,7 +581,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
       atListModel.add(atModel);
     }
 
-    print("targetId:$targetId+++targetType:$targetType++++videoModel.id:${widget.targetId}");
+    print("targetId:$targetId+++targetType:$targetType++++videoModel.id:${widget.targetId}++++replyId：$replyId,replyCommentId:$replyCommentId");
 
     await postComments(
       targetId: targetId,
@@ -592,6 +591,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
       replyId: replyId > 0 ? replyId : null,
       replyCommentId: replyCommentId > 0 ? replyCommentId : null,
       commentModelCallback: (CommentDtoModel model) {
+        print("发布评论：-model：$model");
         if (model != null) {
           if (targetId == widget.targetId) {
             if (courseCommentHot != null) {
@@ -686,7 +686,6 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
           scrollHeight-=MediaQuery.of(context).size.height;
         }
 
-        print("srcollHeight:${scrollHeight}");
 
         if(scrollHeight>0) {
           widget.scrollController.animateTo(
