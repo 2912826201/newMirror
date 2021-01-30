@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:intl/intl.dart';
+import 'package:mirror/config/application.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,6 @@ class TrainingPage extends StatefulWidget {
 }
 
 class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMixin {
-  bool _machineConnected = true;
   double _screenWidth = 0.0;
 
   List<LiveVideoModel> _liveList = [];
@@ -120,7 +120,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
     return Column(
       children: [
         _buildBanner(),
-        notifier.machine == null ? _buildConnection() : _buildEquipment(),
+        notifier.machine == null ? _buildConnection() : _buildEquipment(notifier),
         _buildLive(),
         _buildCourseTitle(),
         _buildPlaceHolder()
@@ -162,7 +162,11 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
           ),
           GestureDetector(
               onTap: () {
-                AppRouter.navigateToScanCodePage(context);
+                if (Application.token.anonymous == 0) {
+                  AppRouter.navigateToScanCodePage(context);
+                } else {
+                  AppRouter.navigateToLoginPage(context);
+                }
               },
               child: Container(
                 margin: const EdgeInsets.only(top: 12),
@@ -197,7 +201,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
     );
   }
 
-  Widget _buildEquipment() {
+  Widget _buildEquipment(MachineNotifier notifier) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 4),
       child: Column(
@@ -237,7 +241,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            "iF智能魔镜-CC10",
+                            "${notifier.machine.name}",
                             style: AppStyle.textMedium15,
                           ),
                           SizedBox(
@@ -260,7 +264,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
                               width: 4,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: _machineConnected ? AppColor.lightGreen : AppColor.mainRed,
+                                color: notifier.machine.status == 0 ? AppColor.mainRed : AppColor.lightGreen,
                               ),
                             ),
                           ),

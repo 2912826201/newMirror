@@ -122,7 +122,9 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
   createMiddleView() {
     print(context.select((FeedMapNotifier value) => value.feedMap[widget.feedId].totalCount));
     return Expanded(
-        child: SmartRefresher(
+      child:NotificationListener<ScrollNotification>(
+        onNotification: _onDragNotification,
+        child:SmartRefresher(
             enablePullDown: false,
             enablePullUp: true,
             footer: footerWidget(),
@@ -140,9 +142,19 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
                   targetType: 0,
                   pageCommentSize: 20,
                   pageSubCommentSize: 3,
+                  externalBoxHeight:MediaQuery.of(context).size.height*0.75,
                 ),
               )
-            ])));
+            ])),
+      ),
+    );
+  }
+
+  //滑动的回调
+  bool _onDragNotification(ScrollNotification notification) {
+    ScrollMetrics metrics = notification.metrics;
+    childKey.currentState.scrollHeightOld=metrics.pixels;
+    return false;
   }
 
   @override
