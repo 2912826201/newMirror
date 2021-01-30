@@ -117,6 +117,9 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
 
   GlobalKey globalKey = new GlobalKey();
 
+  double scrollHeightOld=0;
+
+
   @override
   void initState() {
     super.initState();
@@ -674,6 +677,9 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
         if(widget.isShowHotOrTime){
           scrollHeight+=300;
           scrollHeight-=MediaQuery.of(context).size.height;
+          if(scrollHeight<scrollHeightOld){
+            scrollHeight=0;
+          }
         }else if(widget.externalBoxHeight>0){
           scrollHeight+=50;
           if(scrollHeight>widget.externalBoxHeight) {
@@ -681,9 +687,15 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
           }else{
             scrollHeight=0;
           }
+          if(scrollHeight<scrollHeightOld){
+            scrollHeight=0;
+          }
         }else{
           scrollHeight+=100;
           scrollHeight-=MediaQuery.of(context).size.height;
+          if(scrollHeight<scrollHeightOld){
+            scrollHeight=0;
+          }
         }
 
 

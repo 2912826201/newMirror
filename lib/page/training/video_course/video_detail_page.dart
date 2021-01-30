@@ -353,6 +353,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   //滑动的回调
   bool _onDragNotification(ScrollNotification notification) {
     ScrollMetrics metrics = notification.metrics;
+    childKey.currentState.scrollHeightOld=metrics.pixels;
     if (metrics.pixels < 10) {
       if (isBouncingScrollPhysics) {
         isBouncingScrollPhysics = false;
