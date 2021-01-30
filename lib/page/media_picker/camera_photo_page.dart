@@ -131,10 +131,23 @@ class CameraPhotoState extends State<CameraPhotoPage> with WidgetsBindingObserve
                         }, fixedWidth: widget.fixedWidth, fixedHeight: widget.fixedHeight);
                       }
                     },
+                    behavior: HitTestBehavior.opaque,
                     child: Container(
-                      width: 64,
-                      height: 64,
-                      color: AppColor.white,
+                      width: 66,
+                      height: 66,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppColor.white, width: 4),
+                      ),
+                      child: Container(
+                        width: 49,
+                        height: 49,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColor.white,
+                        ),
+                      ),
                     ),
                   ),
                 ))

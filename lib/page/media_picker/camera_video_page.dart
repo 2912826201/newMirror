@@ -178,10 +178,23 @@ class CameraVideoState extends State<CameraVideoPage> with WidgetsBindingObserve
                           _milliDuration = 0;
                           _filePath = null;
                         },
+                        behavior: HitTestBehavior.opaque,
                         child: Container(
-                          width: 64,
-                          height: 64,
-                          color: _isRecording ? AppColor.mainRed : AppColor.white,
+                          width: 66,
+                          height: 66,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppColor.white, width: 4),
+                          ),
+                          child: Container(
+                            width: 49,
+                            height: 49,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: _isRecording ? AppColor.white.withOpacity(0.24) : AppColor.white,
+                            ),
+                          ),
                         ),
                       ),
                     ],
