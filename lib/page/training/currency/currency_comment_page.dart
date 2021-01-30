@@ -10,6 +10,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -17,7 +18,7 @@ import 'package:mirror/widget/comment_input_bottom_bar.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/post_comments.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
+import 'package:provider/provider.dart';
 import 'currency_page.dart';
 
 class CurrencyCommentPage extends StatefulWidget {
@@ -126,6 +127,16 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
 
   @override
   Widget build(BuildContext context) {
+    print("waawawawa");
+    if(!widget.isShowHotOrTime && courseCommentHot != null) {
+      print("11111111111111111111111");
+      courseCommentHot.list = context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments;
+      print("222222222222222222222");
+      commentListSubSettingList.clear();
+      commentLoadingStatusList.clear();
+      setCommentListSubSetting(courseCommentHot);
+
+    }
     int count = isHotOrTime ? (courseCommentHot?.totalCount) : (courseCommentTime?.totalCount);
     if (count == null) {
       count = 0;
@@ -604,14 +615,13 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
             break;
           }
         }
-
+        print("globalKeyList*************************************${widget.globalKeyList}");
         if(widget.globalKeyList!=null&&widget.globalKeyList.length>0){
           widget.globalKeyList.forEach((element) {
             scrollHeight+=element.currentContext.size.height;
           });
           scrollHeight+=24;
         }
-
         if(widget.isShowHotOrTime){
           scrollHeight+=300;
         }
@@ -637,7 +647,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
       if (courseCommentHot == null) {
         Map<String, dynamic> commentModel = await queryListByHot2(
             targetId: widget.targetId,
-            targetType: 3,
+            targetType: widget.targetType,
             lastId: courseCommentHot?.lastId ?? null,
             size: widget.pageCommentSize);
         courseCommentHot = CommentModel.fromJson(commentModel);
@@ -675,6 +685,12 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
           setState(() {});
           courseCommentPageHot++;
         }
+        if (!widget.isShowHotOrTime) {
+          print("(((((((((((((((((((((((((((((((((((((((((((((((((((((((((");
+          context.read<FeedMapNotifier>().commensAssignment(
+              widget.targetId, courseCommentHot.list, courseCommentHot.totalCount);
+          print("0000000000000000000000000000000000000000000000000000000000000000000");
+        }
       }
       setCommentListSubSetting(courseCommentHot, isFold: isFold);
       if(widget.commentDtoModel != null&&isFristScroll){
@@ -684,7 +700,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
       if (courseCommentTime == null) {
         Map<String, dynamic> commentModel = await queryListByTime(
             targetId: widget.targetId,
-            targetType: 3,
+            targetType: widget.targetType,
             lastId: courseCommentTime?.lastId ?? null,
             size: widget.pageCommentSize);
         if (commentModel != null) {
@@ -781,7 +797,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
       }
       Map<String, dynamic> mapModel = await (isHotOrTime ? queryListByHot2 : queryListByTime)(
           targetId: widget.targetId,
-          targetType: 3,
+          targetType: widget.targetType,
           ids:(isHotOrTime ? screenOutHotIds.toString(): screenOutTimeIds.toString()),
           lastId: (isHotOrTime ? courseCommentHot.lastId : courseCommentTime.lastId),
           size: widget.pageCommentSize);
