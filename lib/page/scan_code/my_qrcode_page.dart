@@ -37,28 +37,27 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
   double width;
   double height;
   String codeData;
+
   _capturePngToByteData() async {
-      RenderRepaintBoundary boundary = rootWidgetKey.currentContext.findRenderObject();
-      double dpr = ui.window.devicePixelRatio; // 获取当前设备的像素比
-      ui.Image image = await boundary.toImage(pixelRatio: dpr);
-      ByteData _byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-      String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
-      Uint8List pngByte = _byteData.buffer.asUint8List();
-      imageFile = await FileUtil().writeImageDataToFile(pngByte, timeStr);
-      print('rootWidgetKey width===============${rootWidgetKey.currentContext.size.width}');
-      print('rootWidgetKey height===============${rootWidgetKey.currentContext.size.height}');
-      width = rootWidgetKey.currentContext.size.width*dpr;
-      height = rootWidgetKey.currentContext.size.height*dpr;
-      print('model height===========================$width');
-      print('nodel weith=========================$height');
-
-
+    RenderRepaintBoundary boundary = rootWidgetKey.currentContext.findRenderObject();
+    double dpr = ui.window.devicePixelRatio; // 获取当前设备的像素比
+    ui.Image image = await boundary.toImage(pixelRatio: dpr);
+    ByteData _byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
+    Uint8List pngByte = _byteData.buffer.asUint8List();
+    imageFile = await FileUtil().writeImageDataToFile(pngByte, timeStr);
+    print('rootWidgetKey width===============${rootWidgetKey.currentContext.size.width}');
+    print('rootWidgetKey height===============${rootWidgetKey.currentContext.size.height}');
+    width = rootWidgetKey.currentContext.size.width * dpr;
+    height = rootWidgetKey.currentContext.size.height * dpr;
+    print('model height===========================$width');
+    print('nodel weith=========================$height');
   }
 
   @override
   void initState() {
     super.initState();
-      _getShortUrl();
+    _getShortUrl();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Future.delayed(Duration(milliseconds: 1000), () {
         try {
@@ -68,15 +67,16 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
     });
   }
 
-  _getShortUrl()async{
-    Map<String,dynamic> map = await getShortUrl(type:3,targetId:context.read<ProfileNotifier>().profile.uid);
-      if(map!=null) {
-        codeData = map["url"];
-        if (mounted) {
-          setState(() {});
-        }
+  _getShortUrl() async {
+    Map<String, dynamic> map = await getShortUrl(type: 3, targetId: context.read<ProfileNotifier>().profile.uid);
+    if (map != null) {
+      codeData = map["url"];
+      if (mounted) {
+        setState(() {});
       }
+    }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,8 +100,8 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
           actions: [
             InkWell(
               onTap: () {
-                model.width =int.parse("$width".substring(0,"$width".indexOf(".")));
-                model.height = int.parse("$height".substring(0,"$height".indexOf(".")));
+                model.width = int.parse("$width".substring(0, "$width".indexOf(".")));
+                model.height = int.parse("$height".substring(0, "$height".indexOf(".")));
                 model.file = imageFile;
                 openShareBottomSheet(
                     context: context,
@@ -197,7 +197,7 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
             ),
             Spacer(),
             QrImage(
-              data: codeData!=null?codeData:"没有数据",
+              data: codeData != null ? codeData : "没有数据",
               size: ScreenUtil.instance.height * 0.49 * 0.57,
               padding: EdgeInsets.zero,
               backgroundColor: AppColor.white,

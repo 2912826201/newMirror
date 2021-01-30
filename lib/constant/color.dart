@@ -32,6 +32,9 @@ class AppColor {
   //N5 辅助、时间文字
   static const textSecondary = Color.fromRGBO(0x99, 0x99, 0x99, 1.0);
 
+
+  static const textSecondaryRound = Color.fromRGBO(0x99, 0x99, 0x99, 0.06);
+
   //N4 Disable、提示文字
   static const textHint = Color.fromRGBO(0xCC, 0xCC, 0xCC, 1.0);
 
@@ -47,6 +50,7 @@ class AppColor {
   static const urlText = Color.fromRGBO(0x18, 0x77, 0xF2, 1.0);
   static const bgVip1 = Color.fromRGBO(0xF3, 0xD2, 0x9C, 1.0);
   static const bgVip2 = Color.fromRGBO(0xC4, 0x8B, 0x3C, 1.0);
+  static const bgVip3 = Color.fromRGBO(0x80, 0x80, 0x80, 1.0);
   static const color246 = Color.fromRGBO(246, 246, 246, 1.0);
   static const textVipPrimary1 = Color.fromRGBO(0x8F, 0x58, 0x08, 1.0);
   static const textHint1 = Color.fromRGBO(0xE8, 0xE8, 0xE8, 1.0);

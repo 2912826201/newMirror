@@ -11,16 +11,21 @@ import 'package:mirror/widget/vip/vip_grid_list.dart';
 import 'package:mirror/widget/vip/vip_horizontal_list.dart';
 import 'package:provider/provider.dart';
 
-enum VipState{
+enum VipState {
   //续费
   RENEW,
   //未开通
-  NOTOPEN
+  NOTOPEN,
+  //已过期
+  EXPIRED
 }
+
 //会员未开通页
 class VipNotOpenPage extends StatefulWidget {
   VipState type;
+
   VipNotOpenPage({this.type});
+
   @override
   State<StatefulWidget> createState() {
     return _VipPageState();
@@ -34,14 +39,17 @@ class _VipPageState extends State<VipNotOpenPage> {
   final String serviceText =
       "付款：自动续费商品包括“连续包年/连续包月”，您确认购买后，会从您的偏账号账户扣费； 取消续订：如果需要续订，请在当前订阅周期前24小时以前，手动关闭自动续费功能，到期前24小时内取消，将会收取订阅费用。";
   int lastTime = 12123434545455;
+
   @override
   void initState() {
     super.initState();
     controller.addListener(() {
       if (controller.offset >= 88) {
         context.read<ProfilePageNotifier>().changeTitleColor(AppColor.white);
+        context.read<ProfilePageNotifier>().changeImageTitle(true);
       } else {
         context.read<ProfilePageNotifier>().changeTitleColor(AppColor.transparent);
+        context.read<ProfilePageNotifier>().changeImageTitle(false);
       }
     });
   }
@@ -49,9 +57,8 @@ class _VipPageState extends State<VipNotOpenPage> {
   @override
   void dispose() {
     // TODO: implement dispose
+    context.read<ProfilePageNotifier>().clear();
     super.dispose();
-    context.read<ProfilePageNotifier>().clearTitleColor();
-    context.read<ProfilePageNotifier>().clearBackImage();
   }
 
   @override
@@ -68,7 +75,21 @@ class _VipPageState extends State<VipNotOpenPage> {
             Navigator.pop(context);
           },
         ),
-        title: Text("会员中心",style: TextStyle(fontWeight: FontWeight.w500,fontSize: 15,color:context.watch<ProfilePageNotifier>().titleColor),),
+        title: context.watch<ProfilePageNotifier>().showImageTitle
+            ?Container(
+          padding: EdgeInsets.only(top: 8),
+          child: ClipOval(
+          child: CachedNetworkImage(
+            height: 28,
+            width: 28,
+            imageUrl: context.watch<ProfileNotifier>().profile.avatarUri,
+            fit: BoxFit.cover,
+            placeholder: (context, url) => Image.asset(
+              "images/test.png",
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),):Container(),
         centerTitle: true,
       ),
       backgroundColor: AppColor.white,
@@ -132,91 +153,95 @@ class _VipPageState extends State<VipNotOpenPage> {
 
   Widget _body() {
     return ListView(
-            controller: controller,
-              children: [
-                _avatarName(),
-                SizedBox(
-                  height: 24,
-                ),
-                Container(
-                    margin: EdgeInsets.only(left: 16),
-                    child: Text(
-                      "开通会员",
-                      style: AppStyle.textMedium14,
-                    )),
-                SizedBox(
-                  height: 16.5,
-                ),
-                //包月包年list
-                VipHorizontalList(),
-                SizedBox(
-                  height: 14,
-                ),
-                Container(
-                  padding: EdgeInsets.only(left: 16, right: 16),
-                  width: ScreenUtil.instance.screenWidthDp * 0.62,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      widget.type==VipState.NOTOPEN?Text(
-                        "这是文案文案文案文案文案文案文案文案",
-                        style: AppStyle.textSecondaryRegular14,
-                      ):Container(),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 14,
-                ),
-                Container(
-                  width: ScreenUtil.instance.screenWidthDp,
-                  height: 12,
-                  color: AppColor.bgWhite,
-                ),
-                SizedBox(
-                  height: 24,
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: 16),
-                  child: Text(
-                    "会员特权",
-                    style: AppStyle.textMedium14,
-                  ),
-                ),
-                SizedBox(
-                  height: 16,
-                ),
-                //会员特权
-                VipGridList(vipType: VipType.NOTOPEN,),
-                SizedBox(
-                  height: 24,
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: 16),
-                  child: Text(
-                    "自动续费服务声明",
-                    style: AppStyle.textMedium14,
-                  ),
-                ),
-                SizedBox(
-                  height: 16,
-                ),
-                Container(
-                  padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
-                  child: Text(
-                    serviceText,
-                    style: AppStyle.textHintRegular12,
-                    maxLines: 10,
-                  ),
-                ),
-                SizedBox(
-                  height: ScreenUtil.instance.bottomBarHeight + 49,
-                ),
-              ],
-            );
-
+      controller: controller,
+      children: [
+        _avatarName(),
+        SizedBox(
+          height: 24,
+        ),
+        Container(
+            margin: EdgeInsets.only(left: 16),
+            child: Text(
+              "开通会员",
+              style: AppStyle.textMedium14,
+            )),
+        SizedBox(
+          height: 16.5,
+        ),
+        //包月包年list
+        VipHorizontalList(),
+        SizedBox(
+          height: 14,
+        ),
+        Container(
+          padding: EdgeInsets.only(left: 16, right: 16),
+          width: ScreenUtil.instance.screenWidthDp * 0.62,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              widget.type == VipState.NOTOPEN
+                  ? Text(
+                      "这是文案文案文案文案文案文案文案文案",
+                      style: AppStyle.textSecondaryRegular14,
+                    )
+                  : Container(),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 14,
+        ),
+        Container(
+          width: ScreenUtil.instance.screenWidthDp,
+          height: 12,
+          color: AppColor.bgWhite,
+        ),
+        SizedBox(
+          height: 24,
+        ),
+        Container(
+          margin: EdgeInsets.only(left: 16),
+          child: Text(
+            "会员特权",
+            style: AppStyle.textMedium14,
+          ),
+        ),
+        SizedBox(
+          height: 16,
+        ),
+        //会员特权
+        VipGridList(
+          vipType: VipType.NOTOPEN,
+        ),
+        SizedBox(
+          height: 24,
+        ),
+        Container(
+          margin: EdgeInsets.only(left: 16),
+          child: Text(
+            "自动续费服务声明",
+            style: AppStyle.textMedium14,
+          ),
+        ),
+        SizedBox(
+          height: 16,
+        ),
+        Container(
+          padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+          child: Text(
+            serviceText,
+            style: AppStyle.textHintRegular12,
+            maxLines: 10,
+          ),
+        ),
+        SizedBox(
+          height: ScreenUtil.instance.bottomBarHeight + 49,
+        ),
+      ],
+    );
   }
-    Widget _avatarName(){
+
+  Widget _avatarName() {
     return Container(
       height: 88,
       color: AppColor.black,
@@ -254,14 +279,18 @@ class _VipPageState extends State<VipNotOpenPage> {
                   SizedBox(
                     height: 6,
                   ),
-                  widget.type==VipState.NOTOPEN?Text("未开通会员", style: AppStyle.textHintRegular13,)
-                  :RichText(text: TextSpan(
-                      text:"${DateUtil.generateFormatDate(lastTime)}到期  ",
-                      style: TextStyle(fontSize: 13,fontWeight: FontWeight.w400,color: AppColor.bgVip2),
-                    children: [
-                      TextSpan(text:"购买后有效期延长",style: AppStyle.textHintRegular13),
-                    ]
-                  )),
+                  widget.type != VipState.RENEW
+                      ? Text(
+                          widget.type==VipState.NOTOPEN?"未开通会员":"已过期",
+                          style: AppStyle.textHintRegular13,
+                        )
+                      : RichText(
+                          text: TextSpan(
+                              text: "${DateUtil.generateFormatDate(lastTime)}到期  ",
+                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.bgVip2),
+                              children: [
+                              TextSpan(text: "购买后有效期延长", style: AppStyle.textHintRegular13),
+                            ])),
                   Spacer(),
                 ],
               ),
@@ -270,5 +299,5 @@ class _VipPageState extends State<VipNotOpenPage> {
         ),
       ),
     );
-    }
+  }
 }

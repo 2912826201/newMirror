@@ -6,6 +6,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_button.dart';
@@ -101,11 +102,7 @@ class HeadView extends StatelessWidget {
           children: [
             GestureDetector(
               onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                  return ProfileDetailPage(
-                    userId: model.pushId,
-                  );
-                }));
+                AppRouter.navigateToMineDetail(context, model.id);
               },
               child: Container(
                 margin: EdgeInsets.only(left: 16, right: 11),

@@ -4,13 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/page/profile/vip/vip_nameplate_page.dart';
+import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 enum VipType { NOTOPEN, OPEN }
 
 class VipGridList extends StatefulWidget{
   VipType vipType;
-  VipGridList({this.vipType});
+  VipState vipState;
+  VipGridList({this.vipType,this.vipState});
   @override
   State<StatefulWidget> createState() {
    return _VipGridState();
@@ -94,18 +96,24 @@ class _VipGridState extends State<VipGridList>{
             height: 38,
             width: 38,
             decoration: BoxDecoration(
-              color:AppColor.bgVip1,
+              color:widget.vipState==VipState.EXPIRED?AppColor.textSecondaryRound:AppColor.bgVip1,
               borderRadius: BorderRadius.all(Radius.circular(20))),
           ),),
           Spacer(),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("${itemName[index]}",style: AppStyle.textMedium16,),
+              Text("${itemName[index]}",style:widget.vipState==VipState.EXPIRED
+                  ?AppStyle.textSecondaryRegular16
+                  :AppStyle.textMedium16,),
               SizedBox(height: 5,),
               Container(
                 width: ScreenUtil.instance.screenWidthDp*0.26,
-                child: Text("${contentList[index]}",style:AppStyle.textPrimary3Regular14,maxLines: 2,overflow: TextOverflow.ellipsis,),
+                child: Text("${contentList[index]}",style:widget.vipState==VipState.EXPIRED
+               ?AppStyle.textHintRegular14
+                :AppStyle.textPrimary3Regular14,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,),
               )
             ],
           )

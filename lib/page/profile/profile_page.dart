@@ -64,25 +64,18 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     ProfileModel attentionModel = await ProfileFollowCount();
     UserExtraInfoModel extraInfoModel = await ProfileGetExtraInfo();
     userModel = await getUserInfo();
-    print('resultModel============================${attentionModel == null}');
     if (attentionModel != null || extraInfoModel != null) {
-      print('uid========================${attentionModel.uid}'
-          'followingCount============================${attentionModel.followingCount}'
-          'feedCount==========${attentionModel.feedCount}'
-          'followerCount=======${attentionModel.followerCount}');
-
-        uid = attentionModel.uid;
-        followingCount = attentionModel.followingCount;
-        followerCount = attentionModel.followerCount;
-        print('个人主页粉丝数================================$followerCount');
-        feedCount = attentionModel.feedCount;
-        trainingSeconds = extraInfoModel.trainingSeconds;
-        weight = extraInfoModel.weight;
-        albumNum = extraInfoModel.albumNum;
-        if(mounted){
-          setState(() {
-          });
-        }
+      uid = attentionModel.uid;
+      followingCount = attentionModel.followingCount;
+      followerCount = attentionModel.followerCount;
+      print('个人主页粉丝数================================$followerCount');
+      feedCount = attentionModel.feedCount;
+      trainingSeconds = extraInfoModel.trainingSeconds;
+      weight = extraInfoModel.weight;
+      albumNum = extraInfoModel.albumNum;
+      if (mounted) {
+        setState(() {});
+      }
     }
   }
 
@@ -329,7 +322,12 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   SizedBox(
                     width: width * 0.12,
                   ),
-                  _TextAndNumber("动态", StringUtil.getNumber(feedCount))
+                  InkWell(
+                    onTap: () {
+                      AppRouter.navigateToMineDetail(context, uid);
+                    },
+                    child: _TextAndNumber("动态", StringUtil.getNumber(feedCount)),
+                  )
                 ]))
           ],
         ));
@@ -348,13 +346,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                     child: ProfileDetailPage(
                   userId: uid,
                 )));
-            /*
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              ///这里传type来告知详情页该怎么展示
-              return ProfileDetailPage(
-
-              );
-            }));*/
           },
           child: Stack(
             children: [
@@ -469,18 +460,17 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     } else if ("我的课程" == title) {
       AppRouter.navigateToMeCoursePage(context);
     } else if ("我的订单" == title) {
-      ScanCodeResultModel model = ScanCodeResultModel();
+      /*ScanCodeResultModel model = ScanCodeResultModel();
       model.type = ScanCodeResultType.CODE_INVALID;
-      AppRouter.navigateToScanCodeResultPage(context, model);
-      /*if(userModel.isVip==0){
+      AppRouter.navigateToScanCodeResultPage(context, model);*/
+      if(userModel.isVip==0){
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return VipNotOpenPage(
-            type: VipState.NOTOPEN,
+          return VipOpenPage(
           );
         }));
       }else{
         AppRouter.navigateToVipOpenPage(context);
-      }*/
+      }
     }
   }
 }

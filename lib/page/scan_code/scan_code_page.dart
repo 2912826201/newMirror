@@ -37,137 +37,141 @@ class _ScanCodeState extends State<ScanCodePage> {
   String imagePath = "";
   ScanController controller = ScanController();
   String codeData;
+
   @override
   void initState() {
     super.initState();
     _getShortUrl();
   }
+
   @override
   void dispose() {
     controller?.pause();
     controller = null;
     super.dispose();
   }
-  _getShortUrl()async{
-    Map<String,dynamic> map = await getShortUrl(type:3,targetId:context.read<ProfileNotifier>().profile.uid);
-    if(map!=null){
+
+  _getShortUrl() async {
+    Map<String, dynamic> map = await getShortUrl(type: 3, targetId: context.read<ProfileNotifier>().profile.uid);
+    if (map != null) {
       codeData = map["url"];
       print('==================这是用户二维码$codeData');
-      if(mounted){
-      setState(() {
-      });
+      if (mounted) {
+        setState(() {});
+      }
     }
-  }}
+  }
 
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return Scaffold(
-          appBar: AppBar(
-            centerTitle: true,
-            backgroundColor: AppColor.white,
-            brightness: Brightness.light,
-            leading: InkWell(
-              child: Container(
-                margin: EdgeInsets.only(left: 16),
-                child: Image.asset("images/resource/2.0x/return2x.png"),
-              ),
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: AppColor.white,
+          brightness: Brightness.light,
+          leading: InkWell(
+            child: Container(
+              margin: EdgeInsets.only(left: 16),
+              child: Image.asset("images/resource/2.0x/return2x.png"),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          leadingWidth: 44,
+          title: Text(
+            "扫描二维码",
+            style: AppStyle.textMedium18,
+          ),
+          actions: [
+            InkWell(
               onTap: () {
-                Navigator.pop(context);
+                _getImagePicker();
+                /*getImage();*/
               },
-            ),
-            leadingWidth: 44,
-            title: Text(
-              "扫描二维码",
-              style: AppStyle.textMedium18,
-            ),
-            actions: [
-              InkWell(
-                onTap: () {
-                  _getImagePicker();
-                  /*getImage();*/
-                },
-                child: Center(
-                  child: Container(
-                    padding: EdgeInsets.only(right: 17, top: 12, bottom: 12),
-                    child: Text(
-                      "相册",
-                      style: AppStyle.textRegular14,
-                    ),
+              child: Center(
+                child: Container(
+                  padding: EdgeInsets.only(right: 17, top: 12, bottom: 12),
+                  child: Text(
+                    "相册",
+                    style: AppStyle.textRegular14,
                   ),
                 ),
-              )
-            ],
-          ),
-          body: Stack(
-            children: [
-              Container(
-                width: width,
-                height: height,
-                child: ScanView(
-                  controller: controller,
-                  scanAreaScale: .7,
-                  scanLineColor: AppColor.white,
-                  onCapture: (data) {
-                    print("+-------------------"+data.toString());
-                    resolveScanResult(data);
-                  },
-                ),
               ),
-              Positioned(
-                  bottom: height * 0.21,
-                  child: Container(
-                    width: width,
-                    child: Row(
-                      children: [
-                        Expanded(child: SizedBox()),
-                        Text(
-                          "将二维码放入框中,即可自动扫描",
-                          style: TextStyle(fontSize: 14, color: AppColor.white),
-                        ),
-                        Expanded(child: SizedBox()),
-                      ],
-                    ),
-                  )),
-              Positioned(
-                  bottom: height * 0.064,
-                  child: Container(
-                    width: width,
-                    child: Row(
-                      children: [
-                        Expanded(child: SizedBox()),
-                        Column(
-                          children: [
-                            InkWell(
-                              onTap: (){
-                                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                                  return MyQrCodePage();
-                                }));
-                              },
-                              child: Center(
+            )
+          ],
+        ),
+        body: Stack(
+          children: [
+            Container(
+              width: width,
+              height: height,
+              child: ScanView(
+                controller: controller,
+                scanAreaScale: .7,
+                scanLineColor: AppColor.white,
+                onCapture: (data) {
+                  print("+-------------------" + data.toString());
+                  resolveScanResult(data);
+                },
+              ),
+            ),
+            Positioned(
+                bottom: height * 0.21,
+                child: Container(
+                  width: width,
+                  child: Row(
+                    children: [
+                      Expanded(child: SizedBox()),
+                      Text(
+                        "将二维码放入框中,即可自动扫描",
+                        style: TextStyle(fontSize: 14, color: AppColor.white),
+                      ),
+                      Expanded(child: SizedBox()),
+                    ],
+                  ),
+                )),
+            Positioned(
+                bottom: height * 0.064,
+                child: Container(
+                  width: width,
+                  child: Row(
+                    children: [
+                      Expanded(child: SizedBox()),
+                      Column(
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                                return MyQrCodePage();
+                              }));
+                            },
+                            child: Center(
                                 child: QrImage(
-                              data: codeData!=null?codeData:"",
+                              data: codeData != null ? codeData : "",
                               size: 40,
                               padding: EdgeInsets.zero,
                               backgroundColor: AppColor.white,
                               version: QrVersions.auto,
-                            )),),
-                            SizedBox(
-                              height: 9,
-                            ),
-                            Text(
-                              "我的二维码",
-                              style: TextStyle(fontSize: 12, color: AppColor.white),
-                            )
-                          ],
-                        ),
-                        Expanded(child: SizedBox()),
-                      ],
-                    ),
-                  ))
-            ],
-          ));
+                            )),
+                          ),
+                          SizedBox(
+                            height: 9,
+                          ),
+                          Text(
+                            "我的二维码",
+                            style: TextStyle(fontSize: 12, color: AppColor.white),
+                          )
+                        ],
+                      ),
+                      Expanded(child: SizedBox()),
+                    ],
+                  ),
+                ))
+          ],
+        ));
   }
 
   _getImagePicker() {
@@ -193,13 +197,12 @@ class _ScanCodeState extends State<ScanCodePage> {
         File imageFile = await FileUtil().writeImageDataToFile(model.croppedImageData, timeStr);
         print('imageFile==============================$imageFile');
         String result = await Scan.parse(imageFile.path);
-        if(result!=null){
+        if (result != null) {
           resolveScanResult(result);
         }
       }
     });
   }
-
 
   //解析这个短链接
   void resolveScanResult(String result) async {

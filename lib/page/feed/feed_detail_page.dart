@@ -221,7 +221,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   @override
   Widget build(BuildContext context) {
     print("动态详情页build---------------------------------------------${feedModel}");
-    if(isFrisrtScroll){
+    if(widget.comment!=null&&isFrisrtScroll){
       for (int i = 0; i < commentModel.length; i++) {
         if (i < choseIndex) {
           itemHeight +=
