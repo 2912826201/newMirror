@@ -41,7 +41,6 @@ class CommentInputBoxState extends State<CommentInputBox> {
 
   @override
   Widget build(BuildContext context) {
-    print("此页面的GlobalKey￥$context");
     // print("底部键盘高度${MediaQuery.of(context).viewInsets.bottom}");
     return Offstage(
       offstage: false,
