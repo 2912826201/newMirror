@@ -190,9 +190,9 @@ Future _initApp() async {
   if (Application.token.anonymous == 0) {
     //todo 获取登录的机器信息
     try {
-      MachineModel machineModel = await getMachineStatusInfo();
-      if (machineModel != null && machineModel.isConnect == 1) {
-        Application.machine = machineModel;
+      List<MachineModel> machineList = await getMachineStatusInfo();
+      if (machineList != null && machineList.isNotEmpty) {
+        Application.machine = machineList.first;
       }
     } catch (e) {}
     //todo 获取有哪些消息是置顶的消息

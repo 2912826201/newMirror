@@ -302,9 +302,9 @@ class _PerfectUserState extends LoginBasePageState {
   _getMoreInfo() async {
     //todo 获取登录的机器信息
     try {
-      MachineModel machineModel = await getMachineStatusInfo();
-      if (machineModel != null && machineModel.isConnect == 1) {
-        context.read<MachineNotifier>().setMachine(machineModel);
+      List<MachineModel> machineList = await getMachineStatusInfo();
+      if (machineList != null && machineList.isNotEmpty) {
+        context.read<MachineNotifier>().setMachine(machineList.first);
       } else {
         context.read<MachineNotifier>().setMachine(null);
       }

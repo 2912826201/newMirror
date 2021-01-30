@@ -24,12 +24,20 @@ Future<bool> loginMachine(int mid) async {
 }
 
 //获取机器状态信息
-Future<MachineModel> getMachineStatusInfo() async {
+Future<List<MachineModel>> getMachineStatusInfo() async {
   Map<String, dynamic> params = {};
   BaseResponseModel responseModel = await requestApi(GETMACHINESTATUSINFO, params);
   if (responseModel.isSuccess) {
-    MachineModel machine = MachineModel.fromJson(responseModel.data);
-    return machine;
+    List<MachineModel> list = [];
+    if (responseModel.data["list"] != null) {
+      responseModel.data["list"].forEach((element) {
+        MachineModel model = MachineModel.fromJson(element);
+        if (model != null && model.isConnect == 1) {
+          list.add(model);
+        }
+      });
+    }
+    return list;
   } else {
     return null;
   }
