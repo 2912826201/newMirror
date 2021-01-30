@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/api/api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
@@ -423,9 +422,11 @@ class GroupMorePageState extends State<GroupMorePage> {
         if (widget.listener != null) {
           widget.listener(1,groupName);
         }
-        setState(() {
+        if(mounted) {
+          setState(() {
 
-        });
+          });
+        }
       } else {
         ToastShow.show(msg: "修改失败", context: context);
       }

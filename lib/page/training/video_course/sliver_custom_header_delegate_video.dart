@@ -23,6 +23,7 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
   bool isFavor;
   final VoidCallback shareBtnClick;
   final VoidCallback favorBtnClick;
+  final GlobalKey globalKey;
 
   SliverCustomHeaderDelegateVideo({
     this.collapsedHeight,
@@ -38,6 +39,7 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
     this.isFavor,
     this.shareBtnClick,
     this.favorBtnClick,
+    this.globalKey,
   });
 
   @override
@@ -129,6 +131,7 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     this.updateStatusBarBrightness(shrinkOffset);
     return Container(
+      key: globalKey,
       height: this.maxExtent,
       width: MediaQuery.of(context).size.width,
       child: Stack(

@@ -91,7 +91,7 @@ Widget footerWidget(){
 }
 
 //获取训练数据ui
-Widget getTitleWidget(LiveVideoModel videoModel,BuildContext context) {
+Widget getTitleWidget(LiveVideoModel videoModel,BuildContext context,GlobalKey globalKey) {
   var widgetArray = <Widget>[];
   var titleArray = [
     (videoModel.times ~/ 60000).toString(),
@@ -153,6 +153,7 @@ Widget getTitleWidget(LiveVideoModel videoModel,BuildContext context) {
     child: Container(
       width: double.infinity,
       color: AppColor.white,
+      key: globalKey,
       padding: const EdgeInsets.only(top: 14, bottom: 14),
       child: Row(
         children: widgetArray,
@@ -162,11 +163,13 @@ Widget getTitleWidget(LiveVideoModel videoModel,BuildContext context) {
 }
 
 //获取教练的名字
-Widget getCoachItem(LiveVideoModel videoModel,BuildContext context,Function onClickAttention,Function onClickCoach) {
+Widget getCoachItem(LiveVideoModel videoModel,BuildContext context,
+    Function onClickAttention,Function onClickCoach,GlobalKey globalKey) {
   return SliverToBoxAdapter(
     child: GestureDetector(
       onTap: onClickCoach,
       child: Container(
+        key: globalKey,
         padding: const EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 20),
         color: Colors.white,
         width: double.infinity,
@@ -251,7 +254,8 @@ Widget getLineView() {
 }
 
 //训练器材界面
-Widget getTrainingEquipmentUi(LiveVideoModel videoModel,BuildContext context,TextStyle titleTextStyle) {
+Widget getTrainingEquipmentUi(LiveVideoModel videoModel,BuildContext context,
+    TextStyle titleTextStyle,GlobalKey globalKey) {
   var widgetList = <Widget>[];
   widgetList.add(Container(
     padding: const EdgeInsets.only(left: 16),
@@ -287,6 +291,7 @@ Widget getTrainingEquipmentUi(LiveVideoModel videoModel,BuildContext context,Tex
 
   return SliverToBoxAdapter(
     child: Container(
+        key: globalKey,
         width: MediaQuery.of(context).size.width,
         margin: const EdgeInsets.only(top: 12),
         child: Column(
@@ -310,7 +315,8 @@ Widget getTrainingEquipmentUi(LiveVideoModel videoModel,BuildContext context,Tex
 }
 
 //获取动作的ui
-Widget getActionUi(LiveVideoModel videoModel,BuildContext context,TextStyle titleTextStyle) {
+Widget getActionUi(LiveVideoModel videoModel,BuildContext context,
+    TextStyle titleTextStyle,GlobalKey globalKey) {
   // ignore: null_aware_before_operator
   if (videoModel.coursewareDto?.actionMapList == null || videoModel.coursewareDto?.actionMapList?.length < 1) {
     return SliverToBoxAdapter();
@@ -374,7 +380,7 @@ Widget getActionUi(LiveVideoModel videoModel,BuildContext context,TextStyle titl
                   Container(
                     width: double.infinity,
                     child: Text(
-                      videoModel.coursewareDto?.actionMapList[index]["name"],
+                      videoModel.coursewareDto?.actionMapList[index]["name"]??"",
                       style: TextStyle(fontSize: 14, color: AppColor.textPrimary2),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -395,6 +401,7 @@ Widget getActionUi(LiveVideoModel videoModel,BuildContext context,TextStyle titl
 
   return SliverToBoxAdapter(
     child: Container(
+      key: globalKey,
       width: double.infinity,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -405,7 +412,8 @@ Widget getActionUi(LiveVideoModel videoModel,BuildContext context,TextStyle titl
 }
 
 //其他人完成的训练ui
-Widget getOtherUsersUi(List<HomeFeedModel> recommendTopicList,BuildContext context,TextStyle titleTextStyle,Function onClick) {
+Widget getOtherUsersUi(List<HomeFeedModel> recommendTopicList,BuildContext context,
+    TextStyle titleTextStyle,Function onClick,GlobalKey globalKey) {
   if (recommendTopicList != null && recommendTopicList.length > 0) {
     var imageArray = <Widget>[];
     for (int i = 0; i < recommendTopicList.length; i++) {
@@ -431,6 +439,7 @@ Widget getOtherUsersUi(List<HomeFeedModel> recommendTopicList,BuildContext conte
     return SliverToBoxAdapter(
       child: GestureDetector(
         child: Container(
+          key: globalKey,
           color: AppColor.transparent,
           child: Column(
             children: [
@@ -489,7 +498,7 @@ Widget getOtherUsersUi(List<HomeFeedModel> recommendTopicList,BuildContext conte
       ),
     );
   } else {
-    return SliverToBoxAdapter();
+    return SliverToBoxAdapter(child: Container(key: globalKey),);
   }
 }
 

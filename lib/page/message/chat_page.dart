@@ -186,11 +186,13 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
         if (loadStatus == LoadingStatus.STATUS_IDEL) {
           // 先设置状态，防止下拉就直接加载
-          setState(() {
-            _timerCount = 0;
-            loadText = "加载中...";
-            loadStatus = LoadingStatus.STATUS_LOADING;
-          });
+          if(mounted) {
+            setState(() {
+              _timerCount = 0;
+              loadText = "加载中...";
+              loadStatus = LoadingStatus.STATUS_LOADING;
+            });
+          }
           if (widget.conversation.getType() != RCConversationType.System) {
             _onRefresh();
           } else {
@@ -398,9 +400,11 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                 ),
                 onTap: (){
                   isShowTopAttentionUi=false;
-                  setState(() {
+                  if(mounted) {
+                    setState(() {
 
-                  });
+                    });
+                  }
                 },
               ),
               Expanded(child: SizedBox(child:  Text("点击关注,及时看到对方动态",
@@ -437,17 +441,21 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                       if (attntionResult == 1 || attntionResult == 3) {
                         text="关注成功!";
                         isShowTopAttentionUi=false;
-                        setState(() {
+                        if(mounted){
+                          setState(() {
 
-                        });
+                          });
+                        }
                       }
                     }
                     ToastShow.show(msg: text, context: context);
                   }else{
                     isShowTopAttentionUi=false;
-                    setState(() {
+                    if(mounted) {
+                      setState(() {
 
-                    });
+                      });
+                    }
                   }
                 },
               ),
@@ -705,9 +713,11 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         _emojiState = false;
         isResizeToAvoidBottomInset = !_emojiState;
         b = false;
-        setState(() {
-          _timerCount = 0;
-        });
+        if(mounted) {
+          setState(() {
+            _timerCount = 0;
+          });
+        }
       } else {
         b = true;
       }
@@ -736,9 +746,11 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     }
     if (isReset) {
       //print("111111111111111111111111111111");
-      setState(() {
-        _timerCount = 0;
-      });
+      if(mounted) {
+        setState(() {
+          _timerCount = 0;
+        });
+      }
     }
   }
 
@@ -795,9 +807,11 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     //获取表情的数据
     emojiModelList = await EmojiManager.getEmojiModelList();
     Future.delayed(Duration(milliseconds: 200), () {
-      setState(() {
-        _timerCount = 0;
-      });
+      if(mounted) {
+        setState(() {
+          _timerCount = 0;
+        });
+      }
     });
   }
 
@@ -992,9 +1006,11 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           break;
         }
 
-        setState(() {
-          _timerCount = 0;
-        });
+        if(mounted) {
+          setState(() {
+            _timerCount = 0;
+          });
+        }
         await Future.delayed(Duration(milliseconds: 100), () {
           try {
             animateToTop();
@@ -1060,11 +1076,13 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     if (recallNotificationMessagePosition >= 0) {
       _updateRecallNotificationMessage();
     } else {
-      setState(() {
-        _timerCount = 0;
-        _textController.text = "";
-        isHaveTextLen = false;
-      });
+      if(mounted) {
+        setState(() {
+          _timerCount = 0;
+          _textController.text = "";
+          isHaveTextLen = false;
+        });
+      }
     }
 
     postText(chatDataList[0], widget.conversation.conversationId, chatTypeId, mentionedInfo, () {
@@ -1091,9 +1109,11 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       chatDataList.insertAll(0, modelList);
     }
     animateToBottom();
-    setState(() {
-      _timerCount = 0;
-    });
+    if(mounted) {
+      setState(() {
+        _timerCount = 0;
+      });
+    }
     postImgOrVideo(modelList, widget.conversation.conversationId, selectedMediaFiles.type, chatTypeId, () {
       delayedSetState();
     });
@@ -1113,9 +1133,11 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     judgeAddAlertTime();
     chatDataList.insert(0, chatDataModel);
     animateToBottom();
-    setState(() {
-      _timerCount = 0;
-    });
+    if(mounted) {
+      setState(() {
+        _timerCount = 0;
+      });
+    }
     postVoice(chatDataList[0], widget.conversation.conversationId, chatTypeId, chatTypeId, () {
       delayedSetState();
     });
@@ -1133,11 +1155,13 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     judgeAddAlertTime();
     chatDataList.insert(0, chatDataModel);
     animateToBottom();
-    setState(() {
-      _timerCount = 0;
-      _textController.text = "";
-      isHaveTextLen = false;
-    });
+    if(mounted) {
+      setState(() {
+        _timerCount = 0;
+        _textController.text = "";
+        isHaveTextLen = false;
+      });
+    }
     postSelectMessage(chatDataList[0], widget.conversation.conversationId, chatTypeId, () {
       delayedSetState();
     });
@@ -1151,9 +1175,11 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     } else {
       chatDataList[position].msg.objectName = RecallNotificationMessage.objectName;
       chatDataList[position].msg.content = recallNotificationMessage;
-      setState(() {
-        _timerCount = 0;
-      });
+      if(mounted) {
+        setState(() {
+          _timerCount = 0;
+        });
+      }
     }
   }
 
@@ -1173,11 +1199,13 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         RongCloud.init().deleteMessageById(chatDataList[recallNotificationMessagePosition + 2].msg, (code) {});
         chatDataList.removeAt(recallNotificationMessagePosition + 2);
         recallNotificationMessagePosition = -1;
-        setState(() {
-          _timerCount = 0;
-          _textController.text = "";
-          isHaveTextLen = false;
-        });
+        if(mounted) {
+          setState(() {
+            _timerCount = 0;
+            _textController.text = "";
+            isHaveTextLen = false;
+          });
+        }
       },
     );
   }
@@ -1192,10 +1220,12 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     judgeAddAlertTime();
     chatDataList.insert(0, chatDataModel);
     animateToBottom();
-    setState(() {
-      _timerCount = 0;
-      isHaveTextLen = false;
-    });
+    if(mounted) {
+      setState(() {
+        _timerCount = 0;
+        isHaveTextLen = false;
+      });
+    }
     postGroupUpdateName(chatDataList[0], widget.conversation.conversationId, () {
       delayedSetState();
     });
@@ -1214,13 +1244,15 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         chatDataModel.isTemporary = false;
         chatDataModel.isHaveAnimation = false;
         chatDataList.insert(0, chatDataModel);
-        setState(() {
-          isShowTopAttentionUi=true;
-          recallNotificationMessagePosition = -1;
-          _timerCount = 0;
-          _textController.text = "";
-          isHaveTextLen = false;
-        });
+        if(mounted) {
+          setState(() {
+            isShowTopAttentionUi = true;
+            recallNotificationMessagePosition = -1;
+            _timerCount = 0;
+            _textController.text = "";
+            isHaveTextLen = false;
+          });
+        }
       },
     );
   }
@@ -1239,10 +1271,12 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     chatDataList.insert(0, chatDataModel);
     animateToBottom();
 
-    setState(() {
-      _timerCount = 0;
-      isHaveTextLen = false;
-    });
+    if(mounted) {
+      setState(() {
+        _timerCount = 0;
+        isHaveTextLen = false;
+      });
+    }
     resetPostMessage(chatDataList[0], () {
       // RongCloud.init().deleteMessageById(message, (code)async {});
       delayedSetState();
@@ -1269,9 +1303,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     Future.delayed(Duration(milliseconds: 200), () {
       //print("setState--delayedSetState");
       _timerCount = 0;
-      try {
+      if(mounted) {
         setState(() {});
-      } catch (e) {}
+      }
     });
   }
 
@@ -1497,16 +1531,20 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   //聊天内容的点击事件
   _messageInputBodyClick() {
     if (_emojiState || MediaQuery.of(context).viewInsets.bottom > 0) {
-      setState(() {
-        _timerCount = 0;
-        _emojiState = false;
-        isContentClickOrEmojiClick = true;
-      });
-      Future.delayed(Duration(milliseconds: 300), () {
+      if(mounted) {
         setState(() {
           _timerCount = 0;
-          isResizeToAvoidBottomInset = !_emojiState;
+          _emojiState = false;
+          isContentClickOrEmojiClick = true;
         });
+      }
+      Future.delayed(Duration(milliseconds: 300), () {
+        if(mounted){
+          setState(() {
+            _timerCount = 0;
+            isResizeToAvoidBottomInset = !_emojiState;
+          });
+        }
       });
     }
   }
@@ -1522,9 +1560,11 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       FocusScope.of(context).requestFocus(new FocusNode());
     }
     isContentClickOrEmojiClick = false;
-    setState(() {
-      _timerCount = 0;
-    });
+    if(mounted) {
+      setState(() {
+        _timerCount = 0;
+      });
+    }
   }
 
   //图片的点击事件
@@ -1564,9 +1604,11 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     _emojiState = false;
     isContentClickOrEmojiClick = true;
     _isVoiceState = !_isVoiceState;
-    setState(() {
-      _timerCount = 0;
-    });
+    if(mounted) {
+      setState(() {
+        _timerCount = 0;
+      });
+    }
   }
 
   //at 了那个用户
@@ -1704,9 +1746,11 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     }
     Future.delayed(Duration(milliseconds: 500), () {
       _refreshController.loadComplete();
-      setState(() {
-        _timerCount = 0;
-      });
+      if(mounted) {
+        setState(() {
+          _timerCount = 0;
+        });
+      }
     });
   }
 
@@ -1743,10 +1787,12 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     } else if (settingType == "删除") {
       RongCloud.init().deleteMessageById(chatDataList[position].msg, (code) {
         //print("====" + code.toString());
-        setState(() {
-          _timerCount = 0;
-          chatDataList.removeAt(position);
-        });
+        if(mounted) {
+          setState(() {
+            _timerCount = 0;
+            chatDataList.removeAt(position);
+          });
+        }
       });
       // ToastShow.show(msg: "删除-第$position个", context: context);
     } else if (settingType == "撤回") {
@@ -1814,9 +1860,11 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VOICE) {
       ToastShow.show(msg: "播放录音", context: context);
       updateMessage(chatDataList[position], (code) {
-        setState(() {
-          _timerCount = 0;
-        });
+        if(mounted) {
+          setState(() {
+            _timerCount = 0;
+          });
+        }
       });
     } else if (contentType == RecallNotificationMessage.objectName) {
       recallNotificationMessagePosition = position;
@@ -1829,9 +1877,11 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         extentOffset: _textController.text.length,
       );
       _textController.selection = setCursor;
-      setState(() {
-        _timerCount = 0;
-      });
+      if(mounted) {
+        setState(() {
+          _timerCount = 0;
+        });
+      }
     } else if (contentType == ChatTypeModel.CHAT_SYSTEM_BOTTOM_BAR) {
       ToastShow.show(msg: "管家界面-底部点击了：$content", context: context);
       _postSelectMessage(content);

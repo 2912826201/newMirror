@@ -50,14 +50,12 @@ import 'package:mirror/page/scan_code/scan_code_page.dart';
 import 'package:mirror/page/test_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_broadcast_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_detail_page.dart';
-import 'package:mirror/page/training/live_broadcast/live_detail_page2.dart';
 import 'package:mirror/page/training/machine/connection_info_page.dart';
 import 'package:mirror/page/training/machine/machine_setting_page.dart';
 import 'package:mirror/page/training/machine/remote_controller_page.dart';
 import 'package:mirror/page/training/video_course/other_complete_course_page.dart';
 import 'package:mirror/page/training/video_course/video_course_list_page.dart';
 import 'package:mirror/page/training/video_course/video_course_play_page.dart';
-import 'package:mirror/page/training/video_course/video_detail_page2.dart';
 import 'package:mirror/page/training/video_course/video_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -247,7 +245,7 @@ var handlerVideoDetail = Handler(handlerFunc: (BuildContext context, Map<String,
   }
   return VideoDetailPage(
     heroTag: data["heroTag"] == null ? "" : data["heroTag"],
-    liveCourseId: data["videoCourseId"],
+    videoCourseId: data["videoCourseId"],
     videoModel: videoModel,
     commentDtoModel: data["commentDtoModel"]==null?null:CommentDtoModel.fromJson(data["commentDtoModel"]),
     fatherComment: data["fatherComment"]==null?null:CommentDtoModel.fromJson(data["fatherComment"]),

@@ -487,6 +487,8 @@ class CommentDtoModel {
   String replyName;
   int delete;
   int pullNumber = 0;
+  bool isHaveAnimation=false;
+  List<int> screenOutIds=<int>[];
 
   //是否选中
   bool itemChose = false;
