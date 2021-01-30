@@ -6,13 +6,28 @@ import 'api.dart';
 /// user_api
 /// Created by yangjiayi on 2020/10/26.
 
+
+//校验token
+const String CHECKTOKEN = "/appuser/web/user/isEffective";
+//完善用户信息
 const String PERFECT_USERINFO = "/ucenter/web/user/perfectUserInfo";
+//获取用户信息
 const String GET_USERINFO = "/appuser/web/user/getUserInfo";
-///获取所有备注
+//获取所有备注
 const String GET_REMARKBYUID = "/appuser/web/user/getRemarkByUid";
-///二维码加入群聊
+//二维码加入群聊
 const String JOINGROUPCHATUNRESTRICTED = "/appuser/web/groupChat/joinGroupChatUnrestricted";
 
+//校验token
+Future<bool> checkToken() async {
+  Map<String, dynamic> params = {};
+  BaseResponseModel responseModel = await requestApi(CHECKTOKEN, params);
+  if (responseModel.isSuccess) {
+    return responseModel.code == CODE_SUCCESS;
+  } else {
+    return false;
+  }
+}
 
 ///完善用户信息
 Future<bool> perfectUserInfo(String nickName, String avatarUri) async {

@@ -125,10 +125,21 @@ Future _initApp() async {
 
   //从数据库获取已登录的用户token或匿名用户token
   TokenDto token = await TokenDBHelper().queryToken();
+  bool isTokenValid = false;
   if (token == null ||
       (token.anonymous == 0 && (token.isPerfect == 0 || token.isPhone == 0)) ||
       DateTime.now().second + token.expiresIn > (token.createTime / 1000)) {
-    //如果token是空的 或者token非匿名但未完善资料 或者已过期 那么需要先去取一个匿名token
+    //如果token是空的 或者token非匿名但未完善资料
+    isTokenValid = false;
+  } else {
+    //通过一个小接口校验token是否可用（已过期或被清除时需要视为未登录，重新获取匿名token）
+    //无论是否有效 先赋值 不然请求是不会带上token的
+    Application.token = token;
+    isTokenValid = await checkToken();
+  }
+
+  if(!isTokenValid) {
+    Application.token = null;
     TokenModel tokenModel = await login("anonymous", null, null, null);
     if (tokenModel != null) {
       token = TokenDto.fromTokenModel(tokenModel);
