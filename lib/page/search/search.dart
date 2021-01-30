@@ -92,6 +92,7 @@ class SearchHeaderState extends State<SearchHeader> {
   void initState() {
     context.read<SearchEnterNotifier>().EditTextController(controller);
     _formatter = InputFormatter(
+      controller: controller,
       inputChangedCallback: (String value) {
         context.read<SearchEnterNotifier>().changeCallback(value);
       },
