@@ -6,11 +6,14 @@ typedef InputChangedCallback = void Function(String value);
 class InputFormatter extends TextInputFormatter {
 
   InputChangedCallback _inputChangedCallback;
-  
+
+  TextEditingController controller;
 
   InputFormatter({
+    @required this.controller,
     InputChangedCallback inputChangedCallback,
-  });
+  })  : assert( controller != null),
+        _inputChangedCallback = inputChangedCallback;
 
   @override
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
