@@ -124,11 +124,6 @@ dependencies:
   notification_permissions: ^0.4.8
   # 网络状态监听
   connectivity: ^2.0.2
-
-
-
-  #高德三方库
-  amap_map_fluttify: ^0.30.1
   #扫码测试
   scan: ^0.0.3
   #二维码生成测试
