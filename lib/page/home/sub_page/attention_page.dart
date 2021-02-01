@@ -123,6 +123,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       setState(() {
         print("dataPage:  ￥￥$dataPage");
         if (dataPage == 1) {
+          //fixme model.list为空 null 会报错
           if (model.list.isNotEmpty) {
             model.list.forEach((v) {
               attentionIdList.add(HomeFeedModel.fromJson(v).id);
