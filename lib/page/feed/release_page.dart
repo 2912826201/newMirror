@@ -115,9 +115,16 @@ class ReleasePageState extends State<ReleasePage> {
                     KeyboardInput(controller: _controller),
                     // 中间主视图
                     str == "@"
-                        ? Expanded(child: AtList(controller: _controller))
+                        ? Expanded(
+                        child: Container(
+                          child: AtList(controller: _controller),
+                          margin: EdgeInsets.only(bottom: Application.keyboardHeight)
+                        ))
                         : str == "#"
-                            ? Expanded(child: TopicList(controller: _controller))
+                            ? Expanded(
+                        child: Container(
+                            child: TopicList(controller: _controller),margin: EdgeInsets.only(bottom: Application.keyboardHeight)
+                        ))
                             : ReleaseFeedMainView(selectedMediaFiles: _selectedMediaFiles)
                   ],
                 ),
@@ -500,6 +507,7 @@ class KeyboardInputState extends State<KeyboardInput> {
     // 列表回到顶部，不然无法上拉加载下一页
     context.read<ReleaseFeedInputNotifier>().topScrollController.jumpTo(0);
     context.read<ReleaseFeedInputNotifier>().setTopicList(searchTopicList);
+
   }
 
   /// 获得文本输入框样式
