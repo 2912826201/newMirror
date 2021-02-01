@@ -778,7 +778,6 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
                 print('=====================在第一页的子评论的父评论');
                 choseItemInFrist = true;
                 choseIndex = i;
-                courseCommentHot.list[i].pullNumber = 1;
               }
             }
             if (!choseItemInFrist) {
