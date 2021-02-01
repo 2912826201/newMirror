@@ -8,6 +8,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
@@ -28,6 +29,9 @@ class _EditInformationNameState extends State<EditInformationName>{
   int _reciprocal = 15;
   int beforeLength = 0;
   FocusNode blankNode = FocusNode();
+  ///记录上次结果
+  var lastInput = "";
+  PinYinTextEditController controller =  PinYinTextEditController();
   @override
   void initState() {
     super.initState();
@@ -38,6 +42,21 @@ class _EditInformationNameState extends State<EditInformationName>{
       beforeLength = textLength;
       widget.userName = null;
     }
+
+
+    ///controller监听
+    controller.addListener(() {
+      if (lastInput != controller.completeText) {
+        lastInput = controller.completeText;
+        ///通知onChanged
+        setState(() {
+          _EditText = lastInput;
+          textLength = lastInput.length;
+          _reciprocal += beforeLength - textLength;
+          beforeLength = textLength;
+        });
+      }
+    });
   }
   @override
   Widget build(BuildContext context) {
@@ -135,12 +154,7 @@ class _EditInformationNameState extends State<EditInformationName>{
   Widget _inputWidget(double width){
     var putFiled = TextField(
       maxLength: 15,
-      controller: TextEditingController.fromValue(TextEditingValue(
-        text: _EditText,
-        selection: TextSelection.fromPosition(TextPosition(
-          affinity: TextAffinity.downstream,
-          offset: _EditText.length))
-      )),
+      controller: controller,
       cursorColor:AppColor.black,
       style: AppStyle.textRegular16,
       decoration: InputDecoration(
@@ -148,16 +162,6 @@ class _EditInformationNameState extends State<EditInformationName>{
         hintText: "戳这里输入昵称",
         hintStyle:TextStyle(fontSize: 16,color: AppColor.textHint),
         border: InputBorder.none,),
-        onChanged: (value){
-        print("回调了几次");
-        setState(() {
-          _EditText = value;
-          textLength = value.length;
-          _reciprocal += beforeLength - textLength;
-          beforeLength = textLength;
-        });
-
-      },
     );
     return Container(
      padding: EdgeInsets.only(left: 16,right: 16),
