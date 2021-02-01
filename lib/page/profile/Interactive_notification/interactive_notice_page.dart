@@ -445,7 +445,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
       getFeedDetail(context,feedModel.id, comment:type==0?msgModel.commentData:null);
     }else if(msgModel.refType == 2){
       if(fatherCommentModel.type==0){
-        getFeedDetail(context, fatherCommentModel.targetId, comment: type==0?msgModel.commentData:null);
+        getFeedDetail(context, fatherCommentModel.targetId, comment: type==0?msgModel.commentData:null,fatherModel: fatherCommentModel);
       }else if(fatherCommentModel.type==1){
         AppRouter.navigateToLiveDetail(context, fatherCommentModel.targetId,isHaveStartTime: false,commentDtoModel:
         type==0?msgModel.commentData:null,fatherComment: fatherCommentModel);
@@ -461,7 +461,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
       msgModel.commentData);
     }
   }
-  getFeedDetail(BuildContext context, int feedId, {CommentDtoModel comment}) async {
+  getFeedDetail(BuildContext context, int feedId, {CommentDtoModel comment,CommentDtoModel fatherModel}) async {
     HomeFeedModel feedModel = await feedDetail(id: feedId);
     List<HomeFeedModel> list = [];
     list.add(feedModel);
@@ -475,6 +475,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
                 model: feedModel,
                 comment: comment,
                 type: 2,
+                fatherModel: fatherModel,
               )),
     );
   }

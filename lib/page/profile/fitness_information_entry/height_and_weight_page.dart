@@ -84,7 +84,7 @@ class _HeightAndWeightState extends State<HeightAndWeightPage>{
                 backColor: AppColor.bgBlack,
                 color: AppColor.transparent,
                 onTap: (){
-                  FocusScope.of(context).requestFocus(blankNode);
+                  FocusScope.of(context).autofocus(blankNode);
                   print('=height=======$heights===weight==========$weight');
                     context.read<FitnessInformationNotifier>().setHeightAndWeight(heights,weight);
                     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
