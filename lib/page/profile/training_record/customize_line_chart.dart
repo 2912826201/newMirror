@@ -487,6 +487,11 @@ class MyPainter extends CustomPainter {
       x -= pointRadius / 2;
       lineX -= pointRadius / 2;
     }
+
+    if (positionSelect != 0&&positionSelect != points.length - 1) {
+      lineX-=2;
+    }
+
     double y = points[positionSelect].y - 28 - pointRadius / 2 - 8;
 
     drawAlertLine(canvas, lineX, size);
