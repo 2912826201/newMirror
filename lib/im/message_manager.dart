@@ -159,6 +159,7 @@ class MessageManager {
 
   //移除指定一条会话信息 type是ConversationDto的type 不是Message的
   static removeConversation(BuildContext context, String conversationId, int uid, int type) async {
+    print("44444444444444444444444444444444444444444444444444444");
     ConversationDto dto = ConversationDto();
     dto.conversationId = conversationId;
     dto.uid = uid;

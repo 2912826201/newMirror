@@ -616,6 +616,11 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
                   courseCommentHot.list[i].screenOutIds.add(model.id);
                   courseCommentHot.list[i].pullNumber++;
                   commentListSubSettingList[i].subCommentAllHeight = null;
+                  if(!widget.isShowHotOrTime &&
+                      context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments!=null&&
+                      context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length>0) {
+                    context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments[i].screenOutIds.add(model.id);
+                  }
                 }
               }
             }
@@ -627,6 +632,12 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
                   courseCommentTime.list[i].screenOutIds.add(model.id);
                   courseCommentTime.list[i].pullNumber++;
                   commentListSubSettingList[i].subCommentAllHeight = null;
+
+                  if(!widget.isShowHotOrTime &&
+                      context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments!=null&&
+                      context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length>0) {
+                    context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments[i].screenOutIds.add(model.id);
+                  }
                 }
               }
             }
