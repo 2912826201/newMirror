@@ -292,9 +292,11 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
     if(map!=null&&map["url"]!=null){
       qrImageString=map["url"];
       expirationTime=map["expireTime"];
-      setState(() {
+      if(mounted) {
+        setState(() {
 
-      });
+        });
+      }
     }
   }
 

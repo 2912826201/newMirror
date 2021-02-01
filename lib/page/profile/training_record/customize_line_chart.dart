@@ -112,12 +112,14 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
                         } else {
                           pageSize = pageSize + 5;
                         }
-                        setState(() {});
+                        if(mounted){
+                          setState(() {});
+                        }
                       },
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Container(
-                          width: canvasWidth / 4 * (pageSize < 4 ? 4 : pageSize - 1),
+                          width: canvasWidth / 4 * (pageSize <= 4 ? 4 : pageSize - 1),
                           height: height,
                           child: Stack(
                             children: [
@@ -144,7 +146,9 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
     if (notification is ScrollStartNotification) {
       if (isPositionSelectShow) {
         isPositionSelectShow = false;
-        setState(() {});
+        if(mounted){
+          setState(() {});
+        }
       }
       // 滚动开始
       // print('滚动开始');
@@ -228,7 +232,9 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
                   print("点击了");
                   positionSelect = index;
                   isPositionSelectShow = true;
-                  setState(() {});
+                  if(mounted){
+                    setState(() {});
+                  }
                 },
               ),
             );

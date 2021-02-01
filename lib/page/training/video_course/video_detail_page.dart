@@ -148,7 +148,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
               child: Text("加载失败"),
               onTap: () {
                 loadingStatus = LoadingStatus.STATUS_LOADING;
-                setState(() {});
+                if(mounted){
+                  setState(() {});
+                }
                 getDataAction();
               },
             ),
@@ -360,12 +362,16 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     if (metrics.pixels < 10) {
       if (isBouncingScrollPhysics) {
         isBouncingScrollPhysics = false;
-        setState(() {});
+        if(mounted){
+          setState(() {});
+        }
       }
     } else {
       if (!isBouncingScrollPhysics) {
         isBouncingScrollPhysics = true;
-        setState(() {});
+        if(mounted){
+          setState(() {});
+        }
       }
     }
     return false;
@@ -387,7 +393,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     Map<String, dynamic> map = await (!isFavor ? addToMyCourse : deleteFromMyCourse)(videoModel.id);
     if (map != null && map["state"] != null && map["state"]) {
       isFavor = !isFavor;
-      setState(() {});
+      if(mounted){
+        setState(() {});
+      }
     }
   }
 
@@ -413,7 +421,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       }
       print("[${DateTime.now().millisecondsSinceEpoch}]taskId:$taskId; received:$received; total:$total; "
           "progress:$_progress; allDownLoadCount:$allDownLoadCount; completeDownCount:$completeDownCount");
-      setState(() {});
+      if(mounted){
+        setState(() {});
+      }
     };
   }
 
@@ -658,16 +668,22 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       if (model == null) {
         loadingStatus = LoadingStatus.STATUS_IDEL;
         Future.delayed(Duration(seconds: 1), () {
-          setState(() {});
+          if(mounted){
+            setState(() {});
+          }
         });
       } else {
         videoModel = LiveVideoModel.fromJson(model);
         loadingStatus = LoadingStatus.STATUS_COMPLETED;
-        setState(() {});
+        if(mounted){
+          setState(() {});
+        }
       }
     } else {
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
-      setState(() {});
+      if(mounted){
+        setState(() {});
+      }
     }
   }
 
@@ -684,7 +700,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     print('关注监听=========================================$attntionResult');
     if (attntionResult == 1 || attntionResult == 3) {
       videoModel.coachDto?.relation = 1;
-      setState(() {});
+      if(mounted){
+        setState(() {});
+      }
     }
   }
 

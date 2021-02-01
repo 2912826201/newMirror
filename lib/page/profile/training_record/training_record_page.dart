@@ -680,25 +680,25 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
             return;
           }
           daySelectPosition = index - 3;
-          setState(() {
-
-          });
+          if(mounted){
+            setState(() {});
+          }
         } else if (typeString == "周") {
           if (index < 2 || index >= weekModelList.length + 2) {
             return;
           }
           weekSelectPosition = index - 2;
-          setState(() {
-
-          });
+          if(mounted){
+            setState(() {});
+          }
         } else {
           if (index < 2 || index >= monthModelList.length + 2) {
             return;
           }
           monthSelectPosition = index - 2;
-          setState(() {
-
-          });
+          if(mounted){
+            setState(() {});
+          }
         }
       },
     );
@@ -940,14 +940,15 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
     _refreshController.loadComplete();
 
     allDataMap = await getTrainingRecords();
-
-    setState(() {
-      if (dayModelList.length > 0) {
-        loadingStatus = LoadingStatus.STATUS_COMPLETED;
-      } else {
-        loadingStatus = LoadingStatus.STATUS_IDEL;
-      }
-    });
+    if(mounted) {
+      setState(() {
+        if (dayModelList.length > 0) {
+          loadingStatus = LoadingStatus.STATUS_COMPLETED;
+        } else {
+          loadingStatus = LoadingStatus.STATUS_IDEL;
+        }
+      });
+    }
   }
 
 //获取周数据和月数据

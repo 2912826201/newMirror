@@ -124,7 +124,9 @@ class LiveDetailPageState extends State<LiveDetailPage> {
                   child: Text("加载失败"),
                   onTap: () {
                     loadingStatus = LoadingStatus.STATUS_LOADING;
-                    setState(() {});
+                    if(mounted){
+                      setState(() {});
+                    }
                     getDataAction();
                   },
                 ),
@@ -394,12 +396,16 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     if (metrics.pixels < 10) {
       if (isBouncingScrollPhysics) {
         isBouncingScrollPhysics = false;
-        setState(() {});
+        if(mounted){
+          setState(() {});
+        }
       }
     } else {
       if (!isBouncingScrollPhysics) {
         isBouncingScrollPhysics = true;
-        setState(() {});
+        if(mounted){
+          setState(() {});
+        }
       }
     }
     return false;
@@ -448,9 +454,9 @@ class LiveDetailPageState extends State<LiveDetailPage> {
                 return true;
               }));
         }
-        setState(() {
-
-        });
+        if(mounted){
+          setState(() {});
+        }
       }
     }else if(mapBook!=null){
       getDataAction();
@@ -596,9 +602,9 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     print('关注监听=========================================$attntionResult');
     if (attntionResult == 1 || attntionResult == 3) {
       liveModel.coachDto?.relation = 1;
-      setState(() {
-
-      });
+      if(mounted){
+        setState(() {});
+      }
     }
   }
 
@@ -624,12 +630,16 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     if (model == null) {
       loadingStatus = LoadingStatus.STATUS_IDEL;
       Future.delayed(Duration(seconds: 1), () {
-        setState(() {});
+        if(mounted){
+          setState(() {});
+        }
       });
     } else {
       liveModel = LiveVideoModel.fromJson(model);
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
-      setState(() {});
+      if(mounted){
+        setState(() {});
+      }
     }
   }
 

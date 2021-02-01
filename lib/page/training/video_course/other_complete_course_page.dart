@@ -351,9 +351,9 @@ class _OtherCompleteCoursePageState extends State<OtherCompleteCoursePage> {
     }
     _refreshController.refreshCompleted();
     _refreshController.loadComplete();
-    setState(() {
-
-    });
+    if(mounted){
+      setState(() {});
+    }
   }
 
   // 宽高比例高度
