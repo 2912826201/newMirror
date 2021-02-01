@@ -114,7 +114,6 @@ class AlertMsg extends StatelessWidget {
       //群通知
       Map<String, dynamic> mapGroupModel = json.decode(map["data"]["data"]);
       if (mapGroupModel["subType"] == 5) {
-        // print("mapGroupModel:${map["data"]["data"].toString()}");
         getGroupEntryByQRCode(mapGroupModel, context);
       }else if (mapGroupModel["subType"] == 4) {
         updateGroupName(mapGroupModel, context);
@@ -238,6 +237,8 @@ class AlertMsg extends StatelessWidget {
     } else if (mapGroupModel["subType"] == 1) {
       textArray.add("退出群聊");
     } else if (mapGroupModel["subType"] == 2) {
+
+      print("mapGroupModel:${map.toString()}");
       textArray.add("移除了群聊");
     } else if (mapGroupModel["subType"] == 3) {
       textArray.add("已成为新群主");

@@ -50,7 +50,7 @@ class ChatTypeModel {
   static const String MESSAGE_TYPE_ALERT_TIME_NAME = "时间提示消息，该版本较低请升级版本再行查看";
 
   //自定义消息类型：群通知消息
-  static const String MESSAGE_TYPE_ALERT_GROUP = "IF:AlertInviteMessage";
+  static const String MESSAGE_TYPE_ALERT_GROUP = "IF:AlertGroupMessage";
   static const String MESSAGE_TYPE_ALERT_GROUP_NAME = "群通知消息，该版本较低请升级版本再行查看";
 
   //自定义消息类型：提示信息-邀请

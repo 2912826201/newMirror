@@ -68,6 +68,7 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
   changeCallback(Message message) {
     if (message.objectName == ChatTypeModel.MESSAGE_TYPE_CMD) {
       if (message.originContentMap["name"].toString() == "Remove") {
+        print("message.originContentMap:${message.originContentMap.toString()}");
         Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
         print(
             "value:${mapGroupModel["groupChatId"].toString() == this.chatUserId && RCConversationType.Group == chatTypeId}");
@@ -81,6 +82,8 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
               break;
             }
           }
+        }else{
+          insertExitGroupMsg(message, mapGroupModel["groupChatId"].toString());
         }
       }
       return;
@@ -92,5 +95,27 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
         notifyListeners();
       }
     }
+  }
+
+  //插入被退出群提示
+  void insertExitGroupMsg(Message message, String targetId) {
+    TextMessage msg = TextMessage();
+    msg.sendUserInfo = getChatUserInfo();
+    Map<String, dynamic> alertMap = Map();
+    alertMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_GRPNTF;
+    alertMap["name"] = ChatTypeModel.MESSAGE_TYPE_GRPNTF_NAME;
+    alertMap["data"] = jsonEncode(message.originContentMap);
+    msg.content = jsonEncode(alertMap);
+    Application.rongCloud.insertOutgoingMessage(RCConversationType.Group, targetId, msg, null,
+        sendTime: new DateTime.now().millisecondsSinceEpoch);
+  }
+
+  //获取用户数据
+  UserInfo getChatUserInfo() {
+    UserInfo userInfo = UserInfo();
+    userInfo.userId = Application.profile.uid.toString();
+    userInfo.name = Application.profile.nickName;
+    userInfo.portraitUri = Application.profile.avatarUri;
+    return userInfo;
   }
 }
