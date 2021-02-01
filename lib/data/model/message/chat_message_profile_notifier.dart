@@ -22,7 +22,7 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
   Message message;
 
   ///消息
-  Message exitMessage;
+  Message resetMessage;
 
   //消息的id
   int messageId;
@@ -34,7 +34,7 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
   bool isSettingStatus = false;
 
   //是否退出界面
-  bool isExitPage = false;
+  bool isResetPage = false;
 
   //设置消息发送的状态
   setIsSettingStatus({bool isSettingStatus, int messageId, int status}) {
@@ -67,17 +67,36 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
 
   changeCallback(Message message) {
     if (message.objectName == ChatTypeModel.MESSAGE_TYPE_CMD) {
+      print("message.originContentMapName:${message.originContentMap["name"]}");
+      print("message.originContentMap:${message.originContentMap.toString()}");
       if (message.originContentMap["name"].toString() == "Remove") {
-        print("message.originContentMap:${message.originContentMap.toString()}");
         Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
-        print(
-            "value:${mapGroupModel["groupChatId"].toString() == this.chatUserId && RCConversationType.Group == chatTypeId}");
+        print("value:${mapGroupModel["groupChatId"].toString() == this.chatUserId
+            && RCConversationType.Group == chatTypeId}");
         if (mapGroupModel["groupChatId"].toString() == this.chatUserId && RCConversationType.Group == chatTypeId) {
           List<dynamic> users = mapGroupModel["users"];
           for (dynamic d in users) {
             if (d["uid"] == Application.profile.uid) {
-              isExitPage = true;
-              this.exitMessage = message;
+              isResetPage = true;
+              this.resetMessage = message;
+              notifyListeners();
+              break;
+            }
+          }
+        }else{
+          insertExitGroupMsg(message, mapGroupModel["groupChatId"].toString());
+        }
+      }else if (message.originContentMap["name"].toString() == "Entry") {
+        Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
+        print("value:${mapGroupModel["groupChatId"].toString() == this.chatUserId
+                && RCConversationType.Group == chatTypeId}");
+        print("value:${message.originContentMap.toString()}");
+        if (mapGroupModel["groupChatId"].toString() == this.chatUserId && RCConversationType.Group == chatTypeId) {
+          List<dynamic> users = mapGroupModel["users"];
+          for (dynamic d in users) {
+            if (d["uid"] == Application.profile.uid) {
+              isResetPage = true;
+              this.resetMessage = message;
               notifyListeners();
               break;
             }
@@ -88,6 +107,11 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
       }
       return;
     }
+    _changeCallback(message);
+  }
+
+
+  _changeCallback(Message message) {
     if (message.targetId == this.chatUserId && message.conversationType == chatTypeId) {
       if (message.conversationType != RCConversationType.System) {
         this.message = message;

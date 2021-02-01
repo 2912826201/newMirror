@@ -125,13 +125,21 @@ class AlertMsg extends StatelessWidget {
           if (mapGroupModel["subType"] == 1 && !chatGroupUserModel.isGroupLeader()) {
             textArray.clear();
           } else {
-            getGroupText(mapGroupModel, context);
+            if(mapGroupModel["subType"] == 0&&map["data"]["name"]=="Entry"){
+              textArray.clear();
+            }else {
+              getGroupText(mapGroupModel, context);
+            }
           }
         }else{
           if (mapGroupModel["subType"] == 1) {
             textArray.clear();
           } else {
-            getGroupText(mapGroupModel, context);
+            if(mapGroupModel["subType"] == 0&&map["data"]["name"]=="Entry"){
+              textArray.clear();
+            }else {
+              getGroupText(mapGroupModel, context);
+            }
           }
         }
       }
@@ -237,8 +245,6 @@ class AlertMsg extends StatelessWidget {
     } else if (mapGroupModel["subType"] == 1) {
       textArray.add("退出群聊");
     } else if (mapGroupModel["subType"] == 2) {
-
-      print("mapGroupModel:${map.toString()}");
       textArray.add("移除了群聊");
     } else if (mapGroupModel["subType"] == 3) {
       textArray.add("已成为新群主");

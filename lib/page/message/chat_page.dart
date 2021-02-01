@@ -172,7 +172,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     super.initState();
     initData();
 
-    context.read<ChatMessageProfileNotifier>().isExitPage = false;
+    context.read<ChatMessageProfileNotifier>().isResetPage = false;
     if (widget.conversation.getType() != RCConversationType.System) {
       initSetData();
       initTime();
@@ -279,7 +279,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
     bodyArray.add(Offstage(
       offstage: true,
-      child: judgeExitPage(),
+      child: judgeResetPage(),
     ));
 
     return bodyArray;
@@ -1366,17 +1366,15 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     );
   }
 
-//判断是否退出界面
-  Widget judgeExitPage() {
+//判断是否退出界面加入群聊
+  Widget judgeResetPage() {
     return Consumer<ChatMessageProfileNotifier>(
       builder: (context, notifier, child) {
-        bool isExitPage = context.select((ChatMessageProfileNotifier value) => value.isExitPage);
-        Message message = context.select((ChatMessageProfileNotifier value) => value.exitMessage);
+        bool isExitPage = context.select((ChatMessageProfileNotifier value) => value.isResetPage);
+        Message message = context.select((ChatMessageProfileNotifier value) => value.resetMessage);
         if (isExitPage) {
-          context.read<ChatMessageProfileNotifier>().isExitPage = false;
-          // print("22222222222222222222222222222222222222222222222222");
-          // MessageManager.removeConversation(context, chatUserId, Application.profile.uid, widget.conversation.type);
-          context.watch<ChatMessageProfileNotifier>().exitMessage = null;
+          context.watch<ChatMessageProfileNotifier>().isResetPage = false;
+          context.watch<ChatMessageProfileNotifier>().resetMessage = null;
           if (message != null) {
             getChatGroupUserModelList1(chatUserId, context);
             insertExitGroupMsg(message, chatUserId, (Message msg, int code) {
