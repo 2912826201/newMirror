@@ -633,6 +633,8 @@ String getSubCommentComplete(CommentDtoModel value,bool isFold){
     valueReplyLength=value.replys.length;
   }
 
+  // print("valueReplyLength$valueReplyLength${value.replyCount}${value.pullNumber}");
+
   var subCommentCompleteTitle = valueReplyLength < value.replyCount + value.pullNumber
       ? "查看"
       : (isFold ? "查看" : "隐藏");
