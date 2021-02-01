@@ -247,26 +247,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
           getActionUi(videoModel, context, titleTextStyle,globalKeyList[4]),
           getOtherUsersUi(recommendTopicList, context, titleTextStyle, onClickOtherComplete,globalKeyList[5]),
           getLineView(),
-          SliverToBoxAdapter(
-            child: Visibility(
-              visible: recommendLoadingStatus==LoadingStatus.STATUS_COMPLETED,
-              child: CurrencyCommentPage(
-                key:childKey,
-                scrollController: scrollController,
-                refreshController: _refreshController,
-                fatherComment:widget.fatherComment,
-                targetId:videoModel.id,
-                targetType:3,
-                pageCommentSize:3,
-                pageSubCommentSize:3,
-                isShowHotOrTime:true,
-                commentDtoModel:widget.commentDtoModel,
-                isShowAt:false,
-                globalKeyList: globalKeyList,
-              ),
-            ),
-          ),
-          // _getCourseCommentUi(),
+          _getCourseCommentUi(),
           SliverToBoxAdapter(
             child: SizedBox(
               height: 15,
@@ -277,6 +258,38 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     );
   }
 
+  Widget _getCourseCommentUi(){
+    if(recommendLoadingStatus==LoadingStatus.STATUS_COMPLETED&&
+        widget.commentDtoModel!=null){
+      Future.delayed(Duration(milliseconds: 300),()async{
+        print("开始滚动------------------------------------------------------------------------");
+        if(widget.commentDtoModel.type==2) {
+          childKey.currentState.startAnimationScroll(widget.commentDtoModel.targetId);
+        }else{
+          childKey.currentState.startAnimationScroll(widget.commentDtoModel.id);
+        }
+      });
+    }
+    return SliverToBoxAdapter(
+      child: Visibility(
+        visible: recommendLoadingStatus==LoadingStatus.STATUS_COMPLETED,
+        child: CurrencyCommentPage(
+          key:childKey,
+          scrollController: scrollController,
+          refreshController: _refreshController,
+          fatherComment:widget.fatherComment,
+          targetId:videoModel.id,
+          targetType:3,
+          pageCommentSize:20,
+          pageSubCommentSize:3,
+          isShowHotOrTime:true,
+          commentDtoModel:widget.commentDtoModel,
+          isShowAt:false,
+          globalKeyList: globalKeyList,
+        ),
+      ),
+    );
+  }
 
 
   //获取下载中的ui
@@ -353,6 +366,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   //滑动的回调
   bool _onDragNotification(ScrollNotification notification) {
     ScrollMetrics metrics = notification.metrics;
+    childKey.currentState.scrollHeightOld=metrics.pixels;
     if (metrics.pixels < 10) {
       if (isBouncingScrollPhysics) {
         isBouncingScrollPhysics = false;

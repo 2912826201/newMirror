@@ -4,29 +4,13 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/api/home/home_feed_api.dart';
-import 'package:mirror/config/application.dart';
-import 'package:mirror/constant/color.dart';
-import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
-import 'package:mirror/data/notifier/token_notifier.dart';
-import 'package:mirror/page/feed/comment_bottom_list.dart';
-import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/commentInputBox.dart';
-import 'package:mirror/page/if_page.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/page/training/currency/currency_comment_page.dart';
-import 'package:mirror/route/router.dart';
-import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
-import 'package:mirror/widget/comment_input_bottom_bar.dart';
-import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
-import 'package:mirror/widget/post_comments.dart';
-import 'package:mirror/widget/rich_text_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
 
 class CommentBottomSheet extends StatefulWidget {
@@ -39,20 +23,6 @@ class CommentBottomSheet extends StatefulWidget {
 }
 
 class CommentBottomSheetState extends State<CommentBottomSheet> {
-  // // 数据加载页数
-  // int dataPage = 1;
-  //
-  // // 加载中默认文字
-  // String loadText = "加载中...";
-  //
-  // // 加载状态
-  // LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
-
-// //  数据源
-//   List<CommentDtoModel> commentModel = [];
-
-  // // 请求下一页
-  // int hasNext = 0;
 
   // 列表监听
   ScrollController _controller = new ScrollController();
@@ -152,7 +122,9 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
   createMiddleView() {
     print(context.select((FeedMapNotifier value) => value.feedMap[widget.feedId].totalCount));
     return Expanded(
-        child: SmartRefresher(
+      child:NotificationListener<ScrollNotification>(
+        onNotification: _onDragNotification,
+        child:SmartRefresher(
             enablePullDown: false,
             enablePullUp: true,
             footer: footerWidget(),
@@ -173,7 +145,16 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
                   externalBoxHeight:MediaQuery.of(context).size.height*0.75,
                 ),
               )
-            ])));
+            ])),
+      ),
+    );
+  }
+
+  //滑动的回调
+  bool _onDragNotification(ScrollNotification notification) {
+    ScrollMetrics metrics = notification.metrics;
+    childKey.currentState.scrollHeightOld=metrics.pixels;
+    return false;
   }
 
   @override

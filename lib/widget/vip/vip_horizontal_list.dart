@@ -17,7 +17,7 @@ class VipHorizontalList extends StatefulWidget{
 }
 class _VipHorizontalListState extends State<VipHorizontalList>{
   Color itemBackGround = AppColor.white;
-  String titleText = "首月优惠dwwdww";
+  String titleText = "首月优惠";
   double titleWidth;
   int oldIndex;
   @override
@@ -86,15 +86,15 @@ class _VipHorizontalListState extends State<VipHorizontalList>{
             padding: EdgeInsets.only(left: 2,right: 2),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors:[AppColor.lightGreen,AppColor.textVipPrimary1],
-                begin: FractionalOffset(0.6,0), end: FractionalOffset(1, 0.6)),
+                colors:[AppColor.bgVip1,AppColor.bgVip2,AppColor.bgVip3],
+                begin: FractionalOffset(0.5,0), end: FractionalOffset(1,0.5)),
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(6),
                 topRight:Radius.circular(0),
                 bottomLeft: Radius.circular(0),
                 bottomRight: Radius.circular(6) ),),
             child: Center(
-              child: Text(titleText,style: AppStyle.redRegular11,),
+              child: Text(titleText,style: AppStyle.redVipMedium11,),
             ),
           )
         )

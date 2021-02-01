@@ -58,7 +58,7 @@ class _VipNamePlateState extends State<VipNamePlateHorazontalList>{
              onTap: (){
                if(index!=context.read<VipMoveNotifier>().choseIndex){
                  context.read<VipMoveNotifier>().changeListOldIndex(index);
-                 widget.pageController.jumpToPage(context.read<VipMoveNotifier>().choseIndex);
+                 widget.pageController.jumpToPage(index);
                }
              },
              child:Container(

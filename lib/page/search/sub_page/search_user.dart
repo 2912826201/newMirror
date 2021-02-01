@@ -10,6 +10,7 @@ import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -246,11 +247,8 @@ class _SearchState extends State<SearchUserItem> {
         children: [
           InkWell(
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return ProfileDetailPage(
-                  userId: widget.model.uid,
-                );
-              }));
+              AppRouter.navigateToMineDetail(context, widget.model.uid);
+
             },
             child: Row(
               children: [

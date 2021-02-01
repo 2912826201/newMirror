@@ -20,12 +20,6 @@ class InputFormatter extends TextInputFormatter {
     // 判断是删除还是新增
 
     bool isAdd = oldValue.text.length < newValue.text.length;
-    print("新值$newValue");
-    print("新值前光标${newValue.selection.start}");
-    print("新值后光标${newValue.selection.end}");
-    print("旧值$oldValue");
-    print("旧值前光标${oldValue.selection.start}");
-    print("旧值后光标${oldValue.selection.end}");
     // 如果是新增
     if (isAdd && oldValue.selection.start == oldValue.selection.end) {
     } else {

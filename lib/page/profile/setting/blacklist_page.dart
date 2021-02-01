@@ -90,11 +90,8 @@ class _BlackListState extends State<BlackListPage>{
         children: [
           InkWell(
             onTap: (){
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return ProfileDetailPage(
-                  userId: blackList[index].uid,
-                );
-              }));
+              AppRouter.navigateToMineDetail(context, blackList[index].uid);
+
             },
             child: ClipOval(
             child: CachedNetworkImage(

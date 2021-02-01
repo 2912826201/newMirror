@@ -117,6 +117,9 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
 
   GlobalKey globalKey = new GlobalKey();
 
+  double scrollHeightOld=0;
+
+
   @override
   void initState() {
     super.initState();
@@ -133,7 +136,8 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
     if(!widget.isShowHotOrTime && courseCommentHot != null&&
         context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments!=null&&
         context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length>0) {
-      if(context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length!=courseCommentHot.list.length) {
+      if(context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length!=courseCommentHot.list.length
+      ||courseCommentHot.list.length!=commentListSubSettingList.length) {
         courseCommentHot.list = context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments;
         resetSubSetting(courseCommentHot);
       }
@@ -520,7 +524,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
     for (int i = 0; i < commentModel.list.length; i++) {
       int isHaveIndex=-1;
       for(int j=0;j<commentListSubSettingList.length;j++){
-        if(commentListSubSettingList[i].commentId==commentModel.list[i].id){
+        if(commentListSubSettingList[j].commentId==commentModel.list[i].id){
           isHaveIndex=j;
           break;
         }
@@ -644,7 +648,8 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
 
   //滚动界面到指定的item
   void startAnimationScroll(int targetId){
-    Future.delayed(Duration(milliseconds: 100), () {
+    print("滚动界面到指定的item--targetId：$targetId------------------------------------------------------------------------");
+    Future.delayed(Duration(milliseconds: 200), () {
       if (widget.scrollController != null) {
         double scrollHeight=0;
         int index=0;
@@ -664,29 +669,46 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
           });
           scrollHeight+=24;
         }
-        print("targetId:$targetId, widget.targetId:${widget.targetId},"
-            " commentListSubSettingList[i].commentId:${commentListSubSettingList[index].commentId},"
-            "index:$index,count:$count");
-
         scrollHeight+=widget.externalScrollHeight;
-        scrollHeight+=120;
+        scrollHeight+=180;
+
+        print("targetId:$targetId, widget.targetId:${widget.targetId},"+
+            "index:$index,count:$count,scrollHeight:$scrollHeight");
 
         if(widget.isShowHotOrTime){
+          print("111111111111111111111111111111111");
           scrollHeight+=300;
           scrollHeight-=MediaQuery.of(context).size.height;
+          if(scrollHeight<scrollHeightOld){
+            print("22222222222222222222222222222scrollHeight:$scrollHeight, scrollHeightOld:$scrollHeightOld");
+            scrollHeight=0;
+          }
         }else if(widget.externalBoxHeight>0){
+          print("33333333333333333333");
           scrollHeight+=50;
           if(scrollHeight>widget.externalBoxHeight) {
+            print("4444444444444:$scrollHeight, widget.externalBoxHeight:${widget.externalBoxHeight}");
             scrollHeight -= widget.externalBoxHeight;
           }else{
+            print("5555555555555555:$scrollHeight, scrollHeightOld:$scrollHeightOld");
+            scrollHeight=0;
+          }
+          if(scrollHeight<scrollHeightOld){
+            print("666666666666666:$scrollHeight, scrollHeightOld:$scrollHeightOld");
             scrollHeight=0;
           }
         }else{
+          print("7777777777777777777");
           scrollHeight+=100;
           scrollHeight-=MediaQuery.of(context).size.height;
+          if(scrollHeight<scrollHeightOld){
+            print("88888888888888888888:$scrollHeight, scrollHeightOld:$scrollHeightOld");
+            scrollHeight=0;
+          }
         }
 
 
+        print("滚动界面到指定的item--scrollHeight：$scrollHeight------------------------------------------------------------------------");
         if(scrollHeight>0) {
           widget.scrollController.animateTo(
             scrollHeight,
