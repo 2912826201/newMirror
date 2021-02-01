@@ -6,6 +6,7 @@ import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_bottom_sheet.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:union_tabs/union_tabs.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -64,12 +65,16 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin, WidgetsBi
             ChangeNotifierProvider(
                 create: (_) => SelectedbottomNavigationBarNotifier(0),
                 builder: (context, _) {
-                  return UnionOuterTabBarView(
-                    physics: context.watch<SelectedbottomNavigationBarNotifier>().selectedIndex == 0
-                        ? BouncingScrollPhysics()
-                        : NeverScrollableScrollPhysics(),
-                    controller: _controller,
-                    children: _createTabContent(),
+                  return ScrollConfiguration(
+                    behavior: NoBlueEffectBehavior(),
+                    child: UnionOuterTabBarView(
+                      physics: context.watch<SelectedbottomNavigationBarNotifier>().selectedIndex == 0
+                          //ClampingScrollPhysics 禁止回弹效果 NeverScrollableScrollPhysics 禁止滚动效果
+                          ? ClampingScrollPhysics()
+                          : NeverScrollableScrollPhysics(),
+                      controller: _controller,
+                      children: _createTabContent(),
+                    ),
                   );
                 })
           ]),
