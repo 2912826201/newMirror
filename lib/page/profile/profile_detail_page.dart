@@ -30,9 +30,11 @@ import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
+import 'package:mirror/widget/primary_scrollcontainer.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../if_page.dart';
 
@@ -68,17 +70,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///头像
   String _avatar = "";
 
-  ///关注数
-  int _attention;
-
-  ///粉丝数
-  int _fans;
-
-  ///获赞数
-  int _lauded;
-
-  ///会改变的button里的内容
-  String _buttonText = "+ 关注";
   TabController _mController;
 
   ///true是自己的页面，false是别人的页面
@@ -89,22 +80,33 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 
   ///该用户和我的关系
   int relation;
-
   ScrollController scrollController = ScrollController();
   double _signatureHeight = 10;
   Color titleColor = AppColor.transparent;
-
+  List<GlobalKey> scrollChildKeys;
+  GlobalKey<PrimaryScrollContainerState> leftKey = GlobalKey();
+  GlobalKey<PrimaryScrollContainerState> rightKey = GlobalKey();
   @override
   void initState() {
     super.initState();
     context.read<ProfilePageNotifier>().setFirstModel(widget.userId);
-    _mController = TabController(length: 2, vsync: this);
-
     ///判断是自己的页面还是别人的页面
     if (context.read<ProfileNotifier>().profile.uid == widget.userId) {
       isMselfId = true;
     } else {
       isMselfId = false;
+    }
+    _mController = TabController(length: 2, vsync: this);
+    if(isMselfId){
+      scrollChildKeys = [leftKey,rightKey];
+      _mController.addListener(() {
+        for (int i = 0; i < scrollChildKeys.length; i++) {
+          GlobalKey<PrimaryScrollContainerState> key = scrollChildKeys[i];
+          if (key.currentState != null) {
+            key.currentState.onPageChange(_mController.index == i);//控制是否当前显示
+          }
+        }
+      });
     }
     WidgetsBinding.instance.addPostFrameCallback((_){
       _getUserInfo(id: widget.userId);
@@ -174,6 +176,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   void dispose() {
     super.dispose();
     print('=======================================个人主页dispose');
+    context.read<ProfilePageNotifier>().clear();
     SingletonForWholePages.singleton().closePanelController();
   }
 
@@ -228,7 +231,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               ),
               leading: InkWell(
                 onTap: () {
-                  context.read<ProfilePageNotifier>().clearTitleColor();
                   Navigator.pop(this.context, context.read<ProfilePageNotifier>().isFollow);
                 },
                 child: Image.asset(
@@ -336,14 +338,20 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             ? TabBarView(
                 controller: _mController,
                 children: <Widget>[
-                  ProfileDetailsList(
-                    type: 2,
-                    id: widget.userId,
+                  PrimaryScrollContainer(
+                    scrollChildKeys[0],
+                    ProfileDetailsList(
+                      type: 2,
+                      id: widget.userId,
+                    ),
                   ),
-                  ProfileDetailsList(
-                    type: 6,
-                    id: widget.userId,
-                  )
+                  PrimaryScrollContainer(
+                    scrollChildKeys[1],
+                    ProfileDetailsList(
+                      type: 6,
+                      id: widget.userId,
+                    ),
+                  ),
                 ],
               )
             : ProfileDetailsList(type: 3, id: widget.userId));
@@ -634,9 +642,15 @@ class ProfilePageNotifier extends ChangeNotifier {
 
   bool canOnClick = true;
 
+  bool showImageTitle = false;
   void setFirstModel(int id){
     attentionModel[id] = ProfileModel();
     isFollow[id] = false;
+    notifyListeners();
+  }
+
+  void changeImageTitle(bool show){
+    showImageTitle = show;
     notifyListeners();
   }
   void changeIsFollow(bool bl,int id) {
@@ -653,18 +667,16 @@ class ProfilePageNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  void clearAttentionModel(){
-    attentionModel = null;
-
-  }
 
   void changeTitleColor(Color color) {
     titleColor = color;
     notifyListeners();
   }
 
-  void clearTitleColor() {
+  void clear() {
     titleColor = AppColor.transparent;
+    attentionModel = null;
+    backImage = "images/resource/2.0x/white_return@2x.png";
     notifyListeners();
   }
 
@@ -673,8 +685,4 @@ class ProfilePageNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  void clearBackImage() {
-    backImage = "images/resource/2.0x/white_return@2x.png";
-    notifyListeners();
-  }
 }

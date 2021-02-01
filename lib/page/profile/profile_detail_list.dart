@@ -12,24 +12,28 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 
 ///个人主页动态List
-class ProfileDetailsList extends StatefulWidget{
-int type;
-int id;
-ProfileDetailsList({this.type,this.id});
+class ProfileDetailsList extends StatefulWidget {
+  int type;
+  int id;
+
+  ProfileDetailsList({this.type, this.id});
+
   @override
   State<StatefulWidget> createState() {
     return ProfileDetailsListState();
   }
-
 }
-class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKeepAliveClientMixin{
+
+class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKeepAliveClientMixin {
   ///动态model
   List<HomeFeedModel> followModel = [];
+
   ///动态id
   List<int> _followListId = [];
   int followDataPage = 1;
   int followlastTime;
   RefreshController _refreshController = RefreshController();
+  ScrollController scrollController  = ScrollController();
   StateResult fllowState = StateResult.RESULTNULL;
 
   _getDynamicData(int type, {int id}) async {
@@ -39,60 +43,63 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
     }
     DataResponseModel model = await getPullList(type: type, size: 20, targetId: id, lastTime: followlastTime);
 
-      if (followDataPage == 1) {
-        followModel.clear();
-        _followListId.clear();
-        if (model.list.isNotEmpty) {
-          model.list.forEach((result) {
-            followModel.add(HomeFeedModel.fromJson(result));
-            _followListId.add(HomeFeedModel.fromJson(result).id);
-          });
-          _followListId.insert(0, -1);
-          fllowState = StateResult.HAVARESULT;
-          _refreshController.refreshCompleted();
-        } else {
-          fllowState = StateResult.RESULTNULL;
-          _refreshController.resetNoData();
-        }
-      } else if (followDataPage > 1 && followlastTime != null) {
-        if (model.list.isNotEmpty) {
-          model.list.forEach((result) {
-            followModel.add(HomeFeedModel.fromJson(result));
-            _followListId.add(HomeFeedModel.fromJson(result).id);
-          });
-          _refreshController.loadComplete();
-        }
-      } else {
-        _refreshController.loadNoData();
-      }
-      if(mounted){
-        setState(() {
+    if (followDataPage == 1) {
+      followModel.clear();
+      _followListId.clear();
+      if (model.list.isNotEmpty) {
+        model.list.forEach((result) {
+          followModel.add(HomeFeedModel.fromJson(result));
+          _followListId.add(HomeFeedModel.fromJson(result).id);
         });
+        _followListId.insert(0, -1);
+        fllowState = StateResult.HAVARESULT;
+        _refreshController.refreshCompleted();
+      } else {
+        fllowState = StateResult.RESULTNULL;
+        _refreshController.resetNoData();
       }
+    } else if (followDataPage > 1 && followlastTime != null) {
+      if (model.list.isNotEmpty) {
+        model.list.forEach((result) {
+          followModel.add(HomeFeedModel.fromJson(result));
+          _followListId.add(HomeFeedModel.fromJson(result).id);
+        });
+        _refreshController.loadComplete();
+      }
+    } else {
+      _refreshController.loadNoData();
+    }
+    if (mounted) {
+      setState(() {});
+    }
     followlastTime = model.lastTime;
     context.read<FeedMapNotifier>().updateFeedMap(followModel);
   }
+
   ///上拉加载
-  _onLoadding(){
+  _onLoadding() {
     followDataPage += 1;
-    _getDynamicData(widget.type,id: widget.id);
+    _getDynamicData(widget.type, id: widget.id);
   }
 
-  _onRefresh(){
+  _onRefresh() {
     followDataPage = 1;
     followlastTime = null;
-    _getDynamicData(widget.type,id: widget.id);
+    _getDynamicData(widget.type, id: widget.id);
   }
+
   @override
   void initState() {
     super.initState();
-    _getDynamicData(widget.type,id: widget.id);
+    _getDynamicData(widget.type, id: widget.id);
   }
+
   @override
   Widget build(BuildContext context) {
     var _listData = Container(
       width: ScreenUtil.instance.screenWidthDp,
       color: AppColor.white,
+
       ///刷新控件
       child: SmartRefresher(
         enablePullUp: true,
@@ -124,48 +131,52 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
         onLoading: _onLoadding,
         onRefresh: _onRefresh,
         child: ListView.builder(
-          shrinkWrap: true, //解决无限高度问题
-          physics: AlwaysScrollableScrollPhysics(),
-          itemCount: _followListId.length,
-          itemBuilder: (context, index) {
-            int id = _followListId[index];
-            HomeFeedModel model = context.read<FeedMapNotifier>().feedMap[id];
-            if (index == 0) {
-              return Container(
-                height: 10,
-              );
-            } else {
-              return DynamicListLayout(
-                index: index,pageName: "profileDetails", isShowRecommendUser: false, model: model, key: GlobalObjectKey("attention$index"));
-            }
-          }),
+            shrinkWrap: true, //解决无限高度问题
+            physics: AlwaysScrollableScrollPhysics(),
+            itemCount: _followListId.length,
+            itemBuilder: (context, index) {
+              int id = _followListId[index];
+              HomeFeedModel model = context.read<FeedMapNotifier>().feedMap[id];
+              if (index == 0) {
+                return Container(
+                  height: 10,
+                );
+              } else {
+                return DynamicListLayout(
+                    index: index,
+                    pageName: "profileDetails",
+                    isShowRecommendUser: false,
+                    model: model,
+                    key: GlobalObjectKey("attention$index"));
+              }
+            }),
       ),
     );
     switch (fllowState) {
       case StateResult.RESULTNULL:
         return Container(
-          padding: EdgeInsets.only(top: 12),
-          color: AppColor.white,
-          child: ListView(
-            children: [
-              Center(
-                child: Container(
-                  width: 224,
-                  height: 224,
-                  color: AppColor.bgWhite.withOpacity(0.65),
+            padding: EdgeInsets.only(top: 12),
+            color: AppColor.white,
+            child: ListView(
+              children: [
+                Center(
+                  child: Container(
+                    width: 224,
+                    height: 224,
+                    color: AppColor.bgWhite.withOpacity(0.65),
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 16,
-              ),
-              Center(
-                child: Text(
-                  widget.type==3?"他还没有发布动态~":"快发布你的第一条动态吧",
-                  style: AppStyle.textPrimary3Regular14,
+                SizedBox(
+                  height: 16,
                 ),
-              )
-            ],
-          ));
+                Center(
+                  child: Text(
+                    widget.type == 3 ? "他还没有发布动态~" : "快发布你的第一条动态吧",
+                    style: AppStyle.textPrimary3Regular14,
+                  ),
+                )
+              ],
+            ));
         break;
       case StateResult.HAVARESULT:
         return _listData;
@@ -176,5 +187,4 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
-
 }

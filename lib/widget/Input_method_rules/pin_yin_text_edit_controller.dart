@@ -24,7 +24,6 @@ class PinYinTextEditController extends TextEditingController{
     );
     print("进入下一城");
     return TextSpan(
-
         style: style,
         children: <TextSpan>[
           TextSpan(text: value.composing.textBefore(value.text)),

@@ -12,6 +12,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/vip/vip_grid_list.dart';
 import 'package:provider/provider.dart';
+
 //会员已开通页
 class VipOpenPage extends StatefulWidget {
   @override
@@ -23,7 +24,7 @@ class VipOpenPage extends StatefulWidget {
 class _VipOpenPage extends State<VipOpenPage> {
   double textWidth;
   int lastTime = 1432121322112;
-
+  VipState vipState = VipState.EXPIRED;
   @override
   void initState() {
     // TODO: implement initState
@@ -60,8 +61,8 @@ class _VipOpenPage extends State<VipOpenPage> {
           children: [
             Stack(
               children: [
+                //背景图和网格布局
                 Container(
-
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -74,11 +75,12 @@ class _VipOpenPage extends State<VipOpenPage> {
                         height: 124,
                       ),
                       Container(
-                            margin: EdgeInsets.only(left: 16),
+                        margin: EdgeInsets.only(left: 16),
                         child: Text(
-                        "会员尊享权益",
-                        style: AppStyle.redMedium16,
-                      ),),
+                          "会员尊享权益",
+                          style: vipState==VipState.EXPIRED?AppStyle.textSecondaryRegular16:AppStyle.redMedium16,
+                        ),
+                      ),
                       SizedBox(
                         height: 16,
                       ),
@@ -86,11 +88,13 @@ class _VipOpenPage extends State<VipOpenPage> {
                         padding: EdgeInsets.only(left: 16, right: 16),
                         child: VipGridList(
                           vipType: VipType.OPEN,
+                          vipState: VipState.EXPIRED,
                         ),
                       )
                     ],
                   ),
                 ),
+                //会员信息牌
                 Positioned(
                     top: 20,
                     child: Container(
@@ -101,17 +105,14 @@ class _VipOpenPage extends State<VipOpenPage> {
                           padding: EdgeInsets.only(top: 21, bottom: 17, right: 16, left: 16),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                                colors: [AppColor.lightGreen, AppColor.textVipPrimary1],
-                                begin: FractionalOffset(0.6, 0),
-                                end: FractionalOffset(1, 0.6)),
+                                colors: vipState==VipState.EXPIRED?[AppColor.textHint,AppColor.textSecondary,]
+                                    :[AppColor.lightGreen, AppColor.textVipPrimary1],
+                                begin: FractionalOffset(0,0.6),
+                                end: FractionalOffset(0.6, 1)),
                             borderRadius: BorderRadius.all(Radius.circular(10)),
                           ),
                           child: Column(
-                            children: [
-                              _userNameAvatar(),
-                              Spacer(),
-                              _vipLastTime()
-                            ],
+                            children: [_userNameAvatar(), Spacer(), _vipLastTime()],
                           )),
                     ))
               ],
@@ -140,9 +141,6 @@ class _VipOpenPage extends State<VipOpenPage> {
         SizedBox(
           width: 12,
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
             Container(
               width: 193,
               child: Row(
@@ -159,7 +157,8 @@ class _VipOpenPage extends State<VipOpenPage> {
                   Container(
                     alignment: Alignment.topLeft,
                     child: Image.asset(
-                      "images/resource/2.0x/vip_logo@2x.png",
+                      vipState==VipState.EXPIRED?"images/resource/2.0x/vip_notopen_icon@2x.png"
+                                                  :"images/resource/2.0x/vip_open_icon@2x.png",
                       width: 43,
                       height: 16,
                     ),
@@ -167,15 +166,6 @@ class _VipOpenPage extends State<VipOpenPage> {
                 ],
               ),
             ),
-            SizedBox(
-              height: 7,
-            ),
-            Text(
-              "管理制度续费 >",
-              style: AppStyle.whiteRegular12,
-            ),
-          ],
-        ),
       ],
     );
   }
@@ -186,29 +176,35 @@ class _VipOpenPage extends State<VipOpenPage> {
         Align(
           alignment: Alignment.centerLeft,
           child: Text(
-          "vip会员至${DateUtil.generateFormatDate(lastTime)}",
-          style: AppStyle.redRegular13,
-        ),),
+            vipState==VipState.EXPIRED?"已过期56天"
+                :"vip会员至${DateUtil.generateFormatDate(lastTime)}",
+            style: vipState==VipState.EXPIRED?AppStyle.whiteRegular12:AppStyle.redRegular13,
+          ),
+        ),
         Spacer(),
         InkWell(
-          onTap: (){
+          onTap: () {
             Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              ///这里传type来告知详情页该怎么展示
               return VipNotOpenPage(
-                type: VipState.RENEW,
+                type: VipState.EXPIRED,
               );
             }));
           },
           child: Container(
-          height: 31,
-          width: 88,
-          decoration: BoxDecoration(
-              color: AppColor.bgVip1,
-              borderRadius: BorderRadius.all(Radius.circular(14)),),
-          child: Center(
-            child: Text("立即续费",style: AppStyle.redMedium14,),
+            height: 31,
+            width: 88,
+            decoration: BoxDecoration(
+              color: vipState==VipState.EXPIRED?AppColor.textHint:AppColor.bgVip1,
+              borderRadius: BorderRadius.all(Radius.circular(14)),
+            ),
+            child: Center(
+              child: Text(
+                "立即续费",
+                style: vipState==VipState.EXPIRED?AppStyle.whiteMedium14:AppStyle.redMedium14,
+              ),
+            ),
           ),
-        ),)
+        )
       ],
     );
   }
