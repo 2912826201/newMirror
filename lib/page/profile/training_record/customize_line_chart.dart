@@ -44,6 +44,11 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
   RefreshController _refreshController = RefreshController(initialRefresh: false);
 
 
+  @override
+  void initState() {
+    super.initState();
+    initDate();
+  }
 
   void initDate() {
     if (widget.weightDataMap["targetWeight"] == null || widget.weightDataMap["targetWeight"] < 1) {
@@ -59,6 +64,10 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
       valueList.add(widget.weightDataMap["recordList"][i]["weight"]);
       xValue.add(widget.weightDataMap["recordList"][i]["dateTime"]);
     }
+    // for (int i = 0; i < 60; i++) {
+    //   valueList.add(55);
+    //   xValue.add("$i");
+    // }
 
     if (valueList.length >= 5) {
       pageSize = 5;
@@ -69,7 +78,6 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
 
   @override
   Widget build(BuildContext context) {
-    initDate();
     TextStyle style = TextStyle(fontSize: 12, color: AppColor.black);
     bottomHeight = 20.0;
 
@@ -106,17 +114,21 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
                       ),
                       controller: _refreshController,
                       onLoading: () {
-                        _refreshController.loadComplete();
-                        if (pageSize + 5 >= valueList.length) {
-                          pageSize = valueList.length;
-                        } else {
-                          pageSize = pageSize + 5;
-                        }
-                        if(mounted){
-                          setState(() {});
-                        }
+                        Future.delayed(Duration(milliseconds: 200),(){
+                          _refreshController.loadComplete();
+                          if (pageSize + 5 >= valueList.length) {
+                            pageSize = valueList.length;
+                          } else {
+                            pageSize = pageSize + 5;
+                          }
+                          print("pageSize:$pageSize");
+                          if(mounted) {
+                            setState(() {});
+                          }
+                        });
                       },
                       child: SingleChildScrollView(
+                        physics: BouncingScrollPhysics(),
                         scrollDirection: Axis.horizontal,
                         child: Container(
                           width: canvasWidth / 4 * (pageSize <= 4 ? 4 : pageSize - 1),
@@ -142,6 +154,7 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
 
   //滑动的回调
   bool _onDragNotification(ScrollNotification notification) {
+    // ScrollMetrics metrics = notification.metrics;
     // 注册通知回调
     if (notification is ScrollStartNotification) {
       if (isPositionSelectShow) {
@@ -212,6 +225,7 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
         width: double.infinity,
         height: double.infinity,
         child: ListView.builder(
+          physics: NeverScrollableScrollPhysics(),
           itemCount: pageSize,
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) {
@@ -447,7 +461,7 @@ class MyPainter extends CustomPainter {
     initPaint(size);
     initPoints(size);
     canvasCirclePlan(canvas, size);
-    canvasBgLine(canvas, size);
+    // canvasBgLine(canvas, size);
     canvasCircleLine(canvas, size);
     canvasPoint(canvas, size);
     canvasBottomText(canvas, size);
@@ -590,16 +604,20 @@ class MyPainter extends CustomPainter {
     if (newValue == null) {
       return "";
     }
-    DateTime newTime = DateUtil.stringToDateTime(newValue);
-    if (lastValue != null) {
-      DateTime lastTime = DateUtil.stringToDateTime(lastValue);
-      if (newTime.year == lastTime.year) {
-        return "${newTime.month}.${newTime.day}";
+    try{
+      DateTime newTime = DateUtil.stringToDateTime(newValue);
+      if (lastValue != null) {
+        DateTime lastTime = DateUtil.stringToDateTime(lastValue);
+        if (newTime.year == lastTime.year) {
+          return "${newTime.month}.${newTime.day}";
+        } else {
+          return "${newTime.year}./${newTime.month}.${newTime.day}";
+        }
       } else {
-        return "${newTime.year}./${newTime.month}.${newTime.day}";
+        return "${newTime.month}.${newTime.day}";
       }
-    } else {
-      return "${newTime.month}.${newTime.day}";
+    }catch(e){
+      return "";
     }
   }
 
@@ -721,9 +739,17 @@ class MyPainterBenchMarkLine extends CustomPainter {
 
   Paint benchmarkLinePaint;
   double yTextSize = 12.0;
+  int itemCountPage = 4;
+  Paint bgLinePaint;
 
   void initPaint(Size size) {
     benchmarkLinePaint = Paint() // 创建一个画笔并配置其属性
+      ..strokeWidth = 1 // 画笔的宽度
+      ..isAntiAlias = true // 是否抗锯齿
+      ..color = AppColor.textHint // 画笔颜色
+      ..style = PaintingStyle.fill;
+
+    bgLinePaint = Paint() // 创建一个画笔并配置其属性
       ..strokeWidth = 1 // 画笔的宽度
       ..isAntiAlias = true // 是否抗锯齿
       ..color = AppColor.textHint // 画笔颜色
@@ -733,8 +759,18 @@ class MyPainterBenchMarkLine extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     initPaint(size);
+    canvasBgLine(canvas, size);
     canvasBenchmarkLine(canvas, size);
     canvasText(canvas, size);
+  }
+
+  //画背景虚线
+  void canvasBgLine(Canvas canvas, Size size) {
+    for (int i = 0; i < itemCountPage; i++) {
+      double lineHeight = (i * ((size.height - bottomHeight - topHeight - yTextSize) / itemCountPage) + 6 + topHeight);
+      canvasDottedLine(0.0, size.width, lineHeight, canvas, bgLinePaint);
+    }
+    canvasDottedLine(0.0, size.width, size.height - bottomHeight - 6, canvas, bgLinePaint);
   }
 
   void canvasText(Canvas canvas, Size size) {
