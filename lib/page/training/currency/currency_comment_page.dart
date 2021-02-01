@@ -119,6 +119,8 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
 
   double scrollHeightOld=0;
 
+  bool childFristLoading = true;
+
 
   @override
   void initState() {
@@ -132,7 +134,17 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
 
   @override
   Widget build(BuildContext context) {
-
+    if(courseCommentHot!=null&&isFristScroll&&widget.commentDtoModel!=null){
+      Future.delayed(Duration(milliseconds: 100),()async{
+        print("开始滚动------------------------------------------------------------------------");
+        if(widget.commentDtoModel.type==2) {
+         startAnimationScroll(widget.commentDtoModel.targetId);
+        }else{
+          startAnimationScroll(widget.commentDtoModel.id);
+        }
+        isFristScroll = false;
+      });
+    }
     if(!widget.isShowHotOrTime && courseCommentHot != null&&
         context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments!=null&&
         context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length>0) {
@@ -199,7 +211,6 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
     return Container(
       width: double.infinity,
       key: commentListSubSettingList[index].globalKey,
-      padding: const EdgeInsets.only(left: 16, right: 16),
       child: Column(
         children: [
           _getCommentUi(value, false, value.id),
@@ -274,7 +285,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
         offstage: commentListSubSettingList[index].isFold,
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.only(left: 55),
+       /*   padding: const EdgeInsets.only(left: 55),*/
           child: SingleChildScrollView(
             physics: NeverScrollableScrollPhysics(),
             child: Column(
@@ -315,6 +326,16 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
 
   //获取评论的item--每一个item
   Widget _getCommentUi(CommentDtoModel value, bool isSubComment, int _targetId) {
+      if(widget.commentDtoModel!=null){
+        if(value.itemChose){
+          Future.delayed(Duration(milliseconds: 5000),(){
+            print('-=-=-=-=-=-=-=-=-=-=-=-=-=-=倒计时结束，背景改变');
+              value.itemChose=false;
+              setState(() {
+              });
+          });
+        }
+      }
     return IntrinsicHeight(
       child: AnimatedPhysicalModel(
           shape: BoxShape.rectangle,
@@ -322,7 +343,9 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
           elevation: 0,
           shadowColor: !value.itemChose ? AppColor.bgWhite : AppColor.white,
           duration: Duration(seconds: 1),
-          child: Row(
+          child: Container(
+            padding:EdgeInsets.only(left:isSubComment?55:16, right: 16,top: 8,bottom: 8),
+            child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               getUserImage(value.avatarUrl, isSubComment?32:42,  isSubComment?32:42),
@@ -398,7 +421,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
                 ),
               ),
             ],
-          )),
+          ),)),
     );
   }
 
@@ -616,6 +639,11 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
                   courseCommentHot.list[i].screenOutIds.add(model.id);
                   courseCommentHot.list[i].pullNumber++;
                   commentListSubSettingList[i].subCommentAllHeight = null;
+                  if(!widget.isShowHotOrTime &&
+                      context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments!=null&&
+                      context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length>0) {
+                    context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments[i].screenOutIds.add(model.id);
+                  }
                 }
               }
             }
@@ -627,6 +655,12 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
                   courseCommentTime.list[i].screenOutIds.add(model.id);
                   courseCommentTime.list[i].pullNumber++;
                   commentListSubSettingList[i].subCommentAllHeight = null;
+
+                  if(!widget.isShowHotOrTime &&
+                      context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments!=null&&
+                      context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length>0) {
+                    context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments[i].screenOutIds.add(model.id);
+                  }
                 }
               }
             }
@@ -741,25 +775,21 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
                 choseIndex = i;
                 courseCommentHot.list[i].itemChose = true;
               } else if (courseCommentHot.list[i].id == widget.commentDtoModel.targetId) {
-                print('=====================在第一页的子评论');
+                print('=====================在第一页的子评论的父评论');
                 choseItemInFrist = true;
                 choseIndex = i;
-                widget.commentDtoModel.itemChose = true;
-                courseCommentHot.list[i].replys.insert(0,  widget.commentDtoModel);
-                courseCommentHot.list[i].pullNumber = 1;
               }
             }
             if (!choseItemInFrist) {
               if (widget.fatherComment != null) {
-                print('=================不在第一页的子评论');
+                print('=================不在第一页的子评论的父评论');
                 courseCommentHot.list.insert(0, widget.fatherComment);
-                widget.commentDtoModel.itemChose = true;
-                courseCommentHot.list[0].replys.insert(0,  widget.commentDtoModel);
                 courseCommentHot.list[0].pullNumber = 1;
               } else {
                 print('=================不在第一页的父评论');
                 widget.commentDtoModel.itemChose = true;
                 courseCommentHot.list.insert(0,  widget.commentDtoModel);
+                screenOutHotIds.add(widget.fatherComment.id);
               }
             }
           }
@@ -772,7 +802,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
         }
       }
       setCommentListSubSetting(courseCommentHot, isFold: isFold);
-      if(widget.commentDtoModel != null&&isFristScroll){
+      if(widget.fatherComment != null&&isFristScroll){
         onClickAddSubComment(courseCommentHot.list[choseIndex], choseIndex);
       }
     } else {
@@ -835,10 +865,29 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
         if (!(commentModel == null || commentModel.list == null || commentModel.list.length < 1)) {
           print("获取到了commentModel不为空");
           List<CommentDtoModel> commentDtoModelList = <CommentDtoModel>[];
+          if(widget.commentDtoModel!=null&&targetId==widget.commentDtoModel.targetId&&childFristLoading){
+            print('===================第一次进初始化选中的评论');
+            bool isFrist = false;
+            for(int i=0;i<commentModel.list.length;i++){
+              if(commentModel.list[i].id == widget.commentDtoModel.id){
+                print('=====================在第一页');
+                isFrist = true;
+                commentModel.list[i].itemChose = true;
+              }
+            }
+            if(!isFrist){
+              print('==============================不在第一页$isFrist');
+              widget.commentDtoModel.itemChose = true;
+              commentDtoModelList.insert(0, widget.commentDtoModel);
+              courseCommentHot.list[choseIndex].screenOutIds.add(widget.commentDtoModel.id);
+            }
+            childFristLoading = false;
+          }
           commentDtoModelList.addAll(commentModel.list);
-
+          commentModel.list.forEach((element) {
+            print('==================获取到的model的id===========${element.id}');
+          });
           print("获取到了length:${commentDtoModelList.length}条数据， commentModel.lastId：${commentModel.lastId}");
-
           (isHotOrTime ? subCommentLastIdHot : subCommentLastIdTime)["$targetId"] = commentModel.lastId;
 
           for(CommentDtoModel dtoModel in commentDtoModelList){
@@ -1024,6 +1073,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
 }
 class CommentListSubSetting {
   int commentId;
+  int targetId;
   bool isFold;
   double subCommentAllHeight;
   GlobalKey globalKey;

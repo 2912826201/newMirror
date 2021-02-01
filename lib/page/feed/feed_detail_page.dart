@@ -25,8 +25,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 // 动态详情页
 class FeedDetailPage extends StatefulWidget {
-  FeedDetailPage({Key key, this.model, this.type, this.index, this.comment});
-
+  FeedDetailPage({Key key, this.model, this.type, this.index, this.comment,this.fatherModel});
+  CommentDtoModel fatherModel;
   CommentDtoModel comment;
   HomeFeedModel model;
   int index;
@@ -199,18 +199,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                             : Container(),
                       ]),
                     ),
-                    SliverToBoxAdapter(
-                      child: CurrencyCommentPage(
-                        key: childKey,
-                        scrollController: _controller,
-                        refreshController: _refreshController,
-                        targetId: feedModel.id,
-                        targetType: 0,
-                        pageCommentSize: 20,
-                        pageSubCommentSize: 3,
-                        externalScrollHeight: itemHeight.toInt(),
-                      ),
-                    ),
+                    _getCourseCommentUi(),
                     SliverToBoxAdapter(
                       child: SizedBox(
                         height: ScreenUtil.instance.bottomBarHeight,
@@ -228,6 +217,31 @@ class FeedDetailPageState extends State<FeedDetailPage> {
             )
           ],
         ));
+  }
+
+  Widget _getCourseCommentUi(){
+   /* Future.delayed(Duration(milliseconds: 100),()async{
+      print("开始滚动------------------------------------------------------------------------");
+      if(widget.comment.type==2) {
+        childKey.currentState.startAnimationScroll(widget.comment.targetId);
+      }else{
+        childKey.currentState.startAnimationScroll(widget.comment.id);
+      }
+    });*/
+    return SliverToBoxAdapter(
+      child: CurrencyCommentPage(
+        key: childKey,
+        scrollController: _controller,
+        refreshController: _refreshController,
+        targetId: feedModel.id,
+        targetType: 0,
+        pageCommentSize: 20,
+        pageSubCommentSize: 3,
+        externalScrollHeight: itemHeight.toInt(),
+        commentDtoModel: widget.comment,
+        fatherComment: widget.fatherModel,
+      ),
+    );
   }
 
   _calculateHeight() {

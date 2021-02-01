@@ -384,6 +384,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
           },
         ),
         onClickRightBtn: () {
+          print("3333333333333333333333333333333333333333333");
           MessageManager.removeConversation(context, conversation.conversationId, conversation.uid, conversation.type);
         },
       );

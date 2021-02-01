@@ -224,17 +224,6 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   }
 
   Widget _getCourseCommentUi(){
-    if(recommendLoadingStatus==LoadingStatus.STATUS_COMPLETED&&
-        widget.commentDtoModel!=null){
-      Future.delayed(Duration(milliseconds: 300),()async{
-        print("开始滚动------------------------------------------------------------------------");
-        if(widget.commentDtoModel.type==2) {
-          childKey.currentState.startAnimationScroll(widget.commentDtoModel.targetId);
-        }else{
-          childKey.currentState.startAnimationScroll(widget.commentDtoModel.id);
-        }
-      });
-    }
     return SliverToBoxAdapter(
       child: Visibility(
         visible: recommendLoadingStatus==LoadingStatus.STATUS_COMPLETED,

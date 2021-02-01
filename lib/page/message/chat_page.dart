@@ -361,6 +361,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                 }
               }, () {
                 //退出群聊
+                    print("111111111111111111111111111111111111111111111111111111111111111");
                 MessageManager.removeConversation(
                     context, chatUserId, Application.profile.uid, widget.conversation.type);
                 Navigator.of(context).pop();
@@ -423,8 +424,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.add,size: 16,color: AppColor.textPrimary1),
-                      SizedBox(width: 3),
+                      SizedBox(width: 2),
                       Text("关注",style: TextStyle(color: AppColor.textPrimary1,fontSize: 14,fontWeight: FontWeight.bold)),
+                      SizedBox(width: 1),
                     ],
                   ),
                 ),
@@ -1371,7 +1373,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         bool isExitPage = context.select((ChatMessageProfileNotifier value) => value.isExitPage);
         Message message = context.select((ChatMessageProfileNotifier value) => value.exitMessage);
         if (isExitPage) {
-          MessageManager.removeConversation(context, chatUserId, Application.profile.uid, widget.conversation.type);
+          context.read<ChatMessageProfileNotifier>().isExitPage = false;
+          // print("22222222222222222222222222222222222222222222222222");
+          // MessageManager.removeConversation(context, chatUserId, Application.profile.uid, widget.conversation.type);
           context.watch<ChatMessageProfileNotifier>().exitMessage = null;
           if (message != null) {
             getChatGroupUserModelList1(chatUserId, context);

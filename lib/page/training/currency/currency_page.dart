@@ -623,19 +623,39 @@ Widget getCommentNoData(){
 
 //获取有几个子评论
 String getSubCommentComplete(CommentDtoModel value,bool isFold){
-  // ignore: null_aware_before_operator
-  var subCommentCompleteTitle = (value.replys?.length < value.replyCount + value.pullNumber
-      ? "查看"
-      : (isFold ? "查看" : "隐藏"));
-  var subCommentComplete =
-      subCommentCompleteTitle +
-          // ignore: null_aware_before_operator
-          "${value.replys?.length >= value.replyCount + value.pullNumber ? value.replyCount : (value.replyCount + value.pullNumber - value.replys?.length)}条回复";
-  print("value.replys?.length:${value.replys?.length}, value.pullNumber：${value.pullNumber}, value.replyCount :${value.replyCount }");
-  if (subCommentCompleteTitle == "隐藏") {
-    subCommentComplete = "隐藏回复";
+
+  if(value==null){return "";}
+
+  int valueReplyLength=0;
+  if(value.replys==null||value.replys.length<1){
+    valueReplyLength=0;
+  }else{
+    valueReplyLength=value.replys.length;
   }
-  return subCommentComplete;
+
+  // print("valueReplyLength$valueReplyLength${value.replyCount}${value.pullNumber}");
+
+  var subCommentCompleteTitle = valueReplyLength < value.replyCount + value.pullNumber
+      ? "查看"
+      : (isFold ? "查看" : "隐藏");
+
+  if (subCommentCompleteTitle == "隐藏") {
+    return "隐藏回复";
+  }else{
+    if(isFold){
+      if(valueReplyLength>0){
+        return "$subCommentCompleteTitle$valueReplyLength条回复";
+      }else{
+        return "$subCommentCompleteTitle${value.replyCount + value.pullNumber}条回复";
+      }
+    }else{
+      if(valueReplyLength>=value.replyCount + value.pullNumber){
+        return "隐藏回复";
+      }else{
+        return "$subCommentCompleteTitle${value.replyCount - (valueReplyLength-value.pullNumber)}条回复";
+      }
+    }
+  }
 }
 
 //获取用户的头像
