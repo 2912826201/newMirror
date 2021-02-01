@@ -49,7 +49,7 @@ class RongCloudReceiveManager {
   //发送消息结果的回调
   onMessageSend(int messageId, int status, int code) {
     //将发送的消息插入记录
-    print("messageId:${messageId},status:${status},code:${code}");
+    print("发送了融云消息：messageId:${messageId},status:${status},code:${code}");
     Application.appContext
         .read<ChatMessageProfileNotifier>()
         .setIsSettingStatus(isSettingStatus: true, messageId: messageId, status: status);

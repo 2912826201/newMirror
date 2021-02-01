@@ -2,20 +2,28 @@ import 'dart:collection';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:camera/camera.dart';
+import 'package:provider/provider.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:mirror/api/basic_api.dart';
+import 'package:mirror/data/database/profile_db_helper.dart';
+import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/region_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
-import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/data/model/token_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
+import 'package:mirror/data/notifier/machine_notifier.dart';
+import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
@@ -83,8 +91,7 @@ class Application {
   static Message shareMessage;
 
   //省级地区的数据
-  static LinkedHashMap<int, RegionDto> provinceMap =
-      LinkedHashMap<int, RegionDto>();
+  static LinkedHashMap<int, RegionDto> provinceMap = LinkedHashMap<int, RegionDto>();
 
   //市级地区的数据
   static Map<int, List<RegionDto>> cityMap = Map<int, List<RegionDto>>();
@@ -95,15 +102,20 @@ class Application {
   //main的上下文
   static BuildContext appContext;
 
+  //app的页面导航key
+  static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+  //系统平台 0-android 1-ios
+  static int platform;
+
+  //用户所登录的机器
+  static MachineModel machine;
 
   //群成员的id--群昵称
   static Map<String, String> chatGroupUserModelMap = Map();
 
   //群组at的列表
-  static AtMesGroupModel atMesGroupModel = new AtMesGroupModel();
-
-  //系统平台 0-android 1-ios
-  static int platform;
+  static AtMesGroupModel atMesGroupModel = AtMesGroupModel();
 
   //那些消息是置顶的no_prompt_uid_model
   static List<TopChatModel> topChatModelList = [];
@@ -111,6 +123,45 @@ class Application {
   //那些消息是免打扰的
   static List<NoPromptUidModel> queryNoPromptUidList = [];
 
-  //用户所登录的机器
-  static MachineModel machine;
+  //公共登出方法
+  static appLogout() async {
+    //先取个匿名token
+    TokenModel tokenModel = await login("anonymous", null, null, null);
+    if (tokenModel != null) {
+      TokenDto tokenDto = TokenDto.fromTokenModel(tokenModel);
+      if (token.anonymous == 0) {
+        print("🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫进入了登录用户登出流程🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫");
+        bool result = await logout();
+        //TODO 这里先不处理登出接口的结果
+        //清用户token和用户资料 provider的context用appContext
+        await TokenDBHelper().insertToken(tokenDto);
+        appContext.read<TokenNotifier>().setToken(tokenDto);
+        await ProfileDBHelper().clearProfile();
+        appContext.read<ProfileNotifier>().setProfile(ProfileDto.fromUserModel(UserModel()));
+        // 登出融云
+        Application.rongCloud.disconnect();
+        //TODO 处理登出后需要清掉的用户的其他数据
+        MessageManager.clearUserMessage(appContext);
+        _clearUserRuntimeCache();
+        //跳转页面 移除所有页面 重新打开首页
+        navigatorKey.currentState.pushNamedAndRemoveUntil("/", (route) => false);
+      } else {
+        print("🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫进入了匿名用户登出流程🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫");
+        //如果本来就是匿名token那么换个token就行 不用清任何东西也不用跳转页面
+        await TokenDBHelper().insertToken(tokenDto);
+        appContext.read<TokenNotifier>().setToken(tokenDto);
+      }
+    } else {
+      //失败的情况下 登出将无token可用 所以不能继续登出
+    }
+  }
+
+  static _clearUserRuntimeCache() {
+    appContext.read<MachineNotifier>().setMachine(null);
+    //TODO 其他的provider还需整理出来清掉
+    chatGroupUserModelMap.clear();
+    atMesGroupModel?.atMsgMap?.clear();
+    topChatModelList.clear();
+    queryNoPromptUidList.clear();
+  }
 }
