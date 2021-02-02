@@ -25,6 +25,7 @@ class _IntroductionState extends State<EditInformationIntroduction> {
   ///记录上次结果
   var lastInput = "";
   PinYinTextEditController controller = PinYinTextEditController();
+  FocusNode _commentFocus = FocusNode();
   @override
   void dispose() {
     // TODO: implement dispose
@@ -73,6 +74,7 @@ class _IntroductionState extends State<EditInformationIntroduction> {
               child: Image.asset("images/resource/2.0x/return2x.png"),
             ),
             onTap: () {
+              _commentFocus.unfocus();
               Navigator.pop(context, widget.introduction);
             },
           ),
@@ -85,6 +87,7 @@ class _IntroductionState extends State<EditInformationIntroduction> {
           actions: [
             InkWell(
                 onTap: () {
+                  _commentFocus.unfocus();
                   Navigator.pop(this.context, editText);
                 },
                 child: Container(
@@ -137,6 +140,7 @@ class _IntroductionState extends State<EditInformationIntroduction> {
       child: Column(
         children: [
           TextField(
+            focusNode: _commentFocus,
             autofocus: true,
             maxLength: 90,
             maxLines: 5,

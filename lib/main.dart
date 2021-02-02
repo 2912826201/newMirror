@@ -75,7 +75,6 @@ void main() {
             ChangeNotifierProvider(create: (_) => GroupUserProfileNotifier()),
             ChangeNotifierProvider(create: (_) => UnreadMessageNotifier()),
             ChangeNotifierProvider(create: (_) => VipMoveNotifier()),
-            ChangeNotifierProvider(create: (_) => AppDialogNotifier()),
             ChangeNotifierProvider(create: (_) => SettingNotifile()),
           ],
           child: MyApp(),

@@ -462,6 +462,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
     }
   }
   getFeedDetail(BuildContext context, int feedId, {CommentDtoModel comment,CommentDtoModel fatherModel}) async {
+    print('==============================feedId==$feedId');
     HomeFeedModel feedModel = await feedDetail(id: feedId);
     List<HomeFeedModel> list = [];
     list.add(feedModel);

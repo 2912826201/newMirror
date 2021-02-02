@@ -641,14 +641,16 @@ class ProfilePageNotifier extends ChangeNotifier {
   Map<int,bool> isFollow = {};
 
   bool canOnClick = true;
-
+  double progress = 0.0;
   bool showImageTitle = false;
   void setFirstModel(int id){
     attentionModel[id] = ProfileModel();
     isFollow[id] = false;
+  }
+  void changeProgress(double pros){
+    progress = pros;
     notifyListeners();
   }
-
   void changeImageTitle(bool show){
     showImageTitle = show;
     notifyListeners();

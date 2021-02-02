@@ -102,7 +102,8 @@ class HeadView extends StatelessWidget {
           children: [
             GestureDetector(
               onTap: () {
-                AppRouter.navigateToMineDetail(context, model.id);
+                print('动态item的Id========================${model.pushId}');
+                AppRouter.navigateToMineDetail(context, model.pushId);
               },
               child: Container(
                 margin: EdgeInsets.only(left: 16, right: 11),

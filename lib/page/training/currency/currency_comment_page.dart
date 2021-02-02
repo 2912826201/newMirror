@@ -638,11 +638,14 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
                   courseCommentHot.list[i].replys.add(model);
                   courseCommentHot.list[i].screenOutIds.add(model.id);
                   courseCommentHot.list[i].pullNumber++;
+                  if(isHotOrTime) {
+                    commentListSubSettingList[i].isFold = false;
+                  }
                   commentListSubSettingList[i].subCommentAllHeight = null;
                   if(!widget.isShowHotOrTime &&
-                      context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments!=null&&
-                      context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length>0) {
-                    context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments[i].screenOutIds.add(model.id);
+                      context.read<FeedMapNotifier>().feedMap[widget.targetId].comments!=null&&
+                      context.read<FeedMapNotifier>().feedMap[widget.targetId].comments.length>0) {
+                    context.read<FeedMapNotifier>().feedMap[widget.targetId].comments[i].screenOutIds.add(model.id);
                   }
                 }
               }
@@ -654,6 +657,9 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
                   courseCommentTime.list[i].replys.add(model);
                   courseCommentTime.list[i].screenOutIds.add(model.id);
                   courseCommentTime.list[i].pullNumber++;
+                  if(!isHotOrTime) {
+                    commentListSubSettingList[i].isFold = false;
+                  }
                   commentListSubSettingList[i].subCommentAllHeight = null;
 
                   if(!widget.isShowHotOrTime &&
