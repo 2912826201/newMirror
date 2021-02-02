@@ -88,7 +88,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     double height = ScreenUtil.instance.height;
     return Scaffold(
       appBar: null,
-      body: _buildSuggestions(width, height),
+      body: SingleChildScrollView(child: _buildSuggestions(width, height),),
     );
   }
 

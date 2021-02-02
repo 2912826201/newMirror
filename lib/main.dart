@@ -83,8 +83,6 @@ void main() {
             //记录未读消息数 目前只记录3种互动通知的数量 从接口获取更新数据
             ChangeNotifierProvider(create: (_) => UnreadMessageNotifier()),
             ChangeNotifierProvider(create: (_) => VipMoveNotifier()),
-            //TODO 弹框的进度状态 应该不需要在全局更新状态
-            ChangeNotifierProvider(create: (_) => AppDialogNotifier()),
             ChangeNotifierProvider(create: (_) => SettingNotifile()),
           ],
           child: MyApp(),

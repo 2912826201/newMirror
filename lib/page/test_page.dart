@@ -3,10 +3,13 @@ import 'dart:math';
 
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:install_plugin/install_plugin.dart';
 import 'package:mirror/api/version_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/config/shared_preferences.dart';
+import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/dto/download_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/version_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
@@ -29,6 +32,9 @@ import 'package:provider/provider.dart';
 
 import 'message/message_chat_page_manager.dart';
 import 'profile/login_test_page.dart';
+import 'profile/profile_detail_page.dart';
+import 'profile/profile_detail_page.dart';
+import 'profile/profile_detail_page.dart';
 import 'training/video_course/video_course_play_page2.dart';
 import 'training/video_course/video_course_play_page.dart';
 
@@ -355,6 +361,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
     );
   }
   void _getNewVersion(BuildContext context)async{
+    String url = "https://download.sj.qq.com/upload/connAssitantDownload/upload/MobileAssistant_1.apk";
     VersionModel model = await getNewVersion();
     if(model!=null){
       print('====================版本model有值');
@@ -379,10 +386,23 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
               cancel:AppDialogButton("不更新",(){
                 return true;
               }),
-              progress:context.read<AppDialogNotifier>().progress,
               confirm: AppDialogButton("更新",(){
-                FileUtil().download(model.url, (taskId, received, total){
-                  print('============================${received/total}');
+                FileUtil().download(url, (taskId, received, total) async {
+                  print('==taskId$taskId====================progress${received/total}');
+                  if(received==total){
+                    String path = await FileUtil().getDownloadedPath(url);
+                    print('===========================path$path');
+                    if(path!=null){
+                      InstallPlugin.installApk(path, 'com.aimymusic.mirror')
+                          .then((result) {
+                        print('=======================安装成功$result');
+                      }).catchError((error) {
+                        print('install apk error: $error');
+                      });
+                    }
+
+                  /*  FileUtil().removeDownloadTask(url);*/
+                  }
               });
                 return true;
               }),
@@ -395,7 +415,6 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
     }
   }
 }
-
 
 Future<Map<String, String>> _videoDownloadCheck() async {
   Map<String, String> map = {};

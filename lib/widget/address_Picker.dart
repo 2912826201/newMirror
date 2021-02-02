@@ -171,25 +171,27 @@ class _addressPickerState extends State<AddressPicker>{
                     ),
                     Positioned(
                       top: 0,
-                      child: Container(
+                      child: IgnorePointer(
+                        child: Container(
                         width: width,
                         height: (height * 0.32 - height*0.05) / 2 - 15,
-                        color: AppColor.white.withOpacity(0.5),
-                      )),
+                        color: AppColor.white.withOpacity(0.7),
+                      ),)),
                     Positioned(
                       bottom: 0,
-                      child: Container(
+                      child:  IgnorePointer(
+                          child: Container(
                         width: width,
                         height: (height * 0.32 - height*0.05) / 2 - 15,
-                        color: AppColor.white.withOpacity(0.6),
-                      )),
+                        color: AppColor.white.withOpacity(0.7),
+                      ))),
                     Positioned(
                       left: width / 2 * 0.15,
                       top: (height * 0.32 - height*0.05) / 2 - 15,
                       child: Container(
                         height: 0.5,
                         width: width / 2 * 0.7,
-                        color: AppColor.textHint,
+                        color: AppColor.textHint.withOpacity(0.6),
                       )),
                     Positioned(
                       left: width / 2 * 0.15,
@@ -197,7 +199,7 @@ class _addressPickerState extends State<AddressPicker>{
                       child: Container(
                         height: 0.5,
                         width: width / 2 * 0.7,
-                        color: AppColor.textHint,
+                        color: AppColor.textHint.withOpacity(0.6),
                       )),
                     Positioned(
                       right: width / 2 * 0.15,
@@ -205,7 +207,7 @@ class _addressPickerState extends State<AddressPicker>{
                       child: Container(
                         height: 0.5,
                         width: width / 2 * 0.7,
-                        color: AppColor.textHint,
+                        color: AppColor.textHint.withOpacity(0.6),
                       )),
                     Positioned(
                       right: width / 2 * 0.15,
@@ -213,7 +215,7 @@ class _addressPickerState extends State<AddressPicker>{
                       child: Container(
                         height: 0.5,
                         width: width / 2 * 0.7,
-                        color: AppColor.textHint,
+                        color: AppColor.textHint.withOpacity(0.6),
                       )),
                   ],
                 )
@@ -237,7 +239,10 @@ class _addressPickerState extends State<AddressPicker>{
         childCount: textContext.length,
         builder: (context, index) {
           return Container(
-            child: Center(child: _listItem(textContext, index, type)),
+            child: Center(
+              child: Text("${textContext[index]}",
+                style: AppStyle.textRegular15
+            ),),
           );
         }),
 
@@ -259,21 +264,6 @@ class _addressPickerState extends State<AddressPicker>{
           setState(() {});
         }
       },
-    );
-  }
-  ///item
-  Widget _listItem(List textContext, int index, int type) {
-    print('adress========%%%%%%%%%%%%%%%%%=================${provinceIdList[index]}');
-    return Column(
-      children: [
-        Container(
-          child: Center(
-            child: Text("${textContext[index]}",
-              style: AppStyle.textRegular15
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

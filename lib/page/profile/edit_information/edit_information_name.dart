@@ -31,7 +31,7 @@ class _EditInformationNameState extends State<EditInformationName> {
   ///记录上次结果
   var lastInput = "";
   PinYinTextEditController controller = PinYinTextEditController();
-
+  FocusNode _commentFocus = FocusNode();
   @override
   void initState() {
     super.initState();
@@ -65,7 +65,11 @@ class _EditInformationNameState extends State<EditInformationName> {
       }
     });
   }
-
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -80,6 +84,7 @@ class _EditInformationNameState extends State<EditInformationName> {
             child: Image.asset("images/resource/2.0x/return2x.png"),
           ),
           onTap: () {
+           _commentFocus.unfocus();
             Navigator.pop(context);
           },
         ),
@@ -96,6 +101,7 @@ class _EditInformationNameState extends State<EditInformationName> {
                 Toast.show("昵称不能为空", context);
                 return;
               }
+              _commentFocus.unfocus();
               Navigator.pop(this.context, _EditText);
             },
             child: Container(
@@ -172,6 +178,7 @@ class _EditInformationNameState extends State<EditInformationName> {
     var putFiled = TextField(
       autofocus: true,
       maxLength: 15,
+      focusNode: _commentFocus,
       controller: controller,
       cursorColor: AppColor.black,
       style: AppStyle.textRegular16,
