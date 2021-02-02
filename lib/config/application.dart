@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:camera/camera.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
@@ -124,7 +125,7 @@ class Application {
   static List<NoPromptUidModel> queryNoPromptUidList = [];
 
   //公共登出方法
-  static appLogout() async {
+  static appLogout({bool isKicked = false}) async {
     //先取个匿名token
     TokenModel tokenModel = await login("anonymous", null, null, null);
     if (tokenModel != null) {
@@ -145,6 +146,17 @@ class Application {
         _clearUserRuntimeCache();
         //跳转页面 移除所有页面 重新打开首页
         navigatorKey.currentState.pushNamedAndRemoveUntil("/", (route) => false);
+        //TODO 这个弹窗待定
+        if (isKicked) {
+          Future.delayed(Duration(seconds: 1)).then((value) {
+            showAppDialog(navigatorKey.currentState.overlay.context,
+                title: "你被踢下线了",
+                info: "可能在其他设备登录",
+                confirm: AppDialogButton("我知道了", () {
+                  return true;
+                }));
+          });
+        }
       } else {
         print("🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫进入了匿名用户登出流程🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫");
         //如果本来就是匿名token那么换个token就行 不用清任何东西也不用跳转页面
@@ -153,6 +165,7 @@ class Application {
       }
     } else {
       //失败的情况下 登出将无token可用 所以不能继续登出
+      print("🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫登出流程获取token失败🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫");
     }
   }
 

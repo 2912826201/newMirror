@@ -58,7 +58,7 @@ Future<BaseResponseModel> requestApi(String path, Map<String, dynamic> queryPara
     //302为未登录 一般统一自动处理 登出清数据断开一些组件连接等操作
     if(responseModel.code == CODE_NOT_LOGIN && autoHandleLogout){
       responseModel.isSuccess = false;
-      Application.appLogout();
+      Application.appLogout(isKicked: true);
       return responseModel;
     } else {
       //要注意 只有服务端系统错误500被视为失败 其他错误码要在具体业务中处理

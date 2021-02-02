@@ -25,7 +25,7 @@ class RongCloudStatusManager {
     if(connectionStatus == RCConnectionStatus.KickedByOtherClient){
       //这里先断开融云连接再做其他处理
       Application.rongCloud.disconnect();
-      Application.appLogout();
+      Application.appLogout(isKicked: true);
     }
   }
 
