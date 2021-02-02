@@ -251,7 +251,7 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
                         children: [
                           IconButton(
                             icon: Icon(
-                              Icons.favorite_border_rounded,
+                              isFavor ? Icons.favorite : Icons.favorite_border_rounded,
                               color: isFavor ? AppColor.mainRed : AppColor.white,
                             ),
                             onPressed: () {

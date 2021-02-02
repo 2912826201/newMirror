@@ -549,7 +549,18 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     if (liveModel.playType == 2) {
       _bookLiveCourse(liveModel, 0, true,bindingTerminal: bindingTerminal);
     } else {
-      _bookLiveCourse(liveModel, 0, true);
+      showAppDialog(context,
+          title: "取消预约",
+          info: "确认取消预约吗？",
+          cancel: AppDialogButton("取消", () {
+            print("点了取消");
+            return true;
+          }),
+          confirm: AppDialogButton("确定", () {
+            print("点击了删除");
+            _bookLiveCourse(liveModel, 0, true);
+            return true;
+          }));
     }
   }
 
