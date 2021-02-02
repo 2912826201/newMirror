@@ -3,6 +3,7 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:mirror/data/dto/download_dto.dart';
 import 'package:mirror/page/training/video_course/video_course_play_page.dart';
 import 'package:mirror/util/file_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 
 /// download_test_page
 /// Created by yangjiayi on 2020/12/28.
@@ -34,7 +35,7 @@ class _DownloadTestState extends State<DownloadTestPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: CustomAppBar(),
       body: Column(
         children: [
           Text("输入文件地址"),
