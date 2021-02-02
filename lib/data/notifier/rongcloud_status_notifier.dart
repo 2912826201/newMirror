@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 class RongCloudStatusNotifier with ChangeNotifier {
   //   RCConnectionStatus
@@ -21,23 +22,23 @@ class RongCloudStatusNotifier with ChangeNotifier {
     switch(_status){
       case -1:
         return "（未连接）";
-      case 0:
+      case RCConnectionStatus.Connected:
         return "";
-      case 1:
+      case RCConnectionStatus.Connecting:
         return "（连接中...）";
-      case 2:
+      case RCConnectionStatus.KickedByOtherClient:
         return "（连接已断开）";
-      case 3:
+      case RCConnectionStatus.NetworkUnavailable:
         return "（连接已断开）";
-      case 4:
+      case RCConnectionStatus.TokenIncorrect:
         return "（连接已断开）";
-      case 5:
+      case RCConnectionStatus.UserBlocked:
         return "（连接已断开）";
-      case 6:
+      case RCConnectionStatus.DisConnected:
         return "（连接已断开）";
-      case 13:
+      case RCConnectionStatus.Suspend:
         return "（连接已断开）";
-      case 14:
+      case RCConnectionStatus.Timeout:
         return "（连接超时）";
       default:
         return "（未知错误）";

@@ -39,7 +39,7 @@ const String REMOVENOPROMPT = "/appuser/web/black/removeNoPrompt";
 //查询是否免打扰
 const String QUERYISNOPROMPT = "/appuser/web/black/queryIsNoPrompt";
 //查询免打扰列表
-const String QUERYNOPROMPTUIDLIST = "/appuser/web/black/queryNoPromptUidList";
+const String QUERYNOPROMPTLIST = "/appuser/web/black/queryNoPromptList";
 //更新未读消息为已读
 const String REFREASHMSGUNREAD = "/appuser/web/message/updateUnreadMsgToRead";
 
@@ -309,7 +309,7 @@ Future<Map> queryIsNoPrompt({int targetId, int type}) async {
 ///targetId:群聊id/私聊id
 Future<Map> queryNoPromptUidList() async {
   Map<String, dynamic> params = {};
-  BaseResponseModel responseModel = await requestApi(QUERYNOPROMPTUIDLIST, params);
+  BaseResponseModel responseModel = await requestApi(QUERYNOPROMPTLIST, params);
   if (responseModel.isSuccess) {
     return responseModel.data;
   } else {

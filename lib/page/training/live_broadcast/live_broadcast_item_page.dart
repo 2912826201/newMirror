@@ -90,7 +90,9 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
               child: nullDataUi(),
               onTap: () {
                 loadingStatus = LoadingStatus.STATUS_LOADING;
-                setState(() {});
+                if(mounted) {
+                  setState(() {});
+                }
                 liveModelArray.clear();
                 getLiveModelData();
 
@@ -495,11 +497,15 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     print("直播当日的的数量：${liveModelArray.length}");
     if (liveModelArray.length > 0) {
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
-      setState(() {});
+      if(mounted) {
+        setState(() {});
+      }
     } else {
       loadingStatus = LoadingStatus.STATUS_IDEL;
       Future.delayed(Duration(seconds: 1), () {
-        setState(() {});
+        if(mounted){
+          setState(() {});
+        }
       });
     }
   }

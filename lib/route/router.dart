@@ -136,13 +136,13 @@ class AppRouter {
 
   // 封装了入参，无论入参是什么格式都转成map
   static void _navigateToPage(BuildContext context, String path, Map<String, dynamic> params,
-      {Function(dynamic result) callback}) {
+      {Function(dynamic result) callback, bool replace = false}) {
     String data = Uri.encodeComponent(json.encode(params));
     String uri = path + "?$paramData=" + data;
     if (callback == null) {
-      Application.router.navigateTo(context, uri);
+      Application.router.navigateTo(context, uri, replace: replace);
     } else {
-      Application.router.navigateTo(context, uri).then(callback);
+      Application.router.navigateTo(context, uri, replace: replace).then(callback);
     }
   }
 

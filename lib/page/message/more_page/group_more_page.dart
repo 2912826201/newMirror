@@ -444,9 +444,11 @@ class GroupMorePageState extends State<GroupMorePage> {
       if (model != null && model["uid"] != null) {
         groupMeName = newName;
         isUpdateGroupMeName = true;
-        setState(() {
+        if(mounted) {
+          setState(() {
 
-        });
+          });
+        }
       } else {
         ToastShow.show(msg: "修改失败", context: context);
       }
@@ -527,7 +529,9 @@ class GroupMorePageState extends State<GroupMorePage> {
                 widget.listener(3,name);
               }
             }
-            setState(() {});
+            if(mounted) {
+              setState(() {});
+            }
           });
     }));
   }
@@ -545,7 +549,9 @@ class GroupMorePageState extends State<GroupMorePage> {
           voidCallback: (name, userId, type, context) {
             print("移除这个用户：$name");
 
-            setState(() {});
+            if(mounted) {
+              setState(() {});
+            }
           });
     }));
   }
@@ -584,9 +590,11 @@ class GroupMorePageState extends State<GroupMorePage> {
     } else {
       topChat = !topChat;
     }
-    setState(() {
-      dismissProgressDialog();
-    });
+    if(mounted) {
+      setState(() {
+        dismissProgressDialog();
+      });
+    }
   }
 
   //设置消息免打扰
@@ -603,9 +611,11 @@ class GroupMorePageState extends State<GroupMorePage> {
         print(status);
       });
     }
-    setState(() {
-      dismissProgressDialog();
-    });
+    if(mounted) {
+      setState(() {
+        dismissProgressDialog();
+      });
+    }
   }
 
   //获取消息是否免打扰
@@ -634,7 +644,10 @@ class GroupMorePageState extends State<GroupMorePage> {
       }
     }
 
-    setState(() {});
+    if(mounted) {
+      setState(() {
+      });
+    }
   }
 
   //点击事件
@@ -654,20 +667,24 @@ class GroupMorePageState extends State<GroupMorePage> {
       // ToastShow.show(msg: "${!isOpen ? "打开" : "关闭"}$title", context: context);
     } else if (title == "群聊名称") {
       AppRouter.navigateToEditInfomationName(context, subtitle, (result) {
-        setState(() {
-          if (result != null && groupName != result) {
-            modifyPr(result);
-          }
-        });
+        if(mounted) {
+          setState(() {
+            if (result != null && groupName != result) {
+              modifyPr(result);
+            }
+          });
+        }
       }, title: "修改群聊名称");
       // ToastShow.show(msg: subtitle, context: context);
     } else if (title == "群昵称") {
       AppRouter.navigateToEditInfomationName(context, subtitle, (result) {
-        setState(() {
-          if (result != null && groupMeName != result) {
-            modifyNickNamePr(result);
-          }
-        });
+        if(mounted) {
+          setState(() {
+            if (result != null && groupMeName != result) {
+              modifyNickNamePr(result);
+            }
+          });
+        }
       }, title: "修改群昵称");
       // ToastShow.show(msg: subtitle, context: context);
     } else if (title == "删除并退出") {

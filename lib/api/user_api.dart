@@ -21,7 +21,8 @@ const String JOINGROUPCHATUNRESTRICTED = "/appuser/web/groupChat/joinGroupChatUn
 //校验token
 Future<bool> checkToken() async {
   Map<String, dynamic> params = {};
-  BaseResponseModel responseModel = await requestApi(CHECKTOKEN, params);
+  //无需自动处理未登录状态
+  BaseResponseModel responseModel = await requestApi(CHECKTOKEN, params, autoHandleLogout: false);
   if (responseModel.isSuccess) {
     return responseModel.code == CODE_SUCCESS;
   } else {

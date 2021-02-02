@@ -286,7 +286,9 @@ class _MeCoursePageState extends State<MeCoursePage> {
       if (mounted) {
         _refreshController.loadComplete();
         _refreshController.refreshCompleted();
-        setState(() {});
+        if(mounted){
+          setState(() {});
+        }
       }
     }).catchError((error) {
       _refreshController.loadComplete();

@@ -85,17 +85,19 @@ class PrivateMorePageState extends State<PrivateMorePage> {
           child: _switchRow(type, isOpen, title, isCupertinoSwitchShow),
           splashColor: AppColor.textHint,
           onTap: () {
-            setState(() {
-              if (type == 1) {
-                disturbTheNews = !disturbTheNews;
-                onClickItem(disturbTheNews, title);
-              } else if (type == 2) {
-                topChat = !topChat;
-                onClickItem(topChat, title);
-              } else {
-                onClickItem(isOpen, title);
-              }
-            });
+            if(mounted) {
+              setState(() {
+                if (type == 1) {
+                  disturbTheNews = !disturbTheNews;
+                  onClickItem(disturbTheNews, title);
+                } else if (type == 2) {
+                  topChat = !topChat;
+                  onClickItem(topChat, title);
+                } else {
+                  onClickItem(isOpen, title);
+                }
+              });
+            }
           },
         ));
   }
@@ -132,7 +134,9 @@ class PrivateMorePageState extends State<PrivateMorePage> {
                     } else {
                       onClickItem(isOpen, title);
                     }
-                    setState(() {});
+                    if(mounted) {
+                      setState(() {});
+                    }
                   },
                 ),
               ),
@@ -172,9 +176,11 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     } else {
       topChat = !topChat;
     }
-    setState(() {
-      dismissProgressDialog();
-    });
+    if(mounted) {
+      setState(() {
+        dismissProgressDialog();
+      });
+    }
   }
 
   //设置消息免打扰
@@ -191,9 +197,11 @@ class PrivateMorePageState extends State<PrivateMorePage> {
         print(status);
       });
     }
-    setState(() {
-      dismissProgressDialog();
-    });
+    if(mounted) {
+      setState(() {
+        dismissProgressDialog();
+      });
+    }
   }
 
   //获取消息是否免打扰
@@ -223,8 +231,9 @@ class PrivateMorePageState extends State<PrivateMorePage> {
         }
       }
     }
-    setState(() {});
-
+    if(mounted) {
+      setState(() {});
+    }
     //融云检测有没有开启免打扰
     // Application.rongCloud.getConversationNotificationStatus(
     //     RCConversationType.Private, widget.chatUserId,
@@ -264,9 +273,11 @@ class PrivateMorePageState extends State<PrivateMorePage> {
       if(widget.listener!=null){
         widget.listener(2,"拉黑");
       }
-      setState(() {
-        dismissProgressDialog();
-      });
+      if(mounted) {
+        setState(() {
+          dismissProgressDialog();
+        });
+      }
     } else {
       ToastShow.show(msg: "拉黑失败", context: context);
       dismissProgressDialog();
@@ -280,9 +291,11 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     if (blackStatus) {
       isBlackList = false;
       ToastShow.show(msg: "解除了拉黑", context: context);
-      setState(() {
-        dismissProgressDialog();
-      });
+      if(mounted) {
+        setState(() {
+          dismissProgressDialog();
+        });
+      }
     } else {
       ToastShow.show(msg: "解除拉黑失败", context: context);
       dismissProgressDialog();

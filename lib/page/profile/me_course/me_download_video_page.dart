@@ -64,7 +64,9 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
                 }
                 selectDeleteIndexList.clear();
                 isAllSelect = false;
-                setState(() {});
+                if(mounted){
+                  setState(() {});
+                }
               }else{
                 ToastShow.show(msg: "暂无课程", context: context);
               }
@@ -170,7 +172,9 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
                     selectDeleteIndexList.add(i);
                   }
                 }
-                setState(() {});
+                if(mounted){
+                  setState(() {});
+                }
               },
             ),
             left: 0,
@@ -247,7 +251,9 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
         selectDeleteIndexList.add(index);
       }
       isAllSelect = selectDeleteIndexList.length == courseVideoModelList.length;
-      setState(() {});
+      if(mounted){
+        setState(() {});
+      }
     } else {
       AppRouter.navigateToVideoDetail(context, courseVideoModelList[index].courseId);
     }
@@ -364,13 +370,17 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
       }
     }
     loadingStatus = LoadingStatus.STATUS_COMPLETED;
-    setState(() {});
+    if(mounted){
+      setState(() {});
+    }
   }
 
   void deleteVideo() async {
     if (selectDeleteIndexList.length < 1) {
       isAllSelect = false;
-      setState(() {});
+      if(mounted){
+        setState(() {});
+      }
       return;
     }
 

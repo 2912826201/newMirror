@@ -331,8 +331,9 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
           Future.delayed(Duration(milliseconds: 5000),(){
             print('-=-=-=-=-=-=-=-=-=-=-=-=-=-=倒计时结束，背景改变');
               value.itemChose=false;
-              setState(() {
-              });
+              if(mounted) {
+                setState(() {});
+              }
           });
         }
       }
@@ -799,7 +800,9 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
               }
             }
           }
-          setState(() {});
+          if(mounted) {
+            setState(() {});
+          }
           courseCommentPageHot++;
         }
         if (!widget.isShowHotOrTime) {
@@ -848,7 +851,9 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
         (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber <= 0) {
       print("有数量，但是null为空，表示没有数据了");
       commentLoadingStatusList[positionComment] = LoadingStatus.STATUS_COMPLETED;
-      setState(() {});
+      if(mounted) {
+        setState(() {});
+      }
       return;
     }
     try {
@@ -912,9 +917,11 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
     }
 
     commentLoadingStatusList[positionComment] = LoadingStatus.STATUS_COMPLETED;
-    setState(() {
-      print("加载子评论结束了");
-    });
+    if(mounted) {
+      setState(() {
+        print("加载子评论结束了");
+      });
+    }
   }
 
 
@@ -957,7 +964,9 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
       } else {
         widget.refreshController.loadNoData();
       }
-      setState(() {});
+      if(mounted) {
+        setState(() {});
+      }
     });
   }
 
@@ -999,11 +1008,15 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
       // ignore: null_aware_before_operator
       if (value.replys?.length >= value.replyCount + value.pullNumber) {
         commentListSubSettingList[index].isFold=!commentListSubSettingList[index].isFold;
-        setState(() {});
+        if(mounted) {
+          setState(() {});
+        }
       } else {
         commentListSubSettingList[index].isFold = false;
         commentLoadingStatusList[index] = LoadingStatus.STATUS_LOADING;
-        setState(() {});
+        if(mounted) {
+          setState(() {});
+        }
         _getSubComment(value.id, value.replys?.length, value.replyCount, value.pullNumber, index);
       }
     }
@@ -1038,7 +1051,9 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
       } else {
         ToastShow.show(msg: "取消点赞成功", context: context);
       }
-      setState(() {});
+      if(mounted) {
+        setState(() {});
+      }
     } else {
       if (laud) {
         ToastShow.show(msg: "点赞失败", context: context);

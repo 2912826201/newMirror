@@ -307,9 +307,9 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
         } else {
           monthAllModelMap[dateCompleteString1] = 0;
         }
-        setState(() {
-
-        });
+        if(mounted){
+          setState(() {});
+        }
       },
     );
   }
@@ -413,9 +413,9 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
                             } else {
                               monthUnfoldModelMap[monthModelList[index].dateCompleteString1] = 0;
                             }
-                            setState(() {
-
-                            });
+                            if(mounted){
+                              setState(() {});
+                            }
                           },
                         )
                       ],
@@ -564,14 +564,15 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
     if (isGetAllData) {
       allDataMap = await getTrainingRecords();
     }
-
-    setState(() {
-      if (this.monthUnfoldModelMap.length > 0) {
-        loadingStatus = LoadingStatus.STATUS_COMPLETED;
-      } else {
-        loadingStatus = LoadingStatus.STATUS_IDEL;
-      }
-    });
+    if(mounted) {
+      setState(() {
+        if (this.monthUnfoldModelMap.length > 0) {
+          loadingStatus = LoadingStatus.STATUS_COMPLETED;
+        } else {
+          loadingStatus = LoadingStatus.STATUS_IDEL;
+        }
+      });
+    }
   }
 
 //获取月数据

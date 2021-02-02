@@ -104,7 +104,9 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
       onClickRightBtn: () {
         delWeight(weightDataMap["recordList"][index]["id"]);
         weightDataMap["recordList"].removeAt(index);
-        setState(() {});
+        if(mounted){
+          setState(() {});
+        }
       },
     );
   }
@@ -333,7 +335,9 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
             userWeight = formatData(userWeight);
             saveTargetWeight(userWeight.toString());
             weightDataMap["targetWeight"] = userWeight;
-            setState(() {});
+            if(mounted){
+              setState(() {});
+            }
           } catch (e) {
             ToastShow.show(msg: "输入有错，请重新输入！", context: context);
           }
@@ -419,16 +423,18 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
         weightDataMap["recordList"].insert(0, recordMap);
       }
     }
-    setState(() {
-
-    });
+    if(mounted){
+      setState(() {});
+    }
   }
 
   //获取数据
   loadData() async {
     weightDataMap = await getWeightRecords(1, 1000);
     loadingStatus = LoadingStatus.STATUS_COMPLETED;
-    setState(() {});
+    if(mounted){
+      setState(() {});
+    }
   }
 
   double formatData(double value) {

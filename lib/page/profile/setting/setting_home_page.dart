@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:mirror/config/config.dart';
@@ -30,15 +29,18 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:toast/toast.dart';
 
 ///设置主页
-class SettingHomePage extends StatefulWidget{
+class SettingHomePage extends StatefulWidget {
   PanelController pcController;
+
   SettingHomePage({this.pcController});
+
   @override
   State<StatefulWidget> createState() {
-   return _SettingHomePageState();
+    return _SettingHomePageState();
   }
 }
-class _SettingHomePageState extends State<SettingHomePage>{
+
+class _SettingHomePageState extends State<SettingHomePage> {
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -51,37 +53,42 @@ class _SettingHomePageState extends State<SettingHomePage>{
         leading: InkWell(
           child: Container(
             margin: EdgeInsets.only(left: 16),
-            child: Image.asset("images/resource/2.0x/return2x.png"),),
-          onTap: (){
+            child: Image.asset("images/resource/2.0x/return2x.png"),
+          ),
+          onTap: () {
             Navigator.pop(context);
           },
         ),
         leadingWidth: 44,
-        title: Text("设置",style: AppStyle.textMedium18,),
+        title: Text(
+          "设置",
+          style: AppStyle.textMedium18,
+        ),
       ),
       body: Container(
         height: height - ScreenUtil.instance.statusBarHeight,
         width: width,
         child: Column(
           children: [
-            SizedBox(height: 12,),
+            SizedBox(
+              height: 12,
+            ),
             InkWell(
-              child:
-            _rowItem(width, "账户与安全"),
-              onTap: (){
+              child: _rowItem(width, "账户与安全"),
+              onTap: () {
                 AppRouter.navigateToSettingAccountSecurity(context);
               },
             ),
             InkWell(
-              onTap: (){
-               /* AppRouter.navigateToSettingBlackList(context);*/
+              onTap: () {
+                /* AppRouter.navigateToSettingBlackList(context);*/
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                   return BlackListPage(
                     pc: widget.pcController,
                   );
                 }));
               },
-              child:_rowItem(width, "黑名单"),
+              child: _rowItem(width, "黑名单"),
             ),
             Container(
               height: 12,
@@ -89,41 +96,42 @@ class _SettingHomePageState extends State<SettingHomePage>{
               width: width,
             ),
             InkWell(
-              onTap: (){
+              onTap: () {
                 AppRouter.navigateToSettingNoticeSetting(context);
               },
               child: _rowItem(width, "通知设置"),
             ),
             InkWell(
-              onTap: (){
-                  showAppDialog(
-                    context,
-                    confirm: AppDialogButton("清除",(){
-                        //清掉拍照截图、录制视频、录制语言的文件夹内容
-                        _clearCache(AppConfig.getAppPicDir());
-                        _clearCache(AppConfig.getAppVideoDir());
-                        _clearCache(AppConfig.getAppVoiceDir());
-                        //TODO Android还需要清更新用的apk包
-                        //下载的视频课内容不在这里清，在专门管理课程的地方清
-                        return true;
-                    }),
-                    cancel: AppDialogButton("取消",(){
-                      return true;
-                    }),
-                    title: "清除缓存",
-                    info: "你确定要清除缓存么",
-                  );
+              onTap: () {
+                showAppDialog(
+                  context,
+                  confirm: AppDialogButton("清除", () {
+                    //清掉拍照截图、录制视频、录制语言的文件夹内容
+                    _clearCache(AppConfig.getAppPicDir());
+                    _clearCache(AppConfig.getAppVideoDir());
+                    _clearCache(AppConfig.getAppVoiceDir());
+                    //TODO Android还需要清更新用的apk包
+                    //下载的视频课内容不在这里清，在专门管理课程的地方清
+                    return true;
+                  }),
+                  cancel: AppDialogButton("取消", () {
+                    return true;
+                  }),
+                  title: "清除缓存",
+                  info: "你确定要清除缓存么",
+                );
               },
-              child: _rowItem(width, "清除缓存"),),
+              child: _rowItem(width, "清除缓存"),
+            ),
             InkWell(
-              onTap: (){
+              onTap: () {
                 AppRouter.navigateToSettingFeedBack(context);
               },
               child: _rowItem(width, "意见反馈"),
             ),
             InkWell(
               child: _rowItem(width, "关于"),
-              onTap: (){
+              onTap: () {
                 AppRouter.navigateToSettingAbout(context);
               },
             ),
@@ -138,76 +146,68 @@ class _SettingHomePageState extends State<SettingHomePage>{
       ),
     );
   }
-  Widget _signOutRow(double width){
-     return InkWell(
-       onTap: ()async{
-              //先取个匿名token
-        TokenModel tokenModel = await login("anonymous", null, null, null);
-        if (tokenModel != null) {
-          TokenDto tokenDto = TokenDto.fromTokenModel(tokenModel);
-          bool result = await logout();
-          //TODO 这里先不处理登出接口的结果
-          await TokenDBHelper().insertToken(tokenDto);
-          context.read<TokenNotifier>().setToken(tokenDto);
-          await ProfileDBHelper().clearProfile();
-          context.read<ProfileNotifier>().setProfile(ProfileDto.fromUserModel(UserModel()));
-          context.read<MachineNotifier>().setMachine(null);
-          // 登出融云
-          Application.rongCloud.disconnect();
-          //TODO 处理登出后需要清掉的用户数据
-          MessageManager.clearUserMessage(context);
-          //跳转页面 移除所有页面 重新打开首页
-          Navigator.pushNamedAndRemoveUntil(context, "/", (route) => false);
-        } else {
-          //失败的情况下 登出将无token可用 所以不能继续登出
-        }
+
+  Widget _signOutRow(double width) {
+    return InkWell(
+      onTap: () async {
+        await Application.appLogout();
       },
       child: Container(
         height: 48,
         width: width,
-        padding: EdgeInsets.only(left: 16,right: 16),
+        padding: EdgeInsets.only(left: 16, right: 16),
         child: Row(
           children: [
-            Text("退出登录",style: AppStyle.redRegular16,),
+            Text(
+              "退出登录",
+              style: AppStyle.redRegular16,
+            ),
             Expanded(child: SizedBox())
           ],
         ),
       ),
     );
   }
-  Widget _rowItem(double width,String text){
+
+  Widget _rowItem(double width, String text) {
     return Container(
       height: 48,
       width: width,
-      padding: EdgeInsets.only(left: 16,right: 16),
+      padding: EdgeInsets.only(left: 16, right: 16),
       child: Row(
         children: [
-          Text(text,style: AppStyle.textRegular16,),
-          Expanded(child: SizedBox(),),
+          Text(
+            text,
+            style: AppStyle.textRegular16,
+          ),
+          Expanded(
+            child: SizedBox(),
+          ),
           Container(
             height: 18,
             width: 18,
-            child:Icon(Icons.arrow_forward_ios,color: AppColor.textSecondary,),)
+            child: Icon(
+              Icons.arrow_forward_ios,
+              color: AppColor.textSecondary,
+            ),
+          )
         ],
       ),
     );
   }
-
-
 
   void _clearCache(String path) async {
     try {
       //删除缓存目录
       Directory file = Directory(path);
       await delDir(file);
-      Toast.show('清除缓存成功',context);
+      Toast.show('清除缓存成功', context);
     } catch (e) {
       print(e);
-      Toast.show('清除缓存失败',context);
-    } finally {
-
-    }
+      Toast.show('清除缓存失败', context);
+    } finally {}
   }
+
   ///递归方式删除目录
   Future<Null> delDir(FileSystemEntity file) async {
     try {
@@ -223,5 +223,4 @@ class _SettingHomePageState extends State<SettingHomePage>{
       print(e);
     }
   }
-
 }

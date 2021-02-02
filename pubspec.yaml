@@ -126,10 +126,6 @@ dependencies:
   connectivity: ^2.0.2
   #安装apk
   install_plugin: ^2.0.1
-
-
-  #高德三方库
-  amap_map_fluttify: ^0.30.1
   #扫码测试
   scan: ^0.0.3
   #二维码生成测试
