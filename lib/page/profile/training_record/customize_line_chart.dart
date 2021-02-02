@@ -47,27 +47,17 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
   @override
   void initState() {
     super.initState();
-    initDate();
+    initPageSize();
   }
 
-  void initDate() {
-    if (widget.weightDataMap["targetWeight"] == null || widget.weightDataMap["targetWeight"] < 1) {
-      benchmarkValue = 0;
-      benchmarkValueText = "目标0";
-    } else {
-      benchmarkValue = widget.weightDataMap["targetWeight"];
-      benchmarkValueText = "目标$benchmarkValue";
-    }
+  void initPageSize() {
+
     valueList.clear();
     xValue.clear();
     for (int i = 0; i < widget.weightDataMap["recordList"].length; i++) {
       valueList.add(widget.weightDataMap["recordList"][i]["weight"]);
       xValue.add(widget.weightDataMap["recordList"][i]["dateTime"]);
     }
-    // for (int i = 0; i < 60; i++) {
-    //   valueList.add(55);
-    //   xValue.add("$i");
-    // }
 
     if (valueList.length >= 5) {
       pageSize = 5;
@@ -76,13 +66,37 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
     }
   }
 
+  void initData(){
+    if(widget.weightDataMap["recordList"].length!=valueList.length){
+      valueList.clear();
+      xValue.clear();
+      for (int i = 0; i < widget.weightDataMap["recordList"].length; i++) {
+        valueList.add(widget.weightDataMap["recordList"][i]["weight"]);
+        xValue.add(widget.weightDataMap["recordList"][i]["dateTime"]);
+      }
+      if (valueList.length >= 5) {
+        pageSize = 5;
+      } else {
+        pageSize = valueList.length;
+      }
+    }
+
+    if (widget.weightDataMap["targetWeight"] == null || widget.weightDataMap["targetWeight"] < 1) {
+      benchmarkValue = 0;
+      benchmarkValueText = "目标0";
+    } else {
+      benchmarkValue = widget.weightDataMap["targetWeight"];
+      benchmarkValueText = "目标$benchmarkValue";
+    }
+  }
+
+  TextStyle style = TextStyle(fontSize: 12, color: AppColor.black);
+
   @override
   Widget build(BuildContext context) {
-    TextStyle style = TextStyle(fontSize: 12, color: AppColor.black);
+    initData();
     bottomHeight = 20.0;
-
     width = MediaQuery.of(context).size.width;
-
     double canvasWidth = width - (getTextSize("${yMaxValue}kg", style, 1).width) - 36;
     return Container(
       width: width,
@@ -221,39 +235,44 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
 
   //折线图上层的点击层item
   Widget getPolylineClickItemUi(double canvasWidth){
+    double itemWidth = canvasWidth / 4;
     return Container(
-        width: double.infinity,
-        height: double.infinity,
-        child: ListView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          itemCount: pageSize,
-          scrollDirection: Axis.horizontal,
-          itemBuilder: (context, index) {
-            double itemWidth = canvasWidth / 4;
-            if (index == 0) {
-              itemWidth /= 2;
-            } else if (index == pageSize - 1) {
-              itemWidth /= 2;
-            }
-            return UnconstrainedBox(
-              child: GestureDetector(
-                child: Container(
-                  height: height,
-                  width: pageSize != 1 ? itemWidth : canvasWidth,
-                  color: AppColor.transparent,
-                ),
-                onTap: () {
-                  print("点击了");
-                  positionSelect = index;
-                  isPositionSelectShow = true;
-                  if(mounted){
-                    setState(() {});
-                  }
-                },
-              ),
-            );
-          },
-        )
+      child: Transform.translate(
+        offset: Offset(-4, 0),
+        child: Container(
+            width: pageSize==1?itemWidth:double.infinity,
+            height: double.infinity,
+            alignment: Alignment.topCenter,
+            child: ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: pageSize,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                double itemWidthContainer=itemWidth;
+                if(pageSize!=1&&index==0){
+                  itemWidthContainer/=2;
+                }
+                return UnconstrainedBox(
+                  child: GestureDetector(
+                    child: Container(
+                      height: height,
+                      width: itemWidthContainer,
+                      color:AppColor.transparent,
+                    ),
+                    onTap: () {
+                      print("点击了$index");
+                      positionSelect = index;
+                      isPositionSelectShow = true;
+                      if(mounted){
+                        setState(() {});
+                      }
+                    },
+                  ),
+                );
+              },
+            )
+        ),
+      ),
     );
   }
 
@@ -502,7 +521,7 @@ class MyPainter extends CustomPainter {
       lineX -= pointRadius / 2;
     }
 
-    if (positionSelect != 0&&positionSelect != points.length - 1) {
+    if (points.length<5&&positionSelect != 0&&positionSelect != points.length - 1) {
       lineX-=2;
     }
 
@@ -595,7 +614,7 @@ class MyPainter extends CustomPainter {
       if (i == points.length - 1) {
         xValue -= 8;
       }
-      Offset offset = Offset(xValue, getPointHeight(0.0, size) + 16);
+      Offset offset = Offset(xValue, getPointHeight(0.0, size) + 14);
       canvas.drawParagraph(paragraph, offset); /**/
     }
   }

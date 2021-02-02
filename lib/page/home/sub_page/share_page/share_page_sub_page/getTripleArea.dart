@@ -213,7 +213,9 @@ class GetTripleAreaState extends State<GetTripleArea> {
                 ),
                 onTap: () {
                   openFeedCommentBottomSheet(context: context, feedId: widget.model.id,callback: (){
-                    widget.back();
+                    if(widget.back!=null) {
+                      widget.back();
+                    }
                   });
                 }))
       ],

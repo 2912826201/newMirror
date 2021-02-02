@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -15,6 +16,7 @@ import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/comment_input_bottom_bar.dart';
+import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/post_comments.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -70,10 +72,10 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
   //判断是热度还是评论
   bool isHotOrTime;
   //防止滚动多次
-  bool isFristScroll = true;
+  bool isFirstScroll = true;
 
   //选中评论是否在第一页
-  bool choseItemInFrist = false;
+  bool choseItemInFirst = false;
 
   //选中的index
   int choseIndex = 0;
@@ -119,7 +121,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
 
   double scrollHeightOld=0;
 
-  bool childFristLoading = true;
+  bool childFirstLoading = true;
 
 
   @override
@@ -134,7 +136,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
 
   @override
   Widget build(BuildContext context) {
-    if(courseCommentHot!=null&&isFristScroll&&widget.commentDtoModel!=null){
+    if(courseCommentHot!=null&&isFirstScroll&&widget.commentDtoModel!=null){
       Future.delayed(Duration(milliseconds: 100),()async{
         print("开始滚动------------------------------------------------------------------------");
         if(widget.commentDtoModel.type==2) {
@@ -142,7 +144,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
         }else{
           startAnimationScroll(widget.commentDtoModel.id);
         }
-        isFristScroll = false;
+        isFirstScroll = false;
       });
     }
     if(!widget.isShowHotOrTime && courseCommentHot != null&&
@@ -337,92 +339,117 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
           });
         }
       }
-    return IntrinsicHeight(
-      child: AnimatedPhysicalModel(
-          shape: BoxShape.rectangle,
-          color: value.itemChose ? AppColor.bgWhite : AppColor.white,
-          elevation: 0,
-          shadowColor: !value.itemChose ? AppColor.bgWhite : AppColor.white,
-          duration: Duration(seconds: 1),
-          child: Container(
-            padding:EdgeInsets.only(left:isSubComment?55:16, right: 16,top: 8,bottom: 8),
-            child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              getUserImage(value.avatarUrl, isSubComment?32:42,  isSubComment?32:42),
-              SizedBox(width: 15),
-              // //中间信息
-              Expanded(
-                  child: SizedBox(
-                    child: GestureDetector(
-                      child: Container(
-                        width: double.infinity,
-                        color: AppColor.transparent,
-                        child: Column(
-                          children: [
-                            Container(
+    return GestureDetector(
+      child: Container(
+        color: AppColor.transparent,
+        child: IntrinsicHeight(
+          child: AnimatedPhysicalModel(
+              shape: BoxShape.rectangle,
+              color: value.itemChose ? AppColor.bgWhite : AppColor.white,
+              elevation: 0,
+              shadowColor: !value.itemChose ? AppColor.bgWhite : AppColor.white,
+              duration: Duration(seconds: 1),
+              child: Container(
+                padding:EdgeInsets.only(left:isSubComment?55:16, right: 16,top: 8,bottom: 8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    getUserImage(value.avatarUrl, isSubComment?32:42,  isSubComment?32:42),
+                    SizedBox(width: 15),
+                    // //中间信息
+                    Expanded(
+                        child: SizedBox(
+                          child: GestureDetector(
+                            child: Container(
                               width: double.infinity,
-                              child: RichText(
-                                text: TextSpan(
-                                  children: getSubCommentText(value, isSubComment),
-                                ),
+                              color: AppColor.transparent,
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    child: RichText(
+                                      text: TextSpan(
+                                        children: getSubCommentText(value, isSubComment),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 6),
+                                  Container(
+                                      width: double.infinity,
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            child: Text(
+                                              DateUtil.formatDateNoYearString(DateUtil.getDateTimeByMs(value.createTime)),
+                                              style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                                            ),
+                                          ),
+                                          SizedBox(width: 12),
+                                          Container(
+                                            child: Text(
+                                              "回复",
+                                              style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 12,
+                                          ),
+                                        ],
+                                      )),
+                                ],
                               ),
                             ),
-                            SizedBox(height: 6),
-                            Container(
-                                width: double.infinity,
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      child: Text(
-                                        DateUtil.formatDateNoYearString(DateUtil.getDateTimeByMs(value.createTime)),
-                                        style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
-                                      ),
-                                    ),
-                                    SizedBox(width: 12),
-                                    Container(
-                                      child: Text(
-                                        "回复",
-                                        style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 12,
-                                    ),
-                                  ],
-                                )),
+                            onTap: () => onPostComment(_targetId, 2, value.uid, value.id, hintText: "回复 " + value.name),
+                          ),
+                        )),
+                    SizedBox(width: 16),
+                    Container(
+                      child: GestureDetector(
+                        child: Column(
+                          children: [
+                            Icon(
+                              value.isLaud == 1 ? Icons.favorite : Icons.favorite_border,
+                              color: value.isLaud == 1 ? Colors.red : Colors.grey,
+                              size: 18,
+                            ),
+                            SizedBox(
+                              height: 7,
+                            ),
+                            Text(
+                              IntegerUtil.formatIntegerEn(value.laudCount),
+                              style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                            ),
                           ],
                         ),
+                        onTap: () {
+                          _laudComment(value.id, value.isLaud == 0);
+                        },
                       ),
-                      onTap: () => onPostComment(_targetId, 2, value.uid, value.id, hintText: "回复 " + value.name),
                     ),
-                  )),
-              SizedBox(width: 16),
-              Container(
-                child: GestureDetector(
-                  child: Column(
-                    children: [
-                      Icon(
-                        value.isLaud == 1 ? Icons.favorite : Icons.favorite_border,
-                        color: value.isLaud == 1 ? Colors.red : Colors.grey,
-                        size: 18,
-                      ),
-                      SizedBox(
-                        height: 7,
-                      ),
-                      Text(
-                        IntegerUtil.formatIntegerEn(value.laudCount),
-                        style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
-                      ),
-                    ],
-                  ),
-                  onTap: () {
-                    _laudComment(value.id, value.isLaud == 0);
-                  },
-                ),
-              ),
-            ],
-          ),)),
+                  ],
+                ),)),
+        ),
+      ),
+      onLongPress: (){
+        List<String> list = [];
+        if(value.uid==Application.profile.uid){
+          list.add("删除");
+        }else{
+          list.add("举报");
+        }
+        openMoreBottomSheet(
+            context: context,
+            lists: list,
+            onItemClickListener: (index) {
+              if (list[index] == "删除") {
+                ToastShow.show(msg: "删除评论", context: context);
+                print("删除评论");
+              } else if (list[index] == "举报") {
+                ToastShow.show(msg: "举报评论", context: context);
+              }
+            },
+        );
+      },
     );
   }
 
@@ -431,7 +458,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
   List<TextSpan> getSubCommentText(CommentDtoModel value, bool isSubComment) {
     var textSpanList = <TextSpan>[];
     textSpanList.add(TextSpan(
-      text: value.name ?? " ",
+      text: "${value.name}  ",
       style: TextStyle(
         fontSize: 15,
         color: AppColor.textPrimary1,
@@ -478,16 +505,21 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
     Map<String, int> userMap = Map();
     String content = value.content;
     int subLen = 0;
-    for (int i = 0; i < value.atUsers.length; i++) {
-      int index = value.atUsers[i].index - subLen;
-      int end = value.atUsers[i].len - subLen;
-      if (index < content.length) {
+
+    List<AtUsersModel> atUsers = [];
+    atUsers.addAll(value.atUsers);
+    atUsers.sort((left,right)=>left.index.compareTo(right.index));
+
+    for (int i = 0; i < atUsers.length; i++) {
+      int index = atUsers[i].index - subLen;
+      int end = atUsers[i].len - subLen;
+      if (index < content.length&&index>=0) {
         String firstString = content.substring(0, index);
         String secondString = content.substring(index, end);
         String threeString = content.substring(end, content.length);
         contentArray.add(firstString);
         contentArray.add(secondString);
-        userMap[(contentArray.length - 1).toString()] = value.atUsers[i].uid;
+        userMap[(contentArray.length - 1).toString()] = atUsers[i].uid;
         content = threeString;
         subLen = subLen + firstString.length + secondString.length;
       }
@@ -511,6 +543,8 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
     }
     return textSpanList;
   }
+
+
 
 
   //设置评论的动画类
@@ -609,8 +643,6 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
       atListModel.add(atModel);
     }
 
-    print("targetId:$targetId+++targetType:$targetType++++videoModel.id:${widget.targetId}++++replyId：$replyId,replyCommentId:$replyCommentId");
-
     await postComments(
       targetId: targetId,
       targetType: targetType,
@@ -619,62 +651,78 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
       replyId: replyId > 0 ? replyId : null,
       replyCommentId: replyCommentId > 0 ? replyCommentId : null,
       commentModelCallback: (CommentDtoModel model) {
-        print("发布评论：-model：$model");
         if (model != null) {
           if (targetId == widget.targetId) {
-            if (courseCommentHot != null) {
-              courseCommentHot.list.insert(0, model);
+            if(isHotOrTime){
+              if (courseCommentHot != null) {
+                courseCommentHot.list.insert(0, model);
+              }else{
+                courseCommentHot=new CommentModel();
+                courseCommentHot.list=[];
+                courseCommentHot.list.add(model);
+              }
               screenOutHotIds.add(model.id);
               setCommentListSubSettingSingle(model.id);
-            }
-            if (courseCommentTime != null) {
-              courseCommentTime.list.insert(0, model);
+            }else {
+              if (courseCommentTime != null) {
+                courseCommentTime.list.insert(0, model);
+              } else {
+                courseCommentTime = new CommentModel();
+                courseCommentTime.list = [];
+                courseCommentTime.list.add(model);
+              }
               screenOutTimeIds.add(model.id);
               setCommentListSubSettingSingle(model.id);
             }
           } else {
-            if (courseCommentHot != null) {
-              for (int i = 0; i < courseCommentHot.list.length; i++) {
-                if (courseCommentHot.list[i].id == targetId) {
-                  courseCommentHot.list[i].replys.add(model);
-                  courseCommentHot.list[i].screenOutIds.add(model.id);
-                  courseCommentHot.list[i].pullNumber++;
-                  if(isHotOrTime) {
-                    commentListSubSettingList[i].isFold = false;
-                  }
-                  commentListSubSettingList[i].subCommentAllHeight = null;
-                  if(!widget.isShowHotOrTime &&
-                      context.read<FeedMapNotifier>().feedMap[widget.targetId].comments!=null&&
-                      context.read<FeedMapNotifier>().feedMap[widget.targetId].comments.length>0) {
-                    context.read<FeedMapNotifier>().feedMap[widget.targetId].comments[i].screenOutIds.add(model.id);
+            if(isHotOrTime) {
+              if (courseCommentHot != null) {
+                for (int i = 0; i < courseCommentHot.list.length; i++) {
+                  if (courseCommentHot.list[i].id == targetId) {
+                    courseCommentHot.list[i].replys.add(model);
+                    courseCommentHot.list[i].screenOutIds.add(model.id);
+                    courseCommentHot.list[i].pullNumber++;
+                    if(isHotOrTime) {
+                      commentListSubSettingList[i].isFold = false;
+                    }
+                    commentListSubSettingList[i].subCommentAllHeight = null;
+                    if (!widget.isShowHotOrTime &&
+                        context.read<FeedMapNotifier>().feedMap[widget.targetId].comments != null &&
+                        context.read<FeedMapNotifier>().feedMap[widget.targetId].comments.length > 0) {
+                      context.read<FeedMapNotifier>().feedMap[widget.targetId].comments[i].screenOutIds.add(model.id);
+                    }
                   }
                 }
               }
-            }
+            }else {
+              if (courseCommentTime != null) {
+                for (int i = 0; i < courseCommentTime.list.length; i++) {
+                  if (courseCommentTime.list[i].id == targetId) {
+                    courseCommentTime.list[i].replys.add(model);
+                    courseCommentTime.list[i].screenOutIds.add(model.id);
+                    courseCommentTime.list[i].pullNumber++;
+                    commentListSubSettingList[i].subCommentAllHeight = null;
+                    if(!isHotOrTime) {
+                      commentListSubSettingList[i].isFold = false;
+                    }
 
-            if (courseCommentTime != null) {
-              for (int i = 0; i < courseCommentTime.list.length; i++) {
-                if (courseCommentTime.list[i].id == targetId) {
-                  courseCommentTime.list[i].replys.add(model);
-                  courseCommentTime.list[i].screenOutIds.add(model.id);
-                  courseCommentTime.list[i].pullNumber++;
-                  if(!isHotOrTime) {
-                    commentListSubSettingList[i].isFold = false;
-                  }
-                  commentListSubSettingList[i].subCommentAllHeight = null;
-
-                  if(!widget.isShowHotOrTime &&
-                      context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments!=null&&
-                      context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length>0) {
-                    context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments[i].screenOutIds.add(model.id);
+                    if(!widget.isShowHotOrTime &&
+                        context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments!=null&&
+                        context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length>0) {
+                      context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments[i].screenOutIds.add(model.id);
+                    }
                   }
                 }
               }
             }
           }
+
           ToastShow.show(msg: "发布成功", context: context);
           if(mounted){
-            setState(() {});
+
+            setState(() {
+
+            });
             if(targetId!=widget.targetId) {
               startAnimationScroll(targetId);
             }
@@ -706,7 +754,9 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
         print("globalKeyList*************************************${widget.globalKeyList}");
         if(widget.globalKeyList!=null&&widget.globalKeyList.length>0){
           widget.globalKeyList.forEach((element) {
-            scrollHeight+=element.currentContext.size.height;
+            if(element.currentContext!=null&&element.currentContext.size!=null) {
+              scrollHeight += element.currentContext.size.height;
+            }
           });
           scrollHeight+=24;
         }
@@ -766,67 +816,72 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
   void getDataAction({bool isFold = false}) async {
     // //获取评论
     if (isHotOrTime) {
-      if (courseCommentHot == null) {
-        Map<String, dynamic> commentModel = await queryListByHot2(
-            targetId: widget.targetId,
-            targetType: widget.targetType,
-            lastId: courseCommentHot?.lastId ?? null,
-            size: widget.pageCommentSize);
+      Map<String, dynamic> commentModel = await queryListByHot2(
+          targetId: widget.targetId,
+          targetType: widget.targetType,
+          lastId: courseCommentHot?.lastId ?? null,
+          size: widget.pageCommentSize);
+      if (commentModel != null) {
         courseCommentHot = CommentModel.fromJson(commentModel);
-        if (commentModel != null) {
-          if (widget.commentDtoModel != null&&isFristScroll) {
-            for (int i = 0; i < courseCommentHot.list.length; i++) {
-              if (courseCommentHot.list[i].id == widget.commentDtoModel.id) {
-                print('=====================在第一页的父评论');
-                choseItemInFrist = true;
-                choseIndex = i;
-                courseCommentHot.list[i].itemChose = true;
-              } else if (courseCommentHot.list[i].id == widget.commentDtoModel.targetId) {
-                print('=====================在第一页的子评论的父评论');
-                choseItemInFrist = true;
-                choseIndex = i;
-              }
-            }
-            if (!choseItemInFrist) {
-              if (widget.fatherComment != null) {
-                print('=================不在第一页的子评论的父评论');
-                courseCommentHot.list.insert(0, widget.fatherComment);
-                courseCommentHot.list[0].pullNumber = 1;
-              } else {
-                print('=================不在第一页的父评论');
-                widget.commentDtoModel.itemChose = true;
-                courseCommentHot.list.insert(0,  widget.commentDtoModel);
-                screenOutHotIds.add(widget.fatherComment.id);
-              }
+        if (widget.commentDtoModel != null&&isFirstScroll) {
+          for (int i = 0; i < courseCommentHot.list.length; i++) {
+            if (courseCommentHot.list[i].id == widget.commentDtoModel.id) {
+              print('=====================在第一页的父评论');
+              choseItemInFirst = true;
+              choseIndex = i;
+              courseCommentHot.list[i].itemChose = true;
+            } else if (courseCommentHot.list[i].id == widget.commentDtoModel.targetId) {
+              print('=====================在第一页的子评论的父评论');
+              choseItemInFirst = true;
+              choseIndex = i;
             }
           }
-          if(mounted) {
-            setState(() {});
+          if (!choseItemInFirst) {
+            if (widget.fatherComment != null) {
+              print('=================不在第一页的子评论的父评论');
+              courseCommentHot.list.insert(0, widget.fatherComment);
+              courseCommentHot.list[0].pullNumber = 1;
+            } else {
+              print('=================不在第一页的父评论');
+              widget.commentDtoModel.itemChose = true;
+              courseCommentHot.list.insert(0,  widget.commentDtoModel);
+              screenOutHotIds.add(widget.fatherComment.id);
+            }
           }
-          courseCommentPageHot++;
         }
+        if(mounted) {
+          setState(() {});
+        }
+        courseCommentPageHot++;
+
         if (!widget.isShowHotOrTime) {
           context.read<FeedMapNotifier>().commensAssignment(
               widget.targetId, courseCommentHot.list, courseCommentHot.totalCount);
         }
-      }
-      setCommentListSubSetting(courseCommentHot, isFold: isFold);
-      if(widget.fatherComment != null&&isFristScroll){
-        onClickAddSubComment(courseCommentHot.list[choseIndex], choseIndex);
+
+
+        setCommentListSubSetting(courseCommentHot, isFold: isFold);
+        if(widget.fatherComment != null&&isFirstScroll){
+          onClickAddSubComment(courseCommentHot.list[choseIndex], choseIndex);
+        }
+        widget.refreshController.loadComplete();
+      }else{
+        widget.refreshController.loadNoData();
       }
     } else {
-      if (courseCommentTime == null) {
-        Map<String, dynamic> commentModel = await queryListByTime(
-            targetId: widget.targetId,
-            targetType: widget.targetType,
-            lastId: courseCommentTime?.lastId ?? null,
-            size: widget.pageCommentSize);
-        if (commentModel != null) {
-          courseCommentTime = CommentModel.fromJson(commentModel);
-          courseCommentPageTime++;
-        }
+      Map<String, dynamic> commentModel = await queryListByTime(
+          targetId: widget.targetId,
+          targetType: widget.targetType,
+          lastId: courseCommentTime?.lastId ?? null,
+          size: widget.pageCommentSize);
+      if (commentModel != null) {
+        courseCommentTime = CommentModel.fromJson(commentModel);
+        courseCommentPageTime++;
+        setCommentListSubSetting(courseCommentTime, isFold: isFold);
+        widget.refreshController.loadComplete();
+      }else{
+        widget.refreshController.loadNoData();
       }
-      setCommentListSubSetting(courseCommentTime, isFold: isFold);
     }
 
     loadingStatusComment = LoadingStatus.STATUS_COMPLETED;
@@ -876,7 +931,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
         if (!(commentModel == null || commentModel.list == null || commentModel.list.length < 1)) {
           print("获取到了commentModel不为空");
           List<CommentDtoModel> commentDtoModelList = <CommentDtoModel>[];
-          if(widget.commentDtoModel!=null&&targetId==widget.commentDtoModel.targetId&&childFristLoading){
+          if(widget.commentDtoModel!=null&&targetId==widget.commentDtoModel.targetId&&childFirstLoading){
             print('===================第一次进初始化选中的评论');
             bool isFrist = false;
             for(int i=0;i<commentModel.list.length;i++){
@@ -892,7 +947,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
               commentDtoModelList.insert(0, widget.commentDtoModel);
               courseCommentHot.list[choseIndex].screenOutIds.add(widget.commentDtoModel.id);
             }
-            childFristLoading = false;
+            childFirstLoading = false;
           }
           commentDtoModelList.addAll(commentModel.list);
           commentModel.list.forEach((element) {
@@ -927,6 +982,10 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
 
   //加载更多的评论
   void onLoading() async {
+    if((isHotOrTime?courseCommentHot:courseCommentTime)==null){
+      getDataAction();
+      return;
+    }
     Future.delayed(Duration(milliseconds: 500), () async {
       if (isHotOrTime && courseCommentPageHot > 0 && courseCommentHot.lastId == null) {
         widget.refreshController.loadNoData();

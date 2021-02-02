@@ -66,7 +66,7 @@ class LiveVideoModel {
       DateTime startTime = DateUtil.stringToDateTime(this.startTime);
       DateTime endTime = DateUtil.stringToDateTime(this.endTime);
 
-      if (coachDto.isLiving == 1) {
+      if (coachDto!=null&&coachDto.isLiving!=null&&coachDto.isLiving == 1) {
         this.playType = 1;
         return "去上课";
       } else {
@@ -139,6 +139,7 @@ class LiveVideoModel {
   int _createTime;
   int _updateTime;
   int _endState;
+  int _isInMyCourseList;
   double _vipprice;
 
   int get id => _id;
@@ -219,6 +220,7 @@ class LiveVideoModel {
 
   int get updateTime => _updateTime;
   int get endState => _endState;
+  int get isInMyCourseList => _isInMyCourseList;
 
   double get vipprice => _vipprice;
 
@@ -263,6 +265,7 @@ class LiveVideoModel {
       int createTime,
       int updateTime,
       int endState,
+      int isInMyCourseList,
       double vipprice}) {
     _id = id;
     _title = title;
@@ -305,6 +308,7 @@ class LiveVideoModel {
     _updateTime = updateTime;
     _vipprice = vipprice;
     _endState = endState;
+    _isInMyCourseList = isInMyCourseList;
     playType = 0;
   }
 
@@ -359,6 +363,7 @@ class LiveVideoModel {
     _createTime = json["createTime"];
     _updateTime = json["updateTime"];
     _endState = json["endState"];
+    _isInMyCourseList = json["isInMyCourseList"];
     _vipprice = json["vipprice"];
   }
 
@@ -408,6 +413,7 @@ class LiveVideoModel {
     map["createTime"] = _createTime;
     map["updateTime"] = _updateTime;
     map["endState"] = _endState;
+    map["isInMyCourseList"] = _isInMyCourseList;
     map["vipprice"] = _vipprice;
     return map;
   }

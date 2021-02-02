@@ -108,6 +108,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     if(videoModel==null) {
       loadingStatus = LoadingStatus.STATUS_LOADING;
     }else{
+      if(videoModel.isInMyCourseList!=null) {
+        isFavor = videoModel.isInMyCourseList == 1;
+      }
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
     }
     recommendLoadingStatus = LoadingStatus.STATUS_LOADING;
@@ -661,25 +664,23 @@ class VideoDetailPageState extends State<VideoDetailPage> {
 
     recommendLoadingStatus = LoadingStatus.STATUS_COMPLETED;
 
+
     //获取视频详情数据
-    if (videoModel == null || videoModel.coursewareDto?.componentDtos == null) {
-      //加载数据
-      Map<String, dynamic> model = await getVideoCourseDetail(courseId: widget.videoCourseId);
-      if (model == null) {
-        loadingStatus = LoadingStatus.STATUS_IDEL;
-        Future.delayed(Duration(seconds: 1), () {
-          if(mounted){
-            setState(() {});
-          }
-        });
-      } else {
-        videoModel = LiveVideoModel.fromJson(model);
-        loadingStatus = LoadingStatus.STATUS_COMPLETED;
+    //加载数据
+    Map<String, dynamic> model = await getVideoCourseDetail(courseId: widget.videoCourseId);
+    if (model == null) {
+      loadingStatus = LoadingStatus.STATUS_IDEL;
+      Future.delayed(Duration(seconds: 1), () {
         if(mounted){
           setState(() {});
         }
-      }
+      });
     } else {
+      videoModel = LiveVideoModel.fromJson(model);
+
+      if(videoModel.isInMyCourseList!=null) {
+        isFavor = videoModel.isInMyCourseList == 1;
+      }
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
       if(mounted){
         setState(() {});
