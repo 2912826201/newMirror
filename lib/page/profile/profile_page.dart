@@ -24,6 +24,8 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'profile_detail_page.dart';
+import 'profile_detail_page.dart';
+import 'profile_detail_page.dart';
 
 enum ActionItems { DENGCHU, DENGLU }
 
@@ -69,10 +71,11 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       followingCount = attentionModel.followingCount;
       followerCount = attentionModel.followerCount;
       print('个人主页粉丝数================================$followerCount');
+      context.read<ProfilePageNotifier>().setExtraInfoModel(extraInfoModel);
       feedCount = attentionModel.feedCount;
-      trainingSeconds = extraInfoModel.trainingSeconds;
+      /*   trainingSeconds = extraInfoModel.trainingSeconds;
       weight = extraInfoModel.weight;
-      albumNum = extraInfoModel.albumNum;
+      albumNum = extraInfoModel.albumNum;*/
       if (mounted) {
         setState(() {});
       }
@@ -88,7 +91,10 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     double height = ScreenUtil.instance.height;
     return Scaffold(
       appBar: null,
-      body: SingleChildScrollView(child: _buildSuggestions(width, height),),
+      body: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
+        child: _buildSuggestions(width, height),
+      ),
     );
   }
 
@@ -143,11 +149,14 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 ),
                 Row(
                   children: [
-                    _secondData(Icons.access_alarms_sharp, trainingSeconds, "训练记录", height, width),
+                    _secondData(Icons.access_alarms_sharp,
+                        context.watch<ProfilePageNotifier>().extraInfoModel.trainingSeconds, "训练记录"),
                     Expanded(child: Container()),
-                    _secondData(Icons.access_alarms_sharp, weight, "体重记录", height, width),
+                    _secondData(
+                        Icons.access_alarms_sharp, context.watch<ProfilePageNotifier>().extraInfoModel.weight, "体重记录"),
                     Expanded(child: Container()),
-                    _secondData(Icons.access_alarms_sharp, albumNum, "健身相册", height, width),
+                    _secondData(Icons.access_alarms_sharp, context.watch<ProfilePageNotifier>().extraInfoModel.albumNum,
+                        "健身相册"),
                   ],
                 ),
                 SizedBox(
@@ -411,17 +420,17 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
   ///这里是训练计划，体重记录，健身相册的
   ///                这是中间的图标| 这是数值   |这是title
-  Widget _secondData(IconData icon, number, String text, double height, double width) {
+  Widget _secondData(IconData icon, number, String text) {
     var _userPlate = Stack(
       children: [
         Container(
-          height: width * 0.27,
-          width: width * 0.27,
+          height: ScreenUtil.instance.screenWidthDp * 0.27,
+          width: ScreenUtil.instance.screenWidthDp * 0.27,
           color: AppColor.bgWhite,
         ),
         Container(
-          height: width * 0.27,
-          width: width * 0.27,
+          height: ScreenUtil.instance.screenWidthDp * 0.27,
+          width: ScreenUtil.instance.screenWidthDp * 0.27,
           child: Center(
             child: Column(
               children: [
@@ -463,42 +472,15 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       /*ScanCodeResultModel model = ScanCodeResultModel();
       model.type = ScanCodeResultType.CODE_INVALID;
       AppRouter.navigateToScanCodeResultPage(context, model);*/
-      if(userModel.isVip==0){
+      if (userModel.isVip == 0) {
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return VipOpenPage(
-          );
+          return VipOpenPage();
         }));
-      }else{
+      } else {
         AppRouter.navigateToVipOpenPage(context);
       }
     }
   }
-}
-
-class Top2BottomRouter<T> extends PageRouteBuilder<T> {
-  final Widget child;
-  final int duration_ms;
-  final Curve curve;
-
-  Top2BottomRouter({this.child, this.duration_ms = 500, this.curve = Curves.fastOutSlowIn})
-      : super(
-            transitionDuration: Duration(milliseconds: duration_ms),
-            pageBuilder: (ctx, a1, a2) {
-              return child;
-            },
-            transitionsBuilder: (
-              ctx,
-              a1,
-              a2,
-              Widget child,
-            ) {
-              return SlideTransition(
-                  position: Tween<Offset>(
-                    begin: Offset(0.0, -1.0),
-                    end: Offset(0.0, 0.0),
-                  ).animate(CurvedAnimation(parent: a1, curve: curve)),
-                  child: child);
-            });
 }
 
 class ScaleRouter<T> extends PageRouteBuilder<T> {

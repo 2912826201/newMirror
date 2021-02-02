@@ -1,4 +1,5 @@
 
+import 'dart:io';
 import 'dart:math';
 
 import 'package:english_words/english_words.dart';
@@ -28,6 +29,7 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/loading_progress.dart';
 import 'package:mirror/widget/volume_popup.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 import 'message/message_chat_page_manager.dart';
@@ -387,23 +389,34 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                 return true;
               }),
               confirm: AppDialogButton("更新",(){
+                if(Application.platform==0){
                 FileUtil().download(url, (taskId, received, total) async {
                   print('==taskId$taskId====================progress${received/total}');
                   if(received==total){
                     String path = await FileUtil().getDownloadedPath(url);
                     print('===========================path$path');
                     if(path!=null){
-                      InstallPlugin.installApk(path, 'com.aimymusic.mirror')
-                          .then((result) {
-                        print('=======================安装成功$result');
-                      }).catchError((error) {
-                        print('install apk error: $error');
-                      });
+                      Map<Permission, PermissionStatus> statuses = await [
+                        Permission.storage,
+                      ].request();
+                      if(statuses.isNotEmpty){
+                        await File(path).stat().then((value) => print('========文件信息---------------$value'));
+                          InstallPlugin.installApk(path, 'com.aimymusic.mirror')
+                              .then((result) {
+                            if(result!=null){
+                              print('=======================安装成功$result');
+                            }
+                          }).catchError((error) {
+                            print('install apk error: $error');
+                          });
+                        }
                     }
-
                   /*  FileUtil().removeDownloadTask(url);*/
                   }
               });
+                }else{
+                  InstallPlugin.gotoAppStore(url);
+                }
                 return true;
               }),
             );

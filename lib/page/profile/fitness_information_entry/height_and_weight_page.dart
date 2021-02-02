@@ -35,7 +35,7 @@ class _HeightAndWeightState extends State<HeightAndWeightPage>{
             margin: EdgeInsets.only(left: 16),
             child: Image.asset("images/resource/2.0x/return2x.png"),),
           onTap: (){
-            blankNode.unfocus();
+            FocusScope.of(context).requestFocus(blankNode);
             Navigator.pop(context);
           },
         ),
@@ -85,7 +85,7 @@ class _HeightAndWeightState extends State<HeightAndWeightPage>{
                 backColor: AppColor.bgBlack,
                 color: AppColor.transparent,
                 onTap: (){
-                  blankNode.unfocus();
+                  FocusScope.of(context).requestFocus(blankNode);
                   print('=height=======$heights===weight==========$weight');
                     context.read<FitnessInformationNotifier>().setHeightAndWeight(heights,weight);
                     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
@@ -117,8 +117,6 @@ class _HeightAndWeightState extends State<HeightAndWeightPage>{
               Container(
                 height: 44,
                child: TextField(
-                autofocus: false,
-                focusNode: blankNode,
                 style: AppStyle.blackBold21,
                 textAlign: TextAlign.center,
                  keyboardType:TextInputType.phone,

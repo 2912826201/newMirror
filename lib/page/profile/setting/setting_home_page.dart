@@ -211,10 +211,12 @@ class _SettingHomePageState extends State<SettingHomePage> {
   ///递归方式删除目录
   Future<Null> delDir(FileSystemEntity file) async {
     try {
+      await file.stat().then((value) => print('========文件信息---------------$value'));
+      print('=============path=============${file.path}');
       if (file is Directory) {
         final List<FileSystemEntity> children = file.listSync();
+        print('=====================${children.first.path}');
         for (final FileSystemEntity child in children) {
-          print('path===========================${child.path}');
           await delDir(child);
         }
       }

@@ -45,10 +45,10 @@ class _VipPageState extends State<VipNotOpenPage> {
     super.initState();
     controller.addListener(() {
       if (controller.offset >= 88) {
-        context.read<ProfilePageNotifier>().changeTitleColor(AppColor.white);
+        context.read<ProfilePageNotifier>().vipChangeTitleColor(AppColor.white);
         context.read<ProfilePageNotifier>().changeImageTitle(true);
       } else {
-        context.read<ProfilePageNotifier>().changeTitleColor(AppColor.transparent);
+        context.read<ProfilePageNotifier>().vipChangeTitleColor(AppColor.transparent);
         context.read<ProfilePageNotifier>().changeImageTitle(false);
       }
     });
@@ -57,7 +57,6 @@ class _VipPageState extends State<VipNotOpenPage> {
   @override
   void dispose() {
     // TODO: implement dispose
-    context.read<ProfilePageNotifier>().clear();
     super.dispose();
   }
 

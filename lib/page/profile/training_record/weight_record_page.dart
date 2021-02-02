@@ -7,7 +7,9 @@ import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/left_scroll/left_scroll_list_view.dart';
-
+import 'package:provider/provider.dart';
+import '../profile_detail_page.dart';
+import '../profile_detail_page.dart';
 import 'customize_line_chart.dart';
 
 ///体重记录页--我的体重
@@ -107,6 +109,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
         if(mounted){
           setState(() {});
         }
+        context.read<ProfilePageNotifier>().setweight(0);
       },
     );
   }
@@ -393,6 +396,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
             userWeight = formatData(userWeight);
             saveWeight(userWeight.toString());
             addWeightData(userWeight);
+            context.read<ProfilePageNotifier>().setweight(formatData(userWeight));
             _numberController.text = "";
           } catch (e) {
             ToastShow.show(msg: "输入有错，请重新输入！", context: context);

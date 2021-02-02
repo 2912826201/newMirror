@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-
+import 'package:provider/provider.dart';
 import 'package:azlistview/azlistview.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +20,8 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/loading.dart';
+
+import '../profile_detail_page.dart';
 
 /// training_gallery_page
 /// Created by yangjiayi on 2021/1/20.
@@ -72,6 +74,15 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
     _initData();
   }
 
+ int _getImageSize(){
+    int pagesize = 0;
+    _dataList.forEach((element) {
+      element.list.forEach((element) {
+        pagesize++;
+      });
+    });
+    return pagesize;
+  }
   _initAppBar() {
     _selectionModeAppBar = AppBar(
       backgroundColor: AppColor.white,
@@ -120,6 +131,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
             color: AppColor.black,
           ),
           onPressed: () {
+            context.read<ProfilePageNotifier>().setImagePageSize(_getImageSize());
             Navigator.pop(context);
           }),
       actions: [
@@ -315,6 +327,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
               }
               setState(() {});
             }
+            context.read<ProfilePageNotifier>().setImagePageSize(_getImageSize());
           }, dayIndex: dayIndex, imageIndex: index);
         }
       },
@@ -406,6 +419,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
             _insertImageToDataList(saveImage);
           });
           setState(() {});
+          context.read<ProfilePageNotifier>().setImagePageSize(_getImageSize());
         } else {
           ToastShow.show(msg: "保存失败", context: context);
         }
