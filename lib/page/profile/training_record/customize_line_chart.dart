@@ -351,6 +351,12 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
       }
     }
 
+
+    if (benchmarkValue > maxValue) {
+      maxValue = benchmarkValue;
+    }
+
+
     if (maxValue <= 100) {
       return 100.0;
     } else if (maxValue < 1000) {
@@ -812,7 +818,7 @@ class MyPainterBenchMarkLine extends CustomPainter {
     if (benchmarkValue > yMaxValue || benchmarkValue < 0) {
       return;
     }
-    canvasDottedLine(4, size.width, getPointHeight(benchmarkValue, size), canvas, benchmarkLinePaint);
+    canvasDottedLine(0, size.width, getPointHeight(benchmarkValue, size), canvas, benchmarkLinePaint);
   }
 
   //获取每一个点的高度

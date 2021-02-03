@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/page/message/item/chat_voice.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 
 typedef VoiceFile = void Function(String path, int time);
@@ -49,7 +52,6 @@ class MessageInputBarState extends State<MessageInputBar> {
           color: AppColor.white,
           border: Border(
             top: BorderSide(color: Colors.grey, width: 0.2),
-            bottom: BorderSide(color: Colors.grey, width: 0.2),
           ),
         ),
         child: Stack(
@@ -76,7 +78,12 @@ class MessageInputBarState extends State<MessageInputBar> {
                   ),
                   Expanded(
                     child: Container(
-                      height: 32.0,
+                      constraints: BoxConstraints(
+                          maxHeight: 80.0,
+                          minHeight: 16.0,
+                          maxWidth: Platform.isIOS
+                              ? ScreenUtil.instance.screenWidthDp - 32 - 32 - 64
+                              : ScreenUtil.instance.screenWidthDp - 32 - 32 - 64 - 52 - 12),
                       margin: const EdgeInsets.only(
                           top: 8.0, bottom: 8.0, left: 13.0, right: 13.0),
                       decoration: BoxDecoration(
@@ -117,7 +124,7 @@ class MessageInputBarState extends State<MessageInputBar> {
                       width: 48,
                       padding: EdgeInsets.only(left: 16.0, right: 13.0),
                       child: Icon(
-                        Icons.settings_voice,
+                        widget.isVoice?Icons.keyboard:Icons.settings_voice,
                         size: 21,
                       ),
                     ),
