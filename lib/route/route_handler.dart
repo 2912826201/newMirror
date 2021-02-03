@@ -31,6 +31,7 @@ import 'package:mirror/page/profile/me_course/me_course_page.dart';
 import 'package:mirror/page/profile/me_course/me_download_video_page.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/profile_details_more.dart';
+import 'package:mirror/page/profile/query_list/query_follow_list.dart';
 import 'package:mirror/page/profile/setting/about_page.dart';
 import 'package:mirror/page/profile/setting/account_security_page.dart';
 import 'package:mirror/page/profile/setting/blacklist_page.dart';
@@ -47,6 +48,7 @@ import 'package:mirror/page/profile/vip/vip_nameplate_page.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/page/profile/vip/vip_open_page.dart';
 import 'package:mirror/page/rc_test_page.dart';
+import 'package:mirror/page/scan_code/my_qrcode_page.dart';
 import 'package:mirror/page/scan_code/scan_code_page.dart';
 import 'package:mirror/page/scan_code/scan_result_page.dart';
 import 'package:mirror/page/test_page.dart';
@@ -331,7 +333,10 @@ var handlerScanCodeResult = Handler(handlerFunc: (BuildContext context, Map<Stri
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return ScanCodeResultPage(ScanCodeResultModel.fromJson(data["resultModel"]));
 });
-
+var handlerMyQrcodePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  /*Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);*/
+  return MyQrCodePage();
+});
 //健身相册页
 var handlerTrainingGallery = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return TrainingGalleryPage();
@@ -360,6 +365,10 @@ var handlerTrainingGalleryComparison = Handler(handlerFunc: (BuildContext contex
 //我的课程界面
 var handlerMeCoursePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return MeCoursePage();
+});
+var handlerQueryFollowList = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return QueryFollowList(type: data["type"],userId: data["userId"],);
 });
 
 //我的课程界面--下载课程界面

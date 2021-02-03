@@ -11,20 +11,11 @@ import 'package:mirror/data/model/user_extrainfo_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/page/profile/fitness_information_entry/height_and_weight_page.dart';
-import 'package:mirror/page/profile/query_list/query_follow_list.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
-import 'package:mirror/page/profile/vip/vip_open_page.dart';
-import 'package:mirror/page/scan_code/my_qrcode_page.dart';
-import 'package:mirror/page/scan_code/scan_result_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
-import 'package:mirror/util/toast_util.dart';
 import 'package:provider/provider.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'profile_detail_page.dart';
-import 'profile_detail_page.dart';
 import 'profile_detail_page.dart';
 
 enum ActionItems { DENGCHU, DENGLU }
@@ -41,9 +32,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   int followingCount;
   int followerCount;
   int feedCount;
-  int trainingSeconds;
-  double weight;
-  int albumNum;
   UserModel userModel;
 
   @override
@@ -73,9 +61,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       print('个人主页粉丝数================================$followerCount');
       context.read<ProfilePageNotifier>().setExtraInfoModel(extraInfoModel);
       feedCount = attentionModel.feedCount;
-      /*   trainingSeconds = extraInfoModel.trainingSeconds;
-      weight = extraInfoModel.weight;
-      albumNum = extraInfoModel.albumNum;*/
       if (mounted) {
         setState(() {});
       }
@@ -306,12 +291,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   InkWell(
                     child: _TextAndNumber("关注", StringUtil.getNumber(followingCount)),
                     onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                        return QueryFollowList(
-                          type: 1,
-                          userId: uid,
-                        );
-                      }));
+                      AppRouter.navigateToQueryFollowList(context,1, uid);
                     },
                   ),
                   SizedBox(
@@ -319,12 +299,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   ),
                   InkWell(
                     onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                        return QueryFollowList(
-                          type: 2,
-                          userId: uid,
-                        );
-                      }));
+                      AppRouter.navigateToQueryFollowList(context,2, uid);
                     },
                     child: _TextAndNumber("粉丝", StringUtil.getNumber(followerCount)),
                   ),
@@ -472,16 +447,13 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       /*ScanCodeResultModel model = ScanCodeResultModel();
       model.type = ScanCodeResultType.CODE_INVALID;
       AppRouter.navigateToScanCodeResultPage(context, model);*/
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-        return HeightAndWeightPage();
-      }));
-    /*  if (userModel.isVip == 0) {
+      if (userModel.isVip == 0) {
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return VipOpenPage();
+          return VipNotOpenPage(type: VipState.NOTOPEN);
         }));
       } else {
         AppRouter.navigateToVipOpenPage(context);
-      }*/
+      }
     }
   }
 }

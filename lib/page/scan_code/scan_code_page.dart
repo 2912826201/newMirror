@@ -135,14 +135,12 @@ class _ScanCodeState extends State<ScanCodePage> {
                   width: width,
                   child: Row(
                     children: [
-                      Expanded(child: SizedBox()),
+                      Spacer(),
                       Column(
                         children: [
                           InkWell(
                             onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                                return MyQrCodePage();
-                              }));
+                             AppRouter.navigateToMyQrCodePage(context);
                             },
                             child: Center(
                                 child: QrImage(
@@ -162,7 +160,7 @@ class _ScanCodeState extends State<ScanCodePage> {
                           )
                         ],
                       ),
-                      Expanded(child: SizedBox()),
+                      Spacer()
                     ],
                   ),
                 ))
