@@ -415,7 +415,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   height: 10,
                 ),
                 Text(
-                  number != 0 && number != null ? "$number" : "— —",
+                  number != 0 && number != null ? "$number" : "--",
                   style: AppStyle.textRegular14,
                 ),
                 Expanded(child: SizedBox()),
