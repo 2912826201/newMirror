@@ -15,6 +15,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.1.2"
+  app_installer:
+    dependency: "direct main"
+    description:
+      name: app_installer
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.4.0"
   app_settings:
     dependency: "direct main"
     description:
@@ -536,6 +543,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.3.0"
+  open_file:
+    dependency: "direct main"
+    description:
+      name: open_file
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.0.3"
   package_info:
     dependency: "direct main"
     description:
@@ -704,6 +718,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.1.0"
+  root_install:
+    dependency: "direct main"
+    description:
+      name: root_install
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.2"
   rxdart:
     dependency: transitive
     description:
