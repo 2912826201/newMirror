@@ -16,6 +16,7 @@ import 'package:mirror/page/training/currency/currency_page.dart';
 import 'package:mirror/page/training/video_course/sliver_custom_header_delegate_video.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
@@ -178,7 +179,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
           children: [
             Container(
               width: double.infinity,
-              height: MediaQuery.of(context).size.height - 50,
+              height: MediaQuery.of(context).size.height - 50-ScreenUtil.instance.bottomBarHeight,
               child: ScrollConfiguration(
                 behavior: NoBlueEffectBehavior(),
                 child: NotificationListener<ScrollNotification>(
@@ -189,7 +190,8 @@ class VideoDetailPageState extends State<VideoDetailPage> {
             ),
             Container(
               width: double.infinity,
-              height: 50,
+              height: 50.0+ScreenUtil.instance.bottomBarHeight,
+              padding: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
               color: AppColor.white,
               child: _getBottomBar(),
             ),

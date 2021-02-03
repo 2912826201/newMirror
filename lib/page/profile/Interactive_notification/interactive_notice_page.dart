@@ -260,7 +260,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
       feedModel = HomeFeedModel.fromJson(msgModel.refData);
     } else if(msgModel.refType == 2){
      fatherCommentModel = CommentDtoModel.fromJson(msgModel.refData);
-   }else if(msgModel.refType==1||msgModel.refType==3){
+   }else if((msgModel.refType==1||msgModel.refType==3)&&msgModel.refData!=null){
       liveVideoModel = LiveVideoModel.fromJson(msgModel.refData);
     }
   }
@@ -453,12 +453,14 @@ class InteractiveNoticeItemState extends StatelessWidget {
         AppRouter.navigateToVideoDetail(context, fatherCommentModel.targetId,commentDtoModel:
         type==0?msgModel.commentData:null,fatherComment: fatherCommentModel);
       }
-    }else if(msgModel.refType==1){
+    }else if(msgModel.refType==1&&liveVideoModel!=null&&liveVideoModel.id!=null){
       AppRouter.navigateToLiveDetail(context, liveVideoModel.id,isHaveStartTime: false,commentDtoModel:
       msgModel.commentData);
     }else{
-      AppRouter.navigateToVideoDetail(context, liveVideoModel.id,commentDtoModel:
-      msgModel.commentData);
+      if(liveVideoModel!=null&&liveVideoModel.id!=null) {
+        AppRouter.navigateToVideoDetail(context, liveVideoModel.id, commentDtoModel:
+        msgModel.commentData);
+      }
     }
   }
   getFeedDetail(BuildContext context, int feedId, {CommentDtoModel comment,CommentDtoModel fatherModel}) async {

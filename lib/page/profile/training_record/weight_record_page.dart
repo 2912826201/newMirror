@@ -7,6 +7,7 @@ import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/left_scroll/left_scroll_list_view.dart';
+import 'package:mirror/widget/precision_limit_Formatter.dart';
 import 'package:provider/provider.dart';
 import '../profile_detail_page.dart';
 import '../profile_detail_page.dart';
@@ -307,6 +308,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
                     textAlign: TextAlign.center,
                     keyboardType: TextInputType.number,
                     controller: _numberController,
+                    inputFormatters: [PrecisionLimitFormatter(2)],
                     decoration: InputDecoration(
                       hintText: userWeight > 0.0 ? userWeight.toString() : "",
                       labelStyle: TextStyle(color: Color(0x99000000)),
@@ -366,6 +368,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
                         textAlign: TextAlign.center,
                         keyboardType: TextInputType.number,
                         controller: _numberController,
+                        inputFormatters: [PrecisionLimitFormatter(2)],
                         decoration: InputDecoration(
                           labelStyle: TextStyle(color: Color(0x99000000)),
                           hintMaxLines: 1,

@@ -35,6 +35,7 @@ import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/click_util.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
@@ -270,6 +271,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     if (widget.conversation.getType() != RCConversationType.System) {
       bodyArray.add(getMessageInputBar());
       bodyArray.add(bottomSettingBox());
+      bodyArray.add(Container(height: ScreenUtil.instance.bottomBarHeight,color: AppColor.white,));
     }
 
     bodyArray.add(Offstage(
@@ -491,41 +493,51 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //输入框bar内的edit
   Widget edit(context, size) {
-    return TextSpanField(
-      textInputAction: TextInputAction.send,
-      onSubmitted: (text) {
-        if (text.isNotEmpty) {
-          _postText(text);
-        }
-      },
-      controller: _textController,
-      focusNode: _focusNode,
-      // 多行展示
-      keyboardType: TextInputType.multiline,
-      maxLines: null,
-      //不限制行数
-      // 光标颜色
-      cursorColor: Color.fromRGBO(253, 137, 140, 1),
-      scrollPadding: EdgeInsets.all(0),
-      inputFormatters: [_formatter],
-      style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
-      rangeStyles: getTextFieldStyle(Application.appContext.read<ChatEnterNotifier>().rules),
-      //内容改变的回调
-      onChanged: _changTextLen,
-      // rangeStyles: getTextFieldStyle(rules),
-      // 装饰器修改外观
-      decoration: InputDecoration(
-        // 去除下滑线
-        border: InputBorder.none,
-        // 提示文本
-        hintText: "\uD83D\uDE02123\uD83D\uDE01",
-        // 提示文本样式
-        hintStyle: TextStyle(fontSize: 14, color: AppColor.textHint),
-        // 设置为true,contentPadding才会生效，TextField会有默认高度。
-        isCollapsed: true,
-        contentPadding: EdgeInsets.only(top: 8, bottom: 8, left: 16),
-      ),
-    );
+
+    return ConstrainedBox(
+        constraints: BoxConstraints(
+            maxHeight: 80.0,
+            minHeight: 16.0,
+            maxWidth: Platform.isIOS
+                ? ScreenUtil.instance.screenWidthDp - 32 - 32 - 64
+                : ScreenUtil.instance.screenWidthDp - 32 - 32 - 64 - 52 - 12),
+        child: TextSpanField(
+          controller: _textController,
+          focusNode: _focusNode,
+          // 多行展示
+          keyboardType: TextInputType.multiline,
+          //不限制行数
+          maxLines: null,
+          enableInteractiveSelection: true,
+          // 光标颜色
+          cursorColor: Color.fromRGBO(253, 137, 140, 1),
+          scrollPadding: EdgeInsets.all(0),
+          style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
+          //内容改变的回调
+          onChanged: _changTextLen,
+          textInputAction: TextInputAction.send,
+          onSubmitted: (text) {
+            if (text.isNotEmpty) {
+              _postText(text);
+            }
+          },
+          // 装饰器修改外观
+          decoration: InputDecoration(
+            // 去除下滑线
+            border: InputBorder.none,
+            // 提示文本
+            hintText: "\uD83D\uDE02123\uD83D\uDE01",
+            // 提示文本样式
+            hintStyle: TextStyle(fontSize: 14, color: AppColor.textHint),
+            // 设置为true,contentPadding才会生效，TextField会有默认高度。
+            isCollapsed: true,
+            contentPadding: EdgeInsets.only(top: 8, bottom: 8, left: 16),
+          ),
+
+          rangeStyles: getTextFieldStyle(Application.appContext.read<ChatEnterNotifier>().rules),
+          inputFormatters: [_formatter],
+        ),
+      );
   }
 
   //键盘与表情的框
@@ -535,7 +547,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       isOffstage = false;
     }
     return Container(
-      color: Colors.white,
+      color: AppColor.white,
       child: Stack(
         children: [
           emoji(),
@@ -576,7 +588,12 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       child: Container(
         height: emojiHeight,
         width: double.infinity,
-        color: Colors.white,
+        decoration: BoxDecoration(
+          color: AppColor.white,
+          border: Border(
+            top: BorderSide(color: Colors.grey, width: 0.2),
+          ),
+        ),
         child: emojiList(),
       ),
     );
@@ -1596,7 +1613,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //录音按钮的点击事件
   _voiceOnTapClick() async {
-    await [Permission.microphone].request();
+    // await [Permission.microphone].request();
 
     _focusNode.unfocus();
     _emojiState = false;

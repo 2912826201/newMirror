@@ -8,6 +8,7 @@ import 'package:mirror/data/dto/download_video_dto.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
@@ -215,9 +216,13 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
   Widget getListView() {
     return ListView.builder(
       physics: BouncingScrollPhysics(),
-      itemCount: courseVideoModelList.length,
+      itemCount: courseVideoModelList.length+1,
       itemBuilder: (context, index) {
-        return getLeftDeleteUi(courseVideoModelList[index], index);
+        if(index==courseVideoModelList.length){
+          return Container(height: ScreenUtil.instance.bottomBarHeight,color: AppColor.white,);
+        }else {
+          return getLeftDeleteUi(courseVideoModelList[index], index);
+        }
       },
     );
   }
