@@ -10,6 +10,7 @@ import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_button.dart';
+import 'package:mirror/widget/loading.dart';
 import 'package:provider/provider.dart';
 
 class TrainSeveralTimes extends StatefulWidget{
@@ -112,6 +113,7 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes>{
             backColor: selected?AppColor.bgBlack:AppColor.transparent,
             color: selected?AppColor.transparent:AppColor.textHint,
             onTap: (){
+              Loading.showLoading(context);
               setState(() {
                 switch(type){
                   case 3:
@@ -149,7 +151,7 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes>{
     }else{
         print('================================健身信息录入失败');
     }
-
+    Loading.hideLoading(context);
   }
 }
 

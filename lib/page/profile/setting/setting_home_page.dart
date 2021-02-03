@@ -111,6 +111,17 @@ class _SettingHomePageState extends State<SettingHomePage> {
                     _clearCache(AppConfig.getAppVideoDir());
                     _clearCache(AppConfig.getAppVoiceDir());
                     //TODO Android还需要清更新用的apk包
+                    if(Platform.isAndroid){
+                      ///遍历下载的文件，删掉带有apk后缀的文件
+                      Directory file = Directory(AppConfig.getAppDownloadDir());
+                      List<FileSystemEntity> children = file.listSync();
+                      for (final FileSystemEntity child in children) {
+                        if(child.path.contains("apk")){
+                          print('===================存在安装包${child.path}');
+                          child.delete(recursive: false);
+                        }
+                      }
+                    }
                     //下载的视频课内容不在这里清，在专门管理课程的地方清
                     return true;
                   }),
@@ -220,7 +231,7 @@ class _SettingHomePageState extends State<SettingHomePage> {
           await delDir(child);
         }
       }
-      await file.delete();
+      await file.delete(recursive: false);
     } catch (e) {
       print(e);
     }

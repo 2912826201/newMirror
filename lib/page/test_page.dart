@@ -431,7 +431,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
         }
       }
     }else{
-      print("======================版本model为空");
+     return;
     }
   }
 }

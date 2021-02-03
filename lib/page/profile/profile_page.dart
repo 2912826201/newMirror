@@ -472,13 +472,16 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       /*ScanCodeResultModel model = ScanCodeResultModel();
       model.type = ScanCodeResultType.CODE_INVALID;
       AppRouter.navigateToScanCodeResultPage(context, model);*/
-      if (userModel.isVip == 0) {
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+        return HeightAndWeightPage();
+      }));
+    /*  if (userModel.isVip == 0) {
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
           return VipOpenPage();
         }));
       } else {
         AppRouter.navigateToVipOpenPage(context);
-      }
+      }*/
     }
   }
 }

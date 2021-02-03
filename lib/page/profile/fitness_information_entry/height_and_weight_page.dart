@@ -9,6 +9,7 @@ import 'package:mirror/page/profile/fitness_information_entry/body_type_page.dar
 import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_button.dart';
+import 'package:mirror/widget/precision_limit_Formatter.dart';
 import 'package:provider/provider.dart';
 class HeightAndWeightPage extends StatefulWidget{
   @override
@@ -129,10 +130,7 @@ class _HeightAndWeightState extends State<HeightAndWeightPage>{
                     borderSide:BorderSide(width: 0.5,color: AppColor.bgWhite)
                   )
                  ),
-                 inputFormatters: <TextInputFormatter>[
-                   FilteringTextInputFormatter(RegExp("[0-9]"), allow: true),
-                   LengthLimitingTextInputFormatter(3)//限制长度
-                 ],
+                 inputFormatters: [PrecisionLimitFormatter(2)],
                  onChanged: (value){
                   if(title=="身高"){
                     setState(() {
