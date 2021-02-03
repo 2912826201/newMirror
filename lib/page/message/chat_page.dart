@@ -215,7 +215,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         appBar: getAppBar(),
         body: MessageInputBody(
           onTap: () => _messageInputBodyClick(),
-          decoration: BoxDecoration(color: Color(0xffefefef)),
+          decoration: BoxDecoration(color: AppColor.bgWhite),
           child: Column(children: getBody()),
         ),
       ),
@@ -1813,7 +1813,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     } else if (settingType == "撤回") {
       recallMessage(chatDataList[position].msg, position);
     } else if (settingType == "复制") {
-      if (context != null && content.isNotEmpty) {
+      if (context != null && content!=null) {
         Clipboard.setData(ClipboardData(text: content));
         ToastShow.show(msg: "复制成功", context: context);
       }

@@ -5,13 +5,16 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
+import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -26,6 +29,7 @@ import 'currency_page.dart';
 class CurrencyCommentPage extends StatefulWidget {
   final RefreshController refreshController;
   final int targetId;
+  final int pushId;
   final int targetType;
   final int pageCommentSize;
   final int pageSubCommentSize;
@@ -46,6 +50,7 @@ class CurrencyCommentPage extends StatefulWidget {
     @required this.scrollController,
     @required this.refreshController,
     @required this.targetType,
+    this.pushId=-1,
     this.globalKeyList,
     this.externalScrollHeight=0,
     this.pageCommentSize=20,
@@ -342,6 +347,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
           });
         }
       }
+
     return GestureDetector(
       child: Container(
         color: AppColor.transparent,
@@ -357,7 +363,12 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    getUserImage(value.avatarUrl, isSubComment?32:42,  isSubComment?32:42),
+                    GestureDetector(
+                      child: getUserImage(value.avatarUrl, isSubComment?32:42,  isSubComment?32:42),
+                      onTap: (){
+                        AppRouter.navigateToMineDetail(context, value.uid);
+                      },
+                    ),
                     SizedBox(width: 15),
                     // //中间信息
                     Expanded(
@@ -438,17 +449,28 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
         if(value.uid==Application.profile.uid){
           list.add("删除");
         }else{
+          if(widget.pushId==Application.profile.uid) {
+            list.add("删除");
+          }
+          list.add("回复");
           list.add("举报");
         }
+        list.add("复制");
         openMoreBottomSheet(
             context: context,
             lists: list,
             onItemClickListener: (index) {
               if (list[index] == "删除") {
-                ToastShow.show(msg: "删除评论", context: context);
-                print("删除评论");
+                _deleteComment(value.id);
               } else if (list[index] == "举报") {
-                ToastShow.show(msg: "举报评论", context: context);
+                _profileMoreDenounce(value.id);
+              }  else if (list[index] == "回复") {
+                onPostComment(_targetId, 2, value.uid, value.id, hintText: "回复 " + value.name);
+              } else if (list[index] == "复制") {
+                if (context != null && value.content!=null) {
+                  Clipboard.setData(ClipboardData(text: value.content));
+                  ToastShow.show(msg: "复制成功", context: context);
+                }
               }
             },
         );
@@ -457,11 +479,74 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
   }
 
 
+  //举报评论
+  _profileMoreDenounce(int targetId)async{
+    bool isSucess = await ProfileMoreDenounce(targetId, 2);
+    print("举报：isSucess:$isSucess");
+    if (isSucess) {
+      ToastShow.show(msg: "举报成功", context: context);
+    }
+  }
+
+  //删除评论
+  _deleteComment(int commentId) async {
+    Map<String, dynamic> model = await deleteComment(commentId: commentId);
+    print(model);
+    if (model != null && model["state"] == true) {
+      _deleteCommentData(courseCommentHot, commentId, true);
+      _deleteCommentData(courseCommentTime, commentId, false);
+      if (courseCommentHot!=null&&!widget.isShowHotOrTime) {
+        context.read<FeedMapNotifier>().commensAssignment(
+            widget.targetId, courseCommentHot.list, courseCommentHot.totalCount);
+      }
+      ToastShow.show(msg: "删除成功", context: context);
+      setState(() {
+
+      });
+    } else {
+      ToastShow.show(msg: "删除失败!", context: context);
+    }
+  }
+
+  _deleteCommentData(CommentModel commentModel, int commentId, bool isHotOrTime) {
+    if (commentModel != null) {
+      for (int i = 0; i < commentModel.list.length; i++) {
+        if (commentModel.list[i].id == commentId) {
+          commentModel.list.removeAt(i);
+          break;
+        }
+        int judge = 0;
+        for (int j = 0; j < commentModel.list[i].replys.length; j++) {
+          if (commentModel.list[i].replys[j].id == commentId) {
+            commentModel.list[i].replys.removeAt(j);
+            (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].replyCount--;
+            if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[i].pullNumber > 0) {
+              (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].replyCount +=
+                  (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].pullNumber;
+              (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].pullNumber = 0;
+            }
+            judge = 1;
+            break;
+          }
+        }
+        if (judge == 1) {
+          break;
+        }
+      }
+    }
+  }
+
+
+
   //获取子评论的文字
   List<TextSpan> getSubCommentText(CommentDtoModel value, bool isSubComment) {
     var textSpanList = <TextSpan>[];
     textSpanList.add(TextSpan(
       text: "${value.name}  ",
+      recognizer: new TapGestureRecognizer()
+        ..onTap = () {
+          AppRouter.navigateToMineDetail(context, value.uid);
+        },
       style: TextStyle(
         fontSize: 15,
         color: AppColor.textPrimary1,
@@ -479,7 +564,11 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
         ));
 
         textSpanList.add(TextSpan(
-          text: value.replyName ?? " ",
+          text: "${value.replyName}  ",
+          recognizer: new TapGestureRecognizer()
+            ..onTap = () {
+              AppRouter.navigateToMineDetail(context, value.replyId);
+            },
           style: TextStyle(
             fontSize: 15,
             color: AppColor.textPrimary1,
@@ -535,7 +624,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
         recognizer: new TapGestureRecognizer()
           ..onTap = () {
             if (userMap[(i).toString()] != null) {
-              ToastShow.show(msg: "点击了用户：${userMap[(i).toString()]}", context: context);
+              AppRouter.navigateToMineDetail(context, userMap[(i).toString()]);
             }
           },
         style: TextStyle(
