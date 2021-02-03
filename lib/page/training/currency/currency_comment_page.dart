@@ -19,6 +19,7 @@ import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/comment_input_bottom_bar.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/post_comments.dart';
@@ -458,7 +459,17 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
             lists: list,
             onItemClickListener: (index) {
               if (list[index] == "删除") {
-                _deleteComment(value.id);
+                showAppDialog(context,
+                    title: "删除确认",
+                    info: "该评论删除后不可恢复，是否确认删除?",
+                    cancel: AppDialogButton("取消", () {
+                      // print("点了取消");
+                      return true;
+                    }),
+                    confirm: AppDialogButton("确定", () {
+                      _deleteComment(value.id);
+                      return true;
+                    }));
               } else if (list[index] == "举报") {
                 _profileMoreDenounce(value.id);
               }  else if (list[index] == "回复") {
@@ -496,7 +507,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
         context.read<FeedMapNotifier>().commensAssignment(
             widget.targetId, courseCommentHot.list, courseCommentHot.totalCount);
       }
-      ToastShow.show(msg: "删除成功", context: context);
+      ToastShow.show(msg: "已删除", context: context);
       setState(() {
 
       });
