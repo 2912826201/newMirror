@@ -154,8 +154,8 @@ class BottomopupState extends State<BottomPopup> {
     );
     var onTap2 = () {
       if (onItemClickListener != null) {
-        onItemClickListener(index);
         Navigator.pop(context);
+        onItemClickListener(index);
       }
     };
 
