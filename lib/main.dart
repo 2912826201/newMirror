@@ -70,15 +70,20 @@ void main() {
             ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
             //用户的融云会话信息 登录后会从数据库查出来放到此provider中
             ChangeNotifierProvider(create: (_) => ConversationNotifier()),
+            //聊天界面用户录音的提示文字
             ChangeNotifierProvider(create: (_) => VoiceAlertData()),
+            //聊天界面用户用户录音的功能
             ChangeNotifierProvider(create: (_) => VoiceSettingNotifier()),
+            //接收融云消息-进行判断
             ChangeNotifierProvider(create: (_) => ChatMessageProfileNotifier()),
+            //群聊界面的@用户功能
             ChangeNotifierProvider(create: (_) => ChatEnterNotifier()),
             //TODO 省市地区选择器的状态 应该不需要在全局更新状态
             ChangeNotifierProvider(create: (_) => AddressPickerNotifier()),
             //TODO 录入健身信息的状态 应该不需要在全局更新状态
             ChangeNotifierProvider(create: (_) => FitnessInformationNotifier()),
             ChangeNotifierProvider(create: (_) => ProfilePageNotifier()),
+            //群成员信息
             ChangeNotifierProvider(create: (_) => GroupUserProfileNotifier()),
             //记录未读消息数 目前只记录3种互动通知的数量 从接口获取更新数据
             ChangeNotifierProvider(create: (_) => UnreadMessageNotifier()),

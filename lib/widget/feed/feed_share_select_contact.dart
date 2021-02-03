@@ -214,6 +214,7 @@ class _FriendsPageState extends State<FriendsPage> {
 
               if (selectUserUsIdList == null || selectUserUsIdList.length < 1) {
                 ToastShow.show(msg: "没有选中的用户", context: context);
+                return;
               } else {
                 for (int i = 0; i < selectUserUsIdList.length; i++) {
                   if (i == selectUserUsIdList.length - 1) {

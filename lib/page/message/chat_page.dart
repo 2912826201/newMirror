@@ -424,9 +424,8 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.add,size: 16,color: AppColor.textPrimary1),
-                      SizedBox(width: 2),
                       Text("关注",style: TextStyle(color: AppColor.textPrimary1,fontSize: 14,fontWeight: FontWeight.bold)),
-                      SizedBox(width: 1),
+                      SizedBox(width: 2),
                     ],
                   ),
                 ),
@@ -570,18 +569,15 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     //     child: emojiList(),
     //   ),
     // ) : Container();
-    //
+
     return AnimatedContainer(
       height: emojiHeight,
       duration: Duration(milliseconds: 300),
-      child: Offstage(
-        offstage: !_emojiState,
-        child: Container(
-          height: emojiHeight,
-          width: double.infinity,
-          color: Colors.white,
-          child: emojiList(),
-        ),
+      child: Container(
+        height: emojiHeight,
+        width: double.infinity,
+        color: Colors.white,
+        child: emojiList(),
       ),
     );
   }
@@ -1212,26 +1208,26 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     );
   }
 
-  //发送修改群名称
-  _postUpdateGroupName(String name) {
-    ChatDataModel chatDataModel = new ChatDataModel();
-    chatDataModel.type = ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME;
-    chatDataModel.content = name;
-    chatDataModel.isTemporary = true;
-    chatDataModel.isHaveAnimation = true;
-    judgeAddAlertTime();
-    chatDataList.insert(0, chatDataModel);
-    animateToBottom();
-    if(mounted) {
-      setState(() {
-        _timerCount = 0;
-        isHaveTextLen = false;
-      });
-    }
-    postGroupUpdateName(chatDataList[0], widget.conversation.conversationId, () {
-      delayedSetState();
-    });
-  }
+  // //发送修改群名称
+  // _postUpdateGroupName(String name) {
+  //   ChatDataModel chatDataModel = new ChatDataModel();
+  //   chatDataModel.type = ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME;
+  //   chatDataModel.content = name;
+  //   chatDataModel.isTemporary = true;
+  //   chatDataModel.isHaveAnimation = true;
+  //   judgeAddAlertTime();
+  //   chatDataList.insert(0, chatDataModel);
+  //   animateToBottom();
+  //   if(mounted) {
+  //     setState(() {
+  //       _timerCount = 0;
+  //       isHaveTextLen = false;
+  //     });
+  //   }
+  //   postGroupUpdateName(chatDataList[0], widget.conversation.conversationId, () {
+  //     delayedSetState();
+  //   });
+  // }
 
   //插入加入黑名单的消息
   void _insertMessageMenu(String text){

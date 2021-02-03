@@ -94,7 +94,7 @@ Widget footerWidget(){
 Widget getTitleWidget(LiveVideoModel videoModel,BuildContext context,GlobalKey globalKey) {
   var widgetArray = <Widget>[];
   var titleArray = [
-    (videoModel.times ~/ 60000).toString(),
+    ((videoModel.times??0) ~/ 60000).toString(),
     videoModel.calories.toString(),
     videoModel.levelDto?.ename
   ];
@@ -199,7 +199,7 @@ Widget getCoachItem(LiveVideoModel videoModel,BuildContext context,
                 children: [
                   Text(
                     // ignore: null_aware_before_operator
-                    videoModel.coachDto?.nickName,
+                    videoModel.coachDto?.nickName??"",
                     style: const TextStyle(fontSize: 14, color: AppColor.textPrimary2, fontWeight: FontWeight.bold),
                   ),
                 ],
