@@ -20,6 +20,7 @@ import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/media_picker/preview_photo_page.dart';
 import 'package:mirror/page/media_picker/preview_video_page.dart';
 import 'package:mirror/page/message/chat_page.dart';
+import 'package:mirror/page/message/link_failure/network_link_failure_page.dart';
 import 'package:mirror/page/message/more_page/group_qrcode_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/login_success_page.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_introduction.dart';
@@ -284,6 +285,10 @@ var handlerPerfectUserPage = Handler(handlerFunc: (BuildContext context, Map<Str
 
 var handlerLoginSucessPagePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return LoginSucessPage();
+});
+
+var handlerNetworkLinkFailure = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return NetworkLinkFailure();
 });
 
 //消息界面

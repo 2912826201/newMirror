@@ -193,38 +193,43 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
 
   Widget _buildConnectionView() {
     if (isOffline) {
-      return Container(
-        height: 36,
-        color: AppColor.mainRed.withOpacity(0.1),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 16,
-            ),
-            Icon(
-              Icons.error_outline,
-              size: 16,
-              color: AppColor.mainRed,
-            ),
-            SizedBox(
-              width: 6,
-            ),
-            Text(
-              "网络连接已断开，请检查网络设置",
-              style: TextStyle(fontSize: 14, color: AppColor.mainRed),
-            ),
-            Spacer(),
-            Icon(
-              Icons.chevron_right,
-              size: 16,
-              color: AppColor.mainRed,
-            ),
-            SizedBox(
-              width: 16,
-            )
-          ],
+      return GestureDetector(
+        child: Container(
+          height: 36,
+          color: AppColor.mainRed.withOpacity(0.1),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 16,
+              ),
+              Icon(
+                Icons.error_outline,
+                size: 16,
+                color: AppColor.mainRed,
+              ),
+              SizedBox(
+                width: 6,
+              ),
+              Text(
+                "网络连接已断开，请检查网络设置",
+                style: TextStyle(fontSize: 14, color: AppColor.mainRed),
+              ),
+              Spacer(),
+              Icon(
+                Icons.chevron_right,
+                size: 16,
+                color: AppColor.mainRed,
+              ),
+              SizedBox(
+                width: 16,
+              )
+            ],
+          ),
         ),
+        onTap: (){
+          AppRouter.navigateToNetworkLinkFailure(context: context);
+        },
       );
     } else {
       return Container();

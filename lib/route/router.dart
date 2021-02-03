@@ -49,6 +49,7 @@ class AppRouter {
   static String pathEditInformationName = "/profile/editinformation/name";
   static String pathEditInformationIntroduction = "/profile/editinformation/introduction";
   static String pathChatPage = "/profile/chatPage";
+  static String pathNetworkLinkFailure = "/profile/networkLinkFailure";
   static String pathGroupQrCodePage = "/profile/chatPage/groupMorePage/groupQrCodePage";
   static String pathSettingHomePage = "/profile/settinghomepage";
   static String pathSettingFeedBack = "/profile/settingfeedback";
@@ -90,6 +91,7 @@ class AppRouter {
     router.define(pathPerfectUserPage, handler: handlerPerfectUserPage);
     router.define(pathLoginSucess, handler: handlerLoginSucessPagePage);
     router.define(pathChatPage, handler: handlerChatPage);
+    router.define(pathNetworkLinkFailure, handler: handlerNetworkLinkFailure);
     router.define(pathGroupQrCodePage, handler: handlerGroupQrCodePage);
     router.define(pathPreviewPhoto, handler: handlerPreviewPhoto);
     router.define(pathPreviewVideo, handler: handlerPreviewVideo);
@@ -370,6 +372,13 @@ class AppRouter {
     }
     Application.shareMessage = shareMessage;
     _navigateToPage(context, pathChatPage, map);
+  }
+
+
+  static void navigateToNetworkLinkFailure(
+      {@required BuildContext context,}) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathNetworkLinkFailure, map);
   }
 
   static void navigateToGroupQrCodePage(
