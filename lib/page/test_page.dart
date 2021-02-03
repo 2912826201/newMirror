@@ -2,10 +2,10 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:app_installer/app_installer.dart';
+
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
-import 'package:install_plugin/install_plugin.dart';
+import 'package:launch_review/launch_review.dart';
 import 'package:mirror/api/version_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
@@ -28,18 +28,12 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
-import 'package:mirror/widget/loading_progress.dart';
+
 import 'package:mirror/widget/volume_popup.dart';
 import 'package:open_file/open_file.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:root_install/root_install.dart';
-
 import 'message/message_chat_page_manager.dart';
-import 'profile/login_test_page.dart';
-import 'profile/profile_detail_page.dart';
-import 'profile/profile_detail_page.dart';
-import 'profile/profile_detail_page.dart';
 import 'training/video_course/video_course_play_page2.dart';
 import 'training/video_course/video_course_play_page.dart';
 
@@ -421,13 +415,14 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
               );
             }
           }else{
-            showAppDialog(context,
+            showAppDialog(
+              context,
               title:"检测到新版本安装包，是否跳转商店？",
               cancel:AppDialogButton("取消",(){
                 return true;
               }),
               confirm: AppDialogButton("跳转",(){
-                InstallPlugin.gotoAppStore(url);
+                LaunchReview.launch(writeReview: false,iOSAppId: "585027354");
                 return true;
               }),
             );
@@ -436,7 +431,6 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
         }
       }
     }else{
-
       print("======================版本model为空");
     }
   }

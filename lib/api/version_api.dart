@@ -11,7 +11,9 @@ Future<VersionModel> getNewVersion()async{
   VersionModel model;
   if(responseModel.isSuccess){
     print('==============================版本接口请求成功');
+    if(responseModel.data!=null){
     model = VersionModel.fromJson(responseModel.data);
+    }
     return model;
   }else{
     return null;
