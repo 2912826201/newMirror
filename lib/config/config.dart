@@ -103,6 +103,10 @@ class AppConfig {
   static String getAppVoiceDir() {
     return "$_appDir/voice";
   }
+  //获取语音文件的路径
+  static String getAppApkDir() {
+    return "$_appDir/apk";
+  }
 
   static String getAppVoiceFilePath() {
     return "${getAppVoiceDir()}/record_${new DateTime.now().millisecondsSinceEpoch}.aac";

@@ -126,6 +126,9 @@ dependencies:
   connectivity: ^2.0.2
   #安装apk
   install_plugin: ^2.0.1
+  app_installer: ^0.4.0
+  root_install: ^1.0.2
+  open_file: ^3.0.3
   #扫码测试
   scan: ^0.0.3
   #二维码生成测试
