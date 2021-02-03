@@ -421,7 +421,17 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
               );
             }
           }else{
-           InstallPlugin.gotoAppStore(url);
+            showAppDialog(context,
+              title:"检测到新版本安装包，是否跳转商店？",
+              cancel:AppDialogButton("取消",(){
+                return true;
+              }),
+              confirm: AppDialogButton("跳转",(){
+                InstallPlugin.gotoAppStore(url);
+                return true;
+              }),
+            );
+
           }
         }
       }
