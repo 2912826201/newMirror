@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +19,7 @@ import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/feed/search_location.dart';
+import 'package:mirror/page/feed/test_location.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
@@ -26,7 +28,9 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_button.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:text_span_field/range_style.dart';
@@ -1169,14 +1173,34 @@ class ReleaseFeedMainView extends StatelessWidget {
   List<String> addresss = ["成都市", "花样年福年广场", "牛水煮·麻辣水煮牛肉", "园林火锅", "嘉年CEO酒店公寓-(成都会展中心福年广场店)", "查看更多"];
   PanelController pc = new PanelController();
 
+
+  Widget _showDialog(BuildContext context) {
+    return showAppDialog(context,
+        title: "获取系统定位权限",
+        info: "获取周边地址信息",
+        cancel: AppDialogButton("取消", () {
+          return true;
+        }),
+        confirm: AppDialogButton("去打开", () {
+          AppSettings.openNotificationSettings();
+          return true;
+        }));
+  }
+
   // 选择地址
   seletedAddress(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-          return SearchLocation();
-        }));
+      onTap: () async{
+        final permissions = await Permission.locationWhenInUse.request();
+        if (permissions.isGranted) {
+          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+            return TestWidget();
+            // return SearchLocation();
+          }));
+        } else {
+          _showDialog(context);
+        }
         print("跳转选择地址页面");
       },
       child: Container(

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:amap_map_fluttify/amap_map_fluttify.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:camera/camera.dart';
 import 'package:fluro/fluro.dart';
@@ -190,7 +191,12 @@ Future _initApp() async {
 
   //初始化省市信息
   _initRegionMap();
-
+  await enableFluttifyLog(false);
+  //设置ios的key
+  await AmapService.instance.init(
+    iosKey: '836c55dba7d3a44793ec9ae1e1dc2e82',
+    androidKey: '7c9daac55e90a439f7b4304b465297fa',
+  );
   //todo 获取视频课标签列表 其实在没有登录时无法获取
   try {
     Map<String, dynamic> videoCourseTagMap = await getAllTags();
