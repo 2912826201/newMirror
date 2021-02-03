@@ -152,6 +152,9 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
         }
         isFirstScroll = false;
       });
+    }else{
+      print('========================条件不满足 --courseCommentHot${courseCommentHot!=null}--isFirstScroll$isFirstScroll'
+          '---widget.commentDtoModel${widget.commentDtoModel!=null}');
     }
     if(!widget.isShowHotOrTime && courseCommentHot != null&&
         context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments!=null&&
