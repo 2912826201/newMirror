@@ -6,14 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/api/training/training_gallery_api.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/download_dto.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
-import 'package:mirror/widget/loading.dart';
 import 'package:mirror/widget/scale_view.dart';
 
 import 'training_gallery_page.dart';
@@ -64,19 +62,25 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        titleString: _title,
-        leadingOnTap: () {
-          Navigator.pop(context, _galleryResult);
-        },
-        actions: [
-          CustomAppBarButton(Icons.more_horiz, AppColor.black, false, () {
-            _showMorePopup(context, _imageList[_currentIndex]);
-          }),
-        ],
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, _galleryResult);
+        return false;
+      },
+      child: Scaffold(
+        appBar: CustomAppBar(
+          titleString: _title,
+          leadingOnTap: () {
+            Navigator.pop(context, _galleryResult);
+          },
+          actions: [
+            CustomAppBarButton(Icons.more_horiz, AppColor.black, false, () {
+              _showMorePopup(context, _imageList[_currentIndex]);
+            }),
+          ],
+        ),
+        body: _buildBody(),
       ),
-      body: _buildBody(),
     );
   }
 

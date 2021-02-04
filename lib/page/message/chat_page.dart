@@ -269,7 +269,10 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     if (widget.conversation.getType() != RCConversationType.System) {
       bodyArray.add(getMessageInputBar());
       bodyArray.add(bottomSettingBox());
-      bodyArray.add(Container(height: ScreenUtil.instance.bottomBarHeight,color: AppColor.white,));
+      bodyArray.add(Container(
+        height: ScreenUtil.instance.bottomBarHeight,
+        color: AppColor.white,
+      ));
     }
 
     bodyArray.add(Offstage(
@@ -422,8 +425,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.add,size: 16,color: AppColor.textPrimary1),
-                      Text("关注",style: TextStyle(color: AppColor.textPrimary1,fontSize: 14,fontWeight: FontWeight.bold)),
+                      Icon(Icons.add, size: 16, color: AppColor.textPrimary1),
+                      Text("关注",
+                          style: TextStyle(color: AppColor.textPrimary1, fontSize: 14, fontWeight: FontWeight.bold)),
                       SizedBox(width: 2),
                     ],
                   ),
@@ -486,51 +490,50 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //输入框bar内的edit
   Widget edit(context, size) {
-
     return ConstrainedBox(
-        constraints: BoxConstraints(
-            maxHeight: 80.0,
-            minHeight: 16.0,
-            maxWidth: Platform.isIOS
-                ? ScreenUtil.instance.screenWidthDp - 32 - 32 - 64
-                : ScreenUtil.instance.screenWidthDp - 32 - 32 - 64 - 52 - 12),
-        child: TextSpanField(
-          controller: _textController,
-          focusNode: _focusNode,
-          // 多行展示
-          keyboardType: TextInputType.multiline,
-          //不限制行数
-          maxLines: null,
-          enableInteractiveSelection: true,
-          // 光标颜色
-          cursorColor: Color.fromRGBO(253, 137, 140, 1),
-          scrollPadding: EdgeInsets.all(0),
-          style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
-          //内容改变的回调
-          onChanged: _changTextLen,
-          textInputAction: TextInputAction.send,
-          onSubmitted: (text) {
-            if (text.isNotEmpty) {
-              _postText(text);
-            }
-          },
-          // 装饰器修改外观
-          decoration: InputDecoration(
-            // 去除下滑线
-            border: InputBorder.none,
-            // 提示文本
-            hintText: "\uD83D\uDE02123\uD83D\uDE01",
-            // 提示文本样式
-            hintStyle: TextStyle(fontSize: 14, color: AppColor.textHint),
-            // 设置为true,contentPadding才会生效，TextField会有默认高度。
-            isCollapsed: true,
-            contentPadding: EdgeInsets.only(top: 8, bottom: 8, left: 16),
-          ),
-
-          rangeStyles: getTextFieldStyle(Application.appContext.read<ChatEnterNotifier>().rules),
-          inputFormatters: [_formatter],
+      constraints: BoxConstraints(
+          maxHeight: 80.0,
+          minHeight: 16.0,
+          maxWidth: Platform.isIOS
+              ? ScreenUtil.instance.screenWidthDp - 32 - 32 - 64
+              : ScreenUtil.instance.screenWidthDp - 32 - 32 - 64 - 52 - 12),
+      child: TextSpanField(
+        controller: _textController,
+        focusNode: _focusNode,
+        // 多行展示
+        keyboardType: TextInputType.multiline,
+        //不限制行数
+        maxLines: null,
+        enableInteractiveSelection: true,
+        // 光标颜色
+        cursorColor: Color.fromRGBO(253, 137, 140, 1),
+        scrollPadding: EdgeInsets.all(0),
+        style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
+        //内容改变的回调
+        onChanged: _changTextLen,
+        textInputAction: TextInputAction.send,
+        onSubmitted: (text) {
+          if (text.isNotEmpty) {
+            _postText(text);
+          }
+        },
+        // 装饰器修改外观
+        decoration: InputDecoration(
+          // 去除下滑线
+          border: InputBorder.none,
+          // 提示文本
+          hintText: "\uD83D\uDE02123\uD83D\uDE01",
+          // 提示文本样式
+          hintStyle: TextStyle(fontSize: 14, color: AppColor.textHint),
+          // 设置为true,contentPadding才会生效，TextField会有默认高度。
+          isCollapsed: true,
+          contentPadding: EdgeInsets.only(top: 8, bottom: 8, left: 16),
         ),
-      );
+
+        rangeStyles: getTextFieldStyle(Application.appContext.read<ChatEnterNotifier>().rules),
+        inputFormatters: [_formatter],
+      ),
+    );
   }
 
   //键盘与表情的框
@@ -1802,7 +1805,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     } else if (settingType == "撤回") {
       recallMessage(chatDataList[position].msg, position);
     } else if (settingType == "复制") {
-      if (context != null && content!=null) {
+      if (context != null && content != null) {
         Clipboard.setData(ClipboardData(text: content));
         ToastShow.show(msg: "复制成功", context: context);
       }
