@@ -177,7 +177,7 @@ class _VipOpenPage extends State<VipOpenPage> {
         Align(
           alignment: Alignment.centerLeft,
           child: Text(
-            vipState == VipState.EXPIRED ? "已过期56天" : "vip会员至${DateUtil.generateFormatDate(lastTime)}",
+            vipState == VipState.EXPIRED ? "已过期56天" : "vip会员至${DateUtil.generateFormatDate(lastTime,true)}",
             style: vipState == VipState.EXPIRED ? AppStyle.whiteRegular12 : AppStyle.redRegular13,
           ),
         ),
