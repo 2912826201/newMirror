@@ -221,7 +221,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           videos[i].coverUrl = FileUtil.getVideoFirstPhoto(model.url);
         }
       }
-      print("数据请求发不打印${postModel.content}");
+      print("数据请求发不打印${postModel.toString()}");
       if (mounted) {
         Map<String, dynamic> feedModel = await publishFeed(
             type: 0,

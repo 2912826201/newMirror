@@ -113,4 +113,6 @@ class Application {
 
   //用户所登录的机器
   static MachineModel machine;
+  // 定位所在城市Id
+  static String cityId = "targetCityId";
 }

@@ -1,11 +1,14 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:amap_map_fluttify/amap_map_fluttify.dart';
 import 'package:app_settings/app_settings.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
+import 'package:mirror/api/location/location.api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/config/application.dart';
@@ -15,10 +18,10 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/feed/post_feed.dart';
+import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
-import 'package:mirror/page/feed/search_location.dart';
 import 'package:mirror/page/feed/test_location.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
@@ -74,9 +77,15 @@ class ReleasePageState extends State<ReleasePage> {
   TextEditingController _controller = TextEditingController();
   FocusNode feedFocus = FocusNode();
 
+  // 权限
+  PermissionStatus permissions;
+
   // at的索引数组
   List<Rule> rules = [];
-
+  Location currentAddressInfo; //当前位置的信息
+  String androidAMapKey = "fef4e35be05e2337119aeb3b4e57388d"; //安卓高德key 搜索POI需要
+  String iosKey = "836c55dba7d3a44793ec9ae1e1dc2e82";
+  List<PeripheralInformationPoi> pois = []; //返回周边信息页面显示的数据集合
   @override
   void dispose() {
     _controller.dispose();
@@ -87,9 +96,79 @@ class ReleasePageState extends State<ReleasePage> {
   void initState() {
     //TODO 取出来判断是否为空 非空则将图片视频作为初始值 取出后需将Application中的值清空
     print("查明￥${Application.selectedMediaFiles}");
+    // 获取定位权限
+    locationPermissions();
     _selectedMediaFiles = Application.selectedMediaFiles;
     Application.selectedMediaFiles = null;
     super.initState();
+  }
+
+  // 获取定位权限
+  locationPermissions() async {
+    permissions = await Permission.locationWhenInUse.request();
+    if (permissions.isGranted) {
+      //flutter定位只能获取到经纬度信息
+      currentAddressInfo = await AmapLocation.instance.fetchLocation();
+      // 调用周边
+      aroundHttp();
+    }
+  }
+
+  //高德接口获取周边数据
+  aroundHttp() async {
+    PeripheralInformationEntity locationInformationEntity = await aroundForHttp();
+    if (locationInformationEntity.status == "1") {
+      print('请求成功');
+      pois = locationInformationEntity.pois;
+      // 城市信息导入
+      PeripheralInformationPoi poi1 = PeripheralInformationPoi();
+      poi1.name = locationInformationEntity.pois.first.cityname;
+      poi1.id = Application.cityId;
+      poi1.citycode = locationInformationEntity.pois.first.citycode;
+      // 获取城市经纬度
+      Application.cityMap.forEach((key, value) {
+        value.forEach((v) {
+          if (v.regionCode == poi1.citycode) {
+            poi1.location = v.longitude.toString() + "," + v.latitude.toString();
+          }
+        });
+      });
+      // print("高德返回￥${poi1.citycode}");
+      print(" 插入城市${poi1.toString()}");
+      pois.insert(0, poi1);
+      setState(() {});
+    } else {
+      // 请求失败
+    }
+  }
+
+  //高德接口获取当前位置周边信息
+  Future<PeripheralInformationEntity> aroundForHttp() async {
+    String BaseUrl = "https://restapi.amap.com/v3/place/around";
+    Map<String, dynamic> map = Map();
+    if (Platform.isIOS) {
+      print("ios");
+      map["key"] = iosKey;
+    } else {
+      map["key"] = androidAMapKey;
+      print("androidAMapKey");
+    }
+    map["location"] =
+        "${currentAddressInfo.latLng.longitude},${currentAddressInfo.latLng.latitude}"; //中心点坐标 经度和纬度用","分割，经度在前，纬度在后，经纬度小数点后不得超过6位
+    map["offset"] = 20; //每页记录数据
+    map["page"] = 1; //每页记录数据
+    map["extensions"] = "all";
+    Response resp = await Http.getInstance()
+        .dio
+        .get(
+          BaseUrl,
+          queryParameters: map,
+        )
+        .catchError((e) {
+      print(e);
+    });
+    PeripheralInformationEntity baseBean = PeripheralInformationEntity.fromJson(resp.data);
+    return baseBean;
   }
 
   @override
@@ -120,16 +199,19 @@ class ReleasePageState extends State<ReleasePage> {
                     // 中间主视图
                     str == "@"
                         ? Expanded(
-                        child: Container(
-                          child: AtList(controller: _controller),
-                          margin: EdgeInsets.only(bottom: Application.keyboardHeight)
-                        ))
+                            child: Container(
+                                child: AtList(controller: _controller),
+                                margin: EdgeInsets.only(bottom: Application.keyboardHeight)))
                         : str == "#"
                             ? Expanded(
-                        child: Container(
-                            child: TopicList(controller: _controller),margin: EdgeInsets.only(bottom: Application.keyboardHeight)
-                        ))
-                            : ReleaseFeedMainView(selectedMediaFiles: _selectedMediaFiles)
+                                child: Container(
+                                    child: TopicList(controller: _controller),
+                                    margin: EdgeInsets.only(bottom: Application.keyboardHeight)))
+                            : ReleaseFeedMainView(
+                                selectedMediaFiles: _selectedMediaFiles,
+                                permissions: permissions,
+                                pois: pois,
+                              )
                   ],
                 ),
               );
@@ -144,7 +226,7 @@ class FeedHeader extends StatelessWidget {
   SelectedMediaFiles selectedMediaFiles;
 
   // 发布动态
-  pulishFeed(String inputText, List<Rule> rules, BuildContext context) async {
+  pulishFeed(String inputText, List<Rule> rules, BuildContext context, PeripheralInformationPoi poi) async {
     print("打印一下规则$rules");
     PostFeedModel feedModel = PostFeedModel();
     List<AtUsersModel> atUsersModel = [];
@@ -183,6 +265,12 @@ class FeedHeader extends StatelessWidget {
           topics.add(topicDtoModel);
         }
       }
+      if (poi != null) {
+        address = poi.name;
+        longitude = poi.location.split(",")[0];
+        latitude = poi.location.split(",")[1];
+        cityCode = poi.citycode;
+      }
       feedModel.selectedMediaFiles = selectedMediaFiles;
       feedModel.atUsersModel = atUsersModel;
       feedModel.address = address;
@@ -194,6 +282,8 @@ class FeedHeader extends StatelessWidget {
       // 传入发布动态model
       context.read<FeedMapNotifier>().setPublishFeedModel(feedModel);
       context.read<ReleaseFeedInputNotifier>().rules.clear();
+      context.read<ReleaseFeedInputNotifier>().selectAddress = null;
+
       Navigator.pop(context, true);
       print("打印结束");
     } else {
@@ -231,8 +321,11 @@ class FeedHeader extends StatelessWidget {
 
                 // 获取输入框内的规则
                 var rules = context.read<ReleaseFeedInputNotifier>().rules;
+
+                // 获取选择的地址
+                var poi = context.read<ReleaseFeedInputNotifier>().selectAddress;
                 print("点击生效");
-                pulishFeed(inputText, rules, context);
+                pulishFeed(inputText, rules, context, poi);
               },
               child: IgnorePointer(
                 // 监听输入框的值==""使外层点击不生效。非""手势生效。
@@ -278,6 +371,7 @@ class KeyboardInput extends StatefulWidget {
 class KeyboardInputState extends State<KeyboardInput> {
   ReleaseFeedInputFormatter _formatter;
   FocusNode commentFocus;
+
   // 判断是否只是切换光标
   bool isSwitchCursor = true;
 
@@ -294,10 +388,10 @@ class KeyboardInputState extends State<KeyboardInput> {
       // 是否点击了@列表
       bool isClickAtUser = context.read<ReleaseFeedInputNotifier>().isClickAtUser;
       // 是否点击了话题列表
-      bool isClickTopic =  context.read<ReleaseFeedInputNotifier>().isClickTopic;
+      bool isClickTopic = context.read<ReleaseFeedInputNotifier>().isClickTopic;
 
       // 在每次选择@用户后ios设置光标位置。
-      if (Platform.isIOS && isClickAtUser ) {
+      if (Platform.isIOS && isClickAtUser) {
         print("@改光标");
         // 设置光标
         var setCursor = TextSelection(
@@ -307,7 +401,7 @@ class KeyboardInputState extends State<KeyboardInput> {
         widget.controller.selection = setCursor;
       }
       context.read<ReleaseFeedInputNotifier>().setClickAtUser(false);
-      if (Platform.isIOS && isClickTopic ) {
+      if (Platform.isIOS && isClickTopic) {
         // 设置光标
         var setCursor = TextSelection(
           baseOffset: widget.controller.text.length,
@@ -396,16 +490,11 @@ class KeyboardInputState extends State<KeyboardInput> {
               // 调用搜索全局用户第一页
               requestSearchFollowList(atSearchStr);
             } else {
-              if (context
-                  .read<ReleaseFeedInputNotifier>()
-                  .backupFollowList
-                  .isNotEmpty) {
+              if (context.read<ReleaseFeedInputNotifier>().backupFollowList.isNotEmpty) {
                 // 使用备份的关注用户数据
                 context
                     .read<ReleaseFeedInputNotifier>()
-                    .setFollowList(context
-                    .read<ReleaseFeedInputNotifier>()
-                    .backupFollowList);
+                    .setFollowList(context.read<ReleaseFeedInputNotifier>().backupFollowList);
               }
             }
           }
@@ -419,9 +508,7 @@ class KeyboardInputState extends State<KeyboardInput> {
                 // 使用备份的推荐话题数据
                 context
                     .read<ReleaseFeedInputNotifier>()
-                    .setTopicList(context
-                    .read<ReleaseFeedInputNotifier>()
-                    .backupTopicList);
+                    .setTopicList(context.read<ReleaseFeedInputNotifier>().backupTopicList);
               }
             }
           }
@@ -511,7 +598,6 @@ class KeyboardInputState extends State<KeyboardInput> {
     // 列表回到顶部，不然无法上拉加载下一页
     context.read<ReleaseFeedInputNotifier>().topScrollController.jumpTo(0);
     context.read<ReleaseFeedInputNotifier>().setTopicList(searchTopicList);
-
   }
 
   /// 获得文本输入框样式
@@ -1159,20 +1245,29 @@ class AtListState extends State<AtList> {
 }
 
 // 发布动态输入框下的所有部件
-class ReleaseFeedMainView extends StatelessWidget {
-  ReleaseFeedMainView({this.pc, this.selectedMediaFiles});
+class ReleaseFeedMainView extends StatefulWidget {
+  ReleaseFeedMainView({this.permissions, this.selectedMediaFiles, this.pois});
 
+  PermissionStatus permissions;
   SelectedMediaFiles selectedMediaFiles;
-  List<String> PhotoUrl = [
-    "images/test/yxlm2.jpeg",
-    "images/test/yxlm3.jpeg",
-    "images/test/yxlm4.jpg",
-    "images/test/yxlm6.jpg",
-    "images/test/yxlm7.jpeg"
-  ];
-  List<String> addresss = ["成都市", "花样年福年广场", "牛水煮·麻辣水煮牛肉", "园林火锅", "嘉年CEO酒店公寓-(成都会展中心福年广场店)", "查看更多"];
-  PanelController pc = new PanelController();
+  List<PeripheralInformationPoi> pois;
 
+  @override
+  ReleaseFeedMainViewState createState() => ReleaseFeedMainViewState();
+}
+
+class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
+  // 选择的地址
+  String seletedAddressText = "你在哪儿";
+
+  // 是否显示推荐地址列表
+  bool isShowList = true;
+
+  // 展示勾选的索引
+  int checkIndex = 0;
+
+  // 传入选择地址
+  PeripheralInformationPoi selectAddress = PeripheralInformationPoi();
 
   Widget _showDialog(BuildContext context) {
     return showAppDialog(context,
@@ -1191,12 +1286,13 @@ class ReleaseFeedMainView extends StatelessWidget {
   seletedAddress(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: () async{
-        final permissions = await Permission.locationWhenInUse.request();
-        if (permissions.isGranted) {
+      onTap: () async {
+        if (widget.permissions.isGranted) {
           Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-            return TestWidget();
-            // return SearchLocation();
+            return TestWidget(
+                checkIndex: checkIndex,
+                selectAddress: selectAddress,
+                childrenACallBack: (poi) => childrenACallBack(poi));
           }));
         } else {
           _showDialog(context);
@@ -1218,7 +1314,7 @@ class ReleaseFeedMainView extends StatelessWidget {
               width: 4,
             ),
             Text(
-              "你在哪儿",
+              seletedAddressText,
               style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
             ),
             Spacer(),
@@ -1240,27 +1336,73 @@ class ReleaseFeedMainView extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 12.5),
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: addresss.length,
+          itemCount: 7,
           itemBuilder: (context, index) {
-            return addressItem(addresss[index], index);
+            return addressItem(widget.pois[index], index);
           }),
     );
   }
 
+  // 子页面回调
+  childrenACallBack(PeripheralInformationPoi poi) {
+    if (poi.name != "不显示所在位置") {
+      isShowList = false;
+      seletedAddressText = poi.name;
+      selectAddress = poi;
+      checkIndex = 1;
+      context.read<ReleaseFeedInputNotifier>().setPeripheralInformationPoi(poi);
+    } else {
+      seletedAddressText = "你在哪儿";
+      selectAddress = PeripheralInformationPoi();
+      checkIndex = 0;
+    }
+    setState(() {});
+  }
+
   // 推荐地址Item
-  addressItem(String address, int index) {
-    return Container(
-      // height: 23,
-      margin: EdgeInsets.only(left: index == 0 ? 16 : 12, right: index == addresss.length - 1 ? 16 : 0),
-      padding: EdgeInsets.symmetric(horizontal: 5, vertical: 3),
-      alignment: Alignment(0, 0),
-      decoration:
-          BoxDecoration(color: AppColor.textHint.withOpacity(0.24), borderRadius: BorderRadius.all(Radius.circular(3))),
-      child: Text(
-        address,
-        style: TextStyle(fontSize: 12),
-      ),
-    );
+  addressItem(PeripheralInformationPoi address, int index) {
+    return GestureDetector(
+        onTap: () {
+          if (index != 6) {
+            seletedAddressText = addressText(address, index);
+            isShowList = false;
+            selectAddress = address;
+            checkIndex = 1;
+            context.read<ReleaseFeedInputNotifier>().setPeripheralInformationPoi(address);
+            setState(() {});
+          } else {
+            Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+              return TestWidget(
+                  checkIndex: checkIndex,
+                  selectAddress: selectAddress,
+                  childrenACallBack: (poi) => childrenACallBack(poi));
+            }));
+          }
+        },
+        child: Container(
+          // height: 23,
+          margin: EdgeInsets.only(left: index == 0 ? 16 : 12, right: index == 6 ? 16 : 0),
+          padding: EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+          alignment: Alignment(0, 0),
+          decoration: BoxDecoration(
+              color: AppColor.textHint.withOpacity(0.24), borderRadius: BorderRadius.all(Radius.circular(3))),
+          child: Text(
+            addressText(address, index),
+            style: TextStyle(fontSize: 12),
+          ),
+        ));
+  }
+
+  // 地址
+  addressText(PeripheralInformationPoi poi, int index) {
+    String address;
+    if (index != 6) {
+      address = poi.name;
+    }
+    if (index == 6) {
+      address = "查看更多";
+    }
+    return address;
   }
 
   @override
@@ -1268,14 +1410,13 @@ class ReleaseFeedMainView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        selectedMediaFiles.list != null
+        widget.selectedMediaFiles.list != null
             ? SeletedPhoto(
-                photoUrl: PhotoUrl,
-                selectedMediaFiles: selectedMediaFiles,
+                selectedMediaFiles: widget.selectedMediaFiles,
               )
             : Container(),
         seletedAddress(context),
-        recommendAddress()
+        widget.pois.isNotEmpty ? Offstage(offstage: isShowList == false, child: recommendAddress()) : Container()
       ],
     );
   }
@@ -1283,9 +1424,8 @@ class ReleaseFeedMainView extends StatelessWidget {
 
 // 图片
 class SeletedPhoto extends StatefulWidget {
-  SeletedPhoto({Key key, this.photoUrl, this.selectedMediaFiles}) : super(key: key);
+  SeletedPhoto({Key key, this.selectedMediaFiles}) : super(key: key);
   SelectedMediaFiles selectedMediaFiles;
-  List<String> photoUrl;
 
   SeletedPhotoState createState() => SeletedPhotoState();
 }
@@ -1322,13 +1462,12 @@ class SeletedPhotoState extends State<SeletedPhoto> {
           }
           int fixedWidth;
           int fixedHeight;
-          if( widget.selectedMediaFiles.list.isNotEmpty){
+          if (widget.selectedMediaFiles.list.isNotEmpty) {
             fixedWidth = widget.selectedMediaFiles.list.first.sizeInfo.width;
             fixedHeight = widget.selectedMediaFiles.list.first.sizeInfo.height;
           }
           AppRouter.navigateToMediaPickerPage(
-              context, 9 - widget.selectedMediaFiles.list.length, type, true, startPageGallery, false,
-              (result) async {
+              context, 9 - widget.selectedMediaFiles.list.length, type, true, startPageGallery, false, (result) async {
             SelectedMediaFiles files = Application.selectedMediaFiles;
             if (true != result || files == null) {
               print("没有选择媒体文件");
@@ -1352,7 +1491,7 @@ class SeletedPhotoState extends State<SeletedPhoto> {
             widget.selectedMediaFiles.list.addAll(files.list);
             context.read<ReleaseFeedInputNotifier>().setSelectedMediaFiles(widget.selectedMediaFiles);
             setState(() {});
-          },fixedWidth:fixedWidth,fixedHeight: fixedHeight);
+          }, fixedWidth: fixedWidth, fixedHeight: fixedHeight);
         },
         child: Container(
           margin: EdgeInsets.only(left: 10, top: 9, right: 16),
@@ -1506,6 +1645,9 @@ class ReleaseFeedInputNotifier extends ChangeNotifier {
   // 发布动态选择的图片视频
   SelectedMediaFiles selectedMediaFiles;
 
+  // 发布动态选择的地址
+  PeripheralInformationPoi selectAddress;
+
   // 是否点击了弹起的@用户列表
   bool isClickAtUser = false;
 
@@ -1588,6 +1730,11 @@ class ReleaseFeedInputNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  setPeripheralInformationPoi(PeripheralInformationPoi poi) {
+    this.selectAddress = poi;
+    notifyListeners();
+  }
+
   setFollowList(List<BuddyModel> list) {
     this.followList = list;
     notifyListeners();
@@ -1657,11 +1804,13 @@ class ReleaseFeedInputNotifier extends ChangeNotifier {
     this.topScrollController = controller;
     notifyListeners();
   }
+
   setClickAtUser(bool at) {
     this.isClickAtUser = at;
   }
+
   // 是否点击了弹起的话题列表
-  setClickTopic (bool top) {
+  setClickTopic(bool top) {
     this.isClickTopic = top;
   }
 }

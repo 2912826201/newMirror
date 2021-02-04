@@ -2,7 +2,7 @@ class PeripheralInformationEntity {
   PeripheralInformationSuggestion suggestion;
   String count;
   String infocode;
-  List<PeripheralInformationPoi> pois;
+  List<PeripheralInformationPoi> pois = [];
   String status;
   String info;
 
@@ -74,6 +74,7 @@ class PeripheralInformationPoi {
   List<Null> importance;
   List<Null> bizType;
   String cityname;
+  String citycode;
   String type;
   List<PeripheralInformationPoisPhoto> photos;
   String typecode;
@@ -96,6 +97,7 @@ class PeripheralInformationPoi {
         this.importance,
         this.bizType,
         this.cityname,
+        this.citycode,
         this.type,
         this.photos,
         this.typecode,
@@ -120,6 +122,7 @@ class PeripheralInformationPoi {
     bizExt = json['biz_ext'] != null ? new PeripheralInformationPoisBizExt.fromJson(json['biz_ext']) : null;
     pname = json['pname'];
     cityname = json['cityname'];
+    citycode = json['citycode'];
     type = json['type'];
     typecode = json['typecode'];
     shopinfo = json['shopinfo'];
@@ -150,6 +153,7 @@ class PeripheralInformationPoi {
       data['biz_type'] = [];
     }
     data['cityname'] = this.cityname;
+    data['citycode'] = this.citycode;
     data['type'] = this.type;
     if (this.photos != null) {
       data['photos'] = this.photos.map((v) => v.toJson()).toList();
@@ -171,6 +175,10 @@ class PeripheralInformationPoi {
     }
     data['id'] = this.id;
     return data;
+  }
+  @override
+  String toString() {
+    return toJson().toString();
   }
 }
 
