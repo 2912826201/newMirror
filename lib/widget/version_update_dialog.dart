@@ -51,7 +51,7 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
       print('==taskId$taskId====================progress${received / total}');
       if (received == total) {
         Future.delayed(Duration(milliseconds: 100), () async {
-            _installApk();
+          _installApk();
         });
       }
     });
@@ -66,11 +66,11 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
       ].request();
       if (statuses.isNotEmpty) {
         await File(path).stat().then((value) => print('========文件信息---------------$value'));
-        if(strong){
+        if (strong) {
           setState(() {
             progressText = "去安装";
           });
-        }else{
+        } else {
           Navigator.pop(context);
         }
         OpenFile.open(path).then((value) {
