@@ -1,4 +1,3 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +15,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/rich_text_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -50,34 +50,34 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     }
     QueryListModel model = await queryMsgList(type, 20, lastTime);
 
-      if (listPage == 1) {
-        if (model.list != null) {
-          haveData = true;
-          msgList.clear();
-          controller.loadComplete();
-          lastTime = model.lastTime;
-          model.list.forEach((element) {
-            msgList.add(element);
-          });
-          controller.refreshCompleted();
-        } else {
-          haveData = false;
-          controller.resetNoData();
-        }
-      } else if (listPage > 1 && lastTime != null) {
-        if (model.list != null) {
-          lastTime = model.lastTime;
-          model.list.forEach((element) {
-            msgList.add(element);
-          });
-          controller.loadComplete();
-        } else {
-          controller.loadNoData();
-        }
+    if (listPage == 1) {
+      if (model.list != null) {
+        haveData = true;
+        msgList.clear();
+        controller.loadComplete();
+        lastTime = model.lastTime;
+        model.list.forEach((element) {
+          msgList.add(element);
+        });
+        controller.refreshCompleted();
+      } else {
+        haveData = false;
+        controller.resetNoData();
       }
-      if(mounted) {
-        setState(() {});
+    } else if (listPage > 1 && lastTime != null) {
+      if (model.list != null) {
+        lastTime = model.lastTime;
+        model.list.forEach((element) {
+          msgList.add(element);
+        });
+        controller.loadComplete();
+      } else {
+        controller.loadNoData();
       }
+    }
+    if (mounted) {
+      setState(() {});
+    }
     print('msglist.length========================${msgList.length}');
   }
 
@@ -116,27 +116,15 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
       },
       child: Scaffold(
         backgroundColor: AppColor.white,
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: AppColor.white,
-          leading: InkWell(
-            child: Container(
-              margin: EdgeInsets.only(left: 16),
-              child: Image.asset("images/resource/2.0x/return2x.png"),
-            ),
-            onTap: () {
-              Navigator.pop(context, timeStamp);
-            },
-          ),
-          leadingWidth: 44,
-          title: Text(
-            widget.type == 0
-                ? "评论"
-                : widget.type == 1
-                    ? "@我"
-                    : "点赞",
-            style: AppStyle.textMedium18,
-          ),
+        appBar: CustomAppBar(
+          leadingOnTap: () {
+            Navigator.pop(context, timeStamp);
+          },
+          titleString: widget.type == 0
+              ? "评论"
+              : widget.type == 1
+                  ? "@我"
+                  : "点赞",
         ),
         body: Container(
           width: width,
@@ -236,12 +224,12 @@ class InteractiveNoticeItemState extends StatelessWidget {
   bool commentIsDelete = false;
   String commentState;
 
-  _getRefData(BuildContext context){
+  _getRefData(BuildContext context) {
     if (type == 0 || type == 1) {
       atUserList = msgModel.commentData.atUsers;
-      if(msgModel.commentData==null){
+      if (msgModel.commentData == null) {
         commentIsDelete = true;
-      }else{
+      } else {
         comment = msgModel.commentData.content;
       }
     } else {
@@ -253,14 +241,14 @@ class InteractiveNoticeItemState extends StatelessWidget {
         comment = "赞了你的评论";
       }
     }
-    if(msgModel.refData==null){
+    if (msgModel.refData == null) {
       feedIsDelete = true;
     }
-    if(msgModel.refType==0){
+    if (msgModel.refType == 0) {
       feedModel = HomeFeedModel.fromJson(msgModel.refData);
-    } else if(msgModel.refType == 2){
-     fatherCommentModel = CommentDtoModel.fromJson(msgModel.refData);
-   }else if(msgModel.refType==1||msgModel.refType==3){
+    } else if (msgModel.refType == 2) {
+      fatherCommentModel = CommentDtoModel.fromJson(msgModel.refData);
+    } else if (msgModel.refType == 1 || msgModel.refType == 3) {
       liveVideoModel = LiveVideoModel.fromJson(msgModel.refData);
     }
   }
@@ -284,7 +272,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
     print('-====================消息互动列表页Item  biuld');
     senderAvatarUrl = msgModel.senderAvatarUrl;
     senderName = msgModel.senderName;
-    if(type==0){
+    if (type == 0) {
       msgModel.commentData.name = senderName;
       msgModel.commentData.replyName = context.watch<ProfileNotifier>().profile.nickName;
     }
@@ -296,6 +284,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
       } else {
         commentState = "";
       }
+
       ///判断文字的高度，动态改变
       TextPainter testSize = calculateTextWidth(
           "$commentState$comment", AppStyle.textRegular13, ScreenUtil.instance.screenWidthDp * 0.64, 3);
@@ -313,93 +302,95 @@ class InteractiveNoticeItemState extends StatelessWidget {
       child: Row(
         children: [
           InkWell(
-            onTap: (){
+            onTap: () {
               AppRouter.navigateToMineDetail(context, msgModel.senderId);
             },
             child: Container(
-              alignment: Alignment.topLeft,
-              child: Stack(
-                children: [
-                  ClipOval(
-                    child: CachedNetworkImage(
-                      height: 38,
-                      width: 38,
-                      imageUrl: senderAvatarUrl,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Image.asset(
-                        "images/test.png",
+                alignment: Alignment.topLeft,
+                child: Stack(
+                  children: [
+                    ClipOval(
+                      child: CachedNetworkImage(
+                        height: 38,
+                        width: 38,
+                        imageUrl: senderAvatarUrl,
                         fit: BoxFit.cover,
+                        placeholder: (context, url) => Image.asset(
+                          "images/test.png",
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
-                  ),
-                  msgModel.isRead == 0
-                      ? Positioned(
-                          top: 0,
-                          left: 0,
-                          child: Container(
-                            height: 10,
-                            width: 10,
-                            decoration: BoxDecoration(
-                                color: AppColor.mainRed,
-                                borderRadius: BorderRadius.all(Radius.circular(18.5)),
-                                border: Border.all(width: 0.5, color: AppColor.white)),
-                          ),
-                        )
-                      : Container()
-                ],
-              )),),
+                    msgModel.isRead == 0
+                        ? Positioned(
+                            top: 0,
+                            left: 0,
+                            child: Container(
+                              height: 10,
+                              width: 10,
+                              decoration: BoxDecoration(
+                                  color: AppColor.mainRed,
+                                  borderRadius: BorderRadius.all(Radius.circular(18.5)),
+                                  border: Border.all(width: 0.5, color: AppColor.white)),
+                            ),
+                          )
+                        : Container()
+                  ],
+                )),
+          ),
           Spacer(),
           InkWell(
-            onTap: (){
+            onTap: () {
               _jumpToDetailPage(context);
             },
             child: Container(
-            alignment: Alignment.centerLeft,
-            width: ScreenUtil.instance.screenWidthDp * 0.64,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "$senderName",
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppStyle.textMedium15,
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                !commentIsDelete
-                    ? MyRichTextWidget(
-                        Text(
-                          "$comment",
-                          style: AppStyle.textRegular13,
+              alignment: Alignment.centerLeft,
+              width: ScreenUtil.instance.screenWidthDp * 0.64,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "$senderName",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppStyle.textMedium15,
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  !commentIsDelete
+                      ? MyRichTextWidget(
+                          Text(
+                            "$comment",
+                            style: AppStyle.textRegular13,
+                          ),
+                          maxLines: 3,
+                          textOverflow: TextOverflow.ellipsis,
+                          richTexts: _atText(context),
+                          headText: commentState,
+                          headStyle: AppStyle.textMedium13,
+                        )
+                      : Text(
+                          "该评论已删除",
+                          style: AppStyle.textHintRegular13,
                         ),
-                        maxLines: 3,
-                        textOverflow: TextOverflow.ellipsis,
-                        richTexts: _atText(context),
-                        headText: commentState,
-                        headStyle: AppStyle.textMedium13,
-                      )
-                    : Text(
-                        "该评论已删除",
-                        style: AppStyle.textHintRegular13,
-                      ),
-                SizedBox(
-                  height: 7,
-                ),
-                Text(
-                  DateUtil.generateFormatDate(msgModel.createTime),
-                  style: AppStyle.textHintRegular12,
-                )
-              ],
+                  SizedBox(
+                    height: 7,
+                  ),
+                  Text(
+                    DateUtil.generateFormatDate(msgModel.createTime),
+                    style: AppStyle.textHintRegular12,
+                  )
+                ],
+              ),
             ),
-          ),),
+          ),
           Spacer(),
           !feedIsDelete
               ? InkWell(
                   onTap: () {
                     print('========================点击了${msgModel.refId}');
-                   _jumpToDetailPage(context);
+                    _jumpToDetailPage(context);
                   },
                   child: Container(
                     alignment: Alignment.topRight,
@@ -438,30 +429,33 @@ class InteractiveNoticeItemState extends StatelessWidget {
     );
   }
 
-    //跳转判断
-  _jumpToDetailPage(BuildContext context){
+  //跳转判断
+  _jumpToDetailPage(BuildContext context) {
     if (msgModel.refType == 0) {
       print('=====================动态');
-      getFeedDetail(context,feedModel.id, comment:type==0?msgModel.commentData:null);
-    }else if(msgModel.refType == 2){
-      if(fatherCommentModel.type==0){
-        getFeedDetail(context, fatherCommentModel.targetId, comment: type==0?msgModel.commentData:null,fatherModel: fatherCommentModel);
-      }else if(fatherCommentModel.type==1){
-        AppRouter.navigateToLiveDetail(context, fatherCommentModel.targetId,isHaveStartTime: false,commentDtoModel:
-        type==0?msgModel.commentData:null,fatherComment: fatherCommentModel);
-      }else if(fatherCommentModel.type==3){
-        AppRouter.navigateToVideoDetail(context, fatherCommentModel.targetId,commentDtoModel:
-        type==0?msgModel.commentData:null,fatherComment: fatherCommentModel);
+      getFeedDetail(context, feedModel.id, comment: type == 0 ? msgModel.commentData : null);
+    } else if (msgModel.refType == 2) {
+      if (fatherCommentModel.type == 0) {
+        getFeedDetail(context, fatherCommentModel.targetId,
+            comment: type == 0 ? msgModel.commentData : null, fatherModel: fatherCommentModel);
+      } else if (fatherCommentModel.type == 1) {
+        AppRouter.navigateToLiveDetail(context, fatherCommentModel.targetId,
+            isHaveStartTime: false,
+            commentDtoModel: type == 0 ? msgModel.commentData : null,
+            fatherComment: fatherCommentModel);
+      } else if (fatherCommentModel.type == 3) {
+        AppRouter.navigateToVideoDetail(context, fatherCommentModel.targetId,
+            commentDtoModel: type == 0 ? msgModel.commentData : null, fatherComment: fatherCommentModel);
       }
-    }else if(msgModel.refType==1){
-      AppRouter.navigateToLiveDetail(context, liveVideoModel.id,isHaveStartTime: false,commentDtoModel:
-      msgModel.commentData);
-    }else{
-      AppRouter.navigateToVideoDetail(context, liveVideoModel.id,commentDtoModel:
-      msgModel.commentData);
+    } else if (msgModel.refType == 1) {
+      AppRouter.navigateToLiveDetail(context, liveVideoModel.id,
+          isHaveStartTime: false, commentDtoModel: msgModel.commentData);
+    } else {
+      AppRouter.navigateToVideoDetail(context, liveVideoModel.id, commentDtoModel: msgModel.commentData);
     }
   }
-  getFeedDetail(BuildContext context, int feedId, {CommentDtoModel comment,CommentDtoModel fatherModel}) async {
+
+  getFeedDetail(BuildContext context, int feedId, {CommentDtoModel comment, CommentDtoModel fatherModel}) async {
     print('==============================feedId==$feedId');
     HomeFeedModel feedModel = await feedDetail(id: feedId);
     List<HomeFeedModel> list = [];

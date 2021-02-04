@@ -13,6 +13,7 @@ import 'package:mirror/page/message/message_view/currency_msg.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 
@@ -55,9 +56,8 @@ class _OtherCompleteCoursePageState extends State<OtherCompleteCoursePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("TA们刚刚完成训练"),
-        centerTitle: true,
+      appBar: CustomAppBar(
+        titleString: "TA们刚刚完成训练",
       ),
       body: Container(
         color: AppColor.bgWhite,

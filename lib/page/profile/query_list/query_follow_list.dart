@@ -14,6 +14,7 @@ import 'package:mirror/page/topic/topic_detail.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +24,7 @@ class QueryFollowList extends StatefulWidget {
   int type;
   int userId;
 
-  QueryFollowList({this.type,this.userId});
+  QueryFollowList({this.type, this.userId});
 
   @override
   State<StatefulWidget> createState() {
@@ -100,9 +101,10 @@ class _QueryFollowState extends State<QueryFollowList> {
         _refreshController.loadNoData();
       }
     }
-    if(mounted){
-    setState(() {});
-  }}
+    if (mounted) {
+      setState(() {});
+    }
+  }
 
   ///搜索关注用户
   _getSearchUser(String text) async {
@@ -179,36 +181,36 @@ class _QueryFollowState extends State<QueryFollowList> {
     print('====================粉丝页请求接口');
     BuddyListModel model = await GetFansList(_lastTime, 15, uid: widget.userId);
 
-      if (listPage == 1 && _lastTime == null) {
+    if (listPage == 1 && _lastTime == null) {
+      _refreshController.loadComplete();
+      buddyList.clear();
+      if (model.list != null) {
+        hasNext = model.hasNext;
+        _lastTime = model.lastTime;
+        print('粉丝数=====================================${model.list.length}');
+        model.list.forEach((element) {
+          buddyList.add(element);
+        });
+        print('model粉丝数=====================================${buddyList.length}');
+        _refreshController.refreshCompleted();
+      } else {
+        _refreshController.resetNoData();
+      }
+    } else if (listPage > 1 && _lastTime != null) {
+      print('lastTime================================$_lastTime');
+      if (model.list != null) {
+        _lastTime = model.lastTime;
+        model.list.forEach((element) {
+          buddyList.add(element);
+        });
         _refreshController.loadComplete();
-        buddyList.clear();
-        if (model.list != null) {
-          hasNext = model.hasNext;
-          _lastTime = model.lastTime;
-          print('粉丝数=====================================${model.list.length}');
-          model.list.forEach((element) {
-            buddyList.add(element);
-          });
-          print('model粉丝数=====================================${buddyList.length}');
-          _refreshController.refreshCompleted();
-        } else {
-          _refreshController.resetNoData();
-        }
-      } else if (listPage > 1 && _lastTime != null) {
-        print('lastTime================================$_lastTime');
-        if (model.list != null) {
-          _lastTime = model.lastTime;
-          model.list.forEach((element) {
-            buddyList.add(element);
-          });
-          _refreshController.loadComplete();
-        } else {
-          _refreshController.loadNoData();
-        }
+      } else {
+        _refreshController.loadNoData();
       }
-      if(mounted) {
-        setState(() {});
-      }
+    }
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   ///获取关注话题列表
@@ -220,34 +222,33 @@ class _QueryFollowState extends State<QueryFollowList> {
     print('====================话题页请求接口');
     TopicListModel model = await GetTopicList(_lastTime, 20, uid: widget.userId);
 
-      if (listPage == 1) {
-        _refreshController.loadComplete();
-        topicList.clear();
-        if (model != null) {
-          _lastTime = model.lastTime;
-          model.list.forEach((element) {
-            print('话题名称============================${element.name}');
-            topicList.add(element);
-          });
-          _refreshController.refreshCompleted();
-        } else {
-          _refreshController.resetNoData();
-        }
-      } else if (listPage > 1 && _lastTime != null) {
-        if (model != null) {
-          _lastTime = model.lastTime;
-          model.list.forEach((element) {
-            topicList.add(element);
-          });
-          _refreshController.loadComplete();
-        } else {
-          _refreshController.loadNoData();
-        }
-      }
-      if(mounted){
-        setState(() {
+    if (listPage == 1) {
+      _refreshController.loadComplete();
+      topicList.clear();
+      if (model != null) {
+        _lastTime = model.lastTime;
+        model.list.forEach((element) {
+          print('话题名称============================${element.name}');
+          topicList.add(element);
         });
+        _refreshController.refreshCompleted();
+      } else {
+        _refreshController.resetNoData();
       }
+    } else if (listPage > 1 && _lastTime != null) {
+      if (model != null) {
+        _lastTime = model.lastTime;
+        model.list.forEach((element) {
+          topicList.add(element);
+        });
+        _refreshController.loadComplete();
+      } else {
+        _refreshController.loadNoData();
+      }
+    }
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   //搜索关注话题
@@ -378,36 +379,19 @@ class _QueryFollowState extends State<QueryFollowList> {
     print('这是从个人主页传过来的type================================${widget.type}');
     return Scaffold(
       backgroundColor: AppColor.white,
-      appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: AppColor.white,
-          leading: InkWell(
-            child: Container(
-              margin: EdgeInsets.only(left: 16),
-              child: Image.asset("images/resource/2.0x/return2x.png"),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          leadingWidth: 44,
-          title: isMySelf
-              ? Text(
-                  widget.type == 1
-                      ? "我的关注"
-                      : widget.type == 2
-                          ? "我的粉丝"
-                          : "我关注的话题",
-                  style: AppStyle.textMedium18,
-                )
-              : Text(
-                  widget.type == 1
-                      ? "他的关注"
-                      : widget.type == 2
-                          ? "他的粉丝"
-                          : "他关注的话题",
-                  style: AppStyle.textMedium18,
-                )),
+      appBar: CustomAppBar(
+        titleString: isMySelf
+            ? widget.type == 1
+                ? "我的关注"
+                : widget.type == 2
+                    ? "我的粉丝"
+                    : "我关注的话题"
+            : widget.type == 1
+                ? "他的关注"
+                : widget.type == 2
+                    ? "他的粉丝"
+                    : "他关注的话题",
+      ),
       body: Container(
         height: height,
         width: width,
@@ -617,7 +601,6 @@ class _FollowItemState extends State<QueryFollowItem> {
 
   String description;
 
-
   ///这是关注
   _getAttention(int id) async {
     int attntionResult = await ProfileAddFollow(id);
@@ -684,7 +667,7 @@ class _FollowItemState extends State<QueryFollowItem> {
         }
       }
       //话题列表
-    }else {
+    } else {
       userName = "#${widget.tpcModel.name}";
       if (widget.tpcModel.description != null) {
         description = widget.tpcModel.description;
@@ -707,9 +690,10 @@ class _FollowItemState extends State<QueryFollowItem> {
                 } else {
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                     return TopicDetail(
-                     topicId: widget.tpcModel.id,
+                      topicId: widget.tpcModel.id,
                     );
                   }));
+
                   ///这里处理话题跳转
                 }
               },
@@ -790,7 +774,14 @@ class _FollowItemState extends State<QueryFollowItem> {
                       border: Border.all(width: !isFollow ? 0.5 : 0.0),
                     ),
                     child: Center(
-                      child: Text(!isFollow?widget.type==1?"关注":widget.isMySelf?"回粉":"关注":"已关注",
+                      child: Text(
+                          !isFollow
+                              ? widget.type == 1
+                                  ? "关注"
+                                  : widget.isMySelf
+                                      ? "回粉"
+                                      : "关注"
+                              : "已关注",
                           style: !isFollow ? AppStyle.whiteRegular12 : AppStyle.textSecondaryRegular12),
                     ),
                   ))

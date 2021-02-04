@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 //关于
 class AboutPage extends StatefulWidget {
   @override
@@ -20,19 +21,8 @@ class _AboutPageState extends State<AboutPage>{
     double height = ScreenUtil.instance.height;
         return Scaffold(
           backgroundColor: AppColor.white,
-          appBar: AppBar(
-            backgroundColor: AppColor.white,
-            leading: InkWell(
-              child: Container(
-                margin: EdgeInsets.only(left: 16),
-                child: Image.asset("images/resource/2.0x/return2x.png"),),
-              onTap: (){
-                Navigator.pop(context);
-              },
-            ),
-            leadingWidth: 44,
-            title: Text("关于iFitness",style: AppStyle.textMedium18,),
-            centerTitle: true,
+          appBar: CustomAppBar(
+            titleString: "关于iFitness",
           ),
           body: Container(
             width: width,

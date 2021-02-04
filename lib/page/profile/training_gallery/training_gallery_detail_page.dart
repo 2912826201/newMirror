@@ -12,6 +12,7 @@ import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/loading.dart';
 import 'package:mirror/widget/scale_view.dart';
 
@@ -64,36 +65,15 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColor.white,
-        brightness: Brightness.light,
-        title: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              _title,
-              style: AppStyle.textMedium18,
-            ),
-          ],
-        ),
-        leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: AppColor.black,
-            ),
-            onPressed: () {
-              Navigator.pop(context, _galleryResult);
-            }),
+      appBar: CustomAppBar(
+        titleString: _title,
+        leadingOnTap: () {
+          Navigator.pop(context, _galleryResult);
+        },
         actions: [
-          IconButton(
-              icon: Icon(
-                Icons.more_horiz,
-                color: AppColor.black,
-              ),
-              onPressed: () {
-                _showMorePopup(context, _imageList[_currentIndex]);
-              }),
+          CustomAppBarButton(Icons.more_horiz, AppColor.black, false, () {
+            _showMorePopup(context, _imageList[_currentIndex]);
+          }),
         ],
       ),
       body: _buildBody(),
