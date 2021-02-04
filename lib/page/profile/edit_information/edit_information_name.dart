@@ -7,6 +7,8 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
+import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/custom_button.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
@@ -28,10 +30,12 @@ class _EditInformationNameState extends State<EditInformationName> {
   String _EditText;
   int _reciprocal = 15;
   int beforeLength = 0;
+
   ///记录上次结果
   var lastInput = "";
   PinYinTextEditController controller = PinYinTextEditController();
   FocusNode _commentFocus = FocusNode();
+
   @override
   void initState() {
     super.initState();
@@ -55,6 +59,7 @@ class _EditInformationNameState extends State<EditInformationName> {
     controller.addListener(() {
       if (lastInput != controller.completeText) {
         lastInput = controller.completeText;
+
         ///通知onChanged
         setState(() {
           _EditText = lastInput;
@@ -65,62 +70,43 @@ class _EditInformationNameState extends State<EditInformationName> {
       }
     });
   }
+
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return Scaffold(
       backgroundColor: AppColor.white,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         backgroundColor: AppColor.white,
-        leading: InkWell(
-          child: Container(
-            margin: EdgeInsets.only(left: 16),
-            child: Image.asset("images/resource/2.0x/return2x.png"),
-          ),
-          onTap: () {
-           _commentFocus.unfocus();
-            Navigator.pop(context);
-          },
-        ),
-        leadingWidth: 44,
-        title: Text(
-          "编辑昵称",
-          style: AppStyle.textMedium18,
-        ),
-        centerTitle: true,
+        leadingOnTap: () {
+          _commentFocus.unfocus();
+          Navigator.pop(context);
+        },
+        titleString: "编辑昵称",
         actions: [
-          InkWell(
-            onTap: () {
-              if (_EditText.isEmpty) {
-                Toast.show("昵称不能为空", context);
-                return;
-              }
-              _commentFocus.unfocus();
-              Navigator.pop(this.context, _EditText);
-            },
-            child: Container(
-              width: 60,
-              margin: EdgeInsets.only(right: 16),
-              child: Center(
-                  child: Container(
-                decoration: BoxDecoration(
-                  color: AppColor.mainRed,
-                  borderRadius: BorderRadius.all(Radius.circular(14)),
-                ),
-                padding: EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 4),
-                child: Text(
-                  "确定",
-                  style: TextStyle(fontSize: 14, color: AppColor.white),
-                ),
-              )),
+          Container(
+            alignment: Alignment.center,
+            padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding),
+            child: CustomRedButton(
+              "确定",
+              CustomRedButton.buttonStateNormal,
+              () {
+                if (_EditText.isEmpty) {
+                  Toast.show("昵称不能为空", context);
+                  return;
+                }
+                _commentFocus.unfocus();
+                Navigator.pop(this.context, _EditText);
+              },
             ),
-          )
+          ),
         ],
       ),
       body: Container(

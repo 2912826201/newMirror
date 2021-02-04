@@ -12,6 +12,8 @@ import 'package:mirror/data/model/profile/shared_image_model.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/image_cropper.dart';
 import 'package:intl/intl.dart';
@@ -39,60 +41,40 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
   Widget build(BuildContext context) {
     _canvasSize = ScreenUtil.instance.screenWidthDp;
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColor.white,
-        brightness: Brightness.light,
-        title: Row(crossAxisAlignment: CrossAxisAlignment.center, mainAxisSize: MainAxisSize.max, children: [
-          //60+16-56-16
+      appBar: CustomAppBar(
+        titleString: "制作对比图",
+        actions: [
           Container(
-            width: 4,
-          ),
-          Spacer(),
-          Text(
-            "制作对比图",
-            style: AppStyle.textMedium18,
-          ),
-          Spacer(),
-          GestureDetector(
-            onTap: () async {
-              RenderRepaintBoundary boundary = _cropperKey.currentContext.findRenderObject();
-              double dpr = ui.window.devicePixelRatio; // 获取当前设备的像素比
-              ui.Image image = await boundary.toImage(pixelRatio: dpr);
-              print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-              ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-              print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-              Uint8List picBytes = byteData.buffer.asUint8List();
-              print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
-              File imageFile =
-                  await FileUtil().writeImageDataToFile(picBytes, DateTime.now().millisecondsSinceEpoch.toString());
+            alignment: Alignment.center,
+            padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding),
+            child: CustomRedButton(
+              "完成",
+              CustomRedButton.buttonStateNormal,
+              () async {
+                RenderRepaintBoundary boundary = _cropperKey.currentContext.findRenderObject();
+                double dpr = ui.window.devicePixelRatio; // 获取当前设备的像素比
+                ui.Image image = await boundary.toImage(pixelRatio: dpr);
+                print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+                print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                Uint8List picBytes = byteData.buffer.asUint8List();
+                print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
+                File imageFile =
+                    await FileUtil().writeImageDataToFile(picBytes, DateTime.now().millisecondsSinceEpoch.toString());
 
-              SharedImageModel model = SharedImageModel();
-              model.width = (_canvasSize * dpr).toInt();
-              model.height = (_canvasSize * dpr).toInt();
-              model.file = imageFile;
-              openShareBottomSheet(
-                  context: context,
-                  chatTypeModel: ChatTypeModel.MESSAGE_TYPE_IMAGE,
-                  map: model.toJson(),
-                  sharedType: 2);
-            },
-            child: Container(
-              alignment: Alignment.center,
-              height: 28,
-              width: 60,
-              decoration: BoxDecoration(color: AppColor.mainRed, borderRadius: BorderRadius.circular(14)),
-              child: Text("完成", style: TextStyle(color: AppColor.white, fontSize: 14)),
+                SharedImageModel model = SharedImageModel();
+                model.width = (_canvasSize * dpr).toInt();
+                model.height = (_canvasSize * dpr).toInt();
+                model.file = imageFile;
+                openShareBottomSheet(
+                    context: context,
+                    chatTypeModel: ChatTypeModel.MESSAGE_TYPE_IMAGE,
+                    map: model.toJson(),
+                    sharedType: 2);
+              },
             ),
           ),
-        ]),
-        leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: AppColor.black,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            }),
+        ],
       ),
       body: _buildBody(),
     );
