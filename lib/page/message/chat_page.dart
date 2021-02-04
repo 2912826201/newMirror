@@ -799,7 +799,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   void initSetData() async {
     List msgList = new List();
     msgList = await RongCloud.init().getHistoryMessages(widget.conversation.getType(),
-        widget.conversation.conversationId, new DateTime.now().millisecondsSinceEpoch, 20, 0);
+        widget.conversation.conversationId, new DateTime.now().millisecondsSinceEpoch, 5, 0);
     print("历史记录${msgList.length}");
     if (msgList != null && msgList.length > 0) {
       for (int i = 0; i < msgList.length; i++) {
@@ -821,7 +821,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
     //获取表情的数据
     emojiModelList = await EmojiManager.getEmojiModelList();
-    Future.delayed(Duration(milliseconds: 200), () {
+    Future.delayed(Duration(milliseconds: 300), () {
       if(mounted) {
         setState(() {
           _timerCount = 0;
