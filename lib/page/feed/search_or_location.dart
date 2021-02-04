@@ -13,11 +13,11 @@ import 'package:mirror/data/model/peripheral_information_entity/peripheral_infor
 import 'package:mirror/util/screen_util.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-class TestWidget extends StatefulWidget {
-  TestWidget({this.checkIndex, this.selectAddress, this.childrenACallBack});
+class SearchOrLocationWidget extends StatefulWidget {
+  SearchOrLocationWidget({this.checkIndex, this.selectAddress, this.childrenACallBack});
 
   @override
-  _TestWidgetState createState() => _TestWidgetState();
+  _SearchOrLocationWidgetState createState() => _SearchOrLocationWidgetState();
 
   // 展示勾选的索引
   int checkIndex;
@@ -29,7 +29,7 @@ class TestWidget extends StatefulWidget {
   ValueChanged<PeripheralInformationPoi> childrenACallBack;
 }
 
-class _TestWidgetState extends State<TestWidget> {
+class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
   Location currentAddressInfo; //当前位置的信息
 
   TextEditingController searchController = TextEditingController(); //搜索关键字控制器
@@ -40,8 +40,6 @@ class _TestWidgetState extends State<TestWidget> {
   RefreshController _refreshController = RefreshController(); // 刷新控件控制器
   List<PeripheralInformationPoi> pois = []; //返回周边信息页面显示的数据集合
   List<PeripheralInformationPoi> searchPois = []; //返回搜索页面的数据集合
-  String androidAMapKey = "fef4e35be05e2337119aeb3b4e57388d"; //安卓高德key 搜索POI需要
-  String iosKey = "836c55dba7d3a44793ec9ae1e1dc2e82";
   bool cityLimit = true; //仅返回指定城市数据
 
   @override
@@ -363,9 +361,9 @@ class _TestWidgetState extends State<TestWidget> {
     String BaseUrl = "https://restapi.amap.com/v3/place/text";
     Map<String, dynamic> map = Map();
     if (Platform.isIOS) {
-      map["key"] = iosKey;
+      map["key"] = Application.iosKey;
     } else {
-      map["key"] = androidAMapKey;
+      map["key"] = Application.androidAMapKey;
     }
     map["keywords"] = searchController.text;
     map["city"] = currentAddressInfo.city; //搜索的城市
@@ -393,9 +391,9 @@ class _TestWidgetState extends State<TestWidget> {
     Map<String, dynamic> map = Map();
     if (Platform.isIOS) {
       print("ios");
-      map["key"] = iosKey;
+      map["key"] = Application.iosKey;
     } else {
-      map["key"] = androidAMapKey;
+      map["key"] = Application.androidAMapKey;
       print("androidAMapKey");
     }
     map["location"] =

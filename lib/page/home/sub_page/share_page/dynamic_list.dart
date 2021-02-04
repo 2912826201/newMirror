@@ -4,6 +4,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/page/feed/create_map_screen.dart';
 import 'package:mirror/page/feed/feed_detail_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/attention_user.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/commentInputBox.dart';
@@ -81,7 +82,7 @@ class DynamicListLayout extends StatelessWidget {
             margin: EdgeInsets.only(left: 16, right: 16),
             // color: Colors.orange,
             width: ScreenUtil.instance.width,
-            child: getCourseInfo(model),
+            child: getCourseInfo(model,context),
           ),
         ),
 
@@ -240,16 +241,31 @@ class DynamicListLayout extends StatelessWidget {
   }
 
   // 课程信息和地址
-  Widget getCourseInfo(HomeFeedModel model) {
+  Widget getCourseInfo(HomeFeedModel model,BuildContext context) {
     List<String> tags = [];
+    double longitude;
+    double latitude;
+    bool isAddress = false;
     if (model.courseDto != null) {
       tags.add(model.courseDto.title);
     }
     if (model.address != null) {
       tags.add(model.address);
+      longitude = model.longitude;
+      latitude = model.latitude;
+      isAddress = true;
     }
     return Row(
-      children: [for (String item in tags) CourseAddressLabel(item, tags)],
+      children: [for (String item in tags) GestureDetector(
+        onTap: () {
+          if (isAddress) {
+            Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+              return createMapScreen(latitude: latitude, longitude: longitude,keyWords: model.name,);
+            }));
+          }
+        },
+        child: CourseAddressLabel(item, tags),
+      )],
     );
   }
 

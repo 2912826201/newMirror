@@ -9,7 +9,6 @@ import 'package:mirror/util/text_util.dart';
 class CourseAddressLabel extends StatelessWidget {
   final String text;
   List tas;
-
   CourseAddressLabel(this.text, this.tas);
 
   // 最外层圆角背景的宽度

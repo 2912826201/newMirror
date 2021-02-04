@@ -22,7 +22,7 @@ import 'package:mirror/data/model/peripheral_information_entity/peripheral_infor
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
-import 'package:mirror/page/feed/test_location.dart';
+import 'package:mirror/page/feed/search_or_location.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
@@ -325,6 +325,7 @@ class FeedHeader extends StatelessWidget {
                 // 获取选择的地址
                 var poi = context.read<ReleaseFeedInputNotifier>().selectAddress;
                 print("点击生效");
+                print(poi.toString());
                 pulishFeed(inputText, rules, context, poi);
               },
               child: IgnorePointer(
@@ -1289,7 +1290,7 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
       onTap: () async {
         if (widget.permissions.isGranted) {
           Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-            return TestWidget(
+            return SearchOrLocationWidget(
                 checkIndex: checkIndex,
                 selectAddress: selectAddress,
                 childrenACallBack: (poi) => childrenACallBack(poi));
@@ -1307,15 +1308,16 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Icon(
-              Icons.accessible,
+              Icons.where_to_vote_rounded,
               size: 24,
+              color: seletedAddressText != "你在哪儿" ? AppColor.mainBlue : AppColor.textPrimary1,
             ),
             SizedBox(
-              width: 4,
+              width: 12,
             ),
             Text(
               seletedAddressText,
-              style: TextStyle(fontSize: 16, color: AppColor.textPrimary1),
+              style: TextStyle(fontSize: 16,  color: seletedAddressText != "你在哪儿" ? AppColor.mainBlue : AppColor.textPrimary1),
             ),
             Spacer(),
             Icon(
@@ -1350,12 +1352,13 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
       seletedAddressText = poi.name;
       selectAddress = poi;
       checkIndex = 1;
-      context.read<ReleaseFeedInputNotifier>().setPeripheralInformationPoi(poi);
     } else {
       seletedAddressText = "你在哪儿";
       selectAddress = PeripheralInformationPoi();
       checkIndex = 0;
     }
+    print("子页面回调${poi.toString()}");
+    context.read<ReleaseFeedInputNotifier>().setPeripheralInformationPoi(poi);
     setState(() {});
   }
 
@@ -1372,7 +1375,7 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
             setState(() {});
           } else {
             Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-              return TestWidget(
+              return SearchOrLocationWidget(
                   checkIndex: checkIndex,
                   selectAddress: selectAddress,
                   childrenACallBack: (poi) => childrenACallBack(poi));
