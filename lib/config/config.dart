@@ -11,7 +11,7 @@ class AppConfig {
   static const Env ENV = Env.DEV;
 
   //版本号
-  //TODO 暂时先写在这 之后需要和打包配置联动
+  //TODO  暂时先写在这 之后需要和打包配置联动
   static  String version = "0.0.1";
   static  String buildNumber = "1";
   //各环境api请求基础路径

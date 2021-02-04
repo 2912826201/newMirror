@@ -46,6 +46,7 @@ class SettingHomePage extends StatefulWidget {
 class _SettingHomePageState extends State<SettingHomePage> {
   bool haveNewVersion = false;
   String url = "https://down.qq.com/qqweb/QQ_1/android_apk/Android_8.5.5.5105_537066978.apk";
+  String content;
   @override
   void initState() {
     // TODO: implement initState
@@ -55,8 +56,10 @@ class _SettingHomePageState extends State<SettingHomePage> {
   _getNewVersion() async {
     VersionModel model = await getNewVersion();
     if(model!=null){
-      if(model.version==AppConfig.version){
+      if(model.version!=AppConfig.version){
         haveNewVersion = true;
+        content = model.description;
+        url = model.url;
         if(mounted){
           setState(() {
           });
@@ -151,7 +154,7 @@ class _SettingHomePageState extends State<SettingHomePage> {
             InkWell(
               child: _rowItem(width, "关于"),
               onTap: () {
-                AppRouter.navigateToSettingAbout(context, url, haveNewVersion);
+                AppRouter.navigateToSettingAbout(context, url, haveNewVersion,content);
               },
             ),
             Container(

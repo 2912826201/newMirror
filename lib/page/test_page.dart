@@ -390,7 +390,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
             } else {
               showVersionDialog(
                   barrierDismissible: false,
-                  content: "位到无多无的地位多无多无定位到无多无",
+                  content: model.description,
                   strong: model.isForceUpdate==0?false:true,
                   context: context,
                   url: url);
@@ -398,13 +398,18 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
           } else {
             showAppDialog(
               context,
-              title: "检测到新版本，是否跳转商店？",
-              cancel: AppDialogButton("取消", () {
+              barrierDismissible:model.isForceUpdate==0?false:true,
+              title: "检测到新版本，去下载",
+              cancel: model.isForceUpdate==0?AppDialogButton("取消", () {
                 return true;
-              }),
-              confirm: AppDialogButton("跳转", () {
+              }):null,
+              confirm: AppDialogButton("确定", () {
                 LaunchReview.launch(writeReview: false, iOSAppId: "585027354");
-                return true;
+                if(model.isForceUpdate==0){
+                  return true;
+                }else{
+                  return false;
+                }
               }),
             );
           }

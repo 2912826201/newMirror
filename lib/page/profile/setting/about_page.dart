@@ -13,17 +13,19 @@ import 'package:toast/toast.dart';
 class AboutPage extends StatefulWidget {
   String url;
   bool haveNewVersion;
-  AboutPage({this.url,this.haveNewVersion});
+  String content;
+  AboutPage({this.url,this.haveNewVersion,this.content});
   @override
   State<StatefulWidget> createState() {
-        return _AboutPageState(url: url,haveNewVersion: haveNewVersion);
+        return _AboutPageState(url: url,haveNewVersion: haveNewVersion,content: content);
   }
 
 }
 class _AboutPageState extends State<AboutPage>{
   String url;
   bool haveNewVersion;
-  _AboutPageState({this.url,this.haveNewVersion});
+  String content;
+  _AboutPageState({this.url,this.haveNewVersion,this.content});
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -58,7 +60,7 @@ class _AboutPageState extends State<AboutPage>{
                     if(haveNewVersion){
                       showVersionDialog(
                         context: context,
-                        content: "这是更新描述",
+                        content: content,
                         url: url,
                         strong: false
                       );

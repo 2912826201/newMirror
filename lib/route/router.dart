@@ -328,10 +328,11 @@ class AppRouter {
     _navigateToPage(context, pathSettingBlackList, map);
   }
 
-  static void navigateToSettingAbout(BuildContext context,String url,bool haveNewVersion) {
+  static void navigateToSettingAbout(BuildContext context,String url,bool haveNewVersion,String content) {
     Map<String, dynamic> map = Map();
     map["url"] = url;
     map["haveNewVersion"] = haveNewVersion;
+    map["content"] = content;
     _navigateToPage(context, pathSettingAbout, map);
   }
 
