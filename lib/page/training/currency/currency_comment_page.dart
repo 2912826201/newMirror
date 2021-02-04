@@ -958,13 +958,15 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
         courseCommentPageHot++;
 
         if (!widget.isShowHotOrTime) {
-          context.read<FeedMapNotifier>().commensAssignment(
-              widget.targetId, courseCommentHot.list, courseCommentHot.totalCount);
+          if(mounted) {
+            context.read<FeedMapNotifier>().commensAssignment(
+                widget.targetId, courseCommentHot.list, courseCommentHot.totalCount);
+          }
         }
 
 
         setCommentListSubSetting(courseCommentHot, isFold: isFold);
-        if(widget.fatherComment != null&&isFirstScroll){
+        if(widget.fatherComment != null&&isFirstScroll&&mounted){
           onClickAddSubComment(courseCommentHot.list[choseIndex], choseIndex);
         }
         widget.refreshController.loadComplete();

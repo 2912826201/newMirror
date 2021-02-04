@@ -133,10 +133,7 @@ class ChatDetailsBody extends StatelessWidget {
         ),
 
         Positioned(
-          child: Offstage(
-            offstage: !isPersonalButler,
-            child: ChatSystemBottomBar(voidMessageClickCallBack),
-          ),
+          child: isPersonalButler?ChatSystemBottomBar(voidMessageClickCallBack):Container(),
           left: 0,
           right: 0,
           bottom: 0,

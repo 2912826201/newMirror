@@ -55,6 +55,7 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin, WidgetsBi
     return AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.dark,
         child: Scaffold(
+            resizeToAvoidBottomInset:false,
             body: Container(
           child: Stack(children: [
             // TabBarView(
