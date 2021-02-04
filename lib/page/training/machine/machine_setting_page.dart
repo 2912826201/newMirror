@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 
 /// machine_setting_page
 /// Created by yangjiayi on 2021/1/4.
@@ -25,31 +26,8 @@ class _MachineSettingState extends State<MachineSettingPage> {
     return AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.dark,
         child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: AppColor.white,
-            brightness: Brightness.light,
-            title: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "终端设置",
-                  style: AppStyle.textMedium18,
-                ),
-                //因只有左侧有按钮 所以在右侧增加同样大小区域 避免居中后偏右
-                SizedBox(
-                  width: 48,
-                )
-              ],
-            ),
-            leading: IconButton(
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: AppColor.black,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                }),
+          appBar: CustomAppBar(
+            titleString: "终端设置",
           ),
           body: _buildSettingList(),
         ));

@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:mirror/constant/style.dart';
 import 'package:mirror/page/agora_test_page.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 
@@ -21,10 +20,7 @@ class _AgoraInputState extends State<AgoraInputPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: Text(
-          "输入token及频道号",
-          style: AppStyle.textMedium18,
-        ),
+        titleString: "输入token及频道号",
       ),
       body: Center(
         child: Column(

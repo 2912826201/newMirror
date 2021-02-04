@@ -13,6 +13,7 @@ import 'package:mirror/page/message/message_view/currency_msg.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/loading_progress.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_share_select_contact.dart';
@@ -73,9 +74,8 @@ class GroupMorePageState extends State<GroupMorePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("群聊消息"),
-        centerTitle: true,
+      appBar: CustomAppBar(
+        titleString: "群聊消息",
       ),
       body: getBodyUi(),
     );

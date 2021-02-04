@@ -5,6 +5,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/left_scroll/left_scroll_list_view.dart';
 
@@ -33,9 +34,8 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        title: Text("我的体重"),
-        centerTitle: true,
+      appBar: CustomAppBar(
+        titleString: "我的体重",
       ),
       body: getBodyUi(),
     );

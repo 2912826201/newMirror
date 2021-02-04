@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
-import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 
@@ -28,10 +27,7 @@ class _ActivationTestState extends State<ActivationTestPage> {
     print("激活机器及扫码登录测试页");
     return Scaffold(
       appBar: CustomAppBar(
-        title: Text(
-          "激活机器及扫码登录测试页",
-          style: AppStyle.textMedium18,
-        ),
+        titleString: "激活机器及扫码登录测试页",
       ),
       body: Center(
         child: SingleChildScrollView(

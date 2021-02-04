@@ -6,6 +6,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:provider/provider.dart';
 
@@ -39,24 +40,8 @@ class _ScanCodeResultState extends State<ScanCodeResultPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        brightness: Brightness.light,
-        backgroundColor: AppColor.white,
-        leading: InkWell(
-          child: Container(
-            margin: EdgeInsets.only(left: 16),
-            child: Image.asset("images/resource/2.0x/return2x.png"),
-          ),
-          onTap: () {
-            Navigator.pop(context);
-          },
-        ),
-        leadingWidth: 44,
-        title: Text(
-          "扫码结果",
-          style: AppStyle.textMedium18,
-        ),
-        centerTitle: true,
+      appBar: CustomAppBar(
+        titleString: "扫码结果",
       ),
       body: Container(
         child: widget.resultModel.type == ScanCodeResultType.LOGIN_MACHINE && !isLoginSuccess

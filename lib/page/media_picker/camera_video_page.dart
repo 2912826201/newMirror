@@ -10,6 +10,7 @@ import 'package:mirror/constant/constants.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// camera_video_page
@@ -62,8 +63,12 @@ class CameraVideoState extends State<CameraVideoPage> with WidgetsBindingObserve
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColor.bgBlack,
+      appBar: CustomAppBar(
+        backgroundColor: AppColor.black,
+        brightness: Brightness.dark,
+        leading: CustomAppBarButton(Icons.arrow_back_ios_outlined, AppColor.white, true, () {
+          Navigator.pop(context);
+        }),
       ),
       body: (_controller == null || !_controller.value.isInitialized)
           ? Container(

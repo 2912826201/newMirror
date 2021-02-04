@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
@@ -72,36 +73,12 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     return AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.dark,
         child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: AppColor.white,
-            brightness: Brightness.light,
-            title: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  _title,
-                  style: AppStyle.textMedium18,
-                ),
-              ],
-            ),
-            leading: IconButton(
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: AppColor.black,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                }),
+          appBar: CustomAppBar(
+            titleString: _title,
             actions: [
-              IconButton(
-                  icon: Icon(
-                    Icons.menu,
-                    color: AppColor.black,
-                  ),
-                  onPressed: () {
-                    AppRouter.navigateToMachineSetting(context);
-                  }),
+              CustomAppBarButton(Icons.menu, AppColor.black, false, () {
+                AppRouter.navigateToMachineSetting(context);
+              }),
             ],
           ),
           body: _buildBody(context),

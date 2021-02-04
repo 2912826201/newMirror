@@ -17,6 +17,7 @@ import 'package:mirror/page/training/currency/currency_comment_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/expandable_text.dart';
 import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/slide_banner.dart';
@@ -25,7 +26,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 // 动态详情页
 class FeedDetailPage extends StatefulWidget {
-  FeedDetailPage({Key key, this.model, this.type, this.index, this.comment,this.fatherModel});
+  FeedDetailPage({Key key, this.model, this.type, this.index, this.comment, this.fatherModel});
+
   CommentDtoModel fatherModel;
   CommentDtoModel comment;
   HomeFeedModel model;
@@ -88,25 +90,12 @@ class FeedDetailPageState extends State<FeedDetailPage> {
     print("动态详情页build---------------------------------------------${feedModel}");
     return Scaffold(
         backgroundColor: AppColor.white,
-        appBar: AppBar(
-            title: Text(
-              "动态详情页",
-              style: TextStyle(color: AppColor.textPrimary1, fontSize: 18, fontWeight: FontWeight.w500),
-            ),
-            centerTitle: true,
-            backgroundColor: AppColor.white,
-            leading: GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pop(true);
-                },
-                child: Container(
-                  margin: EdgeInsets.only(left: 16),
-                  child: Image.asset(
-                    "images/resource/2.0x/return2x.png",
-                  ),
-                )),
-            leadingWidth: 44.0,
-            elevation: 0.5),
+        appBar: CustomAppBar(
+          titleString: "动态详情页",
+          leadingOnTap: () {
+            Navigator.of(context).pop(true);
+          },
+        ),
         body: Stack(
           children: [
             Container(
@@ -219,8 +208,8 @@ class FeedDetailPageState extends State<FeedDetailPage> {
         ));
   }
 
-  Widget _getCourseCommentUi(){
-   /* Future.delayed(Duration(milliseconds: 100),()async{
+  Widget _getCourseCommentUi() {
+    /* Future.delayed(Duration(milliseconds: 100),()async{
       print("开始滚动------------------------------------------------------------------------");
       if(widget.comment.type==2) {
         childKey.currentState.startAnimationScroll(widget.comment.targetId);

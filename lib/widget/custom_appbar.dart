@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 
 /// custom_appbar
 /// Created by yangjiayi on 2021/2/2.
@@ -12,22 +13,26 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   CustomAppBar(
       {Key key,
-      this.title,
+      this.titleWidget,
+      this.titleString = "",
       this.actions = const [],
       this.backgroundColor = AppColor.mainRed,
       this.brightness = Brightness.light,
       this.hasLeading = true,
       this.leading,
+      this.leadingWidth,
       this.leadingOnTap,
       this.hasDivider = true})
       : super(key: key);
 
-  final Widget title;
+  final Widget titleWidget;
+  final String titleString;
   final List<Widget> actions;
   final Color backgroundColor;
   final Brightness brightness;
   final bool hasLeading;
   final Widget leading;
+  final double leadingWidth;
   final Function() leadingOnTap;
   final bool hasDivider;
 
@@ -38,7 +43,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return PreferredSize(
       child: AppBar(
-        title: title,
+        title: titleWidget == null
+            ? Text(
+                titleString,
+                style: AppStyle.textMedium18,
+              )
+            : titleWidget,
         actions: actions,
         elevation: hasDivider ? 0.5 : 0,
         backgroundColor: backgroundColor,
@@ -57,7 +67,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                         : leadingOnTap)
                 : leading
             : null,
-        leadingWidth: appBarButtonWidth,
+        leadingWidth: leadingWidth == null ? appBarButtonWidth : leadingWidth,
       ),
       preferredSize: preferredSize,
     );

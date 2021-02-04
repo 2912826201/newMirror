@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:intl/intl.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -71,20 +72,10 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      appBar: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: AppColor.white,
-          brightness: Brightness.light,
-          title: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "训练",
-                style: AppStyle.textMedium18,
-              ),
-            ],
-          )),
+      appBar: CustomAppBar(
+        hasLeading: false,
+        titleString: "训练",
+      ),
       backgroundColor: AppColor.white,
       body: Stack(
         children: [

@@ -2,7 +2,6 @@ import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcLocalView;
 import 'package:agora_rtc_engine/rtc_remote_view.dart' as RtcRemoteView;
 import 'package:flutter/material.dart';
-import 'package:mirror/constant/style.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -61,10 +60,7 @@ class _AgoraTestState extends State<AgoraTestPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: const Text(
-          'Plugin example app',
-          style: AppStyle.textMedium18,
-        ),
+        titleString: 'Plugin example app',
       ),
       body: Stack(
         children: [

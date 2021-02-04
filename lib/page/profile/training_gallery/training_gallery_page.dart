@@ -19,6 +19,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/loading.dart';
 
 /// training_gallery_page
@@ -40,8 +41,8 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   List<TrainingGalleryDayModel> _dataList = [];
 
   bool _isSelectionMode = false;
-  AppBar _normalModeAppBar;
-  AppBar _selectionModeAppBar;
+  CustomAppBar _normalModeAppBar;
+  CustomAppBar _selectionModeAppBar;
   final List<TrainingGalleryImageModel> _selectedImageList = [];
   final DateFormat _dateTimeFormat = DateFormat('yyyy-MM-dd');
 
@@ -73,70 +74,31 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   }
 
   _initAppBar() {
-    _selectionModeAppBar = AppBar(
-      backgroundColor: AppColor.white,
-      brightness: Brightness.light,
-      title: Stack(
-        children: [
-          Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "健身相册",
-                style: AppStyle.textMedium18,
-              ),
-            ],
-          ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  _isSelectionMode = false;
-                });
-              },
-              child: Text(
-                "取消",
-                style: AppStyle.textPrimary2Medium16,
-              ),
-            ),
-          )
-        ],
-      ),
-      automaticallyImplyLeading: false,
-    );
-    _normalModeAppBar = AppBar(
-      backgroundColor: AppColor.white,
-      brightness: Brightness.light,
-      title: Text(
-        "健身相册",
-        style: AppStyle.textMedium18,
-      ),
-      centerTitle: true,
-      leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: AppColor.black,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          }),
-      actions: [
-        Container(
+    _selectionModeAppBar = CustomAppBar(
+      titleString: "健身相册",
+      leadingWidth: 56.0,
+      leading: GestureDetector(
+        onTap: () {
+          setState(() {
+            _isSelectionMode = false;
+          });
+        },
+        child: Container(
           alignment: Alignment.center,
-          //TODO 这里为了保证和左边返回按钮一样宽 之后要改
-          width: 56,
-          child: IconButton(
-              icon: Icon(
-                Icons.camera_alt_outlined,
-                color: AppColor.black,
-              ),
-              onPressed: () {
-                AppRouter.navigateToMediaPickerPage(
-                    context, 1, typeImage, false, startPageGallery, false, _uploadImage);
-              }),
+          padding: EdgeInsets.only(left: CustomAppBar.appBarIconPadding),
+          child: Text(
+            "取消",
+            style: AppStyle.textPrimary2Medium16,
+          ),
         ),
+      ),
+    );
+    _normalModeAppBar = CustomAppBar(
+      titleString: "健身相册",
+      actions: [
+        CustomAppBarButton(Icons.camera_alt_outlined, AppColor.black, false, () {
+          AppRouter.navigateToMediaPickerPage(context, 1, typeImage, false, startPageGallery, false, _uploadImage);
+        }),
       ],
     );
   }

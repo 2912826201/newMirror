@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
@@ -106,10 +105,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: Text(
-          "课程库",
-          style: AppStyle.textMedium18,
-        ),
+        titleString: "课程库",
         actions: [
           CustomAppBarButton(
             Icons.search,

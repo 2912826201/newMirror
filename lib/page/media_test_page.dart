@@ -4,7 +4,6 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
-import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/page/feed_video_test_page.dart';
@@ -35,10 +34,7 @@ class _MediaTestState extends State<MediaTestPage> {
     _screenWidth = ScreenUtil.instance.screenWidthDp;
     return Scaffold(
       appBar: CustomAppBar(
-        title: Text(
-          "视频图片测试页",
-          style: AppStyle.textMedium18,
-        ),
+        titleString: "视频图片测试页",
       ),
       body: Column(
         children: [

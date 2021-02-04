@@ -23,10 +23,7 @@ class _ConnectionInfoState extends State<ConnectionInfoPage> {
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
         appBar: CustomAppBar(
-          title: Text(
-            _title,
-            style: AppStyle.textMedium18,
-          ),
+          titleString: _title,
         ),
         body: _buildBody(context),
       ),
