@@ -8,6 +8,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/data/database/conversation_db_helper.dart';
 import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:provider/provider.dart';
 
@@ -38,8 +39,8 @@ class RCTestState extends State<RCTestPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("融云测试"),
+      appBar: CustomAppBar(
+        titleString: "融云测试",
       ),
       body: Center(
         child: Column(

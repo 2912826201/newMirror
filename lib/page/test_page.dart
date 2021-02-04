@@ -8,8 +8,6 @@ import 'package:mirror/api/version_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/config/shared_preferences.dart';
-import 'package:mirror/constant/style.dart';
-import 'package:mirror/data/dto/download_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/version_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
@@ -25,6 +23,7 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/version_update_dialog.dart';
 
@@ -57,8 +56,8 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
     print("build");
     print("底部条高度：${ScreenUtil.instance.bottomBarHeight}");
     return Scaffold(
-      appBar: AppBar(
-        title: Text("测试页"),
+      appBar: CustomAppBar(
+        titleString: "测试页",
       ),
       body: Center(
         child: SingleChildScrollView(

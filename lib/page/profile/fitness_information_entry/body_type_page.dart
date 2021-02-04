@@ -6,6 +6,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/page/profile/fitness_information_entry/fitness_target_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:provider/provider.dart';
 class BodyTypePage extends StatefulWidget {
@@ -25,18 +26,7 @@ class _BodyTypeState extends State<BodyTypePage> {
     double height = ScreenUtil.instance.height;
     return Scaffold(
       backgroundColor: AppColor.white,
-      appBar: AppBar(
-        backgroundColor: AppColor.white,
-        leading: InkWell(
-          child: Container(
-            margin: EdgeInsets.only(left: 16),
-            child: Image.asset("images/resource/2.0x/return2x.png"),
-          ),
-          onTap: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
+      appBar: CustomAppBar(),
       body: Container(
         height: height,
         width: width,

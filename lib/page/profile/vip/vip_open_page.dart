@@ -10,6 +10,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/vip/vip_grid_list.dart';
 import 'package:provider/provider.dart';
 
@@ -25,6 +26,7 @@ class _VipOpenPage extends State<VipOpenPage> {
   double textWidth;
   int lastTime = 1432121322112;
   VipState vipState = VipState.EXPIRED;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -37,22 +39,16 @@ class _VipOpenPage extends State<VipOpenPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: CustomAppBar(
         backgroundColor: AppColor.black,
-        leading: InkWell(
-          child: Container(
-            margin: EdgeInsets.only(left: 16),
-            child: Image.asset("images/resource/2.0x/white_return@2x.png"),
-          ),
-          onTap: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text(
+        brightness: Brightness.dark,
+        leading: CustomAppBarIconButton(Icons.arrow_back_ios_outlined, AppColor.white, true, () {
+          Navigator.pop(context);
+        }),
+        titleWidget: Text(
           "我的VIP会员",
           style: AppStyle.whiteMedium18,
         ),
-        centerTitle: true,
       ),
       body: Container(
         height: ScreenUtil.instance.height,
@@ -78,7 +74,7 @@ class _VipOpenPage extends State<VipOpenPage> {
                         margin: EdgeInsets.only(left: 16),
                         child: Text(
                           "会员尊享权益",
-                          style: vipState==VipState.EXPIRED?AppStyle.textSecondaryRegular16:AppStyle.redMedium16,
+                          style: vipState == VipState.EXPIRED ? AppStyle.textSecondaryRegular16 : AppStyle.redMedium16,
                         ),
                       ),
                       SizedBox(
@@ -105,9 +101,13 @@ class _VipOpenPage extends State<VipOpenPage> {
                           padding: EdgeInsets.only(top: 21, bottom: 17, right: 16, left: 16),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                                colors: vipState==VipState.EXPIRED?[AppColor.textHint,AppColor.textSecondary,]
-                                    :[AppColor.lightGreen, AppColor.textVipPrimary1],
-                                begin: FractionalOffset(0,0.6),
+                                colors: vipState == VipState.EXPIRED
+                                    ? [
+                                        AppColor.textHint,
+                                        AppColor.textSecondary,
+                                      ]
+                                    : [AppColor.lightGreen, AppColor.textVipPrimary1],
+                                begin: FractionalOffset(0, 0.6),
                                 end: FractionalOffset(0.6, 1)),
                             borderRadius: BorderRadius.all(Radius.circular(10)),
                           ),
@@ -141,31 +141,32 @@ class _VipOpenPage extends State<VipOpenPage> {
         SizedBox(
           width: 12,
         ),
-            Container(
-              width: 193,
-              child: Row(
-                children: [
-                  Container(
-                    width: textWidth < 150 ? textWidth : 150,
-                    child: Text(
-                      context.watch<ProfileNotifier>().profile.nickName,
-                      style: AppStyle.whiteMedium15,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  Container(
-                    alignment: Alignment.topLeft,
-                    child: Image.asset(
-                      vipState==VipState.EXPIRED?"images/resource/2.0x/vip_notopen_icon@2x.png"
-                                                  :"images/resource/2.0x/vip_open_icon@2x.png",
-                      width: 43,
-                      height: 16,
-                    ),
-                  )
-                ],
+        Container(
+          width: 193,
+          child: Row(
+            children: [
+              Container(
+                width: textWidth < 150 ? textWidth : 150,
+                child: Text(
+                  context.watch<ProfileNotifier>().profile.nickName,
+                  style: AppStyle.whiteMedium15,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-            ),
+              Container(
+                alignment: Alignment.topLeft,
+                child: Image.asset(
+                  vipState == VipState.EXPIRED
+                      ? "images/resource/2.0x/vip_notopen_icon@2x.png"
+                      : "images/resource/2.0x/vip_open_icon@2x.png",
+                  width: 43,
+                  height: 16,
+                ),
+              )
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -176,9 +177,8 @@ class _VipOpenPage extends State<VipOpenPage> {
         Align(
           alignment: Alignment.centerLeft,
           child: Text(
-            vipState==VipState.EXPIRED?"已过期56天"
-                :"vip会员至${DateUtil.generateFormatDate(lastTime,true)}",
-            style: vipState==VipState.EXPIRED?AppStyle.whiteRegular12:AppStyle.redRegular13,
+            vipState == VipState.EXPIRED ? "已过期56天" : "vip会员至${DateUtil.generateFormatDate(lastTime)}",
+            style: vipState == VipState.EXPIRED ? AppStyle.whiteRegular12 : AppStyle.redRegular13,
           ),
         ),
         Spacer(),
@@ -194,13 +194,13 @@ class _VipOpenPage extends State<VipOpenPage> {
             height: 31,
             width: 88,
             decoration: BoxDecoration(
-              color: vipState==VipState.EXPIRED?AppColor.textHint:AppColor.bgVip1,
+              color: vipState == VipState.EXPIRED ? AppColor.textHint : AppColor.bgVip1,
               borderRadius: BorderRadius.all(Radius.circular(14)),
             ),
             child: Center(
               child: Text(
                 "立即续费",
-                style: vipState==VipState.EXPIRED?AppStyle.whiteMedium14:AppStyle.redMedium14,
+                style: vipState == VipState.EXPIRED ? AppStyle.whiteMedium14 : AppStyle.redMedium14,
               ),
             ),
           ),

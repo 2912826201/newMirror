@@ -11,6 +11,7 @@ import 'package:mirror/page/feed_video_test_page2.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 
 import 'media_picker/media_picker_page.dart';
 
@@ -32,8 +33,8 @@ class _MediaTestState extends State<MediaTestPage> {
   Widget build(BuildContext context) {
     _screenWidth = ScreenUtil.instance.screenWidthDp;
     return Scaffold(
-      appBar: AppBar(
-        title: Text("视频图片测试页"),
+      appBar: CustomAppBar(
+        titleString: "视频图片测试页",
       ),
       body: Column(
         children: [
@@ -75,8 +76,8 @@ class _MediaTestState extends State<MediaTestPage> {
               ),
               RaisedButton(
                 onPressed: () {
-                  AppRouter.navigateToMediaPickerPage(
-                      context, 9, typeImageAndVideo, false, startPageGallery, false, (result) async {
+                  AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, false, startPageGallery, false,
+                      (result) async {
                     SelectedMediaFiles files = Application.selectedMediaFiles;
                     if (true != result || files == null) {
                       print("没有选择媒体文件");
@@ -108,8 +109,8 @@ class _MediaTestState extends State<MediaTestPage> {
             children: [
               RaisedButton(
                 onPressed: () {
-                  AppRouter.navigateToMediaPickerPage(
-                      context, 9, typeImageAndVideo, true, startPageGallery, false, (result) async {
+                  AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, true, startPageGallery, false,
+                      (result) async {
                     SelectedMediaFiles files = Application.selectedMediaFiles;
                     if (true != result || files == null) {
                       print("没有选择媒体文件");
@@ -170,14 +171,16 @@ class _MediaTestState extends State<MediaTestPage> {
               RaisedButton(
                 onPressed: () {
                   AppRouter.navigateToMediaPickerPage(
-                      context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {}, publishMode: 1);
+                      context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
+                      publishMode: 1);
                 },
                 child: Text("裁剪后去发布0"),
               ),
               RaisedButton(
                 onPressed: () {
                   AppRouter.navigateToMediaPickerPage(
-                      context, 9, typeImageAndVideo, true, startPagePhoto, false, (result) {}, publishMode: 1);
+                      context, 9, typeImageAndVideo, true, startPagePhoto, false, (result) {},
+                      publishMode: 1);
                 },
                 child: Text("裁剪后去发布1"),
               ),

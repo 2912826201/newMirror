@@ -11,6 +11,7 @@ import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:provider/provider.dart';
 
 import 'package:mirror/route/router.dart';
@@ -20,8 +21,8 @@ class LoginTestPage extends StatelessWidget {
   Widget build(BuildContext context) {
     print("登录测试页");
     return Scaffold(
-      appBar: AppBar(
-        title: Text("登录测试页"),
+      appBar: CustomAppBar(
+        titleString: "登录测试页",
       ),
       body: Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [

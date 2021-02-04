@@ -18,6 +18,7 @@ import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/count_badge.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/left_scroll/left_scroll_list_view.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/widget/create_group_popup.dart';
@@ -139,29 +140,13 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     _listLength =
         context.watch<ConversationNotifier>().topListLength + context.watch<ConversationNotifier>().commonListLength;
     return Scaffold(
-      appBar: AppBar(
-        leading: null,
-        backgroundColor: AppColor.white,
-        brightness: Brightness.light,
-        title: Text(
-          "消息${context.watch<RongCloudStatusNotifier>().statusString}",
-          style: AppStyle.textMedium18,
-        ),
-        centerTitle: true,
+      appBar: CustomAppBar(
+        hasLeading: false,
+        titleString: "消息${context.watch<RongCloudStatusNotifier>().statusString}",
         actions: [
-          Container(
-            alignment: Alignment.center,
-            //TODO 这里为了保证和左边返回按钮一样宽 之后要改
-            width: 56,
-            child: IconButton(
-                icon: Icon(
-                  Icons.group_add,
-                  color: AppColor.black,
-                ),
-                onPressed: () async {
-                  showCreateGroupPopup(context);
-                }),
-          ),
+          CustomAppBarIconButton(Icons.group_add, AppColor.black, false, () async {
+            showCreateGroupPopup(context);
+          }),
         ],
       ),
       backgroundColor: AppColor.white,

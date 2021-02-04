@@ -6,6 +6,7 @@ import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/page/profile/fitness_information_entry/fitness_level_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:provider/provider.dart';
 class FitnessTargetPage extends StatefulWidget{
   @override
@@ -36,18 +37,7 @@ class _FitnessTargetState extends State<FitnessTargetPage>{
 
     return Scaffold(
       backgroundColor: AppColor.white,
-      appBar: AppBar(
-        backgroundColor: AppColor.white,
-        leading: InkWell(
-          child: Container(
-            margin: EdgeInsets.only(left: 16),
-            child: Image.asset("images/resource/2.0x/return2x.png"),
-          ),
-          onTap: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
+      appBar: CustomAppBar(),
       body: Container(
           width: width,
         height: height,

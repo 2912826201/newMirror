@@ -11,6 +11,7 @@ import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/loading_progress.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -48,9 +49,8 @@ class PrivateMorePageState extends State<PrivateMorePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.name),
-        centerTitle: true,
+      appBar: CustomAppBar(
+        titleString: widget.name,
       ),
       body: Container(
         color: AppColor.white,

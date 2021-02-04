@@ -6,6 +6,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/user_notice_model.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:notification_permissions/notification_permissions.dart';
 import 'package:provider/provider.dart';
@@ -111,23 +112,8 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
     double height = ScreenUtil.instance.height;
     return Scaffold(
         backgroundColor: AppColor.white,
-        appBar: AppBar(
-          backgroundColor: AppColor.white,
-          leading: InkWell(
-            child: Container(
-              margin: EdgeInsets.only(left: 16),
-              child: Image.asset("images/resource/2.0x/return2x.png"),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          leadingWidth: 44,
-          title: Text(
-            "通知设置",
-            style: AppStyle.textMedium18,
-          ),
-          centerTitle: true,
+        appBar: CustomAppBar(
+          titleString: "通知设置",
         ),
         body: Container(
           padding: EdgeInsets.only(left: 16, right: 16),

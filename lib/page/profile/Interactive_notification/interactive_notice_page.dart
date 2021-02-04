@@ -15,6 +15,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/rich_text_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -115,27 +116,15 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
       },
       child: Scaffold(
         backgroundColor: AppColor.white,
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: AppColor.white,
-          leading: InkWell(
-            child: Container(
-              margin: EdgeInsets.only(left: 16),
-              child: Image.asset("images/resource/2.0x/return2x.png"),
-            ),
-            onTap: () {
-              Navigator.pop(context, timeStamp);
-            },
-          ),
-          leadingWidth: 44,
-          title: Text(
-            widget.type == 0
-                ? "评论"
-                : widget.type == 1
-                    ? "@我"
-                    : "点赞",
-            style: AppStyle.textMedium18,
-          ),
+        appBar: CustomAppBar(
+          leadingOnTap: () {
+            Navigator.pop(context, timeStamp);
+          },
+          titleString: widget.type == 0
+              ? "评论"
+              : widget.type == 1
+                  ? "@我"
+                  : "点赞",
         ),
         body: Container(
           width: width,
@@ -370,7 +359,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
                   SizedBox(
                     height: 8,
                   ),
-                  !commentIsDelete||!feedIsDelete
+                  !commentIsDelete || !feedIsDelete
                       ? MyRichTextWidget(
                           Text(
                             "$comment",

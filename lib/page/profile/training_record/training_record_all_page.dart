@@ -6,6 +6,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/profile/training_record_model.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dotted_line.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -54,9 +55,8 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("所有的训练"),
-        centerTitle: true,
+      appBar: CustomAppBar(
+        titleString: "所有的训练",
       ),
       body: getBodyUi(),
     );
