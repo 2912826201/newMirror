@@ -139,6 +139,7 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
                   scrollController: _controller,
                   refreshController: _refreshController,
                   targetId: widget.feedId,
+                  pushId: context.watch<FeedMapNotifier>().feedMap[widget.feedId].pushId,
                   targetType: 0,
                   pageCommentSize: 20,
                   pageSubCommentSize: 3,

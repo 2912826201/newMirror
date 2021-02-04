@@ -124,8 +124,10 @@ dependencies:
   notification_permissions: ^0.4.8
   # 网络状态监听
   connectivity: ^2.0.2
-  #安装apk
-  install_plugin: ^2.0.1
+  #跳转商店
+  launch_review: ^2.0.0
+  #打开对应文件安装apk
+  open_file: ^3.0.3
   #扫码测试
   scan: ^0.0.3
   #二维码生成测试

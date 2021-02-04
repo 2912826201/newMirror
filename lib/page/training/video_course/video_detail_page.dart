@@ -16,6 +16,7 @@ import 'package:mirror/page/training/currency/currency_page.dart';
 import 'package:mirror/page/training/video_course/sliver_custom_header_delegate_video.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
@@ -108,6 +109,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     if(videoModel==null) {
       loadingStatus = LoadingStatus.STATUS_LOADING;
     }else{
+      if(videoModel.isInMyCourseList!=null) {
+        isFavor = videoModel.isInMyCourseList == 1;
+      }
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
     }
     recommendLoadingStatus = LoadingStatus.STATUS_LOADING;
@@ -175,7 +179,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
           children: [
             Container(
               width: double.infinity,
-              height: MediaQuery.of(context).size.height - 50,
+              height: MediaQuery.of(context).size.height - 50-ScreenUtil.instance.bottomBarHeight,
               child: ScrollConfiguration(
                 behavior: NoBlueEffectBehavior(),
                 child: NotificationListener<ScrollNotification>(
@@ -186,7 +190,8 @@ class VideoDetailPageState extends State<VideoDetailPage> {
             ),
             Container(
               width: double.infinity,
-              height: 50,
+              height: 50.0+ScreenUtil.instance.bottomBarHeight,
+              padding: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
               color: AppColor.white,
               child: _getBottomBar(),
             ),
@@ -661,25 +666,23 @@ class VideoDetailPageState extends State<VideoDetailPage> {
 
     recommendLoadingStatus = LoadingStatus.STATUS_COMPLETED;
 
+
     //获取视频详情数据
-    if (videoModel == null || videoModel.coursewareDto?.componentDtos == null) {
-      //加载数据
-      Map<String, dynamic> model = await getVideoCourseDetail(courseId: widget.videoCourseId);
-      if (model == null) {
-        loadingStatus = LoadingStatus.STATUS_IDEL;
-        Future.delayed(Duration(seconds: 1), () {
-          if(mounted){
-            setState(() {});
-          }
-        });
-      } else {
-        videoModel = LiveVideoModel.fromJson(model);
-        loadingStatus = LoadingStatus.STATUS_COMPLETED;
+    //加载数据
+    Map<String, dynamic> model = await getVideoCourseDetail(courseId: widget.videoCourseId);
+    if (model == null) {
+      loadingStatus = LoadingStatus.STATUS_IDEL;
+      Future.delayed(Duration(seconds: 1), () {
         if(mounted){
           setState(() {});
         }
-      }
+      });
     } else {
+      videoModel = LiveVideoModel.fromJson(model);
+
+      if(videoModel.isInMyCourseList!=null) {
+        isFavor = videoModel.isInMyCourseList == 1;
+      }
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
       if(mounted){
         setState(() {});

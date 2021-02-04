@@ -223,6 +223,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
         scrollController: _controller,
         refreshController: _refreshController,
         targetId: feedModel.id,
+        pushId: feedModel.pushId,
         targetType: 0,
         pageCommentSize: 20,
         pageSubCommentSize: 3,

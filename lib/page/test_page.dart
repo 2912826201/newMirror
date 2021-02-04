@@ -1,9 +1,11 @@
 
+import 'dart:io';
 import 'dart:math';
+
 
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
-import 'package:install_plugin/install_plugin.dart';
+import 'package:launch_review/launch_review.dart';
 import 'package:mirror/api/version_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
@@ -27,15 +29,12 @@ import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
-import 'package:mirror/widget/loading_progress.dart';
-import 'package:mirror/widget/volume_popup.dart';
-import 'package:provider/provider.dart';
 
+import 'package:mirror/widget/volume_popup.dart';
+import 'package:open_file/open_file.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'message/message_chat_page_manager.dart';
-import 'profile/login_test_page.dart';
-import 'profile/profile_detail_page.dart';
-import 'profile/profile_detail_page.dart';
-import 'profile/profile_detail_page.dart';
 import 'training/video_course/video_course_play_page2.dart';
 import 'training/video_course/video_course_play_page.dart';
 
@@ -362,7 +361,7 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
     );
   }
   void _getNewVersion(BuildContext context)async{
-    String url = "https://download.sj.qq.com/upload/connAssitantDownload/upload/MobileAssistant_1.apk";
+    String url = "https://down.qq.com/qqweb/QQ_1/android_apk/Android_8.5.5.5105_537066978.apk";
     VersionModel model = await getNewVersion();
     if(model!=null){
       print('====================版本model有值');
@@ -370,49 +369,70 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
         ToastShow.show(msg: "当前版本${AppConfig.version}   最新版本${model.version}", context:context);
       }else{
         AppConfig.version = model.version;
-        if(model.os==Application.platform&&model.url!=null){
-          String path = await FileUtil().getDownloadedPath(model.url);
-          if(path!=null){
-            showAppDialog(context,
-              title:"检测到新版本安装包，是否安装？",
-              cancel:AppDialogButton("不安装",(){
-                return true;
-              }),
-              confirm: AppDialogButton("安装",(){
-                return true;
-              }),
-            );
+        if(model.os==Application.platform&&url!=null){
+          if(Application.platform==0){
+            String oldPath = await FileUtil().getDownloadedPath(url);
+            if(oldPath!=null){
+              showAppDialog(context,
+                title:"检测到新版本安装包，是否安装？",
+                cancel:AppDialogButton("不安装",(){
+                  return true;
+                }),
+                confirm: AppDialogButton("安装",(){
+                  OpenFile.open(oldPath).then((value){
+                    print('=======================${value.message}');
+                  });
+                  return true;
+                }),
+              );
+            }else{
+              showAppDialog(context, title:"获取到新版本，是否更新？",
+                cancel:AppDialogButton("不更新",(){
+                  return true;
+                }),
+                confirm: AppDialogButton("更新",(){
+                    FileUtil().download(url, (taskId, received, total) async {
+                      print('==taskId$taskId====================progress${received/total}');
+                      if(received==total){
+                        Future.delayed(Duration(milliseconds: 100),()async{
+                          String path = await FileUtil().getDownloadedPath(url);
+                          print('===========================path$path');
+                          if(path!=null){
+                            Map<Permission, PermissionStatus> statuses = await [
+                              Permission.storage,
+                            ].request();
+                            if(statuses.isNotEmpty){
+                              await File(path).stat().then((value) => print('========文件信息---------------$value'));
+                              OpenFile.open(path).then((value){
+                                print('=======================${value.message}');
+                              });
+                            }
+                          }
+                        });
+                      }
+                    });
+                  return true;
+                }),
+              );
+            }
           }else{
-            showAppDialog(context, title:"获取到新版本，是否更新？",
-              cancel:AppDialogButton("不更新",(){
+            showAppDialog(
+              context,
+              title:"检测到新版本安装包，是否跳转商店？",
+              cancel:AppDialogButton("取消",(){
                 return true;
               }),
-              confirm: AppDialogButton("更新",(){
-                FileUtil().download(url, (taskId, received, total) async {
-                  print('==taskId$taskId====================progress${received/total}');
-                  if(received==total){
-                    String path = await FileUtil().getDownloadedPath(url);
-                    print('===========================path$path');
-                    if(path!=null){
-                      InstallPlugin.installApk(path, 'com.aimymusic.mirror')
-                          .then((result) {
-                        print('=======================安装成功$result');
-                      }).catchError((error) {
-                        print('install apk error: $error');
-                      });
-                    }
-
-                  /*  FileUtil().removeDownloadTask(url);*/
-                  }
-              });
+              confirm: AppDialogButton("跳转",(){
+                LaunchReview.launch(writeReview: false,iOSAppId: "585027354");
                 return true;
               }),
             );
+
           }
         }
       }
     }else{
-      print("======================版本model为空");
+     return;
     }
   }
 }

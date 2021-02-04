@@ -13,6 +13,7 @@ import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/page/training/currency/currency_comment_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
@@ -151,7 +152,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
           children: [
             Container(
               width: double.infinity,
-              height: MediaQuery.of(context).size.height - 50,
+              height: MediaQuery.of(context).size.height - 50-ScreenUtil.instance.bottomBarHeight,
               child: ScrollConfiguration(
                 behavior: NoBlueEffectBehavior(),
                 child: NotificationListener<ScrollNotification>(
@@ -162,7 +163,8 @@ class LiveDetailPageState extends State<LiveDetailPage> {
             ),
             Container(
               width: double.infinity,
-              height: 50,
+              height: 50.0+ScreenUtil.instance.bottomBarHeight,
+              padding: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
               color: AppColor.white,
               child: _getBottomBar(),
             ),
@@ -549,7 +551,18 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     if (liveModel.playType == 2) {
       _bookLiveCourse(liveModel, 0, true,bindingTerminal: bindingTerminal);
     } else {
-      _bookLiveCourse(liveModel, 0, true);
+      showAppDialog(context,
+          title: "取消预约",
+          info: "确认取消预约吗？",
+          cancel: AppDialogButton("取消", () {
+            print("点了取消");
+            return true;
+          }),
+          confirm: AppDialogButton("确定", () {
+            print("点击了删除");
+            _bookLiveCourse(liveModel, 0, true);
+            return true;
+          }));
     }
   }
 

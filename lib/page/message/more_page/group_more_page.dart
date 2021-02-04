@@ -12,6 +12,7 @@ import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/page/message/message_view/currency_msg.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/loading_progress.dart';
@@ -119,6 +120,9 @@ class GroupMorePageState extends State<GroupMorePage> {
           getContainer(height: 12, horizontal: 0),
           getListItem(text: "删除并退出", textColor: AppColor.mainRed),
           getContainer(),
+          SliverToBoxAdapter(
+            child: Container(height: ScreenUtil.instance.bottomBarHeight,color: AppColor.white,),
+          )
         ],
       ),
     );

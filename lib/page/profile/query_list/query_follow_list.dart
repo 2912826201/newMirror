@@ -494,12 +494,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                           if (index == 0) {
                             return InkWell(
                               onTap: () {
-                                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                                  return QueryFollowList(
-                                    type: 3,
-                                    userId: widget.userId,
-                                  );
-                                }));
+                                AppRouter.navigateToQueryFollowList(context,3, widget.userId);
                               },
                               child: _followTopic(width),
                             );

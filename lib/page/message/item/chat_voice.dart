@@ -192,9 +192,14 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
         // startY = details.globalPosition.dy;
         // showVoiceView();
       },
-      onVerticalDragDown: (details) {
-        startY = details.globalPosition.dy;
-        showVoiceView();
+      onVerticalDragDown: (details)async {
+        var status = await Permission.microphone.request();
+        if (status != PermissionStatus.granted) {
+          throw RecordingPermissionException('Microphone permission not granted');
+        }else {
+          startY = details.globalPosition.dy;
+          showVoiceView();
+        }
       },
       onVerticalDragCancel: () => hideVoiceView(),
       onVerticalDragEnd: (details) => hideVoiceView(),

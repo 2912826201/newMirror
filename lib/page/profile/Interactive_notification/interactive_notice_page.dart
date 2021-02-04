@@ -226,10 +226,10 @@ class InteractiveNoticeItemState extends StatelessWidget {
 
   _getRefData(BuildContext context) {
     if (type == 0 || type == 1) {
-      atUserList = msgModel.commentData.atUsers;
       if (msgModel.commentData == null) {
         commentIsDelete = true;
       } else {
+        atUserList = msgModel.commentData.atUsers;
         comment = msgModel.commentData.content;
       }
     } else {
@@ -241,15 +241,16 @@ class InteractiveNoticeItemState extends StatelessWidget {
         comment = "赞了你的评论";
       }
     }
-    if (msgModel.refData == null) {
+    if (msgModel.refData != null) {
+      if (msgModel.refType == 0) {
+        feedModel = HomeFeedModel.fromJson(msgModel.refData);
+      } else if (msgModel.refType == 2) {
+        fatherCommentModel = CommentDtoModel.fromJson(msgModel.refData);
+      } else if (msgModel.refType == 1 || msgModel.refType == 3) {
+        liveVideoModel = LiveVideoModel.fromJson(msgModel.refData);
+      }
+    } else {
       feedIsDelete = true;
-    }
-    if (msgModel.refType == 0) {
-      feedModel = HomeFeedModel.fromJson(msgModel.refData);
-    } else if (msgModel.refType == 2) {
-      fatherCommentModel = CommentDtoModel.fromJson(msgModel.refData);
-    } else if (msgModel.refType == 1 || msgModel.refType == 3) {
-      liveVideoModel = LiveVideoModel.fromJson(msgModel.refData);
     }
   }
 
@@ -341,7 +342,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
           Spacer(),
           InkWell(
             onTap: () {
-              _jumpToDetailPage(context);
+              _jumpToDetailPage(context, "评论");
             },
             child: Container(
               alignment: Alignment.centerLeft,
@@ -358,7 +359,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
                   SizedBox(
                     height: 8,
                   ),
-                  !commentIsDelete
+                  !commentIsDelete || !feedIsDelete
                       ? MyRichTextWidget(
                           Text(
                             "$comment",
@@ -390,7 +391,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
               ? InkWell(
                   onTap: () {
                     print('========================点击了${msgModel.refId}');
-                    _jumpToDetailPage(context);
+                    _jumpToDetailPage(context, "内容");
                   },
                   child: Container(
                     alignment: Alignment.topRight,
@@ -415,6 +416,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
                   child: Container(
                     height: 38,
                     width: 38,
+                    alignment: Alignment.topRight,
                     color: AppColor.bgWhite,
                     child: Center(
                       child: Text(
@@ -430,7 +432,15 @@ class InteractiveNoticeItemState extends StatelessWidget {
   }
 
   //跳转判断
-  _jumpToDetailPage(BuildContext context) {
+  _jumpToDetailPage(BuildContext context, String onTapType) {
+    if (onTapType == "评论" && commentIsDelete) {
+      Toast.show("该评论已删除", context);
+      return;
+    }
+    if (onTapType == "内容" && feedIsDelete) {
+      Toast.show("该内容已删除", context);
+      return;
+    }
     if (msgModel.refType == 0) {
       print('=====================动态');
       getFeedDetail(context, feedModel.id, comment: type == 0 ? msgModel.commentData : null);
@@ -447,11 +457,13 @@ class InteractiveNoticeItemState extends StatelessWidget {
         AppRouter.navigateToVideoDetail(context, fatherCommentModel.targetId,
             commentDtoModel: type == 0 ? msgModel.commentData : null, fatherComment: fatherCommentModel);
       }
-    } else if (msgModel.refType == 1) {
+    } else if (msgModel.refType == 1 && liveVideoModel != null && liveVideoModel.id != null) {
       AppRouter.navigateToLiveDetail(context, liveVideoModel.id,
           isHaveStartTime: false, commentDtoModel: msgModel.commentData);
     } else {
-      AppRouter.navigateToVideoDetail(context, liveVideoModel.id, commentDtoModel: msgModel.commentData);
+      if (liveVideoModel != null && liveVideoModel.id != null) {
+        AppRouter.navigateToVideoDetail(context, liveVideoModel.id, commentDtoModel: msgModel.commentData);
+      }
     }
   }
 

@@ -3,21 +3,16 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/data/model/data_response_model.dart';
-import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/profile/profile_model.dart';
+import 'package:mirror/data/model/user_extrainfo_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/page/home/sub_page/recommend_page.dart';
-import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_bottom_sheet.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_list.dart';
@@ -29,12 +24,11 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/feed/feed_comment_popups.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/primary_scrollcontainer.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../if_page.dart';
 
@@ -86,29 +80,34 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   List<GlobalKey> scrollChildKeys;
   GlobalKey<PrimaryScrollContainerState> leftKey = GlobalKey();
   GlobalKey<PrimaryScrollContainerState> rightKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
     context.read<ProfilePageNotifier>().setFirstModel(widget.userId);
+
     ///判断是自己的页面还是别人的页面
-    if (context.read<ProfileNotifier>().profile.uid == widget.userId) {
+    if (context
+        .read<ProfileNotifier>()
+        .profile
+        .uid == widget.userId) {
       isMselfId = true;
     } else {
       isMselfId = false;
     }
     _mController = TabController(length: 2, vsync: this);
-    if(isMselfId){
-      scrollChildKeys = [leftKey,rightKey];
+    if (isMselfId) {
+      scrollChildKeys = [leftKey, rightKey];
       _mController.addListener(() {
         for (int i = 0; i < scrollChildKeys.length; i++) {
           GlobalKey<PrimaryScrollContainerState> key = scrollChildKeys[i];
           if (key.currentState != null) {
-            key.currentState.onPageChange(_mController.index == i);//控制是否当前显示
+            key.currentState.onPageChange(_mController.index == i); //控制是否当前显示
           }
         }
       });
     }
-    WidgetsBinding.instance.addPostFrameCallback((_){
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _getUserInfo(id: widget.userId);
       _getFollowCount(id: widget.userId);
     });
@@ -116,11 +115,11 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       /* if (scrollController.hasClients) {*/
       if (scrollController.offset >=
           ScreenUtil.instance.height * 0.33 + _signatureHeight) {
-        context.read<ProfilePageNotifier>().changeTitleColor(AppColor.bgBlack);
-        context.read<ProfilePageNotifier>().changeOnClick(false);
+        context.read<ProfilePageNotifier>().changeTitleColor(widget.userId, AppColor.black);
+        context.read<ProfilePageNotifier>().changeOnClick(widget.userId,false);
       } else {
-        context.read<ProfilePageNotifier>().changeTitleColor(AppColor.transparent);
-        context.read<ProfilePageNotifier>().changeOnClick(true);
+        context.read<ProfilePageNotifier>().changeTitleColor(widget.userId, AppColor.transparent);
+        context.read<ProfilePageNotifier>().changeOnClick(widget.userId,true);
         /*  }*/
       }
     });
@@ -130,12 +129,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   _getFollowCount({int id}) async {
     ProfileModel attentionModel = await ProfileFollowCount(id: id);
     print(
-        'attentionModel========================${attentionModel.followingCount}${attentionModel.feedCount}${attentionModel.laudedCount}');
+        'attentionModel========================${attentionModel.followingCount}${attentionModel
+            .feedCount}${attentionModel.laudedCount}');
     print('====关注数========================${attentionModel.followingCount}');
     print('====粉丝数========================${attentionModel.followerCount}');
     print('====点赞数========================${attentionModel.laudedCount}');
     if (attentionModel != null) {
-      context.read<ProfilePageNotifier>().changeAttentionModel(attentionModel,widget.userId);
+      context.read<ProfilePageNotifier>().changeAttentionModel(attentionModel, widget.userId);
     }
   }
 
@@ -146,28 +146,27 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       print('获取relation=============================${userModel.relation}');
       print('获取用户签名==============================${userModel.description}');
 
-        _avatar = userModel.avatarUri;
-        _id = userModel.uid;
-        _signature = userModel.description;
-        if (_signature != null) {
-          ///判断文字的高度，动态改变
-          TextPainter testSize = calculateTextWidth(_signature, AppStyle.textRegular14, 255, 10);
-          _signatureHeight = testSize.height;
-          print('textHeight==============================$_signatureHeight');
-        }
-        _textName = userModel.nickName;
-        relation = userModel.relation;
-        if (!isMselfId) {
-          print('判断relation=====================$relation');
-        }
-        if(mounted){
-          setState(() {
-          });
-        }
+      _avatar = userModel.avatarUri;
+      _id = userModel.uid;
+      _signature = userModel.description;
+      if (_signature != null) {
+        ///判断文字的高度，动态改变
+        TextPainter testSize = calculateTextWidth(_signature, AppStyle.textRegular14, 255, 10);
+        _signatureHeight = testSize.height;
+        print('textHeight==============================$_signatureHeight');
+      }
+      _textName = userModel.nickName;
+      relation = userModel.relation;
+      if (!isMselfId) {
+        print('判断relation=====================$relation');
+      }
+      if (mounted) {
+        setState(() {});
+      }
       if (relation == 0 || relation == 2) {
-        context.read<ProfilePageNotifier>().changeIsFollow(true,widget.userId);
+        context.read<ProfilePageNotifier>().changeIsFollow(true, widget.userId);
       } else if (relation == 1 || relation == 3) {
-        context.read<ProfilePageNotifier>().changeIsFollow(false,widget.userId);
+        context.read<ProfilePageNotifier>().changeIsFollow(false, widget.userId);
       }
     }
   }
@@ -176,8 +175,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   void dispose() {
     super.dispose();
     print('=======================================个人主页dispose');
-    context.read<ProfilePageNotifier>().clear();
-    SingletonForWholePages.singleton().closePanelController();
   }
 
   @override
@@ -187,29 +184,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     double height = ScreenUtil.instance.height;
     return Scaffold(
       appBar: null,
-      body: SlidingUpPanel(
-          panel: Container(
-            child: context.watch<FeedMapNotifier>().feedId != null
-                ? CommentBottomSheet(
-                    feedId: context.select((FeedMapNotifier value) => value.feedId),
-                  )
-                : Container(),
-          ),
-          onPanelClosed: () {
-            context.read<FeedMapNotifier>().clearTotalCount();
-
-            /// 关闭视图后清空动态Id
-            context.read<FeedMapNotifier>().changeFeeId(null);
-          },
-          maxHeight: ScreenUtil.instance.height * 0.75,
-          backdropEnabled: true,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(10.0),
-            topRight: Radius.circular(10.0),
-          ),
-          controller: SingletonForWholePages.singleton().panelController(),
-          minHeight: 0,
-          body: _minehomeBody(width, height)),
+      body: _minehomeBody(width, height),
     );
   }
 
@@ -227,11 +202,15 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               title: Text(
                 "$_textName",
                 style: TextStyle(
-                    fontWeight: FontWeight.w500, fontSize: 18, color: context.watch<ProfilePageNotifier>().titleColor),
+                    fontWeight: FontWeight.w500, fontSize: 18, color: context
+                    .watch<ProfilePageNotifier>()
+                    .profileUiChangeModel[widget.userId].titleColor),
               ),
               leading: InkWell(
                 onTap: () {
-                  Navigator.pop(this.context, context.read<ProfilePageNotifier>().isFollow);
+                  Navigator.pop(this.context, context
+                      .read<ProfilePageNotifier>()
+                      .profileUiChangeModel[widget.userId].isFollow);
                 },
                 child: Image.asset(
                   "images/test/back.png",
@@ -244,9 +223,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                   onTap: () {
                     openShareBottomSheet(
                         context: context,
-                      map: userModel.toJson(),
-                      chatTypeModel: ChatTypeModel.MESSAGE_TYPE_USER,
-                    sharedType: 1);
+                        map: userModel.toJson(),
+                        chatTypeModel: ChatTypeModel.MESSAGE_TYPE_USER,
+                        sharedType: 1);
                   },
                   child: Image.asset(
                     _imgShared,
@@ -259,33 +238,35 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 ),
                 !isMselfId
                     ? InkWell(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                            return ProfileDetailsMore(
-                              userId: widget.userId,
-                              isFollow: context.watch<ProfilePageNotifier>().isFollow[widget.userId],
-                              userName: _textName,
-                            );
-                          })).then((value) {
-                            if (value) {
-                              _getUserInfo(id: widget.userId);
-                              _getFollowCount(id: widget.userId);
-                            }
-                          });
-                        },
-                        child: Image.asset(
-                          _imgMore,
-                          width: 24,
-                          height: 24,
-                        ),
-                      )
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                      return ProfileDetailsMore(
+                        userId: widget.userId,
+                        isFollow: context
+                            .watch<ProfilePageNotifier>()
+                            .profileUiChangeModel[widget.userId].isFollow,
+                        userName: _textName,
+                      );
+                    })).then((value) {
+                      if (value) {
+                        _getUserInfo(id: widget.userId);
+                        _getFollowCount(id: widget.userId);
+                      }
+                    });
+                  },
+                  child: Image.asset(
+                    _imgMore,
+                    width: 24,
+                    height: 24,
+                  ),
+                )
                     : Container(
-                        width: 0,
-                      ),
+                  width: 0,
+                ),
                 !isMselfId
                     ? SizedBox(
-                        width: 15.5,
-                      )
+                  width: 15.5,
+                )
                     : Container()
               ],
               backgroundColor: AppColor.white,
@@ -294,66 +275,67 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               ///这里是资料展示页,写在这个里面相当于是appBar的背景板
               flexibleSpace: FlexibleSpaceBar(
                   background: Container(
-                child: mineHomeData(height, width),
-              )),
+                    child: mineHomeData(height, width),
+                  )),
             ),
 
             ///根据布尔值返回视图
             isMselfId
                 ? SliverPersistentHeader(
-                    /// 可以吸顶的TabBar
-                    pinned: true,
-                    delegate: StickyTabBarDelegate(
-                      width: width,
-                      child: TabBar(
-                        unselectedLabelStyle: AppStyle.textHintRegular16,
-                        unselectedLabelColor: AppColor.textSecondary,
-                        labelStyle: AppStyle.textMedium18,
-                        labelColor: AppColor.black,
-                        indicatorColor: AppColor.black,
-                        controller: _mController,
-                        indicatorSize: TabBarIndicatorSize.label,
-                        indicator: RoundUnderlineTabIndicator(
-                            insets: EdgeInsets.only(bottom: 0),
-                            wantWidth: 20,
-                            borderSide: BorderSide(
-                              width: 2,
-                              color: AppColor.black,
-                            )),
-                        tabs: <Widget>[
-                          Tab(text: '动态'),
-                          Tab(text: '喜欢'),
-                        ],
-                      ),
-                    ),
-                  )
+
+              /// 可以吸顶的TabBar
+              pinned: true,
+              delegate: StickyTabBarDelegate(
+                width: width,
+                child: TabBar(
+                  unselectedLabelStyle: AppStyle.textHintRegular16,
+                  unselectedLabelColor: AppColor.textSecondary,
+                  labelStyle: AppStyle.textMedium18,
+                  labelColor: AppColor.black,
+                  indicatorColor: AppColor.black,
+                  controller: _mController,
+                  indicatorSize: TabBarIndicatorSize.label,
+                  indicator: RoundUnderlineTabIndicator(
+                      insets: EdgeInsets.only(bottom: 0),
+                      wantWidth: 20,
+                      borderSide: BorderSide(
+                        width: 2,
+                        color: AppColor.black,
+                      )),
+                  tabs: <Widget>[
+                    Tab(text: '动态'),
+                    Tab(text: '喜欢'),
+                  ],
+                ),
+              ),
+            )
                 : SliverToBoxAdapter(
-                    child: Container(),
-                  )
+              child: Container(),
+            )
           ];
         },
 
         ///根据布尔值返回body
         body: isMselfId
             ? TabBarView(
-                controller: _mController,
-                children: <Widget>[
-                  PrimaryScrollContainer(
-                    scrollChildKeys[0],
-                    ProfileDetailsList(
-                      type: 2,
-                      id: widget.userId,
-                    ),
-                  ),
-                  PrimaryScrollContainer(
-                    scrollChildKeys[1],
-                    ProfileDetailsList(
-                      type: 6,
-                      id: widget.userId,
-                    ),
-                  ),
-                ],
-              )
+          controller: _mController,
+          children: <Widget>[
+            PrimaryScrollContainer(
+              scrollChildKeys[0],
+              ProfileDetailsList(
+                type: 2,
+                id: widget.userId,
+              ),
+            ),
+            PrimaryScrollContainer(
+              scrollChildKeys[1],
+              ProfileDetailsList(
+                type: 6,
+                id: widget.userId,
+              ),
+            ),
+          ],
+        )
             : ProfileDetailsList(type: 3, id: widget.userId));
   }
 
@@ -373,10 +355,11 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                   width: height * 0.33,
                   imageUrl: _avatar,
                   fit: BoxFit.cover,
-                  placeholder: (context, url) => Image.asset(
-                    "images/test.png",
-                    fit: BoxFit.cover,
-                  ),
+                  placeholder: (context, url) =>
+                      Image.asset(
+                        "images/test.png",
+                        fit: BoxFit.cover,
+                      ),
                 ),
               )),
           Positioned(
@@ -418,6 +401,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               ),
             ),
             Spacer(),
+
             ///昵称
             Container(
               padding: EdgeInsets.only(left: 16, right: 16),
@@ -434,6 +418,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               child: Text("ID: $_id"),
             ),
             Spacer(),
+
             ///签名
             Container(
               height: _signatureHeight,
@@ -441,7 +426,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               width: width * 0.7,
               child: Text(_signature != null ? _signature : "      ", softWrap: true, style: AppStyle.textRegular14),
             ),
-           Spacer(),
+            Spacer(),
+
             ///关注，获赞，粉丝
             Container(
               padding: EdgeInsets.only(left: 16, right: 16),
@@ -450,7 +436,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                   InkWell(
                     child: _textAndNumber(
                         "关注",
-                        StringUtil.getNumber(context.read<ProfilePageNotifier>().attentionModel[widget.userId].followingCount),
+                        StringUtil.getNumber(context
+                            .read<ProfilePageNotifier>()
+                            .profileUiChangeModel[widget.userId].attentionModel.followingCount),
                         height),
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
@@ -474,13 +462,17 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       }));
                     },
                     child: _textAndNumber("粉丝",
-                        StringUtil.getNumber(context.read<ProfilePageNotifier>().attentionModel[widget.userId].followerCount), height),
+                        StringUtil.getNumber(context
+                            .read<ProfilePageNotifier>()
+                            .profileUiChangeModel[widget.userId].attentionModel.followerCount), height),
                   ),
                   SizedBox(
                     width: 61,
                   ),
                   _textAndNumber("获赞",
-                      StringUtil.getNumber(context.read<ProfilePageNotifier>().attentionModel[widget.userId].laudedCount), height),
+                      StringUtil.getNumber(context
+                          .read<ProfilePageNotifier>()
+                          .profileUiChangeModel[widget.userId].attentionModel.laudedCount), height),
                 ],
               ),
             ),
@@ -498,22 +490,28 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   Widget _mineButton(double height) {
     return InkWell(
         onTap: () {
-          if(context.read<ProfilePageNotifier>().canOnClick){
+          if (context
+              .read<ProfilePageNotifier>()
+              .profileUiChangeModel[widget.userId].canOnClick) {
             if (isMselfId) {
               ///这里跳转到编辑资料页
               AppRouter.navigateToEditInfomation(context, (result) {
                 _getUserInfo();
               });
             } else {
-              print('isFollow================================${context.read<ProfilePageNotifier>().isFollow}');
-              if (context.read<ProfilePageNotifier>().isFollow[widget.userId]) {
+              print('isFollow================================${context
+                  .read<ProfilePageNotifier>()
+                  .profileUiChangeModel[widget.userId].isFollow}');
+              if (context
+                  .read<ProfilePageNotifier>()
+                  .profileUiChangeModel[widget.userId].isFollow) {
                 _getAttention();
               } else {
                 ///这里跳转到私聊界面
                 jumpChatPageUser(context, userModel);
               }
             }
-          }else{
+          } else {
             return false;
           }
         },
@@ -522,9 +520,11 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           width: 72,
           decoration: BoxDecoration(
               color: !isMselfId
-                  ? context.read<ProfilePageNotifier>().isFollow[widget.userId]
-                      ? AppColor.mainRed
-                      : AppColor.transparent
+                  ? context
+                  .read<ProfilePageNotifier>()
+                  .profileUiChangeModel[widget.userId].isFollow
+                  ? AppColor.mainRed
+                  : AppColor.transparent
                   : AppColor.transparent,
               borderRadius: BorderRadius.all(Radius.circular(14)),
               border: Border.all(width: 0.5, color: AppColor.black)),
@@ -532,11 +532,11 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           ///判断是我的页面还是别人的页面
           child: isMselfId
               ? Center(
-                  child: Text(
-                    "编辑资料",
-                    style: AppStyle.textRegular12,
-                  ),
-                )
+            child: Text(
+              "编辑资料",
+              style: AppStyle.textRegular12,
+            ),
+          )
               : _buttonLayoutSelect(),
         ));
   }
@@ -545,19 +545,24 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   Widget _buttonLayoutSelect() {
     return Stack(
       children: [
+
         ///关注按钮
         Opacity(
-          opacity: context.read<ProfilePageNotifier>().isFollow[widget.userId] ? 1 : 0,
+          opacity: context
+              .read<ProfilePageNotifier>()
+              .profileUiChangeModel[widget.userId].isFollow ? 1 : 0,
           child: Center(
               child: Text(
-            "+ 关注",
-            style: TextStyle(color: AppColor.white, fontSize: 12),
-          )),
+                "+ 关注",
+                style: TextStyle(color: AppColor.white, fontSize: 12),
+              )),
         ),
 
         ///私聊按钮
         Opacity(
-          opacity: context.read<ProfilePageNotifier>().isFollow[widget.userId] ? 0 : 1,
+          opacity: context
+              .read<ProfilePageNotifier>()
+              .profileUiChangeModel[widget.userId].isFollow ? 0 : 1,
           child: Center(
             child: Row(
               children: [
@@ -590,33 +595,33 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         child: Hero(
           tag: "我的头像",
           child: ClipOval(
-      child: CachedNetworkImage(
-          height: height * 0.09,
-          width: height * 0.09,
-          imageUrl: _avatar,
-          fit: BoxFit.cover,
-          placeholder: (context, url) => CircularProgressIndicator()),
-    ),));
+            child: CachedNetworkImage(
+                height: height * 0.09,
+                width: height * 0.09,
+                imageUrl: _avatar,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => CircularProgressIndicator()),
+          ),));
   }
 
   ///这是关注粉丝获赞
   Widget _textAndNumber(String text, String number, double height) {
     return Container(
         child: Column(
-      children: [
-        Text(
-          number,
-          style: AppStyle.textMedium18,
-        ),
-        SizedBox(
-          height: height * 0.008,
-        ),
-        Text(
-          text,
-          style: AppStyle.textSecondaryRegular12,
-        )
-      ],
-    ));
+          children: [
+            Text(
+              number,
+              style: AppStyle.textMedium18,
+            ),
+            SizedBox(
+              height: height * 0.008,
+            ),
+            Text(
+              text,
+              style: AppStyle.textSecondaryRegular12,
+            )
+          ],
+        ));
   }
 
   ///这是取消关注和关注的方法，true为关注，false为取消关注
@@ -624,7 +629,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     int attntionResult = await ProfileAddFollow(widget.userId);
     print('关注监听=========================================$attntionResult');
     if (attntionResult == 1 || attntionResult == 3) {
-      context.read<ProfilePageNotifier>().changeIsFollow(false,widget.userId);
+      context.read<ProfilePageNotifier>().changeIsFollow(false, widget.userId);
       _getFollowCount(id: widget.userId);
       ToastShow.show(msg: "关注成功!", context: context);
     }
@@ -632,59 +637,82 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 }
 
 class ProfilePageNotifier extends ChangeNotifier {
-  Color titleColor = AppColor.transparent;
+  Color vipTitleColor = AppColor.transparent;
 
-  String backImage = "images/resource/2.0x/white_return@2x.png";
-
-  Map<int,ProfileModel> attentionModel = {};
-
-  Map<int,bool> isFollow = {};
-
-  bool canOnClick = true;
   double progress = 0.0;
+
   bool showImageTitle = false;
-  void setFirstModel(int id){
-    attentionModel[id] = ProfileModel();
-    isFollow[id] = false;
+
+  Map<int, ProfileUiChangeModel> profileUiChangeModel = {};
+
+  UserExtraInfoModel extraInfoModel = UserExtraInfoModel();
+
+
+  void setExtraInfoModel(UserExtraInfoModel model){
+    extraInfoModel = model;
+    notifyListeners();
   }
-  void changeProgress(double pros){
+  void setweight(double weight){
+    extraInfoModel.weight = weight;
+    notifyListeners();
+  }
+  void setImagePageSize(int pageSize){
+    extraInfoModel.albumNum = pageSize;
+    notifyListeners();
+  }
+  void setFirstModel(int id) {
+    profileUiChangeModel[id] = ProfileUiChangeModel();
+    notifyListeners();
+  }
+  void changeProgress(double pros) {
     progress = pros;
     notifyListeners();
   }
-  void changeImageTitle(bool show){
+
+  void changeImageTitle(bool show) {
     showImageTitle = show;
     notifyListeners();
   }
-  void changeIsFollow(bool bl,int id) {
-    isFollow[id] = bl;
-    print('changeIsFollow============================$isFollow');
-    notifyListeners();
-  }
-  void changeOnClick(bool canClick){
-    canOnClick = canClick;
-    notifyListeners();
-  }
-  void changeAttentionModel(ProfileModel model,int id) {
-    attentionModel[id] = model;
+
+  void vipChangeTitleColor(Color color) {
+    vipTitleColor = color;
     notifyListeners();
   }
 
-
-  void changeTitleColor(Color color) {
-    titleColor = color;
+  void clear(int id) {
+    profileUiChangeModel[id] = null;
     notifyListeners();
   }
 
-  void clear() {
-    titleColor = AppColor.transparent;
-    attentionModel = null;
-    backImage = "images/resource/2.0x/white_return@2x.png";
+  void changeTitleColor(int id, Color titleColor) {
+    profileUiChangeModel[id].titleColor = titleColor;
     notifyListeners();
   }
 
-  void changeBackImage(String image) {
-    backImage = image;
+  void changeIsFollow(bool bl, int id) {
+    profileUiChangeModel[id].isFollow = bl;
     notifyListeners();
   }
 
+  void changeOnClick(int id,bool canClick) {
+    profileUiChangeModel[id].canOnClick = canClick;
+    notifyListeners();
+  }
+
+  void changeAttentionModel(ProfileModel model, int id) {
+    profileUiChangeModel[id].attentionModel = model;
+    notifyListeners();
+  }
+
+  void changeBackImage(int id,String image) {
+    profileUiChangeModel[id].backImage = image;
+    notifyListeners();
+  }
+}
+class ProfileUiChangeModel {
+  bool isFollow= false;
+  bool canOnClick = true;
+  Color titleColor = AppColor.transparent;
+  ProfileModel attentionModel = ProfileModel();
+  String backImage ="images/resource/2.0x/white_return@2x.png";
 }

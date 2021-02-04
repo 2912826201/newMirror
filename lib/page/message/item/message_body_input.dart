@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/constant/color.dart';
 
 //信息界面-输入聊天信息的界面
 class MessageInputBody extends StatelessWidget {
   MessageInputBody({
     this.child,
-    this.color = const Color(0xfff4f4f4),
+    this.color = AppColor.bgWhite,
     this.decoration,
     this.onTap,
   });

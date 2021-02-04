@@ -8,7 +8,10 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/left_scroll/left_scroll_list_view.dart';
-
+import 'package:mirror/widget/precision_limit_Formatter.dart';
+import 'package:provider/provider.dart';
+import '../profile_detail_page.dart';
+import '../profile_detail_page.dart';
 import 'customize_line_chart.dart';
 
 ///体重记录页--我的体重
@@ -107,6 +110,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
         if(mounted){
           setState(() {});
         }
+        context.read<ProfilePageNotifier>().setweight(0);
       },
     );
   }
@@ -304,6 +308,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
                     textAlign: TextAlign.center,
                     keyboardType: TextInputType.number,
                     controller: _numberController,
+                    inputFormatters: [PrecisionLimitFormatter(2)],
                     decoration: InputDecoration(
                       hintText: userWeight > 0.0 ? userWeight.toString() : "",
                       labelStyle: TextStyle(color: Color(0x99000000)),
@@ -363,6 +368,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
                         textAlign: TextAlign.center,
                         keyboardType: TextInputType.number,
                         controller: _numberController,
+                        inputFormatters: [PrecisionLimitFormatter(2)],
                         decoration: InputDecoration(
                           labelStyle: TextStyle(color: Color(0x99000000)),
                           hintMaxLines: 1,
@@ -393,6 +399,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
             userWeight = formatData(userWeight);
             saveWeight(userWeight.toString());
             addWeightData(userWeight);
+            context.read<ProfilePageNotifier>().setweight(formatData(userWeight));
             _numberController.text = "";
           } catch (e) {
             ToastShow.show(msg: "输入有错，请重新输入！", context: context);

@@ -42,6 +42,7 @@ class AppRouter {
   static String pathVideoCoursePlay = "/training/videocourseplay";
   static String pathScanCode = "/scancode";
   static String pathScanCodeResult = "/scancode/result";
+  static String pathMyQrCodePage = "/scancode/myqrcodepage";
   static String pathMineDetails = "/minedetails";
   static String pathProfileDetails = "/profile/details";
   static String pathProfileDetailsMore = "/profile/details/more";
@@ -49,6 +50,7 @@ class AppRouter {
   static String pathEditInformationName = "/profile/editinformation/name";
   static String pathEditInformationIntroduction = "/profile/editinformation/introduction";
   static String pathChatPage = "/profile/chatPage";
+  static String pathNetworkLinkFailure = "/profile/networkLinkFailure";
   static String pathGroupQrCodePage = "/profile/chatPage/groupMorePage/groupQrCodePage";
   static String pathSettingHomePage = "/profile/settinghomepage";
   static String pathSettingFeedBack = "/profile/settingfeedback";
@@ -67,6 +69,7 @@ class AppRouter {
   static String pathTrainingGalleryDetail = "/profile/traininggallery/detail";
   static String pathTrainingGalleryComparison = "/profile/traininggallery/comparison";
   static String pathMeCoursePage = "/profile/mecoursepage";
+  static String pathQueryFollowList = "/profile/queryfollowlist";
   static String pathMeDownloadVideoCoursePage = "/profile/mecoursepage/medownloadvideocoursepage";
   static String pathVipNotOpenPage = "/profile/vip/notopenpage";
   static String pathVipOpenPage = "/profile/vip/openpage";
@@ -90,6 +93,7 @@ class AppRouter {
     router.define(pathPerfectUserPage, handler: handlerPerfectUserPage);
     router.define(pathLoginSucess, handler: handlerLoginSucessPagePage);
     router.define(pathChatPage, handler: handlerChatPage);
+    router.define(pathNetworkLinkFailure, handler: handlerNetworkLinkFailure);
     router.define(pathGroupQrCodePage, handler: handlerGroupQrCodePage);
     router.define(pathPreviewPhoto, handler: handlerPreviewPhoto);
     router.define(pathPreviewVideo, handler: handlerPreviewVideo);
@@ -98,6 +102,7 @@ class AppRouter {
     router.define(pathVideoDetail, handler: handlerVideoDetail);
     router.define(pathScanCode, handler: handlerScanCode);
     router.define(pathScanCodeResult, handler: handlerScanCodeResult);
+    router.define(pathMyQrCodePage, handler: handlerMyQrcodePage);
     router.define(pathProfileDetails, handler: handlerMineDetails);
     router.define(pathVideoCourseList, handler: handlerVideoCourseList);
     router.define(pathVideoCoursePlay, handler: handlerVideoCoursePlay);
@@ -124,6 +129,7 @@ class AppRouter {
     router.define(pathTrainingGalleryDetail, handler: handlerTrainingGalleryDetail);
     router.define(pathTrainingGalleryComparison, handler: handlerTrainingGalleryComparison);
     router.define(pathMeCoursePage, handler: handlerMeCoursePage);
+    router.define(pathQueryFollowList, handler: handlerQueryFollowList);
     router.define(pathMeDownloadVideoCoursePage, handler: handlerMeDownloadVideoCoursePage);
     router.define(pathOtherCompleteCourse, handler: handlerOtherCompleteCourse);
     router.define(pathVipNotOpenPage, handler: handlerVipNotOpen);
@@ -274,7 +280,9 @@ class AppRouter {
     map["resultModel"] = resultModel.toJson();
     _navigateToPage(context, pathScanCodeResult, map);
   }
-
+  static void navigateToMyQrCodePage(BuildContext context) {
+    _navigateToPage(context, pathMyQrCodePage, {});
+  }
   static void navigateToProfileDetailMore(BuildContext context) {
     _navigateToPage(context, pathProfileDetailsMore, {});
   }
@@ -372,6 +380,13 @@ class AppRouter {
     _navigateToPage(context, pathChatPage, map);
   }
 
+
+  static void navigateToNetworkLinkFailure(
+      {@required BuildContext context,}) {
+    Map<String, dynamic> map = Map();
+    _navigateToPage(context, pathNetworkLinkFailure, map);
+  }
+
   static void navigateToGroupQrCodePage(
       {@required BuildContext context, @required String imageUrl,@required String name,@required String groupId}) {
     Map<String, dynamic> map = Map();
@@ -447,7 +462,12 @@ class AppRouter {
   static void navigateToMeCoursePage(BuildContext context) {
     _navigateToPage(context, pathMeCoursePage, {});
   }
-
+  static void navigateToQueryFollowList(BuildContext context,int type,int userId) {
+    Map<String,dynamic> map = Map();
+    map["type"] = type;
+    map["userId"] = userId;
+    _navigateToPage(context, pathQueryFollowList, map);
+  }
   static void navigateToMeDownloadVideoCoursePage(BuildContext context) {
     _navigateToPage(context, pathMeDownloadVideoCoursePage, {});
   }

@@ -8,10 +8,10 @@ class UserExtraInfoModel{
   int albumNum;
 
   UserExtraInfoModel(
-    {this.uid,
-      this.trainingSeconds,
-      this.weight,
-      this.albumNum,
+    {this.uid =0,
+      this.trainingSeconds = 0,
+      this.weight = 0,
+      this.albumNum = 0,
     });
 
   UserExtraInfoModel.fromJson(Map<String, dynamic> json) {
