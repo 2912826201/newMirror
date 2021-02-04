@@ -174,7 +174,8 @@ var handlerSettingFeedBack = Handler(handlerFunc: (BuildContext context, Map<Str
 });
 
 var handlerSettingAbout = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return AboutPage();
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return AboutPage(url: data["url"],haveNewVersion: data["haveNewVersion"],content: data["content"],);
 });
 
 var handlerSettingAccountSecurity = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {

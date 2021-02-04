@@ -639,7 +639,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 class ProfilePageNotifier extends ChangeNotifier {
   Color vipTitleColor = AppColor.transparent;
 
-  double progress = 0.0;
+  double progress = 1;
 
   bool showImageTitle = false;
 

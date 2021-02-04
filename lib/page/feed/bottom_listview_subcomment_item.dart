@@ -170,7 +170,7 @@ class BottomListViewSubCommentListItemState extends State<BottomListViewSubComme
                             Container(
                               margin: EdgeInsets.only(bottom: 12),
                               child: Text(
-                                "${DateUtil.generateFormatDate(widget.model.createTime)} 回复",
+                                "${DateUtil.generateFormatDate(widget.model.createTime,false)} 回复",
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: AppColor.textSecondary,

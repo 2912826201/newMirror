@@ -379,7 +379,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
                     height: 7,
                   ),
                   Text(
-                    DateUtil.generateFormatDate(msgModel.createTime),
+                    DateUtil.generateFormatDate(msgModel.createTime,true),
                     style: AppStyle.textHintRegular12,
                   )
                 ],
