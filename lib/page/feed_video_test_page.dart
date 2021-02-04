@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/feed_video_player.dart';
 
 /// feed_video_test_page
@@ -15,7 +16,7 @@ class FeedVideoTestPage extends StatelessWidget {
     sizeInfo.videoCroppedRatio = 1.0;
     sizeInfo.offsetRatioX = -0.21875;
     return Scaffold(
-      appBar: AppBar(),
+      appBar: CustomAppBar(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

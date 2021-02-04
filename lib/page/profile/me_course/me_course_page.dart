@@ -5,6 +5,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 ///我的课程
@@ -32,9 +33,8 @@ class _MeCoursePageState extends State<MeCoursePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("我的课程"),
-        centerTitle: true,
+      appBar: CustomAppBar(
+        titleString: "我的课程",
       ),
       body: getBodyUi(),
     );

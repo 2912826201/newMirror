@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:video_player/video_player.dart';
 
 /// video_test_page
@@ -27,7 +28,7 @@ class VideoTestState extends State<VideoTestPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(),
+        appBar: CustomAppBar(),
         body: Center(
           child: _controller.value.initialized
               ? AspectRatio(

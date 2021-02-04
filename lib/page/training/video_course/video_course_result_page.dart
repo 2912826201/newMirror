@@ -7,6 +7,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 
 /// video_course_result_page
@@ -32,31 +33,15 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: CustomAppBar(
         backgroundColor: AppColor.bgBlack,
         brightness: Brightness.dark,
-        leading: IconButton(
-          icon: Icon(
-            Icons.close,
-            color: AppColor.white,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "训练结束",
-              style: TextStyle(color: AppColor.white, fontSize: 16),
-            ),
-            //因只有左侧有按钮 所以在右侧增加同样大小区域 避免居中后偏右
-            SizedBox(
-              width: 48,
-            )
-          ],
+        leading: CustomAppBarButton(Icons.close, AppColor.white, true, () {
+          Navigator.pop(context);
+        }),
+        titleWidget: Text(
+          "训练结束",
+          style: TextStyle(color: AppColor.white, fontSize: 16),
         ),
       ),
       body: Column(children: [

@@ -6,6 +6,7 @@ import 'package:mirror/page/profile/setting/blacklist_page.dart';
 import 'package:mirror/page/profile/setting/feedback_page.dart';
 import 'package:mirror/page/profile/setting/notice_setting_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -47,23 +48,8 @@ class _SettingHomePageState extends State<SettingHomePage> {
     double height = ScreenUtil.instance.height;
     return Scaffold(
       backgroundColor: AppColor.white,
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: AppColor.white,
-        leading: InkWell(
-          child: Container(
-            margin: EdgeInsets.only(left: 16),
-            child: Image.asset("images/resource/2.0x/return2x.png"),
-          ),
-          onTap: () {
-            Navigator.pop(context);
-          },
-        ),
-        leadingWidth: 44,
-        title: Text(
-          "设置",
-          style: AppStyle.textMedium18,
-        ),
+      appBar: CustomAppBar(
+        titleString: "设置",
       ),
       body: Container(
         height: height - ScreenUtil.instance.statusBarHeight,

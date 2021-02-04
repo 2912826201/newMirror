@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:notification_permissions/notification_permissions.dart';
 
 void main() => runApp(MyApp());
@@ -63,8 +64,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Notification Permissions'),
+        appBar: CustomAppBar(
+          titleString: 'Notification Permissions',
         ),
         body: Center(
             child: Container(

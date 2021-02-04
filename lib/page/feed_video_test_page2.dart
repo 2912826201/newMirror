@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/feed_video_player.dart';
 
 /// feed_video_test_page2
@@ -43,7 +44,7 @@ class _FeedVideoTestPage2State extends State<FeedVideoTestPage2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: CustomAppBar(),
       body: ListView.builder(itemCount: 100, itemBuilder: _buildItem),
     );
   }

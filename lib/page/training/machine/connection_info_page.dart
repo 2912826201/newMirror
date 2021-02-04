@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 
 /// connection_info_page
 /// Created by yangjiayi on 2021/1/4.
@@ -19,36 +20,14 @@ class _ConnectionInfoState extends State<ConnectionInfoPage> {
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.dark,
-        child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: AppColor.white,
-            brightness: Brightness.light,
-            title: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  _title,
-                  style: AppStyle.textMedium18,
-                ),
-                //因只有左侧有按钮 所以在右侧增加同样大小区域 避免居中后偏右
-                SizedBox(
-                  width: 48,
-                )
-              ],
-            ),
-            leading: IconButton(
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: AppColor.black,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                }),
-          ),
-          body: _buildBody(context),
-        ));
+      value: SystemUiOverlayStyle.dark,
+      child: Scaffold(
+        appBar: CustomAppBar(
+          titleString: _title,
+        ),
+        body: _buildBody(context),
+      ),
+    );
   }
 
   Widget _buildBody(BuildContext context) {

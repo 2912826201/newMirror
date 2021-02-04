@@ -18,6 +18,7 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -80,44 +81,18 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          backgroundColor: AppColor.white,
-          leading: InkWell(
-            child: Container(
-              margin: EdgeInsets.only(left: 16),
-              child: Image.asset("images/resource/2.0x/return2x.png"),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          leadingWidth: 44,
-          title: Text(
-            "我的二维码",
-            style: AppStyle.textMedium18,
-          ),
-          centerTitle: true,
-          actions: [
-            InkWell(
-              onTap: () {
-                model.width = int.parse("$width".substring(0, "$width".indexOf(".")));
-                model.height = int.parse("$height".substring(0, "$height".indexOf(".")));
-                model.file = imageFile;
-                openShareBottomSheet(
-                    context: context,
-                    chatTypeModel: ChatTypeModel.MESSAGE_TYPE_IMAGE,
-                    map: model.toJson(),
-                    sharedType: 2);
-              },
-              child: Container(
-                  margin: EdgeInsets.only(right: 16),
-                  child: Image.asset(
-                    "images/test/分享.png",
-                    width: 24,
-                    height: 24,
-                  )),
-            ),
-          ]),
+      appBar: CustomAppBar(
+        titleString: "我的二维码",
+        actions: [
+          CustomAppBarButton(Icons.ios_share, AppColor.black, false, () {
+            model.width = int.parse("$width".substring(0, "$width".indexOf(".")));
+            model.height = int.parse("$height".substring(0, "$height".indexOf(".")));
+            model.file = imageFile;
+            openShareBottomSheet(
+                context: context, chatTypeModel: ChatTypeModel.MESSAGE_TYPE_IMAGE, map: model.toJson(), sharedType: 2);
+          }),
+        ],
+      ),
       body: Selector<ProfileNotifier, ProfileDto>(builder: (context, profileDto, child) {
         return RepaintBoundary(
           key: rootWidgetKey,
