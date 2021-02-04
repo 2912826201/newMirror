@@ -186,7 +186,7 @@ class DateUtil {
 
    往年的显示 年-月-⽇ 如 16-5-21 12:12
    */
-  static String generateFormatDate(int timeInterval) {
+  static String generateFormatDate(int timeInterval,bool showText) {
     var result = "";
     if (timeInterval == 0) {
       return result;
@@ -215,9 +215,10 @@ class DateUtil {
       minute = "0" + minute;
     }
     if (currentDateString.year - date.year > 0) {
-      result = year + "-" + month + "-" + day + " " + hour + ":" + minute;
+      result = year + "${showText?"年":"-"}" + month + "${showText?"月":"-"}" + day + "${showText?"日":""}"+" " + hour
+          + ":" + minute;
     } else if (currentDateString.year - date.year == 0 && currentDateString.month - date.month > 0) {
-      result = month + "-" + day + " " + hour + ":" + minute;
+      result = month + "${showText?"月":"-"}" + day + "${showText?"日":""}"+" " + hour + ":" + minute;
     } else if (currentDateString.year - date.year == 0 &&
         currentDateString.month - date.month == 0 &&
         currentDateString.day - date.day > 0) {
@@ -228,7 +229,7 @@ class DateUtil {
       }
       //超过48小时
       if (currentDateString.day - date.day > 2) {
-        result = month + "-" + day + " " + hour + ":" + minute;
+        result = month + "${showText?"月":"-"}" + day +"${showText?"月":""}"+ " " + hour + ":" + minute;
       }
     } else if (currentDateString.year - date.year == 0 &&
         currentDateString.month - date.month == 0 &&

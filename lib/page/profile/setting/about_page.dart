@@ -5,15 +5,24 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/version_update_dialog.dart';
+import 'package:toast/toast.dart';
 //关于
 class AboutPage extends StatefulWidget {
+  String url;
+  bool haveNewVersion;
+  AboutPage({this.url,this.haveNewVersion});
   @override
   State<StatefulWidget> createState() {
-        return _AboutPageState();
+        return _AboutPageState(url: url,haveNewVersion: haveNewVersion);
   }
 
 }
 class _AboutPageState extends State<AboutPage>{
+  String url;
+  bool haveNewVersion;
+  _AboutPageState({this.url,this.haveNewVersion});
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -54,6 +63,21 @@ class _AboutPageState extends State<AboutPage>{
                 ),
                 _itemRow("用户协议"),
                 _itemRow("隐私权政策"),
+                InkWell(
+                  onTap: (){
+                    if(haveNewVersion){
+                      showVersionDialog(
+                        context: context,
+                        content: "这是更新描述",
+                        url: url,
+                        strong: false
+                      );
+                    }else{
+                      Toast.show("已是最新版本", context);
+                    }
+                  },
+                  child: _itemRow("版本更新"),
+                ),
                 Expanded(child: SizedBox()),
                 Center(
                   child: Text("Copyright@2019 iFitness.All rights Reserved",style: AppStyle.textSecondaryRegular13,),
@@ -70,9 +94,20 @@ class _AboutPageState extends State<AboutPage>{
           padding: EdgeInsets.only(left: 16,right: 16),
           child:Center(
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(text,style: AppStyle.textRegular16,),
               Expanded(child: SizedBox()),
+              text=="版本更新"&&haveNewVersion?ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child:Container(
+                  width: 40,
+                  height: 18,
+                  color: AppColor.mainRed,
+                  child: Center(child: Text("NEW",style: AppStyle.whiteRegular12,),),
+                ),
+              ):Container(),
+              SizedBox(width: 12,),
               Container(
                 height: 18,
                 width: 18,

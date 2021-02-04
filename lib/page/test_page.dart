@@ -1,7 +1,5 @@
-
 import 'dart:io';
 import 'dart:math';
-
 
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +26,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
+import 'package:mirror/widget/version_update_dialog.dart';
 
 import 'package:mirror/widget/volume_popup.dart';
 import 'package:open_file/open_file.dart';
@@ -47,8 +46,10 @@ class TestPage extends StatefulWidget {
 
 class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
   double nowProgress = 0;
+
   @override
   bool get wantKeepAlive => true; //必须重写
+  String url = "https://down.qq.com/qqweb/QQ_1/android_apk/Android_8.5.5.5105_537066978.apk";
 
   @override
   Widget build(BuildContext context) {
@@ -345,10 +346,12 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                   child: Text("视频课结果页"),
                 ),
               ]),
+
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 RaisedButton(
                   onPressed: () {
                     _getNewVersion(context);
+
                   },
                   child: Text("获取最新版本"),
                 ),
@@ -359,79 +362,57 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
       ),
     );
   }
-  void _getNewVersion(BuildContext context)async{
+
+  void _getNewVersion(BuildContext context) async {
     String url = "https://down.qq.com/qqweb/QQ_1/android_apk/Android_8.5.5.5105_537066978.apk";
     VersionModel model = await getNewVersion();
-    if(model!=null){
+    if (model != null) {
       print('====================版本model有值');
-      if(model.version!=AppConfig.version){
-        ToastShow.show(msg: "当前版本${AppConfig.version}   最新版本${model.version}", context:context);
-      }else{
-        AppConfig.version = model.version;
-        if(model.os==Application.platform&&url!=null){
-          if(Application.platform==0){
+      if (model.version != AppConfig.version) {
+        ToastShow.show(msg: "当前版本${AppConfig.version}   最新版本${model.version}", context: context);
+      } else {
+        if (model.os == Application.platform && url != null) {
+          if (Application.platform == 0) {
             String oldPath = await FileUtil().getDownloadedPath(url);
-            if(oldPath!=null){
-              showAppDialog(context,
-                title:"检测到新版本安装包，是否安装？",
-                cancel:AppDialogButton("不安装",(){
+            if (oldPath != null) {
+              showAppDialog(
+                context,
+                title: "检测到新版本安装包，是否安装？",
+                cancel: AppDialogButton("不安装", () {
                   return true;
                 }),
-                confirm: AppDialogButton("安装",(){
-                  OpenFile.open(oldPath).then((value){
+                confirm: AppDialogButton("安装", () {
+                  OpenFile.open(oldPath).then((value) {
                     print('=======================${value.message}');
                   });
                   return true;
                 }),
               );
-            }else{
-              showAppDialog(context, title:"获取到新版本，是否更新？",
-                cancel:AppDialogButton("不更新",(){
-                  return true;
-                }),
-                confirm: AppDialogButton("更新",(){
-                    FileUtil().download(url, (taskId, received, total) async {
-                      print('==taskId$taskId====================progress${received/total}');
-                      if(received==total){
-                        Future.delayed(Duration(milliseconds: 100),()async{
-                          String path = await FileUtil().getDownloadedPath(url);
-                          print('===========================path$path');
-                          if(path!=null){
-                            Map<Permission, PermissionStatus> statuses = await [
-                              Permission.storage,
-                            ].request();
-                            if(statuses.isNotEmpty){
-                              await File(path).stat().then((value) => print('========文件信息---------------$value'));
-                              OpenFile.open(path).then((value){
-                                print('=======================${value.message}');
-                              });
-                            }
-                          }
-                        });
-                      }
-                    });
-                  return true;
-                }),
-              );
+            } else {
+              showVersionDialog(
+                  barrierDismissible: false,
+                  content: "位到无多无的地位多无多无定位到无多无",
+                  strong: model.isForceUpdate==0?false:true,
+                  context: context,
+                  url: url);
             }
-          }else{
+          } else {
             showAppDialog(
               context,
-              title:"检测到新版本安装包，是否跳转商店？",
-              cancel:AppDialogButton("取消",(){
+              title: "检测到新版本，是否跳转商店？",
+              cancel: AppDialogButton("取消", () {
                 return true;
               }),
-              confirm: AppDialogButton("跳转",(){
-                LaunchReview.launch(writeReview: false,iOSAppId: "585027354");
+              confirm: AppDialogButton("跳转", () {
+                LaunchReview.launch(writeReview: false, iOSAppId: "585027354");
                 return true;
               }),
             );
-
           }
         }
       }
-    }else{
-     return;
+    } else {
+      return;
     }
   }
 }

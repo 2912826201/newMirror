@@ -285,7 +285,7 @@ class _VipPageState extends State<VipNotOpenPage> {
                         )
                       : RichText(
                           text: TextSpan(
-                              text: "${DateUtil.generateFormatDate(lastTime)}到期  ",
+                              text: "${DateUtil.generateFormatDate(lastTime,true)}到期  ",
                               style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.bgVip2),
                               children: [
                               TextSpan(text: "购买后有效期延长", style: AppStyle.textHintRegular13),
