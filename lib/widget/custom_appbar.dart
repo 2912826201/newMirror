@@ -56,7 +56,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         centerTitle: true,
         leading: hasLeading
             ? leading == null
-                ? CustomAppBarButton(
+                ? CustomAppBarIconButton(
                     Icons.arrow_back_ios_outlined,
                     AppColor.black,
                     true,
@@ -74,8 +74,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-class CustomAppBarButton extends StatefulWidget {
-  CustomAppBarButton(this.icon, this.iconColor, this.isLeading, this.onTap, {Key key}) : super(key: key);
+class CustomAppBarIconButton extends StatefulWidget {
+  CustomAppBarIconButton(this.icon, this.iconColor, this.isLeading, this.onTap, {Key key}) : super(key: key);
 
   final IconData icon;
   final Color iconColor;
@@ -83,10 +83,10 @@ class CustomAppBarButton extends StatefulWidget {
   final Function() onTap;
 
   @override
-  _CustomAppBarButtonState createState() => _CustomAppBarButtonState();
+  _CustomAppBarIconButtonState createState() => _CustomAppBarIconButtonState();
 }
 
-class _CustomAppBarButtonState extends State<CustomAppBarButton> {
+class _CustomAppBarIconButtonState extends State<CustomAppBarIconButton> {
   bool isPressed = false;
 
   @override
@@ -102,6 +102,60 @@ class _CustomAppBarButtonState extends State<CustomAppBarButton> {
           widget.icon,
           color: isPressed ? widget.iconColor.withOpacity(0.5) : widget.iconColor,
           size: CustomAppBar.appBarIconSize,
+        ),
+        onTapDown: (details) {
+          setState(() {
+            isPressed = true;
+          });
+        },
+        onTapUp: (details) {
+          setState(() {
+            isPressed = false;
+          });
+        },
+        onTapCancel: () {
+          setState(() {
+            isPressed = false;
+          });
+        },
+        onTap: widget.onTap,
+      ),
+    );
+  }
+}
+
+class CustomAppBarTextButton extends StatefulWidget {
+  CustomAppBarTextButton(this.text, this.iconColor, this.isLeading, this.onTap, {Key key}) : super(key: key);
+
+  final String text;
+  final Color iconColor;
+  final bool isLeading;
+  final Function() onTap;
+
+  @override
+  _CustomAppBarTextButtonState createState() => _CustomAppBarTextButtonState();
+}
+
+class _CustomAppBarTextButtonState extends State<CustomAppBarTextButton> {
+  bool isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      //高度填充满整个AppBar
+      height: CustomAppBar.appBarHeight,
+      alignment: Alignment.center,
+      padding: widget.isLeading
+          ? EdgeInsets.only(left: CustomAppBar.appBarIconPadding)
+          : EdgeInsets.only(right: CustomAppBar.appBarIconPadding),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        child: Text(
+          widget.text,
+          style: TextStyle(
+            fontSize: 16,
+            color: isPressed ? widget.iconColor.withOpacity(0.5) : widget.iconColor,
+          ),
         ),
         onTapDown: (details) {
           setState(() {

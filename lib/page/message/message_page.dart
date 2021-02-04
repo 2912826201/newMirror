@@ -144,7 +144,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         hasLeading: false,
         titleString: "消息${context.watch<RongCloudStatusNotifier>().statusString}",
         actions: [
-          CustomAppBarButton(Icons.group_add, AppColor.black, false, () async {
+          CustomAppBarIconButton(Icons.group_add, AppColor.black, false, () async {
             showCreateGroupPopup(context);
           }),
         ],

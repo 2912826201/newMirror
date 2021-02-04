@@ -40,7 +40,7 @@ class _VipOpenPage extends State<VipOpenPage> {
       appBar: CustomAppBar(
         backgroundColor: AppColor.black,
         brightness: Brightness.dark,
-        leading: CustomAppBarButton(Icons.arrow_back_ios_outlined, AppColor.white, true, () {
+        leading: CustomAppBarIconButton(Icons.arrow_back_ios_outlined, AppColor.white, true, () {
           Navigator.pop(context);
         }),
         titleWidget: Text(

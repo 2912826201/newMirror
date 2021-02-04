@@ -84,7 +84,7 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
       appBar: CustomAppBar(
         titleString: "我的二维码",
         actions: [
-          CustomAppBarButton(Icons.ios_share, AppColor.black, false, () {
+          CustomAppBarIconButton(Icons.ios_share, AppColor.black, false, () {
             model.width = int.parse("$width".substring(0, "$width".indexOf(".")));
             model.height = int.parse("$height".substring(0, "$height".indexOf(".")));
             model.file = imageFile;

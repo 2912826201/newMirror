@@ -80,15 +80,18 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(titleString: "群聊二维码", actions: [
-        CustomAppBarButton(Icons.ios_share, AppColor.black, false, () {
-          model.width = int.parse("$width".substring(0, "$width".indexOf(".")));
-          model.height = int.parse("$height".substring(0, "$height".indexOf(".")));
-          model.file = imageFile;
-          openShareBottomSheet(
-              context: context, chatTypeModel: ChatTypeModel.MESSAGE_TYPE_IMAGE, map: model.toJson(), sharedType: 2);
-        }),
-      ]),
+      appBar: CustomAppBar(
+        titleString: "群聊二维码",
+        actions: [
+          CustomAppBarIconButton(Icons.ios_share, AppColor.black, false, () {
+            model.width = int.parse("$width".substring(0, "$width".indexOf(".")));
+            model.height = int.parse("$height".substring(0, "$height".indexOf(".")));
+            model.file = imageFile;
+            openShareBottomSheet(
+                context: context, chatTypeModel: ChatTypeModel.MESSAGE_TYPE_IMAGE, map: model.toJson(), sharedType: 2);
+          }),
+        ],
+      ),
       body: RepaintBoundary(
         key: rootWidgetKey,
         child: Container(
