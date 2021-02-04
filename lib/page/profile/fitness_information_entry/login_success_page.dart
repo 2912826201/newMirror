@@ -42,20 +42,9 @@ class _LoginSucessState extends State<LoginSucessPage> {
       backgroundColor: AppColor.white,
       appBar: CustomAppBar(
         actions: [
-          Center(
-            child: GestureDetector(
-              child: Container(
-                padding: EdgeInsets.only(right: 16),
-                child: Text(
-                  "跳过",
-                  style: AppStyle.textRegular15,
-                ),
-              ),
-              onTap: () {
-                AppRouter.popToBeforeLogin(context);
-              },
-            ),
-          ),
+          CustomAppBarTextButton("跳过", AppColor.textPrimary2, false, () {
+            AppRouter.popToBeforeLogin(context);
+          }),
         ],
       ),
       body: Container(
