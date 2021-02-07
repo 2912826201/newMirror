@@ -260,7 +260,7 @@ class DynamicListLayout extends StatelessWidget {
         onTap: () {
           if (isAddress) {
             Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-              return createMapScreen(latitude: latitude, longitude: longitude,keyWords: model.name,);
+              return createMapScreen(latitude: latitude, longitude: longitude,keyWords: model.address,);
             }));
           }
         },

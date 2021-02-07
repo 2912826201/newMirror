@@ -35,7 +35,6 @@ import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:text_span_field/range_style.dart';
 import 'package:text_span_field/text_span_field.dart';
 import 'package:toast/toast.dart';
@@ -72,7 +71,7 @@ class ReleasePage extends StatefulWidget {
   ReleasePageState createState() => ReleasePageState();
 }
 
-class ReleasePageState extends State<ReleasePage> {
+class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
   SelectedMediaFiles _selectedMediaFiles;
   TextEditingController _controller = TextEditingController();
   FocusNode feedFocus = FocusNode();
@@ -83,12 +82,11 @@ class ReleasePageState extends State<ReleasePage> {
   // at的索引数组
   List<Rule> rules = [];
   Location currentAddressInfo; //当前位置的信息
-  String androidAMapKey = "fef4e35be05e2337119aeb3b4e57388d"; //安卓高德key 搜索POI需要
-  String iosKey = "836c55dba7d3a44793ec9ae1e1dc2e82";
   List<PeripheralInformationPoi> pois = []; //返回周边信息页面显示的数据集合
   @override
   void dispose() {
     _controller.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -98,19 +96,63 @@ class ReleasePageState extends State<ReleasePage> {
     print("查明￥${Application.selectedMediaFiles}");
     // 获取定位权限
     locationPermissions();
+    WidgetsBinding.instance.addObserver(this);
     _selectedMediaFiles = Application.selectedMediaFiles;
     Application.selectedMediaFiles = null;
     super.initState();
   }
-
+  @override
+  ///监听用户回到app
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      backToBack();
+    }
+  }
+    // 前台回到后台
+    backToBack() async{
+      var status = await Permission.locationWhenInUse.status;
+      if (permissions != null && permissions != PermissionStatus.granted && status == PermissionStatus.granted) {
+        //flutter定位只能获取到经纬度信息
+        currentAddressInfo = await AmapLocation.instance.fetchLocation();
+        // 调用周边
+        aroundHttp();
+      }
+    }
   // 获取定位权限
   locationPermissions() async {
-    permissions = await Permission.locationWhenInUse.request();
-    if (permissions.isGranted) {
-      //flutter定位只能获取到经纬度信息
-      currentAddressInfo = await AmapLocation.instance.fetchLocation();
-      // 调用周边
-      aroundHttp();
+    // 获取权限状态
+    permissions = await Permission.locationWhenInUse.status;
+    switch (permissions) {
+      // 用户拒绝访问请求的功能
+      case PermissionStatus.denied:
+        return 0;
+      // 用户授予了对所请求功能的访问权限
+      case PermissionStatus.granted:
+        //flutter定位只能获取到经纬度信息
+        currentAddressInfo = await AmapLocation.instance.fetchLocation();
+        // 调用周边
+        aroundHttp();
+        return 1;
+
+      ///操作系统拒绝访问请求的功能。 用户无法更改
+      ///此应用程序的状态，可能是由于活动限制（例如父母身份）
+      ///控制就位。
+      /// *仅在iOS上受支持。*
+      case PermissionStatus.restricted:
+        return 2;
+
+      ///尚未请求许可。
+      case PermissionStatus.undetermined:
+        return 3;
+
+      ///用户拒绝访问请求的功能，并选择从不
+      ///再次显示对此权限的请求。 用户仍然可以更改
+      ///设置中的权限状态。
+      /// *仅在Android上受支持。
+      case PermissionStatus.permanentlyDenied:
+        return 4;
+      default:
+        throw UnimplementedError();
     }
   }
 
@@ -119,23 +161,25 @@ class ReleasePageState extends State<ReleasePage> {
     PeripheralInformationEntity locationInformationEntity = await aroundForHttp();
     if (locationInformationEntity.status == "1") {
       print('请求成功');
-      pois = locationInformationEntity.pois;
-      // 城市信息导入
-      PeripheralInformationPoi poi1 = PeripheralInformationPoi();
-      poi1.name = locationInformationEntity.pois.first.cityname;
-      poi1.id = Application.cityId;
-      poi1.citycode = locationInformationEntity.pois.first.citycode;
-      // 获取城市经纬度
-      Application.cityMap.forEach((key, value) {
-        value.forEach((v) {
-          if (v.regionCode == poi1.citycode) {
-            poi1.location = v.longitude.toString() + "," + v.latitude.toString();
-          }
+      if (locationInformationEntity.pois.isNotEmpty) {
+        pois = locationInformationEntity.pois;
+        // 城市信息导入
+        PeripheralInformationPoi poi1 = PeripheralInformationPoi();
+        poi1.name = locationInformationEntity.pois.first.cityname;
+        poi1.id = Application.cityId;
+        poi1.citycode = locationInformationEntity.pois.first.citycode;
+        // 获取城市经纬度
+        Application.cityMap.forEach((key, value) {
+          value.forEach((v) {
+            if (v.regionCode == poi1.citycode) {
+              poi1.location = v.longitude.toString() + "," + v.latitude.toString();
+            }
+          });
         });
-      });
-      // print("高德返回￥${poi1.citycode}");
-      print(" 插入城市${poi1.toString()}");
-      pois.insert(0, poi1);
+        // print("高德返回￥${poi1.citycode}");
+        print(" 插入城市${poi1.toString()}");
+        pois.insert(0, poi1);
+      }
       setState(() {});
     } else {
       // 请求失败
@@ -148,9 +192,9 @@ class ReleasePageState extends State<ReleasePage> {
     Map<String, dynamic> map = Map();
     if (Platform.isIOS) {
       print("ios");
-      map["key"] = iosKey;
+      map["key"] = Application.iosKey;
     } else {
-      map["key"] = androidAMapKey;
+      map["key"] = Application.androidAMapKey;
       print("androidAMapKey");
     }
     map["location"] =
@@ -1270,6 +1314,7 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
   // 传入选择地址
   PeripheralInformationPoi selectAddress = PeripheralInformationPoi();
 
+
   Widget _showDialog(BuildContext context) {
     return showAppDialog(context,
         title: "获取系统定位权限",
@@ -1278,7 +1323,7 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
           return true;
         }),
         confirm: AppDialogButton("去打开", () {
-          AppSettings.openNotificationSettings();
+          AppSettings.openAppSettings();
           return true;
         }));
   }
@@ -1288,15 +1333,24 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () async {
-        if (widget.permissions.isGranted) {
+        // 获取定位权限
+        var status = await Permission.locationWhenInUse.status;
+        ///尚未请求许可。请求权限
+        if ( status == PermissionStatus.undetermined) {
+          await Permission.locationWhenInUse.request();
+        }
+        // 请求了许可但是未授权，弹窗提醒
+        if (status != PermissionStatus.granted && status != PermissionStatus.undetermined) {
+          _showDialog(context);
+        }
+        //  请求了许可授了权，跳转页面
+        if ( status == PermissionStatus.granted) {
           Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
             return SearchOrLocationWidget(
                 checkIndex: checkIndex,
                 selectAddress: selectAddress,
                 childrenACallBack: (poi) => childrenACallBack(poi));
           }));
-        } else {
-          _showDialog(context);
         }
         print("跳转选择地址页面");
       },
@@ -1317,7 +1371,8 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
             ),
             Text(
               seletedAddressText,
-              style: TextStyle(fontSize: 16,  color: seletedAddressText != "你在哪儿" ? AppColor.mainBlue : AppColor.textPrimary1),
+              style: TextStyle(
+                  fontSize: 16, color: seletedAddressText != "你在哪儿" ? AppColor.mainBlue : AppColor.textPrimary1),
             ),
             Spacer(),
             Icon(

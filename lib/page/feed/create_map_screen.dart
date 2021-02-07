@@ -24,43 +24,41 @@ class createMapScreen extends StatefulWidget {
 
 class _createMapScreenState extends State<createMapScreen> {
   AmapController _controller;
-  PeripheralInformationPoi pois = PeripheralInformationPoi();
+  String formatted_address;
 
   @override
   void initState() {
-    super.initState();
     aroundHttp();
+    super.initState();
   }
 
   // 查询定位信息
   aroundHttp() async {
-    PeripheralInformationEntity locationInformationEntity = await aroundForHttp();
+    PeripheralInformationEntity locationInformationEntity = await reverseGeographyHttp();
     if (locationInformationEntity.status == "1") {
       print('请求成功');
-      pois = locationInformationEntity.pois.first;
-      setState(() {});
+      formatted_address = locationInformationEntity.regeocode.formatted_address;
+      print(formatted_address);
+      if (mounted) {
+        setState(() {});
+      }
     } else {
       // 请求失败
     }
   }
 
-  //高德接口获取当前位置周边信息
-  Future<PeripheralInformationEntity> aroundForHttp() async {
-    String BaseUrl = "https://restapi.amap.com/v3/place/around";
+  // 逆地理编码
+  Future<PeripheralInformationEntity> reverseGeographyHttp() async {
+    String BaseUrl = "https://restapi.amap.com/v3/geocode/regeo";
     Map<String, dynamic> map = Map();
     if (Platform.isIOS) {
-      print("ios");
       map["key"] = Application.iosKey;
       ;
     } else {
       map["key"] = Application.androidAMapKey;
-      print("androidAMapKey");
     }
-    // map["keywords"] = widget.keyWords;
-    map["radius"] = 100;
     map["location"] = "${widget.longitude},${widget.latitude}"; //中心点坐标 经度和纬度用","分割，经度在前，纬度在后，经纬度小数点后不得超过6位
-    map["offset"] = 20; //每页记录数据
-    map["page"] = 1; //每页记录数据
+    map["batch"] = false;
     Response resp = await Http.getInstance()
         .dio
         .get(
@@ -97,9 +95,11 @@ class _createMapScreenState extends State<createMapScreen> {
                 )),
             leadingWidth: 44.0,
             elevation: 0.5),
-        body: widget.longitude == null && pois.name == null || pois.cityname == null || pois.adname == null || pois.address.toString() == null || pois.pname == null
-            ? Container(
-        )
+        body: widget.longitude == null ||
+                formatted_address == null ||
+                formatted_address.isEmpty ||
+                widget.keyWords == null
+            ? Container()
             : ListView(
                 physics: NeverScrollableScrollPhysics(),
                 children: [
@@ -107,20 +107,21 @@ class _createMapScreenState extends State<createMapScreen> {
                       height: ScreenUtil.instance.height -
                           ScreenUtil.instance.height * 0.085 -
                           kToolbarHeight -
-                          ScreenUtil.instance.statusBarHeight - ScreenUtil.instance.bottomBarHeight,
+                          ScreenUtil.instance.statusBarHeight -
+                          ScreenUtil.instance.bottomBarHeight,
                       child: AmapView(
                         /// 地图类型
                         mapType:
                             // 正常视图
-                            // MapType.Standard,
-                            // 公交视图
-                            // MapType.Bus,
-                            // '卫星视图':
-                            // MapType.Satellite,
-                            // '黑夜视图':
-                            // MapType.Night,
-                            // '导航视图':
-                            MapType.Navi,
+                            MapType.Standard,
+                        // 公交视图
+                        // MapType.Bus,
+                        // '卫星视图':
+                        // MapType.Satellite,
+                        // '黑夜视图':
+                        // MapType.Night,
+                        // '导航视图':
+                        // MapType.Navi,
 
                         /// 是否显示缩放控件
                         showZoomControl: false,
@@ -141,19 +142,22 @@ class _createMapScreenState extends State<createMapScreen> {
                         /// 的遮罩, [maskDelay]配置延迟多少时间之后再显示地图, 默认不延迟, 即0.
                         maskDelay: Duration(milliseconds: 500),
 
+                        /// 标记
+                        markers: [
+                          MarkerOption(
+                            coordinate: LatLng(widget.latitude, widget.longitude),
+                            widget:Image.asset('images/test/map.png',width: 36,height: 36,) ,
+                          ),
+                        ],
+
                         /// 地图创建完成回调
                         onMapCreated: (controller) async {
                           _controller = controller;
-                          // MyLocationOption(
-                          //   show: true,
-                          //   strokeWidth: 16,
-                          //   iconProvider: AssetImage('images/test/map.png'),
-                          // );
-                          // await _controller?.showMyLocation(MyLocationOption(
-                          //   show: true,
-                          //     strokeWidth: 16,
-                          //   iconProvider: AssetImage('images/test/map.png'),
-                          // ));
+                          // 标记
+                          _controller.addMarker( MarkerOption(
+                            coordinate: LatLng(widget.latitude, widget.longitude),
+                            widget:Image.asset('images/test/map.png',width: 36,height: 36,) ,
+                          ),);
                         },
                       )),
                   Container(
@@ -171,16 +175,18 @@ class _createMapScreenState extends State<createMapScreen> {
                                 Container(
                                   margin: EdgeInsets.only(left: 16, right: 16),
                                   child: Text(
-                                    pois.name,
+                                    widget.keyWords,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: AppStyle.textRegular16,
                                   ),
                                 ),
-                                SizedBox(height: 4,),
+                                SizedBox(
+                                  height: 4,
+                                ),
                                 Container(
                                     margin: EdgeInsets.only(left: 16, right: 16),
-                                    child: Text(pois.pname + pois.cityname + pois.adname + pois.address.toString(),
+                                    child: Text(formatted_address,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: AppStyle.textSecondaryRegular13))

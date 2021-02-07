@@ -2,6 +2,7 @@ class PeripheralInformationEntity {
   PeripheralInformationSuggestion suggestion;
   String count;
   String infocode;
+  PeripheralInformationRegeocode regeocode;
   List<PeripheralInformationPoi> pois = [];
   String status;
   String info;
@@ -17,6 +18,9 @@ class PeripheralInformationEntity {
       (json['pois'] as List).forEach((v) {
         pois.add(new PeripheralInformationPoi.fromJson(v));
       });
+    }
+    if (json['regeocode'] != null) {
+      regeocode =  PeripheralInformationRegeocode.fromJson(json['regeocode']);
     }
     status = json['status'];
     info = json['info'];
@@ -231,5 +235,16 @@ class PeripheralInformationPoisPhoto {
     }
     data['url'] = this.url;
     return data;
+  }
+}
+
+class PeripheralInformationRegeocode {
+  // addressComponent;
+  String formatted_address;
+  PeripheralInformationRegeocode({this.formatted_address});
+  PeripheralInformationRegeocode.fromJson(Map<String, dynamic> json) {
+    if (json['formatted_address'] != null) {
+      formatted_address = json['formatted_address'];
+    }
   }
 }

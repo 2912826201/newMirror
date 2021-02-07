@@ -118,5 +118,5 @@ class Application {
   // 高德ioskey
   static String iosKey = "836c55dba7d3a44793ec9ae1e1dc2e82";
   // 高德安卓key
-  static String androidAMapKey = "fef4e35be05e2337119aeb3b4e57388d";
+  static String androidAMapKey = "836c55dba7d3a44793ec9ae1e1dc2e82";
 }
