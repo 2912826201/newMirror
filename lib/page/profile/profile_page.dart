@@ -15,6 +15,7 @@ import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:provider/provider.dart';
 import 'profile_detail_page.dart';
 
@@ -134,22 +135,22 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 ),
                 Row(
                   children: [
-                    _secondData(Icons.access_alarms_sharp,
+                    _secondData(Icons.timer,
                         context.watch<ProfilePageNotifier>().extraInfoModel.trainingSeconds, "训练记录"),
                     Expanded(child: Container()),
                     _secondData(
-                        Icons.access_alarms_sharp, context.watch<ProfilePageNotifier>().extraInfoModel.weight, "体重记录"),
+                        Icons.poll, context.watch<ProfilePageNotifier>().extraInfoModel.weight, "体重记录"),
                     Expanded(child: Container()),
-                    _secondData(Icons.access_alarms_sharp, context.watch<ProfilePageNotifier>().extraInfoModel.albumNum,
+                    _secondData(Icons.photo, context.watch<ProfilePageNotifier>().extraInfoModel.albumNum,
                         "健身相册"),
                   ],
                 ),
                 SizedBox(
                   height: 28,
                 ),
-                _bottomSetting("我的课程"),
-                _bottomSetting("我的订单"),
-                _bottomSetting("我的成就"),
+                _bottomSetting(Icon(Icons.menu_book), "我的课程"),
+                _bottomSetting(Icon(Icons.article_outlined), "我的订单"),
+                _bottomSetting(Icon(Icons.emoji_events_outlined), "我的成就"),
               ],
             ),
           )
@@ -210,42 +211,25 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   ///这是扫一扫
   Widget _getTopText(double width, double height) {
     return Container(
-      height: 44,
+      height: CustomAppBar.appBarHeight,
       width: width,
-      padding: EdgeInsets.only(left: 16, right: 16),
       child: Center(
           child: Row(
         children: [
-          InkWell(
-            onTap: () async {
-              AppRouter.navigateToScanCodePage(context);
-            },
-            child: Container(
-              height: 20,
-              width: 20,
-              child: Icon(Icons.settings_overscan),
-            ),
-          ),
-          Expanded(child: SizedBox()),
-          InkWell(
-            onTap: () {
-              AppRouter.navigateToSettingHomePage(context);
-            },
-            child: Container(
-              height: 20,
-              width: 20,
-              child: Icon(
-                Icons.list,
-              ),
-            ),
-          )
+          CustomAppBarIconButton(Icons.qr_code, AppColor.black, true, () {
+            AppRouter.navigateToScanCodePage(context);
+          }),
+          Spacer(),
+          CustomAppBarIconButton(Icons.menu, AppColor.black, false, () {
+            AppRouter.navigateToSettingHomePage(context);
+          }),
         ],
       )),
     );
   }
 
   ///这里是底部订单成就，为了代码复用写成一个布局，通过传值来改变
-  Widget _bottomSetting(String text) {
+  Widget _bottomSetting(Icon icon, String text) {
     return GestureDetector(
       child: Container(
         color: AppColor.transparent,
@@ -253,7 +237,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
         child: Center(
           child: Row(
             children: [
-              Icon(Icons.account_balance_sharp),
+              icon,
               SizedBox(
                 width: 12,
               ),
@@ -291,7 +275,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   InkWell(
                     child: _TextAndNumber("关注", StringUtil.getNumber(followingCount)),
                     onTap: () {
-                      AppRouter.navigateToQueryFollowList(context,1, uid);
+                      AppRouter.navigateToQueryFollowList(context, 1, uid);
                     },
                   ),
                   SizedBox(
@@ -299,7 +283,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   ),
                   InkWell(
                     onTap: () {
-                      AppRouter.navigateToQueryFollowList(context,2, uid);
+                      AppRouter.navigateToQueryFollowList(context, 2, uid);
                     },
                     child: _TextAndNumber("粉丝", StringUtil.getNumber(followerCount)),
                   ),
@@ -409,16 +393,16 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
           child: Center(
             child: Column(
               children: [
-                Expanded(child: SizedBox()),
-                Icon(icon),
+                Expanded(child: SizedBox(), flex: 2,),
+                Icon(icon, size: 24,),
                 SizedBox(
-                  height: 10,
+                  height: 8,
                 ),
                 Text(
                   number != 0 && number != null ? "$number" : "--",
                   style: AppStyle.textRegular14,
                 ),
-                Expanded(child: SizedBox()),
+                Expanded(child: SizedBox(), flex: 3,),
               ],
             ),
           ),
