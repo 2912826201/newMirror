@@ -6,6 +6,8 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/image_cropper.dart';
 
 /// preview_photo_page
@@ -40,14 +42,17 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
+        appBar: CustomAppBar(
           backgroundColor: AppColor.bgBlack,
-          title: Row(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Spacer(),
-              GestureDetector(
-                onTap: () async {
+          brightness: Brightness.dark,
+          actions: [
+            Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding),
+              child: CustomRedButton(
+                "下一步",
+                CustomRedButton.buttonStateNormal,
+                () async {
                   MediaFileModel model = MediaFileModel();
                   model.croppedImage = await _getImage();
                   model.type = mediaTypeKeyImage;
@@ -64,16 +69,10 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
 
                   Navigator.pop(context, true);
                 },
-                child: Container(
-                  alignment: Alignment.center,
-                  height: 28,
-                  width: 60,
-                  decoration: BoxDecoration(color: AppColor.mainRed, borderRadius: BorderRadius.circular(14)),
-                  child: Text("下一步", style: TextStyle(color: AppColor.white, fontSize: 14)),
-                ),
-              )
-            ],
-          ),
+                isDarkBackground: true,
+              ),
+            ),
+          ],
         ),
         body: Column(
           children: [
