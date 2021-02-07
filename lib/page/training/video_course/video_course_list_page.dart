@@ -9,7 +9,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
-import 'package:mirror/page/search/search.dart';
+import 'package:mirror/page/search/search_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';

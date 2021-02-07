@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/search/search_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -20,24 +19,20 @@ import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:mirror/page/search/sub_page/search_topic.dart';
 import 'package:mirror/page/search/sub_page/search_user.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/Input_method_rules/input_formatter.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
-import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
-import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
 
 // 搜索页
 class SearchPage extends StatelessWidget {
-
   final defaultIndex;
 
-  SearchPage({Key key,this.defaultIndex=0});
+  SearchPage({Key key, this.defaultIndex = 0});
 
   // 输入框焦点控制器
-  FocusNode focusNode = new FocusNode();
-
+  final FocusNode focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +53,7 @@ class SearchPage extends StatelessWidget {
                       context.watch<SearchEnterNotifier>().enterText.length > 0
                           ? SearchTabBarView(
                               focusNode: focusNode,
+                              defaultIndex: defaultIndex,
                             )
                           : SearchMiddleView(),
                     ],
@@ -68,15 +64,15 @@ class SearchPage extends StatelessWidget {
 
 // // 搜索头部布局
 class SearchHeader extends StatefulWidget {
-  FocusNode focusNode;
+  final FocusNode focusNode;
 
   SearchHeader({Key key, this.focusNode}) : super(key: key);
 
   @override
-  SearchHeaderState createState() => SearchHeaderState();
+  _SearchHeaderState createState() => _SearchHeaderState();
 }
 
-class SearchHeaderState extends State<SearchHeader> {
+class _SearchHeaderState extends State<SearchHeader> {
   TextEditingController controller = TextEditingController();
 
   ///记录上次结果
@@ -90,6 +86,7 @@ class SearchHeaderState extends State<SearchHeader> {
     controller.dispose();
     super.dispose();
   }
+
   @override
   void initState() {
     context.read<SearchEnterNotifier>().EditTextController(controller);
@@ -108,7 +105,7 @@ class SearchHeaderState extends State<SearchHeader> {
       margin: EdgeInsets.only(
         top: ScreenUtil.instance.statusBarHeight,
       ),
-      height: 44.0,
+      height: CustomAppBar.appBarHeight,
       width: ScreenUtil.instance.screenWidthDp,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -136,12 +133,10 @@ class SearchHeaderState extends State<SearchHeader> {
                     child: TextField(
                       controller: controller,
                       textInputAction: TextInputAction.search,
-                      onSubmitted: (text){
-                        if(text.isNotEmpty) {
-                          SearchHistoryDBHelper().insertSearchHistory(context
-                              .read<ProfileNotifier>()
-                              .profile
-                              .uid, text);
+                      onSubmitted: (text) {
+                        if (text.isNotEmpty) {
+                          SearchHistoryDBHelper()
+                              .insertSearchHistory(context.read<ProfileNotifier>().profile.uid, text);
                         }
                       },
                       decoration: new InputDecoration(
@@ -149,8 +144,7 @@ class SearchHeaderState extends State<SearchHeader> {
                           contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
                           hintText: '搜索结果的样式',
                           border: InputBorder.none),
-                      inputFormatters:
-                      inputFormatters == null ? [_formatter] : (inputFormatters..add(_formatter)),
+                      inputFormatters: inputFormatters == null ? [_formatter] : (inputFormatters..add(_formatter)),
                       // inputFormatters: [
                       //   WhitelistingTextInputFormatter(RegExp("[a-zA-Z]|[\u4e00-\u9fa5]|[0-9]")), //只能输入汉字或者字母或数字
                       //   LengthLimitingTextInputFormatter(30),
@@ -173,21 +167,10 @@ class SearchHeaderState extends State<SearchHeader> {
               ],
             ),
           ),
-          Spacer(
-          ),
-          TextBtn(
-            title: "取消",
-            fontsize: 16,
-            textColor: AppColor.textPrimary1,
-            width: 32,
-            height: 22.5,
-            onTap: () {
-              Navigator.of(context).pop(true);
-            },
-          ),
-          SizedBox(
-            width: 16,
-          )
+          Spacer(),
+          CustomAppBarTextButton("取消", AppColor.textPrimary1, false, () {
+            Navigator.of(context).pop(true);
+          }),
         ],
       ),
     );
@@ -204,6 +187,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
   List<TopicDtoModel> topicList = [];
   List<SearchHistoryDto> searchHistoryList = [];
   List<LiveVideoModel> liveVideoList = [];
+
   @override
   void initState() {
     // 合并请求
@@ -252,7 +236,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
         // 最近搜索标题栏
         searchHistoryList.isNotEmpty ? searchTitleBar(context) : Container(),
         searchHistoryList.isNotEmpty ? historyRecord(context) : Container(),
-        liveVideoList.isNotEmpty ?  HotCourseTitleBar() : Container(),
+        liveVideoList.isNotEmpty ? HotCourseTitleBar() : Container(),
         liveVideoList.isNotEmpty ? HotCourseContent() : Container(),
         topicList.isNotEmpty ? HotTopicTitleBar() : Container(),
         topicList.isNotEmpty ? HotTopicContent() : Container(),
@@ -316,14 +300,13 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                 context.read<SearchEnterNotifier>().textController.text = searchHistoryList[index].word;
               },
               child: Container(
-                  decoration: BoxDecoration(
-                      color: AppColor.textHint.withOpacity(0.24), borderRadius: BorderRadius.all(Radius.circular(3))),
-                  margin: EdgeInsets.only(left: 16, right: historyRecordItemSpacing(searchHistoryList.length, index)),
-                  padding: EdgeInsets.only(left: 8, right: 8,bottom: 1),
-                  alignment: Alignment(0, 0),
-                  child: Center(
-                    child: Text(searchHistoryList[index].word)),
-                  ),
+                decoration: BoxDecoration(
+                    color: AppColor.textHint.withOpacity(0.24), borderRadius: BorderRadius.all(Radius.circular(3))),
+                margin: EdgeInsets.only(left: 16, right: historyRecordItemSpacing(searchHistoryList.length, index)),
+                padding: EdgeInsets.only(left: 8, right: 8, bottom: 1),
+                alignment: Alignment(0, 0),
+                child: Center(child: Text(searchHistoryList[index].word)),
+              ),
             );
           }),
     );
@@ -370,7 +353,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
         return Container(
           height: 48,
           width: (ScreenUtil.instance.width - 48) / 2,
-          padding: EdgeInsets.only(top: 5,bottom: 4),
+          padding: EdgeInsets.only(top: 5, bottom: 4),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -386,7 +369,8 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(liveVideoList[index].title, style: AppStyle.textRegular14, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    Text(liveVideoList[index].title,
+                        style: AppStyle.textRegular14, maxLines: 1, overflow: TextOverflow.ellipsis),
                     Spacer(),
                     Text(
                       liveVideoList[index].description,
@@ -430,12 +414,11 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
         itemHeight: (ScreenUtil.instance.screenWidthDp - 38) * 0.43,
         layout: SwiperLayout.STACK,
         itemBuilder: (BuildContext context, int index) {
-          return
-              Stack(
+          return Stack(
             children: [
               Container(
                 decoration: BoxDecoration(
-                  // 渐变色
+                    // 渐变色
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomLeft,
@@ -463,7 +446,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      margin: EdgeInsets.only(left: 10,top: 3),
+                      margin: EdgeInsets.only(left: 10, top: 3),
                       child: Icon(
                         Icons.import_contacts_sharp,
                         size: 32,
@@ -473,7 +456,7 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                     ),
                     // Expanded(
                     //     child:
-                        Container(
+                    Container(
                       margin: EdgeInsets.only(left: 12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -482,14 +465,16 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                             "#${topicList[index].name}",
                             style: AppStyle.textRegular15,
                           ),
-                         SizedBox(height: 2,),
+                          SizedBox(
+                            height: 2,
+                          ),
                           Text(
                             "${topicList[index].feedCount}条动态",
                             style: AppStyle.textSecondaryRegular12,
                           ),
                         ],
                       ),
-                    // )
+                      // )
                     ),
                     SizedBox(
                       width: 28,
@@ -529,8 +514,9 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
 
 // 搜索页TabBarView
 class SearchTabBarView extends StatefulWidget {
-  SearchTabBarView({Key key, this.focusNode}) : super(key: key);
+  SearchTabBarView({Key key, this.focusNode, this.defaultIndex}) : super(key: key);
   FocusNode focusNode;
+  final defaultIndex;
 
   @override
   SearchTabBarViewState createState() => SearchTabBarViewState();
@@ -545,9 +531,10 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
     controller.dispose();
     super.dispose();
   }
+
   @override
   void initState() {
-    controller = TabController(length: 5, vsync: this, initialIndex: 0);
+    controller = TabController(length: 5, vsync: this, initialIndex: widget.defaultIndex);
     super.initState();
   }
 
@@ -576,7 +563,7 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
           ),
         ),
         Container(
-          height: ScreenUtil.instance.height - 44 - 48 - ScreenUtil.instance.statusBarHeight,
+          height: ScreenUtil.instance.height - CustomAppBar.appBarHeight - 48 - ScreenUtil.instance.statusBarHeight,
           child: TabBarView(
             controller: controller,
             children: [

@@ -68,6 +68,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 : leading
             : null,
         leadingWidth: leadingWidth == null ? appBarButtonWidth : leadingWidth,
+        automaticallyImplyLeading: false,
       ),
       preferredSize: preferredSize,
     );
