@@ -57,6 +57,8 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
 
   Timer _timer;
 
+  bool automaticPost=false;
+
   @override
   void initState() {
     super.initState();
@@ -133,7 +135,11 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     }
   }
 
-  hideVoiceView() async {
+  hideVoiceView(bool automaticPost) async {
+    if(this.automaticPost){
+      return;
+    }
+    this.automaticPost=automaticPost;
     print("hideVoiceView");
     setState(() {
       textShow = "按住说话";
@@ -201,8 +207,8 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
           showVoiceView();
         }
       },
-      onVerticalDragCancel: () => hideVoiceView(),
-      onVerticalDragEnd: (details) => hideVoiceView(),
+      onVerticalDragCancel: () => hideVoiceView(false),
+      onVerticalDragEnd: (details) => hideVoiceView(false),
       onVerticalDragUpdate: (details) {
         offset = details.globalPosition.dy;
         moveVoiceView();
@@ -250,6 +256,9 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       context.read<VoiceAlertData>().changeCallback(showDataTime: DateUtil.formatSecondToStringNum(costTime));
       setState(() {
         costTime++;
+        if(costTime>=60){
+          hideVoiceView(true);
+        }
       });
     });
   }

@@ -290,7 +290,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     bool blackStatus = await ProfileCancelBlack(int.parse(widget.chatUserId));
     if (blackStatus) {
       isBlackList = false;
-      ToastShow.show(msg: "解除了拉黑", context: context);
+      ToastShow.show(msg: "已解除拉黑", context: context);
       if(mounted) {
         setState(() {
           dismissProgressDialog();
