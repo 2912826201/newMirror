@@ -6,10 +6,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/location/location.api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 
 class createMapScreen extends StatefulWidget {
   createMapScreen({this.latitude, this.longitude, this.keyWords});
@@ -51,12 +53,7 @@ class _createMapScreenState extends State<createMapScreen> {
   Future<PeripheralInformationEntity> reverseGeographyHttp() async {
     String BaseUrl = "https://restapi.amap.com/v3/geocode/regeo";
     Map<String, dynamic> map = Map();
-    if (Platform.isIOS) {
-      map["key"] = Application.iosKey;
-      ;
-    } else {
-      map["key"] = Application.androidAMapKey;
-    }
+    map["key"] = AppConfig.getAmapKey();
     map["location"] = "${widget.longitude},${widget.latitude}"; //中心点坐标 经度和纬度用","分割，经度在前，纬度在后，经纬度小数点后不得超过6位
     map["batch"] = false;
     Response resp = await Http.getInstance()
@@ -76,25 +73,9 @@ class _createMapScreenState extends State<createMapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-            title: Text(
-              "查看地图",
-              style: TextStyle(color: AppColor.textPrimary1, fontSize: 18, fontWeight: FontWeight.w500),
-            ),
-            centerTitle: true,
-            backgroundColor: AppColor.white,
-            leading: GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pop(true);
-                },
-                child: Container(
-                  margin: EdgeInsets.only(left: 16),
-                  child: Image.asset(
-                    "images/resource/2.0x/return2x.png",
-                  ),
-                )),
-            leadingWidth: 44.0,
-            elevation: 0.5),
+        appBar: CustomAppBar(
+          titleString: "查看地图",
+        ),
         body: widget.longitude == null ||
                 formatted_address == null ||
                 formatted_address.isEmpty ||
@@ -146,7 +127,11 @@ class _createMapScreenState extends State<createMapScreen> {
                         markers: [
                           MarkerOption(
                             coordinate: LatLng(widget.latitude, widget.longitude),
-                            widget:Image.asset('images/test/map.png',width: 36,height: 36,) ,
+                            widget: Image.asset(
+                              'images/test/map.png',
+                              width: 36,
+                              height: 36,
+                            ),
                           ),
                         ],
 
@@ -154,10 +139,16 @@ class _createMapScreenState extends State<createMapScreen> {
                         onMapCreated: (controller) async {
                           _controller = controller;
                           // 标记
-                          _controller.addMarker( MarkerOption(
-                            coordinate: LatLng(widget.latitude, widget.longitude),
-                            widget:Image.asset('images/test/map.png',width: 36,height: 36,) ,
-                          ),);
+                          _controller.addMarker(
+                            MarkerOption(
+                              coordinate: LatLng(widget.latitude, widget.longitude),
+                              widget: Image.asset(
+                                'images/test/map.png',
+                                width: 36,
+                                height: 36,
+                              ),
+                            ),
+                          );
                         },
                       )),
                   Container(

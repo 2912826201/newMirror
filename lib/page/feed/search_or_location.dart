@@ -5,12 +5,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/location/location.api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/config.dart';
 
 import 'dart:io';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SearchOrLocationWidget extends StatefulWidget {
@@ -75,25 +77,9 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-          title: Text(
-            "所在位置",
-            style: TextStyle(color: AppColor.textPrimary1, fontSize: 18, fontWeight: FontWeight.w500),
-          ),
-          centerTitle: true,
-          backgroundColor: AppColor.white,
-          leading: GestureDetector(
-              onTap: () {
-                Navigator.of(context).pop(true);
-              },
-              child: Container(
-                margin: EdgeInsets.only(left: 16),
-                child: Image.asset(
-                  "images/resource/2.0x/return2x.png",
-                ),
-              )),
-          leadingWidth: 44.0,
-          elevation: 0.5),
+      appBar: CustomAppBar(
+        titleString: "所在位置",
+      ),
       body: Container(
         child: Column(
           children: <Widget>[
@@ -360,11 +346,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
   Future<PeripheralInformationEntity> searchForHttp(pageIndex) async {
     String BaseUrl = "https://restapi.amap.com/v3/place/text";
     Map<String, dynamic> map = Map();
-    if (Platform.isIOS) {
-      map["key"] = Application.iosKey;
-    } else {
-      map["key"] = Application.androidAMapKey;
-    }
+    map["key"] = AppConfig.getAmapKey();
     map["keywords"] = searchController.text;
     map["city"] = currentAddressInfo.city; //搜索的城市
     print(currentAddressInfo.city);
@@ -389,13 +371,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
   Future<PeripheralInformationEntity> aroundForHttp(pageIndex) async {
     String BaseUrl = "https://restapi.amap.com/v3/place/around";
     Map<String, dynamic> map = Map();
-    if (Platform.isIOS) {
-      print("ios");
-      map["key"] = Application.iosKey;
-    } else {
-      map["key"] = Application.androidAMapKey;
-      print("androidAMapKey");
-    }
+    map["key"] = AppConfig.getAmapKey();
     map["location"] =
         "${currentAddressInfo.latLng.longitude},${currentAddressInfo.latLng.latitude}"; //中心点坐标 经度和纬度用","分割，经度在前，纬度在后，经纬度小数点后不得超过6位
     map["offset"] = pageSize; //每页记录数据

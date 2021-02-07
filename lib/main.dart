@@ -205,8 +205,8 @@ Future _initApp() async {
   await enableFluttifyLog(false);
   //设置ios的key
   await AmapService.instance.init(
-    iosKey: Application.iosKey,
-    androidKey: Application.androidAMapKey,
+    iosKey: AppConfig.amapIOSKey,
+    androidKey: AppConfig.amapAndroidKey,
   );
   //todo 获取视频课标签列表 其实在没有登录时无法获取
   try {

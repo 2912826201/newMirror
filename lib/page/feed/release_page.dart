@@ -12,6 +12,7 @@ import 'package:mirror/api/location/location.api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -190,13 +191,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
   Future<PeripheralInformationEntity> aroundForHttp() async {
     String BaseUrl = "https://restapi.amap.com/v3/place/around";
     Map<String, dynamic> map = Map();
-    if (Platform.isIOS) {
-      print("ios");
-      map["key"] = Application.iosKey;
-    } else {
-      map["key"] = Application.androidAMapKey;
-      print("androidAMapKey");
-    }
+    map["key"] = AppConfig.getAmapKey();
     map["location"] =
         "${currentAddressInfo.latLng.longitude},${currentAddressInfo.latLng.latitude}"; //中心点坐标 经度和纬度用","分割，经度在前，纬度在后，经纬度小数点后不得超过6位
     map["offset"] = 20; //每页记录数据

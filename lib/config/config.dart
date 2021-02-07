@@ -116,6 +116,19 @@ class AppConfig {
   static String getAppDownloadDir() {
     return "$_appDir/download";
   }
+
+  // 高德ioskey
+  static String amapIOSKey = "836c55dba7d3a44793ec9ae1e1dc2e82";
+  // 高德安卓key
+  static String amapAndroidKey = "836c55dba7d3a44793ec9ae1e1dc2e82";
+  // 获取当前系统的高德key
+  static String getAmapKey() {
+    if(Platform.isIOS){
+      return amapIOSKey;
+    }else{
+      return amapAndroidKey;
+    }
+  }
 }
 
 enum Env {
