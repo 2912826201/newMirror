@@ -4,7 +4,7 @@ import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/attention_page.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
-import 'package:mirror/page/search/search.dart';
+import 'package:mirror/page/search/search_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
@@ -46,6 +46,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
       controller.index = 0;
     }
     return Scaffold(
+      backgroundColor: AppColor.white,
       appBar: CustomAppBar(
         leading: CustomAppBarIconButton(Icons.camera_alt_outlined, AppColor.black, true, () {
           AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},

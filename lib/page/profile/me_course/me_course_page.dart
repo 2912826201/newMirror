@@ -284,7 +284,7 @@ class _MeCoursePageState extends State<MeCoursePage> {
     if(_isVideoCoursePage>1&&_isVideoCourseLastTime==null){
       return;
     }
-    getMyCourse(_isVideoCoursePage,2, lastTime: _isVideoCourseLastTime).then((result) {
+    getMyCourse(_isVideoCoursePage,20, lastTime: _isVideoCourseLastTime).then((result) {
       _isVideoCourseRequesting = false;
       if (result != null) {
         _isVideoCoursePage++;
