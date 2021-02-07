@@ -1,15 +1,21 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 /// 直播日程页--每一个item界面
 class LiveBroadcastItemPage extends StatefulWidget {
@@ -74,16 +80,19 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   Widget _buildSuggestions() {
     if ((liveModelArray != null && liveModelArray.length > 0) ||
         (liveModelOldArray != null && liveModelOldArray.length > 0)) {
+      //有数据
       // setDataCalendar();
       return _getUi();
     } else {
       if (loadingStatus == LoadingStatus.STATUS_LOADING) {
+        //加载中
         return UnconstrainedBox(
           child: Center(
             child: CircularProgressIndicator(),
           ),
         );
       } else {
+        //没有数据
         return UnconstrainedBox(
           child: Center(
             child: GestureDetector(
@@ -139,6 +148,13 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     widgetArray.add(SizedBox(
       height: 65,
     ));
+
+    //判断有没有接收到预约或者取消预约直播课的消息-要改变ui
+    widgetArray.add(Offstage(
+      offstage: true,
+      child: judgeResetPage(),
+    ));
+
     return Column(
       children: [
         Expanded(
@@ -155,6 +171,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
       ],
     );
   }
+
 
   Widget _getOldDataTitle() {
     return Container(
@@ -475,6 +492,96 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
 
   ///以上ui-------------------------------------------------------
   ///
+
+
+  //判断是否退出界面加入群聊
+  Widget judgeResetPage() {
+    return Consumer<ChatMessageProfileNotifier>(
+      builder: (context, notifier, child) {
+        bool isResetCoursePage = context.select((ChatMessageProfileNotifier value) => value.isResetPage);
+        if (isResetCoursePage) {
+          Message message = context.select((ChatMessageProfileNotifier value) => value.resetMessage);
+          context.watch<ChatMessageProfileNotifier>().isResetPage = false;
+          context.watch<ChatMessageProfileNotifier>().isResetCoursePage = false;
+          context.watch<ChatMessageProfileNotifier>().resetMessage = null;
+          if (message != null) {
+            Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
+            if(mapGroupModel!=null&&mapGroupModel["courseId"]!=null&&mapGroupModel["handleType"]!=null&&
+                mapGroupModel["startTime"]!=null&&mapGroupModel["startTime"] is String
+              &&mapGroupModel["courseId"] is int&&mapGroupModel["handleType"] is int){
+              updateBookState(mapGroupModel["courseId"],mapGroupModel["handleType"],mapGroupModel["startTime"]);
+            }
+          }
+        }
+        return Container();
+      },
+    );
+  }
+
+  //修改直播课程预约的状态
+  void updateBookState(int courseId,int bookState,String startTime){
+    if(liveModelArray==null||liveModelArray.length<1){
+      return;
+    }
+    liveModelArray.forEach((element) {
+      if(element.id==courseId){
+        if(element.playType==4&&bookState==0){
+          element.playType=2;
+          deleteAlertEvents(courseId,startTime);
+          if(mounted){setState(() {});}
+        }else if(element.playType==2&&bookState==1){
+          element.playType=4;
+          if(mounted){setState(() {});}
+        }
+        return;
+      }
+    });
+  }
+
+
+  //点击预约后-查询是否有创建提醒的空间id
+  void deleteAlertEvents(int courseId,String startTime) async {
+    await [Permission.calendar].request();
+    DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
+    List<Calendar> _calendars;
+    final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
+    _calendars = calendarsResult?.data;
+    if (_calendars == null || _calendars.length < 1) {
+      var result = await _deviceCalendarPlugin.createCalendar("mirror", localAccountName: "mirror——1",);
+      if (result.isSuccess) {
+        _deleteAlertEvents(result.data, startTime);
+      }
+    } else {
+      _deleteAlertEvents(_calendars[0].id, startTime);
+    }
+  }
+
+//  删除日历提醒
+  Future _deleteAlertEvents(String calendarId, String startTimePr) async {
+    var calendarEvents = <Event>[];
+    DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
+    final startDate = DateTime.now();
+    final endDate = DateTime.now().add(Duration(days: 7));
+    List<Calendar> _calendars;
+    final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
+    _calendars = calendarsResult?.data;
+    if (_calendars != null && _calendars.length > 0) {
+      var calendarEventsResult = await _deviceCalendarPlugin.retrieveEvents(
+          _calendars[0].id,
+          RetrieveEventsParams(startDate: startDate, endDate: endDate));
+      calendarEvents = calendarEventsResult?.data;
+    }
+    if (calendarEvents.length > 0) {
+      DateTime startTime = DateUtil.stringToDateTime(startTimePr);
+      for (Event event in calendarEvents) {
+        if (event.calendarId == calendarId && event.start == startTime) {
+          await _deviceCalendarPlugin.deleteEvent(calendarId, event.eventId);
+          return;
+        }
+      }
+    }
+  }
+
 // 获取指定日期的直播日程
   getLiveModelData() async {
     //获取今天可回放的数据
@@ -502,7 +609,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
       }
     } else {
       loadingStatus = LoadingStatus.STATUS_IDEL;
-      Future.delayed(Duration(seconds: 1), () {
+      Future.delayed(Duration(milliseconds: 300), () {
         if(mounted){
           setState(() {});
         }

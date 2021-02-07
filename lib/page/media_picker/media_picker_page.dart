@@ -81,6 +81,7 @@ class _MediaPickerState extends State<MediaPickerPage> {
 
   @override
   Widget build(BuildContext context) {
+    print("MediaPickerPage_____________________________________________build");
     return Scaffold(
       body: PageView(
         controller: _pageController,

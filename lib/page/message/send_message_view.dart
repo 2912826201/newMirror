@@ -171,7 +171,7 @@ class SendMessageView extends StatelessWidget {
           // return new Text('可选择的列表');
           return getSelectMsgData(mapModel["data"]);
         } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
-          print("----------------------------------------------------------------------------");
+          // print("----------------------------------------------------------------------------");
           // return new Text('群通知消息');
           Map<String, dynamic> map = Map();
           map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;

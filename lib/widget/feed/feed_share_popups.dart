@@ -5,11 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/feed_share_select_contact.dart';
+import 'package:provider/provider.dart';
 
 // import '../bottom_sheet.dart';
 
@@ -83,6 +86,11 @@ class FeedSharePopups extends StatelessWidget {
                           print("点击了￥${feedViewModel[index].name}");
                           switch(feedViewModel[index].name){
                             case "站内好友":
+                              if(!(context!=null&&context.read<TokenNotifier>().isLoggedIn)){
+                                ToastShow.show(msg: "请先登陆app!", context: context);
+                                AppRouter.navigateToLoginPage(context);
+                                return;
+                              }
                               Navigator.of(context).pop(1);
                               Navigator.push(context, MaterialPageRoute(builder: (_) {
                                 return FriendsPage(voidCallback: (name, userId, type, context) async {

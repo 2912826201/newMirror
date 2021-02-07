@@ -335,7 +335,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       print("返回不请求数据");
     }
 
-    Future.delayed(Duration(milliseconds: 200),(){
+    Future.delayed(Duration(milliseconds: 300),(){
       if (mounted) {
         setState(() {});
       }

@@ -574,9 +574,7 @@ Widget getCourseTopEdit(Function editClick){
           margin: EdgeInsets.only(left: 16),
           width: 28,
           height: 28,
-          decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              image: DecorationImage(image: NetworkImage(Application.profile.avatarUri), fit: BoxFit.cover)),
+          child: getUserImage(Application.profile.avatarUri, 28, 28),
         ),
         GestureDetector(
           child: Container(

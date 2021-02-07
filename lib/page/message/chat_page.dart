@@ -40,7 +40,6 @@ import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:text_span_field/range_style.dart';
@@ -52,6 +51,7 @@ import 'item/emoji_manager.dart';
 import 'item/message_body_input.dart';
 import 'item/message_input_bar.dart';
 import 'package:provider/provider.dart';
+
 
 ////////////////////////////////
 //
@@ -170,7 +170,6 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     initData();
-
     context.read<ChatMessageProfileNotifier>().isResetPage = false;
     if (widget.conversation.getType() != RCConversationType.System) {
       initSetData();
@@ -275,11 +274,13 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       ));
     }
 
+    //接收当前会话的新的消息
     bodyArray.add(Offstage(
       offstage: true,
       child: judgeReceiveMessages(),
     ));
 
+    //判断有没有加入群聊或者退出群聊需要插入数据-刷新界面的
     bodyArray.add(Offstage(
       offstage: true,
       child: judgeResetPage(),
@@ -325,61 +326,23 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           overflow: TextOverflow.ellipsis,
         ),
         onTap: () {
-          Message msg = chatDataList[chatDataList.length - 2].msg;
-          AtMsg atMsg = new AtMsg(groupId: int.parse(msg.targetId), sendTime: msg.sentTime, messageUId: msg.messageUId);
-          Application.atMesGroupModel.add(atMsg);
+          // Message msg = chatDataList[chatDataList.length - 2].msg;
+          // AtMsg atMsg = new AtMsg(groupId: int.parse(msg.targetId), sendTime: msg.sentTime, messageUId: msg.messageUId);
+          // Application.atMesGroupModel.add(atMsg);
+          // jumpPage(KeyboardSensitiveView(),false,context);
         },
       ),
       actions: [
-        CustomAppBarButton(
-          Icons.more_horiz,
-          AppColor.black,
-          false,
-          () {
-            //print("-----------------------");
-            _focusNode.unfocus();
-            ToastShow.show(msg: "点击了更多那妞", context: context);
-            judgeJumpPage(chatTypeId, this.chatUserId, widget.conversation.type, context, chatUserName,
-                (int type, String name) {
-              //type  0-用户名  1--群名 2--拉黑 3--邀请不是相互关注-进行提醒
-              if (type == 0) {
-                //修改了用户名
-                Application.chatGroupUserModelMap.clear();
-                for (ChatGroupUserModel userModel in context.read<GroupUserProfileNotifier>().chatGroupUserModelList) {
-                  Application.chatGroupUserModelMap[userModel.uid.toString()] = userModel.groupNickName;
-                }
-                delayedSetState();
-              } else if (type == 1) {
-                chatUserName = name;
-                //修改了群名
-                // _postUpdateGroupName(name);
-              } else if (type == 2) {
-                //拉黑
-                _insertMessageMenu("你拉黑了这个用户!");
-              } else {
-                //不是还有关系不能邀请进群
-                _insertMessageMenu(name + " 邀请失败!");
-              }
-            }, () {
-              //退出群聊
-              print("111111111111111111111111111111111111111111111111111111111111111");
-              MessageManager.removeConversation(context, chatUserId, Application.profile.uid, widget.conversation.type);
-              Navigator.of(context).pop();
-            });
-          },
-        ),
+        CustomAppBarButton(Icons.more_horiz, AppColor.black, false, _topMoreBtnClick),
       ],
     );
   }
 
   //头部显示关注遮挡
   Widget getTopAttentionUi() {
-    print("开始判断显示不显示关注按钮");
     if (widget.conversation.type != PRIVATE_TYPE) {
-      print("不是私聊界面-不显示");
       isShowTopAttentionUi = false;
     }
-    print("isShowTopAttentionUi：$isShowTopAttentionUi");
     return Visibility(
       visible: isShowTopAttentionUi,
       child: UnconstrainedBox(
@@ -432,32 +395,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                     ],
                   ),
                 ),
-                onTap: () async {
-                  if (widget.conversation.type == PRIVATE_TYPE) {
-                    BlackModel blackModel = await ProfileCheckBlack(int.parse(chatUserId));
-                    String text = "";
-                    if (blackModel.inYouBlack == 1) {
-                      text = "关注失败，你已将对方加入黑名单";
-                    } else if (blackModel.inThisBlack == 1) {
-                      text = "关注失败，你已被对方加入黑名单";
-                    } else {
-                      int attntionResult = await ProfileAddFollow(int.parse(chatUserId));
-                      if (attntionResult == 1 || attntionResult == 3) {
-                        text = "关注成功!";
-                        isShowTopAttentionUi = false;
-                        if (mounted) {
-                          setState(() {});
-                        }
-                      }
-                    }
-                    ToastShow.show(msg: text, context: context);
-                  } else {
-                    isShowTopAttentionUi = false;
-                    if (mounted) {
-                      setState(() {});
-                    }
-                  }
-                },
+                onTap: _attntionOnClick,
               ),
             ],
           ),
@@ -1378,9 +1316,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   Widget judgeResetPage() {
     return Consumer<ChatMessageProfileNotifier>(
       builder: (context, notifier, child) {
-        bool isExitPage = context.select((ChatMessageProfileNotifier value) => value.isResetPage);
+        bool isResetPage = context.select((ChatMessageProfileNotifier value) => value.isResetPage);
         Message message = context.select((ChatMessageProfileNotifier value) => value.resetMessage);
-        if (isExitPage) {
+        if (isResetPage) {
           context.watch<ChatMessageProfileNotifier>().isResetPage = false;
           context.watch<ChatMessageProfileNotifier>().resetMessage = null;
           if (message != null) {
@@ -1619,6 +1557,73 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       });
     }
   }
+
+  //头部-更多按钮的点击事件
+  _topMoreBtnClick(){
+    _focusNode.unfocus();
+    ToastShow.show(msg: "点击了更多那妞", context: context);
+    judgeJumpPage(chatTypeId, this.chatUserId, widget.conversation.type, context, chatUserName,
+        _morePageOnClick, _moreOnClickExitChatPage);
+  }
+
+  //更多的界面-里面进行了一些的点击事件
+  _morePageOnClick(int type, String name){
+    //type  0-用户名  1--群名 2--拉黑 3--邀请不是相互关注-进行提醒
+    if (type == 0) {
+      //修改了用户名
+      Application.chatGroupUserModelMap.clear();
+      for (ChatGroupUserModel userModel in context.read<GroupUserProfileNotifier>().chatGroupUserModelList) {
+        Application.chatGroupUserModelMap[userModel.uid.toString()] = userModel.groupNickName;
+      }
+      delayedSetState();
+    } else if (type == 1) {
+      chatUserName = name;
+      //修改了群名
+      // _postUpdateGroupName(name);
+    } else if (type == 2) {
+      //拉黑
+      _insertMessageMenu("你拉黑了这个用户!");
+    } else {
+      //不是还有关系不能邀请进群
+      _insertMessageMenu(name + " 邀请失败!");
+    }
+  }
+
+  //更多界面点击了退出群聊-要退出聊天界面
+  _moreOnClickExitChatPage(){
+    //退出群聊
+    MessageManager.removeConversation(context, chatUserId, Application.profile.uid, widget.conversation.type);
+    Navigator.of(context).pop();
+  }
+
+  //头部显示的关注按钮的点击事件
+  _attntionOnClick()async{
+    if (widget.conversation.type == PRIVATE_TYPE) {
+      BlackModel blackModel = await ProfileCheckBlack(int.parse(chatUserId));
+      String text = "";
+      if (blackModel.inYouBlack == 1) {
+        text = "关注失败，你已将对方加入黑名单";
+      } else if (blackModel.inThisBlack == 1) {
+        text = "关注失败，你已被对方加入黑名单";
+      } else {
+        int attntionResult = await ProfileAddFollow(int.parse(chatUserId));
+        if (attntionResult == 1 || attntionResult == 3) {
+          text = "关注成功!";
+          isShowTopAttentionUi = false;
+          if (mounted) {
+            setState(() {});
+          }
+        }
+      }
+      ToastShow.show(msg: text, context: context);
+    } else {
+      isShowTopAttentionUi = false;
+      if (mounted) {
+        setState(() {});
+      }
+    }
+  }
+
 
   //at 了那个用户
   void atListItemClick(ChatGroupUserModel userModel, int index) {

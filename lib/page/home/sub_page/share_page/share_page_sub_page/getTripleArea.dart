@@ -31,7 +31,7 @@ class GetTripleArea extends StatefulWidget {
 class GetTripleAreaState extends State<GetTripleArea> {
   @override
   Widget build(BuildContext context) {
-    print("打印model的值￥${widget.model}");
+    // print("打印model的值￥${widget.model}");
     return Container(
         key: widget.offsetKey,
         height: 48,
@@ -65,7 +65,7 @@ class GetTripleAreaState extends State<GetTripleArea> {
 
   // 横排重叠头像
   avatarOverlap(int num, BuildContext context,List<String> laudUserInfo) {
-    print("num:$num");
+    // print("num:$num");
     if (num == 1) {
         return  Container(
           width: 37,

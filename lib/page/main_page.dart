@@ -52,6 +52,7 @@ class MainPageState extends State<MainPage> with SingleTickerProviderStateMixin 
   }
   @override
   Widget build(BuildContext context) {
+    print("MainPage_____________________________________________build");
     double itemWidth = MediaQuery.of(context).size.width / 5;
     // print("初始创建底部页");
     // print(ScreenUtil.instance.bottomBarHeight);

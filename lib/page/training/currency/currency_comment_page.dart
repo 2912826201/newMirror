@@ -14,6 +14,7 @@ import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
@@ -447,10 +448,11 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
       ),
       onLongPress: (){
         List<String> list = [];
-        if(value.uid==Application.profile.uid){
+
+        if(value.uid==Application.profile.uid&&context.read<TokenNotifier>().isLoggedIn){
           list.add("删除");
         }else{
-          if(widget.pushId==Application.profile.uid) {
+          if(widget.pushId==Application.profile.uid&&context.read<TokenNotifier>().isLoggedIn) {
             list.add("删除");
           }
           list.add("回复");
@@ -461,26 +463,33 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
             context: context,
             lists: list,
             onItemClickListener: (index) {
-              if (list[index] == "删除") {
-                showAppDialog(context,
-                    title: "删除确认",
-                    info: "该评论删除后不可恢复，是否确认删除?",
-                    cancel: AppDialogButton("取消", () {
-                      // print("点了取消");
-                      return true;
-                    }),
-                    confirm: AppDialogButton("确定", () {
-                      _deleteComment(value.id);
-                      return true;
-                    }));
-              } else if (list[index] == "举报") {
-                _profileMoreDenounce(value.id);
-              }  else if (list[index] == "回复") {
-                onPostComment(_targetId, 2, value.uid, value.id, hintText: "回复 " + value.name);
-              } else if (list[index] == "复制") {
+              if (list[index] == "复制") {
                 if (context != null && value.content!=null) {
                   Clipboard.setData(ClipboardData(text: value.content));
                   ToastShow.show(msg: "复制成功", context: context);
+                }
+              }else{
+                if(!(mounted&&context.read<TokenNotifier>().isLoggedIn)){
+                  ToastShow.show(msg: "请先登陆app!", context: context);
+                  AppRouter.navigateToLoginPage(context);
+                  return;
+                }
+                if (list[index] == "删除") {
+                  showAppDialog(context,
+                      title: "删除确认",
+                      info: "该评论删除后不可恢复，是否确认删除?",
+                      cancel: AppDialogButton("取消", () {
+                        // print("点了取消");
+                        return true;
+                      }),
+                      confirm: AppDialogButton("确定", () {
+                        _deleteComment(value.id);
+                        return true;
+                      }));
+                } else if (list[index] == "举报") {
+                  _profileMoreDenounce(value.id);
+                }  else if (list[index] == "回复") {
+                  onPostComment(_targetId, 2, value.uid, value.id, hintText: "回复 " + value.name);
                 }
               }
             },
@@ -1206,6 +1215,11 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
 
   //点赞-取消点赞
   _laudComment(int commentId, bool laud) async {
+    if(!(mounted&&context.read<TokenNotifier>().isLoggedIn)){
+      ToastShow.show(msg: "请先登陆app!", context: context);
+      AppRouter.navigateToLoginPage(context);
+      return;
+    }
     Map<String, dynamic> model = await laudComment(commentId: commentId, laud: laud ? 1 : 0);
     if (model != null && model["state"]) {
       _laudCommentData(courseCommentHot, commentId, true, laud);
@@ -1229,6 +1243,12 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
 
   //输入框评论点击事件
   onEditBoxClickBtn() {
+    if(!(mounted&&context.read<TokenNotifier>().isLoggedIn)){
+      ToastShow.show(msg: "请先登陆app!", context: context);
+      AppRouter.navigateToLoginPage(context);
+      return;
+    }
+
     targetId = widget.targetId;
     targetType = widget.targetType;
     replyId = -1;
@@ -1243,6 +1263,11 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
 
   //输入框评论点击事件
   onPostComment(int targetId, int targetType, int replyId, int replyCommentId, {String hintText}) {
+    if(!(mounted&&context.read<TokenNotifier>().isLoggedIn)){
+      ToastShow.show(msg: "请先登陆app!", context: context);
+      AppRouter.navigateToLoginPage(context);
+      return;
+    }
     this.targetId = targetId;
     this.targetType = targetType;
     this.replyId = replyId;

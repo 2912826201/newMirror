@@ -1,10 +1,13 @@
 
+import 'dart:convert';
+
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
@@ -22,6 +25,7 @@ import 'package:mirror/api/training/live_api.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:mirror/page/training/currency/currency_page.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import 'sliver_custom_header_delegate.dart';
 import 'package:provider/provider.dart';
@@ -167,6 +171,10 @@ class LiveDetailPageState extends State<LiveDetailPage> {
               padding: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
               color: AppColor.white,
               child: _getBottomBar(),
+            ),
+            Offstage(
+              offstage: true,
+              child: judgeResetPage(),
             ),
           ],
         ),
@@ -391,6 +399,49 @@ class LiveDetailPageState extends State<LiveDetailPage> {
 
 
 
+  //判断是否退出界面加入群聊
+  Widget judgeResetPage() {
+    return Consumer<ChatMessageProfileNotifier>(
+      builder: (context, notifier, child) {
+        bool isResetCoursePage = context.select((ChatMessageProfileNotifier value) => value.isResetPage);
+        if (isResetCoursePage) {
+          Message message = context.select((ChatMessageProfileNotifier value) => value.resetMessage);
+          context.watch<ChatMessageProfileNotifier>().isResetPage = false;
+          context.watch<ChatMessageProfileNotifier>().isResetCoursePage = false;
+          context.watch<ChatMessageProfileNotifier>().resetMessage = null;
+          if (message != null) {
+            Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
+            if(mapGroupModel!=null&&mapGroupModel["courseId"]!=null&&mapGroupModel["handleType"]!=null&&
+                mapGroupModel["startTime"]!=null&&mapGroupModel["startTime"] is String
+                &&mapGroupModel["courseId"] is int&&mapGroupModel["handleType"] is int){
+              updateBookState(mapGroupModel["courseId"],mapGroupModel["handleType"],mapGroupModel["startTime"]);
+            }
+          }
+        }
+        return Container();
+      },
+    );
+  }
+
+  //修改直播课程预约的状态
+  void updateBookState(int courseId,int bookState,String startTime){
+    if(liveModel==null||liveModel.id==null){
+      return;
+    }
+    if(liveModel.id==courseId){
+      if(liveModel.playType==4&&bookState==0){
+        liveModel.playType=2;
+        deleteAlertEvents(courseId,startTime);
+        if(mounted){setState(() {});}
+      }else if(liveModel.playType==2&&bookState==1){
+        liveModel.playType=4;
+        if(mounted){setState(() {});}
+      }
+      return;
+    }
+  }
+
+
   //滑动的回调
   bool _onDragNotification(ScrollNotification notification) {
     ScrollMetrics metrics = notification.metrics;
@@ -481,15 +532,32 @@ class LiveDetailPageState extends State<LiveDetailPage> {
         if (isBook) {
           createEvent(result.data, _deviceCalendarPlugin, value, alert);
         } else {
-          _deleteAlertEvents(result.data, alert, value);
+          _deleteAlertEvents(result.data, value.startTime);
         }
       }
     } else {
       if (isBook) {
         createEvent(_calendars[0].id, _deviceCalendarPlugin, value, alert);
       } else {
-        _deleteAlertEvents(_calendars[0].id, alert, value);
+        _deleteAlertEvents(_calendars[0].id,  value.startTime);
       }
+    }
+  }
+
+  //删除已经预约的日历提醒
+  void deleteAlertEvents(int courseId,String startTime) async {
+    await [Permission.calendar].request();
+    DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
+    List<Calendar> _calendars;
+    final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
+    _calendars = calendarsResult?.data;
+    if (_calendars == null || _calendars.length < 1) {
+      var result = await _deviceCalendarPlugin.createCalendar("mirror", localAccountName: "mirror——1",);
+      if (result.isSuccess) {
+        _deleteAlertEvents(result.data, startTime);
+      }
+    } else {
+      _deleteAlertEvents(_calendars[0].id, startTime);
     }
   }
 
@@ -510,7 +578,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   }
 
 //  删除日历提醒
-  Future _deleteAlertEvents(String calendarId, String alert, LiveVideoModel value) async {
+  Future _deleteAlertEvents(String calendarId, String startTimePr) async {
     var calendarEvents = <Event>[];
     DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
     final startDate = DateTime.now();
@@ -525,7 +593,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
       calendarEvents = calendarEventsResult?.data;
     }
     if (calendarEvents.length > 0) {
-      DateTime startTime = DateUtil.stringToDateTime(value.startTime);
+      DateTime startTime = DateUtil.stringToDateTime(startTimePr);
       for (Event event in calendarEvents) {
         if (event.calendarId == calendarId && event.start == startTime) {
           await _deviceCalendarPlugin.deleteEvent(calendarId, event.eventId);
@@ -534,7 +602,6 @@ class LiveDetailPageState extends State<LiveDetailPage> {
       }
     }
   }
-
 
   ///------------------------------底部按钮的所有点击事件  start --------------------------------------------------------
 
@@ -604,6 +671,11 @@ class LiveDetailPageState extends State<LiveDetailPage> {
 
   ///这是关注的方法
   onClickAttention() {
+    if(!(mounted&&context.read<TokenNotifier>().isLoggedIn)){
+      ToastShow.show(msg: "请先登陆app!", context: context);
+      AppRouter.navigateToLoginPage(context);
+      return;
+    }
     if (!(liveModel.coachDto?.relation == 1 || liveModel.coachDto?.relation == 3)) {
       _getAttention(liveModel.coachDto?.uid);
     }

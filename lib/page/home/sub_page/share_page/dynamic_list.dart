@@ -41,7 +41,7 @@ class DynamicListLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('==============================动态itembuild');
+    // print('==============================动态itembuild');
     double screen_width = ScreenUtil.instance.screenWidthDp;
     // print("推荐页数据￥${ model.picUrls.isEmpty}");
     // return ChangeNotifierProvider(

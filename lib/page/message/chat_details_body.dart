@@ -105,7 +105,7 @@ class ChatDetailsBody extends StatelessWidget {
               shrinkWrap: chatData.length < pageCount,
               childrenDelegate: FirstEndItemChildrenDelegate((BuildContext context, int index) {
                 if (index == chatData.length - 1) {
-                  print("------------");
+                  // print("------------");
                     return Visibility(
                       visible: loadStatus == LoadingStatus.STATUS_LOADING ? true : false,
                       child: Container(

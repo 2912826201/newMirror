@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 
 class NetworkLinkFailure extends StatefulWidget {
   @override
@@ -13,9 +14,8 @@ class _NetworkLinkFailureState extends State<NetworkLinkFailure> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("网络连接失败"),
-        centerTitle: true,
+      appBar: CustomAppBar(
+        titleString: "网络连接失败",
       ),
       body:  getBody(),
     );

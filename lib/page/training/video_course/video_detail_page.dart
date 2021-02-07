@@ -692,6 +692,11 @@ class VideoDetailPageState extends State<VideoDetailPage> {
 
   ///这是关注的方法
   onClickAttention() {
+    if(!(mounted&&context.read<TokenNotifier>().isLoggedIn)){
+      ToastShow.show(msg: "请先登陆app!", context: context);
+      AppRouter.navigateToLoginPage(context);
+      return;
+    }
     if (!(videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3)) {
       _getAttention(videoModel.coachDto?.uid);
     }
