@@ -4,31 +4,40 @@ import 'package:mirror/util/screen_util.dart';
 import '../bottom_sheet.dart';
 
 typedef OnItemClickListener = void Function(int index);
+
 Future openMoreBottomSheet({
   @required BuildContext context,
   @required OnItemClickListener onItemClickListener,
   @required List<String> lists,
+  bool isFillet = false,
 }) async {
   await showModalBottomSheet(
       isScrollControlled: true,
       context: context,
+      backgroundColor: AppColor.white,
+      // 圆角
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(isFillet ? 10 : 0), topRight: Radius.circular(isFillet ? 10 : 0))),
       builder: (BuildContext context) {
         return SingleChildScrollView(
-          child: BottomPopup(
-            list: lists,
-            onItemClickListener: onItemClickListener,
-          )
-        );
+            child: BottomPopup(
+              list: lists,
+              isFillet: isFillet,
+              onItemClickListener: onItemClickListener,
+            ));
       });
 }
 
 // 底部弹窗
 class BottomPopup extends StatefulWidget {
-  BottomPopup({Key key, this.list, this.onItemClickListener})
+  BottomPopup({Key key, this.list, this.isFillet, this.onItemClickListener})
       : assert(list != null),
         super(key: key);
   List<String> list;
-   OnItemClickListener onItemClickListener;
+  bool isFillet;
+  OnItemClickListener onItemClickListener;
+
   @override
   BottomopupState createState() => BottomopupState();
 }
@@ -36,22 +45,27 @@ class BottomPopup extends StatefulWidget {
 class BottomopupState extends State<BottomPopup> {
   // 回调点击的哪个Item
   OnItemClickListener onItemClickListener;
+
   // 几个Item
   var itemCount;
+
   // 每个底部item的高度
   double itemHeight = 50;
-
 
   @override
   void initState() {
     super.initState();
+    print(widget.isFillet);
     onItemClickListener = widget.onItemClickListener;
   }
 
   @override
   Widget build(BuildContext context) {
     // 获取设备的宽度
-    var deviceWidth = MediaQuery.of(context).size.width;
+    var deviceWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
     // print("宽度$deviceWidth");
     /*
     区分刘海屏
@@ -60,11 +74,12 @@ class BottomopupState extends State<BottomPopup> {
     final double bottomPadding = ScreenUtil.instance.bottomBarHeight;
     // 获取顶部间距
     final double topPadding = ScreenUtil.instance.statusBarHeight;
-    int listLength=widget.list.length;
+    int listLength = widget.list.length;
+
     /// 最后还有一个cancel，所以加1
     itemCount = listLength + 1;
     // 算出弹窗总高度
-    var height ;
+    var height;
     height = ((listLength + 1) * 50 + 12 + bottomPadding).toDouble();
     // 取消Item
     var cancelContainer = Container(
@@ -72,7 +87,7 @@ class BottomopupState extends State<BottomPopup> {
         decoration: BoxDecoration(
           color: AppColor.white, // 底色
         ),
-        child:Column (
+        child: Column(
           children: [
             // 取消上面的分割块
             Container(
@@ -102,14 +117,13 @@ class BottomopupState extends State<BottomPopup> {
                         fontSize: 18),
                   ),
                 ),
-              ) ,
+              ),
             ),
             Container(
               height: bottomPadding,
             )
           ],
-        )
-    );
+        ));
     // itemlist创建视图
     var listview = ListView.builder(
         itemCount: itemCount,
@@ -120,18 +134,19 @@ class BottomopupState extends State<BottomPopup> {
               child: cancelContainer,
             );
           }
-          return getItemContainer(context, index,listLength);
+          return getItemContainer(context, index, listLength);
         });
     // 组合
     var totalContainer = Container(
       child: listview,
       height: height,
-      width: deviceWidth ,
+      width: deviceWidth,
     );
     return totalContainer;
   }
+
   // 创建其他传入的Item
-  Widget getItemContainer(BuildContext context, int index,int listLength) {
+  Widget getItemContainer(BuildContext context, int index, int listLength) {
     if (widget.list == null) {
       return Container();
     }
@@ -139,10 +154,7 @@ class BottomopupState extends State<BottomPopup> {
     var contentText = Text(
       text,
       style: TextStyle(
-          fontWeight: FontWeight.normal,
-          decoration: TextDecoration.none,
-          color: Color(0xFF333333),
-          fontSize: 18),
+          fontWeight: FontWeight.normal, decoration: TextDecoration.none, color: Color(0xFF333333), fontSize: 18),
     );
 
     var decoration;
@@ -158,28 +170,26 @@ class BottomopupState extends State<BottomPopup> {
         onItemClickListener(index);
       }
     };
-
-    if(listLength==1){
+    // 除开取只有一个时
+    if (listLength == 1) {
       decoration = BoxDecoration(
         color: AppColor.white, // 底色
       );
-    }else if(listLength>1){
+    } else if (listLength > 1) {
+      // 除开取消的最后一个
       if (index == listLength - 1) {
         decoration = BoxDecoration(
+          border: Border(top: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
           color: AppColor.white, // 底色
         );
-      } else {
+      } else if(index >= 1) {
         decoration = BoxDecoration(
           color: AppColor.white, // 底色
-          border: Border(
-              bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
+          border: Border(top: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
         );
       }
     }
-    itemContainer = Container(
-        height: itemHeight,
-        decoration: decoration,
-        child: center);
+    itemContainer = Container(height: itemHeight, decoration: decoration, child: center);
 
     return GestureDetector(
       onTap: onTap2,
