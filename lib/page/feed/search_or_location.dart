@@ -3,6 +3,7 @@ import 'package:amap_map_fluttify/amap_map_fluttify.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/gao_de/gao_de_api.dart';
 import 'package:mirror/api/location/location.api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
@@ -202,7 +203,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
   Future<Null> searchHttp() async {
     if (searchController.text != null && searchController.text.isNotEmpty) {
       searchPois.clear();
-      PeripheralInformationEntity locationInformationEntity = await searchForHttp(1);
+      PeripheralInformationEntity locationInformationEntity = await searchForHttp(searchController.text,currentAddressInfo.city,page: 1);
       if (locationInformationEntity.status == "1") {
         _refreshController.refreshCompleted();
         print('请求成功');
@@ -252,7 +253,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
   Future<Null> onLoadMore() async {
     if (searchController.text != null && searchController.text.isNotEmpty) {
       if (pageIndex < pages) {
-        PeripheralInformationEntity locationInformationEntity = await searchForHttp(pageIndex + 1);
+        PeripheralInformationEntity locationInformationEntity = await searchForHttp(searchController.text,currentAddressInfo.city,page:pageIndex + 1);
         if (locationInformationEntity.status == "1") {
           print('请求成功');
           pageIndex++;
@@ -272,7 +273,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
       }
     } else {
       if (pageIndex < pages) {
-        PeripheralInformationEntity locationInformationEntity = await aroundForHttp(pageIndex + 1);
+        PeripheralInformationEntity locationInformationEntity = await aroundForHttp(currentAddressInfo.latLng.longitude,currentAddressInfo.latLng.latitude,page: pageIndex + 1);
         if (locationInformationEntity.status == "1") {
           print('请求成功');
           pageIndex++;
@@ -295,7 +296,7 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
 
   //高德接口获取周边数据
   aroundHttp() async {
-    PeripheralInformationEntity locationInformationEntity = await aroundForHttp(1);
+    PeripheralInformationEntity locationInformationEntity = await aroundForHttp(currentAddressInfo.latLng.longitude,currentAddressInfo.latLng.latitude,page: 1);
     if (locationInformationEntity.status == "1") {
       print('请求成功');
       pois = locationInformationEntity.pois;
@@ -340,54 +341,6 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
       // 请求失败
       _refreshController.loadFailed();
     }
-  }
-
-  //高德接口搜索
-  Future<PeripheralInformationEntity> searchForHttp(pageIndex) async {
-    String BaseUrl = "https://restapi.amap.com/v3/place/text";
-    Map<String, dynamic> map = Map();
-    map["key"] = AppConfig.getAmapKey();
-    map["keywords"] = searchController.text;
-    map["city"] = currentAddressInfo.city; //搜索的城市
-    print(currentAddressInfo.city);
-    map["offset"] = pageSize; //每页记录数据
-    map["page"] = pageIndex; //每页记录数据
-    map["citylimit"] = cityLimit; //仅返回指定城市数据
-    map["extensions"] = "all";
-    Response resp = await Http.getInstance()
-        .dio
-        .get(
-          BaseUrl,
-          queryParameters: map,
-        )
-        .catchError((e) {
-      print(e);
-    });
-    PeripheralInformationEntity baseBean = PeripheralInformationEntity.fromJson(resp.data);
-    return baseBean;
-  }
-
-  //高德接口获取当前位置周边信息
-  Future<PeripheralInformationEntity> aroundForHttp(pageIndex) async {
-    String BaseUrl = "https://restapi.amap.com/v3/place/around";
-    Map<String, dynamic> map = Map();
-    map["key"] = AppConfig.getAmapKey();
-    map["location"] =
-        "${currentAddressInfo.latLng.longitude},${currentAddressInfo.latLng.latitude}"; //中心点坐标 经度和纬度用","分割，经度在前，纬度在后，经纬度小数点后不得超过6位
-    map["offset"] = pageSize; //每页记录数据
-    map["page"] = pageIndex; //每页记录数据
-    map["extensions"] = "all";
-    Response resp = await Http.getInstance()
-        .dio
-        .get(
-          BaseUrl,
-          queryParameters: map,
-        )
-        .catchError((e) {
-      print(e);
-    });
-    PeripheralInformationEntity baseBean = PeripheralInformationEntity.fromJson(resp.data);
-    return baseBean;
   }
 }
 
