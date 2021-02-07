@@ -45,10 +45,10 @@ class _VipPageState extends State<VipNotOpenPage> {
     super.initState();
     controller.addListener(() {
       if (controller.offset >= 88) {
-        context.read<ProfilePageNotifier>().changeTitleColor(AppColor.white);
+        context.read<ProfilePageNotifier>().vipChangeTitleColor(AppColor.white);
         context.read<ProfilePageNotifier>().changeImageTitle(true);
       } else {
-        context.read<ProfilePageNotifier>().changeTitleColor(AppColor.transparent);
+        context.read<ProfilePageNotifier>().vipChangeTitleColor(AppColor.transparent);
         context.read<ProfilePageNotifier>().changeImageTitle(false);
       }
     });
@@ -57,7 +57,6 @@ class _VipPageState extends State<VipNotOpenPage> {
   @override
   void dispose() {
     // TODO: implement dispose
-    context.read<ProfilePageNotifier>().clear();
     super.dispose();
   }
 
@@ -286,7 +285,7 @@ class _VipPageState extends State<VipNotOpenPage> {
                         )
                       : RichText(
                           text: TextSpan(
-                              text: "${DateUtil.generateFormatDate(lastTime)}到期  ",
+                              text: "${DateUtil.generateFormatDate(lastTime,true)}到期  ",
                               style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.bgVip2),
                               children: [
                               TextSpan(text: "购买后有效期延长", style: AppStyle.textHintRegular13),

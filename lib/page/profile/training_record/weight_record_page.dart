@@ -5,9 +5,13 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/left_scroll/left_scroll_list_view.dart';
-
+import 'package:mirror/widget/precision_limit_Formatter.dart';
+import 'package:provider/provider.dart';
+import '../profile_detail_page.dart';
+import '../profile_detail_page.dart';
 import 'customize_line_chart.dart';
 
 ///体重记录页--我的体重
@@ -33,9 +37,8 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        title: Text("我的体重"),
-        centerTitle: true,
+      appBar: CustomAppBar(
+        titleString: "我的体重",
       ),
       body: getBodyUi(),
     );
@@ -104,7 +107,10 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
       onClickRightBtn: () {
         delWeight(weightDataMap["recordList"][index]["id"]);
         weightDataMap["recordList"].removeAt(index);
-        setState(() {});
+        if(mounted){
+          setState(() {});
+        }
+        context.read<ProfilePageNotifier>().setweight(0);
       },
     );
   }
@@ -302,6 +308,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
                     textAlign: TextAlign.center,
                     keyboardType: TextInputType.number,
                     controller: _numberController,
+                    inputFormatters: [PrecisionLimitFormatter(2)],
                     decoration: InputDecoration(
                       hintText: userWeight > 0.0 ? userWeight.toString() : "",
                       labelStyle: TextStyle(color: Color(0x99000000)),
@@ -333,7 +340,9 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
             userWeight = formatData(userWeight);
             saveTargetWeight(userWeight.toString());
             weightDataMap["targetWeight"] = userWeight;
-            setState(() {});
+            if(mounted){
+              setState(() {});
+            }
           } catch (e) {
             ToastShow.show(msg: "输入有错，请重新输入！", context: context);
           }
@@ -359,6 +368,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
                         textAlign: TextAlign.center,
                         keyboardType: TextInputType.number,
                         controller: _numberController,
+                        inputFormatters: [PrecisionLimitFormatter(2)],
                         decoration: InputDecoration(
                           labelStyle: TextStyle(color: Color(0x99000000)),
                           hintMaxLines: 1,
@@ -389,6 +399,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
             userWeight = formatData(userWeight);
             saveWeight(userWeight.toString());
             addWeightData(userWeight);
+            context.read<ProfilePageNotifier>().setweight(formatData(userWeight));
             _numberController.text = "";
           } catch (e) {
             ToastShow.show(msg: "输入有错，请重新输入！", context: context);
@@ -419,16 +430,18 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
         weightDataMap["recordList"].insert(0, recordMap);
       }
     }
-    setState(() {
-
-    });
+    if(mounted){
+      setState(() {});
+    }
   }
 
   //获取数据
   loadData() async {
     weightDataMap = await getWeightRecords(1, 1000);
     loadingStatus = LoadingStatus.STATUS_COMPLETED;
-    setState(() {});
+    if(mounted){
+      setState(() {});
+    }
   }
 
   double formatData(double value) {

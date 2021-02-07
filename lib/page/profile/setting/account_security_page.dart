@@ -7,6 +7,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:provider/provider.dart';
 
 //账号与安全
@@ -43,19 +44,8 @@ class _AccouontSecurityState extends State<AccountSecurityPage>{
     double height = ScreenUtil.instance.height;
       return Scaffold(
         backgroundColor: AppColor.white,
-        appBar:  AppBar(
-          backgroundColor: AppColor.white,
-          leading: InkWell(
-            child: Container(
-              margin: EdgeInsets.only(left: 16),
-              child: Image.asset("images/resource/2.0x/return2x.png"),),
-            onTap: (){
-              Navigator.pop(context);
-            },
-          ),
-          leadingWidth: 44,
-          title: Text("账号与安全",style: AppStyle.textMedium18,),
-          centerTitle: true,
+        appBar: CustomAppBar(
+          titleString: "账号与安全",
         ),
         body: Container(
           width: width,

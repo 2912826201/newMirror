@@ -17,6 +17,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:scan/scan.dart';
 import 'package:provider/provider.dart';
@@ -63,40 +64,13 @@ class _ScanCodeState extends State<ScanCodePage> {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: AppColor.white,
-          brightness: Brightness.light,
-          leading: InkWell(
-            child: Container(
-              margin: EdgeInsets.only(left: 16),
-              child: Image.asset("images/resource/2.0x/return2x.png"),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          leadingWidth: 44,
-          title: Text(
-            "扫描二维码",
-            style: AppStyle.textMedium18,
-          ),
+        appBar: CustomAppBar(
+          titleString: "扫描二维码",
           actions: [
-            InkWell(
-              onTap: () {
-                _getImagePicker();
-                /*getImage();*/
-              },
-              child: Center(
-                child: Container(
-                  padding: EdgeInsets.only(right: 17, top: 12, bottom: 12),
-                  child: Text(
-                    "相册",
-                    style: AppStyle.textRegular14,
-                  ),
-                ),
-              ),
-            )
+            CustomAppBarTextButton("相册", AppColor.textPrimary2, false, () {
+              _getImagePicker();
+              /*getImage();*/
+            }),
           ],
         ),
         body: Stack(
@@ -135,14 +109,12 @@ class _ScanCodeState extends State<ScanCodePage> {
                   width: width,
                   child: Row(
                     children: [
-                      Expanded(child: SizedBox()),
+                      Spacer(),
                       Column(
                         children: [
                           InkWell(
                             onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                                return MyQrCodePage();
-                              }));
+                              AppRouter.navigateToMyQrCodePage(context);
                             },
                             child: Center(
                                 child: QrImage(
@@ -162,7 +134,7 @@ class _ScanCodeState extends State<ScanCodePage> {
                           )
                         ],
                       ),
-                      Expanded(child: SizedBox()),
+                      Spacer()
                     ],
                   ),
                 ))

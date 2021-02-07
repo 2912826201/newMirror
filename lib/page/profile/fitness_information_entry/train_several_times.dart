@@ -1,6 +1,3 @@
-
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
@@ -9,7 +6,9 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
+import 'package:mirror/widget/loading.dart';
 import 'package:provider/provider.dart';
 
 class TrainSeveralTimes extends StatefulWidget{
@@ -29,17 +28,7 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes>{
     double height = ScreenUtil.instance.height;
     return Scaffold(
       backgroundColor: AppColor.white,
-      appBar: AppBar(
-        backgroundColor: AppColor.white,
-        leading: InkWell(
-          child: Container(
-            margin: EdgeInsets.only(left: 16),
-            child: Image.asset("images/resource/2.0x/return2x.png"),),
-          onTap: (){
-            Navigator.pop(context);
-          },
-        ),
-      ),
+      appBar: CustomAppBar(),
       body: Container(
         width: width,
         height: height,
@@ -112,6 +101,7 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes>{
             backColor: selected?AppColor.bgBlack:AppColor.transparent,
             color: selected?AppColor.transparent:AppColor.textHint,
             onTap: (){
+              Loading.showLoading(context);
               setState(() {
                 switch(type){
                   case 3:
@@ -149,7 +139,7 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes>{
     }else{
         print('================================健身信息录入失败');
     }
-
+    Loading.hideLoading(context);
   }
 }
 

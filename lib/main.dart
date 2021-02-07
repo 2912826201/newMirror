@@ -25,7 +25,6 @@ import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/setting/notice_setting_page.dart';
 import 'package:mirror/page/profile/vip/vip_nameplate_page.dart';
 import 'package:mirror/widget/address_Picker.dart';
-import 'package:mirror/widget/dialog.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 
@@ -59,24 +58,36 @@ void main() {
   _initApp().then((value) => runApp(
         MultiProvider(
           providers: [
+            //当前用户的token信息 无论匿名用户还是登录用户都会有值
             ChangeNotifierProvider(create: (_) => TokenNotifier(Application.token)),
+            //当前用户的用户信息 如果是匿名用户则uid为-1 无其他信息
             ChangeNotifierProvider(create: (_) => ProfileNotifier(Application.profile)),
+            //当前用户所登录的机器终端信息 如果没有则为null
             ChangeNotifierProvider(create: (_) => MachineNotifier(Application.machine)),
             // ValueListenableProvider<FeedMapNotifier>(builder: (_) => {},)
             ChangeNotifierProvider(create: (_) => FeedMapNotifier(feedMap: {})),
+            //融云的连接状态 初始值为-1
             ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
+            //用户的融云会话信息 登录后会从数据库查出来放到此provider中
             ChangeNotifierProvider(create: (_) => ConversationNotifier()),
+            //聊天界面用户录音的提示文字
             ChangeNotifierProvider(create: (_) => VoiceAlertData()),
+            //聊天界面用户用户录音的功能
             ChangeNotifierProvider(create: (_) => VoiceSettingNotifier()),
+            //接收融云消息-进行判断
             ChangeNotifierProvider(create: (_) => ChatMessageProfileNotifier()),
+            //群聊界面的@用户功能
             ChangeNotifierProvider(create: (_) => ChatEnterNotifier()),
+            //TODO 省市地区选择器的状态 应该不需要在全局更新状态
             ChangeNotifierProvider(create: (_) => AddressPickerNotifier()),
+            //TODO 录入健身信息的状态 应该不需要在全局更新状态
             ChangeNotifierProvider(create: (_) => FitnessInformationNotifier()),
             ChangeNotifierProvider(create: (_) => ProfilePageNotifier()),
+            //群成员信息
             ChangeNotifierProvider(create: (_) => GroupUserProfileNotifier()),
+            //记录未读消息数 目前只记录3种互动通知的数量 从接口获取更新数据
             ChangeNotifierProvider(create: (_) => UnreadMessageNotifier()),
             ChangeNotifierProvider(create: (_) => VipMoveNotifier()),
-            ChangeNotifierProvider(create: (_) => AppDialogNotifier()),
             ChangeNotifierProvider(create: (_) => SettingNotifile()),
           ],
           child: MyApp(),
@@ -139,7 +150,7 @@ Future _initApp() async {
     isTokenValid = await checkToken();
   }
 
-  if(!isTokenValid) {
+  if (!isTokenValid) {
     Application.token = null;
     TokenModel tokenModel = await login("anonymous", null, null, null);
     if (tokenModel != null) {
@@ -291,6 +302,7 @@ class MyAppState extends State<MyApp> {
         // primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+      navigatorKey: Application.navigatorKey,
       //通过统一方法处理页面跳转路由
       onGenerateRoute: Application.router.generator,
       // localizationsDelegates: [

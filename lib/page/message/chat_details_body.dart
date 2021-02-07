@@ -105,7 +105,7 @@ class ChatDetailsBody extends StatelessWidget {
               shrinkWrap: chatData.length < pageCount,
               childrenDelegate: FirstEndItemChildrenDelegate((BuildContext context, int index) {
                 if (index == chatData.length - 1) {
-                  print("------------");
+                  // print("------------");
                     return Visibility(
                       visible: loadStatus == LoadingStatus.STATUS_LOADING ? true : false,
                       child: Container(
@@ -133,10 +133,7 @@ class ChatDetailsBody extends StatelessWidget {
         ),
 
         Positioned(
-          child: Offstage(
-            offstage: !isPersonalButler,
-            child: ChatSystemBottomBar(voidMessageClickCallBack),
-          ),
+          child: isPersonalButler?ChatSystemBottomBar(voidMessageClickCallBack):Container(),
           left: 0,
           right: 0,
           bottom: 0,

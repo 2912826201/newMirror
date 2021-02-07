@@ -111,7 +111,7 @@ class CommentBottomListView extends StatelessWidget {
             Container(height: 6),
             Container(
               child: Text(
-                "${DateUtil.generateFormatDate(this.model.createTime)} 回复",
+                "${DateUtil.generateFormatDate(this.model.createTime,false)} 回复",
                 style: TextStyle(
                   fontSize: 12,
                   color: AppColor.textSecondary,

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:mirror/page/agora_test_page.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 
 /// agora_input_page
 /// Created by yangjiayi on 2020/11/30.
@@ -18,8 +19,8 @@ class _AgoraInputState extends State<AgoraInputPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("输入token及频道号"),
+      appBar: CustomAppBar(
+        titleString: "输入token及频道号",
       ),
       body: Center(
         child: Column(

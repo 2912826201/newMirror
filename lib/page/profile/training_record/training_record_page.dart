@@ -4,14 +4,15 @@ import 'package:flutter/services.dart';
 import 'package:mirror/api/profile_page/training_record_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/profile/training_record_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
-
 
 ///
 /// 训练记录页
@@ -23,40 +24,55 @@ class TrainingRecordPage extends StatefulWidget {
 class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTickerProviderStateMixin {
   //滑动控制
   TabController tabController;
+
   //数据是否在加载中
   LoadingStatus loadingStatus = LoadingStatus.STATUS_IDEL;
+
   //数据是否在加载中
   RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   //每一天的数据
   List<TrainingRecordModel> dayModelList = <TrainingRecordModel>[];
+
   //每一周的数据--没有具体的数据--有每一天的列表的index索引
   List<TrainingRecordWeekModel> weekModelList = <TrainingRecordWeekModel>[];
+
   //每一月的数据--没有具体的数据--有每一天的列表的index索引
   List<TrainingRecordMonthModel> monthModelList = <TrainingRecordMonthModel>[];
+
   //当前选中的的是第几个月
   int monthSelectPosition = 0;
+
   //当前选中的是第几天
   int daySelectPosition = 0;
+
   //当前选中的是第几周
   int weekSelectPosition = 0;
+
   //每一个月中最大的值-卡路里
   int monthMaxValue = 0;
+
   //每一个天中最大的值-卡路里
   int dayMaxValue = 0;
+
   //每一个周中最大的值-卡路里
   int weekMaxValue = 0;
+
   //有拿些周
   Map<String, int> weekModelMap = Map();
+
   //有哪些月
   Map<String, int> monthModelMap = Map();
+
   //总共训练的时长-训练的数据
   Map<String, dynamic> allDataMap = Map();
 
   //当前是第几页数据
   int pageIndex = 0;
+
   //当前数据的起始时间
   int startTime = 0;
+
   //当前数据的结束时间
   int endTime = 0;
 
@@ -92,7 +108,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
               elevation: 0.5,
               brightness: Brightness.light,
               backgroundColor: AppColor.white,
-              expandedHeight: 114,
+              expandedHeight: CustomAppBar.appBarHeight + ScreenUtil.instance.statusBarHeight + 12,
               flexibleSpace: buildFlexibleSpaceBar(),
               bottom: buildTabBar(),
             ),
@@ -123,7 +139,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
     double itemWidth = (MediaQuery.of(context).size.width - 32);
     double itemHeight = 36.0;
     return PreferredSize(
-      preferredSize: Size(itemWidth, itemHeight + 18),
+      preferredSize: Size(itemWidth, CustomAppBar.appBarHeight),
       child: Container(
         width: itemWidth,
         height: itemHeight,
@@ -132,7 +148,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
           border: Border.all(color: AppColor.black, width: 1),
           borderRadius: BorderRadius.circular(itemHeight / 2),
         ),
-        margin: const EdgeInsets.only(bottom: 8, top: 10),
+        margin: const EdgeInsets.only(bottom: (CustomAppBar.appBarHeight - 36.0) / 2),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(itemHeight / 2),
           child: Stack(
@@ -188,9 +204,12 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
         color: AppColor.white,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
+          children: [
             Container(
-              height: 100,
+              height: ScreenUtil.instance.statusBarHeight,
+            ),
+            Container(
+              height: CustomAppBar.appBarHeight,
               width: MediaQuery.of(context).size.width,
               child: Stack(
                 alignment: AlignmentDirectional.center,
@@ -198,44 +217,38 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
                   Container(
                     child: Text(
                       "训练记录",
-                      style: TextStyle(fontSize: 18, color: AppColor.black, fontWeight: FontWeight.bold),
+                      style: AppStyle.textMedium18,
                     ),
                   ),
                   Positioned(
-                    child: GestureDetector(
-                      child: Container(
-                        height: 50,
-                        width: 50,
-                        color: Colors.transparent,
-                        child: Icon(
-                          Icons.chevron_left,
-                          size: 30,
-                          color: AppColor.black,
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
+                    child: CustomAppBarIconButton(
+                        Icons.arrow_back_ios_outlined,
+                        AppColor.black,
+                        true,
+                        () {
+                          Navigator.pop(context);
+                        }),
                     left: 0,
                   ),
                   Positioned(
                     child: Container(
                       width: MediaQuery.of(context).size.width,
-                      height: 1,
+                      height: 0.5,
                       color: AppColor.bgWhite,
                     ),
-                    bottom: 20,
+                    bottom: 0,
                   ),
                 ],
               ),
             ),
+            Container(
+              height: 12,
+            )
           ],
         ),
       ),
     );
   }
-
 
   //判断加载什么界面
   Widget trainingRecordPageItem(String typeString) {
@@ -281,7 +294,6 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
       slivers: slivers,
     );
   }
-
 
   //总-全部数据页
   Widget getAllTrainingUi() {
@@ -427,7 +439,6 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
     );
   }
 
-
 //获取训练次数的ui
   Widget getTrainAllCountUi(String typeString) {
     String title = "训练次数";
@@ -453,7 +464,6 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
       calorie = monthModelList[monthSelectPosition].dcalorieCount.toString() + "千卡";
     }
 
-
     return SliverToBoxAdapter(
       child: Container(
         margin: const EdgeInsets.only(left: 16, right: 16, top: 32, bottom: 0),
@@ -466,35 +476,35 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
             SizedBox(width: 12),
             Expanded(
                 child: SizedBox(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title,
+                      style: TextStyle(fontSize: 16, color: AppColor.textPrimary1, fontWeight: FontWeight.bold)),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(title,
-                          style: TextStyle(fontSize: 16, color: AppColor.textPrimary1, fontWeight: FontWeight.bold)),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(subTitle, style: TextStyle(fontSize: 14, color: AppColor.textPrimary3)),
-                          Expanded(child: SizedBox()),
-                          Container(
-                            margin: const EdgeInsets.only(top: 3),
-                            child: Icon(Icons.access_time_sharp, size: 16, color: AppColor.textHint),
-                          ),
-                          SizedBox(width: 2),
-                          Text(time, style: TextStyle(fontSize: 12, color: AppColor.textPrimary3)),
-                          SizedBox(width: 15),
-                          Container(
-                            margin: const EdgeInsets.only(top: 3),
-                            child: Icon(Icons.local_fire_department, size: 16, color: AppColor.textHint),
-                          ),
-                          SizedBox(width: 2),
-                          Text(calorie, style: TextStyle(fontSize: 12, color: AppColor.textPrimary3)),
-                        ],
+                      Text(subTitle, style: TextStyle(fontSize: 14, color: AppColor.textPrimary3)),
+                      Expanded(child: SizedBox()),
+                      Container(
+                        margin: const EdgeInsets.only(top: 3),
+                        child: Icon(Icons.access_time_sharp, size: 16, color: AppColor.textHint),
                       ),
+                      SizedBox(width: 2),
+                      Text(time, style: TextStyle(fontSize: 12, color: AppColor.textPrimary3)),
+                      SizedBox(width: 15),
+                      Container(
+                        margin: const EdgeInsets.only(top: 3),
+                        child: Icon(Icons.local_fire_department, size: 16, color: AppColor.textHint),
+                      ),
+                      SizedBox(width: 2),
+                      Text(calorie, style: TextStyle(fontSize: 12, color: AppColor.textPrimary3)),
                     ],
                   ),
-                )),
+                ],
+              ),
+            )),
           ],
         ),
       ),
@@ -518,7 +528,6 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
       ),
     );
   }
-
 
 //获取横向列表
   Widget getHorizontalListView(String typeString) {
@@ -631,41 +640,38 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
 
     return GestureDetector(
       child: Container(
-        width: MediaQuery
-            .of(context)
-            .size
-            .width / count,
+        width: MediaQuery.of(context).size.width / count,
         color: Colors.transparent,
         child: Column(
           children: [
             Expanded(
                 child: SizedBox(
-                  child: Stack(
-                    alignment: AlignmentDirectional.bottomCenter,
-                    children: [
-                      Container(
-                        width: 16,
-                        height: double.infinity,
-                      ),
-                      Container(
-                        width: 1,
-                        height: double.infinity,
-                        color: AppColor.textHint,
-                      ),
-                      Positioned(
-                        child: Container(
-                          width: 16,
-                          height: newValue / maxValue * (175 - 20),
-                          decoration: BoxDecoration(
-                            color: isNowTime ? AppColor.textPrimary2 : AppColor.bgWhite,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        bottom: 0,
-                      ),
-                    ],
+              child: Stack(
+                alignment: AlignmentDirectional.bottomCenter,
+                children: [
+                  Container(
+                    width: 16,
+                    height: double.infinity,
                   ),
-                )),
+                  Container(
+                    width: 1,
+                    height: double.infinity,
+                    color: AppColor.textHint,
+                  ),
+                  Positioned(
+                    child: Container(
+                      width: 16,
+                      height: newValue / maxValue * (175 - 20),
+                      decoration: BoxDecoration(
+                        color: isNowTime ? AppColor.textPrimary2 : AppColor.bgWhite,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    bottom: 0,
+                  ),
+                ],
+              ),
+            )),
             SizedBox(height: 8),
             Text(
               title,
@@ -680,103 +686,99 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
             return;
           }
           daySelectPosition = index - 3;
-          setState(() {
-
-          });
+          if (mounted) {
+            setState(() {});
+          }
         } else if (typeString == "周") {
           if (index < 2 || index >= weekModelList.length + 2) {
             return;
           }
           weekSelectPosition = index - 2;
-          setState(() {
-
-          });
+          if (mounted) {
+            setState(() {});
+          }
         } else {
           if (index < 2 || index >= monthModelList.length + 2) {
             return;
           }
           monthSelectPosition = index - 2;
-          setState(() {
-
-          });
+          if (mounted) {
+            setState(() {});
+          }
         }
       },
     );
   }
-
 
 //获取顶部ui样式
   Widget getTopUi(String typeString) {
     var alertTextStyle = const TextStyle(fontSize: 12, color: AppColor.textHint);
     return SliverToBoxAdapter(
         child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-          child: Column(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      child: Column(
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  Text(getTopTitle(typeString), style: alertTextStyle),
-                  Expanded(child: SizedBox()),
-                  Text("(分钟)", style: alertTextStyle),
-                ],
-              ),
-              SizedBox(height: 6),
-              Text(
-                getTopLearnTime(typeString),
-                style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: AppColor.textPrimary2),
-              ),
-              SizedBox(height: 26),
-              Row(
-                children: [
-                  Expanded(
-                      child: SizedBox(
-                        child: Column(
-                          children: [
-                            Text(getTopCheckInCount(typeString), style: TextStyle(fontSize: 23, fontWeight: FontWeight
-                                .bold, color: AppColor
-                                .textPrimary2)),
-                            SizedBox(height: 6),
-                            Text("打卡次数", style: alertTextStyle),
-                          ],
-                        ),
-                      )),
-
-                  Visibility(
-                    visible: typeString != "日",
-                    child: Expanded(
-                        child: SizedBox(
-                          child: Column(
-                            children: [
-                              Text(getTopTrainingDay(typeString), style: TextStyle(
-                                  fontSize: 23, fontWeight: FontWeight.bold, color: AppColor.textPrimary2)),
-                              SizedBox(height: 6),
-                              Text("训练天数", style: alertTextStyle),
-                            ],
-                          ),
-                        )),
-                  ),
-                  Expanded(
-                      child: SizedBox(
-                        child: Column(
-                          children: [
-                            Text(getTopCalorie(typeString), style: TextStyle(fontSize: 23,
-                                fontWeight: FontWeight.bold,
-                                color: AppColor.textPrimary2)),
-                            SizedBox(height: 6),
-                            Text("消耗千卡", style: alertTextStyle),
-                          ],
-                        ),
-                      )),
-                ],
-              ),
-              SizedBox(height: 20),
-              Container(
-                height: 12,
-                color: AppColor.bgWhite,
-              ),
+              Text(getTopTitle(typeString), style: alertTextStyle),
+              Expanded(child: SizedBox()),
+              Text("(分钟)", style: alertTextStyle),
             ],
           ),
-        ));
+          SizedBox(height: 6),
+          Text(
+            getTopLearnTime(typeString),
+            style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: AppColor.textPrimary2),
+          ),
+          SizedBox(height: 26),
+          Row(
+            children: [
+              Expanded(
+                  child: SizedBox(
+                child: Column(
+                  children: [
+                    Text(getTopCheckInCount(typeString),
+                        style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: AppColor.textPrimary2)),
+                    SizedBox(height: 6),
+                    Text("打卡次数", style: alertTextStyle),
+                  ],
+                ),
+              )),
+              Visibility(
+                visible: typeString != "日",
+                child: Expanded(
+                    child: SizedBox(
+                  child: Column(
+                    children: [
+                      Text(getTopTrainingDay(typeString),
+                          style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: AppColor.textPrimary2)),
+                      SizedBox(height: 6),
+                      Text("训练天数", style: alertTextStyle),
+                    ],
+                  ),
+                )),
+              ),
+              Expanded(
+                  child: SizedBox(
+                child: Column(
+                  children: [
+                    Text(getTopCalorie(typeString),
+                        style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: AppColor.textPrimary2)),
+                    SizedBox(height: 6),
+                    Text("消耗千卡", style: alertTextStyle),
+                  ],
+                ),
+              )),
+            ],
+          ),
+          SizedBox(height: 20),
+          Container(
+            height: 12,
+            color: AppColor.bgWhite,
+          ),
+        ],
+      ),
+    ));
   }
 
   //获取头部title
@@ -862,14 +864,10 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
     }
   }
 
-
 //加载动画
   Widget getLoadUi() {
     return Container(
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
+      width: MediaQuery.of(context).size.width,
       height: double.infinity,
       child: UnconstrainedBox(
         alignment: Alignment.center,
@@ -881,10 +879,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
 //没有数据
   Widget getNoDataUi() {
     return Container(
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
+      width: MediaQuery.of(context).size.width,
       height: double.infinity,
       child: Stack(
         children: [
@@ -900,10 +895,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
           Positioned(
             child: Container(
               height: 83,
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
+              width: MediaQuery.of(context).size.width,
               color: AppColor.textPrimary2,
               alignment: Alignment.topCenter,
               padding: const EdgeInsets.only(top: 14),
@@ -919,7 +911,6 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
       ),
     );
   }
-
 
 //加载数据
   void onLoadData() async {
@@ -940,14 +931,15 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
     _refreshController.loadComplete();
 
     allDataMap = await getTrainingRecords();
-
-    setState(() {
-      if (dayModelList.length > 0) {
-        loadingStatus = LoadingStatus.STATUS_COMPLETED;
-      } else {
-        loadingStatus = LoadingStatus.STATUS_IDEL;
-      }
-    });
+    if (mounted) {
+      setState(() {
+        if (dayModelList.length > 0) {
+          loadingStatus = LoadingStatus.STATUS_COMPLETED;
+        } else {
+          loadingStatus = LoadingStatus.STATUS_IDEL;
+        }
+      });
+    }
   }
 
 //获取周数据和月数据
@@ -1025,7 +1017,6 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
     }
   }
 
-
 //判断是不是直接加入
   int judgeAddDayModelList(TrainingRecordModel recordModel) {
     int position = 0;
@@ -1069,24 +1060,19 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
   }
 
   int getClockCount(TrainingRecordModel recordModel) {
-    if (recordModel == null || recordModel.courseModelList == null ||
-        recordModel.courseModelList.length < 1) {
+    if (recordModel == null || recordModel.courseModelList == null || recordModel.courseModelList.length < 1) {
       return 0;
     } else {
       int count = 0;
       for (int i = 0; i < recordModel.courseModelList.length; i++) {
-        if (!(recordModel.courseModelList[i].isClock == null ||
-            recordModel.courseModelList[i].isClock == 0)) {
+        if (!(recordModel.courseModelList[i].isClock == null || recordModel.courseModelList[i].isClock == 0)) {
           count++;
         }
       }
       return count;
     }
   }
-
-
 }
-
 
 //获取月的string 2021/12
 String getMonthString(String finishTime) {
@@ -1094,18 +1080,17 @@ String getMonthString(String finishTime) {
   return "${dateTime.year}/${dateTime.month}";
 }
 
-
 //获取月的string 1月
 String getMonthStringComplete(String finishTime) {
   DateTime dateTime = DateUtil.stringToDateTime(finishTime);
   return "${dateTime.month}月";
 }
+
 //获取月的string 2021年1月
 String getMonthStringComplete1(String finishTime) {
   DateTime dateTime = DateUtil.stringToDateTime(finishTime);
   return "${dateTime.year}年${dateTime.month}月";
 }
-
 
 //获取周的string 12/21-12/27
 String getWeekString(String finishTime) {
@@ -1127,6 +1112,7 @@ String getWeekString(String finishTime) {
 
   return "${startDateTime.month}/${startDateTime.day}-${endDateTime.month}/${endDateTime.day}";
 }
+
 //获取周的string 1月4日-1月10日
 String getWeekStringComplete(String finishTime) {
   DateTime dateTime = DateUtil.stringToDateTime(finishTime);
@@ -1148,17 +1134,13 @@ String getWeekStringComplete(String finishTime) {
   return "${startDateTime.month}月${startDateTime.day}日-${endDateTime.month}月${endDateTime.day}日";
 }
 
-
 //获取开始时间
 //列如：2020-12结束 2021-1开始
 int getStartTime(int pageIndex, int pageSize, int endTime) {
   if (pageIndex == 0) {
     return new DateTime.now().millisecondsSinceEpoch;
   } else {
-    return DateUtil
-        .getDateTimeByMs(endTime)
-        .add(new Duration(days: -1))
-        .millisecondsSinceEpoch;
+    return DateUtil.getDateTimeByMs(endTime).add(new Duration(days: -1)).millisecondsSinceEpoch;
   }
 }
 
@@ -1186,6 +1168,3 @@ int getEndTime(int pageIndex, int pageSize, int endTime) {
 
   return new DateTime(yearNew, monthNew, 1).millisecondsSinceEpoch;
 }
-
-
-

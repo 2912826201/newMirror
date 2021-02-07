@@ -7,6 +7,8 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/feed_video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
@@ -43,22 +45,23 @@ class _PreviewVideoState extends State<PreviewVideoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
+        appBar: CustomAppBar(
           backgroundColor: AppColor.bgBlack,
-          title: Row(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Spacer(),
-              GestureDetector(
-                onTap: () async {
+          brightness: Brightness.dark,
+          actions: [
+            Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding),
+              child: CustomRedButton(
+                "下一步",
+                CustomRedButton.buttonStateNormal,
+                () async {
                   MediaFileModel model = MediaFileModel();
                   model.type = mediaTypeKeyVideo;
                   model.file = _file;
                   model.sizeInfo = widget.sizeInfo;
                   model.thumb = await VideoThumbnail.thumbnailData(
-                      video: widget.filePath,
-                      imageFormat: ImageFormat.JPEG,
-                      quality: 100);
+                      video: widget.filePath, imageFormat: ImageFormat.JPEG, quality: 100);
 
                   SelectedMediaFiles files = SelectedMediaFiles();
                   files.type = mediaTypeKeyVideo;
@@ -68,16 +71,10 @@ class _PreviewVideoState extends State<PreviewVideoPage> {
 
                   Navigator.pop(context, true);
                 },
-                child: Container(
-                  alignment: Alignment.center,
-                  height: 28,
-                  width: 60,
-                  decoration: BoxDecoration(color: AppColor.mainRed, borderRadius: BorderRadius.circular(14)),
-                  child: Text("下一步", style: TextStyle(color: AppColor.white, fontSize: 14)),
-                ),
-              )
-            ],
-          ),
+                isDarkBackground: true,
+              ),
+            ),
+          ],
         ),
         body: Column(
           children: [
@@ -89,7 +86,7 @@ class _PreviewVideoState extends State<PreviewVideoPage> {
                 widget.filePath,
                 widget.sizeInfo,
                 _previewSize,
-                isfile: true,
+                isFile: true,
               ),
             ),
             Expanded(

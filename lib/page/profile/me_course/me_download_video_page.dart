@@ -8,8 +8,10 @@ import 'package:mirror/data/dto/download_video_dto.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/left_scroll/left_scroll_list_view.dart';
 
@@ -38,38 +40,25 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("下载课程"),
-        centerTitle: true,
+      appBar: CustomAppBar(
+        titleString: "下载课程",
         actions: [
-          GestureDetector(
-            child: Container(
-              height: double.infinity,
-              color: AppColor.transparent,
-              alignment: Alignment.center,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Container(
-                child: Text(
-                  topText,
-                  style: TextStyle(fontSize: 16, color: AppColor.textPrimary3),
-                ),
-              ),
-            ),
-            onTap: () {
-              if(courseVideoModelList!=null&&courseVideoModelList.length>0) {
-                if (topText == "选择") {
-                  topText = "取消";
-                } else {
-                  topText = "选择";
-                }
-                selectDeleteIndexList.clear();
-                isAllSelect = false;
-                setState(() {});
-              }else{
-                ToastShow.show(msg: "暂无课程", context: context);
+          CustomAppBarTextButton(topText, AppColor.textPrimary3, false, () {
+            if (courseVideoModelList != null && courseVideoModelList.length > 0) {
+              if (topText == "选择") {
+                topText = "取消";
+              } else {
+                topText = "选择";
               }
-            },
-          )
+              selectDeleteIndexList.clear();
+              isAllSelect = false;
+              if (mounted) {
+                setState(() {});
+              }
+            } else {
+              ToastShow.show(msg: "暂无课程", context: context);
+            }
+          }),
         ],
       ),
       body: getBodyUi(),
@@ -170,7 +159,9 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
                     selectDeleteIndexList.add(i);
                   }
                 }
-                setState(() {});
+                if (mounted) {
+                  setState(() {});
+                }
               },
             ),
             left: 0,
@@ -211,9 +202,16 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
   Widget getListView() {
     return ListView.builder(
       physics: BouncingScrollPhysics(),
-      itemCount: courseVideoModelList.length,
+      itemCount: courseVideoModelList.length + 1,
       itemBuilder: (context, index) {
-        return getLeftDeleteUi(courseVideoModelList[index], index);
+        if (index == courseVideoModelList.length) {
+          return Container(
+            height: ScreenUtil.instance.bottomBarHeight,
+            color: AppColor.white,
+          );
+        } else {
+          return getLeftDeleteUi(courseVideoModelList[index], index);
+        }
       },
     );
   }
@@ -247,12 +245,13 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
         selectDeleteIndexList.add(index);
       }
       isAllSelect = selectDeleteIndexList.length == courseVideoModelList.length;
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     } else {
       AppRouter.navigateToVideoDetail(context, courseVideoModelList[index].courseId);
     }
   }
-
 
   //每一个item
   Widget getItem(DownloadCourseVideoDto courseVideoDto, int index) {
@@ -364,13 +363,17 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
       }
     }
     loadingStatus = LoadingStatus.STATUS_COMPLETED;
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void deleteVideo() async {
     if (selectDeleteIndexList.length < 1) {
       isAllSelect = false;
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
       return;
     }
 
@@ -389,4 +392,3 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
     loadData();
   }
 }
-

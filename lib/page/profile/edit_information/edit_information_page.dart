@@ -23,6 +23,8 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/address_Picker.dart';
+import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -44,6 +46,7 @@ class _EditInformationState extends State<EditInformation> {
   String userBirthday = "--";
   String _introduction = "去编辑";
   String avataruri = "";
+
   //取图裁剪得到的图片数据
   Uint8List imageData;
   List<File> fileList = [];
@@ -53,6 +56,7 @@ class _EditInformationState extends State<EditInformation> {
   Map<int, List<RegionDto>> cityMap = Application.cityMap;
   OnItemClickListener onItemClickListener;
   double textHeight;
+
   @override
   void initState() {
     super.initState();
@@ -66,7 +70,7 @@ class _EditInformationState extends State<EditInformation> {
     userSex = context.read<ProfileNotifier>().profile.sex;
     userBirthday = context.read<ProfileNotifier>().profile.birthday;
     _introduction = context.read<ProfileNotifier>().profile.description;
-    if (context.read<ProfileNotifier>().profile.cityCode != null){
+    if (context.read<ProfileNotifier>().profile.cityCode != null) {
       provinceMap.forEach((key, value) {
         if (context.read<ProfileNotifier>().profile.cityCode == value.regionCode) {
           print('初始化城市=======================================cityCode=====${value.regionCode}');
@@ -80,8 +84,12 @@ class _EditInformationState extends State<EditInformation> {
           if (context.read<ProfileNotifier>().profile.cityCode == element.regionCode) {
             print('初始化城市=======================================cityCode=====${element.regionCode}');
             print('初始化城市=======================================cityName=====${element.regionName}');
-            context.read<AddressPickerNotifier>().changeCityText(element.regionName,provinceMap[element.parentId].regionName);
-            context.read<AddressPickerNotifier>().changeCityCode(element.regionCode, element.longitude, element.latitude);
+            context
+                .read<AddressPickerNotifier>()
+                .changeCityText(element.regionName, provinceMap[element.parentId].regionName);
+            context
+                .read<AddressPickerNotifier>()
+                .changeCityCode(element.regionCode, element.longitude, element.latitude);
           }
         });
       });
@@ -91,6 +99,7 @@ class _EditInformationState extends State<EditInformation> {
     print('_introduction==========================================$_introduction');
     print('=====================================赋值完成');
   }
+
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -104,249 +113,231 @@ class _EditInformationState extends State<EditInformation> {
     }
     if (_introduction != "") {
       ///判断文字的高度，动态改变
-      TextPainter testSize = calculateTextWidth(_introduction, AppStyle.textRegular16, width*0.66, 5);
+      TextPainter testSize = calculateTextWidth(_introduction, AppStyle.textRegular16, width * 0.66, 5);
       textHeight = testSize.height;
       print('textHeight==============================$textHeight');
     }
     return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
+        appBar: CustomAppBar(
           backgroundColor: AppColor.white,
-          leading: InkWell(
-            child: Container(
-              margin: EdgeInsets.only(left: 16),
-              child: Image.asset("images/resource/2.0x/return2x.png"),),
-            onTap: (){
-              context.read<AddressPickerNotifier>().cleanCityData();
-              Navigator.pop(context);
-            },
-          ),
-          leadingWidth: 44,
-          title: Text(
-            "编辑资料",
-            style: AppStyle.textMedium18,
-          ),
+          leadingOnTap: () {
+            context.read<AddressPickerNotifier>().cleanCityData();
+            Navigator.pop(context);
+          },
+          titleString: "编辑资料",
           actions: [
-            InkWell(
-              onTap: () {
-                if (userName != null && avataruri != null) {
-                  Loading.showLoading(context);
-                  _upDataUserInfo();
-                } else {
-                  Toast.show("头像和昵称不能为空!", context);
-                }
-              },
-              child: Container(
-              width: 60,
-              margin: EdgeInsets.only(right: 16),
-              child: Center(
-                  child: Container(
-                decoration: BoxDecoration(
-                  color: AppColor.mainRed,
-                  borderRadius: BorderRadius.all(Radius.circular(14)),
-                ),
-                padding: EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 4),
-                child: Text(
-                  "确定",
-                  style: TextStyle(fontSize: 14, color: AppColor.white),
-                ),
-              )),
+            Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding),
+              child: CustomRedButton(
+                "确定",
+                CustomRedButton.buttonStateNormal,
+                () {
+                  if (userName != null && avataruri != null) {
+                    Loading.showLoading(context);
+                    _upDataUserInfo();
+                  } else {
+                    Toast.show("头像和昵称不能为空!", context);
+                  }
+                },
+              ),
             ),
-            )
           ],
         ),
         body: Container(
-              color: AppColor.white,
-              height: height - ScreenUtil.instance.statusBarHeight,
-              width: width,
-              child: Column(
-                children: [
-                  Container(
-                    width: width,
-                    height: 0.5,
-                    color: AppColor.bgWhite,
-                  ),
-                  Container(
-                      margin: EdgeInsets.only(top: 16),
-                      width: 71,
-                      height: 71,
-                      child: InkWell(
-                        child: _avatar(context, height,width),
-                        onTap: () {
-                          AppRouter.navigateToMediaPickerPage(
-                              context, 1, typeImage, true, startPageGallery, true, (result) async {
-                            SelectedMediaFiles files = Application.selectedMediaFiles;
-                            if (result != true || files == null) {
-                              print('===============================值为空退回');
-                              return;
-                            }
-                            if (fileList.isNotEmpty) {
-                              fileList.clear();
-                            }
-                            Application.selectedMediaFiles = null;
-                            MediaFileModel model = files.list.first;
-                            print(
-                                'model croppedImageData 1=========================${model.croppedImageData}  ${model.croppedImage}   ${model.file}');
-                            if (model != null) {
-                              print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-                              ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
-                              print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-                              Uint8List picBytes = byteData.buffer.asUint8List();
-                              print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
-                              model.croppedImageData = picBytes;
-                            }
-                            String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
-                            if (model.croppedImageData != null) {
-                              print('==================================model.croppedImageData!=null');
-                              File imageFile = await FileUtil().writeImageDataToFile(model.croppedImageData, timeStr);
-                              print('imageFile==============================$imageFile');
-                              fileList.add(imageFile);
-                              print('===============================${fileList.length}');
-                            }
-                            print('model.croppedImageData 2===========================${model.croppedImageData}');
-                            // context.read<InformationImageNotifier>().setImage(model.croppedImageData);
-                            setState(() {
-                              imageData = model.croppedImageData;
-                            });
-                          });
-                        },
-                      )
-                      ),
-                  SizedBox(
-                    height: 16,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      AppRouter.navigateToEditInfomationName(context, userName, (result) {
-                        setState(() {
-                          if(result!=null){
-                            userName = result;
-                          }
-                        });
-                      });
-                    },
-                    child: _rowChose(width, "昵称", userName),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(left: 16, right: 16),
-                    width: width,
-                    height: 0.5,
-                    color: AppColor.bgWhite,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      List<String> list = ["男","女"];
-                     openMoreBottomSheet(
-                       context: context,
-                       onItemClickListener:(index){
-                         if(list[index]=="男"){
-                           setState(() {
-                            userSex = 1;
-                           });
-                         }else if(list[index] =="女"){
-                           setState(() {
-                             userSex = 2;
-                           });
-                         }
-                       },
-                       lists:list);
-
-                    },
-                    child: _rowChose(width, "性别", userSexText),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(left: 16, right: 16),
-                    width: width,
-                    height: 0.5,
-                    color: AppColor.bgWhite,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      _showDatePicker();
-                    },
-                    child: _rowChose(width, "生日", userBirthday),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(left: 16, right: 16),
-                    width: width,
-                    height: 0.5,
-                    color: AppColor.bgWhite,
-                  ),
-                  InkWell(
-                    child: _rowChose(width, "地区",context.watch<AddressPickerNotifier>().provinceCity),
-                    onTap: () {
-                      openaddressPickerBottomSheet(context:context, provinceMap: provinceMap, cityMap: cityMap);
-                    },
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(left: 16, right: 16),
-                    width: width,
-                    height: 0.5,
-                    color: AppColor.bgWhite,
-                  ),
-                  InkWell(
-                    child: _rowChose(width, "简介", _introduction),
-                    onTap: () {
-                      AppRouter.navigateToEditInfomationIntroduction(context, _introduction, (result) {
-                        setState(() {
-                            _introduction = result;
-                        });
-                      });
-                    },
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(left: 16, right: 16),
-                    width: width,
-                    height: 0.5,
-                    color: AppColor.bgWhite,
-                  ),
-                ],
+          color: AppColor.white,
+          height: height - ScreenUtil.instance.statusBarHeight,
+          width: width,
+          child: Column(
+            children: [
+              Container(
+                width: width,
+                height: 0.5,
+                color: AppColor.bgWhite,
               ),
-            )
-            );
+              Container(
+                  margin: EdgeInsets.only(top: 16),
+                  width: 71,
+                  height: 71,
+                  child: InkWell(
+                    child: _avatar(context, height, width),
+                    onTap: () {
+                      AppRouter.navigateToMediaPickerPage(context, 1, typeImage, true, startPageGallery, true,
+                          (result) async {
+                        SelectedMediaFiles files = Application.selectedMediaFiles;
+                        if (result != true || files == null) {
+                          print('===============================值为空退回');
+                          return;
+                        }
+                        if (fileList.isNotEmpty) {
+                          fileList.clear();
+                        }
+                        Application.selectedMediaFiles = null;
+                        MediaFileModel model = files.list.first;
+                        print(
+                            'model croppedImageData 1=========================${model.croppedImageData}  ${model.croppedImage}   ${model.file}');
+                        if (model != null) {
+                          print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                          ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
+                          print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+                          Uint8List picBytes = byteData.buffer.asUint8List();
+                          print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
+                          model.croppedImageData = picBytes;
+                        }
+                        String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
+                        if (model.croppedImageData != null) {
+                          print('==================================model.croppedImageData!=null');
+                          File imageFile = await FileUtil().writeImageDataToFile(model.croppedImageData, timeStr);
+                          print('imageFile==============================$imageFile');
+                          fileList.add(imageFile);
+                          print('===============================${fileList.length}');
+                        }
+                        print('model.croppedImageData 2===========================${model.croppedImageData}');
+                        // context.read<InformationImageNotifier>().setImage(model.croppedImageData);
+                        setState(() {
+                          imageData = model.croppedImageData;
+                        });
+                      });
+                    },
+                  )),
+              SizedBox(
+                height: 16,
+              ),
+              InkWell(
+                onTap: () {
+                  AppRouter.navigateToEditInfomationName(context, userName, (result) {
+                    setState(() {
+                      if (result != null) {
+                        userName = result;
+                      }
+                    });
+                  });
+                },
+                child: _rowChose(width, "昵称", userName),
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 16, right: 16),
+                width: width,
+                height: 0.5,
+                color: AppColor.bgWhite,
+              ),
+              InkWell(
+                onTap: () {
+                  List<String> list = ["男", "女"];
+                  openMoreBottomSheet(
+                      context: context,
+                      onItemClickListener: (index) {
+                        if (list[index] == "男") {
+                          setState(() {
+                            userSex = 1;
+                          });
+                        } else if (list[index] == "女") {
+                          setState(() {
+                            userSex = 2;
+                          });
+                        }
+                      },
+                      lists: list);
+                },
+                child: _rowChose(width, "性别", userSexText),
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 16, right: 16),
+                width: width,
+                height: 0.5,
+                color: AppColor.bgWhite,
+              ),
+              InkWell(
+                onTap: () {
+                  _showDatePicker();
+                },
+                child: _rowChose(width, "生日", userBirthday),
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 16, right: 16),
+                width: width,
+                height: 0.5,
+                color: AppColor.bgWhite,
+              ),
+              InkWell(
+                child: _rowChose(width, "地区", context.watch<AddressPickerNotifier>().provinceCity),
+                onTap: () {
+                  openaddressPickerBottomSheet(context: context, provinceMap: provinceMap, cityMap: cityMap);
+                },
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 16, right: 16),
+                width: width,
+                height: 0.5,
+                color: AppColor.bgWhite,
+              ),
+              InkWell(
+                child: _rowChose(width, "简介", _introduction),
+                onTap: () {
+                  AppRouter.navigateToEditInfomationIntroduction(context, _introduction, (result) {
+                    setState(() {
+                      _introduction = result;
+                    });
+                  });
+                },
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 16, right: 16),
+                width: width,
+                height: 0.5,
+                color: AppColor.bgWhite,
+              ),
+            ],
+          ),
+        ));
   }
 
   //这是每项资料的item
   Widget _rowChose(double width, String title, String TextContent) {
     return Container(
-      height: title=="简介"?textHeight+25:48,
+      height: title == "简介" ? textHeight + 25 : 48,
       width: width,
-      padding: title=="简介"?EdgeInsets.only(top: 13,left: 16, right: 16,bottom: 12):EdgeInsets.only(left: 16, right: 16),
+      padding: title == "简介"
+          ? EdgeInsets.only(top: 13, left: 16, right: 16, bottom: 12)
+          : EdgeInsets.only(left: 16, right: 16),
       child: Row(
-          children: [
-            Container(
-              alignment: title=="简介"?Alignment.topLeft:Alignment.centerLeft,
-              child: Text(
+        children: [
+          Container(
+            alignment: title == "简介" ? Alignment.topLeft : Alignment.centerLeft,
+            child: Text(
               title,
               style: AppStyle.textRegular16,
-            ),),
-            SizedBox(
-              width: 28,
             ),
-            Container(
-              alignment: title!="简介"?Alignment.centerLeft:Alignment.topLeft,
-              height:title=="简介"?148:23,
-              width: width * 0.67,
-              child: Text(
-                TextContent != null ? TextContent : "去编辑",
-                style: AppStyle.textRegular16,
-                maxLines:5,
-                overflow: TextOverflow.ellipsis,
-              ),
+          ),
+          SizedBox(
+            width: 28,
+          ),
+          Container(
+            alignment: title != "简介" ? Alignment.centerLeft : Alignment.topLeft,
+            height: title == "简介" ? 148 : 23,
+            width: width * 0.67,
+            child: Text(
+              TextContent != null ? TextContent : "去编辑",
+              style: AppStyle.textRegular16,
+              maxLines: 5,
+              overflow: TextOverflow.ellipsis,
             ),
-            Expanded(child: SizedBox()),
-            Container(
-              alignment: title=="简介"?Alignment.topRight:Alignment.centerRight,
-              child: Text(
+          ),
+          Expanded(child: SizedBox()),
+          Container(
+            alignment: title == "简介" ? Alignment.topRight : Alignment.centerRight,
+            child: Text(
               ">",
               style: TextStyle(fontSize: 20, color: AppColor.textSecondary),
-            ),)
-          ],
-        ),
+            ),
+          )
+        ],
+      ),
     );
   }
-    //选择头像
-  Widget _avatar(BuildContext context, double height,double width) {
+
+  //选择头像
+  Widget _avatar(BuildContext context, double height, double width) {
     return Container(
         height: 71,
         width: 71,
@@ -410,8 +401,7 @@ class _EditInformationState extends State<EditInformation> {
       //国际化配置
       onClose: () {},
       onCancel: () => print('onCancel'),
-      onChange: (dateTime, List<int> index) {
-      },
+      onChange: (dateTime, List<int> index) {},
       onConfirm: (dateTime, List<int> index) {
         setState(() {
           userBirthday = DateFormat("yyyy-MM-dd").format(dateTime);
@@ -432,7 +422,10 @@ class _EditInformationState extends State<EditInformation> {
     print('avataruri   2=====================================$avataruri');
     print('================================开始请求接口');
     UserModel model = await ProfileUpdataUserInfo(userName, avataruri,
-        description: _introduction, sex: userSex, birthday: userBirthday, cityCode:context.read<AddressPickerNotifier>().cityCode);
+        description: _introduction,
+        sex: userSex,
+        birthday: userBirthday,
+        cityCode: context.read<AddressPickerNotifier>().cityCode);
     print('model==============================================${model.uid}');
     if (model != null) {
       print('=========================资料修改成功！=========================');
@@ -440,7 +433,10 @@ class _EditInformationState extends State<EditInformation> {
       await ProfileDBHelper().insertProfile(profile);
       context.read<ProfileNotifier>().setProfile(profile);
       context.read<AddressPickerNotifier>().cleanCityData();
-      Toast.show("资料修改成功",context,);
+      Toast.show(
+        "资料修改成功",
+        context,
+      );
       Loading.hideLoading(context);
       Navigator.pop(context);
       print('更新过后的数据库用户头像${context.read<ProfileNotifier>().profile.avatarUri}');

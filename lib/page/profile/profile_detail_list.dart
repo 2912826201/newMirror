@@ -33,45 +33,44 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
   int followDataPage = 1;
   int followlastTime;
   RefreshController _refreshController = RefreshController();
-  ScrollController scrollController  = ScrollController();
+  ScrollController scrollController = ScrollController();
   StateResult fllowState = StateResult.RESULTNULL;
 
-  _getDynamicData(int type, {int id}) async {
+  _getDynamicData() async {
     if (followDataPage > 1 && followlastTime == null) {
       _refreshController.loadNoData();
       return;
     }
-    DataResponseModel model = await getPullList(type: type, size: 20, targetId: id, lastTime: followlastTime);
-
-    if (followDataPage == 1) {
-      followModel.clear();
-      _followListId.clear();
-      if (model.list.isNotEmpty) {
-        model.list.forEach((result) {
-          followModel.add(HomeFeedModel.fromJson(result));
-          _followListId.add(HomeFeedModel.fromJson(result).id);
-        });
-        _followListId.insert(0, -1);
-        fllowState = StateResult.HAVARESULT;
-        _refreshController.refreshCompleted();
+    DataResponseModel model =
+        await getPullList(type: widget.type, size: 20, targetId: widget.id, lastTime: followlastTime);
+    setState(() {
+      if (followDataPage == 1) {
+        followModel.clear();
+        _followListId.clear();
+        if (model.list.isNotEmpty) {
+          model.list.forEach((result) {
+            followModel.add(HomeFeedModel.fromJson(result));
+            _followListId.add(HomeFeedModel.fromJson(result).id);
+          });
+          _followListId.insert(0, -1);
+          fllowState = StateResult.HAVERESULT;
+          _refreshController.refreshCompleted();
+        } else {
+          fllowState = StateResult.RESULTNULL;
+          _refreshController.resetNoData();
+        }
+      } else if (followDataPage > 1 && followlastTime != null) {
+        if (model.list.isNotEmpty) {
+          model.list.forEach((result) {
+            followModel.add(HomeFeedModel.fromJson(result));
+            _followListId.add(HomeFeedModel.fromJson(result).id);
+          });
+          _refreshController.loadComplete();
+        }
       } else {
-        fllowState = StateResult.RESULTNULL;
-        _refreshController.resetNoData();
+        _refreshController.loadNoData();
       }
-    } else if (followDataPage > 1 && followlastTime != null) {
-      if (model.list.isNotEmpty) {
-        model.list.forEach((result) {
-          followModel.add(HomeFeedModel.fromJson(result));
-          _followListId.add(HomeFeedModel.fromJson(result).id);
-        });
-        _refreshController.loadComplete();
-      }
-    } else {
-      _refreshController.loadNoData();
-    }
-    if (mounted) {
-      setState(() {});
-    }
+    });
     followlastTime = model.lastTime;
     context.read<FeedMapNotifier>().updateFeedMap(followModel);
   }
@@ -79,19 +78,19 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
   ///上拉加载
   _onLoadding() {
     followDataPage += 1;
-    _getDynamicData(widget.type, id: widget.id);
+    _getDynamicData();
   }
 
   _onRefresh() {
     followDataPage = 1;
     followlastTime = null;
-    _getDynamicData(widget.type, id: widget.id);
+    _getDynamicData();
   }
 
   @override
   void initState() {
     super.initState();
-    _getDynamicData(widget.type, id: widget.id);
+    _getDynamicData();
   }
 
   @override
@@ -178,7 +177,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
               ],
             ));
         break;
-      case StateResult.HAVARESULT:
+      case StateResult.HAVERESULT:
         return _listData;
         break;
     }

@@ -11,6 +11,7 @@ import 'package:mirror/data/model/profile/black_list_model.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 //黑名单
 class BlackListPage extends StatefulWidget{
@@ -51,19 +52,8 @@ class _BlackListState extends State<BlackListPage>{
     double height = ScreenUtil.instance.height;
     return Scaffold(
       backgroundColor: AppColor.white,
-      appBar:  AppBar(
-        backgroundColor: AppColor.white,
-        leading: InkWell(
-          child: Container(
-            margin: EdgeInsets.only(left: 16),
-            child: Image.asset("images/resource/2.0x/return2x.png"),),
-          onTap: (){
-            Navigator.pop(context);
-          },
-        ),
-        leadingWidth: 44,
-        title: Text("黑名单",style: AppStyle.textMedium18,),
-        centerTitle: true,
+      appBar: CustomAppBar(
+        titleString: "黑名单",
       ),
       body:Container(
         padding: EdgeInsets.only(left: 16,right: 16),

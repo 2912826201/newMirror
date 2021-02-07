@@ -9,6 +9,7 @@ import 'package:mirror/api/qiniu_api.dart';
 import 'package:mirror/data/model/upload/qiniu_token_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/util/file_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:sy_flutter_qiniu_storage/sy_flutter_qiniu_storage.dart';
 
 class QiniuTest extends StatefulWidget {
@@ -82,8 +83,8 @@ class _QiniuTestState extends State<QiniuTest> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: new AppBar(
-        title: const Text('七牛云存储SDK demo'),
+      appBar: CustomAppBar(
+        titleString: '七牛云存储SDK demo',
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),

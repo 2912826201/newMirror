@@ -8,6 +8,7 @@ import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 
 ///个人主页更多
 class ProfileDetailsMore extends StatefulWidget {
@@ -40,27 +41,15 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: AppColor.white,
-          title: Text(
-            "更多",
-            style: AppStyle.textRegular18,
-          ),
-          centerTitle: true,
-          leading: InkWell(
-            child: Container(
-              margin: EdgeInsets.only(left: 16),
-              child: Image.asset("images/resource/2.0x/return2x.png"),
-            ),
-            onTap: () {
-              if (!isNoChange) {
-                Navigator.pop(this.context, true);
-              } else {
-                Navigator.pop(this.context);
-              }
-            },
-          ),
-          leadingWidth: 44,
+        appBar: CustomAppBar(
+          titleString: "更多",
+          leadingOnTap: () {
+            if (!isNoChange) {
+              Navigator.pop(this.context, true);
+            } else {
+              Navigator.pop(this.context);
+            }
+          },
         ),
         body: Container(
             height: height,

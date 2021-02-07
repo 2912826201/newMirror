@@ -35,13 +35,13 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin, WidgetsBi
 
   @override
   Widget build(BuildContext context) {
+    print("if_page_____________________________________________build");
     // 获取屏幕宽度，只能在home内才可调用。
     double screen_bottom = MediaQuery.of(context).padding.bottom;
     Size screen_size = MediaQuery.of(context).size;
     if (context.watch<FeedMapNotifier>().postFeedModel != null) {
       _controller.index = 1;
     }
-    print("获取一下底部安全间距");
     // 初始化获取屏幕数据
     if (isInit == false) {
       ScreenUtil.init(
@@ -55,6 +55,7 @@ class IfPageState extends State<IfPage> with TickerProviderStateMixin, WidgetsBi
     return AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.dark,
         child: Scaffold(
+            resizeToAvoidBottomInset:false,
             body: Container(
           child: Stack(children: [
             // TabBarView(

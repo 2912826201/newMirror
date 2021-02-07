@@ -11,20 +11,44 @@ import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:provider/provider.dart';
 
 import 'package:mirror/route/router.dart';
 
-class LoginTestPage extends StatelessWidget {
+class LoginTestPage extends StatefulWidget {
+  @override
+  _LoginTestState createState() => _LoginTestState();
+}
+
+class _LoginTestState extends State<LoginTestPage> {
+  bool isLogin = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isLogin = context.read<TokenNotifier>().isLoggedIn;
+  }
+
   @override
   Widget build(BuildContext context) {
     print("登录测试页");
     return Scaffold(
-      appBar: AppBar(
-        title: Text("登录测试页"),
+      appBar: CustomAppBar(
+        titleString: "登录测试页",
       ),
       body: Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Consumer<TokenNotifier>(
+            builder: (context, notifier, child) {
+              if (isLogin == false && notifier.isLoggedIn == true) {
+                print("执行用户完成登录后的操作");
+              }
+              isLogin = notifier.isLoggedIn;
+              return child;
+            },
+            child: Container(),
+          ),
           FlatButton(
             child: Text("去登录"),
             onPressed: () {
@@ -36,24 +60,7 @@ class LoginTestPage extends StatelessWidget {
           FlatButton(
             child: Text("登出"),
             onPressed: () async {
-              //先取个匿名token
-              TokenModel tokenModel = await login("anonymous", null, null, null);
-              if (tokenModel != null) {
-                TokenDto tokenDto = TokenDto.fromTokenModel(tokenModel);
-                bool result = await logout();
-                //TODO 这里先不处理登出接口的结果
-                await TokenDBHelper().insertToken(tokenDto);
-                context.read<TokenNotifier>().setToken(tokenDto);
-                await ProfileDBHelper().clearProfile();
-                context.read<ProfileNotifier>().setProfile(ProfileDto.fromUserModel(UserModel()));
-                context.read<MachineNotifier>().setMachine(null);
-                // 登出融云
-                Application.rongCloud.disconnect();
-                //TODO 处理登出后需要清掉的用户数据
-                MessageManager.clearUserMessage(context);
-              } else {
-                //失败的情况下 登出将无token可用 所以不能继续登出
-              }
+              await Application.appLogout();
             },
           ),
         ]),

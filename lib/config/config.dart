@@ -11,7 +11,7 @@ class AppConfig {
   static const Env ENV = Env.DEV;
 
   //版本号
-  //TODO 暂时先写在这 之后需要和打包配置联动
+  //TODO  暂时先写在这 之后需要和打包配置联动
   static  String version = "0.0.1";
   static  String buildNumber = "1";
   //各环境api请求基础路径
@@ -102,6 +102,10 @@ class AppConfig {
   //获取语音文件的路径
   static String getAppVoiceDir() {
     return "$_appDir/voice";
+  }
+  //获取语音文件的路径
+  static String getAppApkDir() {
+    return "$_appDir/apk";
   }
 
   static String getAppVoiceFilePath() {

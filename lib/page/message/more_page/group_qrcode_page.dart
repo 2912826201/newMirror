@@ -17,6 +17,7 @@ import 'package:mirror/data/model/profile/shared_image_model.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -25,11 +26,7 @@ class GroupQrCodePage extends StatefulWidget {
   final String name;
   final String groupId;
 
-  GroupQrCodePage({
-    @required this.imageUrl,
-    @required this.name,
-    @required this.groupId
-  });
+  GroupQrCodePage({@required this.imageUrl, @required this.name, @required this.groupId});
 
   @override
   State<StatefulWidget> createState() {
@@ -45,10 +42,11 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
   double width;
   double height;
   String qrImageString;
+
   //过期时间
   int expirationTime;
-  _capturePngToByteData() async {
 
+  _capturePngToByteData() async {
     RenderRepaintBoundary boundary = rootWidgetKey.currentContext.findRenderObject();
     double dpr = ui.window.devicePixelRatio; // 获取当前设备的像素比
     ui.Image image = await boundary.toImage(pixelRatio: dpr);
@@ -58,11 +56,10 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
     imageFile = await FileUtil().writeImageDataToFile(pngByte, timeStr);
     print('rootWidgetKey width===============${rootWidgetKey.currentContext.size.width}');
     print('rootWidgetKey height===============${rootWidgetKey.currentContext.size.height}');
-    width = rootWidgetKey.currentContext.size.width*dpr;
-    height = rootWidgetKey.currentContext.size.height*dpr;
+    width = rootWidgetKey.currentContext.size.width * dpr;
+    height = rootWidgetKey.currentContext.size.height * dpr;
     print('model height===========================$width');
     print('nodel weith=========================$height');
-
   }
 
   @override
@@ -83,44 +80,18 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          backgroundColor: AppColor.white,
-          leading: InkWell(
-            child: Container(
-              margin: EdgeInsets.only(left: 16),
-              child: Image.asset("images/resource/2.0x/return2x.png"),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          leadingWidth: 44,
-          title: Text(
-            "群聊二维码",
-            style: AppStyle.textMedium18,
-          ),
-          centerTitle: true,
-          actions: [
-            InkWell(
-              onTap: () {
-                model.width =int.parse("$width".substring(0,"$width".indexOf(".")));
-                model.height = int.parse("$height".substring(0,"$height".indexOf(".")));
-                model.file = imageFile;
-                openShareBottomSheet(
-                    context: context,
-                    chatTypeModel: ChatTypeModel.MESSAGE_TYPE_IMAGE,
-                    map: model.toJson(),
-                    sharedType: 2);
-              },
-              child: Container(
-                  margin: EdgeInsets.only(right: 16),
-                  child: Image.asset(
-                    "images/test/分享.png",
-                    width: 24,
-                    height: 24,
-                  )),
-            ),
-          ]),
+      appBar: CustomAppBar(
+        titleString: "群聊二维码",
+        actions: [
+          CustomAppBarIconButton(Icons.ios_share, AppColor.black, false, () {
+            model.width = int.parse("$width".substring(0, "$width".indexOf(".")));
+            model.height = int.parse("$height".substring(0, "$height".indexOf(".")));
+            model.file = imageFile;
+            openShareBottomSheet(
+                context: context, chatTypeModel: ChatTypeModel.MESSAGE_TYPE_IMAGE, map: model.toJson(), sharedType: 2);
+          }),
+        ],
+      ),
       body: RepaintBoundary(
         key: rootWidgetKey,
         child: Container(
@@ -155,9 +126,9 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
 
   //用户头像
   Widget getUserImagePr() {
-    String image=widget.imageUrl;
-    if(image==null){
-      image="";
+    String image = widget.imageUrl;
+    if (image == null) {
+      image = "";
     }
     List<String> avatarList = image.split(",");
     return Container(
@@ -167,34 +138,9 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
         children: [
           avatarList.length == 1
               ? ClipOval(
-            child: CachedNetworkImage(
-              height: 50,
-              width: 50,
-              imageUrl: avatarList.first,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => Image.asset(
-                "images/test.png",
-                fit: BoxFit.cover,
-              ),
-              errorWidget: (context, url, error) => Image.asset(
-                "images/test.png",
-                fit: BoxFit.cover,
-              ),
-            ),
-          )
-              : avatarList.length > 1
-              ? Positioned(
-              top: 0,
-              right: 0,
-              child: Container(
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    //这里的边框颜色需要随背景变化
-                    border: Border.all(width: 0, color: AppColor.white)),
-                child: ClipOval(
                   child: CachedNetworkImage(
-                    height: 32,
-                    width: 32,
+                    height: 50,
+                    width: 50,
                     imageUrl: avatarList.first,
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Image.asset(
@@ -206,45 +152,71 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
                       fit: BoxFit.cover,
                     ),
                   ),
-                ),
-              ))
-              : Container(),
+                )
+              : avatarList.length > 1
+                  ? Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            //这里的边框颜色需要随背景变化
+                            border: Border.all(width: 0, color: AppColor.white)),
+                        child: ClipOval(
+                          child: CachedNetworkImage(
+                            height: 32,
+                            width: 32,
+                            imageUrl: avatarList.first,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Image.asset(
+                              "images/test.png",
+                              fit: BoxFit.cover,
+                            ),
+                            errorWidget: (context, url, error) => Image.asset(
+                              "images/test.png",
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ))
+                  : Container(),
           avatarList.length > 1
               ? Positioned(
-            bottom: 0,
-            child: Container(
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  //这里的边框颜色需要随背景变化
-                  border: Border.all(width: 3, color: AppColor.white)),
-              child: ClipOval(
-                child: CachedNetworkImage(
-                  height: 32,
-                  width: 32,
-                  imageUrl: avatarList[1],
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Image.asset(
-                    "images/test.png",
-                    fit: BoxFit.cover,
+                  bottom: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        //这里的边框颜色需要随背景变化
+                        border: Border.all(width: 3, color: AppColor.white)),
+                    child: ClipOval(
+                      child: CachedNetworkImage(
+                        height: 32,
+                        width: 32,
+                        imageUrl: avatarList[1],
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Image.asset(
+                          "images/test.png",
+                          fit: BoxFit.cover,
+                        ),
+                        errorWidget: (context, url, error) => Image.asset(
+                          "images/test.png",
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
                   ),
-                  errorWidget: (context, url, error) => Image.asset(
-                    "images/test.png",
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-            ),
-          )
+                )
               : Container(),
           Container()
         ],
       ),
     );
   }
+
   Widget _centerQr() {
     return Container(
         width: MediaQuery.of(context).size.width - (37.5 * 2),
-        margin: const EdgeInsets.only(left: 37.5,right: 37.5,bottom: 50),
+        margin: const EdgeInsets.only(left: 37.5, right: 37.5, bottom: 50),
         decoration: BoxDecoration(
           color: AppColor.white,
           borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -261,19 +233,14 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
                 padding: const EdgeInsets.only(left: 24, right: 24),
                 child: Text(
                   widget.name,
-                  style: TextStyle(
-                      fontSize: 18,
-                      color: AppColor.textPrimary1,
-                      fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 18, color: AppColor.textPrimary1, fontWeight: FontWeight.bold),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
               SizedBox(height: 16),
               QrImage(
-                data: qrImageString == null
-                    ? "用户${widget.groupId}"
-                    : qrImageString,
+                data: qrImageString == null ? "用户${widget.groupId}" : qrImageString,
                 size: ScreenUtil.instance.height * 0.49 * 0.57,
                 padding: EdgeInsets.zero,
                 backgroundColor: AppColor.white,
@@ -287,15 +254,14 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
         ));
   }
 
-  void loadData()async {
-    Map<String, dynamic> map = await getShortUrl(type: 2, targetId:int.parse(widget.groupId));
-    if(map!=null&&map["url"]!=null){
-      qrImageString=map["url"];
-      expirationTime=map["expireTime"];
-      setState(() {
-
-      });
+  void loadData() async {
+    Map<String, dynamic> map = await getShortUrl(type: 2, targetId: int.parse(widget.groupId));
+    if (map != null && map["url"] != null) {
+      qrImageString = map["url"];
+      expirationTime = map["expireTime"];
+      if (mounted) {
+        setState(() {});
+      }
     }
   }
-
 }

@@ -14,6 +14,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 /// 视频课程列表-筛选页
@@ -103,23 +104,20 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("课程库"),
-        centerTitle: true,
+      appBar: CustomAppBar(
+        titleString: "课程库",
         actions: [
-          Container(
-            width: 80,
-            height: double.infinity,
-            child: IconButton(
-              icon: Icon(Icons.search),
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return SearchPage();
-                }));
-                print("点击了搜索");
-              },
-            ),
-          )
+          CustomAppBarIconButton(
+            Icons.search,
+            AppColor.black,
+            false,
+            () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return SearchPage();
+              }));
+              print("点击了搜索");
+            },
+          ),
         ],
       ),
       body: _buildSuggestions(),
@@ -268,7 +266,9 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
                       onTap: () {
                         _titleItemListTemp.clear();
                         showScreenTitlePosition = -1;
-                        setState(() {});
+                        if (mounted) {
+                          setState(() {});
+                        }
                       },
                     ),
                   ))
@@ -382,14 +382,16 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
                 } else {
                   topItemOpacity = 0.0;
                 }
-                setState(() {
-                  if (topItemOpacity == 0) {
-                    topItemHeight = 0;
-                  } else if (metrics.pixels > showBackTopBoxHeight && topItemHeight == 0) {
-                    topItemHeight = topItemHeight1;
-                    topItemOpacity = 0.0;
-                  }
-                });
+                if (mounted) {
+                  setState(() {
+                    if (topItemOpacity == 0) {
+                      topItemHeight = 0;
+                    } else if (metrics.pixels > showBackTopBoxHeight && topItemHeight == 0) {
+                      topItemHeight = topItemHeight1;
+                      topItemOpacity = 0.0;
+                    }
+                  });
+                }
               } else if (notification is ScrollEndNotification) {
                 // 滚动结束
                 print('滚动结束');
@@ -487,7 +489,9 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
                     }
                   }
                 }
-                setState(() {});
+                if (mounted) {
+                  setState(() {});
+                }
               },
             ),
             flex: 1,
@@ -514,10 +518,12 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
                 _titleItemList.addAll(_titleItemListTemp);
                 _titleItemListTemp.clear();
                 showScreenTitlePosition = -1;
-                setState(() {
-                  loadingStatus = LoadingStatus.STATUS_LOADING;
-                  _onRefresh();
-                });
+                if (mounted) {
+                  setState(() {
+                    loadingStatus = LoadingStatus.STATUS_LOADING;
+                    _onRefresh();
+                  });
+                }
               },
             ),
             flex: 1,
@@ -637,7 +643,9 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
         } else {
           _titleItemListTemp.add(model);
         }
-        setState(() {});
+        if (mounted) {
+          setState(() {});
+        }
       },
     );
   }
@@ -741,15 +749,17 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
         } else {
           _refreshController.loadComplete();
         }
-        setState(() {
-          loadingStatus = LoadingStatus.STATUS_COMPLETED;
-          if (count == videoModelArray.length) {
-            isHaveMoreData = false;
-          } else {
-            isHaveMoreData = true;
-            pagePosition++;
-          }
-        });
+        if (mounted) {
+          setState(() {
+            loadingStatus = LoadingStatus.STATUS_COMPLETED;
+            if (count == videoModelArray.length) {
+              isHaveMoreData = false;
+            } else {
+              isHaveMoreData = true;
+              pagePosition++;
+            }
+          });
+        }
       });
     } else {
       Future.delayed(Duration(milliseconds: 500), () {
@@ -758,9 +768,11 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
         } else {
           _refreshController.loadNoData();
         }
-        setState(() {
-          loadingStatus = LoadingStatus.STATUS_IDEL;
-        });
+        if (mounted) {
+          setState(() {
+            loadingStatus = LoadingStatus.STATUS_IDEL;
+          });
+        }
       });
     }
     // try {
@@ -826,26 +838,34 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
     if (index < 3) {
       if (titleItemSubSettingList[index].height < 1) {
         filterBoxOpacity = 0.0;
-        setState(() {});
+        if (mounted) {
+          setState(() {});
+        }
         Future.delayed(Duration(milliseconds: 100), () {
           _screenTitleOnclick(index, isSecond: true);
         });
       } else {
         filterBoxOpacity = 1.0;
-        setState(() {});
+        if (mounted) {
+          setState(() {});
+        }
       }
     } else {
       if (titleItemSubSettingList[0].height < 1 ||
           titleItemSubSettingList[1].height < 1 ||
           titleItemSubSettingList[2].height < 1) {
         filterBoxOpacity = 0.0;
-        setState(() {});
+        if (mounted) {
+          setState(() {});
+        }
         Future.delayed(Duration(milliseconds: 100), () {
           _screenTitleOnclick(index, isSecond: true);
         });
       } else {
         filterBoxOpacity = 1.0;
-        setState(() {});
+        if (mounted) {
+          setState(() {});
+        }
       }
     }
   }

@@ -20,6 +20,7 @@ import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/media_picker/preview_photo_page.dart';
 import 'package:mirror/page/media_picker/preview_video_page.dart';
 import 'package:mirror/page/message/chat_page.dart';
+import 'package:mirror/page/message/link_failure/network_link_failure_page.dart';
 import 'package:mirror/page/message/more_page/group_qrcode_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/login_success_page.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_introduction.dart';
@@ -30,6 +31,7 @@ import 'package:mirror/page/profile/me_course/me_course_page.dart';
 import 'package:mirror/page/profile/me_course/me_download_video_page.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/profile_details_more.dart';
+import 'package:mirror/page/profile/query_list/query_follow_list.dart';
 import 'package:mirror/page/profile/setting/about_page.dart';
 import 'package:mirror/page/profile/setting/account_security_page.dart';
 import 'package:mirror/page/profile/setting/blacklist_page.dart';
@@ -46,6 +48,7 @@ import 'package:mirror/page/profile/vip/vip_nameplate_page.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/page/profile/vip/vip_open_page.dart';
 import 'package:mirror/page/rc_test_page.dart';
+import 'package:mirror/page/scan_code/my_qrcode_page.dart';
 import 'package:mirror/page/scan_code/scan_code_page.dart';
 import 'package:mirror/page/scan_code/scan_result_page.dart';
 import 'package:mirror/page/test_page.dart';
@@ -171,7 +174,8 @@ var handlerSettingFeedBack = Handler(handlerFunc: (BuildContext context, Map<Str
 });
 
 var handlerSettingAbout = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return AboutPage();
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return AboutPage(url: data["url"],haveNewVersion: data["haveNewVersion"],content: data["content"],);
 });
 
 var handlerSettingAccountSecurity = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
@@ -286,6 +290,10 @@ var handlerLoginSucessPagePage = Handler(handlerFunc: (BuildContext context, Map
   return LoginSucessPage();
 });
 
+var handlerNetworkLinkFailure = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return NetworkLinkFailure();
+});
+
 //消息界面
 var handlerChatPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
@@ -326,7 +334,10 @@ var handlerScanCodeResult = Handler(handlerFunc: (BuildContext context, Map<Stri
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return ScanCodeResultPage(ScanCodeResultModel.fromJson(data["resultModel"]));
 });
-
+var handlerMyQrcodePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  /*Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);*/
+  return MyQrCodePage();
+});
 //健身相册页
 var handlerTrainingGallery = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return TrainingGalleryPage();
@@ -355,6 +366,10 @@ var handlerTrainingGalleryComparison = Handler(handlerFunc: (BuildContext contex
 //我的课程界面
 var handlerMeCoursePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return MeCoursePage();
+});
+var handlerQueryFollowList = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return QueryFollowList(type: data["type"],userId: data["userId"],);
 });
 
 //我的课程界面--下载课程界面

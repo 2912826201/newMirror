@@ -17,6 +17,8 @@ const int _RECEIVE_TIMEOUT = 20000;
 const int CODE_SUCCESS = 200;
 //无法描述无法应对的服务端异常
 const int CODE_SERVER_ERROR = 500;
+//未登录或token异常
+const int CODE_NOT_LOGIN = 302;
 //数据异常：直播课程预约失败-时间不对
 const int CODE_DATA_EXCEPTION = 321;
 //群聊不存在
@@ -40,7 +42,7 @@ Dio _dioPost;
 
 //通用的请求api的方法，请在具体的子api中进行入参封装和结果处理 authType只在特定的接口中赋值
 Future<BaseResponseModel> requestApi(String path, Map<String, dynamic> queryParameters,
-    {int authType = AUTH_TYPE_COMMON, String requestMethod = METHOD_POST}) async {
+    {int authType = AUTH_TYPE_COMMON, String requestMethod = METHOD_POST, bool autoHandleLogout = true}) async {
   BaseResponseModel responseModel;
   try {
     Response response;
@@ -53,9 +55,16 @@ Future<BaseResponseModel> requestApi(String path, Map<String, dynamic> queryPara
       response = await _getDioPostInstance().post(path, queryParameters: queryParameters);
     }
     responseModel = BaseResponseModel.fromJson(json.decode(response.toString()));
-    //要注意 只有服务端系统错误500被视为失败 其他错误码要在具体业务中处理
-    responseModel.isSuccess = responseModel.code != CODE_SERVER_ERROR;
-    return responseModel;
+    //302为未登录 一般统一自动处理 登出清数据断开一些组件连接等操作
+    if(responseModel.code == CODE_NOT_LOGIN && autoHandleLogout){
+      responseModel.isSuccess = false;
+      Application.appLogout(isKicked: true);
+      return responseModel;
+    } else {
+      //要注意 只有服务端系统错误500被视为失败 其他错误码要在具体业务中处理
+      responseModel.isSuccess = responseModel.code != CODE_SERVER_ERROR;
+      return responseModel;
+    }
   } on DioError catch (e) {
     responseModel = BaseResponseModel(message: e.message);
     responseModel.isSuccess = false;

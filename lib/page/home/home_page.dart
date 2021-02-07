@@ -39,7 +39,8 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
 
     @override
     Widget build(BuildContext context) {
-      print("首页");
+      print("HomePage_____________________________________________build");
+      // print("首页");
       if(context.watch<FeedMapNotifier>().postFeedModel != null) {
         controller.index = 0;
       }

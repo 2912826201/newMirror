@@ -102,7 +102,8 @@ class HeadView extends StatelessWidget {
           children: [
             GestureDetector(
               onTap: () {
-                AppRouter.navigateToMineDetail(context, model.id);
+                print('动态item的Id========================${model.pushId}');
+                AppRouter.navigateToMineDetail(context, model.pushId);
               },
               child: Container(
                 margin: EdgeInsets.only(left: 16, right: 11),
@@ -128,7 +129,7 @@ class HeadView extends StatelessWidget {
                     ),
                     Container(
                       padding: EdgeInsets.only(top: 2),
-                      child: Text("${DateUtil.generateFormatDate(model.createTime)}",
+                      child: Text("${DateUtil.generateFormatDate(model.createTime,false)}",
                           style: TextStyle(
                             fontSize: 12,
                             color: AppColor.textSecondary,

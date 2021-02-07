@@ -10,6 +10,8 @@ import 'package:mirror/constant/constants.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/image_cropper.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:provider/provider.dart';
@@ -26,15 +28,14 @@ final int _galleryPageSize = 100;
 // 相册的选择GridView视图 需要能够区分选择图片或视频 选择图片数量 是否裁剪 裁剪是否只是正方形
 //TODO 目前没有做响应实时相册变化时的处理 完善时可以考虑实现
 class GalleryPage extends StatefulWidget {
-  GalleryPage(
-      {Key key,
-      this.maxImageAmount = 1,
-      this.requestType = RequestType.common,
-      this.needCrop = false,
-      this.cropOnlySquare = false,
-      this.publishMode = 0,
-      this.fixedWidth,
-      this.fixedHeight})
+  GalleryPage({Key key,
+    this.maxImageAmount = 1,
+    this.requestType = RequestType.common,
+    this.needCrop = false,
+    this.cropOnlySquare = false,
+    this.publishMode = 0,
+    this.fixedWidth,
+    this.fixedHeight})
       : super(key: key);
 
   final int maxImageAmount;
@@ -104,14 +105,14 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
       // load the album list
       //TODO 这里需要设置路径
       List<AssetPathEntity> albums =
-          await PhotoManager.getAssetPathList(hasAll: true, onlyAll: true, type: widget.requestType);
+      await PhotoManager.getAssetPathList(hasAll: true, onlyAll: true, type: widget.requestType);
       print(albums);
       //TODO 默认取第一个
       _mediaAmount = albums.first.assetCount;
       context.read<SelectedMapNotifier>().setFolderName(albums.first.name);
       //TODO 需要完善翻页机制
       List<AssetEntity> media =
-          await albums[0].getAssetListRange(start: _galleryList.length, end: _galleryList.length + _galleryPageSize);
+      await albums[0].getAssetListRange(start: _galleryList.length, end: _galleryList.length + _galleryPageSize);
       print(media);
 
       setState(() {
@@ -148,10 +149,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
     _previewMaxHeight = _screenWidth;
     _previewMinHeight = _screenWidth / 2;
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: AppColor.bgBlack,
-          title: _buildAppBar(),
-        ),
+        appBar: _buildAppBar(),
         body: ChangeNotifierProvider(
             create: (_) =>
                 _PreviewHeightNotifier(_previewMaxHeight, maxHeight: _previewMaxHeight, minHeight: _previewMinHeight),
@@ -170,73 +168,77 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                   ),
                   widget.needCrop
                       ?
-                      // 裁剪区域
-                      Positioned(
-                          top: context.watch<_PreviewHeightNotifier>().previewHeight - _previewMaxHeight,
-                          child: Container(
-                            color: AppColor.bgBlack,
-                            width: _previewMaxHeight,
-                            height: _previewMaxHeight,
-                            child: Builder(
-                              builder: (context) {
-                                AssetEntity entity =
-                                    context.select((SelectedMapNotifier notifier) => notifier.currentEntity);
-                                Size selectedSize =
-                                    context.select((SelectedMapNotifier notifier) => notifier.selectedImageSize);
-                                return entity == null
-                                    ? Container()
-                                    : entity.type == AssetType.video
-                                        ? VideoPreviewArea(_fileMap[entity.id], _screenWidth,
-                                            context.select((SelectedMapNotifier notifier) => notifier.useOriginalRatio))
-                                        : entity.type == AssetType.image
-                                            ? CropperImage(
-                                                FileImage(_fileMap[entity.id]),
-                                                round: 0,
-                                                maskPadding: 0,
-                                                outHeight: (selectedSize == null
-                                                        ? _getImageOutSize(
-                                                            entity,
-                                                            context.select((SelectedMapNotifier notifier) =>
-                                                                notifier.useOriginalRatio))
-                                                        : selectedSize)
-                                                    .height,
-                                                outWidth: (selectedSize == null
-                                                        ? _getImageOutSize(
-                                                            entity,
-                                                            context.select((SelectedMapNotifier notifier) =>
-                                                                notifier.useOriginalRatio))
-                                                        : selectedSize)
-                                                    .width,
-                                                key: _cropperKey,
-                                              )
-                                            : Container();
-                              },
-                            ),
-                          ))
+                  // 裁剪区域
+                  Positioned(
+                      top: context
+                          .watch<_PreviewHeightNotifier>()
+                          .previewHeight - _previewMaxHeight,
+                      child: Container(
+                        color: AppColor.bgBlack,
+                        width: _previewMaxHeight,
+                        height: _previewMaxHeight,
+                        child: Builder(
+                          builder: (context) {
+                            AssetEntity entity =
+                            context.select((SelectedMapNotifier notifier) => notifier.currentEntity);
+                            Size selectedSize =
+                            context.select((SelectedMapNotifier notifier) => notifier.selectedImageSize);
+                            return entity == null
+                                ? Container()
+                                : entity.type == AssetType.video
+                                ? VideoPreviewArea(_fileMap[entity.id], _screenWidth,
+                                context.select((SelectedMapNotifier notifier) => notifier.useOriginalRatio))
+                                : entity.type == AssetType.image
+                                ? CropperImage(
+                              FileImage(_fileMap[entity.id]),
+                              round: 0,
+                              maskPadding: 0,
+                              outHeight: (selectedSize == null
+                                  ? _getImageOutSize(
+                                  entity,
+                                  context.select((SelectedMapNotifier notifier) =>
+                                  notifier.useOriginalRatio))
+                                  : selectedSize)
+                                  .height,
+                              outWidth: (selectedSize == null
+                                  ? _getImageOutSize(
+                                  entity,
+                                  context.select((SelectedMapNotifier notifier) =>
+                                  notifier.useOriginalRatio))
+                                  : selectedSize)
+                                  .width,
+                              key: _cropperKey,
+                            )
+                                : Container();
+                          },
+                        ),
+                      ))
                       : Container(),
                   widget.needCrop &&
-                          !widget.cropOnlySquare &&
-                          context.select((SelectedMapNotifier notifier) => notifier.selectedImageSize == null)
+                      !widget.cropOnlySquare &&
+                      context.select((SelectedMapNotifier notifier) => notifier.selectedImageSize == null)
                       ? Positioned(
-                          top: context.watch<_PreviewHeightNotifier>().previewHeight - 36,
-                          left: 12,
-                          child: GestureDetector(
-                            onTap: _changeCurrentRatio,
-                            child: Container(
-                              height: 24,
-                              width: 24,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: AppColor.textPrimary2.withOpacity(0.65),
-                              ),
-                              child: Icon(
-                                Icons.fullscreen,
-                                color: AppColor.white,
-                                size: 24,
-                              ),
-                            ),
-                          ),
-                        )
+                    top: context
+                        .watch<_PreviewHeightNotifier>()
+                        .previewHeight - 36,
+                    left: 12,
+                    child: GestureDetector(
+                      onTap: _changeCurrentRatio,
+                      child: Container(
+                        height: 24,
+                        width: 24,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColor.textPrimary2.withOpacity(0.65),
+                        ),
+                        child: Icon(
+                          Icons.fullscreen,
+                          color: AppColor.white,
+                          size: 24,
+                        ),
+                      ),
+                    ),
+                  )
                       : Container(),
                 ],
               );
@@ -366,18 +368,18 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
               entity.type == AssetType.video
                   ? "${DateFormat("MM:ss").format(DateTime.fromMillisecondsSinceEpoch(entity.duration * 1000))}"
                   : entity.type == AssetType.image
-                      ? ""
-                      : "",
+                  ? ""
+                  : "",
               style: TextStyle(color: AppColor.white, fontSize: 9),
             ),
           ),
           //选满了 但该item没有被选 则显示蒙层
           notifier.selectedMap.length >=
-                      (notifier.selectedType == AssetType.image ? widget.maxImageAmount : widget.maxVideoAmount) &&
-                  !notifier.selectedMap.containsKey(entity.id)
+              (notifier.selectedType == AssetType.image ? widget.maxImageAmount : widget.maxVideoAmount) &&
+              !notifier.selectedMap.containsKey(entity.id)
               ? Container(
-                  color: AppColor.textPrimary2.withOpacity(0.45),
-                )
+            color: AppColor.textPrimary2.withOpacity(0.45),
+          )
               : Container(),
           Positioned(
             top: 10,
@@ -386,34 +388,34 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
               onTap: () => _onCheckBoxTap(context, entity),
               child: notifier.selectedMap.containsKey(entity.id)
                   ? Container(
-                      height: 20,
-                      width: 20,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: AppColor.mainRed,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppColor.mainRed, width: 1),
-                      ),
-                      child: widget.maxImageAmount == 1
-                          ? Icon(
-                              Icons.check,
-                              color: AppColor.white,
-                              size: 16,
-                            )
-                          : Text(
-                              notifier.selectedMap[entity.id].order.toString(),
-                              style: TextStyle(color: AppColor.white, fontSize: 16),
-                            ),
-                    )
+                height: 20,
+                width: 20,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppColor.mainRed,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColor.mainRed, width: 1),
+                ),
+                child: widget.maxImageAmount == 1
+                    ? Icon(
+                  Icons.check,
+                  color: AppColor.white,
+                  size: 16,
+                )
+                    : Text(
+                  notifier.selectedMap[entity.id].order.toString(),
+                  style: TextStyle(color: AppColor.white, fontSize: 16),
+                ),
+              )
                   : Container(
-                      height: 20,
-                      width: 20,
-                      decoration: BoxDecoration(
-                        color: AppColor.black.withOpacity(0.36),
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppColor.white, width: 1),
-                      ),
-                    ),
+                height: 20,
+                width: 20,
+                decoration: BoxDecoration(
+                  color: AppColor.black.withOpacity(0.36),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColor.white, width: 1),
+                ),
+              ),
             ),
           ),
         ]));
@@ -469,7 +471,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
     } else {
       //不需要裁剪
       return GridView.builder(
-          //禁止回弹效果
+        //禁止回弹效果
           physics: ClampingScrollPhysics(),
           itemCount: _galleryList.length,
           gridDelegate: _galleryGridDelegate(),
@@ -479,15 +481,23 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
 
   // 构建标题栏
   Widget _buildAppBar() {
-    return Builder(builder: (context) {
-      return Row(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Expanded(
-            child: Text(context.select((SelectedMapNotifier value) => value.folderName)),
-          ),
-          GestureDetector(
-            onTap: () async {
+    return CustomAppBar(
+      backgroundColor: AppColor.bgBlack,
+      brightness: Brightness.dark,
+      leading: CustomAppBarIconButton(Icons.arrow_back_ios_outlined, AppColor.white, true, () {
+        Navigator.pop(context);
+      }),
+      titleWidget: Text(context.select((SelectedMapNotifier value) => value.folderName)),
+      actions: [
+        Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding),
+          child: CustomRedButton(
+            "下一步",
+            context.select((SelectedMapNotifier value) => value.selectedMap.isEmpty)
+                ? CustomRedButton.buttonStateDisable
+                : CustomRedButton.buttonStateNormal,
+                () async {
               // 先处理选中的结果
               final notifier = context.read<SelectedMapNotifier>();
 
@@ -500,7 +510,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                   type = mediaTypeKeyVideo;
                   break;
                 default:
-                  // 其他类型则程序有错误
+                // 其他类型则程序有错误
                   return;
               }
 
@@ -535,7 +545,9 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                       mediaFileModel.croppedImage = notifier.imageMap[orderedEntity.entity.id];
                       mediaFileModel.sizeInfo.height = mediaFileModel.croppedImage.height;
                       mediaFileModel.sizeInfo.width = mediaFileModel.croppedImage.width;
-                      mediaFileModel.sizeInfo.createTime = DateTime.now().millisecondsSinceEpoch;
+                      mediaFileModel.sizeInfo.createTime = DateTime
+                          .now()
+                          .millisecondsSinceEpoch;
                       break;
                     case AssetType.video:
                       mediaFileModel.file = _fileMap[orderedEntity.entity.id];
@@ -551,7 +563,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                       }
 
                       mediaFileModel.sizeInfo.videoCroppedRatio =
-                          notifier.videoCroppedRatioMap[mediaFileModel.file.path];
+                      notifier.videoCroppedRatioMap[mediaFileModel.file.path];
 
                       break;
                     default:
@@ -582,29 +594,25 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                 Navigator.pop(context, true);
               }
             },
-            child: Container(
-              alignment: Alignment.center,
-              height: 28,
-              width: 60,
-              decoration: BoxDecoration(
-                  color: context.select((SelectedMapNotifier value) => value.selectedMap.isEmpty)
-                      ? AppColor.bgWhite
-                      : AppColor.mainRed,
-                  borderRadius: BorderRadius.circular(14)),
-              child: Text("下一步", style: TextStyle(color: AppColor.white, fontSize: 14)),
-            ),
-          )
-        ],
-      );
-    });
+            isDarkBackground: true,
+          ),
+        )
+      ],
+    );
   }
 
   _getImage(BuildContext context, String id) async {
-    print("开始获取" + DateTime.now().millisecondsSinceEpoch.toString());
+    print("开始获取" + DateTime
+        .now()
+        .millisecondsSinceEpoch
+        .toString());
 
     ui.Image image = await (_cropperKey.currentContext as CropperImageElement).outImage();
 
-    print("已获取到ui.Image" + DateTime.now().millisecondsSinceEpoch.toString());
+    print("已获取到ui.Image" + DateTime
+        .now()
+        .millisecondsSinceEpoch
+        .toString());
     print(image);
     // ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
     // print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
@@ -716,8 +724,8 @@ class SelectedMapNotifier with ChangeNotifier {
     int maxAmount = _selectedType == AssetType.image
         ? maxImageAmount
         : _selectedType == AssetType.video
-            ? maxVideoAmount
-            : 1;
+        ? maxVideoAmount
+        : 1;
     return _selectedMap.length >= maxAmount;
   }
 
@@ -914,7 +922,7 @@ class VideoPreviewState extends State<VideoPreviewArea> {
               _controller.play();
             }
             _VideoPreviewSize _previewSize =
-                _getVideoPreviewSize(_controller.value.aspectRatio, widget.previewWidth, widget.useOriginalRatio);
+            _getVideoPreviewSize(_controller.value.aspectRatio, widget.previewWidth, widget.useOriginalRatio);
             context.watch<SelectedMapNotifier>().setVideoCroppedRatio(_file.path, _previewSize.videoCroppedRatio);
             //初始位置就是(0，0)所以暂不做初始偏移值的处理
             return ScrollConfiguration(

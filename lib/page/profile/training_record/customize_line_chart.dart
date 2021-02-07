@@ -44,15 +44,14 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
   RefreshController _refreshController = RefreshController(initialRefresh: false);
 
 
+  @override
+  void initState() {
+    super.initState();
+    initPageSize();
+  }
 
-  void initDate() {
-    if (widget.weightDataMap["targetWeight"] == null || widget.weightDataMap["targetWeight"] < 1) {
-      benchmarkValue = 0;
-      benchmarkValueText = "目标0";
-    } else {
-      benchmarkValue = widget.weightDataMap["targetWeight"];
-      benchmarkValueText = "目标$benchmarkValue";
-    }
+  void initPageSize() {
+
     valueList.clear();
     xValue.clear();
     for (int i = 0; i < widget.weightDataMap["recordList"].length; i++) {
@@ -67,14 +66,37 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
     }
   }
 
+  void initData(){
+    if(widget.weightDataMap["recordList"].length!=valueList.length){
+      valueList.clear();
+      xValue.clear();
+      for (int i = 0; i < widget.weightDataMap["recordList"].length; i++) {
+        valueList.add(widget.weightDataMap["recordList"][i]["weight"]);
+        xValue.add(widget.weightDataMap["recordList"][i]["dateTime"]);
+      }
+      if (valueList.length >= 5) {
+        pageSize = 5;
+      } else {
+        pageSize = valueList.length;
+      }
+    }
+
+    if (widget.weightDataMap["targetWeight"] == null || widget.weightDataMap["targetWeight"] < 1) {
+      benchmarkValue = 0;
+      benchmarkValueText = "目标0";
+    } else {
+      benchmarkValue = widget.weightDataMap["targetWeight"];
+      benchmarkValueText = "目标$benchmarkValue";
+    }
+  }
+
+  TextStyle style = TextStyle(fontSize: 12, color: AppColor.black);
+
   @override
   Widget build(BuildContext context) {
-    initDate();
-    TextStyle style = TextStyle(fontSize: 12, color: AppColor.black);
+    initData();
     bottomHeight = 20.0;
-
     width = MediaQuery.of(context).size.width;
-
     double canvasWidth = width - (getTextSize("${yMaxValue}kg", style, 1).width) - 36;
     return Container(
       width: width,
@@ -106,18 +128,24 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
                       ),
                       controller: _refreshController,
                       onLoading: () {
-                        _refreshController.loadComplete();
-                        if (pageSize + 5 >= valueList.length) {
-                          pageSize = valueList.length;
-                        } else {
-                          pageSize = pageSize + 5;
-                        }
-                        setState(() {});
+                        Future.delayed(Duration(milliseconds: 200),(){
+                          _refreshController.loadComplete();
+                          if (pageSize + 5 >= valueList.length) {
+                            pageSize = valueList.length;
+                          } else {
+                            pageSize = pageSize + 5;
+                          }
+                          print("pageSize:$pageSize");
+                          if(mounted) {
+                            setState(() {});
+                          }
+                        });
                       },
                       child: SingleChildScrollView(
+                        physics: BouncingScrollPhysics(),
                         scrollDirection: Axis.horizontal,
                         child: Container(
-                          width: canvasWidth / 4 * (pageSize < 4 ? 4 : pageSize - 1),
+                          width: canvasWidth / 4 * (pageSize <= 4 ? 4 : pageSize - 1),
                           height: height,
                           child: Stack(
                             children: [
@@ -140,11 +168,14 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
 
   //滑动的回调
   bool _onDragNotification(ScrollNotification notification) {
+    // ScrollMetrics metrics = notification.metrics;
     // 注册通知回调
     if (notification is ScrollStartNotification) {
       if (isPositionSelectShow) {
         isPositionSelectShow = false;
-        setState(() {});
+        if(mounted){
+          setState(() {});
+        }
       }
       // 滚动开始
       // print('滚动开始');
@@ -204,36 +235,44 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
 
   //折线图上层的点击层item
   Widget getPolylineClickItemUi(double canvasWidth){
+    double itemWidth = canvasWidth / 4;
     return Container(
-        width: double.infinity,
-        height: double.infinity,
-        child: ListView.builder(
-          itemCount: pageSize,
-          scrollDirection: Axis.horizontal,
-          itemBuilder: (context, index) {
-            double itemWidth = canvasWidth / 4;
-            if (index == 0) {
-              itemWidth /= 2;
-            } else if (index == pageSize - 1) {
-              itemWidth /= 2;
-            }
-            return UnconstrainedBox(
-              child: GestureDetector(
-                child: Container(
-                  height: height,
-                  width: pageSize != 1 ? itemWidth : canvasWidth,
-                  color: AppColor.transparent,
-                ),
-                onTap: () {
-                  print("点击了");
-                  positionSelect = index;
-                  isPositionSelectShow = true;
-                  setState(() {});
-                },
-              ),
-            );
-          },
-        )
+      child: Transform.translate(
+        offset: Offset(-4, 0),
+        child: Container(
+            width: pageSize==1?itemWidth:double.infinity,
+            height: double.infinity,
+            alignment: Alignment.topCenter,
+            child: ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: pageSize,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                double itemWidthContainer=itemWidth;
+                if(pageSize!=1&&index==0){
+                  itemWidthContainer/=2;
+                }
+                return UnconstrainedBox(
+                  child: GestureDetector(
+                    child: Container(
+                      height: height,
+                      width: itemWidthContainer,
+                      color:AppColor.transparent,
+                    ),
+                    onTap: () {
+                      print("点击了$index");
+                      positionSelect = index;
+                      isPositionSelectShow = true;
+                      if(mounted){
+                        setState(() {});
+                      }
+                    },
+                  ),
+                );
+              },
+            )
+        ),
+      ),
     );
   }
 
@@ -311,6 +350,12 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
         maxValue = n;
       }
     }
+
+
+    if (benchmarkValue > maxValue) {
+      maxValue = benchmarkValue;
+    }
+
 
     if (maxValue <= 100) {
       return 100.0;
@@ -441,7 +486,7 @@ class MyPainter extends CustomPainter {
     initPaint(size);
     initPoints(size);
     canvasCirclePlan(canvas, size);
-    canvasBgLine(canvas, size);
+    // canvasBgLine(canvas, size);
     canvasCircleLine(canvas, size);
     canvasPoint(canvas, size);
     canvasBottomText(canvas, size);
@@ -481,6 +526,11 @@ class MyPainter extends CustomPainter {
       x -= pointRadius / 2;
       lineX -= pointRadius / 2;
     }
+
+    if (points.length<5&&positionSelect != 0&&positionSelect != points.length - 1) {
+      lineX-=2;
+    }
+
     double y = points[positionSelect].y - 28 - pointRadius / 2 - 8;
 
     drawAlertLine(canvas, lineX, size);
@@ -570,7 +620,7 @@ class MyPainter extends CustomPainter {
       if (i == points.length - 1) {
         xValue -= 8;
       }
-      Offset offset = Offset(xValue, getPointHeight(0.0, size) + 16);
+      Offset offset = Offset(xValue, getPointHeight(0.0, size) + 14);
       canvas.drawParagraph(paragraph, offset); /**/
     }
   }
@@ -579,16 +629,20 @@ class MyPainter extends CustomPainter {
     if (newValue == null) {
       return "";
     }
-    DateTime newTime = DateUtil.stringToDateTime(newValue);
-    if (lastValue != null) {
-      DateTime lastTime = DateUtil.stringToDateTime(lastValue);
-      if (newTime.year == lastTime.year) {
-        return "${newTime.month}.${newTime.day}";
+    try{
+      DateTime newTime = DateUtil.stringToDateTime(newValue);
+      if (lastValue != null) {
+        DateTime lastTime = DateUtil.stringToDateTime(lastValue);
+        if (newTime.year == lastTime.year) {
+          return "${newTime.month}.${newTime.day}";
+        } else {
+          return "${newTime.year}./${newTime.month}.${newTime.day}";
+        }
       } else {
-        return "${newTime.year}./${newTime.month}.${newTime.day}";
+        return "${newTime.month}.${newTime.day}";
       }
-    } else {
-      return "${newTime.month}.${newTime.day}";
+    }catch(e){
+      return "";
     }
   }
 
@@ -710,9 +764,17 @@ class MyPainterBenchMarkLine extends CustomPainter {
 
   Paint benchmarkLinePaint;
   double yTextSize = 12.0;
+  int itemCountPage = 4;
+  Paint bgLinePaint;
 
   void initPaint(Size size) {
     benchmarkLinePaint = Paint() // 创建一个画笔并配置其属性
+      ..strokeWidth = 1 // 画笔的宽度
+      ..isAntiAlias = true // 是否抗锯齿
+      ..color = AppColor.textHint // 画笔颜色
+      ..style = PaintingStyle.fill;
+
+    bgLinePaint = Paint() // 创建一个画笔并配置其属性
       ..strokeWidth = 1 // 画笔的宽度
       ..isAntiAlias = true // 是否抗锯齿
       ..color = AppColor.textHint // 画笔颜色
@@ -722,8 +784,18 @@ class MyPainterBenchMarkLine extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     initPaint(size);
+    canvasBgLine(canvas, size);
     canvasBenchmarkLine(canvas, size);
     canvasText(canvas, size);
+  }
+
+  //画背景虚线
+  void canvasBgLine(Canvas canvas, Size size) {
+    for (int i = 0; i < itemCountPage; i++) {
+      double lineHeight = (i * ((size.height - bottomHeight - topHeight - yTextSize) / itemCountPage) + 6 + topHeight);
+      canvasDottedLine(0.0, size.width, lineHeight, canvas, bgLinePaint);
+    }
+    canvasDottedLine(0.0, size.width, size.height - bottomHeight - 6, canvas, bgLinePaint);
   }
 
   void canvasText(Canvas canvas, Size size) {
@@ -746,7 +818,7 @@ class MyPainterBenchMarkLine extends CustomPainter {
     if (benchmarkValue > yMaxValue || benchmarkValue < 0) {
       return;
     }
-    canvasDottedLine(4, size.width, getPointHeight(benchmarkValue, size), canvas, benchmarkLinePaint);
+    canvasDottedLine(0, size.width, getPointHeight(benchmarkValue, size), canvas, benchmarkLinePaint);
   }
 
   //获取每一个点的高度

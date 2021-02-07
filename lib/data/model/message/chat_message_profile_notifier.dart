@@ -22,7 +22,7 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
   Message message;
 
   ///消息
-  Message exitMessage;
+  Message resetMessage;
 
   //消息的id
   int messageId;
@@ -33,8 +33,11 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
   //是否设置消息状态
   bool isSettingStatus = false;
 
-  //是否退出界面
-  bool isExitPage = false;
+  //是否刷新界面--消息界面
+  bool isResetPage = false;
+
+  //是否刷新界面--课程界面
+  bool isResetCoursePage = false;
 
   //设置消息发送的状态
   setIsSettingStatus({bool isSettingStatus, int messageId, int status}) {
@@ -67,27 +70,75 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
 
   changeCallback(Message message) {
     if (message.objectName == ChatTypeModel.MESSAGE_TYPE_CMD) {
+      print("message.originContentMapName:${message.originContentMap["name"]}");
+      print("message.originContentMap:${message.originContentMap.toString()}");
       if (message.originContentMap["name"].toString() == "Remove") {
-        print("message.originContentMap:${message.originContentMap.toString()}");
-        Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
-        print(
-            "value:${mapGroupModel["groupChatId"].toString() == this.chatUserId && RCConversationType.Group == chatTypeId}");
-        if (mapGroupModel["groupChatId"].toString() == this.chatUserId && RCConversationType.Group == chatTypeId) {
-          List<dynamic> users = mapGroupModel["users"];
-          for (dynamic d in users) {
-            if (d["uid"] == Application.profile.uid) {
-              isExitPage = true;
-              this.exitMessage = message;
-              notifyListeners();
-              break;
-            }
-          }
-        }else{
-          insertExitGroupMsg(message, mapGroupModel["groupChatId"].toString());
-        }
+        _removeGroup(message);
+      }else if (message.originContentMap["name"].toString() == "Entry") {
+        _entryGroup(message);
+      }else if (message.originContentMap["name"].toString() == "BookLive") {
+        _bookLive(message);
       }
       return;
     }
+    _changeCallback(message);
+  }
+
+
+  //课程预约或者取消预约
+  _bookLive(Message message){
+    this.isResetPage = false;
+    this.isResetCoursePage = true;
+    this.resetMessage = message;
+    notifyListeners();
+  }
+
+  //移除群聊
+  _removeGroup(Message message){
+    Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
+    print("value:${mapGroupModel["groupChatId"].toString() == this.chatUserId
+        && RCConversationType.Group == chatTypeId}");
+    if (mapGroupModel["groupChatId"].toString() == this.chatUserId && RCConversationType.Group == chatTypeId) {
+      List<dynamic> users = mapGroupModel["users"];
+      for (dynamic d in users) {
+        if (d["uid"] == Application.profile.uid) {
+          this.isResetPage = true;
+          this.isResetCoursePage = false;
+          this.resetMessage = message;
+          notifyListeners();
+          break;
+        }
+      }
+    }else{
+      insertExitGroupMsg(message, mapGroupModel["groupChatId"].toString());
+    }
+  }
+
+  //加入群聊
+  _entryGroup(Message message){
+    Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
+    print("value:${mapGroupModel["groupChatId"].toString() == this.chatUserId
+        && RCConversationType.Group == chatTypeId}");
+    print("value:${message.originContentMap.toString()}");
+    if (mapGroupModel["groupChatId"].toString() == this.chatUserId && RCConversationType.Group == chatTypeId) {
+      List<dynamic> users = mapGroupModel["users"];
+      for (dynamic d in users) {
+        if (d["uid"] == Application.profile.uid) {
+          this.isResetPage = true;
+          this.isResetCoursePage = false;
+          this.resetMessage = message;
+          notifyListeners();
+          break;
+        }
+      }
+    }else{
+      insertExitGroupMsg(message, mapGroupModel["groupChatId"].toString());
+    }
+  }
+
+
+  //获取新的消息
+  _changeCallback(Message message) {
     if (message.targetId == this.chatUserId && message.conversationType == chatTypeId) {
       if (message.conversationType != RCConversationType.System) {
         this.message = message;

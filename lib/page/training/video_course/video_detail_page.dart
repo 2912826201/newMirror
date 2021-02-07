@@ -16,6 +16,7 @@ import 'package:mirror/page/training/currency/currency_page.dart';
 import 'package:mirror/page/training/video_course/sliver_custom_header_delegate_video.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
@@ -108,6 +109,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     if(videoModel==null) {
       loadingStatus = LoadingStatus.STATUS_LOADING;
     }else{
+      if(videoModel.isInMyCourseList!=null) {
+        isFavor = videoModel.isInMyCourseList == 1;
+      }
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
     }
     recommendLoadingStatus = LoadingStatus.STATUS_LOADING;
@@ -148,7 +152,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
               child: Text("加载失败"),
               onTap: () {
                 loadingStatus = LoadingStatus.STATUS_LOADING;
-                setState(() {});
+                if(mounted){
+                  setState(() {});
+                }
                 getDataAction();
               },
             ),
@@ -173,7 +179,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
           children: [
             Container(
               width: double.infinity,
-              height: MediaQuery.of(context).size.height - 50,
+              height: MediaQuery.of(context).size.height - 50-ScreenUtil.instance.bottomBarHeight,
               child: ScrollConfiguration(
                 behavior: NoBlueEffectBehavior(),
                 child: NotificationListener<ScrollNotification>(
@@ -184,7 +190,8 @@ class VideoDetailPageState extends State<VideoDetailPage> {
             ),
             Container(
               width: double.infinity,
-              height: 50,
+              height: 50.0+ScreenUtil.instance.bottomBarHeight,
+              padding: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
               color: AppColor.white,
               child: _getBottomBar(),
             ),
@@ -360,12 +367,16 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     if (metrics.pixels < 10) {
       if (isBouncingScrollPhysics) {
         isBouncingScrollPhysics = false;
-        setState(() {});
+        if(mounted){
+          setState(() {});
+        }
       }
     } else {
       if (!isBouncingScrollPhysics) {
         isBouncingScrollPhysics = true;
-        setState(() {});
+        if(mounted){
+          setState(() {});
+        }
       }
     }
     return false;
@@ -387,7 +398,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     Map<String, dynamic> map = await (!isFavor ? addToMyCourse : deleteFromMyCourse)(videoModel.id);
     if (map != null && map["state"] != null && map["state"]) {
       isFavor = !isFavor;
-      setState(() {});
+      if(mounted){
+        setState(() {});
+      }
     }
   }
 
@@ -413,7 +426,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       }
       print("[${DateTime.now().millisecondsSinceEpoch}]taskId:$taskId; received:$received; total:$total; "
           "progress:$_progress; allDownLoadCount:$allDownLoadCount; completeDownCount:$completeDownCount");
-      setState(() {});
+      if(mounted){
+        setState(() {});
+      }
     };
   }
 
@@ -651,28 +666,37 @@ class VideoDetailPageState extends State<VideoDetailPage> {
 
     recommendLoadingStatus = LoadingStatus.STATUS_COMPLETED;
 
+
     //获取视频详情数据
-    if (videoModel == null || videoModel.coursewareDto?.componentDtos == null) {
-      //加载数据
-      Map<String, dynamic> model = await getVideoCourseDetail(courseId: widget.videoCourseId);
-      if (model == null) {
-        loadingStatus = LoadingStatus.STATUS_IDEL;
-        Future.delayed(Duration(seconds: 1), () {
+    //加载数据
+    Map<String, dynamic> model = await getVideoCourseDetail(courseId: widget.videoCourseId);
+    if (model == null) {
+      loadingStatus = LoadingStatus.STATUS_IDEL;
+      Future.delayed(Duration(seconds: 1), () {
+        if(mounted){
           setState(() {});
-        });
-      } else {
-        videoModel = LiveVideoModel.fromJson(model);
-        loadingStatus = LoadingStatus.STATUS_COMPLETED;
+        }
+      });
+    } else {
+      videoModel = LiveVideoModel.fromJson(model);
+
+      if(videoModel.isInMyCourseList!=null) {
+        isFavor = videoModel.isInMyCourseList == 1;
+      }
+      loadingStatus = LoadingStatus.STATUS_COMPLETED;
+      if(mounted){
         setState(() {});
       }
-    } else {
-      loadingStatus = LoadingStatus.STATUS_COMPLETED;
-      setState(() {});
     }
   }
 
   ///这是关注的方法
   onClickAttention() {
+    if(!(mounted&&context.read<TokenNotifier>().isLoggedIn)){
+      ToastShow.show(msg: "请先登陆app!", context: context);
+      AppRouter.navigateToLoginPage(context);
+      return;
+    }
     if (!(videoModel.coachDto?.relation == 1 || videoModel.coachDto?.relation == 3)) {
       _getAttention(videoModel.coachDto?.uid);
     }
@@ -684,7 +708,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     print('关注监听=========================================$attntionResult');
     if (attntionResult == 1 || attntionResult == 3) {
       videoModel.coachDto?.relation = 1;
-      setState(() {});
+      if(mounted){
+        setState(() {});
+      }
     }
   }
 

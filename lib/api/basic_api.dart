@@ -53,7 +53,8 @@ Future<bool> sendSms(String phoneNumber, int type) async {
 //token直接取accessToken不用拼接
 Future<bool> logout() async {
   BaseResponseModel responseModel =
-      await requestApi(LOGOUT, {"token": Application.token.accessToken}, authType: AUTH_TYPE_NONE);
+      await requestApi(LOGOUT, {"token": Application.token.accessToken}, authType: AUTH_TYPE_NONE,
+          autoHandleLogout: false);
   if (responseModel.isSuccess) {
     //TODO 这里实际需要将请求结果处理为具体的业务数据
     return responseModel.code == CODE_SUCCESS;

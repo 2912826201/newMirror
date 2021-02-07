@@ -3,6 +3,8 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
+import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/custom_button.dart';
 
 class EditInformationIntroduction extends StatefulWidget {
   final String introduction;
@@ -22,9 +24,12 @@ class _IntroductionState extends State<EditInformationIntroduction> {
   //底部的提示int
   int textLength = 0;
   double textHeight;
+
   ///记录上次结果
   var lastInput = "";
   PinYinTextEditController controller = PinYinTextEditController();
+  FocusNode _commentFocus = FocusNode();
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -51,6 +56,7 @@ class _IntroductionState extends State<EditInformationIntroduction> {
     controller.addListener(() {
       if (lastInput != controller.completeText) {
         lastInput = controller.completeText;
+
         ///通知onChanged
         setState(() {
           textLength = lastInput.length;
@@ -65,44 +71,26 @@ class _IntroductionState extends State<EditInformationIntroduction> {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return Scaffold(
-      appBar: AppBar(
+      appBar: CustomAppBar(
           backgroundColor: AppColor.white,
-          leading: InkWell(
-            child: Container(
-              margin: EdgeInsets.only(left: 16),
-              child: Image.asset("images/resource/2.0x/return2x.png"),
-            ),
-            onTap: () {
-              Navigator.pop(context, widget.introduction);
-            },
-          ),
-          leadingWidth: 44,
-          title: Text(
-            "编辑简介",
-            style: AppStyle.textMedium18,
-          ),
-          centerTitle: true,
+          leadingOnTap: () {
+            _commentFocus.unfocus();
+            Navigator.pop(context, widget.introduction);
+          },
+          titleString: "编辑简介",
           actions: [
-            InkWell(
-                onTap: () {
+            Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding),
+              child: CustomRedButton(
+                "确定",
+                CustomRedButton.buttonStateNormal,
+                () {
+                  _commentFocus.unfocus();
                   Navigator.pop(this.context, editText);
                 },
-                child: Container(
-                  width: 60,
-                  margin: EdgeInsets.only(right: 16),
-                  child: Center(
-                      child: Container(
-                    decoration: BoxDecoration(
-                      color: AppColor.mainRed,
-                      borderRadius: BorderRadius.all(Radius.circular(14)),
-                    ),
-                    padding: EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 4),
-                    child: Text(
-                      "确定",
-                      style: TextStyle(fontSize: 14, color: AppColor.white),
-                    ),
-                  )),
-                )),
+              ),
+            ),
           ]),
       body: Container(
         color: AppColor.white,
@@ -137,6 +125,7 @@ class _IntroductionState extends State<EditInformationIntroduction> {
       child: Column(
         children: [
           TextField(
+            focusNode: _commentFocus,
             autofocus: true,
             maxLength: 90,
             maxLines: 5,

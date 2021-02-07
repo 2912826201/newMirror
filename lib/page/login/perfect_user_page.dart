@@ -25,7 +25,9 @@ import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
+import 'package:mirror/widget/loading.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
@@ -69,19 +71,7 @@ class _PerfectUserState extends LoginBasePageState {
     double height = ScreenUtil.instance.height;
     return Scaffold(
       backgroundColor: AppColor.white,
-      appBar: AppBar(
-        backgroundColor: AppColor.white,
-        leading: InkWell(
-          child: Container(
-            margin: EdgeInsets.only(left: 16),
-            child: Image.asset("images/resource/2.0x/return2x.png"),
-          ),
-          onTap: () {
-            Navigator.pop(context);
-          },
-        ),
-        leadingWidth: 44,
-      ),
+      appBar: CustomAppBar(),
       body: Container(
           width: width,
           height: height,
@@ -234,6 +224,7 @@ class _PerfectUserState extends LoginBasePageState {
         onTap: () {
           if (fileList.isNotEmpty && username != "") {
             FocusScope.of(context).requestFocus(blankNode);
+            Loading.showLoading(context);
             _upDataUserInfo();
           } else {
             Toast.show("昵称和头像不能为空", context);
@@ -261,6 +252,7 @@ class _PerfectUserState extends LoginBasePageState {
       Application.smsCodeSendTime = null;
       print("完善用户资料成功");
       //成功后重新刷新token
+      Loading.hideLoading(context);
       TokenModel token = await login("refresh_token", null, null, Application.tempToken.refreshToken);
       if (token != null) {
         print("刷新用户token成功");
@@ -270,6 +262,7 @@ class _PerfectUserState extends LoginBasePageState {
       }
     } else {
       print("完善用户资料失败");
+      Loading.hideLoading(context);
       Navigator.of(context).pushNamedAndRemoveUntil(
         '/', (route) => false,
         //true 保留当前栈 false 销毁所有 只留下RepeatLogin
@@ -292,7 +285,6 @@ class _PerfectUserState extends LoginBasePageState {
     Application.rongCloud.connect();
     //TODO 处理登录完成后的数据加载
     MessageManager.loadConversationListFromDatabase(context);
-
     //一些非关键数据获取
     _getMoreInfo();
 
