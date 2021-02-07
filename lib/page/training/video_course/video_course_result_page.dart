@@ -36,7 +36,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
       appBar: CustomAppBar(
         backgroundColor: AppColor.bgBlack,
         brightness: Brightness.dark,
-        leading: CustomAppBarButton(Icons.close, AppColor.white, true, () {
+        leading: CustomAppBarIconButton(Icons.close, AppColor.white, true, () {
           Navigator.pop(context);
         }),
         titleWidget: Text(

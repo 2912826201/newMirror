@@ -37,6 +37,7 @@ class _VipHorizontalListState extends State<VipHorizontalList>{
        itemBuilder:(context,index){
             return Row(
               children: [
+                index==0?SizedBox(width: 9,):SizedBox(),
                 InkWell(
                   onTap: (){
                     if(oldIndex!=index){

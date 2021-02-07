@@ -89,26 +89,16 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
     _selectionModeAppBar = CustomAppBar(
       titleString: "健身相册",
       leadingWidth: 56.0,
-      leading: GestureDetector(
-        onTap: () {
-          setState(() {
-            _isSelectionMode = false;
-          });
-        },
-        child: Container(
-          alignment: Alignment.center,
-          padding: EdgeInsets.only(left: CustomAppBar.appBarIconPadding),
-          child: Text(
-            "取消",
-            style: AppStyle.textPrimary2Medium16,
-          ),
-        ),
-      ),
+      leading: CustomAppBarTextButton("取消", AppColor.textPrimary2, true, () {
+        setState(() {
+          _isSelectionMode = false;
+        });
+      }),
     );
     _normalModeAppBar = CustomAppBar(
       titleString: "健身相册",
       actions: [
-        CustomAppBarButton(Icons.camera_alt_outlined, AppColor.black, false, () {
+        CustomAppBarIconButton(Icons.camera_alt_outlined, AppColor.black, false, () {
           AppRouter.navigateToMediaPickerPage(context, 1, typeImage, false, startPageGallery, false, _uploadImage);
         }),
       ],

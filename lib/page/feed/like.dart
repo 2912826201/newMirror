@@ -154,7 +154,7 @@ class LikeListViewItem extends StatelessWidget {
         Container(
           width: ScreenUtil.instance.screenWidthDp - 32 - 38 - 38 - 12,
           child:Text(
-            "${DateUtil.generateFormatDate(model.laudTime)}",
+            "${DateUtil.generateFormatDate(model.laudTime,false)}",
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(

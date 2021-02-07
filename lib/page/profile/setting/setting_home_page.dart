@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:mirror/api/version_api.dart';
 import 'package:mirror/config/config.dart';
+import 'package:mirror/data/model/version_model.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/page/profile/setting/blacklist_page.dart';
 import 'package:mirror/page/profile/setting/feedback_page.dart';
@@ -42,6 +44,29 @@ class SettingHomePage extends StatefulWidget {
 }
 
 class _SettingHomePageState extends State<SettingHomePage> {
+  bool haveNewVersion = false;
+  String url = "https://down.qq.com/qqweb/QQ_1/android_apk/Android_8.5.5.5105_537066978.apk";
+  String content;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getNewVersion();
+  }
+  _getNewVersion() async {
+    VersionModel model = await getNewVersion();
+    if(model!=null){
+      if(model.version!=AppConfig.version){
+        haveNewVersion = true;
+        content = model.description;
+        url = model.url;
+        if(mounted){
+          setState(() {
+          });
+        }
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -129,7 +154,7 @@ class _SettingHomePageState extends State<SettingHomePage> {
             InkWell(
               child: _rowItem(width, "关于"),
               onTap: () {
-                AppRouter.navigateToSettingAbout(context);
+                AppRouter.navigateToSettingAbout(context, url, haveNewVersion,content);
               },
             ),
             Container(
@@ -172,17 +197,27 @@ class _SettingHomePageState extends State<SettingHomePage> {
       width: width,
       padding: EdgeInsets.only(left: 16, right: 16),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
             text,
             style: AppStyle.textRegular16,
           ),
-          Expanded(
-            child: SizedBox(),
-          ),
+          Spacer(),
+        text=="关于"&&haveNewVersion?ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child:Container(
+          width: 64,
+          height: 18,
+          color: AppColor.mainRed,
+          child: Center(child: Text("有新版本",style: AppStyle.whiteRegular12,),),
+        ),
+        ):Container(),
+          SizedBox(width: 12,),
           Container(
             height: 18,
             width: 18,
+            alignment: Alignment.centerRight,
             child: Icon(
               Icons.arrow_forward_ios,
               color: AppColor.textSecondary,

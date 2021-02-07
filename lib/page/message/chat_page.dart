@@ -333,7 +333,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         },
       ),
       actions: [
-        CustomAppBarButton(Icons.more_horiz, AppColor.black, false, _topMoreBtnClick),
+        CustomAppBarIconButton(Icons.more_horiz, AppColor.black, false, _topMoreBtnClick),
       ],
     );
   }

@@ -119,7 +119,7 @@ class _FitnessTargetState extends State<FitnessTargetPage>{
                 Expanded(child: SizedBox()),
             ],
           ),
-          Expanded(child: Container()),
+          Spacer(),
           Center(
               child: Icon(Icons.arrow_forward_ios),
             ),

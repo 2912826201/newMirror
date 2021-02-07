@@ -107,7 +107,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
       appBar: CustomAppBar(
         titleString: "课程库",
         actions: [
-          CustomAppBarButton(
+          CustomAppBarIconButton(
             Icons.search,
             AppColor.black,
             false,

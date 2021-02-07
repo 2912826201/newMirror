@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/constant/color.dart';
 // 自定义按钮
 
 /*
@@ -74,7 +75,7 @@ class ClickLineBtn extends StatelessWidget {
       : super(key: key);
 
   Color color; //颜色
-  Color textColor;//字体颜色
+  Color textColor; //字体颜色
   String title; //文字
   final onTap; //点击方法
   final circular; //弧度
@@ -281,6 +282,103 @@ class ClickTitleAndImageBtn extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+//标准的红色按钮
+class CustomRedButton extends StatefulWidget {
+  //正常状态
+  static const int buttonStateNormal = 0;
+
+  //不可用状态
+  static const int buttonStateDisable = 1;
+
+  //忙碌状态
+  static const int buttonStateLoading = 2;
+
+  //禁用状态
+  static const int buttonStateInvalid = 3;
+
+  CustomRedButton(this.text, this.buttonState, this.onTap, {Key key, this.isDarkBackground = false}) : super(key: key);
+
+  final String text;
+  final int buttonState;
+  final Function() onTap;
+  final bool isDarkBackground;
+
+  @override
+  _CustomRedButtonState createState() => _CustomRedButtonState();
+}
+
+class _CustomRedButtonState extends State<CustomRedButton> {
+  bool isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        alignment: Alignment.center,
+        height: 28,
+        width: widget.buttonState == CustomRedButton.buttonStateLoading ? 82 : 60,
+        decoration: BoxDecoration(
+            color: widget.buttonState == CustomRedButton.buttonStateNormal
+                ? isPressed
+                    ? AppColor.mainRed.withOpacity(0.56)
+                    : AppColor.mainRed
+                : widget.buttonState == CustomRedButton.buttonStateDisable
+                    ? widget.isDarkBackground
+                        ? AppColor.mainRed.withOpacity(0.24)
+                        : AppColor.mainRed.withOpacity(0.16)
+                    : widget.buttonState == CustomRedButton.buttonStateLoading
+                        ? AppColor.mainRed
+                        : AppColor.textHint,
+            borderRadius: BorderRadius.circular(14)),
+        //TODO loading状态需要加加载圈
+        child: Text(
+          widget.text,
+          style: TextStyle(
+              fontSize: 14,
+              color: widget.buttonState == CustomRedButton.buttonStateNormal
+                  ? isPressed
+                      ? AppColor.white.withOpacity(0.56)
+                      : AppColor.white
+                  : widget.buttonState == CustomRedButton.buttonStateDisable
+                      ? widget.isDarkBackground
+                          ? AppColor.white.withOpacity(0.24)
+                          : AppColor.white.withOpacity(0.16)
+                      : widget.buttonState == CustomRedButton.buttonStateLoading
+                          ? AppColor.white
+                          : AppColor.white),
+        ),
+      ),
+      onTapDown: (details) {
+        if (widget.buttonState == CustomRedButton.buttonStateNormal) {
+          setState(() {
+            isPressed = true;
+          });
+        }
+      },
+      onTapUp: (details) {
+        if (widget.buttonState == CustomRedButton.buttonStateNormal) {
+          setState(() {
+            isPressed = false;
+          });
+        }
+      },
+      onTapCancel: () {
+        if (widget.buttonState == CustomRedButton.buttonStateNormal) {
+          setState(() {
+            isPressed = false;
+          });
+        }
+      },
+      onTap: () {
+        if (widget.buttonState == CustomRedButton.buttonStateNormal) {
+          widget.onTap();
+        }
+      },
     );
   }
 }

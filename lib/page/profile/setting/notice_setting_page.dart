@@ -169,6 +169,7 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
               ),
               _switchRow(width, 2, context.watch<SettingNotifile>().mentionedMe, "@我"),
               _switchRow(width, 3, context.watch<SettingNotifile>().comment, "评论"),
+              _switchRow(width, 4, context.watch<SettingNotifile>().laud, "赞"),
             ],
           ),
         ));
@@ -259,6 +260,9 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
                               case 3:
                                 _setUserNotice(3, context.read<SettingNotifile>().comment ? 0 : 1);
                                 break;
+                              case 4:
+                                _setUserNotice(4, context.read<SettingNotifile>().laud ? 0 : 1);
+                                break;
                             }
                           }
                         : null),
@@ -284,6 +288,9 @@ class SettingNotifile extends ChangeNotifier {
   //评论  4
   bool comment = false;
 
+  //赞
+  bool laud = false;
+
   //是否开启权限
   bool permisionIsOpen = false;
 
@@ -306,6 +313,9 @@ class SettingNotifile extends ChangeNotifier {
       case 4:
         comment = result;
         break;
+      case 5:
+        laud = result;
+        break;
     }
     notifyListeners();
   }
@@ -323,6 +333,9 @@ class SettingNotifile extends ChangeNotifier {
         break;
       case 4:
         comment = !comment;
+        break;
+      case 5:
+        laud = !laud;
         break;
     }
     notifyListeners();
