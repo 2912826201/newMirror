@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mirror/api/machine_api.dart';
+import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/constant/color.dart';
@@ -32,11 +34,16 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   Map<int, int> _indexMapWithoutRest = {};
   int _partAmountWithoutRest = 0;
 
+  int _volume;
+  int _luminance;
+
   @override
   void initState() {
     super.initState();
     _parsePartList();
     _updateInfoByPosition();
+    _volume = context.read<MachineNotifier>().machine?.volume;
+    _luminance = context.read<MachineNotifier>().machine?.luminance;
   }
 
   _parsePartList() {
@@ -170,18 +177,25 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                         child: Container(
                       //slider会将handler的大小算在组件宽度 所以间距要减去handler的宽度的一半 才是进度条本体的间距
                       padding: const EdgeInsets.only(left: 6, right: 6),
-                      child: AppSeekBar(100, 0, notifier.machine.volume.toDouble(), notifier.machine.status == 0,
+                      child: AppSeekBar(100, 0, _volume.toDouble(), notifier.machine.status == 0,
                           (handlerIndex, lowerValue, upperValue) {
-                        notifier.setMachine(notifier.machine..volume = lowerValue.toInt());
+                        setState(() {
+                          _volume = lowerValue.toInt();
+                        });
                       }, (handlerIndex, lowerValue, upperValue) {
                         //调接口保存值
                         print("调接口保存音量：$lowerValue");
+                        setMachineVolume(notifier.machine.machineId, lowerValue.toInt()).then((value) {
+                          if(value) {
+                            notifier.setMachine(notifier.machine..volume = lowerValue.toInt());
+                          }
+                        });
                       }),
                     )),
                     SizedBox(
                       width: 42,
                       child: Text(
-                        "${notifier.machine.volume}%",
+                        "$_volume%",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontSize: 14,
@@ -212,18 +226,25 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                         child: Container(
                       //slider会将handler的大小算在组件宽度 所以间距要减去handler的宽度的一半 才是进度条本体的间距
                       padding: const EdgeInsets.only(left: 6, right: 6),
-                      child: AppSeekBar(100, 0, notifier.machine.luminance.toDouble(), notifier.machine.status == 0,
+                      child: AppSeekBar(100, 0, _luminance.toDouble(), notifier.machine.status == 0,
                           (handlerIndex, lowerValue, upperValue) {
-                        notifier.setMachine(notifier.machine..luminance = lowerValue.toInt());
+                        setState(() {
+                          _luminance = lowerValue.toInt();
+                        });
                       }, (handlerIndex, lowerValue, upperValue) {
                         //调接口保存值
                         print("调接口保存亮度：$lowerValue");
+                        setMachineLuminance(notifier.machine.machineId, lowerValue.toInt()).then((value) {
+                          if(value) {
+                            notifier.setMachine(notifier.machine..luminance = lowerValue.toInt());
+                          }
+                        });
                       }),
                     )),
                     SizedBox(
                       width: 42,
                       child: Text(
-                        "${notifier.machine.luminance}%",
+                        "$_luminance%",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontSize: 14,
@@ -262,7 +283,11 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                     GestureDetector(
                       onTap: () {
                         if (notifier.machine.status != 0) {
-                          AppRouter.navigateToMachineConnectionInfo(context);
+                          AppRouter.navigateToMachineConnectionInfo(context, (result){
+                            if(result != null && result == true){
+                              Navigator.pop(context);
+                            }
+                          });
                         }
                       },
                       child: Row(

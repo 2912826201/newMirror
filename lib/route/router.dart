@@ -420,8 +420,8 @@ class AppRouter {
     _navigateToPage(context, pathMachineRemoteController, {});
   }
 
-  static void navigateToMachineConnectionInfo(BuildContext context) {
-    _navigateToPage(context, pathMachineConnectionInfo, {});
+  static void navigateToMachineConnectionInfo(BuildContext context, Function(dynamic result) callback) {
+    _navigateToPage(context, pathMachineConnectionInfo, {}, callback: callback);
   }
 
   static void navigateToMachineSetting(BuildContext context) {
