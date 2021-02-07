@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/search/search_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -20,11 +19,9 @@ import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:mirror/page/search/sub_page/search_topic.dart';
 import 'package:mirror/page/search/sub_page/search_user.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/Input_method_rules/input_formatter.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
-import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
-import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
 
@@ -35,7 +32,7 @@ class SearchPage extends StatelessWidget {
   SearchPage({Key key, this.defaultIndex = 0});
 
   // 输入框焦点控制器
-  FocusNode focusNode = new FocusNode();
+  final FocusNode focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -67,15 +64,15 @@ class SearchPage extends StatelessWidget {
 
 // // 搜索头部布局
 class SearchHeader extends StatefulWidget {
-  FocusNode focusNode;
+  final FocusNode focusNode;
 
   SearchHeader({Key key, this.focusNode}) : super(key: key);
 
   @override
-  SearchHeaderState createState() => SearchHeaderState();
+  _SearchHeaderState createState() => _SearchHeaderState();
 }
 
-class SearchHeaderState extends State<SearchHeader> {
+class _SearchHeaderState extends State<SearchHeader> {
   TextEditingController controller = TextEditingController();
 
   ///记录上次结果
@@ -108,7 +105,7 @@ class SearchHeaderState extends State<SearchHeader> {
       margin: EdgeInsets.only(
         top: ScreenUtil.instance.statusBarHeight,
       ),
-      height: 44.0,
+      height: CustomAppBar.appBarHeight,
       width: ScreenUtil.instance.screenWidthDp,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -171,19 +168,9 @@ class SearchHeaderState extends State<SearchHeader> {
             ),
           ),
           Spacer(),
-          TextBtn(
-            title: "取消",
-            fontsize: 16,
-            textColor: AppColor.textPrimary1,
-            width: 32,
-            height: 22.5,
-            onTap: () {
-              Navigator.of(context).pop(true);
-            },
-          ),
-          SizedBox(
-            width: 16,
-          )
+          CustomAppBarTextButton("取消", AppColor.textPrimary1, false, () {
+            Navigator.of(context).pop(true);
+          }),
         ],
       ),
     );
@@ -576,7 +563,7 @@ class SearchTabBarViewState extends State<SearchTabBarView> with SingleTickerPro
           ),
         ),
         Container(
-          height: ScreenUtil.instance.height - 44 - 48 - ScreenUtil.instance.statusBarHeight,
+          height: ScreenUtil.instance.height - CustomAppBar.appBarHeight - 48 - ScreenUtil.instance.statusBarHeight,
           child: TabBarView(
             controller: controller,
             children: [
