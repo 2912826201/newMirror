@@ -53,7 +53,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
             _followListId.add(HomeFeedModel.fromJson(result).id);
           });
           _followListId.insert(0, -1);
-          fllowState = StateResult.HAVARESULT;
+          fllowState = StateResult.HAVERESULT;
           _refreshController.refreshCompleted();
         } else {
           fllowState = StateResult.RESULTNULL;
@@ -177,7 +177,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
               ],
             ));
         break;
-      case StateResult.HAVARESULT:
+      case StateResult.HAVERESULT:
         return _listData;
         break;
     }
