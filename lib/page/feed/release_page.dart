@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mirror/api/gao_de/gao_de_api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/location/location.api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
@@ -159,7 +160,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
 
   //高德接口获取周边数据
   aroundHttp() async {
-    PeripheralInformationEntity locationInformationEntity = await aroundForHttp();
+    PeripheralInformationEntity locationInformationEntity = await aroundForHttp(currentAddressInfo.latLng.longitude,currentAddressInfo.latLng.latitude);
     if (locationInformationEntity.status == "1") {
       print('请求成功');
       if (locationInformationEntity.pois.isNotEmpty) {
@@ -185,29 +186,6 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
     } else {
       // 请求失败
     }
-  }
-
-  //高德接口获取当前位置周边信息
-  Future<PeripheralInformationEntity> aroundForHttp() async {
-    String BaseUrl = "https://restapi.amap.com/v3/place/around";
-    Map<String, dynamic> map = Map();
-    map["key"] = AppConfig.getAmapKey();
-    map["location"] =
-        "${currentAddressInfo.latLng.longitude},${currentAddressInfo.latLng.latitude}"; //中心点坐标 经度和纬度用","分割，经度在前，纬度在后，经纬度小数点后不得超过6位
-    map["offset"] = 20; //每页记录数据
-    map["page"] = 1; //每页记录数据
-    map["extensions"] = "all";
-    Response resp = await Http.getInstance()
-        .dio
-        .get(
-          BaseUrl,
-          queryParameters: map,
-        )
-        .catchError((e) {
-      print(e);
-    });
-    PeripheralInformationEntity baseBean = PeripheralInformationEntity.fromJson(resp.data);
-    return baseBean;
   }
 
   @override

@@ -4,6 +4,7 @@ import 'package:amap_map_fluttify/amap_map_fluttify.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/gao_de/gao_de_api.dart';
 import 'package:mirror/api/location/location.api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
@@ -36,7 +37,7 @@ class _createMapScreenState extends State<createMapScreen> {
 
   // 查询定位信息
   aroundHttp() async {
-    PeripheralInformationEntity locationInformationEntity = await reverseGeographyHttp();
+    PeripheralInformationEntity locationInformationEntity = await reverseGeographyHttp(widget.longitude,widget.latitude);
     if (locationInformationEntity.status == "1") {
       print('请求成功');
       formatted_address = locationInformationEntity.regeocode.formatted_address;
@@ -47,26 +48,6 @@ class _createMapScreenState extends State<createMapScreen> {
     } else {
       // 请求失败
     }
-  }
-
-  // 逆地理编码
-  Future<PeripheralInformationEntity> reverseGeographyHttp() async {
-    String BaseUrl = "https://restapi.amap.com/v3/geocode/regeo";
-    Map<String, dynamic> map = Map();
-    map["key"] = AppConfig.getAmapKey();
-    map["location"] = "${widget.longitude},${widget.latitude}"; //中心点坐标 经度和纬度用","分割，经度在前，纬度在后，经纬度小数点后不得超过6位
-    map["batch"] = false;
-    Response resp = await Http.getInstance()
-        .dio
-        .get(
-          BaseUrl,
-          queryParameters: map,
-        )
-        .catchError((e) {
-      print(e);
-    });
-    PeripheralInformationEntity baseBean = PeripheralInformationEntity.fromJson(resp.data);
-    return baseBean;
   }
 
   @override
