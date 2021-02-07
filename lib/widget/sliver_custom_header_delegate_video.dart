@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/date_util.dart';
 
+import 'custom_appbar.dart';
+
 ///视频课-头部折叠滑动
 class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
   final double collapsedHeight;
@@ -220,12 +222,11 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      IconButton(
-                        icon: Icon(
-                          Icons.arrow_back_ios,
-                          color: AppColor.white,
-                        ),
-                        onPressed: () => Navigator.pop(context),
+                      CustomAppBarIconButton(
+                        Icons.arrow_back_ios,
+                        AppColor.white,
+                        false,
+                        () => Navigator.pop(context),
                       ),
                       Expanded(
                           child: SizedBox(
@@ -249,23 +250,21 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
                           )),
                       Row(
                         children: [
-                          IconButton(
-                            icon: Icon(
-                              isFavor ? Icons.favorite : Icons.favorite_border_rounded,
-                              color: isFavor ? AppColor.mainRed : AppColor.white,
-                            ),
-                            onPressed: () {
+                          CustomAppBarIconButton(
+                            isFavor ? Icons.favorite : Icons.favorite_border_rounded,
+                            isFavor ? AppColor.mainRed : AppColor.white,
+                            false,
+                            () {
                               if (favorBtnClick != null) {
                                 favorBtnClick();
                               }
                             },
                           ),
-                          IconButton(
-                            icon: Icon(
-                              Icons.share,
-                              color: AppColor.white,
-                            ),
-                            onPressed: shareBtnClick,
+                          CustomAppBarIconButton(
+                            Icons.share,
+                            AppColor.white,
+                            false,
+                            shareBtnClick,
                           ),
                         ],
                       )

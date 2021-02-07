@@ -11,6 +11,7 @@ import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/page/training/currency/currency_comment_page.dart';
@@ -27,7 +28,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:mirror/page/training/currency/currency_page.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
-import 'sliver_custom_header_delegate.dart';
+import '../../../widget/sliver_custom_header_delegate.dart';
 import 'package:provider/provider.dart';
 
 /// 直播详情页
@@ -80,12 +81,27 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   //粘合剂控件滚动控制
   ScrollController scrollController = ScrollController();
 
+  //控制评论布局的滑动
   GlobalKey<CurrencyCommentPageState> childKey = GlobalKey();
+  //评论子布局用来获取这个界面的高度
   List<GlobalKey> globalKeyList=<GlobalKey>[];
+  //是否全部展示动作的item
+  bool isShowAllItemAction=false;
+
+  //判断用户登陆没有
+  bool isLoggedIn;
+
+  //判断是否绑定了终端
+  bool bindingTerminal;
+
 
   @override
   void initState() {
     super.initState();
+
+    isLoggedIn=context.read<TokenNotifier>().isLoggedIn;
+    bindingTerminal=context.read<MachineNotifier>().machine!=null;
+
     if(liveModel==null) {
       loadingStatus = LoadingStatus.STATUS_LOADING;
     }else{
@@ -176,6 +192,14 @@ class LiveDetailPageState extends State<LiveDetailPage> {
               offstage: true,
               child: judgeResetPage(),
             ),
+            Offstage(
+              offstage: true,
+              child: userLoginComplete(),
+            ),
+            Offstage(
+              offstage: true,
+              child: userBindingTerminal(),
+            ),
           ],
         ),
       ),
@@ -189,10 +213,12 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     GlobalKey globalKey1=new GlobalKey();
     GlobalKey globalKey2=new GlobalKey();
     GlobalKey globalKey3=new GlobalKey();
+    GlobalKey globalKey4=new GlobalKey();
     globalKeyList.add(globalKey0);
     globalKeyList.add(globalKey1);
     globalKeyList.add(globalKey2);
     globalKeyList.add(globalKey3);
+    globalKeyList.add(globalKey4);
     return SmartRefresher(
       enablePullDown: false,
       enablePullUp: true,
@@ -210,7 +236,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
             pinned: true,
             delegate: SliverCustomHeaderDelegate(
               title: liveModel.title ?? "",
-              collapsedHeight: 40,
+              collapsedHeight: 44,
               expandedHeight: 300,
               paddingTop: MediaQuery.of(context).padding.top,
               coverImgUrl: getCourseShowImage(liveModel),
@@ -224,7 +250,8 @@ class LiveDetailPageState extends State<LiveDetailPage> {
           getTitleWidget(liveModel,context,globalKeyList[1]),
           getCoachItem(liveModel,context,onClickAttention,onClickCoach,globalKeyList[2]),
           getLineView(),
-          getActionUi(liveModel,context,titleTextStyle,globalKeyList[3]),
+          getTrainingEquipmentUi(liveModel, context, titleTextStyle,globalKeyList[3]),
+          getActionUiLive(liveModel,context,titleTextStyle,globalKeyList[4],isShowAllItemAction,onClickShowAllAction),
           getLineView(),
           _getCourseCommentUi(),
           SliverToBoxAdapter(
@@ -259,11 +286,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
 
   //获取底部按钮
   Widget _getBottomBar() {
-    bool isLoggedIn;
-    context.select((TokenNotifier notifier) => notifier.isLoggedIn ? isLoggedIn = true : isLoggedIn = false);
 
-    //todo 判断是否绑定了终端
-    bool bindingTerminal = false;
     //todo 判断用户是不是vip
     bool isVip = false;
 
@@ -403,12 +426,10 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   Widget judgeResetPage() {
     return Consumer<ChatMessageProfileNotifier>(
       builder: (context, notifier, child) {
-        bool isResetCoursePage = context.select((ChatMessageProfileNotifier value) => value.isResetPage);
+        bool isResetCoursePage = context.select((ChatMessageProfileNotifier value) => value.isResetCoursePage);
         if (isResetCoursePage) {
           Message message = context.select((ChatMessageProfileNotifier value) => value.resetMessage);
-          context.watch<ChatMessageProfileNotifier>().isResetPage = false;
           context.watch<ChatMessageProfileNotifier>().isResetCoursePage = false;
-          context.watch<ChatMessageProfileNotifier>().resetMessage = null;
           if (message != null) {
             Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
             if(mapGroupModel!=null&&mapGroupModel["courseId"]!=null&&mapGroupModel["handleType"]!=null&&
@@ -423,6 +444,40 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     );
   }
 
+
+  //当用户登陆成功后需要刷新数据
+  Widget userLoginComplete() {
+    return Consumer<TokenNotifier>(
+      builder: (context, notifier, child) {
+        if(!isLoggedIn&&notifier.isLoggedIn){
+          getDataAction();
+        }
+        isLoggedIn=notifier.isLoggedIn;
+        return child;
+      },
+      child: Container(),
+    );
+  }
+  //当用户绑定设备后
+  Widget userBindingTerminal() {
+    return Consumer<MachineNotifier>(
+      builder: (context, notifier, child) {
+        if(notifier.machine!=null){
+          bindingTerminal=true;
+          Future.delayed(Duration(milliseconds: 300),(){
+            if(mounted){
+              setState(() {});
+            }
+          });
+        }else{
+          bindingTerminal=false;
+        }
+        return child;
+      },
+      child: Container(),
+    );
+  }
+
   //修改直播课程预约的状态
   void updateBookState(int courseId,int bookState,String startTime){
     if(liveModel==null||liveModel.id==null){
@@ -431,11 +486,19 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     if(liveModel.id==courseId){
       if(liveModel.playType==4&&bookState==0){
         liveModel.playType=2;
+        liveModel.isBooked=0;
         deleteAlertEvents(courseId,startTime);
-        if(mounted){setState(() {});}
+        Future.delayed(Duration(milliseconds: 50),(){
+          if(mounted){setState(() {
+          });}
+        });
       }else if(liveModel.playType==2&&bookState==1){
         liveModel.playType=4;
-        if(mounted){setState(() {});}
+        liveModel.isBooked=1;
+        Future.delayed(Duration(milliseconds: 50),(){
+          if(mounted){setState(() {
+          });}
+        });
       }
       return;
     }
@@ -466,7 +529,6 @@ class LiveDetailPageState extends State<LiveDetailPage> {
 
   //分享的点击事件
   void _shareBtnClick() {
-    print("分享点击事件直播课");
     openShareBottomSheet(
         context: context,
         map: liveModel.toJson(),
@@ -481,40 +543,26 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   ///
 
   Future<void> _bookLiveCourse(LiveVideoModel value, int index, bool isAddCalendar,{bool bindingTerminal=false}) async {
+    int valuePlayType=value.playType;
+    print(value.getGetPlayType());
     Map<String, dynamic> mapBook = await bookLiveCourse(
-        courseId: value.id, startTime: value.startTime, isBook: value.playType == 2);
-
+        courseId: value.id, startTime: value.startTime, isBook: valuePlayType == 2);
     if(mapBook!=null&&mapBook["code"]==200) {
       if (isAddCalendar) {
-        onClickMakeAnAppointment(value, "", value.playType == 2);
+        onClickMakeAnAppointment(value, "", valuePlayType == 2);
       }
-
-      if (mapBook["state"] != null) {
-        if (value.playType == 2) {
-          value.playType = 4;
-        } else {
-          value.playType = 2;
-        }
-        if(mapBook["state"]&&bindingTerminal){
-          showAppDialog(context,
-              title: "报名",
-              info: "使用终端观看有机会加入直播小屏，获得教练实时指导，是否报名",
-              cancel: AppDialogButton("仅上课", () {
-                return true;
-              }),
-              confirm: AppDialogButton("我要报名", () {
-                applyTerminalTrainingPr();
-                return true;
-              }));
-        }
-        if(mounted){
-          setState(() {});
-        }
+      if (mapBook["state"] != null&&mapBook["state"]&&bindingTerminal) {showAppDialog(context,
+          title: "报名",
+          info: "使用终端观看有机会加入直播小屏，获得教练实时指导，是否报名",
+          cancel: AppDialogButton("仅上课", () {
+            return true;
+          }),
+          confirm: AppDialogButton("我要报名", () {
+            applyTerminalTrainingPr();
+            return true;
+          }));
       }
-    }else if(mapBook!=null){
-      getDataAction();
     }
-
     return;
   }
 
@@ -626,7 +674,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
             return true;
           }),
           confirm: AppDialogButton("确定", () {
-            print("点击了删除");
+            print("点击了确定");
             _bookLiveCourse(liveModel, 0, true);
             return true;
           }));
@@ -702,6 +750,11 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     AppRouter.navigateToOtherCompleteCoursePage(context,liveModel.id);
   }
 
+  //显示全部的动作
+  onClickShowAllAction(){
+    isShowAllItemAction=true;
+    setState(() {});
+  }
 
   //加载网络数据
   void getDataAction({bool isFold = false}) async {

@@ -321,7 +321,8 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     return CustomAppBar(
       titleWidget: GestureDetector(
         child: Text(
-          chatUserName + "-" + chatType,
+          // chatUserName + "-" + chatType,
+          chatUserName??"",
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -460,12 +461,12 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           // 去除下滑线
           border: InputBorder.none,
           // 提示文本
-          hintText: "\uD83D\uDE02123\uD83D\uDE01",
+          hintText: "说点什么吧...",
           // 提示文本样式
           hintStyle: TextStyle(fontSize: 14, color: AppColor.textHint),
           // 设置为true,contentPadding才会生效，TextField会有默认高度。
           isCollapsed: true,
-          contentPadding: EdgeInsets.only(top: 8, bottom: 8, left: 16),
+          contentPadding: EdgeInsets.only(top: 6, bottom: 4, left: 16,right: 16),
         ),
 
         rangeStyles: getTextFieldStyle(Application.appContext.read<ChatEnterNotifier>().rules),
@@ -706,15 +707,19 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   //初始化一些数据
   void initData() {
     chatUserName = "聊天界面";
-    chatUserId = "0";
+    chatUserId = "-1";
     chatType = "测试聊天";
     chatTypeId = RCConversationType.Private;
     isPersonalButler = false;
     if (widget.conversation == null) {
       //print("未知信息");
     } else {
-      // //print("-*----------------------"+widget.conversation.toMap().toString());
-      chatUserName = widget.conversation.name;
+      print("-*----------------------"+widget.conversation.toMap().toString());
+      if(widget.conversation.name==null||widget.conversation.name.trim().length<1){
+        chatUserName=widget.conversation.conversationId;
+      }else{
+        chatUserName = widget.conversation.name;
+      }
       chatUserId = widget.conversation.conversationId;
       chatType = getMessageType(widget.conversation, context);
       chatTypeId = widget.conversation.getType();

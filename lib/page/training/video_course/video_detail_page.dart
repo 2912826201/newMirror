@@ -9,11 +9,12 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/page/training/currency/currency_comment_page.dart';
 import 'package:mirror/page/training/currency/currency_page.dart';
-import 'package:mirror/page/training/video_course/sliver_custom_header_delegate_video.dart';
+import 'file:///E:/git/mirror/lib/widget/sliver_custom_header_delegate_video.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -103,9 +104,22 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   GlobalKey<CurrencyCommentPageState> childKey = GlobalKey();
   List<GlobalKey> globalKeyList=<GlobalKey>[];
 
+
+  //判断用户登陆没有
+  bool isLoggedIn;
+
+  //判断是否绑定了终端
+  bool bindingTerminal;
+
+
   @override
   void initState() {
     super.initState();
+
+    isLoggedIn=context.read<TokenNotifier>().isLoggedIn;
+    bindingTerminal=context.read<MachineNotifier>().machine!=null;
+
+
     if(videoModel==null) {
       loadingStatus = LoadingStatus.STATUS_LOADING;
     }else{
@@ -234,7 +248,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
             pinned: true,
             delegate: SliverCustomHeaderDelegateVideo(
               title: videoModel.title ?? "",
-              collapsedHeight: 40,
+              collapsedHeight: 44,
               expandedHeight: 300,
               paddingTop: MediaQuery.of(context).padding.top,
               coverImgUrl: getCourseShowImage(videoModel),
@@ -251,7 +265,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
           getCoachItem(videoModel, context, onClickAttention, onClickCoach,globalKeyList[2]),
           getLineView(),
           getTrainingEquipmentUi(videoModel, context, titleTextStyle,globalKeyList[3]),
-          getActionUi(videoModel, context, titleTextStyle,globalKeyList[4]),
+          getActionUiVideo(videoModel, context, titleTextStyle,globalKeyList[4]),
           getOtherUsersUi(recommendTopicList, context, titleTextStyle, onClickOtherComplete,globalKeyList[5]),
           getLineView(),
           _getCourseCommentUi(),
@@ -259,11 +273,58 @@ class VideoDetailPageState extends State<VideoDetailPage> {
             child: SizedBox(
               height: 15,
             ),
+          ),
+          SliverToBoxAdapter(
+            child: Offstage(
+              offstage: true,
+              child: userLoginComplete(),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Offstage(
+              offstage: true,
+              child: userBindingTerminal(),
+            ),
           )
         ],
       ),
     );
   }
+
+
+  //当用户登陆成功后需要刷新数据
+  Widget userLoginComplete() {
+    return Consumer<TokenNotifier>(
+      builder: (context, notifier, child) {
+        if(!isLoggedIn&&notifier.isLoggedIn){
+          getDataAction();
+        }
+        isLoggedIn=notifier.isLoggedIn;
+        return child;
+      },
+      child: Container(),
+    );
+  }
+  //当用户绑定设备后
+  Widget userBindingTerminal() {
+    return Consumer<MachineNotifier>(
+      builder: (context, notifier, child) {
+        if(notifier.machine!=null){
+          bindingTerminal=true;
+          Future.delayed(Duration(milliseconds: 300),(){
+            if(mounted){
+              setState(() {});
+            }
+          });
+        }else{
+          bindingTerminal=false;
+        }
+        return child;
+      },
+      child: Container(),
+    );
+  }
+
 
   Widget _getCourseCommentUi(){
 
@@ -392,8 +453,13 @@ class VideoDetailPageState extends State<VideoDetailPage> {
         chatTypeModel: ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
   }
 
-  //分享的收藏按钮
+  //收藏按钮
   void _favorBtnClick() async {
+    if(!(mounted&&context.read<TokenNotifier>().isLoggedIn)){
+      ToastShow.show(msg: "请先登陆app!", context: context);
+      AppRouter.navigateToLoginPage(context);
+      return;
+    }
     print("点击了${isFavor ? "取消收藏" : "收藏"}按钮");
     Map<String, dynamic> map = await (!isFavor ? addToMyCourse : deleteFromMyCourse)(videoModel.id);
     if (map != null && map["state"] != null && map["state"]) {
@@ -434,7 +500,9 @@ class VideoDetailPageState extends State<VideoDetailPage> {
 
   //没有登陆点击事件
   void onNoLoginClickListener() {
-    toastShow("没有登陆，请先登陆app");
+    ToastShow.show(msg: "请先登陆app!", context: context);
+    // 去登录
+    AppRouter.navigateToLoginPage(context);
   }
 
   //判断有没有完整的下载好视频
@@ -495,11 +563,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
 
   //获取底部按钮
   Widget _getBottomBar() {
-    bool isLoggedIn;
-    context.select((TokenNotifier notifier) => notifier.isLoggedIn ? isLoggedIn = true : isLoggedIn = false);
 
-    //todo 判断是否链接了终端
-    bool bindingTerminal = false;
     //todo 判断用户是不是vip
     bool isVip = false;
 

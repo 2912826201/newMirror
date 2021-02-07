@@ -315,7 +315,7 @@ Widget getTrainingEquipmentUi(LiveVideoModel videoModel,BuildContext context,
 }
 
 //获取动作的ui
-Widget getActionUi(LiveVideoModel videoModel,BuildContext context,
+Widget getActionUiVideo(LiveVideoModel videoModel,BuildContext context,
     TextStyle titleTextStyle,GlobalKey globalKey) {
   // ignore: null_aware_before_operator
   if (videoModel.coursewareDto?.actionMapList == null || videoModel.coursewareDto?.actionMapList?.length < 1) {
@@ -410,6 +410,124 @@ Widget getActionUi(LiveVideoModel videoModel,BuildContext context,
     ),
   );
 }
+
+
+
+//获取动作的ui
+Widget getActionUiLive(LiveVideoModel liveModel,BuildContext context,
+    TextStyle titleTextStyle,GlobalKey globalKey,bool isShowAllItem,Function onClick) {
+
+  if(liveModel==null||liveModel.coursewareDto==null||
+      liveModel.coursewareDto.actionMapList==null||
+      liveModel.coursewareDto.actionMapList.length < 1){
+    return SliverToBoxAdapter();
+  }
+
+  TextStyle titleTextStyle1=const TextStyle(fontSize: 18,color: AppColor.textPrimary2);
+
+  var widgetArray = <Widget>[];
+  widgetArray.add(Container(
+    padding: const EdgeInsets.only(left: 16, top: 24, bottom: 11.5),
+    width: double.infinity,
+    child: Text(
+      "动作${liveModel.coursewareDto?.actionMapList?.length}个",
+      style: titleTextStyle,
+    ),
+  ));
+
+
+  int length=0;
+  if(isShowAllItem||liveModel.coursewareDto.actionMapList.length < 5) {
+    length = liveModel.coursewareDto.actionMapList.length;
+  }else{
+    length = 5;
+  }
+
+  for (int i = 0; i < length; i++) {
+    widgetArray.add(Container(
+      width: double.infinity,
+      height: 0.5,
+      margin: const EdgeInsets.only(left: 16, right: 16),
+      color: AppColor.bgWhite,
+    ));
+
+    String timeString = "";
+    int longTime = 0;
+    try {
+      longTime = liveModel.coursewareDto?.actionMapList[i]["endTime"] -
+          liveModel.coursewareDto?.actionMapList[i]["startTime"];
+    } catch (e) {
+      longTime = 0;
+    }
+    if (longTime > 0) {
+      timeString = DateUtil.formatSecondToStringNum1(longTime ~/ 1000) + "'${((longTime % 1000) ~/ 10)}'";
+    }
+
+    widgetArray.add(
+      Container(
+        width: double.infinity,
+        margin: const EdgeInsets.only(left: 16, right: 16),
+        padding: const EdgeInsets.only(top: 13.5, bottom: 13),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              liveModel.coursewareDto?.actionMapList[i]["name"] ?? "未知动作",
+              style: titleTextStyle1,
+            ),
+            Text(
+              timeString,
+              style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  if(length<liveModel.coursewareDto.actionMapList.length) {
+    widgetArray.add(Container(
+      width: double.infinity,
+      height: 0.5,
+      margin: const EdgeInsets.only(left: 16, right: 16),
+      color: AppColor.bgWhite,
+    ));
+    widgetArray.add(
+      GestureDetector(
+        child: Container(
+          padding: const EdgeInsets.only(left: 16, top: 24, bottom: 11.5),
+          width: double.infinity,
+          color: Colors.transparent,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.keyboard_arrow_down,size: 16,color: AppColor.black),
+              SizedBox(width: 6),
+              Text(
+                "查看全部${liveModel.coursewareDto.actionMapList.length}个动作",
+                style: TextStyle(fontSize: 14,color: AppColor.textPrimary2),
+              )
+            ],
+          ),
+        ),
+        onTap: onClick,
+      )
+    );
+  }
+
+  return SliverToBoxAdapter(
+    child: Container(
+      width: double.infinity,
+      key: globalKey,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: widgetArray,
+      ),
+    ),
+  );
+}
+
+
 
 //其他人完成的训练ui
 Widget getOtherUsersUi(List<HomeFeedModel> recommendTopicList,BuildContext context,

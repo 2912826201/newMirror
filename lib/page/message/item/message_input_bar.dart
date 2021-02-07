@@ -89,7 +89,7 @@ class MessageInputBarState extends State<MessageInputBar> {
                       decoration: BoxDecoration(
                           color: AppColor.bgWhite.withOpacity(0.65),
                           // color: Colors.red,
-                          borderRadius: BorderRadius.circular(5.0)),
+                          borderRadius: BorderRadius.circular(16.0)),
                       child: widget.isVoice
                           ? ChatVoice(
                               voiceFile: widget.voiceFile,

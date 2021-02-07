@@ -37,6 +37,8 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
   bool isResetPage = false;
 
   //是否刷新界面--课程界面
+  bool isResetCoursePageItem = false;
+  //是否刷新界面--课程界面
   bool isResetCoursePage = false;
 
   //设置消息发送的状态
@@ -68,33 +70,23 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
     this.message = null;
   }
 
-  changeCallback(Message message) {
-    if (message.objectName == ChatTypeModel.MESSAGE_TYPE_CMD) {
-      print("message.originContentMapName:${message.originContentMap["name"]}");
-      print("message.originContentMap:${message.originContentMap.toString()}");
-      if (message.originContentMap["name"].toString() == "Remove") {
-        _removeGroup(message);
-      }else if (message.originContentMap["name"].toString() == "Entry") {
-        _entryGroup(message);
-      }else if (message.originContentMap["name"].toString() == "BookLive") {
-        _bookLive(message);
-      }
-      return;
-    }
-    _changeCallback(message);
-  }
-
-
   //课程预约或者取消预约
-  _bookLive(Message message){
-    this.isResetPage = false;
-    this.isResetCoursePage = true;
-    this.resetMessage = message;
-    notifyListeners();
+  bookLive(Message message){
+    Future.delayed(Duration(milliseconds: 100),(){
+      this.isResetPage = false;
+      this.isResetCoursePageItem = false;
+      this.isResetCoursePage = true;
+      this.resetMessage = message;
+      notifyListeners();
+      Future.delayed(Duration(milliseconds: 200),(){
+        this.isResetCoursePageItem = true;
+        notifyListeners();
+      });
+    });
   }
 
   //移除群聊
-  _removeGroup(Message message){
+  removeGroup(Message message){
     Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
     print("value:${mapGroupModel["groupChatId"].toString() == this.chatUserId
         && RCConversationType.Group == chatTypeId}");
@@ -115,7 +107,7 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
   }
 
   //加入群聊
-  _entryGroup(Message message){
+  entryGroup(Message message){
     Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
     print("value:${mapGroupModel["groupChatId"].toString() == this.chatUserId
         && RCConversationType.Group == chatTypeId}");
@@ -137,8 +129,8 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
   }
 
 
-  //获取新的消息
-  _changeCallback(Message message) {
+  //获取新的消息--判断是不是当前会话的消息
+  judgeConversationMessage(Message message) {
     if (message.targetId == this.chatUserId && message.conversationType == chatTypeId) {
       if (message.conversationType != RCConversationType.System) {
         this.message = message;

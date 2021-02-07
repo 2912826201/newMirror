@@ -341,7 +341,7 @@ class _OtherCompleteCoursePageState extends State<OtherCompleteCoursePage> {
       _refreshController.loadComplete();
       return;
     }
-    DataResponseModel model=await getPullList(type: 7,size: 10,targetId: widget.targetId,lastTime: lastTime);
+    DataResponseModel model=await getPullList(type: 7,size: 20,targetId: widget.targetId,lastTime: lastTime);
     if (model!=null&&model.list!=null&&model.list.length>0) {
       model.list.forEach((v) {
         recommendTopicList.add(HomeFeedModel.fromJson(v));

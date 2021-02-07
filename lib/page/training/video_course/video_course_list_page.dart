@@ -68,7 +68,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
   bool isLoadAddNextPageData = false;
 
   //每一页获取的数量
-  int pageSize = 5;
+  int pageSize = 20;
   int pagePosition = 1;
 
   //上拉加载数据
@@ -113,7 +113,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
             false,
             () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return SearchPage();
+                return SearchPage(defaultIndex:1);
               }));
               print("点击了搜索");
             },

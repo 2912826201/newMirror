@@ -10,6 +10,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
@@ -45,7 +46,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   //当前显示的直播课程的list
   var liveModelArray = <LiveVideoModel>[];
 
-  //当前显示的直播课程的list
+  //当前显示的直播课程的list--今日回放的直播
   var liveModelOldArray = <LiveVideoModel>[];
 
   //日历内有多少个提醒计划
@@ -57,12 +58,16 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   //状态
   LoadingStatus loadingStatus;
 
+  //判断用户登陆没有
+  bool isLoggedIn;
+
   @override
   bool get wantKeepAlive => true;
 
   @override
   void initState() {
     super.initState();
+    isLoggedIn=context.read<TokenNotifier>().isLoggedIn;
     //获取本地日历已经预约的课程
     loadingStatus = LoadingStatus.STATUS_LOADING;
     liveModelArray.clear();
@@ -155,6 +160,13 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
       child: judgeResetPage(),
     ));
 
+    //判断用户登陆了
+    widgetArray.add(
+      Offstage(
+        offstage: true,
+        child: userLoginComplete(),
+      ));
+
     return Column(
       children: [
         Expanded(
@@ -172,6 +184,22 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     );
   }
 
+
+  //当用户登陆成功后需要刷新数据
+  Widget userLoginComplete() {
+    return Consumer<TokenNotifier>(
+      builder: (context, notifier, child) {
+        if(!isLoggedIn&&notifier.isLoggedIn){
+          liveModelOldArray.clear();
+          liveModelArray.clear();
+          getLiveModelData();
+        }
+        isLoggedIn=notifier.isLoggedIn;
+        return child;
+      },
+      child: Container(),
+    );
+  }
 
   Widget _getOldDataTitle() {
     return Container(
@@ -498,12 +526,11 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   Widget judgeResetPage() {
     return Consumer<ChatMessageProfileNotifier>(
       builder: (context, notifier, child) {
-        bool isResetCoursePage = context.select((ChatMessageProfileNotifier value) => value.isResetPage);
-        if (isResetCoursePage) {
+        bool isResetCoursePageItem = context.select((ChatMessageProfileNotifier value) => value.isResetCoursePageItem);
+        if (isResetCoursePageItem) {
           Message message = context.select((ChatMessageProfileNotifier value) => value.resetMessage);
           context.watch<ChatMessageProfileNotifier>().isResetPage = false;
-          context.watch<ChatMessageProfileNotifier>().isResetCoursePage = false;
-          context.watch<ChatMessageProfileNotifier>().resetMessage = null;
+          context.watch<ChatMessageProfileNotifier>().isResetCoursePageItem = false;
           if (message != null) {
             Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
             if(mapGroupModel!=null&&mapGroupModel["courseId"]!=null&&mapGroupModel["handleType"]!=null&&
@@ -527,11 +554,17 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
       if(element.id==courseId){
         if(element.playType==4&&bookState==0){
           element.playType=2;
+          element.isBooked=0;
           deleteAlertEvents(courseId,startTime);
-          if(mounted){setState(() {});}
+          Future.delayed(Duration(milliseconds: 100),(){
+            if(mounted){setState(() {});}
+          });
         }else if(element.playType==2&&bookState==1){
           element.playType=4;
-          if(mounted){setState(() {});}
+          element.isBooked=1;
+          Future.delayed(Duration(milliseconds: 100),(){
+            if(mounted){setState(() {});}
+          });
         }
         return;
       }
@@ -539,7 +572,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
   }
 
 
-  //点击预约后-查询是否有创建提醒的空间id
+  //删除日历预约提醒
   void deleteAlertEvents(int courseId,String startTime) async {
     await [Permission.calendar].request();
     DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();

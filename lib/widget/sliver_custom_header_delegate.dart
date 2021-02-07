@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/date_util.dart';
 
+import 'custom_appbar.dart';
+
 ///直播详情页的头部滑动
 class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
   final double collapsedHeight;
@@ -206,14 +208,11 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      IconButton(
-                        icon: Icon(
+                      CustomAppBarIconButton(
                           Icons.arrow_back_ios,
-                          color: this
-                              .makeStickyHeaderTextColor(shrinkOffset, true),
-                          // color: Colors.black,
-                        ),
-                        onPressed: () => Navigator.pop(context),
+                          this.makeStickyHeaderTextColor(shrinkOffset, true),
+                          false,
+                          () => Navigator.pop(context)
                       ),
                       Expanded(
                           child: SizedBox(
@@ -235,14 +234,11 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
                               ),
                             ),
                           )),
-                      IconButton(
-                        icon: Icon(
+                      CustomAppBarIconButton(
                           Icons.share,
-                          color: this
-                              .makeStickyHeaderTextColor(shrinkOffset, true),
-                          // color: Colors.black,
-                        ),
-                        onPressed: shareBtnClick,
+                          this.makeStickyHeaderTextColor(shrinkOffset, true),
+                          false,
+                          shareBtnClick,
                       ),
                     ],
                   ),

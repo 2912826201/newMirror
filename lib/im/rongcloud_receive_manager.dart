@@ -23,16 +23,20 @@ class RongCloudReceiveManager {
   onMessageReceivedWrapper(Message msg, int left, bool hasPackage, bool offline) {
     //TODO SDK 分批拉取离线消息，当离线消息量巨大的时候，建议当 left == 0 且 hasPackage == false 时刷新会话列表
 
-    Application.appContext.read<ChatMessageProfileNotifier>().changeCallback(msg);
-
-    print("收到了融云消息：" + msg.toString());
+    try{
+      String msgStr = msg.toString();
+      print("收到了融云消息：$msgStr");
+    } catch (e) {
+      print("收到了融云消息：${msg.originContentMap}");
+    }
 
     //发信时间在用户注册时期之前的要舍弃掉 融云会保留一段时间 所以会查到用户注册前的消息
     if (msg.sentTime < Application.profile.createTime) {
       return;
     }
 
-    MessageManager.judgeIsHaveAtUserMes(msg);
+    //分析消息是什么类型
+    MessageManager.splitMessage(msg);
 
     //存在list中
     _manager._receivedMsgList.add(msg);
@@ -42,7 +46,9 @@ class RongCloudReceiveManager {
       List<Message> list = [];
       list.addAll(_manager._receivedMsgList);
       _manager._receivedMsgList.clear();
+
       MessageManager.updateConversationByMessageList(_context, list);
+
     }
   }
 

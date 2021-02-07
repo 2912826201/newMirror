@@ -466,8 +466,8 @@ class GroupMorePageState extends State<GroupMorePage> {
     if (text == null) {
       return "";
     }
-    if (text.length > 10) {
-      return text.substring(0, 10) + "...";
+    if (text.length > 15) {
+      return text.substring(0, 15) + "...";
     } else {
       return text;
     }

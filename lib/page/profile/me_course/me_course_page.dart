@@ -26,7 +26,7 @@ class _MeCoursePageState extends State<MeCoursePage> {
   @override
   void initState() {
     super.initState();
-    _isVideoCoursePage=0;
+    _isVideoCoursePage=1;
     loadData();
   }
 
@@ -145,7 +145,7 @@ class _MeCoursePageState extends State<MeCoursePage> {
             height: 6,
           ),
           Text(
-            "上次学习${DateUtil.getDateDayString(DateUtil.getDateTimeByMs(videoModel.updateTime))}",
+              getLastLearnTimeString(videoModel.lastPracticeTime),
             style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
           ),
           SizedBox(
@@ -159,6 +159,15 @@ class _MeCoursePageState extends State<MeCoursePage> {
       ),
     );
   }
+
+  String getLastLearnTimeString(int lastPracticeTime){
+    if(lastPracticeTime==null||lastPracticeTime<1){
+      return "尚未学习";
+    }
+    return "上次学习${DateUtil.getDateDayString(DateUtil.getDateTimeByMs(lastPracticeTime))}";
+  }
+
+
 
   //没有数据的ui
   Widget noDateUi() {
@@ -197,7 +206,7 @@ class _MeCoursePageState extends State<MeCoursePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("我学过的课程",
+                  Text("我收藏的课程",
                       style: TextStyle(fontSize: 16, color: AppColor.textPrimary1, fontWeight: FontWeight.bold)),
                   Row(
                     children: [
@@ -272,12 +281,13 @@ class _MeCoursePageState extends State<MeCoursePage> {
 
   void loadData() {
     _isVideoCourseRequesting = true;
-    if(_isVideoCoursePage>0&&_isVideoCourseLastTime==null){
+    if(_isVideoCoursePage>1&&_isVideoCourseLastTime==null){
       return;
     }
-    getLearnedCourse(20, lastTime: _isVideoCourseLastTime).then((result) {
+    getMyCourse(_isVideoCoursePage,2, lastTime: _isVideoCourseLastTime).then((result) {
       _isVideoCourseRequesting = false;
       if (result != null) {
+        _isVideoCoursePage++;
         _videoCourseHasNext = result.hasNext == 1;
         _isVideoCourseLastTime = result.lastTime;
         _isVideoCourseTotalCount = result.totalCount;

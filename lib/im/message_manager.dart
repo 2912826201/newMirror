@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/database/conversation_db_helper.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -83,6 +85,11 @@ class MessageManager {
   }
 
   static ConversationDto _convertMsgToConversation(Message msg) {
+    //TODO 如果content为空暂时先不更新会话
+    if(msg.content == null){
+      return null;
+    }
+
     ConversationDto dto = ConversationDto();
     //FIXME 私聊群聊 收信和发信的情况 targetId是否表示会话id需要测试
     dto.conversationId = msg.targetId;
@@ -181,4 +188,31 @@ class MessageManager {
       context.read<ConversationNotifier>().updateConversation(dto);
     }
   }
+
+  //分为两类 一类通知（私聊通知、群聊通知） 一类消息
+  static splitMessage(Message message){
+    if (message.objectName == ChatTypeModel.MESSAGE_TYPE_CMD) {
+      //私聊通知
+
+      if (message.originContentMap["name"].toString() == "Remove") {
+        //移除群聊
+        Application.appContext.read<ChatMessageProfileNotifier>().removeGroup(message);
+      }else if (message.originContentMap["name"].toString() == "Entry") {
+        //加入群聊
+        Application.appContext.read<ChatMessageProfileNotifier>().entryGroup(message);
+      }else if (message.originContentMap["name"].toString() == "BookLive") {
+        //预约直播
+        Application.appContext.read<ChatMessageProfileNotifier>().bookLive(message);
+      }
+    }else if(message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF){
+      //群聊通知
+      Application.appContext.read<ChatMessageProfileNotifier>().judgeConversationMessage(message);
+    }else{
+      //普通消息
+      judgeIsHaveAtUserMes(message);
+      Application.appContext.read<ChatMessageProfileNotifier>().judgeConversationMessage(message);
+    }
+  }
+
+
 }

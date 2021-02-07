@@ -127,7 +127,7 @@ class LiveVideoModel {
   String _startDate;
   String _startTime;
   String _endTime;
-  int _isBooked;
+  int isBooked;
   int _totalTrainingTime;
   int _totalTrainingAmount;
   int _totalCalories;
@@ -140,6 +140,7 @@ class LiveVideoModel {
   int _updateTime;
   int _endState;
   int _isInMyCourseList;
+  int _lastPracticeTime;
   double _vipprice;
 
   int get id => _id;
@@ -198,7 +199,6 @@ class LiveVideoModel {
 
   String get endTime => _endTime;
 
-  int get isBooked => _isBooked;
 
   int get totalTrainingTime => _totalTrainingTime;
 
@@ -221,6 +221,7 @@ class LiveVideoModel {
   int get updateTime => _updateTime;
   int get endState => _endState;
   int get isInMyCourseList => _isInMyCourseList;
+  int get lastPracticeTime => _lastPracticeTime;
 
   double get vipprice => _vipprice;
 
@@ -266,6 +267,7 @@ class LiveVideoModel {
       int updateTime,
       int endState,
       int isInMyCourseList,
+      int lastPracticeTime,
       double vipprice}) {
     _id = id;
     _title = title;
@@ -295,7 +297,7 @@ class LiveVideoModel {
     _startDate = startDate;
     _startTime = startTime;
     _endTime = endTime;
-    _isBooked = isBooked;
+    this.isBooked = isBooked;
     _totalTrainingTime = totalTrainingTime;
     _totalTrainingAmount = totalTrainingAmount;
     _totalCalories = totalCalories;
@@ -309,6 +311,7 @@ class LiveVideoModel {
     _vipprice = vipprice;
     _endState = endState;
     _isInMyCourseList = isInMyCourseList;
+    _lastPracticeTime = lastPracticeTime;
     playType = 0;
   }
 
@@ -351,7 +354,7 @@ class LiveVideoModel {
     _startDate = json["startDate"];
     _startTime = json["startTime"];
     _endTime = json["endTime"];
-    _isBooked = json["isBooked"];
+    this.isBooked = json["isBooked"];
     _totalTrainingTime = json["totalTrainingTime"];
     _totalTrainingAmount = json["totalTrainingAmount"];
     _totalCalories = json["totalCalories"];
@@ -364,6 +367,7 @@ class LiveVideoModel {
     _updateTime = json["updateTime"];
     _endState = json["endState"];
     _isInMyCourseList = json["isInMyCourseList"];
+    _lastPracticeTime = json["lastPracticeTime"];
     _vipprice = json["vipprice"];
   }
 
@@ -401,7 +405,7 @@ class LiveVideoModel {
     map["startDate"] = _startDate;
     map["startTime"] = _startTime;
     map["endTime"] = _endTime;
-    map["isBooked"] = _isBooked;
+    map["isBooked"] = this.isBooked;
     map["totalTrainingTime"] = _totalTrainingTime;
     map["totalTrainingAmount"] = _totalTrainingAmount;
     map["totalCalories"] = _totalCalories;
@@ -415,6 +419,7 @@ class LiveVideoModel {
     map["endState"] = _endState;
     map["isInMyCourseList"] = _isInMyCourseList;
     map["vipprice"] = _vipprice;
+    map["lastPracticeTime"] = _lastPracticeTime;
     return map;
   }
    @override

@@ -44,7 +44,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
     _screenWidth = ScreenUtil.instance.screenWidthDp;
     super.initState();
     _isVideoCourseRequesting = true;
-    getLearnedCourse(10).then((result) {
+    getTerminalLearnedCourse(10).then((result) {
       _isVideoCourseRequesting = false;
       if (result != null) {
         _videoCourseHasNext = result.hasNext == 1;

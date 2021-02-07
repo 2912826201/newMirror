@@ -31,7 +31,9 @@ import 'package:provider/provider.dart';
 // 搜索页
 class SearchPage extends StatelessWidget {
 
-  SearchPage({Key key});
+  final defaultIndex;
+
+  SearchPage({Key key,this.defaultIndex=0});
 
   // 输入框焦点控制器
   FocusNode focusNode = new FocusNode();

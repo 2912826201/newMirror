@@ -47,6 +47,9 @@ const String DELETEFROMMYCOURSE = "/sport/web/videoCourse/deleteFromMyCourse";
 //获取我的课程列表
 const String GETMYCOURSE = "/sport/web/videoCourse/getMyCourse";
 
+//获取我在终端训练过的列表
+const String GETTERMINALLEARNEDCOURSE = "/sport/web/videoCourse/getTerminalLearnedCourse";
+
 ///根据日期获取直播课程列表
 ///请求参数
 ///date:2020-12-10
@@ -271,6 +274,33 @@ Future<ListModel<LiveVideoModel>> getMyCourse(int page, int size, {int lastTime}
     params["lastTime"] = lastTime;
   }
   BaseResponseModel responseModel = await requestApi(GETMYCOURSE, params);
+  if (responseModel.isSuccess) {
+    ListModel<LiveVideoModel> listModel = ListModel<LiveVideoModel>();
+    List<LiveVideoModel> list = [];
+    listModel.hasNext = responseModel.data["hasNext"];
+    listModel.lastTime = responseModel.data["lastTime"];
+    listModel.totalCount = responseModel.data["totalCount"];
+    if (responseModel.data["list"] != null) {
+      responseModel.data["list"].forEach((e) {
+        list.add(LiveVideoModel.fromJson(e));
+      });
+    }
+    listModel.list = list;
+    return listModel;
+  } else {
+    return null;
+  }
+}
+
+
+//获取我在终端训练过的列表
+Future<ListModel<LiveVideoModel>> getTerminalLearnedCourse(int size, {int lastTime}) async {
+  Map<String, dynamic> params = {};
+  params["size"] = size;
+  if (lastTime != null) {
+    params["lastTime"] = lastTime;
+  }
+  BaseResponseModel responseModel = await requestApi(GETTERMINALLEARNEDCOURSE, params);
   if (responseModel.isSuccess) {
     ListModel<LiveVideoModel> listModel = ListModel<LiveVideoModel>();
     List<LiveVideoModel> list = [];
