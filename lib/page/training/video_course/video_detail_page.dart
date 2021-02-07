@@ -14,7 +14,6 @@ import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/page/training/currency/currency_comment_page.dart';
 import 'package:mirror/page/training/currency/currency_page.dart';
-import 'file:///E:/git/mirror/lib/widget/sliver_custom_header_delegate_video.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -23,6 +22,7 @@ import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/training/live_api.dart';
+import 'package:mirror/widget/sliver_custom_header_delegate_video.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 
