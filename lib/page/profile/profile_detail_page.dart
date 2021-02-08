@@ -78,7 +78,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   @override
   void initState() {
     super.initState();
-    context.read<ProfilePageNotifier>().setFirstModel(widget.userId);
+      context.read<ProfilePageNotifier>().setFirstModel(widget.userId);
     ///判断是自己的页面还是别人的页面
     if (context.read<ProfileNotifier>().profile.uid == widget.userId) {
       isMselfId = true;
@@ -106,11 +106,15 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     });
     scrollController.addListener(() {
       if (scrollController.offset >= ScreenUtil.instance.height * 0.33 + _signatureHeight) {
-        context.read<ProfilePageNotifier>().changeTitleColor(widget.userId, AppColor.black);
-        context.read<ProfilePageNotifier>().changeOnClick(widget.userId, false);
+        if(!context.read<ProfilePageNotifier>().watchScroll){
+          context.read<ProfilePageNotifier>().changeTitleColor(widget.userId, AppColor.black);
+          context.read<ProfilePageNotifier>().changeOnClick(widget.userId, false);
+        }
       } else {
-        context.read<ProfilePageNotifier>().changeTitleColor(widget.userId, AppColor.transparent);
-        context.read<ProfilePageNotifier>().changeOnClick(widget.userId, true);
+        if(context.read<ProfilePageNotifier>().watchScroll){
+          context.read<ProfilePageNotifier>().changeTitleColor(widget.userId, AppColor.transparent);
+          context.read<ProfilePageNotifier>().changeOnClick(widget.userId, true);
+        }
       }
     });
   }
@@ -132,10 +136,10 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         isBlack = 1;
       } else if(model.inThisBlack == 1){
         isBlack = 2;
+      }else{
+        isBlack = 0;
       }
-      if (mounted) {
         setState(() {});
-      }
     }
   }
   ///获取用户信息
@@ -495,6 +499,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   Widget _mineButton(double height) {
     return InkWell(
         onTap: () {
+          print('=====================isBlack ==$isBlack');
           if(isBlack==1){
             ToastShow.show(msg: "该用户已被拉黑", context: context);
             return false;
@@ -522,7 +527,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             return false;
           }
         },
-        child: Container(
+        child: isBlack==0?Container(
           height: 28,
           width: 72,
           decoration: BoxDecoration(
@@ -543,7 +548,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                   ),
                 )
               : _buttonLayoutSelect(),
-        ));
+        ):Text("已拉黑",style: AppStyle.textMedium16,));
   }
 
   ///通过布尔值来判断该展示私聊按钮还是关注按钮
@@ -642,57 +647,31 @@ class ProfilePageNotifier extends ChangeNotifier {
   double progress = 1;
 
   bool showImageTitle = false;
-
+  bool watchScroll = true;
   Map<int, ProfileUiChangeModel> profileUiChangeModel = {};
-
-  UserExtraInfoModel extraInfoModel = UserExtraInfoModel();
-
-  void setExtraInfoModel(UserExtraInfoModel model) {
-    extraInfoModel = model;
-    notifyListeners();
-  }
-
-  void setweight(double weight) {
-    extraInfoModel.weight = weight;
-    notifyListeners();
-  }
-
-  void setImagePageSize(int pageSize) {
-    extraInfoModel.albumNum = pageSize;
-    notifyListeners();
-  }
 
   void setFirstModel(int id) {
     profileUiChangeModel[id] = ProfileUiChangeModel();
-    notifyListeners();
   }
-
-  void changeProgress(double pros) {
-    progress = pros;
-    notifyListeners();
-  }
-
-  void changeImageTitle(bool show) {
-    showImageTitle = show;
-    notifyListeners();
-  }
-
   void clear(int id) {
     profileUiChangeModel[id] = null;
     notifyListeners();
   }
-
   void changeTitleColor(int id, Color titleColor) {
     profileUiChangeModel[id].titleColor = titleColor;
     notifyListeners();
   }
-
   void changeIsFollow(bool bl, int id) {
     profileUiChangeModel[id].isFollow = bl;
     notifyListeners();
   }
 
   void changeOnClick(int id, bool canClick) {
+    if(canClick){
+      watchScroll = false;
+    }else{
+      watchScroll = true;
+    }
     profileUiChangeModel[id].canOnClick = canClick;
     notifyListeners();
   }
@@ -706,6 +685,16 @@ class ProfilePageNotifier extends ChangeNotifier {
     profileUiChangeModel[id].backImage = image;
     notifyListeners();
   }
+  void changeProgress(double pros) {
+    progress = pros;
+    notifyListeners();
+  }
+
+  void changeImageTitle(bool show) {
+    showImageTitle = show;
+    notifyListeners();
+  }
+
 }
 
 class ProfileUiChangeModel {

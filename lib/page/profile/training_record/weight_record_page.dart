@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/training_record_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -110,7 +111,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
         if(mounted){
           setState(() {});
         }
-        context.read<ProfilePageNotifier>().setweight(0);
+        context.read<ProfileNotifier>().setweight(0);
       },
     );
   }
@@ -399,7 +400,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
             userWeight = formatData(userWeight);
             saveWeight(userWeight.toString());
             addWeightData(userWeight);
-            context.read<ProfilePageNotifier>().setweight(formatData(userWeight));
+            context.read<ProfileNotifier>().setweight(formatData(userWeight));
             _numberController.text = "";
           } catch (e) {
             ToastShow.show(msg: "输入有错，请重新输入！", context: context);

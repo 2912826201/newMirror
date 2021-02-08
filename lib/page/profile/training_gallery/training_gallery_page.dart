@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:azlistview/azlistview.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -279,7 +280,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
               }
               setState(() {});
             }
-            context.read<ProfilePageNotifier>().setImagePageSize(_getImageSize());
+            context.read<ProfileNotifier>().setImagePageSize(_getImageSize());
           }, dayIndex: dayIndex, imageIndex: index);
         }
       },
@@ -371,7 +372,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
             _insertImageToDataList(saveImage);
           });
           setState(() {});
-          context.read<ProfilePageNotifier>().setImagePageSize(_getImageSize());
+          context.read<ProfileNotifier>().setImagePageSize(_getImageSize());
         } else {
           ToastShow.show(msg: "保存失败", context: context);
         }
