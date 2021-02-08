@@ -5,6 +5,7 @@ import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
@@ -20,25 +21,25 @@ class HeadView extends StatefulWidget{
   bool isDetail;
   // 删除动态
   ValueChanged<int> deleteFeedChanged;
-
+  int isBlack;
   // 取消关注
   ValueChanged<HomeFeedModel> removeFollowChanged;
-  HeadView({this.model,this.isDetail,this.deleteFeedChanged,this.removeFollowChanged});
+  HeadView({this.model,this.isDetail,this.deleteFeedChanged,this.removeFollowChanged,this.isBlack});
   @override
   State<StatefulWidget> createState() {
    return HeadViewState(deleteFeedChanged: deleteFeedChanged,removeFollowChanged: removeFollowChanged,isDetail:
-   isDetail,model: model);
+   isDetail,model: model,isBlack: isBlack);
   }
 
 }
 class HeadViewState extends State<HeadView> {
   HeadViewState({Key key ,this.model, this.deleteFeedChanged,
-    this.removeFollowChanged,this.isDetail = true});
+    this.removeFollowChanged,this.isDetail = true,this.isBlack});
   HomeFeedModel model;
   bool isDetail;
   // 删除动态
   ValueChanged<int> deleteFeedChanged;
-
+  int isBlack;
   // 取消关注
   ValueChanged<HomeFeedModel> removeFollowChanged;
   List<String> list = [];
@@ -81,11 +82,19 @@ class HeadViewState extends State<HeadView> {
       }
     }
   }
+
   // 是否显示关注按钮
   isShowFollowButton(BuildContext context) {
     if (isDetail && model.isFollow == 0) {
       return  GestureDetector(
         onTap: () {
+          if(isBlack==1){
+            ToastShow.show(msg: "该用户已被你拉黑", context: context);
+            return false;
+          }else if(isBlack==2){
+            ToastShow.show(msg: "你已被该用户拉黑", context: context);
+            return false;
+          }
           removeFollowAndFollow(2, model.pushId, context);
         },
         child: Container(

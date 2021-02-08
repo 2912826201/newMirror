@@ -16,6 +16,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
+import 'package:mirror/widget/loading.dart';
 import 'package:toast/toast.dart';
 
 ///意见反馈
@@ -232,6 +233,7 @@ Widget _addImageItem(){
   }
 
   _uploadImage() async {
+    Loading.showLoading(context);
     List<String> list = [];
     if (fileList != null) {
       var result = await FileUtil().uploadPics(fileList, (percent) {
@@ -251,5 +253,6 @@ Widget _addImageItem(){
     } else {
       Toast.show("请添加图片", context);
     }
+    Loading.hideLoading(context);
   }
 }

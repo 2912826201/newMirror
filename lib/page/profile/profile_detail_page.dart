@@ -8,6 +8,7 @@ import 'package:mirror/api/user_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/model/profile/profile_model.dart';
 import 'package:mirror/data/model/user_extrainfo_model.dart';
 import 'package:mirror/data/model/user_model.dart';
@@ -65,11 +66,11 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///用户信息
   UserModel userModel;
 
+  int isBlack = 0;
   ///该用户和我的关系
   int relation;
   ScrollController scrollController = ScrollController();
   double _signatureHeight = 10;
-  Color titleColor = AppColor.transparent;
   List<GlobalKey> scrollChildKeys;
   GlobalKey<PrimaryScrollContainerState> leftKey = GlobalKey();
   GlobalKey<PrimaryScrollContainerState> rightKey = GlobalKey();
@@ -78,7 +79,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   void initState() {
     super.initState();
     context.read<ProfilePageNotifier>().setFirstModel(widget.userId);
-
     ///判断是自己的页面还是别人的页面
     if (context.read<ProfileNotifier>().profile.uid == widget.userId) {
       isMselfId = true;
@@ -100,16 +100,17 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _getUserInfo(id: widget.userId);
       _getFollowCount(id: widget.userId);
+      if(!isMselfId){
+        _checkBlackStatus();
+      }
     });
     scrollController.addListener(() {
-      /* if (scrollController.hasClients) {*/
       if (scrollController.offset >= ScreenUtil.instance.height * 0.33 + _signatureHeight) {
         context.read<ProfilePageNotifier>().changeTitleColor(widget.userId, AppColor.black);
         context.read<ProfilePageNotifier>().changeOnClick(widget.userId, false);
       } else {
         context.read<ProfilePageNotifier>().changeTitleColor(widget.userId, AppColor.transparent);
         context.read<ProfilePageNotifier>().changeOnClick(widget.userId, true);
-        /*  }*/
       }
     });
   }
@@ -117,16 +118,26 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///获取关注、粉丝、动态数
   _getFollowCount({int id}) async {
     ProfileModel attentionModel = await ProfileFollowCount(id: id);
-    print(
-        'attentionModel========================${attentionModel.followingCount}${attentionModel.feedCount}${attentionModel.laudedCount}');
-    print('====关注数========================${attentionModel.followingCount}');
-    print('====粉丝数========================${attentionModel.followerCount}');
-    print('====点赞数========================${attentionModel.laudedCount}');
     if (attentionModel != null) {
       context.read<ProfilePageNotifier>().changeAttentionModel(attentionModel, widget.userId);
     }
   }
-
+  ///请求黑名单关系
+  _checkBlackStatus() async {
+    BlackModel model = await ProfileCheckBlack(widget.userId);
+    if (model != null) {
+      print('inThisBlack===================${model.inThisBlack}');
+      print('inYouBlack===================${model.inYouBlack}');
+      if (model.inYouBlack == 1) {
+        isBlack = 1;
+      } else if(model.inThisBlack == 1){
+        isBlack = 2;
+      }
+      if (mounted) {
+        setState(() {});
+      }
+    }
+  }
   ///获取用户信息
   _getUserInfo({int id}) async {
     userModel = await getUserInfo(uid: id);
@@ -236,10 +247,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                               userName: _textName,
                             );
                           })).then((value) {
-                            if (value) {
                               _getUserInfo(id: widget.userId);
                               _getFollowCount(id: widget.userId);
-                            }
+                              _checkBlackStatus();
                           });
                         },
                         child: Image.asset(
@@ -485,6 +495,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   Widget _mineButton(double height) {
     return InkWell(
         onTap: () {
+          if(isBlack==1){
+            ToastShow.show(msg: "该用户已被拉黑", context: context);
+            return false;
+          }else if(isBlack == 2){
+            ToastShow.show(msg: "你已被该用户拉黑", context: context);
+            return false;
+          }
           if (context.read<ProfilePageNotifier>().profileUiChangeModel[widget.userId].canOnClick) {
             if (isMselfId) {
               ///这里跳转到编辑资料页

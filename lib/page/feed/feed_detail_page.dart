@@ -3,11 +3,13 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/commentInputBox.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/course_address_label.dart';
@@ -50,7 +52,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   ScrollController _controller = new ScrollController();
   int totalCount = 0;
   double itemHeight = 0;
-
+  int isBlack = 0;
   @override
   void dispose() {
     _controller.dispose();
@@ -61,6 +63,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   void initState() {
     print("进入详情页");
     feedModel = context.read<FeedMapNotifier>().feedMap[widget.model.id];
+    _checkBlackStatus();
     itemHeight += ScreenUtil.instance.statusBarHeight + kToolbarHeight + 76 + 48 + 18 + 16;
     if (feedModel.picUrls.isNotEmpty) {
       itemHeight += setAspectRatio(feedModel.picUrls.first.height.toDouble());
@@ -84,7 +87,19 @@ class FeedDetailPageState extends State<FeedDetailPage> {
       return (ScreenUtil.instance.width / feedModel.picUrls[0].width) * height;
     }
   }
-
+  ///请求黑名单关系
+  _checkBlackStatus() async {
+    BlackModel model = await ProfileCheckBlack(feedModel.pushId);
+    if (model != null) {
+      print('inThisBlack===================${model.inThisBlack}');
+      print('inYouBlack===================${model.inYouBlack}');
+      if (model.inYouBlack == 1) {
+        isBlack = 1;
+      } else if(model.inThisBlack == 1){
+        isBlack = 2;
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
     print("动态详情页build---------------------------------------------${feedModel}");
@@ -117,6 +132,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                         ),
                         // 头部布局
                         HeadView(
+                          isBlack: isBlack,
                           isDetail: true,
                             model: feedModel,
                             deleteFeedChanged: (id) {

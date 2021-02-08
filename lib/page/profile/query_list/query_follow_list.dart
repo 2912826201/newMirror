@@ -5,6 +5,7 @@ import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/model/profile/topic_list_model.dart';
@@ -392,7 +393,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                     ? "他的粉丝"
                     : "他关注的话题",
       ),
-      body: Container(
+      body:buddyList.isNotEmpty||topicList.isNotEmpty?Container(
         height: height,
         width: width,
         padding: EdgeInsets.only(left: 16, right: 16),
@@ -527,6 +528,23 @@ class _QueryFollowState extends State<QueryFollowList> {
             ),
           ],
         ),
+      ):Container(
+        height: ScreenUtil.instance.height,
+        width: ScreenUtil.instance.screenWidthDp,
+        child:  Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Spacer(),
+              Container(
+                width: 285,
+                height: 285,
+                color: AppColor.bgWhite,
+              ),
+              SizedBox(height: 12,),
+              Text("没有你要的东西,一会儿再来看看吧",style: AppStyle.textHintRegular14,),
+              Spacer(),
+            ],
+          ),
       ),
     );
   }
@@ -596,6 +614,7 @@ class _FollowItemState extends State<QueryFollowItem> {
 
   String description;
 
+  int isBlack = 0;
   ///这是关注
   _getAttention(int id) async {
     int attntionResult = await ProfileAddFollow(id);
@@ -612,8 +631,24 @@ class _FollowItemState extends State<QueryFollowItem> {
   void initState() {
     super.initState();
     print('initState========================initState');
+    _checkBlackStatus();
   }
-
+  ///请求黑名单关系
+  _checkBlackStatus() async {
+    BlackModel model = await ProfileCheckBlack(widget.userId);
+    if (model != null) {
+      print('inThisBlack===================${model.inThisBlack}');
+      print('inYouBlack===================${model.inYouBlack}');
+      if (model.inYouBlack == 1) {
+        isBlack = 1;
+      } else if(model.inThisBlack == 1){
+        isBlack = 2;
+      }
+      if (mounted) {
+        setState(() {});
+      }
+    }
+  }
   @override
   void dispose() {
     // TODO: implement dispose
@@ -755,6 +790,13 @@ class _FollowItemState extends State<QueryFollowItem> {
           isCanOnclick
               ? InkWell(
                   onTap: () {
+                    if(isBlack==1){
+                      ToastShow.show(msg: "该用户已被你拉黑", context:context);
+                      return false;
+                    }else if(isBlack == 2){
+                      ToastShow.show(msg: "你已被该用户拉黑", context: context);
+                      return false;
+                    }
                     if (!isFollow) {
                       _getAttention(widget.buddyModel.uid);
                     }
