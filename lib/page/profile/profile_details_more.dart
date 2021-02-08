@@ -196,9 +196,15 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
   _cancelBlack() async {
     bool blackStatus = await ProfileCancelBlack(widget.userId);
     print('取消拉黑是否成功====================================$blackStatus');
-    if (blackStatus == true) {
-      _checkBlackStatus();
+    if(blackStatus!=null){
+      if (blackStatus == true) {
+        ToastShow.show(msg: "解除拉黑成功", context: context);
+        _checkBlackStatus();
+      }else{
+        ToastShow.show(msg: "操作失败", context: context);
+      }
     }
+
   }
 
   ///请求黑名单关系
