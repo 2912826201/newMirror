@@ -117,6 +117,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                         ),
                         // 头部布局
                         HeadView(
+                          isDetail: true,
                             model: feedModel,
                             deleteFeedChanged: (id) {
                               // deleteFeedChanged(id);

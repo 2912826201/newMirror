@@ -37,7 +37,6 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
@@ -49,7 +48,8 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
         setState(() {});
       }
       print('==taskId$taskId====================progress${received / total}');
-      if (received == total) {
+    }).then((value){
+      if(value.filePath!=null){
         Future.delayed(Duration(milliseconds: 100), () async {
           _installApk();
         });
