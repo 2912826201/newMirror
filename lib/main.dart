@@ -24,6 +24,7 @@ import 'package:mirror/page/profile/fitness_information_entry/train_several_time
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/setting/notice_setting_page.dart';
 import 'package:mirror/page/profile/vip/vip_nameplate_page.dart';
+import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/widget/address_Picker.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
@@ -89,6 +90,7 @@ void main() {
             ChangeNotifierProvider(create: (_) => UnreadMessageNotifier()),
             ChangeNotifierProvider(create: (_) => VipMoveNotifier()),
             ChangeNotifierProvider(create: (_) => SettingNotifile()),
+            ChangeNotifierProvider(create: (_) => VipTitleChangeNotifier()),
           ],
           child: MyApp(),
         ),

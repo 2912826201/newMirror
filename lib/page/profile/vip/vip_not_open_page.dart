@@ -39,17 +39,15 @@ class _VipPageState extends State<VipNotOpenPage> {
   final String serviceText =
       "付款：自动续费商品包括“连续包年/连续包月”，您确认购买后，会从您的偏账号账户扣费； 取消续订：如果需要续订，请在当前订阅周期前24小时以前，手动关闭自动续费功能，到期前24小时内取消，将会收取订阅费用。";
   int lastTime = 12123434545455;
-
+  bool wacthOffset = true;
   @override
   void initState() {
     super.initState();
     controller.addListener(() {
       if (controller.offset >= 88) {
-        context.read<ProfilePageNotifier>().vipChangeTitleColor(AppColor.white);
-        context.read<ProfilePageNotifier>().changeImageTitle(true);
+        context.read<VipTitleChangeNotifier>().changeOpction(1);
       } else {
-        context.read<ProfilePageNotifier>().vipChangeTitleColor(AppColor.transparent);
-        context.read<ProfilePageNotifier>().changeImageTitle(false);
+        context.read<VipTitleChangeNotifier>().changeOpction(controller.offset*(1/88));
       }
     });
   }
@@ -74,8 +72,9 @@ class _VipPageState extends State<VipNotOpenPage> {
             Navigator.pop(context);
           },
         ),
-        title: context.watch<ProfilePageNotifier>().showImageTitle
-            ?Container(
+        title: Opacity(
+          opacity:context.watch<VipTitleChangeNotifier>().opction,
+          child:Container(
           padding: EdgeInsets.only(top: 8),
           child: ClipOval(
           child: CachedNetworkImage(
@@ -88,7 +87,7 @@ class _VipPageState extends State<VipNotOpenPage> {
               fit: BoxFit.cover,
             ),
           ),
-        ),):Container(),
+        ),) ,),
         centerTitle: true,
       ),
       backgroundColor: AppColor.white,
@@ -298,5 +297,15 @@ class _VipPageState extends State<VipNotOpenPage> {
         ),
       ),
     );
+  }
+}
+
+class VipTitleChangeNotifier extends ChangeNotifier{
+  double opction = 0;
+
+
+  void changeOpction(double op){
+    opction = op;
+    notifyListeners();
   }
 }
