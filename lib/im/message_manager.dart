@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/database/conversation_db_helper.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
+import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
@@ -35,7 +38,7 @@ class MessageManager {
 
   static updateConversationByMessageList(BuildContext context, List<Message> msgList) async {
     //TODO 需要对list进行一次处理 各会话只保留最新的一条 但需要计算未读数
-    for(Message msg in msgList) {
+    for (Message msg in msgList) {
       await updateConversationByMessage(context, msg);
     }
   }
@@ -43,7 +46,7 @@ class MessageManager {
   //TODO 这里应该解析转一下格式 暂时先用融云原数据 先处理数据库再更新通知器
   static updateConversationByMessage(BuildContext context, Message msg) async {
     ConversationDto dto = _convertMsgToConversation(msg);
-    if(dto == null){
+    if (dto == null) {
       //没有返回dto 则无需处理
       return;
     }
@@ -63,11 +66,11 @@ class MessageManager {
         dto.unreadCount += exist.unreadCount;
       }
       //处理名字 新的没有值 旧的有值则用旧的
-      if (dto.name == "" && exist.name != ""){
+      if (dto.name == "" && exist.name != "") {
         dto.name = exist.name;
       }
       //处理头像 新的没有值 旧的有值则用旧的
-      if (dto.avatarUri == "" && exist.avatarUri != ""){
+      if (dto.avatarUri == "" && exist.avatarUri != "") {
         dto.avatarUri = exist.avatarUri;
       }
       result = await ConversationDBHelper().updateConversation(dto);
@@ -86,7 +89,7 @@ class MessageManager {
 
   static ConversationDto _convertMsgToConversation(Message msg) {
     //TODO 如果content为空暂时先不更新会话
-    if(msg.content == null){
+    if (msg.content == null) {
       return null;
     }
 
@@ -101,12 +104,12 @@ class MessageManager {
       case RCConversationType.Private:
         //FIXME 这里需要处理管家消息
         dto.type = PRIVATE_TYPE;
-        if(msg.senderUserId == Application.profile.uid.toString()){
+        if (msg.senderUserId == Application.profile.uid.toString()) {
           //如果发信人是自己。。。要从其他途径更新会话名字和头像
-        }else if(msg.content.sendUserInfo != null) {
+        } else if (msg.content.sendUserInfo != null) {
           dto.avatarUri = msg.content.sendUserInfo.portraitUri;
           dto.name = msg.content.sendUserInfo.name;
-        }else{
+        } else {
           dto.name = msg.targetId;
         }
         break;
@@ -151,12 +154,8 @@ class MessageManager {
         msg.content.mentionedInfo.userIdList != null &&
         msg.content.mentionedInfo.userIdList.length > 0) {
       for (int i = 0; i < msg.content.mentionedInfo.userIdList.length; i++) {
-        if (msg.content.mentionedInfo.userIdList[i] ==
-            Application.profile.uid.toString()) {
-          AtMsg atMsg = new AtMsg(
-              groupId: int.parse(msg.targetId),
-              sendTime: msg.sentTime,
-              messageUId: msg.messageUId);
+        if (msg.content.mentionedInfo.userIdList[i] == Application.profile.uid.toString()) {
+          AtMsg atMsg = new AtMsg(groupId: int.parse(msg.targetId), sendTime: msg.sentTime, messageUId: msg.messageUId);
           Application.atMesGroupModel.add(atMsg);
           break;
         }
@@ -182,7 +181,7 @@ class MessageManager {
     dto.uid = uid;
     dto.type = type;
     dto = context.read<ConversationNotifier>().getConversationById(dto.id);
-    if(dto != null){
+    if (dto != null) {
       dto.unreadCount = 0;
       await ConversationDBHelper().updateConversation(dto);
       context.read<ConversationNotifier>().updateConversation(dto);
@@ -190,29 +189,104 @@ class MessageManager {
   }
 
   //分为两类 一类通知（私聊通知、群聊通知） 一类消息
-  static splitMessage(Message message){
+  static splitMessage(Message message) async {
     if (message.objectName == ChatTypeModel.MESSAGE_TYPE_CMD) {
       //私聊通知
-
-      if (message.originContentMap["name"].toString() == "Remove") {
-        //移除群聊
-        Application.appContext.read<ChatMessageProfileNotifier>().removeGroup(message);
-      }else if (message.originContentMap["name"].toString() == "Entry") {
-        //加入群聊
-        Application.appContext.read<ChatMessageProfileNotifier>().entryGroup(message);
-      }else if (message.originContentMap["name"].toString() == "BookLive") {
-        //预约直播
-        Application.appContext.read<ChatMessageProfileNotifier>().bookLive(message);
+      switch (message.originContentMap["data"]["subType"]) {
+        case 0:
+          //0-加入群聊
+          Application.appContext.read<ChatMessageProfileNotifier>().entryGroup(message);
+          break;
+        case 1:
+          //1-退出群聊
+          break;
+        case 2:
+          //2-移除群聊
+          Application.appContext.read<ChatMessageProfileNotifier>().removeGroup(message);
+          break;
+        case 3:
+          //3-登陆机器
+          int machineId = message.originContentMap["data"]["machineId"];
+          //如果已经关联了该机器，则无需操作；否则需要更新机器信息
+          if (Application.machine == null || Application.machine.machineId != machineId) {
+            getMachineStatusInfo().then((list) {
+              if (list != null && list.isNotEmpty) {
+                Application.appContext.read<MachineNotifier>().setMachine(list.first);
+              }
+            });
+          }
+          break;
+        case 4:
+          //4-机器登出
+          int machineId = message.originContentMap["data"]["machineId"];
+          //如果已关联机器与通知中一致则清空，否则无需操作
+          if (Application.machine != null && Application.machine.machineId == machineId) {
+            Application.appContext.read<MachineNotifier>().setMachine(null);
+          }
+          break;
+        case 5:
+          //5-扫码加入群聊
+          break;
+        case 6:
+          //6-机器状态改变
+          MachineModel machine = MachineModel.fromJson(message.originContentMap["data"]);
+          //当关联机器为空或者本地记录的关联机器与通知中的不一致时，重新从接口获取一次机器信息；一致则直接修改状态
+          if (Application.machine == null || Application.machine.machineId != machine.machineId) {
+            getMachineStatusInfo().then((list) {
+              if (list != null && list.isNotEmpty) {
+                Application.appContext.read<MachineNotifier>().setMachine(list.first);
+              }
+            });
+          } else {
+            //有变化再更新
+            if(Application.machine.status != machine.status) {
+              Application.appContext.read<MachineNotifier>().setMachine(Application.machine..status = machine.status);
+            }
+          }
+          break;
+        case 7:
+          //7-预约直播
+          Application.appContext.read<ChatMessageProfileNotifier>().bookLive(message);
+          break;
+        case 8:
+          //8-遥控器变化
+          MachineModel machine = MachineModel.fromJson(message.originContentMap["data"]);
+          //当关联机器为空或者本地记录的关联机器与通知中的不一致时，重新从接口获取一次机器信息；一致则直接修改状态
+          if (Application.machine == null || Application.machine.machineId != machine.machineId) {
+            getMachineStatusInfo().then((list) {
+              if (list != null && list.isNotEmpty) {
+                Application.appContext.read<MachineNotifier>().setMachine(list.first);
+              }
+            });
+          } else {
+            //有变化再更新
+            bool hasChanged = false;
+            if(machine.volume != null && machine.volume != Application.machine.volume){
+              Application.machine.volume = machine.volume;
+              hasChanged = true;
+            }
+            if(machine.luminance != null && machine.luminance != Application.machine.luminance){
+              Application.machine.luminance = machine.luminance;
+              hasChanged = true;
+            }
+            if(hasChanged) {
+              Application.appContext.read<MachineNotifier>().setMachine(Application.machine);
+            }
+          }
+          break;
+        case 9:
+          //9-训练结束
+          break;
+        default:
+          break;
       }
-    }else if(message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF){
+    } else if (message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
       //群聊通知
       Application.appContext.read<ChatMessageProfileNotifier>().judgeConversationMessage(message);
-    }else{
+    } else {
       //普通消息
       judgeIsHaveAtUserMes(message);
       Application.appContext.read<ChatMessageProfileNotifier>().judgeConversationMessage(message);
     }
   }
-
-
 }

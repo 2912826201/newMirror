@@ -41,14 +41,13 @@ class RongCloudReceiveManager {
     //存在list中
     _manager._receivedMsgList.add(msg);
 
-    //当剩余消息量为0时 统一进行处理
+    //当剩余消息量为0时 统一进行处理会话
     if (left == 0) {
       List<Message> list = [];
       list.addAll(_manager._receivedMsgList);
       _manager._receivedMsgList.clear();
 
       MessageManager.updateConversationByMessageList(_context, list);
-
     }
   }
 
