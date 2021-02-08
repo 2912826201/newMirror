@@ -27,6 +27,7 @@ import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.da
 import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/slide_banner.dart';
 import 'package:provider/provider.dart';
+import 'package:waterfall_flow/waterfall_flow.dart';
 
 class SearchFeed extends StatefulWidget {
   SearchFeed({Key key, this.keyWord, this.focusNode, this.textController}) : super(key: key);
@@ -135,7 +136,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
         feedModel.add(value);
       });
       // 更新全局内没有的数据
-      context.read<FeedMapNotifier>().updateFeedMap( StringUtil.followModelFilterDeta(feedList,feedModel));
+      context.read<FeedMapNotifier>().updateFeedMap(StringUtil.followModelFilterDeta(feedList, feedModel));
     }
     if (hasNext == 0) {
       // 加载完毕
@@ -163,61 +164,102 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
                 loadText = "加载中...";
                 requestFeednIterface();
               },
-              // child:
-              //     CustomScrollView(controller: _scrollController, physics: AlwaysScrollableScrollPhysics(), slivers: [
-              //   SliverToBoxAdapter(
-              child: Container(
-                margin: EdgeInsets.only(left: 16, right: 16),
-                child: MediaQuery.removePadding(
-                    removeTop: true,
-                    context: context,
-                    child: StaggeredGridView.countBuilder(
-                      shrinkWrap: true,
-                      itemCount: feedList.length + 1,
-                      primary: false,
-                      crossAxisCount: 4,
-                      // 上下间隔
-                      mainAxisSpacing: 4.0,
-                      // 左右间隔
-                      crossAxisSpacing: 8.0,
-                      controller: _scrollController,
-                      itemBuilder: (context, index) {
-                        // 获取动态id
-                        int id;
-                        // 获取动态id指定model
-                        HomeFeedModel model;
-                        if (index < feedList.length) {
-                          id = feedList[index].id;
-                          model = context.read<FeedMapNotifier>().feedMap[id];
-                        }
-                        // if (feedList.isNotEmpty) {
-                        if (index == feedList.length) {
-                          return LoadingView(
-                            loadText: loadText,
-                            loadStatus: loadStatus,
-                          );
-                        } else if (index == feedList.length + 1) {
-                          return Container();
-                        } else {
-                          return SearchFeeditem(
-                            model: model,
-                            list: feedList,
-                            index: index,
-                            focusNode: widget.focusNode,
-                            pageName: "searchFeed",
-                            feedLastTime: lastTime,
-                            searchKeyWords: widget.textController.text,
-                            feedHasNext: hasNext,
-                          );
-                        }
-                        // }
-                      },
-                      staggeredTileBuilder: (index) => StaggeredTile.fit(2),
-                    )),
-              ))
-          //     ])
-          // )
-          );
+              child:
+                  CustomScrollView(controller: _scrollController, physics: AlwaysScrollableScrollPhysics(), slivers: [
+                SliverToBoxAdapter(
+                    child: Container(
+                  margin: EdgeInsets.only(left: 16, right: 16),
+                  child: MediaQuery.removePadding(
+                      removeTop: true,
+                      context: context,
+                      child: WaterfallFlow.builder(
+                        primary: false,
+                        shrinkWrap: true,
+                        // controller: _scrollController,
+                        gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          // 上下间隔
+                          mainAxisSpacing: 4.0,
+                          //   // 左右间隔
+                          crossAxisSpacing: 8.0,
+                        ),
+                        itemBuilder: (context, index) {
+                          // 获取动态id
+                          int id;
+                          // 获取动态id指定model
+                          HomeFeedModel model;
+                          if (index < feedList.length) {
+                            id = feedList[index].id;
+                            model = context.read<FeedMapNotifier>().feedMap[id];
+                          }
+                          if (index == feedList.length) {
+                            return LoadingView(
+                              loadText: loadText,
+                              loadStatus: loadStatus,
+                            );
+                          } else if (index == feedList.length + 1) {
+                            return Container();
+                          } else {
+                            return SearchFeeditem(
+                              model: model,
+                              list: feedList,
+                              index: index,
+                              focusNode: widget.focusNode,
+                              pageName: "searchFeed",
+                              feedLastTime: lastTime,
+                              searchKeyWords: widget.textController.text,
+                              feedHasNext: hasNext,
+                            );
+                          }
+                        },
+                        itemCount: feedList.length + 1,
+                      )
+                      // child: StaggeredGridView.countBuilder(
+                      //   shrinkWrap: true,
+                      //   itemCount: feedList.length + 1,
+                      //   primary: false,
+                      //   crossAxisCount: 4,
+                      //   // 上下间隔
+                      //   mainAxisSpacing: 4.0,
+                      //   // 左右间隔
+                      //   crossAxisSpacing: 8.0,
+                      //   controller: _scrollController,
+                      //   itemBuilder: (context, index) {
+                      //     // 获取动态id
+                      //     int id;
+                      //     // 获取动态id指定model
+                      //     HomeFeedModel model;
+                      //     if (index < feedList.length) {
+                      //       id = feedList[index].id;
+                      //       model = context.read<FeedMapNotifier>().feedMap[id];
+                      //     }
+                      //     // if (feedList.isNotEmpty) {
+                      //     if (index == feedList.length) {
+                      //       return LoadingView(
+                      //         loadText: loadText,
+                      //         loadStatus: loadStatus,
+                      //       );
+                      //     } else if (index == feedList.length + 1) {
+                      //       return Container();
+                      //     } else {
+                      //       return SearchFeeditem(
+                      //         model: model,
+                      //         list: feedList,
+                      //         index: index,
+                      //         focusNode: widget.focusNode,
+                      //         pageName: "searchFeed",
+                      //         feedLastTime: lastTime,
+                      //         searchKeyWords: widget.textController.text,
+                      //         feedHasNext: hasNext,
+                      //       );
+                      //     }
+                      //     // }
+                      //   },
+                      //   staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+                      // )
+                      ),
+                ))
+              ])));
     } else {
       return Container(
         child: Column(

@@ -248,10 +248,10 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                           removeTop: true,
                           context: context,
                           child: WaterfallFlow.builder(
+                            primary: false,
                             shrinkWrap: true,
                             gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
-
                               // 上下间隔
                               mainAxisSpacing: 4.0,
                               //   // 左右间隔
