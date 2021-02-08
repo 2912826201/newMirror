@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
 
 /// string_util
 /// Created by yangjiayi on 2020/11/24.
@@ -247,5 +248,29 @@ class StringUtil {
       breakWord += '\u200B';
     });
     return breakWord;
+  }
+  /** 全局动态和请求数据比较
+   * 比较两数组 取出不同的，
+   * array1 数组一
+   * array2 数组二
+   * **/
+  static List<HomeFeedModel>  followModelFilterDeta(List<HomeFeedModel> array1, List<HomeFeedModel> array2) {
+    List<HomeFeedModel> result = [];
+    for (var i = 0; i < array1.length; i++) {
+      var obj = array1[i].id;
+      var isExist = false;
+      for (var j = 0; j < array2.length; j++) {
+        var aj = array2[j].id;
+        if (obj == aj) {
+          isExist = true;
+          continue;
+        }
+      }
+      if (!isExist) {
+        result.add(array1[i]);
+      }
+    }
+    print("result${result.toString()}");
+    return result;
   }
 }
