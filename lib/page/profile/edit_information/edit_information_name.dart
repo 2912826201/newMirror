@@ -97,7 +97,7 @@ class _EditInformationNameState extends State<EditInformationName> {
         actions: [
           InkWell(
             onTap: () {
-              if (_EditText.isEmpty) {
+              if (_EditText.length==0) {
                 Toast.show("昵称不能为空", context);
                 return;
               }

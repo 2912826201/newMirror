@@ -282,16 +282,16 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
           children: [
             Positioned(
               left: 0,
-              child: _ImgAvatar(height, width),
+              child: _imgAvatar(height, width),
             ),
             Positioned(
                 left: width * 0.38,
                 bottom: 0,
                 child: Row(children: [
                   InkWell(
-                    child: _TextAndNumber("关注", StringUtil.getNumber(followingCount)),
+                    child: _textAndNumber("关注", StringUtil.getNumber(followingCount)),
                     onTap: () {
-                      AppRouter.navigateToQueryFollowList(context,1, uid);
+                      AppRouter.navigateToQueryFollowList(context, 1, uid);
                     },
                   ),
                   SizedBox(
@@ -299,9 +299,9 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   ),
                   InkWell(
                     onTap: () {
-                      AppRouter.navigateToQueryFollowList(context,2, uid);
+                      AppRouter.navigateToQueryFollowList(context, 2, uid);
                     },
-                    child: _TextAndNumber("粉丝", StringUtil.getNumber(followerCount)),
+                    child: _textAndNumber("粉丝", StringUtil.getNumber(followerCount)),
                   ),
                   SizedBox(
                     width: width * 0.12,
@@ -310,7 +310,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                     onTap: () {
                       AppRouter.navigateToMineDetail(context, uid);
                     },
-                    child: _TextAndNumber("动态", StringUtil.getNumber(feedCount)),
+                    child: _textAndNumber("动态", StringUtil.getNumber(feedCount)),
                   )
                 ]))
           ],
@@ -318,7 +318,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   }
 
   ///这是头像
-  Widget _ImgAvatar(double height, double width) {
+  Widget _imgAvatar(double height, double width) {
     return Container(
       width: height * 0.11,
       height: height * 0.11,
@@ -373,7 +373,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   }
 
   ///这里是关注粉丝动态
-  Widget _TextAndNumber(String text, String number) {
+  Widget _textAndNumber(String text, String number) {
     print('__________________________$number');
     return Column(
       children: [
@@ -447,7 +447,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       /*ScanCodeResultModel model = ScanCodeResultModel();
       model.type = ScanCodeResultType.CODE_INVALID;
       AppRouter.navigateToScanCodeResultPage(context, model);*/
-      if (userModel.isVip == 0) {
+      if (userModel.isVip != 0) {
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
           return VipNotOpenPage(type: VipState.NOTOPEN);
         }));

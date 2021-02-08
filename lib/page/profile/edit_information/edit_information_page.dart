@@ -117,7 +117,7 @@ class _EditInformationState extends State<EditInformation> {
               margin: EdgeInsets.only(left: 16),
               child: Image.asset("images/resource/2.0x/return2x.png"),),
             onTap: (){
-              context.read<AddressPickerNotifier>().cleanCityData();
+              /*context.read<AddressPickerNotifier>().cleanCityData();*/
               Navigator.pop(context);
             },
           ),
@@ -288,8 +288,12 @@ class _EditInformationState extends State<EditInformation> {
                     child: _rowChose(width, "简介", _introduction),
                     onTap: () {
                       AppRouter.navigateToEditInfomationIntroduction(context, _introduction, (result) {
+                        if(result!=null){
+                          _introduction = result;
+                        }else{
+                          _introduction = null;
+                        }
                         setState(() {
-                            _introduction = result;
                         });
                       });
                     },
@@ -334,7 +338,7 @@ class _EditInformationState extends State<EditInformation> {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            Expanded(child: SizedBox()),
+            Spacer(),
             Container(
               alignment: title=="简介"?Alignment.topRight:Alignment.centerRight,
               child: Text(
@@ -439,7 +443,7 @@ class _EditInformationState extends State<EditInformation> {
       var profile = ProfileDto.fromUserModel(model);
       await ProfileDBHelper().insertProfile(profile);
       context.read<ProfileNotifier>().setProfile(profile);
-      context.read<AddressPickerNotifier>().cleanCityData();
+      /*context.read<AddressPickerNotifier>().cleanCityData();*/
       Toast.show("资料修改成功",context,);
       Loading.hideLoading(context);
       Navigator.pop(context);

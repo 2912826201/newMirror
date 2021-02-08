@@ -88,7 +88,11 @@ class _IntroductionState extends State<EditInformationIntroduction> {
             InkWell(
                 onTap: () {
                   _commentFocus.unfocus();
-                  Navigator.pop(this.context, editText);
+                  if(editText.length==0){
+                    Navigator.pop(this.context, null);
+                  }else{
+                    Navigator.pop(this.context, editText);
+                  }
                 },
                 child: Container(
                   width: 60,

@@ -40,7 +40,6 @@ class _VipNamePlateState extends State<VipNamePlateHorazontalList>{
   ];
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
   @override

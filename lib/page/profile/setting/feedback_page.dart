@@ -125,6 +125,9 @@ Widget _inputBox(double width){
 }
 
 Widget _imageList(double width){
+    if(imageDataList.length>8){
+      imageDataList.removeRange(8,imageDataList.length);
+    }
     return Container(
       height: 95,
       width: width,
@@ -193,7 +196,7 @@ Widget _item(int index){
 }
 
 Widget _addImageItem(){
-    return imageDataList.length<9?InkWell(
+    return imageDataList.length<8?InkWell(
       onTap: (){
         _getImage();
       },
@@ -214,7 +217,7 @@ Widget _addImageItem(){
     //从相册获取照片
   _getImage(){
     AppRouter.navigateToMediaPickerPage(
-      context, 9, typeImage, true, startPageGallery, false, (result) {
+      context, 8, typeImage, true, startPageGallery, false, (result) {
       SelectedMediaFiles files = Application.selectedMediaFiles;
       if (!result|| files == null) {
         print('===============================值为空退回');
