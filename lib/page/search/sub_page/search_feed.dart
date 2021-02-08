@@ -130,8 +130,12 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
         loadStatus = LoadingStatus.STATUS_IDEL;
         loadText = "加载中...";
       }
-      // 更新全局监听
-      context.read<FeedMapNotifier>().updateFeedMap(feedList);
+      List<HomeFeedModel> feedModel = [];
+      context.read<FeedMapNotifier>().feedMap.forEach((key, value) {
+        feedModel.add(value);
+      });
+      // 更新全局内没有的数据
+      context.read<FeedMapNotifier>().updateFeedMap( StringUtil.followModelFilterDeta(feedList,feedModel));
     }
     if (hasNext == 0) {
       // 加载完毕
@@ -201,6 +205,9 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
                             index: index,
                             focusNode: widget.focusNode,
                             pageName: "searchFeed",
+                            feedLastTime: lastTime,
+                            searchKeyWords: widget.textController.text,
+                            feedHasNext: hasNext,
                           );
                         }
                         // }
@@ -240,7 +247,24 @@ class SearchFeeditem extends StatefulWidget {
   int index;
   String pageName;
 
-  SearchFeeditem({this.model, this.list, this.index, this.focusNode, this.pageName});
+  // 搜索动态关键词
+  String searchKeyWords;
+
+// 动态lastTime
+  int feedLastTime;
+
+  // 动态hasNext
+  int feedHasNext;
+
+  SearchFeeditem(
+      {this.model,
+      this.list,
+      this.index,
+      this.focusNode,
+      this.pageName,
+      this.searchKeyWords,
+      this.feedLastTime,
+      this.feedHasNext});
 
   @override
   SearchFeeditemState createState() =>
@@ -373,25 +397,28 @@ class SearchFeeditemState extends State<SearchFeeditem> {
                   if (focusNode != null) {
                     focusNode.unfocus();
                   }
-                  // list.removeWhere((v) => v == model.id );
-                  List<HomeFeedModel> result = [];
-                  print("点击查看格式");
-                  print(list.length);
-                  for (feedModel in list) {
-                    feedModel = context.read<FeedMapNotifier>().feedMap[feedModel.id];
-                    if (model.id != feedModel.id) {
-                      result.add(feedModel);
-                    }
-                  }
-                  result.insert(0, model);
-                  list = result;
-                  print(list.length);
+                  // List<HomeFeedModel> result = [];
+                  // print("点击查看格式");
+                  // print(list.length);
+                  // for (feedModel in list) {
+                  //   feedModel = context.read<FeedMapNotifier>().feedMap[feedModel.id];
+                  //   if (model.id != feedModel.id) {
+                  //     result.add(feedModel);
+                  //   }
+                  // }
+                  // result.insert(0, model);
+                  // list = result;
+                  // print(list.length);
                   Navigator.push(
                     context,
                     new MaterialPageRoute(
                         builder: (context) => FeedFlow(
                               feedList: list,
                               pageName: widget.pageName,
+                              searchKeyWords: widget.searchKeyWords,
+                              feedLastTime: widget.feedLastTime,
+                              feedIndex: widget.index,
+                              feedHasNext: widget.feedHasNext,
                             )),
                   );
                 },

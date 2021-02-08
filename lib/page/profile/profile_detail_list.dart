@@ -8,6 +8,7 @@ import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 
@@ -77,35 +78,10 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
        feedList.add(value);
      });
      // 只同步没有的数据
-    context.read<FeedMapNotifier>().updateFeedMap(followModelProfileDeta(followModel,feedList));
+    context.read<FeedMapNotifier>().updateFeedMap(StringUtil.followModelFilterDeta(followModel,feedList));
   }
 
-  /** 个人主页全局动态和个人主页请求数据比较
-   * 比较两数组 取出不同的，
-   * array1 数组一
-   * array2 数组二
-   * **/
-  followModelProfileDeta(List<HomeFeedModel> array1, List<HomeFeedModel> array2) {
-    var arr1 = array1;
-    var arr2 = array2;
-    List<HomeFeedModel> result = [];
-    for (var i = 0; i < array1.length; i++) {
-      var obj = array1[i].id;
-      var isExist = false;
-      for (var j = 0; j < array2.length; j++) {
-        var aj = array2[j].id;
-        if (obj == aj) {
-          isExist = true;
-          continue;
-        }
-      }
-      if (!isExist) {
-        result.add(array1[i]);
-      }
-    }
-    print("result${result.toString()}");
-    return result;
-  }
+
   ///上拉加载
   _onLoadding() {
     followDataPage += 1;
