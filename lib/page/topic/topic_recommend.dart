@@ -15,10 +15,9 @@ import 'package:provider/provider.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
 class TopicRecommend extends StatefulWidget {
-  TopicRecommend({this.loadText, this.loadStatus, this.tabKey, this.topicList, this.refreshCallBack});
+  TopicRecommend({this.loadText, this.loadStatus, this.topicList, this.refreshCallBack});
 
   final ValueChanged<bool> refreshCallBack;
-  Key tabKey;
 
   // 话题ListModel
   List<HomeFeedModel> topicList;
@@ -32,50 +31,56 @@ class TopicRecommend extends StatefulWidget {
   @override
   TopicRecommendState createState() => TopicRecommendState();
 }
+
 class TopicRecommendState extends State<TopicRecommend> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true; //必须重写
   @override
   Widget build(BuildContext context) {
-    Container child = Container(
-        child: RefreshIndicator(
-            onRefresh: () async {
-              widget.refreshCallBack(true);
-            },
-            child: Container(
-                margin: EdgeInsets.only(left: 16, right: 16),
-                child: WaterfallFlow.builder(gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  // 上下间隔
-                  mainAxisSpacing: 4.0,
-                  //   // 左右间隔
-                  crossAxisSpacing: 8.0,
-                ), itemBuilder: (context,index) {
-                  // 获取动态id
-                  int id;
-                  // 获取动态id指定model
-                  HomeFeedModel model;
-                  if (index < widget.topicList.length) {
-                    id = widget.topicList[index].id;
-                    model = context.read<FeedMapNotifier>().feedMap[id];
-                  }
-                  // if (feedList.isNotEmpty) {
-                  if (index == widget.topicList.length) {
-                    return LoadingView(
-                      loadText: widget.loadText,
-                      loadStatus: widget.loadStatus,
-                    );
-                  } else if (index == widget.topicList.length + 1) {
-                    return Container();
-                  } else {
-                    return SearchFeeditem(
-                      model: model,
-                      list: widget.topicList,
-                      index: index,
-                      pageName: "topicRecommend",
-                    );
-                  }
-                },itemCount: widget.topicList.length + 1,)
+    // Container child = Container(
+    //     child: RefreshIndicator(
+    //         onRefresh: () async {
+    //           widget.refreshCallBack(true);
+    //         },
+    //         child: Container(
+    //             margin: EdgeInsets.only(left: 16, right: 16),
+    //             child: WaterfallFlow.builder(
+    //               gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+    //                 crossAxisCount: 2,
+    //                 // 上下间隔
+    //                 mainAxisSpacing: 4.0,
+    //                 //   // 左右间隔
+    //                 crossAxisSpacing: 8.0,
+    //               ),
+    //               itemBuilder: (context, index) {
+    //                 // 获取动态id
+    //                 int id;
+    //                 // 获取动态id指定model
+    //                 HomeFeedModel model;
+    //                 if (index < widget.topicList.length) {
+    //                   id = widget.topicList[index].id;
+    //                   model = context.read<FeedMapNotifier>().feedMap[id];
+    //                 }
+    //                 // if (feedList.isNotEmpty) {
+    //                 if (index == widget.topicList.length) {
+    //                   return LoadingView(
+    //                     loadText: widget.loadText,
+    //                     loadStatus: widget.loadStatus,
+    //                   );
+    //                 } else if (index == widget.topicList.length + 1) {
+    //                   return Container();
+    //                 } else {
+    //                   return SearchFeeditem(
+    //                     model: model,
+    //                     list: widget.topicList,
+    //                     index: index,
+    //                     pageName: "topicRecommend",
+    //                   );
+    //                 }
+    //               },
+    //               itemCount: widget.topicList.length + 1,
+    //             )
+    //         )));
                 // child: StaggeredGridView.countBuilder(
                 //   itemCount: widget.topicList.length + 1,
                 //   crossAxisCount: 4,
@@ -111,26 +116,70 @@ class TopicRecommendState extends State<TopicRecommend> with AutomaticKeepAliveC
                 //   },
                 //   staggeredTileBuilder: (index) => StaggeredTile.fit(2),
                 // )
-            )));
-    return widget.topicList.isNotEmpty
-        ? NestedScrollViewInnerScrollPositionKeyWidget(widget.tabKey, child)
-        : Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            width: 224,
-            height: 224,
-            color: AppColor.color246,
-            margin: EdgeInsets.only(bottom: 16, top: 188),
-          ),
-          Text(
-            "这里空空如也，去推荐看看吧",
-            style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
-          ),
-        ],
-      ),
-    );
-  }
 
+
+    return widget.topicList.isNotEmpty
+        ? Container(
+            child: RefreshIndicator(
+                onRefresh: () async {
+                  widget.refreshCallBack(true);
+                },
+                child: Container(
+                    margin: EdgeInsets.only(left: 16, right: 16),
+                    child: WaterfallFlow.builder(
+                      gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        // 上下间隔
+                        mainAxisSpacing: 4.0,
+                        //   // 左右间隔
+                        crossAxisSpacing: 8.0,
+                      ),
+                      itemBuilder: (context, index) {
+                        // 获取动态id
+                        int id;
+                        // 获取动态id指定model
+                        HomeFeedModel model;
+                        if (index < widget.topicList.length) {
+                          id = widget.topicList[index].id;
+                          model = context.read<FeedMapNotifier>().feedMap[id];
+                        }
+                        // if (feedList.isNotEmpty) {
+                        if (index == widget.topicList.length) {
+                          return LoadingView(
+                            loadText: widget.loadText,
+                            loadStatus: widget.loadStatus,
+                          );
+                        } else if (index == widget.topicList.length + 1) {
+                          return Container();
+                        } else {
+                          return SearchFeeditem(
+                            model: model,
+                            list: widget.topicList,
+                            index: index,
+                            pageName: "topicRecommend",
+                          );
+                        }
+                      },
+                      itemCount: widget.topicList.length + 1,
+                    ))))
+        // NestedScrollViewInnerScrollPositionKeyWidget(widget.tabKey, child)
+
+        : Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 224,
+                  height: 224,
+                  color: AppColor.color246,
+                  margin: EdgeInsets.only(bottom: 16, top: 188),
+                ),
+                Text(
+                  "这里空空如也，去推荐看看吧",
+                  style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+                ),
+              ],
+            ),
+          );
+  }
 }

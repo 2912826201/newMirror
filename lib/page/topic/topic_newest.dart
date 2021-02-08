@@ -12,10 +12,9 @@ import 'package:provider/provider.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
 class TopicNewest extends StatefulWidget {
-  TopicNewest({this.loadText, this.loadStatus, this.tabKey, this.topicList, this.refreshCallBack});
+  TopicNewest({this.loadText, this.loadStatus, this.topicList, this.refreshCallBack});
 
   final ValueChanged<bool> refreshCallBack;
-  Key tabKey;
 
   // 话题ListModel
   List<HomeFeedModel> topicList;
@@ -35,83 +34,130 @@ class TopicNewestState extends State<TopicNewest> with AutomaticKeepAliveClientM
   bool get wantKeepAlive => true; //必须重写
   @override
   Widget build(BuildContext context) {
-    Container child = Container(
-        child: RefreshIndicator(
-            onRefresh: () async {
-              widget.refreshCallBack(true);
-            },
-            child: Container(
-                margin: EdgeInsets.only(left: 16, right: 16),
-                child: WaterfallFlow.builder(gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                    // 上下间隔
-                    mainAxisSpacing: 4.0,
-                  //   // 左右间隔
-                    crossAxisSpacing: 8.0,
-                ), itemBuilder: (context,index) {
-                      // 获取动态id
-                      int id;
-                      // 获取动态id指定model
-                      HomeFeedModel model;
-                      if (index < widget.topicList.length) {
-                        id = widget.topicList[index].id;
-                        model = context.read<FeedMapNotifier>().feedMap[id];
-                      }
-                      // if (feedList.isNotEmpty) {
-                      if (index == widget.topicList.length) {
-                        return LoadingView(
-                          loadText: widget.loadText,
-                          loadStatus: widget.loadStatus,
-                        );
-                      } else if (index == widget.topicList.length + 1) {
-                        return Container();
-                      } else {
-                        return SearchFeeditem(
-                          model: model,
-                          list: widget.topicList,
-                          index: index,
-                          pageName: "topicNewest",
-                        );
-                      }
-                },itemCount: widget.topicList.length + 1,)
-                // child: StaggeredGridView.countBuilder(
-                //   itemCount: widget.topicList.length + 1,
-                //   crossAxisCount: 4,
-                //   // 上下间隔
-                //   mainAxisSpacing: 4.0,
-                //   // 左右间隔
-                //   crossAxisSpacing: 8.0,
-                //   itemBuilder: (context, index) {
-                //     // 获取动态id
-                //     int id;
-                //     // 获取动态id指定model
-                //     HomeFeedModel model;
-                //     if (index < widget.topicList.length) {
-                //       id = widget.topicList[index].id;
-                //       model = context.read<FeedMapNotifier>().feedMap[id];
-                //     }
-                //     // if (feedList.isNotEmpty) {
-                //     if (index == widget.topicList.length) {
-                //       return LoadingView(
-                //         loadText: widget.loadText,
-                //         loadStatus: widget.loadStatus,
-                //       );
-                //     } else if (index == widget.topicList.length + 1) {
-                //       return Container();
-                //     } else {
-                //       return SearchFeeditem(
-                //         model: model,
-                //         list: widget.topicList,
-                //         index: index,
-                //         pageName: "topicNewest",
-                //       );
-                //     }
-                //   },
-                //   staggeredTileBuilder: (index) => StaggeredTile.fit(2),
-                // )
-            )));
+    // Container child = Container(
+    //     child: RefreshIndicator(
+    //         onRefresh: () async {
+    //           widget.refreshCallBack(true);
+    //         },
+    //         child: Container(
+    //             margin: EdgeInsets.only(left: 16, right: 16),
+    //             child: WaterfallFlow.builder(
+    //               gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+    //                 crossAxisCount: 2,
+    //                 // 上下间隔
+    //                 mainAxisSpacing: 4.0,
+    //                 //   // 左右间隔
+    //                 crossAxisSpacing: 8.0,
+    //               ),
+    //               itemBuilder: (context, index) {
+    //                 // 获取动态id
+    //                 int id;
+    //                 // 获取动态id指定model
+    //                 HomeFeedModel model;
+    //                 if (index < widget.topicList.length) {
+    //                   id = widget.topicList[index].id;
+    //                   model = context.read<FeedMapNotifier>().feedMap[id];
+    //                 }
+    //                 // if (feedList.isNotEmpty) {
+    //                 if (index == widget.topicList.length) {
+    //                   return LoadingView(
+    //                     loadText: widget.loadText,
+    //                     loadStatus: widget.loadStatus,
+    //                   );
+    //                 } else if (index == widget.topicList.length + 1) {
+    //                   return Container();
+    //                 } else {
+    //                   return SearchFeeditem(
+    //                     model: model,
+    //                     list: widget.topicList,
+    //                     index: index,
+    //                     pageName: "topicNewest",
+    //                   );
+    //                 }
+    //               },
+    //               itemCount: widget.topicList.length + 1,
+    //             ))));
+    // child: StaggeredGridView.countBuilder(
+    //   itemCount: widget.topicList.length + 1,
+    //   crossAxisCount: 4,
+    //   // 上下间隔
+    //   mainAxisSpacing: 4.0,
+    //   // 左右间隔
+    //   crossAxisSpacing: 8.0,
+    //   itemBuilder: (context, index) {
+    //     // 获取动态id
+    //     int id;
+    //     // 获取动态id指定model
+    //     HomeFeedModel model;
+    //     if (index < widget.topicList.length) {
+    //       id = widget.topicList[index].id;
+    //       model = context.read<FeedMapNotifier>().feedMap[id];
+    //     }
+    //     // if (feedList.isNotEmpty) {
+    //     if (index == widget.topicList.length) {
+    //       return LoadingView(
+    //         loadText: widget.loadText,
+    //         loadStatus: widget.loadStatus,
+    //       );
+    //     } else if (index == widget.topicList.length + 1) {
+    //       return Container();
+    //     } else {
+    //       return SearchFeeditem(
+    //         model: model,
+    //         list: widget.topicList,
+    //         index: index,
+    //         pageName: "topicNewest",
+    //       );
+    //     }
+    //   },
+    //   staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+    // )
+
     return widget.topicList.isNotEmpty
-        ? NestedScrollViewInnerScrollPositionKeyWidget(widget.tabKey, child)
+        ? Container(
+            child: RefreshIndicator(
+                onRefresh: () async {
+                  widget.refreshCallBack(true);
+                },
+                child: Container(
+                    margin: EdgeInsets.only(left: 16, right: 16),
+                    child: WaterfallFlow.builder(
+                      gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        // 上下间隔
+                        mainAxisSpacing: 4.0,
+                        //   // 左右间隔
+                        crossAxisSpacing: 8.0,
+                      ),
+                      itemBuilder: (context, index) {
+                        // 获取动态id
+                        int id;
+                        // 获取动态id指定model
+                        HomeFeedModel model;
+                        if (index < widget.topicList.length) {
+                          id = widget.topicList[index].id;
+                          model = context.read<FeedMapNotifier>().feedMap[id];
+                        }
+                        // if (feedList.isNotEmpty) {
+                        if (index == widget.topicList.length) {
+                          return LoadingView(
+                            loadText: widget.loadText,
+                            loadStatus: widget.loadStatus,
+                          );
+                        } else if (index == widget.topicList.length + 1) {
+                          return Container();
+                        } else {
+                          return SearchFeeditem(
+                            model: model,
+                            list: widget.topicList,
+                            index: index,
+                            pageName: "topicNewest",
+                          );
+                        }
+                      },
+                      itemCount: widget.topicList.length + 1,
+                    ))))
+        // NestedScrollViewInnerScrollPositionKeyWidget(widget.tabKey, child)
         : Container(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
