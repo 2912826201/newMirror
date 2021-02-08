@@ -9,6 +9,7 @@ import 'package:mirror/data/database/download_db_helper.dart';
 import 'package:mirror/data/dto/download_dto.dart';
 import 'package:mirror/data/model/upload/qiniu_token_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
+import 'package:mirror/util/range_download.dart';
 import 'package:sy_flutter_qiniu_storage/sy_flutter_qiniu_storage.dart';
 import 'package:uuid/uuid.dart';
 
@@ -152,9 +153,9 @@ class FileUtil {
     String taskId = Uuid().v4();
     String fileName = url.split("/").last;
     List<String> strs = fileName.split(".");
-    if(strs.length > 1){
+    if (strs.length > 1) {
       fileName = StringUtil.generateMd5(fileName) + "." + strs.last;
-    }else{
+    } else {
       fileName = StringUtil.generateMd5(fileName);
     }
     String filePath = "${AppConfig.getAppDownloadDir()}/$fileName";
@@ -177,6 +178,35 @@ class FileUtil {
     }).catchError((e) {
       return null;
     });
+  }
+
+   chunkDownLoad(String url, Dio dio,Function(String taskId,int received, int total)
+  onProgressListener)
+  async {
+    String taskId = Uuid().v4();
+    String fileName = url.split("/").last;
+    List<String> strs = fileName.split(".");
+    if (strs.length > 1) {
+      fileName = StringUtil.generateMd5(fileName) + "." + strs.last;
+    } else {
+      fileName = StringUtil.generateMd5(fileName);
+    }
+    String filePath = "${AppConfig.getAppDownloadDir()}/$fileName";
+    DownloadDto dto = DownloadDto();
+    dto.taskId = taskId;
+    dto.url = url;
+    dto.filePath = filePath;
+    print("start");
+      Response res = await RangeDownload.downloadWithChunks(url, filePath,
+          onReceiveProgress: (received, total) {
+        onProgressListener(taskId,received,total);
+        if(received==total){
+          DownloadDBHelper().insertDownload(taskId, url, filePath);
+        }
+      },dio:dio);
+    print(res.statusCode);
+    print(res.statusMessage);
+    print(res.data);
   }
 //===========================下载部分end===========================
 }

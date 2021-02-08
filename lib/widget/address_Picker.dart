@@ -32,11 +32,11 @@ class AddressPicker extends StatefulWidget{
   AddressPicker({this.provinceMap,this.cityMap});
   @override
   State<StatefulWidget> createState() {
-    return _addressPickerState();
+    return _AddressPickerState();
   }
 
 }
-class _addressPickerState extends State<AddressPicker>{
+class _AddressPickerState extends State<AddressPicker>{
   FixedExtentScrollController leftfixedExtentController = FixedExtentScrollController(initialItem: 0);
   FixedExtentScrollController rightfixedExtentController = FixedExtentScrollController(initialItem: 0);
   bool isFirst = true;
@@ -48,17 +48,12 @@ class _addressPickerState extends State<AddressPicker>{
   List<RegionDto> cityDtoList = [];
   ///取cotyCode
   _getCityCode() {
-    print('===================================================转成cityCode');
       if (widget.cityMap[provinceIdList[leftfixedExtentController.selectedItem]] == null) {
-        print('============================================这里是直辖市,拿的是省级code');
-        print('左边selectedItem===================================${leftfixedExtentController.selectedItem}');
-        print('右边selectedItem===================================${rightfixedExtentController.selectedItem}');
       context.read<AddressPickerNotifier>().changeCityCode(
           provinceDtoList[leftfixedExtentController.selectedItem].regionCode,
           provinceDtoList[leftfixedExtentController.selectedItem].longitude,
           provinceDtoList[leftfixedExtentController.selectedItem].latitude);
       } else {
-        print('============================================这里是省市，拿的是市级code');
         context.read<AddressPickerNotifier>().changeCityCode(
           cityDtoList[rightfixedExtentController.selectedItem].regionCode,
           cityDtoList[rightfixedExtentController.selectedItem].longitude,
@@ -71,8 +66,6 @@ class _addressPickerState extends State<AddressPicker>{
       provinceNameList.add(provinceDto.regionName);
       provinceIdList.add(provinceDto.id);
       provinceDtoList.add(provinceDto);
-      print('省的code===============================${provinceDto.regionCode}');
-      print('省的name===============================${provinceDto.regionName}');
     });
     if (isFirst) {
       cityNameList.clear();
@@ -89,7 +82,7 @@ class _addressPickerState extends State<AddressPicker>{
     }
   }
   ///因为controller的index有两种，初始化和滚动后，判断是否滚动了，没有则用默认，否则用选中
-  _ExtentControllerAddListener() {
+  _extentControllerAddListener() {
     leftfixedExtentController.addListener(() {
       isFirst = false;
     });
@@ -100,7 +93,7 @@ class _addressPickerState extends State<AddressPicker>{
   @override
   void initState() {
     super.initState();
-    _ExtentControllerAddListener();
+    _extentControllerAddListener();
     _getAddressData();
   }
   @override
@@ -226,8 +219,6 @@ class _addressPickerState extends State<AddressPicker>{
   ///滚轮组件
   Widget _listScrollWheel(
     double height, double width, List textContext, FixedExtentScrollController controller, int type) {
-    print('=====================================右边视图');
-    /*print('===================================${textContext.first}');*/
     return ListWheelScrollView.useDelegate(
       controller: controller,
       diameterRatio: 1,

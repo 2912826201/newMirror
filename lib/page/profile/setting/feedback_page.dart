@@ -106,7 +106,10 @@ class _feedBackPage extends State<FeedBackPage> {
     );
   }
 
-  Widget _imageList(double width) {
+Widget _imageList(double width){
+    if(imageDataList.length>8){
+      imageDataList.removeRange(8,imageDataList.length);
+    }
     return Container(
       height: 95,
       width: width,
@@ -171,33 +174,31 @@ class _feedBackPage extends State<FeedBackPage> {
     );
   }
 
-  Widget _addImageItem() {
-    return imageDataList.length < 9
-        ? InkWell(
-            onTap: () {
-              _getImage();
-            },
-            child: Container(
-              margin: EdgeInsets.only(top: 9, right: 16),
-              width: 86,
-              height: 86,
-              decoration: BoxDecoration(
-                color: AppColor.bgWhite,
-                borderRadius: BorderRadius.all(Radius.circular(3.0)),
-              ),
-              child: Center(
-                child: Icon(Icons.add, color: AppColor.textHint),
-              ),
-            ),
-          )
-        : Container();
-  }
+Widget _addImageItem(){
+    return imageDataList.length<8?InkWell(
+      onTap: (){
+        _getImage();
+      },
+      child: Container(
+      margin: EdgeInsets.only( top: 9, right: 16),
+      width: 86,
+      height: 86,
+      decoration: BoxDecoration(
+        color: AppColor.bgWhite,
+        borderRadius: BorderRadius.all(Radius.circular(3.0)),
+      ),
+      child: Center(
+        child: Icon(Icons.add, color: AppColor.textHint),
+      ),
+    ),):Container();
+}
 
-  //从相册获取照片
-  _getImage() {
-    AppRouter.navigateToMediaPickerPage(context, 9, typeImage, true, startPageGallery, false, (result) {
+    //从相册获取照片
+  _getImage(){
+    AppRouter.navigateToMediaPickerPage(
+      context, 8, typeImage, true, startPageGallery, false, (result) {
       SelectedMediaFiles files = Application.selectedMediaFiles;
-      if (!result || files == null) {
+      if (!result|| files == null) {
         print('===============================值为空退回');
         return;
       }

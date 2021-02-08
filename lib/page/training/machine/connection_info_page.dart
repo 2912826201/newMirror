@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mirror/api/machine_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:provider/provider.dart';
 
 /// connection_info_page
 /// Created by yangjiayi on 2021/1/4.
@@ -41,7 +45,7 @@ class _ConnectionInfoState extends State<ConnectionInfoPage> {
           height: 12,
           color: AppColor.bgWhite,
         ),
-        _buildPanel(),
+        _buildPanel(context.watch<MachineNotifier>()),
       ],
     );
   }
@@ -64,7 +68,7 @@ class _ConnectionInfoState extends State<ConnectionInfoPage> {
     return Container();
   }
 
-  Widget _buildPanel() {
+  Widget _buildPanel(MachineNotifier notifier) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
       child: Column(
@@ -80,7 +84,7 @@ class _ConnectionInfoState extends State<ConnectionInfoPage> {
                 ),
                 Spacer(),
                 Text(
-                  "IF终端",
+                  "${notifier.machine.name}",
                   style: AppStyle.textSecondaryRegular16,
                 )
               ],
@@ -106,19 +110,12 @@ class _ConnectionInfoState extends State<ConnectionInfoPage> {
                 ),
                 Expanded(
                     child: Text(
-                  "aimymusic_guest",
+                  notifier.machine.wifi == null ? "未连接" : "${notifier.machine.wifi}",
                   softWrap: false,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.end,
                   style: AppStyle.textSecondaryRegular16,
                 )),
-                SizedBox(
-                  width: 12,
-                ),
-                Text(
-                  "未连接",
-                  style: AppStyle.textSecondaryRegular16,
-                )
               ],
             ),
           ),
@@ -137,7 +134,7 @@ class _ConnectionInfoState extends State<ConnectionInfoPage> {
                 ),
                 Spacer(),
                 Text(
-                  "iFChengdu7CC10",
+                  "${notifier.machine.deviceNumber}",
                   style: AppStyle.textSecondaryRegular16,
                 )
               ],
@@ -158,7 +155,7 @@ class _ConnectionInfoState extends State<ConnectionInfoPage> {
                 ),
                 Spacer(),
                 Text(
-                  "1.1.12",
+                  "${notifier.machine.sysVersion}",
                   style: AppStyle.textSecondaryRegular16,
                 )
               ],
@@ -174,6 +171,12 @@ class _ConnectionInfoState extends State<ConnectionInfoPage> {
           GestureDetector(
             onTap: () {
               print("断开连接");
+              logoutMachine(Application.machine.machineId).then((value) {
+                if(value){
+                  context.read<MachineNotifier>().setMachine(null);
+                  Navigator.pop(context, true);
+                }
+              });
             },
             child: Container(
               alignment: Alignment.center,

@@ -232,6 +232,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.0.10"
+  dio_range_download:
+    dependency: "direct main"
+    description:
+      name: dio_range_download
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.1.3"
   english_words:
     dependency: "direct main"
     description:

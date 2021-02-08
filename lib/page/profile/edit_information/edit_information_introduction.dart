@@ -87,7 +87,11 @@ class _IntroductionState extends State<EditInformationIntroduction> {
                 CustomRedButton.buttonStateNormal,
                 () {
                   _commentFocus.unfocus();
-                  Navigator.pop(this.context, editText);
+                  if(editText.length==0){
+                    Navigator.pop(this.context, null);
+                  }else{
+                    Navigator.pop(this.context, editText);
+                  }
                 },
               ),
             ),
