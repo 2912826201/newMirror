@@ -84,7 +84,7 @@ class _VipOpenPage extends State<VipOpenPage> {
                         padding: EdgeInsets.only(left: 16, right: 16),
                         child: VipGridList(
                           vipType: VipType.OPEN,
-                          vipState: VipState.EXPIRED,
+                          vipState: vipState,
                         ),
                       )
                     ],
@@ -106,9 +106,9 @@ class _VipOpenPage extends State<VipOpenPage> {
                                         AppColor.textHint,
                                         AppColor.textSecondary,
                                       ]
-                                    : [AppColor.lightGreen, AppColor.textVipPrimary1],
-                                begin: FractionalOffset(0, 0.6),
-                                end: FractionalOffset(0.6, 1)),
+                                    : [AppColor.bgVip1,AppColor.bgVip2],
+                                begin: FractionalOffset(0, 0.7),
+                                end: FractionalOffset(0.7, 1)),
                             borderRadius: BorderRadius.all(Radius.circular(10)),
                           ),
                           child: Column(

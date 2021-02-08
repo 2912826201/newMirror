@@ -60,7 +60,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       followingCount = attentionModel.followingCount;
       followerCount = attentionModel.followerCount;
       print('个人主页粉丝数================================$followerCount');
-      context.read<ProfilePageNotifier>().setExtraInfoModel(extraInfoModel);
+      context.read<ProfileNotifier>().setExtraInfoModel(extraInfoModel);
       feedCount = attentionModel.feedCount;
       if (mounted) {
         setState(() {});
@@ -136,12 +136,12 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 Row(
                   children: [
                     _secondData(Icons.timer,
-                        context.watch<ProfilePageNotifier>().extraInfoModel.trainingSeconds, "训练记录"),
+                        context.watch<ProfileNotifier>().extraInfoModel.trainingSeconds, "训练记录"),
                     Expanded(child: Container()),
                     _secondData(
-                        Icons.poll, context.watch<ProfilePageNotifier>().extraInfoModel.weight, "体重记录"),
+                        Icons.poll, context.watch<ProfileNotifier>().extraInfoModel.weight, "体重记录"),
                     Expanded(child: Container()),
-                    _secondData(Icons.photo, context.watch<ProfilePageNotifier>().extraInfoModel.albumNum,
+                    _secondData(Icons.photo, context.watch<ProfileNotifier>().extraInfoModel.albumNum,
                         "健身相册"),
                   ],
                 ),

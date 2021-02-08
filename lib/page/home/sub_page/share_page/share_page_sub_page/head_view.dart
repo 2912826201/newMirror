@@ -12,6 +12,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_button.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
@@ -208,6 +209,9 @@ class HeadViewState extends State<HeadView> {
                         if (list[index] == "取消关注") {
                           removeFollowAndFollow(model.isFollow, model.pushId, context);
                         }
+                        if(list[index] == "举报"){
+                          _showDialog();
+                        }
                       });
                 },
               ),
@@ -215,5 +219,24 @@ class HeadViewState extends State<HeadView> {
           ],
         ));
   }
-
+  void _showDialog() {
+    showAppDialog(context,
+      confirm: AppDialogButton("必须举报!",(){
+        _denounceUser();
+        return true;
+      }),
+      cancel: AppDialogButton("再想想", (){
+        return true;
+      }),
+      title: "提交举报",
+      info: "确认举报用户",
+    );
+  }
+  _denounceUser() async {
+    bool isSucess = await ProfileMoreDenounce(model.pushId, 1);
+    print('isSucess=======================================$isSucess');
+    if (isSucess) {
+      ToastShow.show(msg: "举报成功", context: context);
+    }
+  }
 }
