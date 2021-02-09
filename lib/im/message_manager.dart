@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/config/application.dart';
@@ -192,7 +194,8 @@ class MessageManager {
   static splitMessage(Message message) async {
     if (message.objectName == ChatTypeModel.MESSAGE_TYPE_CMD) {
       //私聊通知
-      switch (message.originContentMap["data"]["subType"]) {
+      Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
+      switch (dataMap["subType"]) {
         case 0:
           //0-加入群聊
           Application.appContext.read<ChatMessageProfileNotifier>().entryGroup(message);
@@ -206,7 +209,7 @@ class MessageManager {
           break;
         case 3:
           //3-登陆机器
-          int machineId = message.originContentMap["data"]["machineId"];
+          int machineId = dataMap["machineId"];
           //如果已经关联了该机器，则无需操作；否则需要更新机器信息
           if (Application.machine == null || Application.machine.machineId != machineId) {
             getMachineStatusInfo().then((list) {
@@ -218,7 +221,7 @@ class MessageManager {
           break;
         case 4:
           //4-机器登出
-          int machineId = message.originContentMap["data"]["machineId"];
+          int machineId = dataMap["machineId"];
           //如果已关联机器与通知中一致则清空，否则无需操作
           if (Application.machine != null && Application.machine.machineId == machineId) {
             Application.appContext.read<MachineNotifier>().setMachine(null);
