@@ -15,11 +15,10 @@ class PrecisionLimitFormatter extends TextInputFormatter {
 
   @override
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
-          //不是删除并且在输入第四位并且新输入的不是小数点
-        if(newValue.text.length>oldValue.text.length&&newValue.text.length==4&&newValue.text.substring(newValue.text
-            .length-1,newValue.text.length)!=POINTER){
-          return oldValue;
-        }
+          ///旧值新值都不存在小数点，并且长度大于三时直接返回旧值
+      if(!oldValue.text.contains(POINTER)&&newValue.text.length>3&&!newValue.text.contains(POINTER)){
+        return oldValue;
+      }
       if (newValue.text.startsWith(POINTER) && newValue.text.length == 1) {
         //第一个不能输入小数点
         return oldValue;
