@@ -5,6 +5,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:provider/provider.dart';
 
@@ -174,7 +175,7 @@ class _ConnectionInfoState extends State<ConnectionInfoPage> {
               logoutMachine(Application.machine.machineId).then((value) {
                 if(value){
                   context.read<MachineNotifier>().setMachine(null);
-                  Navigator.pop(context, true);
+                  AppRouter.popToBeforeMachineController(context);
                 }
               });
             },
