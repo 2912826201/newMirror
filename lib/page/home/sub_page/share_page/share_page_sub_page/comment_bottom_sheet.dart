@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/commentInputBox.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/page/training/currency/currency_comment_page.dart';
+import 'package:mirror/page/training/common/common_comment_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -29,7 +29,7 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
 
   //上拉加载数据
   RefreshController _refreshController = RefreshController(initialRefresh: false);
-  GlobalKey<CurrencyCommentPageState> childKey = GlobalKey();
+  GlobalKey<CommonCommentPageState> childKey = GlobalKey();
 
   @override
   void dispose() {
@@ -134,7 +134,7 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
             },
             child: CustomScrollView(controller: _controller, physics: ClampingScrollPhysics(), slivers: <Widget>[
               SliverToBoxAdapter(
-                child: CurrencyCommentPage(
+                child: CommonCommentPage(
                   key: childKey,
                   scrollController: _controller,
                   refreshController: _refreshController,
