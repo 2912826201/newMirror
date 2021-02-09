@@ -25,9 +25,10 @@ import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/post_comments.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
-import 'currency_page.dart';
 
-class CurrencyCommentPage extends StatefulWidget {
+import 'common_course_page.dart';
+
+class CommonCommentPage extends StatefulWidget {
   final RefreshController refreshController;
   final int targetId;
   final int pushId;
@@ -45,7 +46,7 @@ class CurrencyCommentPage extends StatefulWidget {
   final List<GlobalKey> globalKeyList;
   final double externalBoxHeight;
 
-  CurrencyCommentPage({
+  CommonCommentPage({
     @required Key key,
     @required this.targetId,
     @required this.scrollController,
@@ -64,10 +65,10 @@ class CurrencyCommentPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  CurrencyCommentPageState createState() => CurrencyCommentPageState();
+  CommonCommentPageState createState() => CommonCommentPageState();
 }
 
-class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerProviderStateMixin {
+class CommonCommentPageState extends State<CommonCommentPage> with TickerProviderStateMixin {
   //用户的评论热度-热度排序
   CommentModel courseCommentHot;
   List<int> screenOutHotIds = <int>[];

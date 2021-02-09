@@ -14,7 +14,7 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
-import 'package:mirror/page/training/currency/currency_comment_page.dart';
+import 'package:mirror/page/training/common/common_comment_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -25,7 +25,7 @@ import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/api/training/live_api.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:mirror/page/training/currency/currency_page.dart';
+import 'package:mirror/page/training/common/common_course_page.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import '../../../widget/sliver_custom_header_delegate.dart';
@@ -82,7 +82,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   ScrollController scrollController = ScrollController();
 
   //控制评论布局的滑动
-  GlobalKey<CurrencyCommentPageState> childKey = GlobalKey();
+  GlobalKey<CommonCommentPageState> childKey = GlobalKey();
   //评论子布局用来获取这个界面的高度
   List<GlobalKey> globalKeyList=<GlobalKey>[];
   //是否全部展示动作的item
@@ -266,7 +266,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     return SliverToBoxAdapter(
       child: Visibility(
         visible: recommendLoadingStatus==LoadingStatus.STATUS_COMPLETED,
-        child: CurrencyCommentPage(
+        child: CommonCommentPage(
           key:childKey,
           scrollController: scrollController,
           refreshController: _refreshController,
