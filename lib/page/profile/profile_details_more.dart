@@ -9,6 +9,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/dialog.dart';
 
 ///个人主页更多
 class ProfileDetailsMore extends StatefulWidget {
@@ -44,11 +45,7 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
         appBar: CustomAppBar(
           titleString: "更多",
           leadingOnTap: () {
-            if (!isNoChange) {
-              Navigator.pop(this.context, true);
-            } else {
               Navigator.pop(this.context);
-            }
           },
         ),
         body: Container(
@@ -150,34 +147,17 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
   }
 
   void _showDialog() {
-    showCupertinoDialog(
-        context: context,
-        builder: (context) {
-          return CupertinoAlertDialog(
-            title: Text('提交举报'),
-            content: Text('确认举报该用户'),
-            actions: <Widget>[
-              CupertinoDialogAction(
-                child: Text(
-                  '再想想',
-                  style: AppStyle.textRegular16,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-              CupertinoDialogAction(
-                child: Text(
-                  '必须举报！',
-                  style: AppStyle.redRegular16,
-                ),
-                onPressed: () {
-                  _denounceUser(context);
-                },
-              ),
-            ],
-          );
-        });
+   showAppDialog(context,
+   confirm: AppDialogButton("必须举报!",(){
+        _denounceUser();
+        return true;
+       }),
+     cancel: AppDialogButton("再想想", (){
+       return true;
+     }),
+      title: "提交举报",
+      info: "确认举报用户",
+   );
   }
 
   Widget _itemSelect(double width, TextStyle style, String text) {
@@ -209,12 +189,6 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
     print('拉黑是否成功====================================$blackStatus');
     if (blackStatus == true) {
       _checkBlackStatus();
-      if (widget.isFollow) {
-        isNoChange = false;
-        if (mounted) {
-          setState(() {});
-        }
-      }
     }
   }
 
@@ -222,9 +196,15 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
   _cancelBlack() async {
     bool blackStatus = await ProfileCancelBlack(widget.userId);
     print('取消拉黑是否成功====================================$blackStatus');
-    if (blackStatus == true) {
-      _checkBlackStatus();
+    if(blackStatus!=null){
+      if (blackStatus == true) {
+        ToastShow.show(msg: "解除拉黑成功", context: context);
+        _checkBlackStatus();
+      }else{
+        ToastShow.show(msg: "操作失败", context: context);
+      }
     }
+
   }
 
   ///请求黑名单关系
@@ -245,12 +225,11 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
   }
 
   ///举报
-  _denounceUser(WidgetContext) async {
+  _denounceUser() async {
     bool isSucess = await ProfileMoreDenounce(widget.userId, 0);
     print('isSucess=======================================$isSucess');
     if (isSucess) {
       ToastShow.show(msg: "举报成功", context: context);
     }
-    Navigator.pop(WidgetContext);
   }
 }

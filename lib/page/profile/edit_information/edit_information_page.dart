@@ -230,66 +230,72 @@ class _EditInformationState extends State<EditInformation> {
                         if (list[index] == "男") {
                           setState(() {
                             userSex = 1;
-                          });
-                        } else if (list[index] == "女") {
-                          setState(() {
-                            userSex = 2;
-                          });
+                           });
+                         }else if(list[index] =="女"){
+                           setState(() {
+                             userSex = 2;
+                           });
+                         }
+                       },
+                       lists:list);
+
+                    },
+                    child: _rowChose(width, "性别", userSexText),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 16, right: 16),
+                    width: width,
+                    height: 0.5,
+                    color: AppColor.bgWhite,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      _showDatePicker();
+                    },
+                    child: _rowChose(width, "生日", userBirthday),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 16, right: 16),
+                    width: width,
+                    height: 0.5,
+                    color: AppColor.bgWhite,
+                  ),
+                  InkWell(
+                    child: _rowChose(width, "地区",context.watch<AddressPickerNotifier>().provinceCity),
+                    onTap: () {
+                      openaddressPickerBottomSheet(context:context, provinceMap: provinceMap, cityMap: cityMap);
+                    },
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 16, right: 16),
+                    width: width,
+                    height: 0.5,
+                    color: AppColor.bgWhite,
+                  ),
+                  InkWell(
+                    child: _rowChose(width, "简介", _introduction),
+                    onTap: () {
+                      AppRouter.navigateToEditInfomationIntroduction(context, _introduction, (result) {
+                        if(result!=null){
+                          _introduction = result;
+                        }else{
+                          _introduction = null;
                         }
-                      },
-                      lists: list);
-                },
-                child: _rowChose(width, "性别", userSexText),
+                        setState(() {
+                        });
+                      });
+                    },
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 16, right: 16),
+                    width: width,
+                    height: 0.5,
+                    color: AppColor.bgWhite,
+                  ),
+                ],
               ),
-              Container(
-                margin: EdgeInsets.only(left: 16, right: 16),
-                width: width,
-                height: 0.5,
-                color: AppColor.bgWhite,
-              ),
-              InkWell(
-                onTap: () {
-                  _showDatePicker();
-                },
-                child: _rowChose(width, "生日", userBirthday),
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 16, right: 16),
-                width: width,
-                height: 0.5,
-                color: AppColor.bgWhite,
-              ),
-              InkWell(
-                child: _rowChose(width, "地区", context.watch<AddressPickerNotifier>().provinceCity),
-                onTap: () {
-                  openaddressPickerBottomSheet(context: context, provinceMap: provinceMap, cityMap: cityMap);
-                },
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 16, right: 16),
-                width: width,
-                height: 0.5,
-                color: AppColor.bgWhite,
-              ),
-              InkWell(
-                child: _rowChose(width, "简介", _introduction),
-                onTap: () {
-                  AppRouter.navigateToEditInfomationIntroduction(context, _introduction, (result) {
-                    setState(() {
-                      _introduction = result;
-                    });
-                  });
-                },
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 16, right: 16),
-                width: width,
-                height: 0.5,
-                color: AppColor.bgWhite,
-              ),
-            ],
-          ),
-        ));
+            )
+            );
   }
 
   //这是每项资料的item
@@ -307,26 +313,25 @@ class _EditInformationState extends State<EditInformation> {
             child: Text(
               title,
               style: AppStyle.textRegular16,
+            ),),
+            SizedBox(
+              width: 28,
             ),
-          ),
-          SizedBox(
-            width: 28,
-          ),
-          Container(
-            alignment: title != "简介" ? Alignment.centerLeft : Alignment.topLeft,
-            height: title == "简介" ? 148 : 23,
-            width: width * 0.67,
-            child: Text(
-              TextContent != null ? TextContent : "去编辑",
-              style: AppStyle.textRegular16,
-              maxLines: 5,
-              overflow: TextOverflow.ellipsis,
+            Container(
+              alignment: title!="简介"?Alignment.centerLeft:Alignment.topLeft,
+              height:title=="简介"?148:23,
+              width: width * 0.67,
+              child: Text(
+                TextContent != null ? TextContent : "去编辑",
+                style: AppStyle.textRegular16,
+                maxLines:5,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-          ),
-          Expanded(child: SizedBox()),
-          Container(
-            alignment: title == "简介" ? Alignment.topRight : Alignment.centerRight,
-            child: Text(
+            Spacer(),
+            Container(
+              alignment: title=="简介"?Alignment.topRight:Alignment.centerRight,
+              child: Text(
               ">",
               style: TextStyle(fontSize: 20, color: AppColor.textSecondary),
             ),
@@ -432,11 +437,8 @@ class _EditInformationState extends State<EditInformation> {
       var profile = ProfileDto.fromUserModel(model);
       await ProfileDBHelper().insertProfile(profile);
       context.read<ProfileNotifier>().setProfile(profile);
-      context.read<AddressPickerNotifier>().cleanCityData();
-      Toast.show(
-        "资料修改成功",
-        context,
-      );
+      /*context.read<AddressPickerNotifier>().cleanCityData();*/
+      Toast.show("资料修改成功",context,);
       Loading.hideLoading(context);
       Navigator.pop(context);
       print('更新过后的数据库用户头像${context.read<ProfileNotifier>().profile.avatarUri}');

@@ -7,7 +7,7 @@ import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+// import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/search/search_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -27,6 +27,7 @@ import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.da
 import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/slide_banner.dart';
 import 'package:provider/provider.dart';
+import 'package:waterfall_flow/waterfall_flow.dart';
 
 class SearchFeed extends StatefulWidget {
   SearchFeed({Key key, this.keyWord, this.focusNode, this.textController}) : super(key: key);
@@ -130,8 +131,12 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
         loadStatus = LoadingStatus.STATUS_IDEL;
         loadText = "加载中...";
       }
-      // 更新全局监听
-      context.read<FeedMapNotifier>().updateFeedMap(feedList);
+      List<HomeFeedModel> feedModel = [];
+      context.read<FeedMapNotifier>().feedMap.forEach((key, value) {
+        feedModel.add(value);
+      });
+      // 更新全局内没有的数据
+      context.read<FeedMapNotifier>().updateFeedMap(StringUtil.followModelFilterDeta(feedList, feedModel));
     }
     if (hasNext == 0) {
       // 加载完毕
@@ -159,58 +164,102 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
                 loadText = "加载中...";
                 requestFeednIterface();
               },
-              // child:
-              //     CustomScrollView(controller: _scrollController, physics: AlwaysScrollableScrollPhysics(), slivers: [
-              //   SliverToBoxAdapter(
-              child: Container(
-                margin: EdgeInsets.only(left: 16, right: 16),
-                child: MediaQuery.removePadding(
-                    removeTop: true,
-                    context: context,
-                    child: StaggeredGridView.countBuilder(
-                      shrinkWrap: true,
-                      itemCount: feedList.length + 1,
-                      primary: false,
-                      crossAxisCount: 4,
-                      // 上下间隔
-                      mainAxisSpacing: 4.0,
-                      // 左右间隔
-                      crossAxisSpacing: 8.0,
-                      controller: _scrollController,
-                      itemBuilder: (context, index) {
-                        // 获取动态id
-                        int id;
-                        // 获取动态id指定model
-                        HomeFeedModel model;
-                        if (index < feedList.length) {
-                          id = feedList[index].id;
-                          model = context.read<FeedMapNotifier>().feedMap[id];
-                        }
-                        // if (feedList.isNotEmpty) {
-                        if (index == feedList.length) {
-                          return LoadingView(
-                            loadText: loadText,
-                            loadStatus: loadStatus,
-                          );
-                        } else if (index == feedList.length + 1) {
-                          return Container();
-                        } else {
-                          return SearchFeeditem(
-                            model: model,
-                            list: feedList,
-                            index: index,
-                            focusNode: widget.focusNode,
-                            pageName: "searchFeed",
-                          );
-                        }
-                        // }
-                      },
-                      staggeredTileBuilder: (index) => StaggeredTile.fit(2),
-                    )),
-              ))
-          //     ])
-          // )
-          );
+              child:
+                  CustomScrollView(controller: _scrollController, physics: AlwaysScrollableScrollPhysics(), slivers: [
+                SliverToBoxAdapter(
+                    child: Container(
+                  margin: EdgeInsets.only(left: 16, right: 16),
+                  child: MediaQuery.removePadding(
+                      removeTop: true,
+                      context: context,
+                      child: WaterfallFlow.builder(
+                        primary: false,
+                        shrinkWrap: true,
+                        // controller: _scrollController,
+                        gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          // 上下间隔
+                          mainAxisSpacing: 4.0,
+                          //   // 左右间隔
+                          crossAxisSpacing: 8.0,
+                        ),
+                        itemBuilder: (context, index) {
+                          // 获取动态id
+                          int id;
+                          // 获取动态id指定model
+                          HomeFeedModel model;
+                          if (index < feedList.length) {
+                            id = feedList[index].id;
+                            model = context.read<FeedMapNotifier>().feedMap[id];
+                          }
+                          if (index == feedList.length) {
+                            return LoadingView(
+                              loadText: loadText,
+                              loadStatus: loadStatus,
+                            );
+                          } else if (index == feedList.length + 1) {
+                            return Container();
+                          } else {
+                            return SearchFeeditem(
+                              model: model,
+                              list: feedList,
+                              index: index,
+                              focusNode: widget.focusNode,
+                              pageName: "searchFeed",
+                              feedLastTime: lastTime,
+                              searchKeyWords: widget.textController.text,
+                              feedHasNext: hasNext,
+                            );
+                          }
+                        },
+                        itemCount: feedList.length + 1,
+                      )
+                      // child: StaggeredGridView.countBuilder(
+                      //   shrinkWrap: true,
+                      //   itemCount: feedList.length + 1,
+                      //   primary: false,
+                      //   crossAxisCount: 4,
+                      //   // 上下间隔
+                      //   mainAxisSpacing: 4.0,
+                      //   // 左右间隔
+                      //   crossAxisSpacing: 8.0,
+                      //   controller: _scrollController,
+                      //   itemBuilder: (context, index) {
+                      //     // 获取动态id
+                      //     int id;
+                      //     // 获取动态id指定model
+                      //     HomeFeedModel model;
+                      //     if (index < feedList.length) {
+                      //       id = feedList[index].id;
+                      //       model = context.read<FeedMapNotifier>().feedMap[id];
+                      //     }
+                      //     // if (feedList.isNotEmpty) {
+                      //     if (index == feedList.length) {
+                      //       return LoadingView(
+                      //         loadText: loadText,
+                      //         loadStatus: loadStatus,
+                      //       );
+                      //     } else if (index == feedList.length + 1) {
+                      //       return Container();
+                      //     } else {
+                      //       return SearchFeeditem(
+                      //         model: model,
+                      //         list: feedList,
+                      //         index: index,
+                      //         focusNode: widget.focusNode,
+                      //         pageName: "searchFeed",
+                      //         feedLastTime: lastTime,
+                      //         searchKeyWords: widget.textController.text,
+                      //         feedHasNext: hasNext,
+                      //       );
+                      //     }
+                      //     // }
+                      //   },
+                      //   staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+                      // )
+                      ),
+                ))
+              ])));
     } else {
       return Container(
         child: Column(
@@ -240,7 +289,24 @@ class SearchFeeditem extends StatefulWidget {
   int index;
   String pageName;
 
-  SearchFeeditem({this.model, this.list, this.index, this.focusNode, this.pageName});
+  // 搜索动态关键词
+  String searchKeyWords;
+
+// 动态lastTime
+  int feedLastTime;
+
+  // 动态hasNext
+  int feedHasNext;
+
+  SearchFeeditem(
+      {this.model,
+      this.list,
+      this.index,
+      this.focusNode,
+      this.pageName,
+      this.searchKeyWords,
+      this.feedLastTime,
+      this.feedHasNext});
 
   @override
   SearchFeeditemState createState() =>
@@ -373,25 +439,28 @@ class SearchFeeditemState extends State<SearchFeeditem> {
                   if (focusNode != null) {
                     focusNode.unfocus();
                   }
-                  // list.removeWhere((v) => v == model.id );
-                  List<HomeFeedModel> result = [];
-                  print("点击查看格式");
-                  print(list.length);
-                  for (feedModel in list) {
-                    feedModel = context.read<FeedMapNotifier>().feedMap[feedModel.id];
-                    if (model.id != feedModel.id) {
-                      result.add(feedModel);
-                    }
-                  }
-                  result.insert(0, model);
-                  list = result;
-                  print(list.length);
+                  // List<HomeFeedModel> result = [];
+                  // print("点击查看格式");
+                  // print(list.length);
+                  // for (feedModel in list) {
+                  //   feedModel = context.read<FeedMapNotifier>().feedMap[feedModel.id];
+                  //   if (model.id != feedModel.id) {
+                  //     result.add(feedModel);
+                  //   }
+                  // }
+                  // result.insert(0, model);
+                  // list = result;
+                  // print(list.length);
                   Navigator.push(
                     context,
                     new MaterialPageRoute(
                         builder: (context) => FeedFlow(
                               feedList: list,
                               pageName: widget.pageName,
+                              searchKeyWords: widget.searchKeyWords,
+                              feedLastTime: widget.feedLastTime,
+                              feedIndex: widget.index,
+                              feedHasNext: widget.feedHasNext,
                             )),
                   );
                 },

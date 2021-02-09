@@ -6,6 +6,7 @@ import 'package:mirror/api/user_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
@@ -203,32 +204,31 @@ class SearchUserItem extends StatefulWidget {
 class _SearchState extends State<SearchUserItem> {
   bool isFollow = false;
   bool isMySelf = false;
-    //获取当前item用户的信息
-  _getUserInfo({int id}) async {
-    UserModel userModel = await getUserInfo(uid: id);
-    if (userModel != null) {
-      setState(() {
-        int relation = userModel.relation;
-        if (relation == 0 || relation == 2) {
-          setState(() {
-            widget.model.relation = 0;
-          });
-
-        } else if (relation == 1 || relation == 3) {
-           setState(() {
-             widget.model.relation = 1;
-           });
-        }
-      });
-    }
-  }
+  int isBlack = 0;
   @override
   void initState() {
     super.initState();
+    _checkBlackStatus();
     if(widget.model.uid==context.read<ProfileNotifier>().profile.uid){
         isMySelf = true;
     }else{
       isMySelf = false;
+    }
+  }
+  ///请求黑名单关系
+  _checkBlackStatus() async {
+    BlackModel model = await ProfileCheckBlack(widget.model.uid);
+    if (model != null) {
+      print('inThisBlack===================${model.inThisBlack}');
+      print('inYouBlack===================${model.inYouBlack}');
+      if (model.inYouBlack == 1) {
+        isBlack = 1;
+      } else if(model.inThisBlack == 1){
+        isBlack = 2;
+      }
+      if (mounted) {
+        setState(() {});
+      }
     }
   }
   @override
@@ -310,6 +310,13 @@ class _SearchState extends State<SearchUserItem> {
           Spacer(),
           !isMySelf?InkWell(
             onTap: () {
+              if(isBlack==1){
+                ToastShow.show(msg: "该用户已被你拉黑", context: context);
+                return false;
+              }else if(isBlack == 2){
+                ToastShow.show(msg: "你已被该用户拉黑", context: context);
+                return false;
+              }
                 //只有在未关注时点击走方法
               if (!isFollow) {
                 _getAttention(widget.model.uid);

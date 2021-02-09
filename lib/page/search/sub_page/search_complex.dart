@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+// import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/search/search_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
@@ -21,6 +21,7 @@ import 'package:mirror/page/search/sub_page/search_user.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:provider/provider.dart';
+import 'package:waterfall_flow/waterfall_flow.dart';
 import 'search_topic.dart';
 
 class SearchComplex extends StatefulWidget {
@@ -179,7 +180,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
         // 更新全局监听
         context.read<FeedMapNotifier>().updateFeedMap(feedList);
       }
-      if (hasNext == 0)  {
+      if (hasNext == 0) {
         // 加载完毕
         loadText = "已加载全部动态";
         loadStatus = LoadingStatus.STATUS_COMPLETED;
@@ -246,15 +247,16 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                       child: MediaQuery.removePadding(
                           removeTop: true,
                           context: context,
-                          child: StaggeredGridView.countBuilder(
-                            shrinkWrap: true,
-                            itemCount: feedList.length + 1,
+                          child: WaterfallFlow.builder(
                             primary: false,
-                            crossAxisCount: 4,
-                            // 上下间隔
-                            mainAxisSpacing: 4.0,
-                            // 左右间隔
-                            crossAxisSpacing: 8.0,
+                            shrinkWrap: true,
+                            gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              // 上下间隔
+                              mainAxisSpacing: 4.0,
+                              //   // 左右间隔
+                              crossAxisSpacing: 8.0,
+                            ),
                             itemBuilder: (context, index) {
                               if (index == feedList.length) {
                                 return LoadingView(
@@ -268,13 +270,42 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                                   model: feedList[index],
                                   list: feedList,
                                   index: index,
-                                  focusNode: widget.focusNode,
                                   pageName: "searchComplex",
                                 );
                               }
                             },
-                            staggeredTileBuilder: (index) => StaggeredTile.fit(2),
-                          ))))),
+                            itemCount: feedList.length + 1,
+                          )
+                          // child: StaggeredGridView.countBuilder(
+                          //   shrinkWrap: true,
+                          //   itemCount: feedList.length + 1,
+                          //   primary: false,
+                          //   crossAxisCount: 4,
+                          //   // 上下间隔
+                          //   mainAxisSpacing: 4.0,
+                          //   // 左右间隔
+                          //   crossAxisSpacing: 8.0,
+                          //   itemBuilder: (context, index) {
+                          //     if (index == feedList.length) {
+                          //       return LoadingView(
+                          //         loadText: loadText,
+                          //         loadStatus: loadStatus,
+                          //       );
+                          //     } else if (index == feedList.length + 1) {
+                          //       return Container();
+                          //     } else {
+                          //       return SearchFeeditem(
+                          //         model: feedList[index],
+                          //         list: feedList,
+                          //         index: index,
+                          //         focusNode: widget.focusNode,
+                          //         pageName: "searchComplex",
+                          //       );
+                          //     }
+                          //   },
+                          //   staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+                          // )
+                          )))),
         ],
       ),
     );
