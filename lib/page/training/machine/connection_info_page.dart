@@ -46,7 +46,7 @@ class _ConnectionInfoState extends State<ConnectionInfoPage> {
           height: 12,
           color: AppColor.bgWhite,
         ),
-        _buildPanel(context.watch<MachineNotifier>()),
+        _buildPanel(),
       ],
     );
   }
@@ -69,130 +69,138 @@ class _ConnectionInfoState extends State<ConnectionInfoPage> {
     return Container();
   }
 
-  Widget _buildPanel(MachineNotifier notifier) {
+  Widget _buildPanel() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-      child: Column(
-        children: [
-          SizedBox(
-            height: 48,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "设备名称",
-                  style: AppStyle.textRegular16,
-                ),
-                Spacer(),
-                Text(
-                  "${notifier.machine.name}",
-                  style: AppStyle.textSecondaryRegular16,
-                )
-              ],
-            ),
-          ),
-          Container(
-            height: 0.5,
-            color: AppColor.bgWhite,
-          ),
-          //wifi名称可能很长 所以做个长度处理
-          SizedBox(
-            height: 48,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+      child: Consumer<MachineNotifier>(
+        builder: (context, notifier, child) {
+          if (notifier.machine == null) {
+            AppRouter.popToBeforeMachineController(context);
+            return Container();
+          } else {
+            return Column(
               children: [
                 SizedBox(
-                  width: 96,
-                  child: Text(
-                    "Wi-Fi",
-                    textAlign: TextAlign.start,
-                    style: AppStyle.textRegular16,
+                  height: 48,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "设备名称",
+                        style: AppStyle.textRegular16,
+                      ),
+                      Spacer(),
+                      Text(
+                        "${notifier.machine.name}",
+                        style: AppStyle.textSecondaryRegular16,
+                      )
+                    ],
                   ),
                 ),
-                Expanded(
+                Container(
+                  height: 0.5,
+                  color: AppColor.bgWhite,
+                ),
+                //wifi名称可能很长 所以做个长度处理
+                SizedBox(
+                  height: 48,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 96,
+                        child: Text(
+                          "Wi-Fi",
+                          textAlign: TextAlign.start,
+                          style: AppStyle.textRegular16,
+                        ),
+                      ),
+                      Expanded(
+                          child: Text(
+                        notifier.machine.wifi == null ? "未连接" : "${notifier.machine.wifi}",
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.end,
+                        style: AppStyle.textSecondaryRegular16,
+                      )),
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 0.5,
+                  color: AppColor.bgWhite,
+                ),
+                SizedBox(
+                  height: 48,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "设备号",
+                        style: AppStyle.textRegular16,
+                      ),
+                      Spacer(),
+                      Text(
+                        "${notifier.machine.deviceNumber}",
+                        style: AppStyle.textSecondaryRegular16,
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 0.5,
+                  color: AppColor.bgWhite,
+                ),
+                SizedBox(
+                  height: 48,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "系统版本号",
+                        style: AppStyle.textRegular16,
+                      ),
+                      Spacer(),
+                      Text(
+                        "${notifier.machine.sysVersion}",
+                        style: AppStyle.textSecondaryRegular16,
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 0.5,
+                  color: AppColor.bgWhite,
+                ),
+                SizedBox(
+                  height: 28,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    print("断开连接");
+                    logoutMachine(Application.machine.machineId).then((value) {
+                      if (value) {
+                        context.read<MachineNotifier>().setMachine(null);
+                      }
+                    });
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(3)),
+                      color: AppColor.textPrimary2,
+                    ),
                     child: Text(
-                  notifier.machine.wifi == null ? "未连接" : "${notifier.machine.wifi}",
-                  softWrap: false,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.end,
-                  style: AppStyle.textSecondaryRegular16,
-                )),
-              ],
-            ),
-          ),
-          Container(
-            height: 0.5,
-            color: AppColor.bgWhite,
-          ),
-          SizedBox(
-            height: 48,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "设备号",
-                  style: AppStyle.textRegular16,
+                      "断开连接",
+                      style: TextStyle(color: AppColor.white, fontSize: 16),
+                    ),
+                  ),
                 ),
-                Spacer(),
-                Text(
-                  "${notifier.machine.deviceNumber}",
-                  style: AppStyle.textSecondaryRegular16,
-                )
               ],
-            ),
-          ),
-          Container(
-            height: 0.5,
-            color: AppColor.bgWhite,
-          ),
-          SizedBox(
-            height: 48,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "系统版本号",
-                  style: AppStyle.textRegular16,
-                ),
-                Spacer(),
-                Text(
-                  "${notifier.machine.sysVersion}",
-                  style: AppStyle.textSecondaryRegular16,
-                )
-              ],
-            ),
-          ),
-          Container(
-            height: 0.5,
-            color: AppColor.bgWhite,
-          ),
-          SizedBox(
-            height: 28,
-          ),
-          GestureDetector(
-            onTap: () {
-              print("断开连接");
-              logoutMachine(Application.machine.machineId).then((value) {
-                if(value){
-                  context.read<MachineNotifier>().setMachine(null);
-                  AppRouter.popToBeforeMachineController(context);
-                }
-              });
-            },
-            child: Container(
-              alignment: Alignment.center,
-              height: 44,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(3)),
-                color: AppColor.textPrimary2,
-              ),
-              child: Text(
-                "断开连接",
-                style: TextStyle(color: AppColor.white, fontSize: 16),
-              ),
-            ),
-          ),
-        ],
+            );
+          }
+        },
       ),
     );
   }

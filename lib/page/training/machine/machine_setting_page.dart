@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/notifier/machine_notifier.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:provider/provider.dart';
 
 /// machine_setting_page
 /// Created by yangjiayi on 2021/1/4.
@@ -24,13 +27,23 @@ class _MachineSettingState extends State<MachineSettingPage> {
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.dark,
-        child: Scaffold(
-          appBar: CustomAppBar(
-            titleString: "终端设置",
-          ),
-          body: _buildSettingList(),
-        ));
+      value: SystemUiOverlayStyle.dark,
+      child: Scaffold(
+        appBar: CustomAppBar(
+          titleString: "终端设置",
+        ),
+        body: Consumer<MachineNotifier>(
+          builder: (context, notifier, child) {
+            if (notifier.machine == null) {
+              AppRouter.popToBeforeMachineController(context);
+              return Container();
+            } else {
+              return _buildSettingList();
+            }
+          },
+        ),
+      ),
+    );
   }
 
   Widget _buildSettingList() {

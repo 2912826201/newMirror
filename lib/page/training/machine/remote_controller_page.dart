@@ -78,37 +78,48 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.dark,
-        child: Scaffold(
-          appBar: CustomAppBar(
-            titleString: _title,
-            actions: [
-              CustomAppBarIconButton(Icons.menu, AppColor.black, false, () {
-                AppRouter.navigateToMachineSetting(context);
-              }),
-            ],
-          ),
-          body: _buildBody(context),
-        ));
+      value: SystemUiOverlayStyle.dark,
+      child: Scaffold(
+        appBar: CustomAppBar(
+          titleString: _title,
+          actions: [
+            CustomAppBarIconButton(Icons.menu, AppColor.black, false, () {
+              AppRouter.navigateToMachineSetting(context);
+            }),
+          ],
+        ),
+        //FIXME setState() or markNeedsBuild() called during build.
+        body: Consumer<MachineNotifier>(
+          builder: (context, notifier, child) {
+            if (notifier.machine == null) {
+              AppRouter.popToBeforeMachineController(context);
+              return Container();
+            } else {
+              return _buildBody(notifier);
+            }
+          },
+        ),
+      ),
+    );
   }
 
-  Widget _buildBody(BuildContext context) {
+  Widget _buildBody(MachineNotifier notifier) {
     return Column(
       children: [
         Container(
           height: 260,
-          child: _buildScreen(context),
+          child: _buildScreen(),
         ),
         Container(
           height: 12,
           color: AppColor.bgWhite,
         ),
-        _buildPanel(context.watch<MachineNotifier>()),
+        _buildPanel(notifier),
       ],
     );
   }
 
-  Widget _buildScreen(BuildContext context) {
+  Widget _buildScreen() {
     // return _buildMachinePic();
     return _buildVideoCourse();
   }
@@ -154,334 +165,331 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   }
 
   Widget _buildPanel(MachineNotifier notifier) {
-    if (notifier.machine != null) {
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(40.5, 16, 40.5, 0),
-        child: Column(
-          children: [
-            SizedBox(
-                height: 48,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                        alignment: Alignment.center,
-                        height: 28,
-                        width: 28,
-                        child: Icon(
-                          Icons.volume_up,
-                          color: notifier.machine.status != 0 ? AppColor.textPrimary2 : AppColor.textHint,
-                          size: 24,
-                        )),
-                    Expanded(
-                        child: Container(
-                      //slider会将handler的大小算在组件宽度 所以间距要减去handler的宽度的一半 才是进度条本体的间距
-                      padding: const EdgeInsets.only(left: 6, right: 6),
-                      child: AppSeekBar(100, 0, _volume.toDouble(), notifier.machine.status == 0,
-                          (handlerIndex, lowerValue, upperValue) {
-                        setState(() {
-                          _volume = lowerValue.toInt();
-                        });
-                      }, (handlerIndex, lowerValue, upperValue) {
-                        //调接口保存值
-                        print("调接口保存音量：$lowerValue");
-                        setMachineVolume(notifier.machine.machineId, lowerValue.toInt()).then((value) {
-                          if(value) {
-                            notifier.setMachine(notifier.machine..volume = lowerValue.toInt());
-                          }
-                        });
-                      }),
-                    )),
-                    SizedBox(
-                      width: 42,
-                      child: Text(
-                        "$_volume%",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 14,
-                            color: notifier.machine.status != 0 ? AppColor.textPrimary2 : AppColor.textHint,
-                            fontWeight: FontWeight.w500),
-                      ),
-                    )
-                  ],
-                )),
-            SizedBox(
-              height: 12,
-            ),
-            SizedBox(
-                height: 48,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                        alignment: Alignment.center,
-                        height: 28,
-                        width: 28,
-                        child: Icon(
-                          Icons.wb_sunny,
-                          color: notifier.machine.status != 0 ? AppColor.textPrimary2 : AppColor.textHint,
-                          size: 24,
-                        )),
-                    Expanded(
-                        child: Container(
-                      //slider会将handler的大小算在组件宽度 所以间距要减去handler的宽度的一半 才是进度条本体的间距
-                      padding: const EdgeInsets.only(left: 6, right: 6),
-                      child: AppSeekBar(100, 0, _luminance.toDouble(), notifier.machine.status == 0,
-                          (handlerIndex, lowerValue, upperValue) {
-                        setState(() {
-                          _luminance = lowerValue.toInt();
-                        });
-                      }, (handlerIndex, lowerValue, upperValue) {
-                        //调接口保存值
-                        print("调接口保存亮度：$lowerValue");
-                        setMachineLuminance(notifier.machine.machineId, lowerValue.toInt()).then((value) {
-                          if(value) {
-                            notifier.setMachine(notifier.machine..luminance = lowerValue.toInt());
-                          }
-                        });
-                      }),
-                    )),
-                    SizedBox(
-                      width: 42,
-                      child: Text(
-                        "$_luminance%",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 14,
-                            color: notifier.machine.status != 0 ? AppColor.textPrimary2 : AppColor.textHint,
-                            fontWeight: FontWeight.w500),
-                      ),
-                    )
-                  ],
-                )),
-            SizedBox(
-              height: 12,
-            ),
-            SizedBox(
-                height: 48,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(40.5, 16, 40.5, 0),
+      child: Column(
+        children: [
+          SizedBox(
+              height: 48,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
                       alignment: Alignment.center,
                       height: 28,
                       width: 28,
                       child: Icon(
-                        Icons.book,
-                        color: AppColor.textPrimary2,
+                        Icons.volume_up,
+                        color: notifier.machine.status != 0 ? AppColor.textPrimary2 : AppColor.textHint,
                         size: 24,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 12,
-                    ),
-                    Text(
-                      "${notifier.machine.name}连接状态",
-                      style: AppStyle.textRegular15,
-                    ),
-                    Spacer(),
-                    GestureDetector(
-                      onTap: () {
-                        if (notifier.machine.status != 0) {
-                          AppRouter.navigateToMachineConnectionInfo(context);
+                      )),
+                  Expanded(
+                      child: Container(
+                    //slider会将handler的大小算在组件宽度 所以间距要减去handler的宽度的一半 才是进度条本体的间距
+                    padding: const EdgeInsets.only(left: 6, right: 6),
+                    child: AppSeekBar(100, 0, _volume.toDouble(), notifier.machine.status == 0,
+                        (handlerIndex, lowerValue, upperValue) {
+                      setState(() {
+                        _volume = lowerValue.toInt();
+                      });
+                    }, (handlerIndex, lowerValue, upperValue) {
+                      //调接口保存值
+                      print("调接口保存音量：$lowerValue");
+                      setMachineVolume(notifier.machine.machineId, lowerValue.toInt()).then((value) {
+                        if (value) {
+                          notifier.setMachine(notifier.machine..volume = lowerValue.toInt());
                         }
-                      },
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            notifier.machine.status != 0 ? "已连接" : "未连接",
-                            style: TextStyle(fontSize: 14, color: AppColor.textPrimary2),
-                          ),
-                          Container(
-                            alignment: Alignment.center,
-                            height: 12,
-                            width: 12,
-                            child: Container(
-                              height: 4,
-                              width: 4,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: notifier.machine.status != 0 ? AppColor.lightGreen : AppColor.mainRed,
-                              ),
+                      });
+                    }),
+                  )),
+                  SizedBox(
+                    width: 42,
+                    child: Text(
+                      "$_volume%",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: notifier.machine.status != 0 ? AppColor.textPrimary2 : AppColor.textHint,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  )
+                ],
+              )),
+          SizedBox(
+            height: 12,
+          ),
+          SizedBox(
+              height: 48,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                      alignment: Alignment.center,
+                      height: 28,
+                      width: 28,
+                      child: Icon(
+                        Icons.wb_sunny,
+                        color: notifier.machine.status != 0 ? AppColor.textPrimary2 : AppColor.textHint,
+                        size: 24,
+                      )),
+                  Expanded(
+                      child: Container(
+                    //slider会将handler的大小算在组件宽度 所以间距要减去handler的宽度的一半 才是进度条本体的间距
+                    padding: const EdgeInsets.only(left: 6, right: 6),
+                    child: AppSeekBar(100, 0, _luminance.toDouble(), notifier.machine.status == 0,
+                        (handlerIndex, lowerValue, upperValue) {
+                      setState(() {
+                        _luminance = lowerValue.toInt();
+                      });
+                    }, (handlerIndex, lowerValue, upperValue) {
+                      //调接口保存值
+                      print("调接口保存亮度：$lowerValue");
+                      setMachineLuminance(notifier.machine.machineId, lowerValue.toInt()).then((value) {
+                        if (value) {
+                          notifier.setMachine(notifier.machine..luminance = lowerValue.toInt());
+                        }
+                      });
+                    }),
+                  )),
+                  SizedBox(
+                    width: 42,
+                    child: Text(
+                      "$_luminance%",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: notifier.machine.status != 0 ? AppColor.textPrimary2 : AppColor.textHint,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  )
+                ],
+              )),
+          SizedBox(
+            height: 12,
+          ),
+          SizedBox(
+              height: 48,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    alignment: Alignment.center,
+                    height: 28,
+                    width: 28,
+                    child: Icon(
+                      Icons.book,
+                      color: AppColor.textPrimary2,
+                      size: 24,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 12,
+                  ),
+                  Text(
+                    "${notifier.machine.name}连接状态",
+                    style: AppStyle.textRegular15,
+                  ),
+                  Spacer(),
+                  GestureDetector(
+                    onTap: () {
+                      if (notifier.machine.status != 0) {
+                        AppRouter.navigateToMachineConnectionInfo(context);
+                      }
+                    },
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          notifier.machine.status != 0 ? "已连接" : "未连接",
+                          style: TextStyle(fontSize: 14, color: AppColor.textPrimary2),
+                        ),
+                        Container(
+                          alignment: Alignment.center,
+                          height: 12,
+                          width: 12,
+                          child: Container(
+                            height: 4,
+                            width: 4,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: notifier.machine.status != 0 ? AppColor.lightGreen : AppColor.mainRed,
                             ),
                           ),
-                          Icon(
-                            Icons.chevron_right,
-                            color: AppColor.textHint,
-                            size: 16,
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                )),
-            SizedBox(
-              height: 46,
-            ),
-            Container(
-              alignment: Alignment.center,
-              height: 44,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(3)),
-                color: notifier.machine.status != 0 ? AppColor.textPrimary2 : AppColor.textHint,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      print("上一段");
-                    },
-                    child: Container(
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.skip_previous,
-                        color: AppColor.white,
-                        size: 32,
-                      ),
+                        ),
+                        Icon(
+                          Icons.chevron_right,
+                          color: AppColor.textHint,
+                          size: 16,
+                        ),
+                      ],
                     ),
-                  ),
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      print("暂停");
-                      _showPauseDialog();
-                    },
-                    child: Container(
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.pause,
-                        color: AppColor.white,
-                        size: 32,
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      print("下一段");
-                    },
-                    child: Container(
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.skip_next,
-                        color: AppColor.white,
-                        size: 32,
-                      ),
-                    ),
-                  ),
+                  )
                 ],
-              ),
+              )),
+          SizedBox(
+            height: 46,
+          ),
+          Container(
+            alignment: Alignment.center,
+            height: 44,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(3)),
+              color: notifier.machine.status != 0 ? AppColor.textPrimary2 : AppColor.textHint,
             ),
-            SizedBox(
-              height: 16,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    print("上一段");
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Icon(
+                      Icons.skip_previous,
+                      color: AppColor.white,
+                      size: 32,
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    print("暂停");
+                    _showPauseDialog();
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Icon(
+                      Icons.pause,
+                      color: AppColor.white,
+                      size: 32,
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    print("下一段");
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Icon(
+                      Icons.skip_next,
+                      color: AppColor.white,
+                      size: 32,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            Slider(
-                max: _totalDuration.toDouble(),
-                min: 0,
-                value: _currentPosition,
-                onChanged: (position) {
-                  _currentPosition = position;
-                  setState(() {
-                    _updateInfoByPosition();
-                  });
-                })
-          ],
-        ),
-      );
-    } else {
-      return Container();
-    }
+          ),
+          SizedBox(
+            height: 16,
+          ),
+          Slider(
+              max: _totalDuration.toDouble(),
+              min: 0,
+              value: _currentPosition,
+              onChanged: (position) {
+                _currentPosition = position;
+                setState(() {
+                  _updateInfoByPosition();
+                });
+              })
+        ],
+      ),
+    );
   }
 
   _showPauseDialog() {
     showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return WillPopScope(
-            onWillPop: () async => false,
-            child: Dialog(
-              backgroundColor: AppColor.transparent,
-              elevation: 0,
-              child: Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              height: 74,
-                              width: 74,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: AppColor.textPrimary1,
-                              ),
-                              child: Icon(
-                                Icons.stop,
-                                size: 48,
-                                color: AppColor.textHint,
-                              ),
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return WillPopScope(
+          onWillPop: () async => false,
+          child: Dialog(
+            backgroundColor: AppColor.transparent,
+            elevation: 0,
+            child: Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 74,
+                            width: 74,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppColor.textPrimary1,
                             ),
-                            SizedBox(
-                              height: 16,
+                            child: Icon(
+                              Icons.stop,
+                              size: 48,
+                              color: AppColor.textHint,
                             ),
-                            Text(
-                              "退出训练",
-                              style: TextStyle(color: AppColor.white, fontSize: 14),
-                            )
-                          ],
-                        )),
-                    SizedBox(
-                      width: 53,
-                    ),
-                    GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              height: 74,
-                              width: 74,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: AppColor.white,
-                              ),
-                              child: Icon(
-                                Icons.play_arrow,
-                                size: 48,
-                                color: AppColor.textHint,
-                              ),
+                          ),
+                          SizedBox(
+                            height: 16,
+                          ),
+                          Text(
+                            "退出训练",
+                            style: TextStyle(color: AppColor.white, fontSize: 14),
+                          )
+                        ],
+                      )),
+                  SizedBox(
+                    width: 53,
+                  ),
+                  GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 74,
+                            width: 74,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppColor.white,
                             ),
-                            SizedBox(
-                              height: 16,
+                            child: Icon(
+                              Icons.play_arrow,
+                              size: 48,
+                              color: AppColor.textHint,
                             ),
-                            Text(
-                              "继续训练",
-                              style: TextStyle(color: AppColor.white, fontSize: 14),
-                            )
-                          ],
-                        )),
-                  ],
-                ),
+                          ),
+                          SizedBox(
+                            height: 16,
+                          ),
+                          Text(
+                            "继续训练",
+                            style: TextStyle(color: AppColor.white, fontSize: 14),
+                          )
+                        ],
+                      )),
+                ],
               ),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 }
