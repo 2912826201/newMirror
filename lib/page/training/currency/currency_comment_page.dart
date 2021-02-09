@@ -11,6 +11,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
@@ -436,7 +437,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
                           ],
                         ),
                         onTap: () {
-                          _laudComment(value.id, value.isLaud == 0);
+                          _laudComment(value.id, value.isLaud == 0,value.uid);
                         },
                       ),
                     ),
@@ -736,7 +737,21 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
   }
 
   //发布评论
-  _publishComment(String text, List<Rule> rules) async {
+  _publishComment(String text, List<Rule> rules,int commentUId) async {
+
+    BlackModel blackModel = await ProfileCheckBlack(commentUId);
+    String text = "";
+    if (blackModel.inYouBlack == 1) {
+      text = "发布失败，你已将对方加入黑名单";
+      ToastShow.show(msg: text, context: context);
+      return;
+    } else if (blackModel.inThisBlack == 1) {
+      text = "发布失败，你已被对方加入黑名单";
+      ToastShow.show(msg: text, context: context);
+      return;
+    }
+
+
     List<AtUsersModel> atListModel = [];
     for (Rule rule in rules) {
       AtUsersModel atModel = new AtUsersModel();
@@ -1197,12 +1212,25 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
   }
 
   //点赞-取消点赞
-  _laudComment(int commentId, bool laud) async {
+  _laudComment(int commentId, bool laud,int chatUserId) async {
     if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
       ToastShow.show(msg: "请先登陆app!", context: context);
       AppRouter.navigateToLoginPage(context);
       return;
     }
+
+    BlackModel blackModel = await ProfileCheckBlack(chatUserId);
+    String text = "";
+    if (blackModel.inYouBlack == 1) {
+      text = "发布失败，你已将对方加入黑名单";
+      ToastShow.show(msg: text, context: context);
+      return;
+    } else if (blackModel.inThisBlack == 1) {
+      text = "发布失败，你已被对方加入黑名单";
+      ToastShow.show(msg: text, context: context);
+      return;
+    }
+
     Map<String, dynamic> model = await laudComment(commentId: commentId, laud: laud ? 1 : 0);
     if (model != null && model["state"]) {
       _laudCommentData(courseCommentHot, commentId, true, laud);
@@ -1239,7 +1267,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
 
     openInputBottomSheet(
       buildContext: this.context,
-      voidCallback: _publishComment,
+      voidCallback: (String content, List<Rule> rules)=>_publishComment(content,rules,widget.pushId),
       isShowAt: widget.isShowAt,
     );
   }
@@ -1258,7 +1286,7 @@ class CurrencyCommentPageState extends State<CurrencyCommentPage> with TickerPro
     openInputBottomSheet(
       buildContext: this.context,
       hintText: hintText,
-      voidCallback: _publishComment,
+      voidCallback: (String content, List<Rule> rules)=>_publishComment(content,rules,replyId),
       isShowAt: widget.isShowAt,
     );
   }

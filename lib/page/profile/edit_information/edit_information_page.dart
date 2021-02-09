@@ -39,13 +39,13 @@ class EditInformation extends StatefulWidget {
 }
 
 class _EditInformationState extends State<EditInformation> {
-  String userName = "--";
+  String userName;
   int userSex;
-  String userSexText = "--";
+  String userSexText;
   DateTime _selectedDateTime = DateTime.now();
-  String userBirthday = "--";
+  String userBirthday;
   String _introduction = "去编辑";
-  String avataruri = "";
+  String avataruri;
 
   //取图裁剪得到的图片数据
   Uint8List imageData;
@@ -299,7 +299,7 @@ class _EditInformationState extends State<EditInformation> {
   }
 
   //这是每项资料的item
-  Widget _rowChose(double width, String title, String TextContent) {
+  Widget _rowChose(double width, String title, String textContent) {
     return Container(
       height: title == "简介" ? textHeight + 25 : 48,
       width: width,
@@ -322,7 +322,7 @@ class _EditInformationState extends State<EditInformation> {
               height:title=="简介"?148:23,
               width: width * 0.67,
               child: Text(
-                TextContent != null ? TextContent : "去编辑",
+                textContent != null ? textContent : "去编辑",
                 style: AppStyle.textRegular16,
                 maxLines:5,
                 overflow: TextOverflow.ellipsis,

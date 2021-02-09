@@ -445,7 +445,11 @@ class VideoDetailPageState extends State<VideoDetailPage> {
 
   //分享的点击事件
   void _shareBtnClick() {
-    print("分享点击事件视频课");
+    if(!(context!=null&&context.read<TokenNotifier>().isLoggedIn)){
+      ToastShow.show(msg: "请先登陆app!", context: context);
+      AppRouter.navigateToLoginPage(context);
+      return;
+    }
     openShareBottomSheet(
         context: context,
         sharedType: 1,
