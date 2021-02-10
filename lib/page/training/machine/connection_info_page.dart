@@ -181,11 +181,11 @@ class _ConnectionInfoState extends State<ConnectionInfoPage> {
                 GestureDetector(
                   onTap: () {
                     print("断开连接");
-                    // logoutMachine(Application.machine.machineId).then((value) {
-                    //   if (value) {
+                    logoutMachine(Application.machine.machineId).then((value) {
+                      if (value) {
                         context.read<MachineNotifier>().setMachine(null);
-                    //   }
-                    // });
+                      }
+                    });
                   },
                   child: Container(
                     alignment: Alignment.center,

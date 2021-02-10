@@ -294,9 +294,9 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                   Spacer(),
                   GestureDetector(
                     onTap: () {
-                      // if (notifier.machine.status != 0) {
+                      if (notifier.machine.status != 0) {
                         AppRouter.navigateToMachineConnectionInfo(context);
-                      // }
+                      }
                     },
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
