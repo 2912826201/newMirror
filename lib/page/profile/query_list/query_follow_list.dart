@@ -16,6 +16,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/custom_button.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
@@ -338,7 +339,10 @@ class _QueryFollowState extends State<QueryFollowList> {
   @override
   void initState() {
     super.initState();
-    if (widget.userId == context.read<ProfileNotifier>().profile.uid) {
+    if (widget.userId == context
+        .read<ProfileNotifier>()
+        .profile
+        .uid) {
       isMySelf = true;
     } else {
       isMySelf = false;
@@ -383,17 +387,17 @@ class _QueryFollowState extends State<QueryFollowList> {
       appBar: CustomAppBar(
         titleString: isMySelf
             ? widget.type == 1
-                ? "我的关注"
-                : widget.type == 2
-                    ? "我的粉丝"
-                    : "我关注的话题"
+            ? "我的关注"
+            : widget.type == 2
+            ? "我的粉丝"
+            : "我关注的话题"
             : widget.type == 1
-                ? "他的关注"
-                : widget.type == 2
-                    ? "他的粉丝"
-                    : "他关注的话题",
+            ? "他的关注"
+            : widget.type == 2
+            ? "他的粉丝"
+            : "他关注的话题",
       ),
-      body:buddyList.isNotEmpty||topicList.isNotEmpty?Container(
+      body: buddyList.isNotEmpty || topicList.isNotEmpty ? Container(
         height: height,
         width: width,
         padding: EdgeInsets.only(left: 16, right: 16),
@@ -402,56 +406,56 @@ class _QueryFollowState extends State<QueryFollowList> {
             //需要显隐的搜索框
             isMySelf && widget.type != 2
                 ? Column(
-                    children: [
-                      SizedBox(
-                        height: 12,
-                      ),
-                      Container(
-                        height: 32,
-                        width: width,
-                        color: AppColor.bgWhite,
-                        padding: EdgeInsets.only(left: 12),
-                        child: Center(
-                          child: Row(
-                            children: [
-                              Container(
-                                height: 21,
-                                width: 21,
-                                child: Image.asset("images/resource/Nav_search_icon.png"),
-                              ),
-                              SizedBox(
-                                width: 12,
-                              ),
-                              Expanded(
-                                child: TextField(
-                                  cursorColor: AppColor.black,
-                                  style: AppStyle.textRegular16,
-                                  controller: controller,
-                                  decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.only(bottom: 12),
-                                    counterText: '',
-                                    hintText: widget.type == 1
-                                        ? "搜索用户"
-                                        : widget.type == 2
-                                            ? "搜索用户"
-                                            : "搜索",
-                                    hintStyle: TextStyle(fontSize: 16, color: AppColor.textHint),
-                                    border: InputBorder.none,
-                                  ),
-                                ),
-                              ),
-                            ],
+              children: [
+                SizedBox(
+                  height: 12,
+                ),
+                Container(
+                  height: 32,
+                  width: width,
+                  color: AppColor.bgWhite,
+                  padding: EdgeInsets.only(left: 12),
+                  child: Center(
+                    child: Row(
+                      children: [
+                        Container(
+                          height: 21,
+                          width: 21,
+                          child: Image.asset("images/resource/Nav_search_icon.png"),
+                        ),
+                        SizedBox(
+                          width: 12,
+                        ),
+                        Expanded(
+                          child: TextField(
+                            cursorColor: AppColor.black,
+                            style: AppStyle.textRegular16,
+                            controller: controller,
+                            decoration: InputDecoration(
+                              contentPadding: EdgeInsets.only(bottom: 12),
+                              counterText: '',
+                              hintText: widget.type == 1
+                                  ? "搜索用户"
+                                  : widget.type == 2
+                                  ? "搜索用户"
+                                  : "搜索",
+                              hintStyle: TextStyle(fontSize: 16, color: AppColor.textHint),
+                              border: InputBorder.none,
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 12,
-                      ),
-                    ],
-                  )
-                : Container(
-                    height: 0,
+                      ],
+                    ),
                   ),
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+              ],
+            )
+                : Container(
+              height: 0,
+            ),
 
             Expanded(
               child: SmartRefresher(
@@ -495,7 +499,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                           if (index == 0) {
                             return InkWell(
                               onTap: () {
-                                AppRouter.navigateToQueryFollowList(context,3, widget.userId);
+                                AppRouter.navigateToQueryFollowList(context, 3, widget.userId);
                               },
                               child: _followTopic(width),
                             );
@@ -528,23 +532,23 @@ class _QueryFollowState extends State<QueryFollowList> {
             ),
           ],
         ),
-      ):Container(
+      ) : Container(
         height: ScreenUtil.instance.height,
         width: ScreenUtil.instance.screenWidthDp,
-        child:  Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Spacer(),
-              Container(
-                width: 285,
-                height: 285,
-                color: AppColor.bgWhite,
-              ),
-              SizedBox(height: 12,),
-              Text("没有你要的东西,一会儿再来看看吧",style: AppStyle.textHintRegular14,),
-              Spacer(),
-            ],
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Spacer(),
+            Container(
+              width: 285,
+              height: 285,
+              color: AppColor.bgWhite,
+            ),
+            SizedBox(height: 12,),
+            Text("没有你要的东西,一会儿再来看看吧", style: AppStyle.textHintRegular14,),
+            Spacer(),
+          ],
+        ),
       ),
     );
   }
@@ -615,46 +619,6 @@ class _FollowItemState extends State<QueryFollowItem> {
   String description;
 
   int isBlack = 0;
-  ///这是关注
-  _getAttention(int id) async {
-    int attntionResult = await ProfileAddFollow(id);
-    print('关注监听=========================================$attntionResult');
-    if (attntionResult == 1 || attntionResult == 3) {
-      ToastShow.show(msg: "关注成功!", context: context);
-      setState(() {
-        widget.buddyModel.relation = 1;
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    print('initState========================initState');
-    _checkBlackStatus();
-  }
-  ///请求黑名单关系
-  _checkBlackStatus() async {
-    BlackModel model = await ProfileCheckBlack(widget.userId);
-    if (model != null) {
-      print('inThisBlack===================${model.inThisBlack}');
-      print('inYouBlack===================${model.inYouBlack}');
-      if (model.inYouBlack == 1) {
-        isBlack = 1;
-      } else if(model.inThisBlack == 1){
-        isBlack = 2;
-      }
-      if (mounted) {
-        setState(() {});
-      }
-    }
-  }
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    print('==================================disPose');
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -683,14 +647,20 @@ class _FollowItemState extends State<QueryFollowItem> {
           ///自己的关注列表是没有按钮的
           isCanOnclick = false;
         } else {
-          if (widget.buddyModel.uid == context.watch<ProfileNotifier>().profile.uid) {
+          if (widget.buddyModel.uid == context
+              .watch<ProfileNotifier>()
+              .profile
+              .uid) {
             isCanOnclick = false;
           } else {
             isCanOnclick = true;
           }
         }
       } else {
-        if (widget.buddyModel.uid == context.watch<ProfileNotifier>().profile.uid) {
+        if (widget.buddyModel.uid == context
+            .watch<ProfileNotifier>()
+            .profile
+            .uid) {
           isCanOnclick = false;
         } else {
           isCanOnclick = true;
@@ -734,17 +704,18 @@ class _FollowItemState extends State<QueryFollowItem> {
                     child: widget.type == 3
                         ? Image.asset("images/resource/searchGroup.png")
                         : ClipOval(
-                            child: CachedNetworkImage(
-                              height: widget.width * 0.1,
-                              width: widget.width * 0.1,
-                              imageUrl: avatarUrl,
+                      child: CachedNetworkImage(
+                        height: widget.width * 0.1,
+                        width: widget.width * 0.1,
+                        imageUrl: avatarUrl,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) =>
+                            Image.asset(
+                              "images/test.png",
                               fit: BoxFit.cover,
-                              placeholder: (context, url) => Image.asset(
-                                "images/test.png",
-                                fit: BoxFit.cover,
-                              ),
                             ),
-                          ),
+                      ),
+                    ),
                   ),
                   SizedBox(
                     width: 11,
@@ -768,17 +739,17 @@ class _FollowItemState extends State<QueryFollowItem> {
                           haveIntroduction ? Spacer() : Container(),
                           haveIntroduction
                               ? Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    description,
-                                    style: AppStyle.textSecondaryRegular12,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                )
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              description,
+                              style: AppStyle.textSecondaryRegular12,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )
                               : Container(
-                                  height: 0,
-                                ),
+                            height: 0,
+                          ),
                           Spacer(),
                         ],
                       ),
@@ -788,40 +759,13 @@ class _FollowItemState extends State<QueryFollowItem> {
               )),
           Spacer(),
           isCanOnclick
-              ? InkWell(
-                  onTap: () {
-                    if(isBlack==1){
-                      ToastShow.show(msg: "该用户已被你拉黑", context:context);
-                      return false;
-                    }else if(isBlack == 2){
-                      ToastShow.show(msg: "你已被该用户拉黑", context: context);
-                      return false;
-                    }
-                    if (!isFollow) {
-                      _getAttention(widget.buddyModel.uid);
-                    }
-                  },
-                  child: Container(
-                    width: 56,
-                    height: 24,
-                    alignment: Alignment.centerRight,
-                    decoration: BoxDecoration(
-                      color: !isFollow ? AppColor.textPrimary1 : AppColor.transparent,
-                      borderRadius: BorderRadius.all(Radius.circular(14)),
-                      border: Border.all(width: !isFollow ? 0.5 : 0.0),
-                    ),
-                    child: Center(
-                      child: Text(
-                          !isFollow
-                              ? widget.type == 1
-                                  ? "关注"
-                                  : widget.isMySelf
-                                      ? "回粉"
-                                      : "关注"
-                              : "已关注",
-                          style: !isFollow ? AppStyle.whiteRegular12 : AppStyle.textSecondaryRegular12),
-                    ),
-                  ))
+              ? FollowButton(
+            id:uid,
+            isFollow:isFollow,
+            isMysList:widget.isMySelf,
+            buttonType:widget.type==1
+                ?FollowButtonType.FOLLOW
+                :FollowButtonType.FANS,)
               : Container(),
         ],
       ),
