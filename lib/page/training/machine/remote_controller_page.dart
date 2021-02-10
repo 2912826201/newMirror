@@ -88,11 +88,13 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
             }),
           ],
         ),
-        //FIXME setState() or markNeedsBuild() called during build.
         body: Consumer<MachineNotifier>(
           builder: (context, notifier, child) {
             if (notifier.machine == null) {
-              AppRouter.popToBeforeMachineController(context);
+              //因为在build过程中所以要delay
+              Future.delayed(Duration.zero, (){
+                Navigator.pop(context);
+              });
               return Container();
             } else {
               return _buildBody(notifier);
@@ -292,9 +294,9 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                   Spacer(),
                   GestureDetector(
                     onTap: () {
-                      if (notifier.machine.status != 0) {
+                      // if (notifier.machine.status != 0) {
                         AppRouter.navigateToMachineConnectionInfo(context);
-                      }
+                      // }
                     },
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,

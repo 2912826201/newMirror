@@ -160,14 +160,6 @@ class AppRouter {
     }
   }
 
-  static void popToBeforeMachineController(BuildContext context) {
-    if (Application.machineRemoConPopRouteName != null) {
-      Navigator.of(context).popUntil(ModalRoute.withName(Application.machineRemoConPopRouteName));
-    } else {
-      Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
-    }
-  }
-
   static void navigateToPerfectUserPage(BuildContext context) {
     _navigateToPage(context, pathPerfectUserPage, {});
   }
@@ -425,11 +417,6 @@ class AppRouter {
   }
 
   static void navigateToMachineRemoteController(BuildContext context) {
-    //将当前页面路由名字存起来 机器退出登录后直接返回到该页面
-    var route = ModalRoute.of(context);
-    if (route != null) {
-      Application.machineRemoConPopRouteName = route.settings.name;
-    }
     _navigateToPage(context, pathMachineRemoteController, {});
   }
 

@@ -75,7 +75,10 @@ class _ConnectionInfoState extends State<ConnectionInfoPage> {
       child: Consumer<MachineNotifier>(
         builder: (context, notifier, child) {
           if (notifier.machine == null) {
-            AppRouter.popToBeforeMachineController(context);
+            //因为在build过程中所以要delay
+            Future.delayed(Duration.zero, (){
+              Navigator.pop(context);
+            });
             return Container();
           } else {
             return Column(
@@ -178,11 +181,11 @@ class _ConnectionInfoState extends State<ConnectionInfoPage> {
                 GestureDetector(
                   onTap: () {
                     print("断开连接");
-                    logoutMachine(Application.machine.machineId).then((value) {
-                      if (value) {
+                    // logoutMachine(Application.machine.machineId).then((value) {
+                    //   if (value) {
                         context.read<MachineNotifier>().setMachine(null);
-                      }
-                    });
+                    //   }
+                    // });
                   },
                   child: Container(
                     alignment: Alignment.center,
