@@ -86,7 +86,7 @@ class HeadViewState extends State<HeadView> {
 
   // 是否显示关注按钮
   isShowFollowButton(BuildContext context) {
-    if (isDetail && model.isFollow == 0) {
+    if (isDetail && model.isFollow == 0&&model.pushId!=context.watch<ProfileNotifier>().profile.uid) {
       return  GestureDetector(
         onTap: () {
           if(isBlack==1){
