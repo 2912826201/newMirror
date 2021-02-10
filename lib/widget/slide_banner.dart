@@ -19,12 +19,14 @@ import 'package:provider/provider.dart';
 
 // 轮播图
 class SlideBanner extends StatefulWidget {
-  SlideBanner({Key key, this.height, this.model,this.pageName, this.isDynamicDetails = false}) : super(key: key);
+  SlideBanner({Key key, this.height, this.model,this.index,this.pageName, this.isDynamicDetails = false, this.isHero = false}) : super(key: key);
   HomeFeedModel model;
   double height;
   String pageName;
+  int index;
 
   bool isDynamicDetails;
+  bool isHero;
 
   @override
   _SlideBannerState createState() => _SlideBannerState();
@@ -265,13 +267,16 @@ class _SlideBannerState extends State<SlideBanner> {
                   child: Swiper(
                     itemCount: widget.model.picUrls.length,
                     itemBuilder: (BuildContext context, int index) {
-                      return widget.isDynamicDetails
+
+                      print("index:${widget.index}-widget.isHero:${widget.isHero}- widget.isDynamicDetails:${ widget.isDynamicDetails}, widget.pageName :${widget.model.id}");
+
+                      return widget.isDynamicDetails||(!widget.isHero)
                           ? buildShowItemContainer(
                               index,
                               setAspectRatio(widget.height),
                             )
                           : Hero(
-                              tag: widget.pageName + "${widget.model.id}",
+                              tag: widget.pageName + "${widget.model.id}${widget.index}",
                               child: buildShowItemContainer(
                                 index,
                                 setAspectRatio(widget.height),

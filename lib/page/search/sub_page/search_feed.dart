@@ -600,7 +600,10 @@ class LaudItemState extends State<LaudItem> {
           },
           child: Icon(
             Icons.favorite,
-            color: context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 1
+            color: (context.select((FeedMapNotifier value) => value.feedMap) != null
+                &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id]) != null
+                &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) != null
+                &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 1)
                 ? Colors.red
                 : Colors.grey,
             size: 16,
@@ -610,7 +613,10 @@ class LaudItemState extends State<LaudItem> {
           width: 2,
         ),
         Offstage(
-          offstage: context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].laudCount) == 0,
+          offstage: (context.select((FeedMapNotifier value) => value.feedMap) != null
+                  &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id]) != null
+                  &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].laudCount) != null
+                  &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].laudCount) == 0),
           child: //用Selector的方式监听数据
               Selector<FeedMapNotifier, int>(builder: (context, laudCount, child) {
             return Text(
@@ -621,7 +627,10 @@ class LaudItemState extends State<LaudItem> {
               ),
             );
           }, selector: (context, notifier) {
-            return notifier.feedMap[widget.model.id].laudCount;
+            return (notifier.feedMap!=null&&
+                notifier.feedMap[widget.model.id]!=null&&
+                notifier.feedMap[widget.model.id].laudCount!=null)?
+            notifier.feedMap[widget.model.id].laudCount:0;
           }),
         ),
         // SizedBox(width: 2,)

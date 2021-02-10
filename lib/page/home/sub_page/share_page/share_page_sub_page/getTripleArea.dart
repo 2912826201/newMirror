@@ -41,16 +41,18 @@ class GetTripleAreaState extends State<GetTripleArea> {
             Selector<FeedMapNotifier, List<String>>(builder: (context,laudUserInfo , child) {
               return laudUserInfo.length == 0 ? Container() : avatarOverlap(laudUserInfo.length, context,laudUserInfo);
             }, selector: (context, notifier) {
-              return notifier.feedMap[widget.model.id].laudUserInfo;
+              return (notifier.feedMap==null||notifier.feedMap[widget.model.id]==null||notifier.feedMap[widget.model.id].laudUserInfo==null)?
+              <String>[]:notifier.feedMap[widget.model.id].laudUserInfo;
             }),
             // context
             // widget.model.laudUserInfo.length > 0 ? avatarOverlap(widget.model.laudUserInfo.length, context,widget.model.laudUserInfo) : Container(),
             SizedBox(width: 5),
             Selector<FeedMapNotifier, List<String>>(builder: (context,laudUserInfo , child) {
-                          return laudUserInfo.length == 0 ? Container() : roundedLikeNum(context);
-                        }, selector: (context, notifier) {
-                          return notifier.feedMap[widget.model.id].laudUserInfo;
-                        }),
+              return laudUserInfo.length == 0 ? Container() : roundedLikeNum(context);
+            }, selector: (context, notifier) {
+              return (notifier.feedMap==null||notifier.feedMap[widget.model.id]==null||notifier.feedMap[widget.model.id].laudUserInfo==null)?
+              <String>[]:notifier.feedMap[widget.model.id].laudUserInfo;
+            }),
             // widget.model.laudUserInfo.length > 0 ? roundedLikeNum(context) : Container(),
             Spacer(),
             Container(
@@ -180,7 +182,10 @@ class GetTripleAreaState extends State<GetTripleArea> {
                Icons.favorite,
                 color:
                 // widget.model.isLaud == 0
-                context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 0
+                (context.select((FeedMapNotifier value) => value.feedMap)==null
+                    &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id])==null
+                    &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud)==null
+                    &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 0)
                     ? Colors.grey : Colors.redAccent,
                size: 24,
              ),

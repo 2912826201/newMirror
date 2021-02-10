@@ -146,6 +146,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                             ? SlideBanner(
                                 height: feedModel?.picUrls[0]?.height?.toDouble(),
                                 model: feedModel,
+                                index:widget.index,
                                 pageName: "FeedDetailPage",
                                 isDynamicDetails: true,
                               )

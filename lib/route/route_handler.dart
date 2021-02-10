@@ -57,7 +57,7 @@ import 'package:mirror/page/training/live_broadcast/live_detail_page.dart';
 import 'package:mirror/page/training/machine/connection_info_page.dart';
 import 'package:mirror/page/training/machine/machine_setting_page.dart';
 import 'package:mirror/page/training/machine/remote_controller_page.dart';
-import 'package:mirror/page/training/video_course/other_complete_course_page.dart';
+import 'file:///E:/git/mirror/lib/page/feed/feed_flow/two_column_feed_page.dart';
 import 'package:mirror/page/training/video_course/video_course_list_page.dart';
 import 'package:mirror/page/training/video_course/video_course_play_page.dart';
 import 'package:mirror/page/training/video_course/video_detail_page.dart';
@@ -260,7 +260,7 @@ var handlerVideoDetail = Handler(handlerFunc: (BuildContext context, Map<String,
 //其他人也完成了这个视频课程训练页
 var handlerOtherCompleteCourse = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return OtherCompleteCoursePage(
+  return TwoColumnFeedPage(
     targetId:  data["liveCourseId"],
   );
 });
