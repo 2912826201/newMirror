@@ -391,7 +391,7 @@ class _TwoColumnFeedPageState extends State<TwoColumnFeedPage> {
       Navigator.push(
           context,
           PageRouteBuilder(
-              transitionDuration: Duration(milliseconds: 1000),
+              // transitionDuration: Duration(milliseconds: 1000),
               pageBuilder: (_, __, ___) =>
                 FeedFlowPage(
                   pullFeedType:7,
