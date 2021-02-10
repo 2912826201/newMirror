@@ -977,7 +977,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         }
 
         setCommentListSubSetting(courseCommentHot, isFold: isFold);
-        if (widget.fatherComment != null && isFirstScroll && mounted) {
+        if (widget.commentDtoModel != null &&widget.fatherComment != null && isFirstScroll && mounted) {
           onClickAddSubComment(courseCommentHot.list[choseIndex], choseIndex);
         }
         widget.refreshController.loadComplete();
