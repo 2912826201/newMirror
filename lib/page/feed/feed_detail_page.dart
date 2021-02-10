@@ -15,7 +15,7 @@ import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/course_address_label.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/getTripleArea.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/head_view.dart';
-import 'package:mirror/page/training/currency/currency_comment_page.dart';
+import 'package:mirror/page/training/common/common_comment_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -45,7 +45,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
 
   //上拉加载数据
   RefreshController _refreshController = RefreshController(initialRefresh: false);
-  GlobalKey<CurrencyCommentPageState> childKey = GlobalKey();
+  GlobalKey<CommonCommentPageState> childKey = GlobalKey();
   GlobalKey _key = GlobalKey();
 
   // 列表监听
@@ -235,7 +235,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
       }
     });*/
     return SliverToBoxAdapter(
-      child: CurrencyCommentPage(
+      child: CommonCommentPage(
         key: childKey,
         scrollController: _controller,
         refreshController: _refreshController,

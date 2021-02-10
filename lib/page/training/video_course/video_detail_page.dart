@@ -12,8 +12,8 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
-import 'package:mirror/page/training/currency/currency_comment_page.dart';
-import 'package:mirror/page/training/currency/currency_page.dart';
+import 'package:mirror/page/training/common/common_comment_page.dart';
+import 'package:mirror/page/training/common/common_course_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -101,7 +101,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   ScrollController scrollController = ScrollController();
 
 
-  GlobalKey<CurrencyCommentPageState> childKey = GlobalKey();
+  GlobalKey<CommonCommentPageState> childKey = GlobalKey();
   List<GlobalKey> globalKeyList=<GlobalKey>[];
 
 
@@ -331,7 +331,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     return SliverToBoxAdapter(
       child: Visibility(
         visible: recommendLoadingStatus==LoadingStatus.STATUS_COMPLETED,
-        child: CurrencyCommentPage(
+        child: CommonCommentPage(
           key:childKey,
           scrollController: scrollController,
           refreshController: _refreshController,
@@ -445,7 +445,11 @@ class VideoDetailPageState extends State<VideoDetailPage> {
 
   //分享的点击事件
   void _shareBtnClick() {
-    print("分享点击事件视频课");
+    if(!(context!=null&&context.read<TokenNotifier>().isLoggedIn)){
+      ToastShow.show(msg: "请先登陆app!", context: context);
+      AppRouter.navigateToLoginPage(context);
+      return;
+    }
     openShareBottomSheet(
         context: context,
         sharedType: 1,
