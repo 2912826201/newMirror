@@ -10,6 +10,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/triangle_path.dart';
 import 'package:provider/provider.dart';
 
+double namePlateWidth = 93.5;
 class VipNamePlateHorazontalList extends StatefulWidget{
   int index;
   ScrollController scrollController;
@@ -61,7 +62,7 @@ class _VipNamePlateState extends State<VipNamePlateHorazontalList>{
                }
              },
              child:Container(
-               width: 93,
+               width: namePlateWidth,
                height: 88,
 
                child: Center(
