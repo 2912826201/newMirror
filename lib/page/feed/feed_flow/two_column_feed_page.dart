@@ -391,12 +391,13 @@ class _TwoColumnFeedPageState extends State<TwoColumnFeedPage> {
       Navigator.push(
           context,
           PageRouteBuilder(
-              // transitionDuration: Duration(milliseconds: 1000),
+              transitionDuration: Duration(milliseconds: 300),
               pageBuilder: (_, __, ___) =>
                 FeedFlowPage(
                   pullFeedType:7,
                   pullFeedTargetId: widget.targetId,
                   onCallback:resetHero,
+                  initialScrollOffset: getInitialScrollOffset(index),
                 ),// <-- here is the magic
           )
       );
@@ -457,5 +458,17 @@ class _TwoColumnFeedPageState extends State<TwoColumnFeedPage> {
       return (((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) / width) * height - 20;
     }
     return (((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) / width) * height;
+  }
+
+  //
+  getInitialScrollOffset(int index) {
+    double initialScrollOffset=0.0;
+    // for(int i=0;i<index;i++){
+    //   // HomeFeedModel homeFeedModel=context.read<FeedFlowDataNotifier>().homeFeedModelList[i];
+    //   initialScrollOffset+=700.0;
+    //   // initialScrollOffset+=48.0;
+    //   // initialScrollOffset+=60.0;
+    // }
+    return initialScrollOffset;
   }
 }

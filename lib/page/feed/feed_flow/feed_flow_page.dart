@@ -21,8 +21,9 @@ class FeedFlowPage extends StatefulWidget {
   final Function onCallback;
   final int pullFeedType;
   final int pullFeedTargetId;
+  final double initialScrollOffset;
 
-  FeedFlowPage({this.onCallback, this.pullFeedType, this.pullFeedTargetId});
+  FeedFlowPage({this.onCallback, this.pullFeedType, this.pullFeedTargetId, this.initialScrollOffset=0.0});
 
   @override
   _FeedFlowPageState createState() => _FeedFlowPageState();
@@ -40,12 +41,26 @@ class _FeedFlowPageState extends State<FeedFlowPage> {
   int firstIndex = -1;
   int lastIndex = -1;
 
+
+  // ScrollController scrollController;
+
   @override
   void initState() {
     super.initState();
+
+    // scrollController=new ScrollController(initialScrollOffset: widget.initialScrollOffset);
+    //
+    // if (scrollController.hasClients) {
+    //   print("`````````````````````````````````${scrollController.offset}");
+    // }
     controller = AutoScrollController(
+        initialScrollOffset: widget.initialScrollOffset,
         viewportBoundaryGetter: () => Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
         axis: Axis.vertical);
+
+    // scrollController.addListener(() {
+    //   print("_scrollController:::::::::${scrollController.offset}");
+    // });
   }
 
   @override
@@ -62,13 +77,14 @@ class _FeedFlowPageState extends State<FeedFlowPage> {
   }
 
   Widget getBody() {
+    // state = 1;
     int position = context.watch<FeedFlowDataNotifier>().pageSelectPosition;
     if (state == 0) {
-      Future.delayed(Duration(milliseconds: 100), () async {
+      Future.delayed(Duration(milliseconds: 200), () async {
         state = 1;
         await controller.scrollToIndex(position,
             duration: Duration(milliseconds: 1), preferPosition: AutoScrollPosition.begin);
-        Future.delayed(Duration(milliseconds: 100), () async {
+        Future.delayed(Duration(milliseconds: 200), () async {
           state = 1;
           if (mounted) {
             setState(() {});
@@ -93,10 +109,13 @@ class _FeedFlowPageState extends State<FeedFlowPage> {
     var widgetArray = <Widget>[];
     int pageSelectPosition = context.watch<FeedFlowDataNotifier>().pageSelectPosition;
     int modelLength = context.watch<FeedFlowDataNotifier>().homeFeedModelList.length;
-
+    if(modelLength>5){
+      modelLength=5;
+    }
     return Container(
       color: AppColor.white,
       child: ListView.builder(
+        // controller: scrollController,
         shrinkWrap: true,
         itemBuilder: (context, index) {
           if (index == 0) {
@@ -254,7 +273,9 @@ class _FeedFlowPageState extends State<FeedFlowPage> {
 
   void requestPop() async {
     if (await _requestPop()) {
-      Navigator.of(context).pop();
+      Future.delayed(Duration.zero, () {
+        Navigator.of(context).pop();
+      });
     }
   }
 
@@ -268,6 +289,8 @@ class _FeedFlowPageState extends State<FeedFlowPage> {
     int firstIndex = this.firstIndex;
     if (this.lastIndex - this.firstIndex > 1) {
       firstIndex++;
+    }else if(this.lastIndex==context.read<FeedFlowDataNotifier>().homeFeedModelList.length-1){
+      firstIndex++;
     }
     print("11111111--$firstIndex");
     if (context.read<FeedFlowDataNotifier>().pageSelectPosition != firstIndex) {
@@ -277,7 +300,9 @@ class _FeedFlowPageState extends State<FeedFlowPage> {
         print("11111111--onCallback");
         widget.onCallback();
       }
-      setState(() {});
+      if(mounted) {
+        setState(() {});
+      }
       Future.delayed(Duration(milliseconds: 300), () {
         Navigator.of(context).pop();
       });

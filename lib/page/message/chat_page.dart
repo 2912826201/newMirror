@@ -1598,7 +1598,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   _moreOnClickExitChatPage(){
     //退出群聊
     MessageManager.removeConversation(context, chatUserId, Application.profile.uid, widget.conversation.type);
-    Navigator.of(context).pop();
+    Future.delayed(Duration.zero, () {
+      Navigator.of(context).pop();
+    });
   }
 
   //头部显示的关注按钮的点击事件
