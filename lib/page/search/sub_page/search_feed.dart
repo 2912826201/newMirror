@@ -421,7 +421,28 @@ class SearchFeeditemState extends State<SearchFeeditem> {
     }
     return (((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) / width) * height;
   }
+  // 算出到置顶item的高度
+  specifyItemHeight() {
+    double itemHeight = 0.0;
+    list.forEach((v) {
+      // 头部
+      itemHeight += 62;
+      // 图片
+      if (v.picUrls.isNotEmpty) {
+        if (v.picUrls.first.height == 0) {
+          itemHeight += ScreenUtil.instance.width;
+        }  else {
+          itemHeight += (ScreenUtil.instance.width / v.picUrls[0].width) * v.picUrls[0].height;
+        }
+      }
+      // 视频
+      if(v.videos.isNotEmpty) {
 
+      }
+      // 转发评论点赞
+      itemHeight += 48;
+    });
+}
   // @override
   Widget build(BuildContext context) {
     if (model.videos.isNotEmpty) {
@@ -451,6 +472,7 @@ class SearchFeeditemState extends State<SearchFeeditem> {
                   // result.insert(0, model);
                   // list = result;
                   // print(list.length);
+
                   Navigator.push(
                     context,
                     new MaterialPageRoute(

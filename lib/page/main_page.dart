@@ -6,6 +6,7 @@ import 'package:mirror/page/home/home_page.dart';
 import 'package:mirror/page/if_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/page/message/message_page.dart';
+import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
@@ -19,7 +20,7 @@ class MainPage extends StatefulWidget {
   MainPageState createState() => MainPageState();
 }
 
-class MainPageState extends State<MainPage> with SingleTickerProviderStateMixin {
+class MainPageState extends XCState with SingleTickerProviderStateMixin {
   int currentIndex;
   bool isInit = false;
 
@@ -47,78 +48,79 @@ class MainPageState extends State<MainPage> with SingleTickerProviderStateMixin 
   }
   @override
   void dispose() {
-   // controller.dispose();
+    // controller.dispose();
     super.dispose();
   }
-  @override
-  Widget build(BuildContext context) {
-    print("MainPage_____________________________________________build");
-    double itemWidth = MediaQuery.of(context).size.width / 5;
-    // print("初始创建底部页");
-    // print(ScreenUtil.instance.bottomBarHeight);
-    return Scaffold(
-      // 此属性是重新计算布局空间大小
-      // 内部元素要监听键盘高度必需要设置为false,
-      // resizeToAvoidBottomInset: true,
-      bottomNavigationBar: BottomAppBar(
-          child: Stack(
-        children: <Widget>[
-          AnimatedPositionedDirectional(
-            top: 9,
-            start: _start,
-            width: itemWidth,
-            height: 32,
-            duration: Duration(milliseconds: 300),
-            child: Container(
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: AppColor.black),
-            ),
-          ),
-          Row(children: [
-            Expanded(
-              child: SizedBox(height: 51, width: itemWidth, child: tabbar(0, context,itemWidth)),
-              flex: 1,
-            ),
-            Expanded(
-              child: SizedBox(height: 51, width: itemWidth, child: tabbar(1, context,itemWidth)),
-              flex: 1,
-            ),
-            Expanded(
-              child: SizedBox(height: 51, width: itemWidth, child: tabbar(2, context,itemWidth)),
-              flex: 1,
-            ),
-            Expanded(
-              child: SizedBox(height: 51, width: itemWidth, child: tabbar(3, context,itemWidth)),
-              flex: 1,
-            )
-          ])
-        ],
-      )),
-      // SlidingUpPanel
-      body:
-      // pages[currentIndex]
-      Stack(
-        children: <Widget>[
-          new Offstage(
-            offstage: currentIndex != 0, //这里控制
-            child: HomePage(),
-          ),
-          new Offstage(
-            offstage: currentIndex != 1, //这里控制
-            child: TrainingPage(),
-          ),
-          new Offstage(
-            offstage: currentIndex != 2, //这里控制
-            child: context.watch<TokenNotifier>().isLoggedIn ? MessagePage() : Container(),
-          ),
-          new Offstage(
-            offstage: currentIndex != 3, //这里控制
-            child: context.watch<TokenNotifier>().isLoggedIn ? ProfilePage() : Container(),
-          ),
-        ],
-      ),
-      // returnView(currentIndex),
-    );
-  }
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   print("MainPage_____________________________________________build");
+  //   double itemWidth = MediaQuery.of(context).size.width / 5;
+  //   // print("初始创建底部页");
+  //   // print(ScreenUtil.instance.bottomBarHeight);
+  //   return Scaffold(
+  //     // 此属性是重新计算布局空间大小
+  //     // 内部元素要监听键盘高度必需要设置为false,
+  //     // resizeToAvoidBottomInset: true,
+  //     bottomNavigationBar: BottomAppBar(
+  //         child: Stack(
+  //       children: <Widget>[
+  //         AnimatedPositionedDirectional(
+  //           top: 9,
+  //           start: _start,
+  //           width: itemWidth,
+  //           height: 32,
+  //           duration: Duration(milliseconds: 300),
+  //           child: Container(
+  //             decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: AppColor.black),
+  //           ),
+  //         ),
+  //         Row(children: [
+  //           Expanded(
+  //             child: SizedBox(height: 51, width: itemWidth, child: tabbar(0, context,itemWidth)),
+  //             flex: 1,
+  //           ),
+  //           Expanded(
+  //             child: SizedBox(height: 51, width: itemWidth, child: tabbar(1, context,itemWidth)),
+  //             flex: 1,
+  //           ),
+  //           Expanded(
+  //             child: SizedBox(height: 51, width: itemWidth, child: tabbar(2, context,itemWidth)),
+  //             flex: 1,
+  //           ),
+  //           Expanded(
+  //             child: SizedBox(height: 51, width: itemWidth, child: tabbar(3, context,itemWidth)),
+  //             flex: 1,
+  //           )
+  //         ])
+  //       ],
+  //     )),
+  //     // SlidingUpPanel
+  //     body:
+  //     // pages[currentIndex]
+  //     Stack(
+  //       children: <Widget>[
+  //         new Offstage(
+  //           offstage: currentIndex != 0, //这里控制
+  //           child: HomePage(),
+  //         ),
+  //         new Offstage(
+  //           offstage: currentIndex != 1, //这里控制
+  //           child: TrainingPage(),
+  //         ),
+  //         new Offstage(
+  //           offstage: currentIndex != 2, //这里控制
+  //           child: context.watch<TokenNotifier>().isLoggedIn ? MessagePage() : Container(),
+  //         ),
+  //         new Offstage(
+  //           offstage: currentIndex != 3, //这里控制
+  //           child: context.watch<TokenNotifier>().isLoggedIn ? ProfilePage() : Container(),
+  //         ),
+  //       ],
+  //     ),
+  //     // returnView(currentIndex),
+  //   );
+  // }
 
   // 自定义BottomAppBar
   Widget tabbar(int index, BuildContext context,double itemWidth) {
@@ -164,7 +166,7 @@ class MainPageState extends State<MainPage> with SingleTickerProviderStateMixin 
                 } else {
                   context.read<SelectedbottomNavigationBarNotifier>().changeIndex(index);
                   if (currentIndex != index) {
-                    setState(() {
+                    reload(() {
                       currentIndex = index;
                       if (index == 0) {
                         _start = itemWidth / 7;
@@ -181,6 +183,23 @@ class MainPageState extends State<MainPage> with SingleTickerProviderStateMixin 
                         _start = 3 * itemWidth + itemWidth * 0.9;
                       }
                     });
+                    // setState(() {
+                    //   currentIndex = index;
+                    //   if (index == 0) {
+                    //     _start = itemWidth / 7;
+                    //   }
+                    //   if (index == 1) {
+                    //     _start = itemWidth + itemWidth * 0.4;
+                    //   }
+                    //   if (index == 2) {
+                    //     //在切换到消息页时 请求未读互动通知数
+                    //     getUnReads();
+                    //     _start = 2 * itemWidth + itemWidth * 0.64;
+                    //   }
+                    //   if (index == 3) {
+                    //     _start = 3 * itemWidth + itemWidth * 0.9;
+                    //   }
+                    // });
                   }
                 }
               },
@@ -190,6 +209,76 @@ class MainPageState extends State<MainPage> with SingleTickerProviderStateMixin 
       );
     }
     return item(context);
+  }
+
+  @override
+  Widget shouldBuild(BuildContext context) {
+    print("MainPage_____________________________________________build");
+    double itemWidth = MediaQuery.of(context).size.width / 5;
+    // print("初始创建底部页");
+    // print(ScreenUtil.instance.bottomBarHeight);
+    return Scaffold(
+      // 此属性是重新计算布局空间大小
+      // 内部元素要监听键盘高度必需要设置为false,
+      // resizeToAvoidBottomInset: true,
+      bottomNavigationBar: BottomAppBar(
+          child: Stack(
+            children: <Widget>[
+              AnimatedPositionedDirectional(
+                top: 9,
+                start: _start,
+                width: itemWidth,
+                height: 32,
+                duration: Duration(milliseconds: 300),
+                child: Container(
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: AppColor.black),
+                ),
+              ),
+              Row(children: [
+                Expanded(
+                  child: SizedBox(height: 51, width: itemWidth, child: tabbar(0, context,itemWidth)),
+                  flex: 1,
+                ),
+                Expanded(
+                  child: SizedBox(height: 51, width: itemWidth, child: tabbar(1, context,itemWidth)),
+                  flex: 1,
+                ),
+                Expanded(
+                  child: SizedBox(height: 51, width: itemWidth, child: tabbar(2, context,itemWidth)),
+                  flex: 1,
+                ),
+                Expanded(
+                  child: SizedBox(height: 51, width: itemWidth, child: tabbar(3, context,itemWidth)),
+                  flex: 1,
+                )
+              ])
+            ],
+          )),
+      // SlidingUpPanel
+      body:
+      // pages[currentIndex]
+      Stack(
+        children: <Widget>[
+          new Offstage(
+            offstage: currentIndex != 0, //这里控制
+            child: HomePage(),
+          ),
+          new Offstage(
+            offstage: currentIndex != 1, //这里控制
+            child: TrainingPage(),
+          ),
+          new Offstage(
+            offstage: currentIndex != 2, //这里控制
+            child: context.watch<TokenNotifier>().isLoggedIn ? MessagePage() : Container(),
+          ),
+          new Offstage(
+            offstage: currentIndex != 3, //这里控制
+            child: context.watch<TokenNotifier>().isLoggedIn ? ProfilePage() : Container(),
+          ),
+        ],
+      ),
+      // returnView(currentIndex),
+    );
   }
 }
 

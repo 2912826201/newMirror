@@ -300,6 +300,7 @@ class MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    print("Main_________________________________build");
     return MaterialApp(
       // title: 'Flutter Demo',
       theme: ThemeData(
