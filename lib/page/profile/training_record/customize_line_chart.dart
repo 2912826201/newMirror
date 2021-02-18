@@ -67,18 +67,17 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
   }
 
   void initData(){
-    if(widget.weightDataMap["recordList"].length!=valueList.length){
-      valueList.clear();
-      xValue.clear();
-      for (int i = 0; i < widget.weightDataMap["recordList"].length; i++) {
-        valueList.add(widget.weightDataMap["recordList"][i]["weight"]);
-        xValue.add(widget.weightDataMap["recordList"][i]["dateTime"]);
-      }
-      if (valueList.length >= 5) {
-        pageSize = 5;
-      } else {
-        pageSize = valueList.length;
-      }
+
+    valueList.clear();
+    xValue.clear();
+    for (int i = 0; i < widget.weightDataMap["recordList"].length; i++) {
+      valueList.add(widget.weightDataMap["recordList"][i]["weight"]);
+      xValue.add(widget.weightDataMap["recordList"][i]["dateTime"]);
+    }
+    if (valueList.length >= 5) {
+      pageSize = 5;
+    } else {
+      pageSize = valueList.length;
     }
 
     if (widget.weightDataMap["targetWeight"] == null || widget.weightDataMap["targetWeight"] < 1) {

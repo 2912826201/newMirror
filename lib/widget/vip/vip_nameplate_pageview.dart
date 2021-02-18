@@ -5,6 +5,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/page/profile/vip/vip_nameplate_page.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/vip/vip_nameplate_horazontal_list.dart';
 import 'package:provider/provider.dart';
 class VipNamePlatePageView  extends StatefulWidget{
   PageController pageController;
@@ -55,13 +56,14 @@ class _VipNamePlatePageState extends State<VipNamePlatePageView>{
     return Container(
         height: ScreenUtil.instance.height-132+ScreenUtil.instance.statusBarHeight,
         width: ScreenUtil.instance.width,
+        color: AppColor.white,
         child: PageView(
           controller: widget.pageController,
           children: widgetList,
           onPageChanged: (index){
                   context.read<VipMoveNotifier>().changeListOldIndex(index);
-                    double i = (ScreenUtil.instance.screenWidthDp-93.5)/2;
-                    double offset = 93.5 * index - i;
+                    double i = (ScreenUtil.instance.screenWidthDp-namePlateWidth)/2;
+                    double offset = namePlateWidth * index - i;
                   widget.scrollController.animateTo(offset, duration: Duration(milliseconds: 400), curve:Curves.ease);
           },
         ),
