@@ -17,19 +17,19 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
-class FeedFlowPage extends StatefulWidget {
+class FeedFlowPage2 extends StatefulWidget {
   final Function onCallback;
   final int pullFeedType;
   final int pullFeedTargetId;
   final double initialScrollOffset;
 
-  FeedFlowPage({this.onCallback, this.pullFeedType, this.pullFeedTargetId, this.initialScrollOffset=0.0});
+  FeedFlowPage2({this.onCallback, this.pullFeedType, this.pullFeedTargetId, this.initialScrollOffset=0.0});
 
   @override
-  _FeedFlowPageState createState() => _FeedFlowPageState();
+  _FeedFlowPage2State createState() => _FeedFlowPage2State();
 }
 
-class _FeedFlowPageState extends State<FeedFlowPage> {
+class _FeedFlowPage2State extends State<FeedFlowPage2> {
   int state = 0;
 
   // scroll_to_index定位
@@ -42,11 +42,23 @@ class _FeedFlowPageState extends State<FeedFlowPage> {
   int lastIndex = -1;
 
 
+  int showFirstItemPosition;
+  int showEndItemPosition;
+  int showItemCount=6;
+
   // ScrollController scrollController;
 
   @override
   void initState() {
     super.initState();
+    showFirstItemPosition=context.read<FeedFlowDataNotifier>().pageSelectPosition;
+    if(showFirstItemPosition+5>=context.read<FeedFlowDataNotifier>().homeFeedModelList.length-1){
+      showItemCount=context.read<FeedFlowDataNotifier>().homeFeedModelList.length-showFirstItemPosition;
+      showEndItemPosition=context.read<FeedFlowDataNotifier>().homeFeedModelList.length;
+    }else{
+      showItemCount=5;
+      showEndItemPosition=showItemCount+showFirstItemPosition;
+    }
 
     // scrollController=new ScrollController(initialScrollOffset: widget.initialScrollOffset);
     //
@@ -54,13 +66,45 @@ class _FeedFlowPageState extends State<FeedFlowPage> {
     //   print("`````````````````````````````````${scrollController.offset}");
     // }
     controller = AutoScrollController(
-        initialScrollOffset: 0,
+        initialScrollOffset: widget.initialScrollOffset,
         viewportBoundaryGetter: () => Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
         axis: Axis.vertical);
 
-    // scrollController.addListener(() {
-    //   print("_scrollController:::::::::${scrollController.offset}");
-    // });
+    controller.addListener(() {
+      print("_scrollController:::::::::${controller.offset}");
+      if(controller.offset<controller.position.minScrollExtent){
+
+        if(showFirstItemPosition-2<=0){
+          showFirstItemPosition=0;
+        }else{
+          showFirstItemPosition-=2;
+        }
+        showItemCount=showEndItemPosition-showFirstItemPosition;
+
+        print("showItemCount:$showItemCount,showEndItemPosition:$showEndItemPosition,showFirstItemPosition:$showFirstItemPosition");
+
+        setState(() {
+
+        });
+      }else if(controller.offset>controller.position.maxScrollExtent){
+
+        if(showEndItemPosition>=context.read<FeedFlowDataNotifier>().homeFeedModelList.length){
+          return;
+        }
+        if(showEndItemPosition+2>=context.read<FeedFlowDataNotifier>().homeFeedModelList.length){
+          showEndItemPosition=context.read<FeedFlowDataNotifier>().homeFeedModelList.length;
+        }else{
+          showEndItemPosition+=2;
+        }
+        showItemCount=showFirstItemPosition+showEndItemPosition;
+
+        print("showItemCount:$showItemCount,showEndItemPosition:$showEndItemPosition,showFirstItemPosition:$showFirstItemPosition");
+
+        setState(() {
+
+        });
+      }
+    });
   }
 
   @override
@@ -77,78 +121,16 @@ class _FeedFlowPageState extends State<FeedFlowPage> {
   }
 
   Widget getBody() {
-    // state = 1;
-    int position = context.watch<FeedFlowDataNotifier>().pageSelectPosition;
-    if (state == 0) {
-      Future.delayed(Duration(milliseconds: 200), () async {
-        state = 1;
-        controller.jumpTo(widget.initialScrollOffset);
-        // await controller.scrollToIndex(position,
-        //     duration: Duration(milliseconds: 1), preferPosition: AutoScrollPosition.begin);
-        Future.delayed(Duration(milliseconds: 200), () async {
-          state = 1;
-          if (mounted) {
-            setState(() {});
-          }
-        });
-      });
-    }
     return Container(
-      child: Stack(
-        children: [
-          getSmartRefresher(),
-          Visibility(
-            visible: state == 0,
-            child: getColumnData(),
-          ),
-        ],
-      ),
+      child: getSmartRefresher(),
     );
   }
 
-  Widget getColumnData() {
-    var widgetArray = <Widget>[];
-    int pageSelectPosition = context.watch<FeedFlowDataNotifier>().pageSelectPosition;
-    int modelLength = context.watch<FeedFlowDataNotifier>().homeFeedModelList.length;
-    if(modelLength>5){
-      modelLength=5;
-    }
-    return Container(
-      color: AppColor.white,
-      child: ListView.builder(
-        // controller: scrollController,
-        shrinkWrap: true,
-        itemBuilder: (context, index) {
-          if (index == 0) {
-            return DynamicListLayout(
-              index: pageSelectPosition,
-              pageName: "TwoColumnFeedPage",
-              isShowRecommendUser: false,
-              isHero: true,
-              model: context.watch<FeedFlowDataNotifier>().homeFeedModelList[pageSelectPosition],
-              // 可选参数 子Item的个数
-              key: GlobalObjectKey("attention$pageSelectPosition"),
-            );
-          } else {
-            return DynamicListLayout(
-              index: index,
-              pageName: "TwoColumnFeedPage",
-              isShowRecommendUser: false,
-              model: context.watch<FeedFlowDataNotifier>().homeFeedModelList[index],
-              // 可选参数 子Item的个数
-              key: GlobalObjectKey("attention$index"),
-            );
-          }
-        },
-        itemCount: modelLength,
-      ),
-    );
-  }
 
   Widget getSmartRefresher() {
     return SmartRefresher(
-      enablePullDown: true,
-      enablePullUp: true,
+      enablePullDown: false,
+      enablePullUp: false,
       footer: footerWidget(),
       header: WaterDropHeader(
         complete: Text("刷新完成"),
@@ -163,16 +145,16 @@ class _FeedFlowPageState extends State<FeedFlowPage> {
 
   Widget getListViewData() {
     return ListView.custom(
+      physics: BouncingScrollPhysics(),
       controller: controller,
-      itemExtent: 630,
       childrenDelegate: FirstEndItemChildrenDelegate(
-        (BuildContext context, int index) {
-          bool isHero = index == context.watch<FeedFlowDataNotifier>().pageSelectPosition && state != 0;
-
+        (BuildContext context, int position) {
+          int index=showFirstItemPosition+position;
+          bool isHero = index == context.watch<FeedFlowDataNotifier>().pageSelectPosition;
           return autoScrollTag(index, context.watch<FeedFlowDataNotifier>().homeFeedModelList[index], isHero);
         },
         firstEndCallback: firstEndCallbackListView,
-        childCount: context.watch<FeedFlowDataNotifier>().homeFeedModelList.length,
+        childCount: showItemCount,
       ),
       dragStartBehavior: DragStartBehavior.down,
     );
@@ -244,33 +226,43 @@ class _FeedFlowPageState extends State<FeedFlowPage> {
   }
 
   void _onRefresh() async {
-    context.read<FeedFlowDataNotifier>().clear();
-    _onLoading();
+    // context.read<FeedFlowDataNotifier>().clear();
+    // _onLoading();
+    print("下拉刷新：_onRefresh-showFirstItemPosition：$showFirstItemPosition, showItemCount:$showItemCount");
+    print("下拉刷新：itemcount:${context.read<FeedFlowDataNotifier>().homeFeedModelList.length}");
+    _refreshController.refreshCompleted();
+    _refreshController.loadComplete();
   }
 
   void _onLoading() async {
-    int pageSize = context.read<FeedFlowDataNotifier>().pageSize;
-    int lastTime = context.read<FeedFlowDataNotifier>().pageLastTime;
 
-    if (pageSize > 0 && lastTime == null) {
-      _refreshController.refreshCompleted();
-      _refreshController.loadComplete();
-      return;
-    }
-    DataResponseModel model =
-        await getPullList(type: widget.pullFeedType, size: 20, targetId: widget.pullFeedTargetId, lastTime: lastTime);
-    if (model != null && model.list != null && model.list.length > 0) {
-      model.list.forEach((v) {
-        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
-      });
-      context.read<FeedFlowDataNotifier>().pageLastTime = model.lastTime;
-      context.read<FeedFlowDataNotifier>().pageSize = pageSize + 1;
-    }
+    print("上拉加载：_onLoading-showFirstItemPosition：$showFirstItemPosition, showItemCount:$showItemCount");
+    print("上拉加载：itemcount:${context.read<FeedFlowDataNotifier>().homeFeedModelList.length}");
     _refreshController.refreshCompleted();
     _refreshController.loadComplete();
-    if (mounted) {
-      setState(() {});
-    }
+    //
+    // int pageSize = context.read<FeedFlowDataNotifier>().pageSize;
+    // int lastTime = context.read<FeedFlowDataNotifier>().pageLastTime;
+    //
+    // if (pageSize > 0 && lastTime == null) {
+    //   _refreshController.refreshCompleted();
+    //   _refreshController.loadComplete();
+    //   return;
+    // }
+    // DataResponseModel model =
+    //     await getPullList(type: widget.pullFeedType, size: 20, targetId: widget.pullFeedTargetId, lastTime: lastTime);
+    // if (model != null && model.list != null && model.list.length > 0) {
+    //   model.list.forEach((v) {
+    //     context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+    //   });
+    //   context.read<FeedFlowDataNotifier>().pageLastTime = model.lastTime;
+    //   context.read<FeedFlowDataNotifier>().pageSize = pageSize + 1;
+    // }
+    // _refreshController.refreshCompleted();
+    // _refreshController.loadComplete();
+    // if (mounted) {
+    //   setState(() {});
+    // }
   }
 
   void requestPop() async {

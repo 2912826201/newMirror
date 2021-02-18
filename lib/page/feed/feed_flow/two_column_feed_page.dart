@@ -19,6 +19,7 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
 import 'feed_flow_page.dart';
+import 'feed_flow_page2.dart';
 
 
 class TwoColumnFeedPage extends StatefulWidget {
@@ -391,7 +392,7 @@ class _TwoColumnFeedPageState extends State<TwoColumnFeedPage> {
       Navigator.push(
           context,
           PageRouteBuilder(
-              transitionDuration: Duration(milliseconds: 300),
+              transitionDuration: Duration(milliseconds: 500),
               pageBuilder: (_, __, ___) =>
                 FeedFlowPage(
                   pullFeedType:7,
@@ -441,6 +442,36 @@ class _TwoColumnFeedPageState extends State<TwoColumnFeedPage> {
     if (model != null && model.list != null && model.list.length > 0) {
       model.list.forEach((v) {
         context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+        context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
       });
       context.read<FeedFlowDataNotifier>().pageLastTime = model.lastTime;
       context.read<FeedFlowDataNotifier>().pageSize=pageSize+1;
@@ -463,12 +494,12 @@ class _TwoColumnFeedPageState extends State<TwoColumnFeedPage> {
   //
   getInitialScrollOffset(int index) {
     double initialScrollOffset=0.0;
-    // for(int i=0;i<index;i++){
-    //   // HomeFeedModel homeFeedModel=context.read<FeedFlowDataNotifier>().homeFeedModelList[i];
-    //   initialScrollOffset+=700.0;
-    //   // initialScrollOffset+=48.0;
-    //   // initialScrollOffset+=60.0;
-    // }
+    for(int i=0;i<index;i++){
+      // HomeFeedModel homeFeedModel=context.read<FeedFlowDataNotifier>().homeFeedModelList[i];
+      initialScrollOffset+=630.0;
+      // initialScrollOffset+=48.0;
+      // initialScrollOffset+=60.0;
+    }
     return initialScrollOffset;
   }
 }
