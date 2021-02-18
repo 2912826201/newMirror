@@ -8,6 +8,7 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:provider/provider.dart';
@@ -279,6 +280,12 @@ class MessageManager {
           break;
         case 9:
           //9-训练结束
+          TrainingCompleteResultModel trainingResult = TrainingCompleteResultModel.fromJson(dataMap["cmd"]);
+          //TODO 处理训练结束事件
+          //TODO 如果有结果则打开训练结果页面
+          if(trainingResult.hasResult == 1){
+            
+          }
           break;
         default:
           break;

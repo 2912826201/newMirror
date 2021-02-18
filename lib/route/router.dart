@@ -9,6 +9,7 @@ import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/page/scan_code/scan_result_page.dart';
@@ -40,6 +41,7 @@ class AppRouter {
   static String pathVideoDetail = "/training/videocourselist/videodetail";
   static String pathOtherCompleteCourse = "/training/videocourselist/videodetail/pathOtherCompleteCoursePage";
   static String pathVideoCoursePlay = "/training/videocourseplay";
+  static String pathVideoCourseResult = "/training/videocourseresult";
   static String pathScanCode = "/scancode";
   static String pathScanCodeResult = "/scancode/result";
   static String pathMyQrCodePage = "/scancode/myqrcodepage";
@@ -106,6 +108,7 @@ class AppRouter {
     router.define(pathProfileDetails, handler: handlerMineDetails);
     router.define(pathVideoCourseList, handler: handlerVideoCourseList);
     router.define(pathVideoCoursePlay, handler: handlerVideoCoursePlay);
+    router.define(pathVideoCourseResult, handler: handlerVideoCourseResult);
     router.define(pathProfileDetailsMore, handler: handlerProfileDetailMore);
     router.define(pathEditInformation, handler: handlerEditInformation);
     router.define(pathEditInformationName, handler: handlerEditInformationName);
@@ -230,6 +233,13 @@ class AppRouter {
     map["videoPathMap"] = videoPathMap;
     map["videoCourseModel"] = videoCourseModel.toJson();
     _navigateToPage(context, pathVideoCoursePlay, map);
+  }
+
+  static void navigateToVideoCourseResult(
+      BuildContext context, TrainingCompleteResultModel trainingResult) {
+    Map<String, dynamic> map = Map();
+    map["result"] = trainingResult.toJson();
+    _navigateToPage(context, pathVideoCourseResult, map);
   }
 
   static void navigateToLiveDetail(BuildContext context, int liveCourseId, {String heroTag,bool isHaveStartTime=true,

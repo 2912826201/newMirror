@@ -9,6 +9,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
+import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/model/version_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/activation_test_page.dart';
@@ -338,9 +339,17 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 RaisedButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return VideoCourseResultPage();
-                    }));
+                    TrainingCompleteResultModel result = TrainingCompleteResultModel();
+                    result.synthesisRank = 0.67;
+                    result.upperRank = 1.0;
+                    result.lowerRank = 0.8;
+                    result.coreRank = 0.33;
+                    result.completionDegree = 0.57;
+                    result.no = 233;
+                    result.calorie = 198;
+                    result.mseconds = 2040000;
+                    result.synthesisScore = 12894;
+                    AppRouter.navigateToVideoCourseResult(context, result);
                   },
                   child: Text("视频课结果页"),
                 ),

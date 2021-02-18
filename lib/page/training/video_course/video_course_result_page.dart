@@ -6,6 +6,7 @@ import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
@@ -14,21 +15,26 @@ import 'package:mirror/widget/no_blue_effect_behavior.dart';
 /// Created by yangjiayi on 2021/1/14.
 
 class VideoCourseResultPage extends StatefulWidget {
+  final TrainingCompleteResultModel result;
+
+  VideoCourseResultPage(this.result, {Key key}) : super(key: key);
+
   @override
   _VideoCourseResultState createState() => _VideoCourseResultState();
 }
 
 class _VideoCourseResultState extends State<VideoCourseResultPage> {
-  int _completeTimes = 0;
   String _videoCourseName = "课程名称";
-  int _score = 12894;
-  int _calorie = 198;
-  int _durationMin = 34;
   int _uid = 123;
   String _nickName = "Koach 大婷婷";
   String _avatarUrl = "https://i1.hdslb.com/bfs/face/c63ebeed7d49967e2348ef953b539f8de90c5140.jpg";
   int _relation = 1;
-  List<double> _rateList = [0.67, 0.33, 0.57, 1.0, 0.8];
+
+  @override
+  void initState() {
+    super.initState();
+    //TODO 通过课程id获取课程详情
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +115,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
             alignment: Alignment.centerLeft,
             color: AppColor.bgBlack,
             child: Text(
-              "恭喜你，${Application.profile.nickName}\n第$_completeTimes次完成\n$_videoCourseName",
+              "恭喜你，${Application.profile.nickName}\n第${widget.result.no}次完成\n$_videoCourseName",
               style: TextStyle(color: AppColor.white, fontSize: 18, fontWeight: FontWeight.w500),
             ),
           ),
@@ -128,7 +134,13 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                     alignment: Alignment.center,
                     child: PentagonChart(
                       width: 144.0,
-                      rateList: _rateList,
+                      rateList: [
+                        widget.result.synthesisRank,
+                        widget.result.completionDegree,
+                        widget.result.lowerRank,
+                        widget.result.upperRank,
+                        widget.result.coreRank
+                      ],
                     ),
                   )),
                   Container(
@@ -146,7 +158,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                                 crossAxisAlignment: CrossAxisAlignment.baseline,
                                 children: [
                                   Text(
-                                    "$_score",
+                                    "${widget.result.synthesisScore}",
                                     style: TextStyle(color: AppColor.textPrimary2, fontSize: 23),
                                   )
                                 ],
@@ -183,7 +195,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                                 crossAxisAlignment: CrossAxisAlignment.baseline,
                                 children: [
                                   Text(
-                                    "$_calorie",
+                                    "${widget.result.calorie}",
                                     style: TextStyle(color: AppColor.textPrimary2, fontSize: 23),
                                   ),
                                   Text(
@@ -224,7 +236,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                                 crossAxisAlignment: CrossAxisAlignment.baseline,
                                 children: [
                                   Text(
-                                    "$_durationMin",
+                                    "${widget.result.mseconds ~/ 60000}",
                                     style: TextStyle(color: AppColor.textPrimary2, fontSize: 23),
                                   ),
                                   Text(

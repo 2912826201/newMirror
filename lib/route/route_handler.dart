@@ -8,6 +8,7 @@ import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/page/feed/like.dart';
 import 'package:mirror/page/feed/release_page.dart';
@@ -60,6 +61,7 @@ import 'package:mirror/page/training/machine/remote_controller_page.dart';
 import 'package:mirror/page/training/video_course/other_complete_course_page.dart';
 import 'package:mirror/page/training/video_course/video_course_list_page.dart';
 import 'package:mirror/page/training/video_course/video_course_play_page.dart';
+import 'package:mirror/page/training/video_course/video_course_result_page.dart';
 import 'package:mirror/page/training/video_course/video_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -222,6 +224,12 @@ var handlerVideoCoursePlay = Handler(handlerFunc: (BuildContext context, Map<Str
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return VideoCoursePlayPage(
       Map<String, String>.from(data["videoPathMap"]), LiveVideoModel.fromJson(data["videoCourseModel"]));
+});
+
+//课程结果页
+var handlerVideoCourseResult = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return VideoCourseResultPage(TrainingCompleteResultModel.fromJson(data["result"]));
 });
 
 //直播课程详情界面

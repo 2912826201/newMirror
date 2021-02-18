@@ -301,6 +301,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        //TODO 从已连接变为未连接时要弹窗
                         Text(
                           notifier.machine.status != 0 ? "已连接" : "未连接",
                           style: TextStyle(fontSize: 14, color: AppColor.textPrimary2),
