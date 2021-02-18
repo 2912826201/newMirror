@@ -113,7 +113,14 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
             height: 193,
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
             alignment: Alignment.centerLeft,
-            color: AppColor.bgBlack,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [AppColor.textPrimary1, AppColor.textPrimary2],
+                stops: [0, 1],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              )
+            ),
             child: Text(
               "恭喜你，${Application.profile.nickName}\n第${widget.result.no}次完成\n$_videoCourseName",
               style: TextStyle(color: AppColor.white, fontSize: 18, fontWeight: FontWeight.w500),
