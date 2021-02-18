@@ -232,7 +232,7 @@ class MessageManager {
           break;
         case 6:
           //6-机器状态改变
-          MachineModel machine = MachineModel.fromJson(message.originContentMap["data"]);
+          MachineModel machine = MachineModel.fromJson(dataMap);
           //当关联机器为空或者本地记录的关联机器与通知中的不一致时，重新从接口获取一次机器信息；一致则直接修改状态
           if (Application.machine == null || Application.machine.machineId != machine.machineId) {
             getMachineStatusInfo().then((list) {
@@ -253,7 +253,7 @@ class MessageManager {
           break;
         case 8:
           //8-遥控器变化
-          MachineModel machine = MachineModel.fromJson(message.originContentMap["data"]);
+          MachineModel machine = MachineModel.fromJson(dataMap);
           //当关联机器为空或者本地记录的关联机器与通知中的不一致时，重新从接口获取一次机器信息；一致则直接修改状态
           if (Application.machine == null || Application.machine.machineId != machine.machineId) {
             getMachineStatusInfo().then((list) {
