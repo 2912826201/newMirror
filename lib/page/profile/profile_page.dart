@@ -228,7 +228,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     );
   }
 
-  ///这里是底部订单成就，为了代码复用写成一个布局，通过传值来改变
   Widget _bottomSetting(Icon icon, String text) {
     return GestureDetector(
       child: Container(
