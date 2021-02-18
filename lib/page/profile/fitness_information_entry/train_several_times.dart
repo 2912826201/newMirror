@@ -12,9 +12,11 @@ import 'package:mirror/widget/loading.dart';
 import 'package:provider/provider.dart';
 
 class TrainSeveralTimes extends StatefulWidget{
+  FitnessEntryModel model;
+  TrainSeveralTimes({this.model});
   @override
   State<StatefulWidget> createState() {
-    return _TrainSeveralTimesState();
+    return _TrainSeveralTimesState(model: model);
   }
 
 }
@@ -22,6 +24,8 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes>{
   bool three = false;
   bool four = false;
   bool fives = false;
+  FitnessEntryModel model;
+  _TrainSeveralTimesState({this.model});
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -106,15 +110,15 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes>{
                 switch(type){
                   case 3:
                      three = true;
-                     context.read<FitnessInformationNotifier>().setTimeOfWeek(3);
+                     model.timesOfWeek = 3;
                     break;
                   case 4:
                       four = true;
-                      context.read<FitnessInformationNotifier>().setTimeOfWeek(4);
+                     model.timesOfWeek = 4;
                     break;
                   case 5:
                       fives = true;
-                      context.read<FitnessInformationNotifier>().setTimeOfWeek(5);
+                      model.timesOfWeek = 5;
                     break;
                 }
               });
@@ -125,13 +129,13 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes>{
 
       _fitnessEntry()async{
     FitnessEntryModel getModel = await userFitnessEntry(
-      height: context.read<FitnessInformationNotifier>().height,
-      weight: context.read<FitnessInformationNotifier>().weight,
-      bodyType: context.read<FitnessInformationNotifier>().bodyType,
-      target: context.read<FitnessInformationNotifier>().target,
-      level: context.read<FitnessInformationNotifier>().level,
-      keyPartList: context.read<FitnessInformationNotifier>().keyPartList,
-      timesOfWeek: context.read<FitnessInformationNotifier>().timeOfWeek
+      height: model.height,
+      weight: model.weight,
+      bodyType: model.bodyType,
+      target: model.target,
+      level: model.hard,
+      keyPartList: model.keyPartList,
+      timesOfWeek: model.timesOfWeek
     );
       if(getModel!=null){
         print('===============================健身信息录入成功');

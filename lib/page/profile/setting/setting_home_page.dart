@@ -71,12 +71,12 @@ class _SettingHomePageState extends State<SettingHomePage> {
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
-    return Scaffold(
+    return  Scaffold(
       backgroundColor: AppColor.white,
       appBar: CustomAppBar(
         titleString: "设置",
       ),
-      body: Container(
+      body:Container(
         height: height - ScreenUtil.instance.statusBarHeight,
         width: width,
         child: Column(
@@ -165,7 +165,7 @@ class _SettingHomePageState extends State<SettingHomePage> {
             _signOutRow(width)
           ],
         ),
-      ),
+      )
     );
   }
 

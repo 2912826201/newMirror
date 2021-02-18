@@ -81,17 +81,12 @@ void main() {
             ChangeNotifierProvider(create: (_) => ChatEnterNotifier()),
             //FIXME 省市地区选择器的状态 应该不需要在全局更新状态
             ChangeNotifierProvider(create: (_) => AddressPickerNotifier()),
-            //FIXME 录入健身信息的状态 应该不需要在全局更新状态
-            ChangeNotifierProvider(create: (_) => FitnessInformationNotifier()),
             //FIXME 个人空间页的状态 应该不需要在全局更新状态
             ChangeNotifierProvider(create: (_) => ProfilePageNotifier()),
             //群成员信息
             ChangeNotifierProvider(create: (_) => GroupUserProfileNotifier()),
             //记录未读消息数 目前只记录3种互动通知的数量 从接口获取更新数据
             ChangeNotifierProvider(create: (_) => UnreadMessageNotifier()),
-            ChangeNotifierProvider(create: (_) => VipMoveNotifier()),
-            ChangeNotifierProvider(create: (_) => SettingNotifile()),
-            ChangeNotifierProvider(create: (_) => VipTitleChangeNotifier()),
           ],
           child: MyApp(),
         ),

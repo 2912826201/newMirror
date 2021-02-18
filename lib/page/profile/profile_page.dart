@@ -55,16 +55,18 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     ProfileModel attentionModel = await ProfileFollowCount();
     UserExtraInfoModel extraInfoModel = await ProfileGetExtraInfo();
     userModel = await getUserInfo();
-    if (attentionModel != null || extraInfoModel != null) {
+    if (attentionModel != null) {
       uid = attentionModel.uid;
       followingCount = attentionModel.followingCount;
       followerCount = attentionModel.followerCount;
       print('个人主页粉丝数================================$followerCount');
-      context.read<ProfileNotifier>().setExtraInfoModel(extraInfoModel);
       feedCount = attentionModel.feedCount;
-      if (mounted) {
-        setState(() {});
-      }
+    }
+    if(extraInfoModel != null){
+      context.read<ProfileNotifier>().setExtraInfo(extraInfoModel);
+    }
+    if (mounted) {
+      setState(() {});
     }
   }
 
@@ -136,12 +138,12 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 Row(
                   children: [
                     _secondData(Icons.timer,
-                        context.watch<ProfileNotifier>().extraInfoModel.trainingSeconds, "训练记录"),
-                    Expanded(child: Container()),
+                        context.watch<ProfileNotifier>().trainingSeconds, "训练记录"),
+                    Spacer(),
                     _secondData(
-                        Icons.poll, context.watch<ProfileNotifier>().extraInfoModel.weight, "体重记录"),
-                    Expanded(child: Container()),
-                    _secondData(Icons.photo, context.watch<ProfileNotifier>().extraInfoModel.albumNum,
+                        Icons.poll, context.watch<ProfileNotifier>().weight, "体重记录"),
+                    Spacer(),
+                    _secondData(Icons.photo, context.watch<ProfileNotifier>().albumNum,
                         "健身相册"),
                   ],
                 ),

@@ -62,6 +62,7 @@ import 'package:mirror/page/training/video_course/video_course_list_page.dart';
 import 'package:mirror/page/training/video_course/video_course_play_page.dart';
 import 'package:mirror/page/training/video_course/video_detail_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:provider/provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 /// route_handler
@@ -166,7 +167,7 @@ var handlerSettingBlackList = Handler(handlerFunc: (BuildContext context, Map<St
 });
 
 var handlerSettingNoticeSetting = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return NoticeSettingPage();
+  return ChangeNotifierProvider(create: (_)=>SettingNotifile(),child: NoticeSettingPage(),);
 });
 
 var handlerSettingFeedBack = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {

@@ -172,7 +172,7 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
               _switchRow(width, 4, context.watch<SettingNotifile>().laud, "赞"),
             ],
           ),
-        ));
+        ),);
   }
 
   ///接收通知设置
@@ -277,23 +277,23 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
 
 class SettingNotifile extends ChangeNotifier {
   //未关注私信人  1
-  bool notFollow = false;
+  bool notFollow;
 
   //我关注及好友私信  2
-  bool followBuddy = false;
+  bool followBuddy ;
 
   //@我  3
-  bool mentionedMe = false;
+  bool mentionedMe;
 
   //评论  4
-  bool comment = false;
+  bool comment;
 
   //赞
-  bool laud = false;
+  bool laud;
 
   //是否开启权限
-  bool permisionIsOpen = false;
-
+  bool permisionIsOpen;
+  SettingNotifile({this.laud = false,this.comment = false,this.permisionIsOpen = false,this.notFollow = false,this.followBuddy = false,this.mentionedMe = false});
   void changePermision(bool result) {
     permisionIsOpen = result;
     notifyListeners();

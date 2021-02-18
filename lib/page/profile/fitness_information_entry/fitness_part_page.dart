@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -12,17 +13,19 @@ import 'package:toast/toast.dart';
 import 'package:provider/provider.dart';
 
 class FitnesspartPage extends StatefulWidget {
+  FitnessEntryModel model;
+  FitnesspartPage({this.model});
   @override
   State<StatefulWidget> createState() {
-    return _FitnessPartState();
+    return _FitnessPartState(model: model);
   }
 }
 
 class _FitnessPartState extends State<FitnesspartPage> {
   List<int> choselist = [];
   List<SubTagModel> partList = [];
-
-
+  FitnessEntryModel model;
+  _FitnessPartState({this.model});
   @override
   void initState() {
     // TODO: implement initState
@@ -104,9 +107,10 @@ class _FitnessPartState extends State<FitnesspartPage> {
                   if(choselist.isEmpty){
                     Toast.show("请选择想要训练的部位", context);
                   }else{
-                    context.read<FitnessInformationNotifier>().setKeyPartList(choselist);
+                    model.keyPartList = choselist;
+                  /*  context.read<FitnessInformationNotifier>().setKeyPartList(choselist);*/
                     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                      return TrainSeveralTimes();
+                      return TrainSeveralTimes(model: model,);
                     }));
                   }
 
