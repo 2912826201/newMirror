@@ -108,7 +108,7 @@ class MessageManager {
         //FIXME 这里需要处理管家消息
         dto.type = PRIVATE_TYPE;
         if (msg.senderUserId == Application.profile.uid.toString()) {
-          //如果发信人是自己。。。要从其他途径更新会话名字和头像
+          //FIXME 如果发信人是自己。。。要从其他途径更新会话名字和头像
         } else if (msg.content.sendUserInfo != null) {
           dto.avatarUri = msg.content.sendUserInfo.portraitUri;
           dto.name = msg.content.sendUserInfo.name;

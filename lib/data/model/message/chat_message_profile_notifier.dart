@@ -149,7 +149,7 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
     alertMap["name"] = ChatTypeModel.MESSAGE_TYPE_GRPNTF_NAME;
     alertMap["data"] = jsonEncode(message.originContentMap);
     msg.content = jsonEncode(alertMap);
-    Application.rongCloud.insertOutgoingMessage(RCConversationType.Group, targetId, msg, null,
+    Application.rongCloud.insertOutgoingMessage(RCConversationType.Group, targetId, msg, (msg, code){},
         sendTime: new DateTime.now().millisecondsSinceEpoch);
   }
 

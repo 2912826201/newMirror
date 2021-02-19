@@ -23,7 +23,7 @@ class RongCloudReceiveManager {
   onMessageReceivedWrapper(Message msg, int left, bool hasPackage, bool offline) {
     //TODO SDK 分批拉取离线消息，当离线消息量巨大的时候，建议当 left == 0 且 hasPackage == false 时刷新会话列表
 
-    try{
+    try {
       String msgStr = msg.toString();
       print("收到了融云消息：$msgStr");
     } catch (e) {
@@ -53,18 +53,23 @@ class RongCloudReceiveManager {
 
   //发送消息结果的回调
   onMessageSend(int messageId, int status, int code) {
+    //   RCSentStatus
+    //   static const int Sending = 10; //发送中
+    //   static const int Failed = 20; //发送失败
+    //   static const int Sent = 30; //发送成功
+    //   static const int Received = 40; //对方已接收
+    //   static const int Read = 50; //对方已阅读
     //将发送的消息插入记录
     print("发送了融云消息：messageId:${messageId},status:${status},code:${code}");
     Application.appContext
         .read<ChatMessageProfileNotifier>()
         .setIsSettingStatus(isSettingStatus: true, messageId: messageId, status: status);
-
-//   RCSentStatus
-//   static const int Sending = 10; //发送中
-//   static const int Failed = 20; //发送失败
-//   static const int Sent = 30; //发送成功
-//   static const int Received = 40; //对方已接收
-//   static const int Read = 50; //对方已阅读
+    // 需要更新会话
+    Application.rongCloud.getMessageById(messageId).then((msg) {
+      MessageManager.updateConversationByMessageList(_context, [msg]);
+    }).catchError((e) {
+      print("未查到融云消息：messageId:${messageId}");
+    });
   }
 
   //消息撤回监听
