@@ -14,6 +14,7 @@ import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
+import 'package:mirror/widget/custom_button.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
@@ -308,48 +309,12 @@ class _SearchState extends State<SearchUserItem> {
           ),
           ],)),
           Spacer(),
-          !isMySelf?InkWell(
-            onTap: () {
-              if(isBlack==1){
-                ToastShow.show(msg: "该用户已被你拉黑", context: context);
-                return false;
-              }else if(isBlack == 2){
-                ToastShow.show(msg: "你已被该用户拉黑", context: context);
-                return false;
-              }
-                //只有在未关注时点击走方法
-              if (!isFollow) {
-                _getAttention(widget.model.uid);
-              }
-            },
-            ///按钮
-            child: Container(
-              width: 56,
-              height: 24,
-              alignment: Alignment.centerRight,
-              decoration: BoxDecoration(
-                color: !isFollow ? AppColor.textPrimary1 : AppColor.transparent,
-                borderRadius: BorderRadius.all(Radius.circular(14)),
-                border: Border.all(width: !isFollow ? 0.5 : 0.0, color: AppColor.black),
-              ),
-              child: Center(
-                child: Text(!isFollow ? "关注" : "已关注",
-                  style: !isFollow ? AppStyle.whiteRegular12 : AppStyle.textSecondaryRegular12),
-              ),
-            )):Container()
+          !isMySelf? FollowButton(
+              id:widget.model.uid,
+              isFollow:isFollow,
+              buttonType:FollowButtonType.SERCH,):Container()
         ],
       ),
     );
-  }
-
-  _getAttention(int id) async {
-    int attntionResult = await ProfileAddFollow(id);
-    print('关注监听=========================================$attntionResult');
-    if (attntionResult == 1 || attntionResult == 3) {
-      ToastShow.show(msg: "关注成功!", context: context);
-      setState(() {
-        widget.model.relation = 1;
-      });
-    }
   }
 }

@@ -9,6 +9,7 @@ import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
+import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/page/scan_code/scan_result_page.dart';
@@ -41,6 +42,7 @@ class AppRouter {
   static String pathVideoDetail = "/training/videocourselist/videodetail";
   static String pathOtherCompleteCourse = "/training/videocourselist/videodetail/pathOtherCompleteCoursePage";
   static String pathVideoCoursePlay = "/training/videocourseplay";
+  static String pathVideoCourseResult = "/training/videocourseresult";
   static String pathScanCode = "/scancode";
   static String pathScanCodeResult = "/scancode/result";
   static String pathMyQrCodePage = "/scancode/myqrcodepage";
@@ -123,6 +125,7 @@ class AppRouter {
     router.define(pathProfileDetails, handler: handlerMineDetails);
     router.define(pathVideoCourseList, handler: handlerVideoCourseList);
     router.define(pathVideoCoursePlay, handler: handlerVideoCoursePlay);
+    router.define(pathVideoCourseResult, handler: handlerVideoCourseResult);
     router.define(pathProfileDetailsMore, handler: handlerProfileDetailMore);
     router.define(pathEditInformation, handler: handlerEditInformation);
     router.define(pathEditInformationName, handler: handlerEditInformationName);
@@ -182,14 +185,6 @@ class AppRouter {
   static void popToBeforeLogin(BuildContext context) {
     if (Application.loginPopRouteName != null) {
       Navigator.of(context).popUntil(ModalRoute.withName(Application.loginPopRouteName));
-    } else {
-      Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
-    }
-  }
-
-  static void popToBeforeMachineController(BuildContext context) {
-    if (Application.machineRemoConPopRouteName != null) {
-      Navigator.of(context).popUntil(ModalRoute.withName(Application.machineRemoConPopRouteName));
     } else {
       Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
     }
@@ -267,12 +262,22 @@ class AppRouter {
     _navigateToPage(context, pathVideoCoursePlay, map);
   }
 
-  static void navigateToLiveDetail(BuildContext context, int liveCourseId,
-      {String heroTag,
-      bool isHaveStartTime = true,
-      LiveVideoModel liveModel,
-      CommentDtoModel commentDtoModel,
-      CommentDtoModel fatherComment}) {
+  // static void navigateToLiveDetail(BuildContext context, int liveCourseId,
+  //     ){String heroTag,
+  //     bool isHaveStartTime = true,
+  //     LiveVideoModel liveModel,
+  //     CommentDtoModel commentDtoModel,
+  //     CommentDtoModel fatherComment}
+
+  static void navigateToVideoCourseResult(
+      BuildContext context, TrainingCompleteResultModel trainingResult) {
+    Map<String, dynamic> map = Map();
+    map["result"] = trainingResult.toJson();
+    _navigateToPage(context, pathVideoCourseResult, map);
+  }
+
+  static void navigateToLiveDetail(BuildContext context, int liveCourseId, {String heroTag,bool isHaveStartTime=true,
+    LiveVideoModel liveModel,CommentDtoModel commentDtoModel,CommentDtoModel fatherComment}) {
     Map<String, dynamic> map = Map();
     map["liveCourseId"] = liveCourseId;
     map["isHaveStartTime"] = isHaveStartTime;
@@ -461,11 +466,6 @@ class AppRouter {
   }
 
   static void navigateToMachineRemoteController(BuildContext context) {
-    //将当前页面路由名字存起来 机器退出登录后直接返回到该页面
-    var route = ModalRoute.of(context);
-    if (route != null) {
-      Application.machineRemoConPopRouteName = route.settings.name;
-    }
     _navigateToPage(context, pathMachineRemoteController, {});
   }
 

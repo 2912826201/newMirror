@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/page/profile/fitness_information_entry/fitness_part_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
@@ -12,15 +13,19 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:provider/provider.dart';
 class FitnessLevelPage extends StatefulWidget{
+  FitnessEntryModel model;
+  FitnessLevelPage({this.model});
   @override
   State<StatefulWidget> createState() {
-    return _FitnessLevelState();
+    return _FitnessLevelState(model:model);
   }
 
 }
 class _FitnessLevelState extends State<FitnessLevelPage>{
   List<SubTagModel> levelList;
   int beforIndex;
+  FitnessEntryModel model;
+  _FitnessLevelState({this.model});
   @override
   void initState() {
     // TODO: implement initState
@@ -84,10 +89,11 @@ class _FitnessLevelState extends State<FitnessLevelPage>{
                 setState(() {
                   beforIndex = index;
                 });
-              context.read<FitnessInformationNotifier>().setHard(index);
+                model.hard = index;
+              /*context.read<FitnessInformationNotifier>().setHard(index);*/
               print('index===============================$index');
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return FitnesspartPage();
+                return FitnesspartPage(model: model,);
               }));
             },
             child: Container(

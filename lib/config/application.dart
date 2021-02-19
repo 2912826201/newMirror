@@ -79,9 +79,6 @@ class Application {
   // 用于记录登录页之前页面的路由名称，以便完成登录后回退到该页完成页面返回
   static String loginPopRouteName;
 
-  // 用于记录设备遥控页之前页面的路由名称，以便退出登录设备后回退到该页完成页面返回
-  static String machineRemoConPopRouteName;
-
   //发送验证码的全局计时
   static int smsCodeSendTime;
 

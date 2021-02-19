@@ -225,6 +225,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
   String commentState;
 
   _getRefData(BuildContext context) {
+    print('=======================${msgModel.refType}');
     if (type == 0 || type == 1) {
       if (msgModel.commentData == null) {
         commentIsDelete = true;
@@ -235,7 +236,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
     } else {
       if (msgModel.refType == 0) {
         comment = "赞了你的动态";
-      } else if (msgModel.refType == 1) {
+      } else if (msgModel.refType == 1||msgModel.refType == 3) {
         comment = "赞了你的课程";
       } else if (msgModel.refType == 2) {
         comment = "赞了你的评论";
@@ -342,7 +343,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
           Spacer(),
           InkWell(
             onTap: () {
-              _jumpToDetailPage(context, "评论");
+              _jumpToDetailPage(context);
             },
             child: Container(
               alignment: Alignment.centerLeft,
@@ -391,7 +392,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
               ? InkWell(
                   onTap: () {
                     print('========================点击了${msgModel.refId}');
-                    _jumpToDetailPage(context, "内容");
+                    _jumpToDetailPage(context);
                   },
                   child: Container(
                     alignment: Alignment.topRight,
@@ -432,12 +433,8 @@ class InteractiveNoticeItemState extends StatelessWidget {
   }
 
   //跳转判断
-  _jumpToDetailPage(BuildContext context, String onTapType) {
-    if (onTapType == "评论" && commentIsDelete) {
-      Toast.show("该评论已删除", context);
-      return;
-    }
-    if (onTapType == "内容" && feedIsDelete) {
+  _jumpToDetailPage(BuildContext context) {
+    if (feedIsDelete||commentIsDelete) {
       Toast.show("该内容已删除", context);
       return;
     }
@@ -459,11 +456,12 @@ class InteractiveNoticeItemState extends StatelessWidget {
       }
     } else if (msgModel.refType == 1 && liveVideoModel != null && liveVideoModel.id != null) {
       AppRouter.navigateToLiveDetail(context, liveVideoModel.id,
-          isHaveStartTime: false, commentDtoModel: msgModel.commentData);
+          isHaveStartTime: false, commentDtoModel: type == 0 ?msgModel.commentData:null);
     } else {
       if (liveVideoModel != null && liveVideoModel.id != null) {
-        AppRouter.navigateToVideoDetail(context, liveVideoModel.id, commentDtoModel: msgModel.commentData);
-      }
+        AppRouter.navigateToVideoDetail(context, liveVideoModel.id, commentDtoModel:type == 0
+            ?msgModel.commentData:null);
+      };
     }
   }
 

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/api/rongcloud_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/im/rongcloud_receive_manager.dart';
 import 'package:mirror/im/rongcloud_status_manager.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import '../config/config.dart';
+import 'message_manager.dart';
 
 /// rongcloud
 /// Created by yangjiayi on 2020/11/2.
@@ -142,11 +144,22 @@ class RongCloud {
   void insertOutgoingMessage(
       int conversationType, String targetId, MessageContent content, Function(Message msg, int code) finished,
       {int sendTime = -1}) {
+    // 需要同时更新会话
     if (sendTime < 0) {
       RongIMClient.insertOutgoingMessage(
-          conversationType, targetId, 30, content, new DateTime.now().millisecondsSinceEpoch, finished);
+          conversationType, targetId, 30, content, new DateTime.now().millisecondsSinceEpoch, (msg, code) {
+        try {
+          MessageManager.updateConversationByMessageList(Application.appContext, [msg]);
+        } catch (e) {}
+        finished(msg, code);
+      });
     } else {
-      RongIMClient.insertOutgoingMessage(conversationType, targetId, 30, content, sendTime, finished);
+      RongIMClient.insertOutgoingMessage(conversationType, targetId, 30, content, sendTime, (msg, code) {
+        try {
+          MessageManager.updateConversationByMessageList(Application.appContext, [msg]);
+        } catch (e) {}
+        finished(msg, code);
+      });
     }
   }
 
@@ -180,5 +193,10 @@ class RongCloud {
   void getConversationNotificationStatus(
       int conversationType, String targetId, Function(int status, int code) finished) {
     RongIMClient.getConversationNotificationStatus(conversationType, targetId, finished);
+  }
+
+  //通过消息id查询消息
+  Future<Message> getMessageById(int messageId) {
+    return RongIMClient.getMessage(messageId);
   }
 }

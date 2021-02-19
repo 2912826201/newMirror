@@ -8,6 +8,7 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:provider/provider.dart';
@@ -107,7 +108,7 @@ class MessageManager {
         //FIXME 这里需要处理管家消息
         dto.type = PRIVATE_TYPE;
         if (msg.senderUserId == Application.profile.uid.toString()) {
-          //如果发信人是自己。。。要从其他途径更新会话名字和头像
+          //FIXME 如果发信人是自己。。。要从其他途径更新会话名字和头像
         } else if (msg.content.sendUserInfo != null) {
           dto.avatarUri = msg.content.sendUserInfo.portraitUri;
           dto.name = msg.content.sendUserInfo.name;
@@ -232,7 +233,7 @@ class MessageManager {
           break;
         case 6:
           //6-机器状态改变
-          MachineModel machine = MachineModel.fromJson(message.originContentMap["data"]);
+          MachineModel machine = MachineModel.fromJson(dataMap);
           //当关联机器为空或者本地记录的关联机器与通知中的不一致时，重新从接口获取一次机器信息；一致则直接修改状态
           if (Application.machine == null || Application.machine.machineId != machine.machineId) {
             getMachineStatusInfo().then((list) {
@@ -253,7 +254,7 @@ class MessageManager {
           break;
         case 8:
           //8-遥控器变化
-          MachineModel machine = MachineModel.fromJson(message.originContentMap["data"]);
+          MachineModel machine = MachineModel.fromJson(dataMap);
           //当关联机器为空或者本地记录的关联机器与通知中的不一致时，重新从接口获取一次机器信息；一致则直接修改状态
           if (Application.machine == null || Application.machine.machineId != machine.machineId) {
             getMachineStatusInfo().then((list) {
@@ -279,6 +280,12 @@ class MessageManager {
           break;
         case 9:
           //9-训练结束
+          TrainingCompleteResultModel trainingResult = TrainingCompleteResultModel.fromJson(dataMap["cmd"]);
+          //TODO 处理训练结束事件
+          //TODO 如果有结果则打开训练结果页面
+          if(trainingResult.hasResult == 1){
+            
+          }
           break;
         default:
           break;

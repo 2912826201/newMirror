@@ -15,19 +15,23 @@ class ProfileNotifier with ChangeNotifier {
   ProfileDto _profile;
 
   ProfileDto get profile => _profile;
-  UserExtraInfoModel extraInfoModel = UserExtraInfoModel();
+  double weight = 0.0;
+  int albumNum = 0;
+  int trainingSeconds = 0;
 
-  void setExtraInfoModel(UserExtraInfoModel model) {
-    extraInfoModel = model;
+  void setExtraInfo(UserExtraInfoModel model) {
+    weight = model.weight;
+    albumNum = model.albumNum;
+    trainingSeconds = model.trainingSeconds;
     notifyListeners();
   }
-  void setweight(double weight) {
-    extraInfoModel.weight = weight;
+  void setWeight(double weights) {
+    weight = weight;
     notifyListeners();
   }
 
-  void setImagePageSize(int pageSize) {
-    extraInfoModel.albumNum = pageSize;
+  void setImagePageSize(int pageSizes) {
+    albumNum = pageSizes;
     notifyListeners();
   }
   void setProfile(ProfileDto profile) {

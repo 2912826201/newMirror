@@ -48,8 +48,8 @@ class _VipNamePlateState extends State<VipNamePlatePage> {
     if (widget.index < 2) {
       scrollController = ScrollController();
     } else {
-      double i = (ScreenUtil.instance.screenWidthDp-93.5)/2;
-      double offset = 93.5 * widget.index - i;
+      double i = (ScreenUtil.instance.screenWidthDp-namePlateWidth)/2;
+      double offset = namePlateWidth * widget.index - i;
       scrollController = ScrollController(initialScrollOffset: offset);
     }
   }
@@ -107,8 +107,8 @@ class _VipNamePlateState extends State<VipNamePlatePage> {
                 Navigator.pop(context);
               },
               child: Container(
-                height: 20,
-                width: 20,
+               /* height: 20,
+                width: 20,*/
                 alignment: Alignment.centerLeft,
                 child: Image.asset("images/resource/2.0x/return2x.png"),
               ),

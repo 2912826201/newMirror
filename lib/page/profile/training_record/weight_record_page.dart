@@ -111,7 +111,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
         if(mounted){
           setState(() {});
         }
-        context.read<ProfileNotifier>().setweight(0);
+        context.read<ProfileNotifier>().setWeight(0);
       },
     );
   }
@@ -400,7 +400,7 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
             userWeight = formatData(userWeight);
             saveWeight(userWeight.toString());
             addWeightData(userWeight);
-            context.read<ProfileNotifier>().setweight(formatData(userWeight));
+            context.read<ProfileNotifier>().setWeight(formatData(userWeight));
             _numberController.text = "";
           } catch (e) {
             ToastShow.show(msg: "输入有错，请重新输入！", context: context);

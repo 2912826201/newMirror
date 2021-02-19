@@ -75,7 +75,10 @@ class _ConnectionInfoState extends State<ConnectionInfoPage> {
       child: Consumer<MachineNotifier>(
         builder: (context, notifier, child) {
           if (notifier.machine == null) {
-            AppRouter.popToBeforeMachineController(context);
+            //因为在build过程中所以要delay
+            Future.delayed(Duration.zero, (){
+              Navigator.pop(context);
+            });
             return Container();
           } else {
             return Column(

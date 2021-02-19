@@ -643,10 +643,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 }
 
 class ProfilePageNotifier extends ChangeNotifier {
-
-  double progress = 1;
-
-  bool showImageTitle = false;
   bool watchScroll = true;
   Map<int, ProfileUiChangeModel> profileUiChangeModel = {};
 
@@ -683,15 +679,6 @@ class ProfilePageNotifier extends ChangeNotifier {
 
   void changeBackImage(int id, String image) {
     profileUiChangeModel[id].backImage = image;
-    notifyListeners();
-  }
-  void changeProgress(double pros) {
-    progress = pros;
-    notifyListeners();
-  }
-
-  void changeImageTitle(bool show) {
-    showImageTitle = show;
     notifyListeners();
   }
 

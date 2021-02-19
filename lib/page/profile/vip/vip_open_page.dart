@@ -185,9 +185,11 @@ class _VipOpenPage extends State<VipOpenPage> {
         InkWell(
           onTap: () {
             Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              return VipNotOpenPage(
+              return ChangeNotifierProvider(
+                create: (_)=>VipTitleChangeNotifier(),
+                child:VipNotOpenPage(
                 type: VipState.EXPIRED,
-              );
+              ),);
             }));
           },
           child: Container(

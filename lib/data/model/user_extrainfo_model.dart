@@ -16,9 +16,9 @@ class UserExtraInfoModel{
 
   UserExtraInfoModel.fromJson(Map<String, dynamic> json) {
     uid = json["uid"];
-    trainingSeconds = json["trainingSeconds"];
-    weight = json["weight"];
-    albumNum = json["albumNum"];
+    trainingSeconds = json["trainingSeconds"]==null?0:json["trainingSeconds"];
+    weight = json["weight"]==null?0:json["weight"];
+    albumNum = json["albumNum"]==null?0:json["albumNum"];
   }
 
   Map<String, dynamic> toJson() {

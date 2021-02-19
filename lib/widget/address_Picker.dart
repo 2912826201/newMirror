@@ -260,11 +260,7 @@ class _AddressPickerState extends State<AddressPicker>{
 }
 ///通过provider去改变值
 class AddressPickerNotifier extends ChangeNotifier{
-AddressPickerNotifier({this.cityText,this.provinceText,this.provinceCity,this.latitude,this.longitude,this.cityCode});
-
-String provinceText;
-
-String cityText;
+AddressPickerNotifier({this.provinceCity,this.latitude,this.longitude,this.cityCode});
 
 String provinceCity;
 
@@ -274,8 +270,6 @@ double longitude;
 
 double latitude;
 void changeCityText(String city,String province){
-  cityText = city;
-  provinceText = province;
   provinceCity = "$province $city";
   notifyListeners();
 }
@@ -290,8 +284,6 @@ void changeCityCode(String citycode,double longitudeCode,double latitudeCode){
 void cleanCityData(){
   provinceCity = null;
   cityCode = null;
-  cityText = null;
-  provinceText = null;
   longitude = null;
   latitude = null;
   notifyListeners();
