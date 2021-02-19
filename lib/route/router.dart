@@ -7,6 +7,7 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
@@ -14,6 +15,7 @@ import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/page/scan_code/scan_result_page.dart';
 import 'package:mirror/route/route_handler.dart';
+import 'package:mirror/widget/feed/feed_friends_cell.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 /// router
@@ -77,6 +79,24 @@ class AppRouter {
   static String pathVipOpenPage = "/profile/vip/openpage";
   static String pathVipNamePlatePage = "/profile/vip/nameplatepage";
 
+  // 话题详情页Pl
+  static String pathTopicDetailPage = "topic/topicdetail";
+
+  // 搜索页面
+  static String pathSearchPage = "search/searchpage";
+
+  // 好友页面
+  static String pathFriendsPage = "widget/feed/feedsharepopups";
+
+  // 创建地图页
+  static String pahtCreateMapScreenPage = "feed/createmapscreen";
+
+  // 动态详情页
+  static String pathFeedDetailPage = "feed/feeddetailpage";
+
+  // 所在位置页面
+  static String pathSearchOrLocationPage = "feed/searchOrlocationwidget";
+
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
       print("ROUTE WAS NOT FOUND !!!");
@@ -90,6 +110,7 @@ class AppRouter {
     router.define(pathMediaPicker, handler: handlerMediaPicker);
     router.define(pathLogin, handler: handlerLogin);
     router.define(pathLoginPhone, handler: handlerLoginPhone);
+    // 点赞页面
     router.define(pathLike, handler: handlerLike);
     router.define(pathRelease, handler: handlerReleaseFeed);
     router.define(pathPerfectUserPage, handler: handlerPerfectUserPage);
@@ -138,7 +159,18 @@ class AppRouter {
     router.define(pathVipNotOpenPage, handler: handlerVipNotOpen);
     router.define(pathVipOpenPage, handler: handlerVipOpen);
     router.define(pathVipNamePlatePage, handler: handlerVipNamePlatePage);
-
+    // 话题详情页
+    router.define(pathTopicDetailPage, handler: handlerTopicDetailPage);
+    // 搜索页面
+    router.define(pathSearchPage, handler: handlerSearchPage);
+    // 好友页面
+    router.define(pathFriendsPage, handler: handlerFriendsPage);
+    // 创建地图页
+    router.define(pahtCreateMapScreenPage, handler: handlerCreateMapScreenPage);
+    // 跳转动态详情页
+    router.define(pathFeedDetailPage, handler: handlerFeedDetailPage);
+    // 所在位置页面
+    router.define(pathSearchOrLocationPage, handler: handlerSearchOrLocationPage);
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
   }
@@ -235,15 +267,25 @@ class AppRouter {
     _navigateToPage(context, pathVideoCoursePlay, map);
   }
 
-  static void navigateToVideoCourseResult(
-      BuildContext context, TrainingCompleteResultModel trainingResult) {
+  // static void navigateToLiveDetail(BuildContext context, int liveCourseId,
+  //     ){String heroTag,
+  //     bool isHaveStartTime = true,
+  //     LiveVideoModel liveModel,
+  //     CommentDtoModel commentDtoModel,
+  //     CommentDtoModel fatherComment}
+
+  static void navigateToVideoCourseResult(BuildContext context, TrainingCompleteResultModel trainingResult) {
     Map<String, dynamic> map = Map();
     map["result"] = trainingResult.toJson();
     _navigateToPage(context, pathVideoCourseResult, map);
   }
 
-  static void navigateToLiveDetail(BuildContext context, int liveCourseId, {String heroTag,bool isHaveStartTime=true,
-    LiveVideoModel liveModel,CommentDtoModel commentDtoModel,CommentDtoModel fatherComment}) {
+  static void navigateToLiveDetail(BuildContext context, int liveCourseId,
+      {String heroTag,
+      bool isHaveStartTime = true,
+      LiveVideoModel liveModel,
+      CommentDtoModel commentDtoModel,
+      CommentDtoModel fatherComment}) {
     Map<String, dynamic> map = Map();
     map["liveCourseId"] = liveCourseId;
     map["isHaveStartTime"] = isHaveStartTime;
@@ -253,17 +295,17 @@ class AppRouter {
     if (heroTag != null) {
       map["heroTag"] = heroTag;
     }
-    if(commentDtoModel!=null){
+    if (commentDtoModel != null) {
       map["commentDtoModel"] = commentDtoModel.toJson();
     }
-    if(fatherComment!=null){
+    if (fatherComment != null) {
       map["fatherComment"] = fatherComment.toJson();
     }
     _navigateToPage(context, pathLiveDetail, map);
   }
 
   static void navigateToVideoDetail(BuildContext context, int liveCourseId,
-      {String heroTag, LiveVideoModel videoModel,CommentDtoModel commentDtoModel,CommentDtoModel fatherComment}) {
+      {String heroTag, LiveVideoModel videoModel, CommentDtoModel commentDtoModel, CommentDtoModel fatherComment}) {
     Map<String, dynamic> map = Map();
     map["videoCourseId"] = liveCourseId;
     if (videoModel != null) {
@@ -272,10 +314,10 @@ class AppRouter {
     if (heroTag != null) {
       map["heroTag"] = heroTag;
     }
-    if(commentDtoModel!=null){
+    if (commentDtoModel != null) {
       map["commentDtoModel"] = commentDtoModel.toJson();
     }
-    if(fatherComment!=null){
+    if (fatherComment != null) {
       map["fatherComment"] = fatherComment.toJson();
     }
     _navigateToPage(context, pathVideoDetail, map);
@@ -290,9 +332,11 @@ class AppRouter {
     map["resultModel"] = resultModel.toJson();
     _navigateToPage(context, pathScanCodeResult, map);
   }
+
   static void navigateToMyQrCodePage(BuildContext context) {
     _navigateToPage(context, pathMyQrCodePage, {});
   }
+
   static void navigateToProfileDetailMore(BuildContext context) {
     _navigateToPage(context, pathProfileDetailsMore, {});
   }
@@ -338,7 +382,7 @@ class AppRouter {
     _navigateToPage(context, pathSettingBlackList, map);
   }
 
-  static void navigateToSettingAbout(BuildContext context,String url,bool haveNewVersion,String content) {
+  static void navigateToSettingAbout(BuildContext context, String url, bool haveNewVersion, String content) {
     Map<String, dynamic> map = Map();
     map["url"] = url;
     map["haveNewVersion"] = haveNewVersion;
@@ -356,8 +400,11 @@ class AppRouter {
     _navigateToPage(context, pathLoginSucess, map);
   }
 
-  static void navigateToLikePage(BuildContext context) {
+  static void navigateToLikePage(BuildContext context, HomeFeedModel model) {
     Map<String, dynamic> map = Map();
+    if (model != null) {
+      map["model"] = model.toJson();
+    }
     _navigateToPage(context, pathLike, map);
   }
 
@@ -393,15 +440,15 @@ class AppRouter {
     _navigateToPage(context, pathChatPage, map);
   }
 
-
-  static void navigateToNetworkLinkFailure(
-      {@required BuildContext context,}) {
+  static void navigateToNetworkLinkFailure({
+    @required BuildContext context,
+  }) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathNetworkLinkFailure, map);
   }
 
   static void navigateToGroupQrCodePage(
-      {@required BuildContext context, @required String imageUrl,@required String name,@required String groupId}) {
+      {@required BuildContext context, @required String imageUrl, @required String name, @required String groupId}) {
     Map<String, dynamic> map = Map();
     map["imageUrl"] = imageUrl;
     map["name"] = name;
@@ -475,19 +522,106 @@ class AppRouter {
   static void navigateToMeCoursePage(BuildContext context) {
     _navigateToPage(context, pathMeCoursePage, {});
   }
-  static void navigateToQueryFollowList(BuildContext context,int type,int userId) {
-    Map<String,dynamic> map = Map();
+
+  static void navigateToQueryFollowList(BuildContext context, int type, int userId) {
+    Map<String, dynamic> map = Map();
     map["type"] = type;
     map["userId"] = userId;
     _navigateToPage(context, pathQueryFollowList, map);
   }
+
   static void navigateToMeDownloadVideoCoursePage(BuildContext context) {
     _navigateToPage(context, pathMeDownloadVideoCoursePage, {});
   }
 
-  static void navigateToOtherCompleteCoursePage(BuildContext context,int liveCourseId) {
+  static void navigateToOtherCompleteCoursePage(BuildContext context, int liveCourseId) {
     Map<String, dynamic> map = Map();
     map["liveCourseId"] = liveCourseId;
     _navigateToPage(context, pathOtherCompleteCourse, map);
+  }
+
+  // 话题详情页
+  static void navigateToTopicDetailPage(BuildContext context, int topicId) {
+    Map<String, dynamic> map = Map();
+    map["topicId"] = topicId;
+    _navigateToPage(context, pathTopicDetailPage, map);
+  }
+
+  // 搜索页面
+  static void navigateSearchPage(BuildContext context) {
+    _navigateToPage(context, pathSearchPage, {});
+  }
+
+  // 好友页面
+  static void navigateFriendsPage({
+    BuildContext context,
+    int type,
+    int groupChatId,
+    Map<String, dynamic> shareMap,
+    String chatTypeModel,
+  }) {
+    Map<String, dynamic> map = Map();
+    if (type != null) {
+      map['type'] = type;
+    }
+    if (groupChatId != null) {
+      map['groupChatId'] = groupChatId;
+    }
+    if (shareMap != null) {
+      map['shareMap'] = shareMap;
+    }
+    if (chatTypeModel != null) {
+      map['chatTypeModel'] = chatTypeModel;
+    }
+    _navigateToPage(context, pathFriendsPage, map);
+  }
+
+// 创建地图页
+  static void navigateCreateMapScreenPage(
+    BuildContext context,
+    double longitude,
+    double latitude,
+    String keyWords,
+  ) {
+    Map<String, dynamic> map = Map();
+    map['longitude'] = longitude;
+    map['latitude'] = latitude;
+    map['keyWords'] = keyWords;
+    _navigateToPage(context, pahtCreateMapScreenPage, map);
+  }
+
+  // 动态详情页
+  static void navigateFeedDetailPage({
+    BuildContext context,
+    CommentDtoModel fatherModel,
+    CommentDtoModel comment,
+    HomeFeedModel model,
+    int index,
+    int type,
+  }) {
+    Map<String, dynamic> map = Map();
+    if (fatherModel != null) {
+      map['fatherModel'] = fatherModel.toJson();
+    }
+    if (comment != null) {
+      map['comment'] = comment.toJson();
+    }
+    if (model != null) {
+      map['model'] = model.toJson();
+    }
+    if (index != null) {
+      map['index'] = index;
+    }
+    map['type'] = type;
+    _navigateToPage(context, pathFeedDetailPage, map);
+  }
+
+  // 所在位置页面
+  static void navigateSearchOrLocationPage(
+      BuildContext context, int checkIndex, PeripheralInformationPoi selectAddress, Function(dynamic result) callback) {
+    Map<String, dynamic> map = Map();
+    map['checkIndex'] = checkIndex;
+    map['selectAddress'] = selectAddress.toJson();
+    _navigateToPage(context, pathSearchOrLocationPage, map, callback: callback);
   }
 }

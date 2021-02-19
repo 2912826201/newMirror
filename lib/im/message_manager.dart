@@ -2,12 +2,15 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:mirror/api/machine_api.dart';
+import 'package:mirror/api/message_api.dart';
+import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/database/conversation_db_helper.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
@@ -88,6 +91,48 @@ class MessageManager {
         context.read<ConversationNotifier>().insertTopList([dto]);
       }
     }
+    //FIXME 如果名字头像等信息缺失 需要去接口获取 最好支持批量 需要解决并发同时请求同一数据的问题
+    if (dto.name == "" || dto.avatarUri == "") {
+      //根据私聊或者群聊类型取信息 异步
+      switch (dto.type) {
+        case PRIVATE_TYPE:
+          getUserBaseInfo(uid: int.parse(dto.conversationId)).then((user) async {
+            if (user != null) {
+              dto.name = user.nickName;
+              dto.avatarUri = user.avatarUri;
+              result = await ConversationDBHelper().updateConversation(dto);
+              if (result) {
+                if (dto.isTop == 0) {
+                  context.read<ConversationNotifier>().insertCommonList([dto]);
+                } else {
+                  context.read<ConversationNotifier>().insertTopList([dto]);
+                }
+              }
+            }
+          });
+          break;
+        case GROUP_TYPE:
+          //暂时只获取一个群
+          getGroupChatByIds(id: int.parse(dto.conversationId)).then((model) async {
+            if (model != null && model["list"] != null) {
+              GroupChatModel groupChatModel = GroupChatModel.fromJson(model["list"].first);
+              dto.name = groupChatModel.modifiedName == null ? groupChatModel.name : groupChatModel.modifiedName;
+              dto.avatarUri = groupChatModel.coverUrl;
+              result = await ConversationDBHelper().updateConversation(dto);
+              if (result) {
+                if (dto.isTop == 0) {
+                  context.read<ConversationNotifier>().insertCommonList([dto]);
+                } else {
+                  context.read<ConversationNotifier>().insertTopList([dto]);
+                }
+              }
+            }
+          });
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   static ConversationDto _convertMsgToConversation(Message msg) {
@@ -108,7 +153,7 @@ class MessageManager {
         //FIXME 这里需要处理管家消息
         dto.type = PRIVATE_TYPE;
         if (msg.senderUserId == Application.profile.uid.toString()) {
-          //如果发信人是自己。。。要从其他途径更新会话名字和头像
+          //FIXME 如果发信人是自己。。。要从其他途径更新会话名字和头像
         } else if (msg.content.sendUserInfo != null) {
           dto.avatarUri = msg.content.sendUserInfo.portraitUri;
           dto.name = msg.content.sendUserInfo.name;
@@ -243,7 +288,7 @@ class MessageManager {
             });
           } else {
             //有变化再更新
-            if(Application.machine.status != machine.status) {
+            if (Application.machine.status != machine.status) {
               Application.appContext.read<MachineNotifier>().setMachine(Application.machine..status = machine.status);
             }
           }
@@ -265,15 +310,15 @@ class MessageManager {
           } else {
             //有变化再更新
             bool hasChanged = false;
-            if(machine.volume != null && machine.volume != Application.machine.volume){
+            if (machine.volume != null && machine.volume != Application.machine.volume) {
               Application.machine.volume = machine.volume;
               hasChanged = true;
             }
-            if(machine.luminance != null && machine.luminance != Application.machine.luminance){
+            if (machine.luminance != null && machine.luminance != Application.machine.luminance) {
               Application.machine.luminance = machine.luminance;
               hasChanged = true;
             }
-            if(hasChanged) {
+            if (hasChanged) {
               Application.appContext.read<MachineNotifier>().setMachine(Application.machine);
             }
           }
@@ -283,9 +328,7 @@ class MessageManager {
           TrainingCompleteResultModel trainingResult = TrainingCompleteResultModel.fromJson(dataMap["cmd"]);
           //TODO 处理训练结束事件
           //TODO 如果有结果则打开训练结果页面
-          if(trainingResult.hasResult == 1){
-            
-          }
+          if (trainingResult.hasResult == 1) {}
           break;
         default:
           break;

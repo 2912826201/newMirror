@@ -54,6 +54,7 @@ import 'im/message_manager.dart';
 import 'route/router.dart';
 
 void main() {
+  //设置状态栏透明
   SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
   SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   _initApp().then((value) => runApp(

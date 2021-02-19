@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/widget/rich_text_widget.dart';
 // 收起展开的文字
 class ExpandableText extends StatefulWidget {
@@ -38,6 +39,7 @@ class _ExpandableTextState extends State<ExpandableText> {
           text.substring(atModel.index,atModel.len),
         style: TextStyle(color:  AppColor.mainBlue, fontSize: 14),
         onTap: () {
+          AppRouter.navigateToMineDetail(context, atModel.uid);
           print("点击用户${atModel.uid}");
         },
       ));
@@ -49,7 +51,8 @@ class _ExpandableTextState extends State<ExpandableText> {
         text.substring(toModel.index, toModel.len),
         style: TextStyle(color:  AppColor.mainBlue, fontSize: 14),
         onTap: () {
-          print("点击用户${toModel.uid}");
+          AppRouter.navigateToTopicDetailPage(context, toModel.id);
+          print("点击用户${toModel.id}");
         },
       ));
     }

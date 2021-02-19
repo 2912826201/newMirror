@@ -27,6 +27,8 @@ const int CODE_GROUP_NOT_EXISTS = 315;
 const int CODE_NO_AUTH = 305;
 //入参错误
 const int CODE_PARAMETER_ERROR = 300;
+// 拉黑
+const int CODE_BLACKED = 353;
 
 //身份认证的类型
 const int AUTH_TYPE_COMMON = 0;

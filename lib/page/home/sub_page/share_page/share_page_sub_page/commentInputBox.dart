@@ -3,17 +3,21 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/comment_input_bottom_bar.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/post_comments.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 class CommentInputBox extends StatefulWidget {
   CommentInputBox({Key key, this.type, this.isUnderline = false, this.feedModel, this.isFeedDetail = false})
@@ -104,14 +108,15 @@ class CommentInputBoxState extends State<CommentInputBox> {
                         targetType: 0,
                         contentext: StringUtil.breakWord(text),
                         atUsers: jsonEncode(atListModel),
-                        commentModelCallback: (CommentDtoModel commentModel) {
-                          if (commentModel != null) {
-                            print(commentModel.toString());
-                            print(widget.feedModel.id);
-                            print(context);
-                            print(widget.feedModel.id);
-                            print("评论model赋值");
-                            context.read<FeedMapNotifier>().feedPublishComment(commentModel, widget.feedModel.id);
+                        commentModelCallback: (BaseResponseModel commentModel) {
+                          CommentDtoModel comModel;
+                          if (commentModel.code == CODE_BLACKED) {
+                            ToastShow.show(msg: "发布失败，你已被对方加入黑名单", context: context, gravity: Toast.CENTER);
+                          } else {
+                            if (commentModel.data != null) {
+                              comModel = (CommentDtoModel.fromJson(commentModel.data));
+                              context.read<FeedMapNotifier>().feedPublishComment(comModel, widget.feedModel.id);
+                            }
                           }
                           // 关闭评论输入框
                           // Navigator.of(context).pop(1);

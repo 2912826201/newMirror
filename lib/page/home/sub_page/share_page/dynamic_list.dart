@@ -12,6 +12,7 @@ import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/course_address_label.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/getTripleArea.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/head_view.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/expandable_text.dart';
 import 'package:mirror/widget/feed_video_player.dart';
@@ -262,9 +263,7 @@ class DynamicListLayout extends StatelessWidget {
       children: [for (String item in tags) GestureDetector(
         onTap: () {
           if (isAddress) {
-            Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-              return createMapScreen(latitude: latitude, longitude: longitude,keyWords: model.address,);
-            }));
+            AppRouter.navigateCreateMapScreenPage(context, longitude, latitude, model.address,);
           }
         },
         child: CourseAddressLabel(item, tags),

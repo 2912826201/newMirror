@@ -4,10 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
@@ -25,6 +27,7 @@ import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/post_comments.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 import 'common_course_page.dart';
 
@@ -438,7 +441,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                           ],
                         ),
                         onTap: () {
-                          _laudComment(value.id, value.isLaud == 0,value.uid);
+                          _laudComment(value.id, value.isLaud == 0, value.uid);
                         },
                       ),
                     ),
@@ -738,20 +741,18 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   }
 
   //发布评论
-  _publishComment(String text, List<Rule> rules,int commentUId) async {
-
-    BlackModel blackModel = await ProfileCheckBlack(commentUId);
-    String text = "";
-    if (blackModel.inYouBlack == 1) {
-      text = "发布失败，你已将对方加入黑名单";
-      ToastShow.show(msg: text, context: context);
-      return;
-    } else if (blackModel.inThisBlack == 1) {
-      text = "发布失败，你已被对方加入黑名单";
-      ToastShow.show(msg: text, context: context);
-      return;
-    }
-
+  _publishComment(String text, List<Rule> rules, int commentUId) async {
+    // BlackModel blackModel = await ProfileCheckBlack(commentUId);
+    // String promptText = "";
+    // if (blackModel.inYouBlack == 1) {
+    //   promptText = "发布失败，你已将对方加入黑名单";
+    //   ToastShow.show(msg: promptText, context: context);
+    //   return;
+    // } else if (blackModel.inThisBlack == 1) {
+    //   promptText = "发布失败，你已被对方加入黑名单";
+    //   ToastShow.show(msg: promptText, context: context);
+    //   return;
+    // }
 
     List<AtUsersModel> atListModel = [];
     for (Rule rule in rules) {
@@ -769,82 +770,92 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       atUsers: jsonEncode(atListModel),
       replyId: replyId > 0 ? replyId : null,
       replyCommentId: replyCommentId > 0 ? replyCommentId : null,
-      commentModelCallback: (CommentDtoModel model) {
-        if (model != null) {
-          if (targetId == widget.targetId) {
-            if (isHotOrTime) {
-              if (courseCommentHot != null) {
-                courseCommentHot.list.insert(0, model);
+      commentModelCallback: (BaseResponseModel baseResponseModel) {
+        if (baseResponseModel.code == CODE_BLACKED) {
+          ToastShow.show(msg: "发布失败，你已被对方加入黑名单", context: context,gravity: Toast.CENTER);
+        } else {
+          if (baseResponseModel.data != null) {
+            CommentDtoModel model;
+            model = (CommentDtoModel.fromJson(baseResponseModel.data));
+            if (targetId == widget.targetId) {
+              if (isHotOrTime) {
+                if (courseCommentHot != null) {
+                  courseCommentHot.list.insert(0, model);
+                } else {
+                  courseCommentHot = new CommentModel();
+                  courseCommentHot.list = [];
+                  courseCommentHot.list.add(model);
+                }
+                screenOutHotIds.add(model.id);
+                setCommentListSubSettingSingle(model.id);
               } else {
-                courseCommentHot = new CommentModel();
-                courseCommentHot.list = [];
-                courseCommentHot.list.add(model);
+                if (courseCommentTime != null) {
+                  courseCommentTime.list.insert(0, model);
+                } else {
+                  courseCommentTime = new CommentModel();
+                  courseCommentTime.list = [];
+                  courseCommentTime.list.add(model);
+                }
+                screenOutTimeIds.add(model.id);
+                setCommentListSubSettingSingle(model.id);
               }
-              screenOutHotIds.add(model.id);
-              setCommentListSubSettingSingle(model.id);
             } else {
-              if (courseCommentTime != null) {
-                courseCommentTime.list.insert(0, model);
+              if (isHotOrTime) {
+                if (courseCommentHot != null) {
+                  for (int i = 0; i < courseCommentHot.list.length; i++) {
+                    if (courseCommentHot.list[i].id == targetId) {
+                      courseCommentHot.list[i].replys.add(model);
+                      courseCommentHot.list[i].screenOutIds.add(model.id);
+                      courseCommentHot.list[i].pullNumber++;
+                      if (isHotOrTime) {
+                        commentListSubSettingList[i].isFold = false;
+                      }
+                      commentListSubSettingList[i].subCommentAllHeight = null;
+                      if (!widget.isShowHotOrTime &&
+                          context.read<FeedMapNotifier>().feedMap[widget.targetId].comments != null &&
+                          context.read<FeedMapNotifier>().feedMap[widget.targetId].comments.length > 0) {
+                        context.read<FeedMapNotifier>().feedMap[widget.targetId].comments[i].screenOutIds.add(model.id);
+                      }
+                    }
+                  }
+                }
               } else {
-                courseCommentTime = new CommentModel();
-                courseCommentTime.list = [];
-                courseCommentTime.list.add(model);
+                if (courseCommentTime != null) {
+                  for (int i = 0; i < courseCommentTime.list.length; i++) {
+                    if (courseCommentTime.list[i].id == targetId) {
+                      courseCommentTime.list[i].replys.add(model);
+                      courseCommentTime.list[i].screenOutIds.add(model.id);
+                      courseCommentTime.list[i].pullNumber++;
+                      commentListSubSettingList[i].subCommentAllHeight = null;
+                      if (!isHotOrTime) {
+                        commentListSubSettingList[i].isFold = false;
+                      }
+
+                      if (!widget.isShowHotOrTime &&
+                          context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments != null &&
+                          context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length > 0) {
+                        context
+                            .watch<FeedMapNotifier>()
+                            .feedMap[widget.targetId]
+                            .comments[i]
+                            .screenOutIds
+                            .add(model.id);
+                      }
+                    }
+                  }
+                }
               }
-              screenOutTimeIds.add(model.id);
-              setCommentListSubSettingSingle(model.id);
+            }
+            ToastShow.show(msg: "发布成功", context: context);
+            if (mounted) {
+              setState(() {});
+              if (targetId != widget.targetId) {
+                startAnimationScroll(targetId);
+              }
             }
           } else {
-            if (isHotOrTime) {
-              if (courseCommentHot != null) {
-                for (int i = 0; i < courseCommentHot.list.length; i++) {
-                  if (courseCommentHot.list[i].id == targetId) {
-                    courseCommentHot.list[i].replys.add(model);
-                    courseCommentHot.list[i].screenOutIds.add(model.id);
-                    courseCommentHot.list[i].pullNumber++;
-                    if (isHotOrTime) {
-                      commentListSubSettingList[i].isFold = false;
-                    }
-                    commentListSubSettingList[i].subCommentAllHeight = null;
-                    if (!widget.isShowHotOrTime &&
-                        context.read<FeedMapNotifier>().feedMap[widget.targetId].comments != null &&
-                        context.read<FeedMapNotifier>().feedMap[widget.targetId].comments.length > 0) {
-                      context.read<FeedMapNotifier>().feedMap[widget.targetId].comments[i].screenOutIds.add(model.id);
-                    }
-                  }
-                }
-              }
-            } else {
-              if (courseCommentTime != null) {
-                for (int i = 0; i < courseCommentTime.list.length; i++) {
-                  if (courseCommentTime.list[i].id == targetId) {
-                    courseCommentTime.list[i].replys.add(model);
-                    courseCommentTime.list[i].screenOutIds.add(model.id);
-                    courseCommentTime.list[i].pullNumber++;
-                    commentListSubSettingList[i].subCommentAllHeight = null;
-                    if (!isHotOrTime) {
-                      commentListSubSettingList[i].isFold = false;
-                    }
-
-                    if (!widget.isShowHotOrTime &&
-                        context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments != null &&
-                        context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length > 0) {
-                      context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments[i].screenOutIds.add(model.id);
-                    }
-                  }
-                }
-              }
-            }
+            ToastShow.show(msg: "发布失败", context: context);
           }
-
-          ToastShow.show(msg: "发布成功", context: context);
-          if (mounted) {
-            setState(() {});
-            if (targetId != widget.targetId) {
-              startAnimationScroll(targetId);
-            }
-          }
-        } else {
-          ToastShow.show(msg: "发布失败", context: context);
         }
       },
     );
@@ -1213,7 +1224,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   }
 
   //点赞-取消点赞
-  _laudComment(int commentId, bool laud,int chatUserId) async {
+  _laudComment(int commentId, bool laud, int chatUserId) async {
     if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
       ToastShow.show(msg: "请先登陆app!", context: context);
       AppRouter.navigateToLoginPage(context);
@@ -1268,7 +1279,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
     openInputBottomSheet(
       buildContext: this.context,
-      voidCallback: (String content, List<Rule> rules)=>_publishComment(content,rules,widget.pushId),
+      voidCallback: (String content, List<Rule> rules) => _publishComment(content, rules, widget.pushId),
       isShowAt: widget.isShowAt,
     );
   }
@@ -1287,7 +1298,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     openInputBottomSheet(
       buildContext: this.context,
       hintText: hintText,
-      voidCallback: (String content, List<Rule> rules)=>_publishComment(content,rules,replyId),
+      voidCallback: (String content, List<Rule> rules) => _publishComment(content, rules, replyId),
       isShowAt: widget.isShowAt,
     );
   }

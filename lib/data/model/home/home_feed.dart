@@ -117,6 +117,7 @@ class HomeFeedModel {
     address = json["address"];
   }
 
+
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
     map["id"] = id;

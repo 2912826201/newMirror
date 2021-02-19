@@ -1834,14 +1834,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     context.read<FeedMapNotifier>().updateFeedMap(list);
     // print("----------feedModel:${feedModel.toJson().toString()}");
     // 跳转动态详情页
-    Navigator.push(
-      context,
-      new MaterialPageRoute(
-          builder: (context) => FeedDetailPage(
-                model: feedModel,
-                type: 1,
-              )),
-    );
+    AppRouter.navigateFeedDetailPage(context: context, model:feedModel, type:1);
   }
 
   //所有的item点击事件

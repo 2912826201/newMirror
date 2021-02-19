@@ -7,7 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mirror/api/gao_de/gao_de_api.dart';
+import 'package:mirror/api/amap/amap.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/location/location.api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
@@ -103,23 +103,27 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
     Application.selectedMediaFiles = null;
     super.initState();
   }
+
   @override
+
   ///监听用户回到app
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       backToBack();
     }
   }
-    // 前台回到后台
-    backToBack() async{
-      var status = await Permission.locationWhenInUse.status;
-      if (permissions != null && permissions != PermissionStatus.granted && status == PermissionStatus.granted) {
-        //flutter定位只能获取到经纬度信息
-        currentAddressInfo = await AmapLocation.instance.fetchLocation();
-        // 调用周边
-        aroundHttp();
-      }
+
+  // 前台回到后台
+  backToBack() async {
+    var status = await Permission.locationWhenInUse.status;
+    if (permissions != null && permissions != PermissionStatus.granted && status == PermissionStatus.granted) {
+      //flutter定位只能获取到经纬度信息
+      currentAddressInfo = await AmapLocation.instance.fetchLocation();
+      // 调用周边
+      aroundHttp();
     }
+  }
+
   // 获取定位权限
   locationPermissions() async {
     // 获取权限状态
@@ -160,7 +164,8 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
 
   //高德接口获取周边数据
   aroundHttp() async {
-    PeripheralInformationEntity locationInformationEntity = await aroundForHttp(currentAddressInfo.latLng.longitude,currentAddressInfo.latLng.latitude);
+    PeripheralInformationEntity locationInformationEntity =
+        await aroundForHttp(currentAddressInfo.latLng.longitude, currentAddressInfo.latLng.latitude);
     if (locationInformationEntity.status == "1") {
       print('请求成功');
       if (locationInformationEntity.pois.isNotEmpty) {
@@ -1287,7 +1292,6 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
   // 传入选择地址
   PeripheralInformationPoi selectAddress = PeripheralInformationPoi();
 
-
   Widget _showDialog(BuildContext context) {
     return showAppDialog(context,
         title: "获取系统定位权限",
@@ -1308,8 +1312,9 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
       onTap: () async {
         // 获取定位权限
         var status = await Permission.locationWhenInUse.status;
+
         ///尚未请求许可。请求权限
-        if ( status == PermissionStatus.undetermined) {
+        if (status == PermissionStatus.undetermined) {
           await Permission.locationWhenInUse.request();
         }
         // 请求了许可但是未授权，弹窗提醒
@@ -1317,13 +1322,11 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
           _showDialog(context);
         }
         //  请求了许可授了权，跳转页面
-        if ( status == PermissionStatus.granted) {
-          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-            return SearchOrLocationWidget(
-                checkIndex: checkIndex,
-                selectAddress: selectAddress,
-                childrenACallBack: (poi) => childrenACallBack(poi));
-          }));
+        if (status == PermissionStatus.granted) {
+          AppRouter.navigateSearchOrLocationPage(context, checkIndex, selectAddress, (result) {
+            PeripheralInformationPoi poi = result as PeripheralInformationPoi;
+            return childrenACallBack(poi);
+          });
         }
         print("跳转选择地址页面");
       },
@@ -1402,12 +1405,10 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
             context.read<ReleaseFeedInputNotifier>().setPeripheralInformationPoi(address);
             setState(() {});
           } else {
-            Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-              return SearchOrLocationWidget(
-                  checkIndex: checkIndex,
-                  selectAddress: selectAddress,
-                  childrenACallBack: (poi) => childrenACallBack(poi));
-            }));
+            AppRouter.navigateSearchOrLocationPage(context, checkIndex, selectAddress, (result) {
+              PeripheralInformationPoi poi = result as PeripheralInformationPoi;
+              return childrenACallBack(poi);
+            });
           }
         },
         child: Container(

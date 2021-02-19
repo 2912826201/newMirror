@@ -505,15 +505,7 @@ class GroupMorePageState extends State<GroupMorePage> {
       ToastShow.show(msg: "你不是群成员", context: context);
       return;
     }
-    Navigator.push(context, MaterialPageRoute(builder: (_) {
-      return FriendsPage(
-          type: 1,
-          groupChatId: int.parse(widget.chatGroupId),
-          voidCallback: (name, userId, type, context) {
-            jumpPage(ProfileDetailPage(userId: userId), false, context);
-            // print("查看了name：$name");
-          });
-    }));
+    AppRouter.navigateFriendsPage(context: context,type: 1,groupChatId: int.parse(widget.chatGroupId));
   }
 
   //添加用户按钮
@@ -522,22 +514,7 @@ class GroupMorePageState extends State<GroupMorePage> {
       ToastShow.show(msg: "你不是群成员", context: context);
       return;
     }
-
-    Navigator.push(context, MaterialPageRoute(builder: (_) {
-      return FriendsPage(
-          type: 3,
-          groupChatId: int.parse(widget.chatGroupId),
-          voidCallback: (name, userId, type, context) {
-            if(name!="邀请成功"&&name!="邀请失败"){
-              if (widget.listener != null) {
-                widget.listener(3,name);
-              }
-            }
-            if(mounted) {
-              setState(() {});
-            }
-          });
-    }));
+    AppRouter.navigateFriendsPage(context: context,type: 3,groupChatId: int.parse(widget.chatGroupId));
   }
 
   //删除用户按钮
@@ -546,18 +523,7 @@ class GroupMorePageState extends State<GroupMorePage> {
       ToastShow.show(msg: "你不是群成员", context: context);
       return;
     }
-    Navigator.push(context, MaterialPageRoute(builder: (_) {
-      return FriendsPage(
-          type: 2,
-          groupChatId: int.parse(widget.chatGroupId),
-          voidCallback: (name, userId, type, context) {
-            print("移除这个用户：$name");
-
-            if(mounted) {
-              setState(() {});
-            }
-          });
-    }));
+    AppRouter.navigateFriendsPage(context: context,type: 2,groupChatId: int.parse(widget.chatGroupId));
   }
 
   //退出按钮

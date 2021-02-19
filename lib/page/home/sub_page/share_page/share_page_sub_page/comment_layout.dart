@@ -4,6 +4,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/feed/feed_comment_popups.dart';
 import 'package:mirror/widget/rich_text_widget.dart';
@@ -17,7 +18,7 @@ class CommentLayout extends StatelessWidget {
   CommentLayout({Key key, this.model,}) : super(key: key);
   final HomeFeedModel model;
 
-  setBaseRichText(CommentDtoModel model) {
+  setBaseRichText(CommentDtoModel model, BuildContext context) {
     List<BaseRichText> richTexts = [];
     String contextText;
     if (model.replyName != null) {
@@ -26,6 +27,7 @@ class CommentLayout extends StatelessWidget {
         contextText.substring(0, model.name.length + 1),
         style: AppStyle.textMedium14,
         onTap: () {
+          AppRouter.navigateToMineDetail(context, model.uid);
           print("点击用户${model.uid}");
         },
       ));
@@ -35,6 +37,7 @@ class CommentLayout extends StatelessWidget {
         // "${model.name + model.replyName}:",
         style: AppStyle.textMedium14,
         onTap: () {
+          AppRouter.navigateToMineDetail(context, model.replyId);
           print("点击用户${model.replyId}");
         },
       ));
@@ -45,6 +48,7 @@ class CommentLayout extends StatelessWidget {
             contextText.substring(atModel.index + model.name.length + ": 回复 ".length + model.replyName.length,atModel.len +  model.name.length + ": 回复 ".length + model.replyName.length),
             style: TextStyle(color: AppColor.mainBlue, fontSize: 14),
             onTap: () {
+              AppRouter.navigateToMineDetail(context, atModel.uid);
               print("点击用户${atModel.uid}");
             },
           ));
@@ -59,6 +63,7 @@ class CommentLayout extends StatelessWidget {
         contextText.substring(0, model.name.length + 1),
         style: AppStyle.textMedium14,
         onTap: () {
+          AppRouter.navigateToMineDetail(context, model.uid);
           print("点击用户${model.uid}");
         },
       ));
@@ -69,6 +74,7 @@ class CommentLayout extends StatelessWidget {
             contextText.substring(atModel.index + model.name.length + 2,atModel.len+ model.name.length + 2),
             style: TextStyle(color: AppColor.mainBlue, fontSize: 14),
             onTap: () {
+              AppRouter.navigateToMineDetail(context, atModel.uid);
               print("点击用户${atModel.uid}");
             },
           ));
@@ -115,7 +121,7 @@ class CommentLayout extends StatelessWidget {
                     maxLines: 1,
                     textOverflow: TextOverflow.ellipsis,
                     richTexts:
-                        setBaseRichText(context.select((FeedMapNotifier value) => value.feedMap[model.id].comments[0])
+                        setBaseRichText(context.select((FeedMapNotifier value) => value.feedMap[model.id].comments[0]),context
                             // model.comments[0]
                             ),
                   )
@@ -138,7 +144,7 @@ class CommentLayout extends StatelessWidget {
                     maxLines: 1,
                     textOverflow: TextOverflow.ellipsis,
                     richTexts:
-                        setBaseRichText(context.select((FeedMapNotifier value) => value.feedMap[model.id].comments[1])
+                        setBaseRichText(context.select((FeedMapNotifier value) => value.feedMap[model.id].comments[1]),context
                             //   model.comments[1]
                             ),
                   )

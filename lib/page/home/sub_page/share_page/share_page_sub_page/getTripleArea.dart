@@ -1,10 +1,14 @@
 //  点赞，转发，评论三连区域
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
+import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
+import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
@@ -13,10 +17,13 @@ import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/if_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/feed_comment_popups.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
+import 'package:mirror/widget/post_comments.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 typedef backCallBack = void Function();
 class GetTripleArea extends StatefulWidget {
   HomeFeedModel model;
@@ -108,23 +115,27 @@ class GetTripleAreaState extends State<GetTripleArea> {
 
   // 跳转点赞页
   jumpLike(BuildContext context) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) {
-      return Like(model: widget.model,);
-    }));
-    // AppRouter.navigateToLikePage(context);
+    AppRouter.navigateToLikePage(context,widget.model);
   }
   // 点赞
   setUpLuad() async {
     bool  isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     print("是否点赞了￥${context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud}");
     if (isLoggedIn) {
-      Map<String, dynamic> model = await laud(id: widget.model.id, laud:context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud == 0 ? 1 : 0);
-      // 点赞/取消赞成功
-      print("state:${model["state"]}");
-      if (model["state"]) {
-        context.read<FeedMapNotifier>().setLaud(widget.model.isLaud,context.read<ProfileNotifier>().profile.avatarUri,widget.model.id);
-      } else { // 失败
-        print("shib ");
+      BaseResponseModel model = await laud(id: widget.model.id, laud:context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud == 0 ? 1 : 0);
+      if (model.code == CODE_BLACKED) {
+        ToastShow.show(msg: "你已被拉黑", context: context,gravity:Toast.CENTER);
+      } else {
+        // 点赞/取消赞成功
+        print("state:${model.data["state"]}");
+        if (model.data["state"]) {
+          context.read<FeedMapNotifier>().setLaud(widget.model.isLaud, context
+              .read<ProfileNotifier>()
+              .profile
+              .avatarUri, widget.model.id);
+        } else { // 失败
+          print("shib ");
+        }
       }
     } else {
       // 去登录
@@ -189,12 +200,24 @@ class GetTripleAreaState extends State<GetTripleArea> {
         Container(
           margin: EdgeInsets.only(left: 16),
           child:GestureDetector(
-              onTap: () {
-                openShareBottomSheet(
-                    context: context,
-                    map: widget.model.toJson(),
-                    chatTypeModel: ChatTypeModel.MESSAGE_TYPE_FEED,
-                  sharedType: 1);
+              onTap: ()  {
+                InquireCheckBlack(checkId:widget.model.pushId,inquireCheckBlackCallback: (BlackModel blackModel) {
+                  String promptText = "";
+                  if (blackModel.inYouBlack == 1) {
+                    promptText = "发布失败，你已将对方加入黑名单";
+                  } else if (blackModel.inThisBlack == 1) {
+                    promptText = "发布失败，你已被对方加入黑名单";
+                  }
+                  if(promptText != "") {
+                    ToastShow.show(msg: promptText, context: context, gravity: Toast.CENTER);
+                    return;
+                  }
+                  openShareBottomSheet(
+                      context: context,
+                      map: widget.model.toJson(),
+                      chatTypeModel: ChatTypeModel.MESSAGE_TYPE_FEED,
+                      sharedType: 1);
+                });
               },
               child: Image.asset(
                 "images/test/分享.png",

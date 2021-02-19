@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/data/model/machine_model.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/constant/color.dart';
@@ -37,6 +38,8 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
   int _volume;
   int _luminance;
 
+  int _status;
+
   @override
   void initState() {
     super.initState();
@@ -44,6 +47,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
     _updateInfoByPosition();
     _volume = context.read<MachineNotifier>().machine?.volume;
     _luminance = context.read<MachineNotifier>().machine?.luminance;
+    _status = context.read<MachineNotifier>().machine?.status;
   }
 
   _parsePartList() {
@@ -92,11 +96,18 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
           builder: (context, notifier, child) {
             if (notifier.machine == null) {
               //因为在build过程中所以要delay
-              Future.delayed(Duration.zero, (){
+              Future.delayed(Duration.zero, () {
                 Navigator.pop(context);
               });
               return Container();
             } else {
+              //从已连接变为未连接时要弹窗
+              if (notifier.machine.status == 0 && _status == 1) {
+                Future.delayed(Duration.zero, () {
+                  _showDisconnectPopup();
+                });
+              }
+              _status = notifier.machine.status;
               return _buildBody(notifier);
             }
           },
@@ -301,7 +312,6 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        //TODO 从已连接变为未连接时要弹窗
                         Text(
                           notifier.machine.status != 0 ? "已连接" : "未连接",
                           style: TextStyle(fontSize: 14, color: AppColor.textPrimary2),
@@ -392,15 +402,24 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
             height: 16,
           ),
           Slider(
-              max: _totalDuration.toDouble(),
-              min: 0,
-              value: _currentPosition,
-              onChanged: (position) {
-                _currentPosition = position;
-                setState(() {
-                  _updateInfoByPosition();
-                });
-              })
+            max: _totalDuration.toDouble(),
+            min: 0,
+            value: _currentPosition,
+            onChanged: (position) {
+              _currentPosition = position;
+              setState(() {
+                _updateInfoByPosition();
+              });
+            },
+          ),
+          FlatButton(
+            onPressed: () {
+              MachineModel machine = context.read<MachineNotifier>().machine;
+              machine.status = (machine.status + 1) % 2;
+              context.read<MachineNotifier>().setMachine(machine);
+            },
+            child: Text("连接/中断"),
+          ),
         ],
       ),
     );
@@ -490,6 +509,83 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                 ],
               ),
             ),
+          ),
+        );
+      },
+    );
+  }
+
+  _showDisconnectPopup() {
+    showModalBottomSheet(
+      context: context,
+      elevation: 0,
+      backgroundColor: AppColor.transparent,
+      builder: (context) {
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+            color: AppColor.white,
+          ),
+          height: 389 + ScreenUtil.instance.bottomBarHeight,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                height: 44,
+                child: Stack(
+                  children: [
+                    Center(
+                      child: Text(
+                        "连接中断",
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColor.black),
+                      ),
+                    ),
+                    Positioned(
+                        right: 16,
+                        top: 0,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(
+                            Icons.close,
+                            size: 18,
+                          ),
+                        ))
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 24,
+              ),
+              Text(
+                "检测到当前终端连接中断，请尝试以下办法：",
+                style: AppStyle.textRegular15,
+              ),
+              SizedBox(
+                height: 12,
+              ),
+              Text(
+                "·检测终端是否成功启动",
+                style: TextStyle(fontSize: 15, color: AppColor.textPrimary3),
+              ),
+              Text(
+                "·检测终端网络连接状态",
+                style: TextStyle(fontSize: 15, color: AppColor.textPrimary3),
+              ),
+              SizedBox(
+                height: 18,
+              ),
+              Container(
+                color: AppColor.mainBlue,
+                height: 160,
+                width: 160,
+              )
+            ],
           ),
         );
       },
