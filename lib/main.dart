@@ -27,6 +27,7 @@ import 'package:mirror/page/profile/vip/vip_nameplate_page.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/widget/address_Picker.dart';
 import 'package:package_info/package_info.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 import 'api/training/live_api.dart';
@@ -128,6 +129,13 @@ Future _initApp() async {
           ? 1
           : -1;
 
+  // 申请通知权限
+  // 检查是否已有读写内存的权限
+  bool status = await Permission.notification.isGranted;
+  //判断如果还没拥有读写权限就申请获取权限
+  if(!status) {
+    return await Permission.notification.request().isGranted;
+  }
   //初始化SharedPreferences
   AppPrefs.init();
 
