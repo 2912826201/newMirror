@@ -7,7 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mirror/api/gao_de/gao_de_api.dart';
+import 'package:mirror/api/amap/gao_de_api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/location/location.api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';

@@ -7,10 +7,12 @@ import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/api.dart';
 // import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/search/search_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
@@ -23,10 +25,12 @@ import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/slide_banner.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
 class SearchFeed extends StatefulWidget {
@@ -65,11 +69,6 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
   void deactivate() {
     print("State 被暂时从视图树中移除时");
     super.deactivate();
-  }
-
-  @override
-  bool useSubstance() {
-    return true;
   }
 
   @override
@@ -574,15 +573,22 @@ class LaudItemState extends State<LaudItem> {
   setUpLuad() async {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     if (isLoggedIn) {
-      Map<String, dynamic> model = await laud(id: widget.model.id, laud: widget.model.isLaud == 0 ? 1 : 0);
-      // 点赞/取消赞成功
-      if (model["state"]) {
-        context
-            .read<FeedMapNotifier>()
-            .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
+      BaseResponseModel model = await laud(id: widget.model.id, laud: widget.model.isLaud == 0 ? 1 : 0);
+      if(model.code == CODE_BLACKED) {
+        ToastShow.show(msg: "你已被拉黑", context: context,gravity: Toast.CENTER);
       } else {
-        // 失败
-        print("shib ");
+        // 点赞/取消赞成功
+        if (model.data["state"]) {
+          context
+              .read<FeedMapNotifier>()
+              .setLaud(widget.model.isLaud, context
+              .read<ProfileNotifier>()
+              .profile
+              .avatarUri, widget.model.id);
+        } else {
+          // 失败
+          print("shib ");
+        }
       }
     } else {
       // 去登录

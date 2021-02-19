@@ -174,20 +174,20 @@ Future<Map> publishFeed(
 }
 
 // 点赞/取消点赞
-Future<Map> laud({@required int id, @required int laud}) async {
+Future<BaseResponseModel> laud({@required int id, @required int laud}) async {
   Map<String, dynamic> params = {};
   params["id"] = id;
   params["laud"] = laud;
   BaseResponseModel responseModel = await requestApi(LAUDFEED, params);
   if (responseModel.isSuccess) {
-    return responseModel.data;
+    return responseModel;
   } else {
     return null;
   }
 }
 
 // 发布/回调评论
-Future<Map> publish(
+Future<BaseResponseModel> publish(
     {@required int targetId, // 目标id（动态ID、课程ID、评论ID）
     @required int targetType, // 0=动态、1=课程 2=评论
     @required String content, // 文字内容
@@ -214,7 +214,7 @@ Future<Map> publish(
   }
   BaseResponseModel responseModel = await requestApi(PUBLISHCOMMENT, params);
   if (responseModel.isSuccess) {
-    return responseModel.data;
+    return responseModel;
   } else {
     return null;
   }

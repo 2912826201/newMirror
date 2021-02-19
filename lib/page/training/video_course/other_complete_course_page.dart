@@ -10,6 +10,7 @@ import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/feed/feed_detail_page.dart';
 import 'package:mirror/page/message/message_view/currency_msg.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -163,14 +164,7 @@ class _OtherCompleteCoursePageState extends State<OtherCompleteCoursePage> {
             List<HomeFeedModel> list = [];
             list.add(feedModel);
             context.read<FeedMapNotifier>().updateFeedMap(list);
-            Navigator.push(
-              context,
-              new MaterialPageRoute(
-                  builder: (context) => FeedDetailPage(
-                        model: feedModel,
-                        type: 1,
-                      )),
-            );
+            AppRouter.navigateFeedDetailPage(context: context, model:feedModel, type:1);
           },
         );
       },

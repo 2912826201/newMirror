@@ -74,9 +74,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
         ),
         actions: [
           CustomAppBarIconButton(Icons.search, AppColor.black, false, () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return SearchPage();
-            }));
+            AppRouter.navigateSearchPage(context);
           }),
         ],
       ),

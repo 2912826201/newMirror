@@ -10,6 +10,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/topic/topic_detail.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
@@ -198,10 +199,7 @@ class SearchTopiciItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          new MaterialPageRoute(builder: (context) => TopicDetail(topicId: model.id,)),
-        );
+        AppRouter.navigateToTopicDetailPage(context, model.id);
       },
       child: Container(
         width: ScreenUtil.instance.width,

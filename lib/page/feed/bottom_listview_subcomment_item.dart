@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
@@ -107,8 +108,12 @@ class BottomListViewSubCommentListItemState extends State<BottomListViewSubComme
                   atUsers: jsonEncode(atListModel),
                   replyId: widget.model.uid,
                   replyCommentId: widget.model.id,
-                  commentModelCallback: (CommentDtoModel commentModel) {
-                    context.read<FeedMapNotifier>().commentFeedCom(widget.feedId, widget.mainIndex, commentModel);
+                  commentModelCallback: (BaseResponseModel modelMap) {
+                    CommentDtoModel comModel;
+                    if (modelMap.data != null) {
+                      comModel = (CommentDtoModel.fromJson(modelMap.data));
+                    }
+                    context.read<FeedMapNotifier>().commentFeedCom(widget.feedId, widget.mainIndex, comModel);
                     print("查看一下+++++++++++++++++++++");
                     print(widget.commentDtoModel.replys.toString());
                     print(context

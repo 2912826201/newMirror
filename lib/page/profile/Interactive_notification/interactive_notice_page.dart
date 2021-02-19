@@ -475,15 +475,6 @@ class InteractiveNoticeItemState extends StatelessWidget {
     context.read<FeedMapNotifier>().updateFeedMap(list);
     // print("----------feedModel:${feedModel.toJson().toString()}");
     // 跳转动态详情页
-    Navigator.push(
-      context,
-      new MaterialPageRoute(
-          builder: (context) => FeedDetailPage(
-                model: feedModel,
-                comment: comment,
-                type: 2,
-                fatherModel: fatherModel,
-              )),
-    );
+    AppRouter.navigateFeedDetailPage(context: context, model:feedModel,comment: comment, type:2,fatherModel: fatherModel);
   }
 }

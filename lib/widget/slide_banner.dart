@@ -4,8 +4,10 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
@@ -14,8 +16,10 @@ import 'package:mirror/page/image_preview/image_preview_page.dart';
 import 'package:mirror/page/image_preview/image_preview_view.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 // 轮播图
 class SlideBanner extends StatefulWidget {
@@ -223,16 +227,23 @@ class _SlideBannerState extends State<SlideBanner> {
   setUpLuad() async {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     if (isLoggedIn) {
-      Map<String, dynamic> model = await laud(id: widget.model.id, laud: widget.model.isLaud == 0 ? 1 : 0);
+      BaseResponseModel model = await laud(id: widget.model.id, laud: widget.model.isLaud == 0 ? 1 : 0);
       // 点赞/取消赞成功
-      print("state:${model["state"]}");
-      if (model["state"]) {
-        context
-            .read<FeedMapNotifier>()
-            .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
+      if(model.code == CODE_BLACKED) {
+        ToastShow.show(msg: "你已被拉黑", context: context,gravity: Toast.CENTER);
       } else {
-        // 失败
-        print("shib ");
+        print("state:${model.data["state"]}");
+        if (model.data["state"]) {
+          context
+              .read<FeedMapNotifier>()
+              .setLaud(widget.model.isLaud, context
+              .read<ProfileNotifier>()
+              .profile
+              .avatarUri, widget.model.id);
+        } else {
+          // 失败
+          print("shib ");
+        }
       }
     } else {
       // 去登录
@@ -283,10 +294,6 @@ class _SlideBannerState extends State<SlideBanner> {
                       autoPlay(index);
                     },
                     onTap: (index) {
-                      // Navigator.push(context, MaterialPageRoute(builder: (_) {
-                          // ZoomImageDemo(imageTestUrl: widget.model.picUrls[index].url);
-                          // SimplePhotoViewDemo();
-                      // }));
                     },
                   ),
                 ),

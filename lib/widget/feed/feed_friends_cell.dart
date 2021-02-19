@@ -5,7 +5,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/page/message/message_view/currency_msg.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
-typedef VoidCallback = void Function(String name, int userId, int type, BuildContext context);
+typedef FriendsCallback = void Function(String name, int userId, int type, BuildContext context);
 
 // ignore: must_be_immutable
 class FriendsCell extends StatelessWidget {
@@ -14,7 +14,7 @@ class FriendsCell extends StatelessWidget {
   final String groupTitle;
   final String imageAssets;
   final int userId;
-  final VoidCallback voidCallback;
+  final FriendsCallback friendsCallback;
   final bool isShowTitle;
   final bool isShowSingleChoice;
   final bool isSelectSingleChoice;
@@ -25,7 +25,7 @@ class FriendsCell extends StatelessWidget {
     this.imageAssets,
     this.groupTitle,
     this.noBottomIndex = 0,
-    this.voidCallback,
+    this.friendsCallback,
     this.isShowTitle = true,
     this.isShowSingleChoice = true,
     this.isSelectSingleChoice = false,
@@ -38,8 +38,8 @@ class FriendsCell extends StatelessWidget {
         child: _buildUi(context),
       ),
       onTap: () {
-        if (voidCallback != null) {
-          voidCallback(name, userId, RCConversationType.Private, context);
+        if (friendsCallback != null) {
+          friendsCallback(name, userId, RCConversationType.Private, context);
         }
       },
     );
