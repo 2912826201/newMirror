@@ -598,6 +598,7 @@ class AppRouter {
     HomeFeedModel model,
     int index,
     int type,
+    Function(dynamic result) callBack
   }) {
     Map<String, dynamic> map = Map();
     if (fatherModel != null) {
@@ -613,7 +614,7 @@ class AppRouter {
       map['index'] = index;
     }
     map['type'] = type;
-    _navigateToPage(context, pathFeedDetailPage, map);
+    _navigateToPage(context, pathFeedDetailPage, map,callback: callBack);
   }
 
   // 所在位置页面
