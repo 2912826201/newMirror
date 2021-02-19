@@ -140,7 +140,7 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
     }
   }
 
-  //插入被退出群提示
+  //插入被移除群聊或者加入群聊的消息
   void insertExitGroupMsg(Message message, String targetId) {
     TextMessage msg = TextMessage();
     msg.sendUserInfo = getChatUserInfo();

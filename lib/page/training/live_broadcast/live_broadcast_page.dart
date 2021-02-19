@@ -1,6 +1,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 
 import 'live_broadcast_item_page.dart';
@@ -13,7 +14,7 @@ class LiveBroadcastPage extends StatefulWidget {
   createState() => new LiveBroadcastPageState();
 }
 
-class LiveBroadcastPageState extends State<LiveBroadcastPage> {
+class LiveBroadcastPageState extends XCState {
   //设置只能加载多少个日期
   var getDateNumber = 7;
 
@@ -42,7 +43,7 @@ class LiveBroadcastPageState extends State<LiveBroadcastPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget shouldBuild(BuildContext context) {
     getTopCalendarDate();
 
     return Scaffold(

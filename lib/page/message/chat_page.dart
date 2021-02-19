@@ -738,7 +738,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   void initSetData() async {
     List msgList = new List();
     msgList = await RongCloud.init().getHistoryMessages(widget.conversation.getType(),
-        widget.conversation.conversationId, new DateTime.now().millisecondsSinceEpoch, 5, 0);
+        widget.conversation.conversationId, new DateTime.now().millisecondsSinceEpoch, 20, 0);
     print("历史记录${msgList.length}");
     if (msgList != null && msgList.length > 0) {
       for (int i = 0; i < msgList.length; i++) {

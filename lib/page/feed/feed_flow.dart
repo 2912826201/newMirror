@@ -121,9 +121,6 @@ class FeedFlowState extends State<FeedFlow> {
 
   @override
   Widget build(BuildContext context) {
-    new Future.delayed(Duration(seconds: 1), () {
-     controller.jumpTo(2000);//延时操作
-    });
     return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: CustomAppBar(

@@ -12,6 +12,7 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
+import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/page/training/common/common_comment_page.dart';
 import 'package:mirror/page/training/common/common_course_page.dart';
 import 'package:mirror/route/router.dart';
@@ -37,21 +38,29 @@ class VideoDetailPage extends StatefulWidget {
         this.videoModel})
       : super(key: key);
 
+  final LiveVideoModel videoModel;
   final String heroTag;
   final int videoCourseId;
-  final LiveVideoModel videoModel;
   final CommentDtoModel commentDtoModel;
   final CommentDtoModel fatherComment;
 
   @override
   createState() {
-    return VideoDetailPageState(videoModel: videoModel);
+    return VideoDetailPageState(videoModel: videoModel,heroTag:heroTag,
+        videoCourseId:videoCourseId,commentDtoModel:commentDtoModel,
+        fatherComment:fatherComment);
   }
 }
 
-class VideoDetailPageState extends State<VideoDetailPage> {
-  VideoDetailPageState({Key key, this.videoModel});
+class VideoDetailPageState extends XCState {
+  VideoDetailPageState({Key key, this.videoModel,
+    this.heroTag,this.videoCourseId,this.commentDtoModel,this.fatherComment});
 
+
+  String heroTag;
+  int videoCourseId;
+  CommentDtoModel commentDtoModel;
+  CommentDtoModel fatherComment;
 
   //当前视频课程的model
   LiveVideoModel videoModel;
@@ -134,7 +143,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget shouldBuild(BuildContext context) {
     return Scaffold(
       appBar: null,
       body: _buildSuggestions(),
@@ -167,7 +176,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
               onTap: () {
                 loadingStatus = LoadingStatus.STATUS_LOADING;
                 if(mounted){
-                  setState(() {});
+                  reload(() {});
                 }
                 getDataAction();
               },
@@ -252,7 +261,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
               expandedHeight: 300,
               paddingTop: MediaQuery.of(context).padding.top,
               coverImgUrl: getCourseShowImage(videoModel),
-              heroTag: widget.heroTag,
+              heroTag: heroTag,
               startTime: videoModel.startTime,
               endTime: videoModel.endTime,
               shareBtnClick: _shareBtnClick,
@@ -313,7 +322,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
           bindingTerminal=true;
           Future.delayed(Duration(milliseconds: 300),(){
             if(mounted){
-              setState(() {});
+              reload(() {});
             }
           });
         }else{
@@ -335,13 +344,13 @@ class VideoDetailPageState extends State<VideoDetailPage> {
           key:childKey,
           scrollController: scrollController,
           refreshController: _refreshController,
-          fatherComment:widget.fatherComment,
+          fatherComment:fatherComment,
           targetId:videoModel.id,
           targetType:3,
           pageCommentSize:20,
           pageSubCommentSize:3,
           isShowHotOrTime:true,
-          commentDtoModel:widget.commentDtoModel,
+          commentDtoModel:commentDtoModel,
           isShowAt:false,
           globalKeyList: globalKeyList,
         ),
@@ -429,14 +438,14 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       if (isBouncingScrollPhysics) {
         isBouncingScrollPhysics = false;
         if(mounted){
-          setState(() {});
+          reload(() {});
         }
       }
     } else {
       if (!isBouncingScrollPhysics) {
         isBouncingScrollPhysics = true;
         if(mounted){
-          setState(() {});
+          reload(() {});
         }
       }
     }
@@ -469,7 +478,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     if (map != null && map["state"] != null && map["state"]) {
       isFavor = !isFavor;
       if(mounted){
-        setState(() {});
+        reload(() {});
       }
     }
   }
@@ -497,7 +506,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       print("[${DateTime.now().millisecondsSinceEpoch}]taskId:$taskId; received:$received; total:$total; "
           "progress:$_progress; allDownLoadCount:$allDownLoadCount; completeDownCount:$completeDownCount");
       if(mounted){
-        setState(() {});
+        reload(() {});
       }
     };
   }
@@ -723,7 +732,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       dataResponseModel = await getPullList(
         type: 7,
         size: 3,
-        targetId: widget.videoCourseId,
+        targetId: videoCourseId,
       );
       if (dataResponseModel != null && dataResponseModel.list != null && dataResponseModel.list.length > 0) {
         dataResponseModel.list.forEach((v) {
@@ -737,12 +746,12 @@ class VideoDetailPageState extends State<VideoDetailPage> {
 
     //获取视频详情数据
     //加载数据
-    Map<String, dynamic> model = await getVideoCourseDetail(courseId: widget.videoCourseId);
+    Map<String, dynamic> model = await getVideoCourseDetail(courseId: videoCourseId);
     if (model == null) {
       loadingStatus = LoadingStatus.STATUS_IDEL;
       Future.delayed(Duration(seconds: 1), () {
         if(mounted){
-          setState(() {});
+          reload(() {});
         }
       });
     } else {
@@ -753,7 +762,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       }
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
       if(mounted){
-        setState(() {});
+        reload(() {});
       }
     }
   }
@@ -777,7 +786,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     if (attntionResult == 1 || attntionResult == 3) {
       videoModel.coachDto?.relation = 1;
       if(mounted){
-        setState(() {});
+        reload(() {});
       }
     }
   }

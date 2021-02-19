@@ -19,7 +19,6 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
 import 'feed_flow_page.dart';
-import 'feed_flow_page2.dart';
 
 
 class TwoColumnFeedPage extends StatefulWidget {

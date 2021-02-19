@@ -20,7 +20,7 @@ class MainPage extends StatefulWidget {
   MainPageState createState() => MainPageState();
 }
 
-class MainPageState extends XCState with SingleTickerProviderStateMixin {
+class MainPageState extends XCState{
   int currentIndex;
   bool isInit = false;
 
