@@ -27,11 +27,13 @@ class DynamicListLayout extends StatelessWidget {
       this.model,
       this.pageName,
       this.deleteFeedChanged,
-      this.removeFollowChanged})
+      this.removeFollowChanged,
+      this.mineDetailId})
       : super(key: key);
   final index;
   bool isShowRecommendUser;
   HomeFeedModel model;
+  int mineDetailId;
   String pageName;
 
   // 删除动态
@@ -56,6 +58,7 @@ class DynamicListLayout extends StatelessWidget {
         HeadView(
             model: model,
             isDetail: false,
+            mineDetailId: mineDetailId!=null?mineDetailId:0,
             deleteFeedChanged: (id) {
               deleteFeedChanged(id);
             },

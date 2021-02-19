@@ -34,7 +34,6 @@ class FeedMapNotifier extends ChangeNotifier {
     childModel = model;
     notifyListeners();
   }
-
 // 更新全局动态map
   void updateFeedMap(List<HomeFeedModel> _feedList) {
     _feedList.forEach((element) {

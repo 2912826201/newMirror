@@ -153,7 +153,17 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
                     pageName: "profileDetails",
                     isShowRecommendUser: false,
                     model: model,
-                    key: GlobalObjectKey("attention$index"));
+                    mineDetailId: widget.id,
+                    key: GlobalObjectKey("attention$index"),
+                deleteFeedChanged: (feedId){
+                  print('====%%%%%%%%%%%%%%%%%%%%%%%%%%%_followListId${_followListId.length}');
+                    _followListId.removeWhere((element){
+                        return element==feedId;
+                      });
+                    setState(() {
+                    });
+                   print('====%%%%%%%%%%%%%%%%%%%%%%%%%%%_followListId${_followListId.length}');
+                  },);
               }
             }),
       ),

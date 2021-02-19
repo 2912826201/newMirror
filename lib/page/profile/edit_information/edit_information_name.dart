@@ -6,6 +6,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
@@ -99,7 +100,7 @@ class _EditInformationNameState extends State<EditInformationName> {
               CustomRedButton.buttonStateNormal,
               () {
                 if (_EditText.isEmpty) {
-                  Toast.show("昵称不能为空", context);
+                 ToastShow.show(msg: "昵称不能为空", context: context);
                   return;
                 }
                 _commentFocus.unfocus();

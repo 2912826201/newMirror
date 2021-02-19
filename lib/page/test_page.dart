@@ -396,22 +396,11 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                   url: url);
             }
           } else {
-            showAppDialog(
-              context,
-              barrierDismissible:model.isForceUpdate==0?false:true,
-              title: "检测到新版本，去下载",
-              cancel: model.isForceUpdate==0?AppDialogButton("取消", () {
-                return true;
-              }):null,
-              confirm: AppDialogButton("确定", () {
-                LaunchReview.launch(writeReview: false, iOSAppId: "585027354");
-                if(model.isForceUpdate==0){
-                  return true;
-                }else{
-                  return false;
-                }
-              }),
-            );
+            showVersionDialog(
+                barrierDismissible: false,
+                content: model.description,
+                strong: model.isForceUpdate==0?false:true,
+                context: context,);
           }
         }
       }

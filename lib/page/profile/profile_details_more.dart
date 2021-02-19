@@ -229,7 +229,7 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
     bool isSucess = await ProfileMoreDenounce(widget.userId, 0);
     print('isSucess=======================================$isSucess');
     if (isSucess) {
-      ToastShow.show(msg: "举报成功", context: context);
+      ToastShow.show(msg: "感谢你的反馈，我们会尽快处理!", context: context);
     }
   }
 }
