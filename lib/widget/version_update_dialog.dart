@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:launch_review/launch_review.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
@@ -16,7 +17,6 @@ class VersionUpdateDialog extends StatefulWidget {
   String content;
   String url;
   bool strong;
-
   VersionUpdateDialog({this.strong, this.content, this.url});
 
   @override
@@ -113,7 +113,11 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
             InkWell(
               onTap: () async {
                 if (progressText == "立即更新") {
-                  _updateProgress();
+                    if(Platform.isIOS){
+                      LaunchReview.launch(writeReview: false, iOSAppId: "585027354");
+                    }else{
+                      _updateProgress();
+                    }
                 } else if (progressText == "去安装") {
                   _installApk();
                 }

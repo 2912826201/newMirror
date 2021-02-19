@@ -164,7 +164,26 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                       physics: AlwaysScrollableScrollPhysics(),
                       itemCount: msgList.length,
                       itemBuilder: (context, index) {
-                        return InkWell(onTap: () {}, child: InteractiveNoticeItemState(widget.type, msgList[index]));
+                        return  InteractiveNoticeItemState(
+                            type:widget.type,
+                            msgModel:msgList[index],
+                            deleteCallBack:(value){
+                              List<QueryModel> list = [];
+                              for(int i=0;i<msgList.length;i++){
+                                if(msgList[i].refType==0&&msgList[i].refId!=value.toString()){
+                                 list.add(msgList[i]);
+                                }else if(msgList[i].refType==2){
+                                  CommentDtoModel fatherComment = CommentDtoModel.fromJson(msgList[i].refData);
+                                  if(fatherComment.targetId!=value){
+                                    list.add(msgList[i]);
+                                  }
+                                }
+                              }
+                              msgList.clear();
+                              msgList.addAll(list);
+                              setState(() {
+                              });
+                            });
                       }),
                 )
               : Center(
@@ -194,12 +213,12 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     );
   }
 }
-
+typedef DeleteChangedCallback = void Function(int id);
 class InteractiveNoticeItemState extends StatelessWidget {
   int type;
   QueryModel msgModel;
-
-  InteractiveNoticeItemState(this.type, this.msgModel);
+  DeleteChangedCallback  deleteCallBack;
+  InteractiveNoticeItemState({this.type, this.msgModel, this.deleteCallBack});
 
   //评论内容：@和评论拿接口内容，点赞给固定内容
   String comment = "";
@@ -461,7 +480,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
       if (liveVideoModel != null && liveVideoModel.id != null) {
         AppRouter.navigateToVideoDetail(context, liveVideoModel.id, commentDtoModel:type == 0
             ?msgModel.commentData:null);
-      };
+      }
     }
   }
 
@@ -482,6 +501,10 @@ class InteractiveNoticeItemState extends StatelessWidget {
                 type: 2,
                 fatherModel: fatherModel,
               )),
-    );
+    ).then((value){
+      if(value!=null){
+        deleteCallBack(value);
+      }
+    });
   }
 }

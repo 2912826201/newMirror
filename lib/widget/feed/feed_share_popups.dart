@@ -106,6 +106,8 @@ class FeedSharePopups extends StatelessWidget {
                               var result = await ImageGallerySaver.saveFile(map["file"].path);
                               if (result["isSuccess"] == true) {
                                 ToastShow.show(msg: "保存成功", context: context);
+                              }else{
+                                ToastShow.show(msg: "保存失败,请重试", context: context);
                               }
                               Navigator.of(context).pop(1);
                               break;

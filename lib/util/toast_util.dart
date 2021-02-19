@@ -14,7 +14,8 @@ class ToastShow {
         context, //必填
         duration: Toast.LENGTH_SHORT,
         gravity: gravity,
+
             // .BOTTOM,
-        backgroundRadius: 4);
+        backgroundRadius: 16);//规范圆角16
   }
 }

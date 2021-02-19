@@ -246,13 +246,16 @@ class _SettingHomePageState extends State<SettingHomePage> {
       await file.stat().then((value) => print('========文件信息---------------$value'));
       print('=============path=============${file.path}');
       if (file is Directory) {
+        print('=========================================if');
         final List<FileSystemEntity> children = file.listSync();
         print('=====================${children.first.path}');
         for (final FileSystemEntity child in children) {
           await delDir(child);
         }
+      }else{
+        print('=========================================else');
+        await file.delete(recursive: false);
       }
-      await file.delete(recursive: false);
     } catch (e) {
       print(e);
     }
