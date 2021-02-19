@@ -2,6 +2,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -46,11 +47,18 @@ class _AboutPageState extends State<AboutPage>{
                   width: width,
                   color: AppColor.bgWhite,
                   child: Center(
-                    child: Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Spacer(),
+                        Container(
                       width: 64,
                       height: 64,
                       color: AppColor.bgBlack,
                     ),
+                      Text("${AppConfig.version}版",style: AppStyle.textHintRegular12,),
+                        Spacer(),
+                      ],),
                   ),
                 ),
                 _itemRow("用户协议"),

@@ -55,7 +55,7 @@ class _BlackListState extends State<BlackListPage>{
       appBar: CustomAppBar(
         titleString: "黑名单",
       ),
-      body:Container(
+      body:blackList.isNotEmpty?Container(
         padding: EdgeInsets.only(left: 16,right: 16),
         height: height,
         width: width,
@@ -68,6 +68,23 @@ class _BlackListState extends State<BlackListPage>{
                     _item(width, index)
                   ],);
           } ),
+      ):Container(
+        height: height,
+        width: width,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Spacer(),
+              Container(
+                height: 224,
+                width: 224,
+                color: AppColor.bgWhite,
+              ),
+              SizedBox(height: 8,),
+              Text("还没有人被你拉黑，快去拉黑两个吧!",style: AppStyle.textHintRegular12,),
+              Spacer(),
+            ],
+        ),
       ),
     );
   }

@@ -6,6 +6,7 @@ import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
@@ -25,7 +26,8 @@ class HeadView extends StatefulWidget{
   int isBlack;
   // 取消关注
   ValueChanged<HomeFeedModel> removeFollowChanged;
-  HeadView({this.model,this.isDetail,this.deleteFeedChanged,this.removeFollowChanged,this.isBlack});
+  int mineDetailId;
+  HeadView({this.model,this.isDetail,this.deleteFeedChanged,this.removeFollowChanged,this.isBlack,this.mineDetailId,});
   @override
   State<StatefulWidget> createState() {
    return HeadViewState(deleteFeedChanged: deleteFeedChanged,removeFollowChanged: removeFollowChanged,isDetail:
@@ -49,6 +51,9 @@ class HeadViewState extends State<HeadView> {
     Map<String, dynamic> map = await deletefeed(id: model.id);
     if (map["state"]) {
       deleteFeedChanged(model.id);
+      if(isDetail){
+        Navigator.pop(context,model.id);
+      }
     } else {
       print("删除失败");
     }
@@ -159,6 +164,9 @@ class HeadViewState extends State<HeadView> {
             GestureDetector(
               onTap: () {
                 print('动态item的Id========================${model.pushId}');
+                if(widget.mineDetailId==model.pushId){
+                  return false;
+                }
                 AppRouter.navigateToMineDetail(context, model.pushId);
               },
               child: Container(

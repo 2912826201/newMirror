@@ -164,7 +164,25 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                       physics: AlwaysScrollableScrollPhysics(),
                       itemCount: msgList.length,
                       itemBuilder: (context, index) {
-                        return InkWell(onTap: () {}, child: InteractiveNoticeItemState(widget.type, msgList[index]));
+                        return InteractiveNoticeItemState(
+                            type: widget.type,
+                            msgModel: msgList[index],
+                            deleteCallBack: (value) {
+                              List<QueryModel> list = [];
+                              for (int i = 0; i < msgList.length; i++) {
+                                if (msgList[i].refType == 0 && msgList[i].refId != value.toString()) {
+                                  list.add(msgList[i]);
+                                } else if (msgList[i].refType == 2) {
+                                  CommentDtoModel fatherComment = CommentDtoModel.fromJson(msgList[i].refData);
+                                  if (fatherComment.targetId != value) {
+                                    list.add(msgList[i]);
+                                  }
+                                }
+                              }
+                              msgList.clear();
+                              msgList.addAll(list);
+                              setState(() {});
+                            });
                       }),
                 )
               : Center(
@@ -195,11 +213,14 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   }
 }
 
+typedef DeleteChangedCallback = void Function(int id);
+
 class InteractiveNoticeItemState extends StatelessWidget {
   int type;
   QueryModel msgModel;
+  DeleteChangedCallback deleteCallBack;
 
-  InteractiveNoticeItemState(this.type, this.msgModel);
+  InteractiveNoticeItemState({this.type, this.msgModel, this.deleteCallBack});
 
   //评论内容：@和评论拿接口内容，点赞给固定内容
   String comment = "";
@@ -236,7 +257,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
     } else {
       if (msgModel.refType == 0) {
         comment = "赞了你的动态";
-      } else if (msgModel.refType == 1||msgModel.refType == 3) {
+      } else if (msgModel.refType == 1 || msgModel.refType == 3) {
         comment = "赞了你的课程";
       } else if (msgModel.refType == 2) {
         comment = "赞了你的评论";
@@ -380,7 +401,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
                     height: 7,
                   ),
                   Text(
-                    DateUtil.generateFormatDate(msgModel.createTime,true),
+                    DateUtil.generateFormatDate(msgModel.createTime, true),
                     style: AppStyle.textHintRegular12,
                   )
                 ],
@@ -434,7 +455,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
 
   //跳转判断
   _jumpToDetailPage(BuildContext context) {
-    if (feedIsDelete||commentIsDelete) {
+    if (feedIsDelete || commentIsDelete) {
       Toast.show("该内容已删除", context);
       return;
     }
@@ -456,12 +477,12 @@ class InteractiveNoticeItemState extends StatelessWidget {
       }
     } else if (msgModel.refType == 1 && liveVideoModel != null && liveVideoModel.id != null) {
       AppRouter.navigateToLiveDetail(context, liveVideoModel.id,
-          isHaveStartTime: false, commentDtoModel: type == 0 ?msgModel.commentData:null);
+          isHaveStartTime: false, commentDtoModel: type == 0 ? msgModel.commentData : null);
     } else {
       if (liveVideoModel != null && liveVideoModel.id != null) {
-        AppRouter.navigateToVideoDetail(context, liveVideoModel.id, commentDtoModel:type == 0
-            ?msgModel.commentData:null);
-      };
+        AppRouter.navigateToVideoDetail(context, liveVideoModel.id,
+            commentDtoModel: type == 0 ? msgModel.commentData : null);
+      }
     }
   }
 
@@ -473,6 +494,14 @@ class InteractiveNoticeItemState extends StatelessWidget {
     context.read<FeedMapNotifier>().updateFeedMap(list);
     // print("----------feedModel:${feedModel.toJson().toString()}");
     // 跳转动态详情页
-    AppRouter.navigateFeedDetailPage(context: context, model:feedModel,comment: comment, type:2,fatherModel: fatherModel);
+    AppRouter.navigateFeedDetailPage(
+        context: context,
+        model: feedModel,
+        comment: comment,
+        type: 2,
+        fatherModel: fatherModel,
+        callBack: (result) {
+          deleteCallBack(result);
+        });
   }
 }
