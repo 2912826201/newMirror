@@ -1,14 +1,8 @@
 import 'package:amap_map_fluttify/amap_map_fluttify.dart';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/api/amap/gao_de_api.dart';
-import 'package:mirror/api/location/location.api.dart';
+import 'package:mirror/api/amap/amap.dart';
 import 'package:mirror/config/application.dart';
-import 'package:mirror/config/config.dart';
-
-import 'dart:io';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
@@ -17,7 +11,7 @@ import 'package:mirror/widget/custom_appbar.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SearchOrLocationWidget extends StatefulWidget {
-  SearchOrLocationWidget({this.checkIndex, this.selectAddress, this.childrenACallBack});
+  SearchOrLocationWidget({this.checkIndex, this.selectAddress});
 
   @override
   _SearchOrLocationWidgetState createState() => _SearchOrLocationWidgetState();
@@ -27,9 +21,6 @@ class SearchOrLocationWidget extends StatefulWidget {
 
   // 传入之前选择地址
   PeripheralInformationPoi selectAddress;
-
-  // 定义接收父类回调函数
-  ValueChanged<PeripheralInformationPoi> childrenACallBack;
 }
 
 class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
@@ -174,12 +165,9 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
                             itemBuilder: (context, index) {
                               return GestureDetector(
                                   onTap: () {
-                                    widget.childrenACallBack(
-                                      searchController.text != null && searchController.text.isNotEmpty
-                                          ? searchPois[index]
-                                          : pois[index],
-                                    );
-                                    Navigator.pop(context);
+                                    Navigator.pop(context,searchController.text != null && searchController.text.isNotEmpty
+                                        ? searchPois[index]
+                                        : pois[index],);
                                   },
                                   child: LocationItem(
                                     poi: searchController.text != null && searchController.text.isNotEmpty

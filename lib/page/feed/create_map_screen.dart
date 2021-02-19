@@ -4,7 +4,7 @@ import 'package:amap_map_fluttify/amap_map_fluttify.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/api/amap/gao_de_api.dart';
+import 'package:mirror/api/amap/amap.dart';
 import 'package:mirror/api/location/location.api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';

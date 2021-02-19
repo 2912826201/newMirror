@@ -7,6 +7,7 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
@@ -93,6 +94,9 @@ class AppRouter {
   // 动态详情页
   static String pathFeedDetailPage = "feed/feeddetailpage";
 
+  // 所在位置页面
+  static String pathSearchOrLocationPage = "feed/searchOrlocationwidget";
+
   static void configureRouter(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<dynamic>> params) {
       print("ROUTE WAS NOT FOUND !!!");
@@ -165,7 +169,8 @@ class AppRouter {
     router.define(pahtCreateMapScreenPage, handler: handlerCreateMapScreenPage);
     // 跳转动态详情页
     router.define(pathFeedDetailPage, handler: handlerFeedDetailPage);
-
+    // 所在位置页面
+    router.define(pathSearchOrLocationPage, handler: handlerSearchOrLocationPage);
     // router.define(login, handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);
     // router.define(test, handler: demoFunctionHandler);
   }
@@ -269,15 +274,18 @@ class AppRouter {
   //     CommentDtoModel commentDtoModel,
   //     CommentDtoModel fatherComment}
 
-  static void navigateToVideoCourseResult(
-      BuildContext context, TrainingCompleteResultModel trainingResult) {
+  static void navigateToVideoCourseResult(BuildContext context, TrainingCompleteResultModel trainingResult) {
     Map<String, dynamic> map = Map();
     map["result"] = trainingResult.toJson();
     _navigateToPage(context, pathVideoCourseResult, map);
   }
 
-  static void navigateToLiveDetail(BuildContext context, int liveCourseId, {String heroTag,bool isHaveStartTime=true,
-    LiveVideoModel liveModel,CommentDtoModel commentDtoModel,CommentDtoModel fatherComment}) {
+  static void navigateToLiveDetail(BuildContext context, int liveCourseId,
+      {String heroTag,
+      bool isHaveStartTime = true,
+      LiveVideoModel liveModel,
+      CommentDtoModel commentDtoModel,
+      CommentDtoModel fatherComment}) {
     Map<String, dynamic> map = Map();
     map["liveCourseId"] = liveCourseId;
     map["isHaveStartTime"] = isHaveStartTime;
@@ -585,18 +593,27 @@ class AppRouter {
   }) {
     Map<String, dynamic> map = Map();
     if (fatherModel != null) {
-      map['fatherModel'] = fatherModel;
+      map['fatherModel'] = fatherModel.toJson();
     }
     if (comment != null) {
-      map['comment'] = comment;
+      map['comment'] = comment.toJson();
     }
     if (model != null) {
-      map['model'] = model;
+      map['model'] = model.toJson();
     }
     if (index != null) {
       map['index'] = index;
     }
     map['type'] = type;
     _navigateToPage(context, pathFeedDetailPage, map);
+  }
+
+  // 所在位置页面
+  static void navigateSearchOrLocationPage(
+      BuildContext context, int checkIndex, PeripheralInformationPoi selectAddress, Function(dynamic result) callback) {
+    Map<String, dynamic> map = Map();
+    map['checkIndex'] = checkIndex;
+    map['selectAddress'] = selectAddress.toJson();
+    _navigateToPage(context, pathSearchOrLocationPage, map, callback: callback);
   }
 }

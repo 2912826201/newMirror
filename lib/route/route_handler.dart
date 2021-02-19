@@ -6,6 +6,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
@@ -14,6 +15,7 @@ import 'package:mirror/page/feed/create_map_screen.dart';
 import 'package:mirror/page/feed/feed_detail_page.dart';
 import 'package:mirror/page/feed/like.dart';
 import 'package:mirror/page/feed/release_page.dart';
+import 'package:mirror/page/feed/search_or_location.dart';
 import 'package:mirror/page/if_page.dart';
 import 'package:mirror/page/login/login_page.dart';
 import 'package:mirror/page/login/perfect_user_page.dart';
@@ -179,7 +181,10 @@ var handlerSettingBlackList = Handler(handlerFunc: (BuildContext context, Map<St
 });
 
 var handlerSettingNoticeSetting = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return ChangeNotifierProvider(create: (_)=>SettingNotifile(),child: NoticeSettingPage(),);
+  return ChangeNotifierProvider(
+    create: (_) => SettingNotifile(),
+    child: NoticeSettingPage(),
+  );
 });
 
 var handlerSettingFeedBack = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
@@ -450,5 +455,18 @@ var handlerFeedDetailPage = Handler(handlerFunc: (BuildContext context, Map<Stri
     model: model,
     index: data['index'],
     type: data['type'],
+  );
+});
+// 所在位置页面
+var handlerSearchOrLocationPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  PeripheralInformationPoi selectAddress;
+  if(data['selectAddress'] != null) {
+    selectAddress = PeripheralInformationPoi.fromJson(data['selectAddress']);
+  }
+  return SearchOrLocationWidget(
+    checkIndex: data['checkIndex'],
+    // 传入之前选择地址
+    selectAddress: selectAddress,
   );
 });
