@@ -100,35 +100,7 @@ class FeedSharePopups extends StatelessWidget {
                             return;
                           }
                           Navigator.of(context).pop(1);
-                          // AppRouter.navigateFriendsPage(context, 0, null, (result) async {
-                          //   if (result == null) {
-                          //     return;
-                          //   }
-                          //
-                          //   FriendsCallback friendsCallback = result as FriendsCallback;
-                          //   if (await jumpShareMessage(map, chatTypeModel, friendsCallback.name, friendsCallback.userId, type, context)) {
-                          //     ToastShow.show(msg: "分享成功", context: context);
-                          //   } else {
-                          //     ToastShow.show(msg: "分享失败", context: context);
-                          //   }
-                          // });
-                          // AppRouter.navigateFriendsPage(context, (name, userId, type, context) {
-                          //   if (await jumpShareMessage(map, chatTypeModel, name, userId, type, context)) {
-                          //   ToastShow.show(msg: "分享成功", context: context);
-                          //   } else {
-                          //   ToastShow.show(msg: "分享失败", context: context);
-                          //   }
-                          // }, type, groupChatId)
-                          AppRouter.navigateFriendsPage(context: context);
-                          // Navigator.push(context, MaterialPageRoute(builder: (_) {
-                          //   return FriendsPage(friendsCallback: (name, userId, type, context) async {
-                          //     if (await jumpShareMessage(map, chatTypeModel, name, userId, type, context)) {
-                          //       ToastShow.show(msg: "分享成功", context: context);
-                          //     } else {
-                          //       ToastShow.show(msg: "分享失败", context: context);
-                          //     }
-                          //   });
-                          // }));
+                          AppRouter.navigateFriendsPage(context: context,shareMap: map,chatTypeModel: chatTypeModel);
                           break;
                         case "保存本地":
                           var result = await ImageGallerySaver.saveFile(map["file"].path);

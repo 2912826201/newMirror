@@ -10,6 +10,7 @@ import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
+import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
@@ -35,12 +36,16 @@ class FriendsPage extends StatefulWidget {
   final FriendsCallback friendsCallback;
   final int groupChatId; //群聊id
   final int type; //0 表示原来的样式 1群成员-查看所有群成员  2移除某一个人出群 3拉人进入群 4分享群聊 其余全表示为0
+  final Map<String, dynamic> shareMap;
+  final String chatTypeModel;
 
   const FriendsPage({
     Key key,
     this.friendsCallback,
     this.type = 0,
     this.groupChatId,
+    this.shareMap,
+    this.chatTypeModel,
   }) : super(key: key);
 
   @override
@@ -101,6 +106,7 @@ class _FriendsPageState extends State<FriendsPage> {
 
   @override
   Widget build(BuildContext context) {
+    print("type:${widget.type}");
     return Scaffold(
       appBar: getAppBar(),
       body: getBodyUi(),
@@ -167,12 +173,7 @@ class _FriendsPageState extends State<FriendsPage> {
           ),
         ),
         onTap: () {
-          AppRouter.navigateFriendsPage(context: context,type: 4);
-          // Navigator.push(context, MaterialPageRoute(builder: (_) {
-          //   return FriendsPage(type: 4, friendsCallback: (String name, int groupId, int type, BuildContext context) {
-          //     widget.friendsCallback(name, groupId, RCConversationType.Group, context);
-          //   });
-          // }));
+          AppRouter.navigateFriendsPage(context: context,type: 4,shareMap: widget.shareMap,chatTypeModel: widget.chatTypeModel);
         },
       ),
     );
@@ -344,21 +345,7 @@ class _FriendsPageState extends State<FriendsPage> {
       userId: userModel.uid,
       groupTitle: _hideIndexLetter ? null : userModel.indexLetter,
       noBottomIndex: noBottomIndex,
-      friendsCallback: !(widget.type == 2 || widget.type == 3) ? widget.friendsCallback :
-          (String name, int userId, int type, BuildContext context) {
-        if (widget.type == 2 &&
-            userId == context
-                .read<GroupUserProfileNotifier>()
-                .chatGroupUserModelList[0].uid) {
-          return;
-        }
-        if (selectUserUsIdList.contains(userId)) {
-          selectUserUsIdList.remove(userId);
-        } else {
-          selectUserUsIdList.add(userId);
-        }
-        setState(() {});
-            },
+      friendsCallback: _friendsCallback,
       isShowTitle: !isHaveTextLen,
       isShowSingleChoice: widget.type == 2 || widget.type == 3,
       isSelectSingleChoice: selectUserUsIdList.contains(userModel.uid),
@@ -553,11 +540,45 @@ class _FriendsPageState extends State<FriendsPage> {
     init();
   }
 
+
+  void _friendsCallback(String name, int userId, int type, BuildContext context)async{
+    if(widget.type==2||widget.type==3) {
+      //----------------------------------------添加人进入群聊或者将人移除群聊------------------
+      if (widget.type == 2 && userId == context.read<GroupUserProfileNotifier>().chatGroupUserModelList[0].uid) {
+        return;
+      }
+      if (selectUserUsIdList.contains(userId)) {
+        selectUserUsIdList.remove(userId);
+      } else {
+        selectUserUsIdList.add(userId);
+      }
+      setState(() {});
+    }else if(widget.type==1){
+      //-----------------------------------------------查看群成员的个人信息------------
+      Navigator.of(context).pop();
+      AppRouter.navigateToMineDetail(context,userId);
+    }else if(widget.type==4){
+      //--------------------------------------------分享消息到群聊---------------
+      if (await jumpShareMessage(widget.shareMap, widget.chatTypeModel, name, userId, RCConversationType.Group, context)) {
+        ToastShow.show(msg: "分享成功", context: context);
+      } else {
+        ToastShow.show(msg: "分享失败", context: context);
+      }
+    }else if(widget.type==0){
+      //----------------------------------------------分享消息到私聊-------------
+      if (await jumpShareMessage(widget.shareMap, widget.chatTypeModel, name, userId, RCConversationType.Private, context)) {
+        ToastShow.show(msg: "分享成功", context: context);
+      } else {
+        ToastShow.show(msg: "分享失败", context: context);
+      }
+    }
+  }
+
+
   //添加这些用户
   void addUserGroup(String uids) async {
     Map<String, dynamic> model = await inviteJoin(groupChatId: widget.groupChatId, uids: uids);
     selectUserUsIdList.clear();
-    print("---model:${model.toString()}");
     if(model!=null){
       if(model["NotFriendList"]!=null&&model["NotFriendList"].length>0){
         String name="";
@@ -568,15 +589,12 @@ class _FriendsPageState extends State<FriendsPage> {
             name+=","+model["NotFriendList"][i]["nickName"];
           }
         }
-        widget.friendsCallback(name, 0, -1, context);
         ToastShow.show(msg: name, context: context);
       }else{
         ToastShow.show(msg: "邀请成功", context: context);
-        widget.friendsCallback("邀请成功", 0, -1, context);
       }
     }else{
       ToastShow.show(msg: "邀请失败", context: context);
-      widget.friendsCallback("邀请失败", 0, -1, context);
     }
     Future.delayed(Duration(milliseconds: 200), () {
       Navigator.of(context).pop();
@@ -592,13 +610,9 @@ class _FriendsPageState extends State<FriendsPage> {
     selectUserUsIdList.clear();
     if (model != null && model["state"]) {
       ToastShow.show(msg: "删除成功", context: context);
-      // await getChatGroupUserModelList(widget.groupChatId.toString(), context);
-      widget.friendsCallback("删除成功", 0, -1, context);
     } else {
       ToastShow.show(msg: "删除失败", context: context);
-      widget.friendsCallback("删除失败", 0, -1, context);
     }
-
     Future.delayed(Duration(milliseconds: 200), () {
       Navigator.of(context).pop();
     });

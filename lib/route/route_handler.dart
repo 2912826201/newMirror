@@ -416,8 +416,10 @@ var handlerSearchPage = Handler(handlerFunc: (BuildContext context, Map<String, 
 var handlerFriendsPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return FriendsPage(
-    type: data["type"],
+    type: data["type"]??0,
     groupChatId: data["groupChatId"],
+    shareMap: data["shareMap"],
+    chatTypeModel: data["chatTypeModel"],
   );
 });
 // 创建地图页

@@ -506,15 +506,6 @@ class GroupMorePageState extends State<GroupMorePage> {
       return;
     }
     AppRouter.navigateFriendsPage(context: context,type: 1,groupChatId: int.parse(widget.chatGroupId));
-    // Navigator.push(context, MaterialPageRoute(builder: (_) {
-    //   return FriendsPage(
-    //       type: 1,
-    //       groupChatId: int.parse(widget.chatGroupId),
-    //       friendsCallback: (name, userId, type, context) {
-    //         jumpPage(ProfileDetailPage(userId: userId), false, context);
-    //         // print("查看了name：$name");
-    //       });
-    // }));
   }
 
   //添加用户按钮
@@ -524,21 +515,6 @@ class GroupMorePageState extends State<GroupMorePage> {
       return;
     }
     AppRouter.navigateFriendsPage(context: context,type: 3,groupChatId: int.parse(widget.chatGroupId));
-    // Navigator.push(context, MaterialPageRoute(builder: (_) {
-    //   return FriendsPage(
-    //       type: 3,
-    //       groupChatId: int.parse(widget.chatGroupId),
-    //       friendsCallback: (name, userId, type, context) {
-    //         if(name!="邀请成功"&&name!="邀请失败"){
-    //           if (widget.listener != null) {
-    //             widget.listener(3,name);
-    //           }
-    //         }
-    //         if(mounted) {
-    //           setState(() {});
-    //         }
-    //       });
-    // }));
   }
 
   //删除用户按钮
@@ -548,18 +524,6 @@ class GroupMorePageState extends State<GroupMorePage> {
       return;
     }
     AppRouter.navigateFriendsPage(context: context,type: 2,groupChatId: int.parse(widget.chatGroupId));
-    // Navigator.push(context, MaterialPageRoute(builder: (_) {
-    //   return FriendsPage(
-    //       type: 2,
-    //       groupChatId: int.parse(widget.chatGroupId),
-    //       friendsCallback: (name, userId, type, context) {
-    //         print("移除这个用户：$name");
-    //
-    //         if(mounted) {
-    //           setState(() {});
-    //         }
-    //       });
-    // }));
   }
 
   //退出按钮

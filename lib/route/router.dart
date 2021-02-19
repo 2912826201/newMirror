@@ -549,6 +549,8 @@ class AppRouter {
     BuildContext context,
     int type,
     int groupChatId,
+    Map<String, dynamic> shareMap,
+    String chatTypeModel,
   }) {
     Map<String, dynamic> map = Map();
     if (type != null) {
@@ -556,6 +558,12 @@ class AppRouter {
     }
     if (groupChatId != null) {
       map['groupChatId'] = groupChatId;
+    }
+    if (shareMap != null) {
+      map['shareMap'] = shareMap;
+    }
+    if (chatTypeModel != null) {
+      map['chatTypeModel'] = chatTypeModel;
     }
     _navigateToPage(context, pathFriendsPage, map);
   }
