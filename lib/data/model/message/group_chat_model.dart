@@ -4,6 +4,7 @@ class GroupChatModel {
   String name;
   String coverUrl;
   int creatorId;
+  String modifiedName;
   int dataState;
   int createTime;
   int updateTime;
@@ -15,6 +16,7 @@ class GroupChatModel {
     this.name = json["name"];
     this.coverUrl = json["coverUrl"];
     this.creatorId = json["creatorId"];
+    this.modifiedName = json["modifiedName"];
     this.dataState = json["dataState"];
     this.createTime = json["createTime"];
     this.updateTime = json["updateTime"];
@@ -26,6 +28,8 @@ class GroupChatModel {
     map["name"] = this.name;
     map["coverUrl"] = this.coverUrl;
     map["creatorId"] = this.creatorId;
+    map["modifiedName"] = this.modifiedName;
+    map["dataState"] = this.dataState;
     map["updateTime"] = this.updateTime;
     map["createTime"] = this.createTime;
     return map;
