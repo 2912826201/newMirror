@@ -91,34 +91,40 @@ class MessageManager {
         context.read<ConversationNotifier>().insertTopList([dto]);
       }
     }
-    //FIXME 如果名字头像等信息缺失 需要去接口获取 最好支持批量
+    //FIXME 如果名字头像等信息缺失 需要去接口获取 最好支持批量 需要解决并发同时请求同一数据的问题
     if (dto.name == "" || dto.avatarUri == "") {
       //根据私聊或者群聊类型取信息 异步
       switch (dto.type) {
         case PRIVATE_TYPE:
-          getUserBaseInfo(uid: int.parse(dto.conversationId)).then((user) {
+          getUserBaseInfo(uid: int.parse(dto.conversationId)).then((user) async {
             if (user != null) {
               dto.name = user.nickName;
               dto.avatarUri = user.avatarUri;
-              if (dto.isTop == 0) {
-                context.read<ConversationNotifier>().insertCommonList([dto]);
-              } else {
-                context.read<ConversationNotifier>().insertTopList([dto]);
+              result = await ConversationDBHelper().updateConversation(dto);
+              if (result) {
+                if (dto.isTop == 0) {
+                  context.read<ConversationNotifier>().insertCommonList([dto]);
+                } else {
+                  context.read<ConversationNotifier>().insertTopList([dto]);
+                }
               }
             }
           });
           break;
         case GROUP_TYPE:
           //暂时只获取一个群
-          getGroupChatByIds(id: int.parse(dto.conversationId)).then((model) {
+          getGroupChatByIds(id: int.parse(dto.conversationId)).then((model) async {
             if (model != null && model["list"] != null) {
               GroupChatModel groupChatModel = GroupChatModel.fromJson(model["list"].first);
               dto.name = groupChatModel.modifiedName == null ? groupChatModel.name : groupChatModel.modifiedName;
               dto.avatarUri = groupChatModel.coverUrl;
-              if (dto.isTop == 0) {
-                context.read<ConversationNotifier>().insertCommonList([dto]);
-              } else {
-                context.read<ConversationNotifier>().insertTopList([dto]);
+              result = await ConversationDBHelper().updateConversation(dto);
+              if (result) {
+                if (dto.isTop == 0) {
+                  context.read<ConversationNotifier>().insertCommonList([dto]);
+                } else {
+                  context.read<ConversationNotifier>().insertTopList([dto]);
+                }
               }
             }
           });
