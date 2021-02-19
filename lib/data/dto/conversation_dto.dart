@@ -40,7 +40,7 @@ class ConversationDto {
     this.uid = Application.profile.uid;
     this.type = GROUP_TYPE;
     this.avatarUri = gdto.coverUrl;
-    this.name = gdto.name;
+    this.name = gdto.modifiedName == null? gdto.name : gdto.modifiedName;
     this.content = "";
     this.updateTime = gdto.updateTime;
     this.createTime = gdto.createTime;
