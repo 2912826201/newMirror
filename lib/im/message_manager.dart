@@ -136,8 +136,11 @@ class MessageManager {
   }
 
   static ConversationDto _convertMsgToConversation(Message msg) {
-    //TODO 如果content为空暂时先不更新会话
-    if (msg.content == null) {
+    //只处理以下几个ObjectName的消息
+    if (msg.objectName != ChatTypeModel.MESSAGE_TYPE_TEXT &&
+        msg.objectName != ChatTypeModel.MESSAGE_TYPE_VOICE &&
+        msg.objectName != ChatTypeModel.MESSAGE_TYPE_RECALL_MSG1 &&
+        msg.objectName != ChatTypeModel.MESSAGE_TYPE_RECALL_MSG2) {
       return null;
     }
 
@@ -155,11 +158,10 @@ class MessageManager {
         dto.type = PRIVATE_TYPE;
         if (msg.senderUserId == Application.profile.uid.toString()) {
           //如果发信人是自己。。。要从其他途径更新会话名字和头像
-        } else if (msg.content.sendUserInfo != null) {
+        } else if (msg.content?.sendUserInfo != null) {
           dto.avatarUri = msg.content.sendUserInfo.portraitUri;
           dto.name = msg.content.sendUserInfo.name;
         } else {
-          dto.name = msg.targetId;
         }
         break;
       case RCConversationType.Group:
@@ -189,8 +191,15 @@ class MessageManager {
     //暂时将时间写一样
     dto.createTime = msg.sentTime;
     dto.updateTime = msg.sentTime;
-    //本条未读则未读数为1
-    dto.unreadCount = msg.receivedStatus == RCReceivedStatus.Unread ? 1 : 0;
+
+    //撤回消息和已读的其他类型消息不计未读数，其他为未读计未读数1
+    if (msg.objectName == ChatTypeModel.MESSAGE_TYPE_RECALL_MSG1 ||
+        msg.objectName == ChatTypeModel.MESSAGE_TYPE_RECALL_MSG2 ||
+        msg.receivedStatus != RCReceivedStatus.Unread) {
+      dto.unreadCount = 0;
+    } else {
+      dto.unreadCount = 1;
+    }
 
     return dto;
   }
@@ -345,12 +354,12 @@ class MessageManager {
   }
 
   //根据类型区分转化内容文字
-  static String _convertMsgContent(Message msg){
-    switch(msg.objectName){
+  static String _convertMsgContent(Message msg) {
+    switch (msg.objectName) {
       case ChatTypeModel.MESSAGE_TYPE_TEXT:
         Map<String, dynamic> contentMap = json.decode((msg.content as TextMessage).content);
-        if(contentMap != null){
-          switch(contentMap["subObjectName"]){
+        if (contentMap != null) {
+          switch (contentMap["subObjectName"]) {
             case ChatTypeModel.MESSAGE_TYPE_TEXT:
               return contentMap["data"];
             case ChatTypeModel.MESSAGE_TYPE_IMAGE:
@@ -368,14 +377,14 @@ class MessageManager {
             default:
               return msg.content.encode();
           }
-        }else {
+        } else {
           return msg.content.encode();
         }
         break;
       case ChatTypeModel.MESSAGE_TYPE_VOICE:
         return "[语音]";
-      case ChatTypeModel.MESSAGE_TYPE_RECALL_MSG:
-        //FIXME 撤回的逻辑目前不通
+      case ChatTypeModel.MESSAGE_TYPE_RECALL_MSG1:
+      case ChatTypeModel.MESSAGE_TYPE_RECALL_MSG2:
         return "撤回了一条消息";
       case ChatTypeModel.MESSAGE_TYPE_GRPNTF:
         return "群聊通知";
