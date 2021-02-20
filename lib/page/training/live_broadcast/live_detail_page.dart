@@ -759,7 +759,7 @@ class LiveDetailPageState extends XCState {
   }
   ///点击了他人刚刚训练完成
   onClickOtherComplete() {
-    AppRouter.navigateToOtherCompleteCoursePage(context,liveModel.id);
+    // AppRouter.navigateToOtherCompleteCoursePage(context,liveModel.id);
   }
 
   //显示全部的动作

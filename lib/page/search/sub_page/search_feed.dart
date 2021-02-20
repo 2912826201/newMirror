@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/search/search_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
@@ -23,6 +24,7 @@ import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/slide_banner.dart';
@@ -441,6 +443,37 @@ class SearchFeeditemState extends State<SearchFeeditem> {
       }
       // 转发评论点赞
       itemHeight += 48;
+
+      //地址和课程
+      if(v.address != null || v.courseDto != null){
+        itemHeight+=7;
+        itemHeight+=getTextSize("123",TextStyle(fontSize: 12),1).height;
+      }
+
+      //文本
+      if(v.content.length>0){
+        itemHeight+=12;
+        itemHeight+=getTextSize(v.content,TextStyle(fontSize: 14),2,ScreenUtil.instance.width-32).height;
+      }
+
+      //评论文本
+      if(v.comments!=null &&v.comments.length != 0){
+        itemHeight+=8;
+        itemHeight+=6;
+        itemHeight+=getTextSize("共0条评论",AppStyle.textHintRegular12,1).height;
+        itemHeight+=getTextSize("第一条评论",AppStyle.textHintRegular13,1).height;
+        if(v.comments.length>1){
+          itemHeight+=8;
+          itemHeight+=getTextSize("第二条评论",AppStyle.textHintRegular13,1).height;
+        }
+      }
+
+      // 输入框
+      itemHeight += 48;
+
+      //分割块
+      itemHeight += 18;
+
     });
 }
   // @override

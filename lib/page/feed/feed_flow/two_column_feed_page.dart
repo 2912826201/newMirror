@@ -397,7 +397,6 @@ class _TwoColumnFeedPageState extends State<TwoColumnFeedPage> {
                   pullFeedType:7,
                   pullFeedTargetId: widget.targetId,
                   onCallback:resetHero,
-                  initialScrollOffset: getInitialScrollOffset(index),
                 ),// <-- here is the magic
           )
       );

@@ -9,6 +9,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
+import 'package:mirror/page/feed/feed_flow/feed_flow_page.dart';
 import 'package:mirror/page/feed/feed_flow/two_column_feed_page.dart';
 import 'package:mirror/page/feed/like.dart';
 import 'package:mirror/page/feed/release_page.dart';
@@ -260,10 +261,17 @@ var handlerVideoDetail = Handler(handlerFunc: (BuildContext context, Map<String,
 //其他人也完成了这个视频课程训练页
 var handlerOtherCompleteCourse = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return TwoColumnFeedPage(
-    targetId:  data["liveCourseId"],
+  // return TwoColumnFeedPage(
+  //   targetId:  data["liveCourseId"],
+  // );
+  return FeedFlowPage(
+    pageName:data["pageName"],
+    pullFeedType:data["pullFeedType"],
+    pullFeedTargetId:data["pullFeedTargetId"],
+    initScrollHeight:data["initScrollHeight"]??0.0,
   );
 });
+
 
 
 var handlerPreviewPhoto = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
