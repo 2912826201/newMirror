@@ -8,6 +8,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
+
 // import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/search/search_api.dart';
@@ -22,6 +23,7 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/feed/feed_flow.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
+import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
@@ -165,99 +167,76 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
               },
               child:
                   CustomScrollView(controller: _scrollController, physics: AlwaysScrollableScrollPhysics(), slivers: [
-                SliverToBoxAdapter(
-                    child: Container(
-                  margin: EdgeInsets.only(left: 16, right: 16),
-                  child: MediaQuery.removePadding(
-                      removeTop: true,
-                      context: context,
-                      child: WaterfallFlow.builder(
-                        primary: false,
-                        shrinkWrap: true,
-                        // controller: _scrollController,
-                        gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          // 上下间隔
-                          mainAxisSpacing: 4.0,
-                          //   // 左右间隔
-                          crossAxisSpacing: 8.0,
-                        ),
-                        itemBuilder: (context, index) {
-                          // 获取动态id
-                          int id;
-                          // 获取动态id指定model
-                          HomeFeedModel model;
-                          if (index < feedList.length) {
-                            id = feedList[index].id;
-                            model = context.read<FeedMapNotifier>().feedMap[id];
-                          }
-                          if (index == feedList.length) {
-                            return LoadingView(
-                              loadText: loadText,
-                              loadStatus: loadStatus,
-                            );
-                          } else if (index == feedList.length + 1) {
-                            return Container();
-                          } else {
-                            return SearchFeeditem(
-                              model: model,
-                              list: feedList,
-                              index: index,
-                              focusNode: widget.focusNode,
-                              pageName: "searchFeed",
-                              feedLastTime: lastTime,
-                              searchKeyWords: widget.textController.text,
-                              feedHasNext: hasNext,
-                            );
-                          }
-                        },
-                        itemCount: feedList.length + 1,
-                      )
-                      // child: StaggeredGridView.countBuilder(
-                      //   shrinkWrap: true,
-                      //   itemCount: feedList.length + 1,
-                      //   primary: false,
-                      //   crossAxisCount: 4,
-                      //   // 上下间隔
-                      //   mainAxisSpacing: 4.0,
-                      //   // 左右间隔
-                      //   crossAxisSpacing: 8.0,
-                      //   controller: _scrollController,
-                      //   itemBuilder: (context, index) {
-                      //     // 获取动态id
-                      //     int id;
-                      //     // 获取动态id指定model
-                      //     HomeFeedModel model;
-                      //     if (index < feedList.length) {
-                      //       id = feedList[index].id;
-                      //       model = context.read<FeedMapNotifier>().feedMap[id];
-                      //     }
-                      //     // if (feedList.isNotEmpty) {
-                      //     if (index == feedList.length) {
-                      //       return LoadingView(
-                      //         loadText: loadText,
-                      //         loadStatus: loadStatus,
-                      //       );
-                      //     } else if (index == feedList.length + 1) {
-                      //       return Container();
-                      //     } else {
-                      //       return SearchFeeditem(
-                      //         model: model,
-                      //         list: feedList,
-                      //         index: index,
-                      //         focusNode: widget.focusNode,
-                      //         pageName: "searchFeed",
-                      //         feedLastTime: lastTime,
-                      //         searchKeyWords: widget.textController.text,
-                      //         feedHasNext: hasNext,
-                      //       );
-                      //     }
-                      //     // }
-                      //   },
-                      //   staggeredTileBuilder: (index) => StaggeredTile.fit(2),
-                      // )
-                      ),
-                ))
+                // SliverToBoxAdapter(
+                //     child: Container(
+                //   margin: EdgeInsets.only(left: 16, right: 16),
+                //   child: MediaQuery.removePadding(
+                //       removeTop: true,
+                //       context: context,
+                //       // 瀑布流
+                //       child: WaterfallFlow.builder(
+                //         primary: false,
+                //         shrinkWrap: true,
+                //         // controller: _scrollController,
+                //         gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+                //           crossAxisCount: 2,
+                //           // 上下间隔
+                //           mainAxisSpacing: 4.0,
+                //           //   // 左右间隔
+                //           crossAxisSpacing: 8.0,
+                //         ),
+                //         itemBuilder: (context, index) {
+                //           // 获取动态id
+                //           int id;
+                //           // 获取动态id指定model
+                //           HomeFeedModel model;
+                //           if (index < feedList.length) {
+                //             id = feedList[index].id;
+                //             model = context.read<FeedMapNotifier>().feedMap[id];
+                //           }
+                //           if (index == feedList.length) {
+                //             return LoadingView(
+                //               loadText: loadText,
+                //               loadStatus: loadStatus,
+                //             );
+                //           } else if (index == feedList.length + 1) {
+                //             return Container();
+                //           } else {
+                //             return SearchFeeditem(
+                //               model: model,
+                //               list: feedList,
+                //               index: index,
+                //               focusNode: widget.focusNode,
+                //               pageName: "searchFeed",
+                //               feedLastTime: lastTime,
+                //               searchKeyWords: widget.textController.text,
+                //               feedHasNext: hasNext,
+                //             );
+                //           }
+                //         },
+                //         itemCount: feedList.length + 1,
+                //       )
+                //      ),
+                // )),
+                SliverList(delegate: SliverChildBuilderDelegate((content, index) {
+                  if (index == feedList.length) {
+                    return LoadingView(
+                      loadText: loadText,
+                      loadStatus: loadStatus,
+                    );
+                  } else if (index == feedList.length + 1) {
+                    return Container();
+                  } else {
+                    return DynamicListLayout(
+                      index: index,
+                      pageName: "searchFeed",
+                      isShowRecommendUser: false,
+                      model: feedList[index],
+                      // 可选参数 子Item的个数
+                      key: GlobalObjectKey("attention$index"),
+                    );
+                  }
+                },childCount: feedList.length + 1))
               ])));
     } else {
       return Container(
@@ -574,17 +553,14 @@ class LaudItemState extends State<LaudItem> {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     if (isLoggedIn) {
       BaseResponseModel model = await laud(id: widget.model.id, laud: widget.model.isLaud == 0 ? 1 : 0);
-      if(model.code == CODE_BLACKED) {
-        ToastShow.show(msg: "你已被拉黑", context: context,gravity: Toast.CENTER);
+      if (model.code == CODE_BLACKED) {
+        ToastShow.show(msg: "你已被拉黑", context: context, gravity: Toast.CENTER);
       } else {
         // 点赞/取消赞成功
         if (model.data["state"]) {
           context
               .read<FeedMapNotifier>()
-              .setLaud(widget.model.isLaud, context
-              .read<ProfileNotifier>()
-              .profile
-              .avatarUri, widget.model.id);
+              .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
         } else {
           // 失败
           print("shib ");
