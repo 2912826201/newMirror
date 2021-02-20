@@ -29,14 +29,15 @@ class DynamicListLayout extends StatelessWidget {
       this.pageName,
       this.deleteFeedChanged,
       this.removeFollowChanged,
-      this.mineDetailId})
+      this.mineDetailId,this.topicId})
       : super(key: key);
   final index;
   bool isShowRecommendUser;
   HomeFeedModel model;
   int mineDetailId;
   String pageName;
-
+  // 话题详情页id
+  int topicId;
   // 删除动态
   ValueChanged<int> deleteFeedChanged;
 
@@ -98,6 +99,7 @@ class DynamicListLayout extends StatelessWidget {
             width: ScreenUtil.instance.screenWidthDp,
             child: ExpandableText(
               text: model.content,
+              topicId: topicId,
               model: model,
               maxLines: 2,
               style: TextStyle(fontSize: 14, color: AppColor.textPrimary1),

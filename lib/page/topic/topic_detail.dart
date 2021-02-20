@@ -435,6 +435,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                       scrollChildKeys[0],
                       TopicRecommend(
                         topicList: recommendTopicList,
+                        topicId: widget.topicId,
                         loadStatus: recommendLoadStatus,
                         loadText: recommendLoadText,
                         refreshCallBack: (bool) {
@@ -457,6 +458,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                         TopicNewest(
                           topicList: newestTopicList,
                           loadStatus: newestLoadStatus,
+                          topicId: widget.topicId,
                           loadText: newestLoadText,
                           refreshCallBack: (bool) {
                             setState(() {
