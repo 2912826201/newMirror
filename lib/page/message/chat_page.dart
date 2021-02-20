@@ -1298,6 +1298,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         } else {
           Application.appContext.read<ChatMessageProfileNotifier>().clearMessage();
         }
+        //当进入聊天界面,没有任何聊天记录,这时对方给我发消息就可能会照成崩溃
         if (chatDataList.length>0&&message.messageUId == chatDataList[0].msg.messageUId) {
           return Container();
         }
