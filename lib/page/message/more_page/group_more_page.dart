@@ -6,6 +6,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
+import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
@@ -53,7 +54,7 @@ class GroupMorePageState extends State<GroupMorePage> {
   bool topChat = false;
   String groupMeName = "还未取名";
   bool isUpdateGroupMeName = false;
-  Map<String, dynamic> groupInformationMap;
+  GroupChatModel groupChatModel;
   String groupName;
   DialogLoadingController _dialogLoadingController;
 
@@ -399,11 +400,11 @@ class GroupMorePageState extends State<GroupMorePage> {
   void getGroupInformation() async {
     print("getGroupInformation");
     try {
-      Map<String, dynamic> model = await getGroupChatByIds(id: int.parse(widget.chatGroupId));
-      if (model != null && model["list"] != null) {
-        model["list"].forEach((v) {
-          groupInformationMap = v;
-          groupName = groupInformationMap["modifiedName"];
+      List<GroupChatModel> list = await getGroupChatByIds(id: int.parse(widget.chatGroupId));
+      if (list != null ) {
+        list.forEach((v) {
+          groupChatModel = v;
+          groupName = groupChatModel.modifiedName == null? groupChatModel.name : groupChatModel.modifiedName;
         });
         await getConversationNotificationStatus();
       }
@@ -422,6 +423,7 @@ class GroupMorePageState extends State<GroupMorePage> {
       Map<String, dynamic> model = await modify(
           groupChatId: int.parse(widget.chatGroupId), newName: newName);
       if (model != null && model["state"] != null && model["state"]) {
+        groupChatModel.modifiedName = newName;
         groupName = newName;
         if (widget.listener != null) {
           widget.listener(1,groupName);
@@ -538,7 +540,9 @@ class GroupMorePageState extends State<GroupMorePage> {
         widget.exitGroupListener();
       }
       ToastShow.show(msg: "退出成功", context: context);
-      Navigator.of(context).pop();
+      Future.delayed(Duration.zero, () {
+        Navigator.of(context).pop();
+      });
     } else {
       ToastShow.show(msg: "退出失败", context: context);
     }
@@ -671,14 +675,14 @@ class GroupMorePageState extends State<GroupMorePage> {
           }));
       // ToastShow.show(msg: "点击了：$title", context: context);
     } else if (title == "群聊二维码") {
-      if(groupInformationMap==null){
+      if(groupChatModel == null){
         ToastShow.show(msg: "获取群聊信息失败", context: context);
       }else{
         AppRouter.navigateToGroupQrCodePage(
             context: context,
-            imageUrl: groupInformationMap["coverUrl"],
-            name: groupInformationMap["name"],
-            groupId: groupInformationMap["id"].toString(),
+            imageUrl: groupChatModel.coverUrl,
+            name: groupChatModel.modifiedName == null ? groupChatModel.name : groupChatModel.modifiedName,
+            groupId: groupChatModel.id.toString(),
         );
       }
     } else {

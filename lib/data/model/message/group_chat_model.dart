@@ -1,4 +1,4 @@
-//创建群聊回来的model
+//群聊的model
 class GroupChatModel {
   int id;
   String name;

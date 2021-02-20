@@ -74,6 +74,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   Widget build(BuildContext context) {
     // TODO: implement build
     super.build(context);
+    print("ProfileState_____________________________________________build");
     print('===============================我的页build');
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -312,8 +313,8 @@ Future<Message> postGroupMessageManager(String targetId,
   return await Application.rongCloud.sendGroupMessage(targetId, messageContent);
 }
 
-//发送消息提示间隔
-void postMessageManagerAlertTime(String chatTypeModel,
+//插入撤回的消息
+void postMessageManagerReset(String chatTypeModel,
     String chatTypeModelName,
     String content,
     String targetId,
@@ -419,7 +420,7 @@ ChatDataModel getMessage(Message message, {bool isHaveAnimation = true}) {
 //插入撤回消息
 void getReChatDataModel(
     {String targetId, int conversationType, int chatTypeId, int sendTime,String text, Function(Message msg, int code) finished}) async {
-  postMessageManagerAlertTime(ChatTypeModel.MESSAGE_TYPE_ALERT, ChatTypeModel.MESSAGE_TYPE_ALERT_NAME,
+  postMessageManagerReset(ChatTypeModel.MESSAGE_TYPE_ALERT, ChatTypeModel.MESSAGE_TYPE_ALERT_NAME,
       text, targetId,
       conversationType, finished, sendTime: sendTime);
 }
@@ -495,8 +496,28 @@ void postSelectMessage(ChatDataModel chatDataModel, String targetId,
 void postImgOrVideo(List<ChatDataModel> modelList, String targetId, String type,
     int chatTypeId,
     VoidCallback voidCallback) async {
+  modelList=modelList.reversed.toList();
   List<UploadResultModel> uploadResultModelList = await onPostImgOrVideo(modelList, type);
-  for (int i = 0; i < modelList.length; i++) {
+
+  int count=0;
+  Timer timer = new Timer.periodic(Duration(seconds: 1), (Timer timer)async {
+    int end=count+2;
+    if(end>modelList.length){
+      end=modelList.length;
+    }
+    await postImage(count,end,uploadResultModelList,modelList,targetId,type,chatTypeId,voidCallback);
+    count=end;
+    if(count>=modelList.length){
+      timer.cancel();
+    }
+  });
+}
+
+Future<void> postImage(int start,int end,List<UploadResultModel> uploadResultModelList,
+    List<ChatDataModel> modelList, String targetId, String type, int chatTypeId,
+    VoidCallback voidCallback)async{
+  for (int i = start; i < end; i++) {
+    print("发送图片：$i");
     int uploadResultModelIndex = -1;
     for (int j = 0; j < uploadResultModelList.length; j++) {
       if (uploadResultModelList[j].filePath ==
@@ -520,6 +541,9 @@ void postImgOrVideo(List<ChatDataModel> modelList, String targetId, String type,
   }
   voidCallback();
 }
+
+
+
 
 //发送语音
 void postVoice(ChatDataModel chatDataModel, String targetId,

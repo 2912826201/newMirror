@@ -14,6 +14,7 @@ import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/search/search_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/base_response_model.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
@@ -27,6 +28,7 @@ import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:mirror/widget/feed_video_player.dart';
@@ -399,7 +401,59 @@ class SearchFeeditemState extends State<SearchFeeditem> {
     }
     return (((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) / width) * height;
   }
+  // 算出到置顶item的高度
+  specifyItemHeight() {
+    double itemHeight = 0.0;
+    list.forEach((v) {
+      // 头部
+      itemHeight += 62;
+      // 图片
+      if (v.picUrls.isNotEmpty) {
+        if (v.picUrls.first.height == 0) {
+          itemHeight += ScreenUtil.instance.width;
+        }  else {
+          itemHeight += (ScreenUtil.instance.width / v.picUrls[0].width) * v.picUrls[0].height;
+        }
+      }
+      // 视频
+      if(v.videos.isNotEmpty) {
 
+      }
+      // 转发评论点赞
+      itemHeight += 48;
+
+      //地址和课程
+      if(v.address != null || v.courseDto != null){
+        itemHeight+=7;
+        itemHeight+=getTextSize("123",TextStyle(fontSize: 12),1).height;
+      }
+
+      //文本
+      if(v.content.length>0){
+        itemHeight+=12;
+        itemHeight+=getTextSize(v.content,TextStyle(fontSize: 14),2,ScreenUtil.instance.width-32).height;
+      }
+
+      //评论文本
+      if(v.comments!=null &&v.comments.length != 0){
+        itemHeight+=8;
+        itemHeight+=6;
+        itemHeight+=getTextSize("共0条评论",AppStyle.textHintRegular12,1).height;
+        itemHeight+=getTextSize("第一条评论",AppStyle.textHintRegular13,1).height;
+        if(v.comments.length>1){
+          itemHeight+=8;
+          itemHeight+=getTextSize("第二条评论",AppStyle.textHintRegular13,1).height;
+        }
+      }
+
+      // 输入框
+      itemHeight += 48;
+
+      //分割块
+      itemHeight += 18;
+
+    });
+}
   // @override
   Widget build(BuildContext context) {
     if (model.videos.isNotEmpty) {
@@ -429,6 +483,7 @@ class SearchFeeditemState extends State<SearchFeeditem> {
                   // result.insert(0, model);
                   // list = result;
                   // print(list.length);
+
                   Navigator.push(
                     context,
                     new MaterialPageRoute(
@@ -582,7 +637,10 @@ class LaudItemState extends State<LaudItem> {
           },
           child: Icon(
             Icons.favorite,
-            color: context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 1
+            color: (context.select((FeedMapNotifier value) => value.feedMap) != null
+                &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id]) != null
+                &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) != null
+                &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 1)
                 ? Colors.red
                 : Colors.grey,
             size: 16,
@@ -592,7 +650,10 @@ class LaudItemState extends State<LaudItem> {
           width: 2,
         ),
         Offstage(
-          offstage: context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].laudCount) == 0,
+          offstage: (context.select((FeedMapNotifier value) => value.feedMap) != null
+                  &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id]) != null
+                  &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].laudCount) != null
+                  &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].laudCount) == 0),
           child: //用Selector的方式监听数据
               Selector<FeedMapNotifier, int>(builder: (context, laudCount, child) {
             return Text(
@@ -603,7 +664,10 @@ class LaudItemState extends State<LaudItem> {
               ),
             );
           }, selector: (context, notifier) {
-            return notifier.feedMap[widget.model.id].laudCount;
+            return (notifier.feedMap!=null&&
+                notifier.feedMap[widget.model.id]!=null&&
+                notifier.feedMap[widget.model.id].laudCount!=null)?
+            notifier.feedMap[widget.model.id].laudCount:0;
           }),
         ),
         // SizedBox(width: 2,)

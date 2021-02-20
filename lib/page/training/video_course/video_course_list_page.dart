@@ -10,6 +10,7 @@ import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/page/search/search_page.dart';
+import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
@@ -23,7 +24,7 @@ class VideoCourseListPage extends StatefulWidget {
   createState() => new VideoCourseListPageState();
 }
 
-class VideoCourseListPageState extends State<VideoCourseListPage> {
+class VideoCourseListPageState extends XCState {
   //选择的所有标签
   List<SubTagModel> _titleItemList = <SubTagModel>[];
   List<SubTagModel> _titleItemListTemp = <SubTagModel>[];
@@ -102,7 +103,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget shouldBuild(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
         titleString: "课程库",
@@ -267,7 +268,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
                         _titleItemListTemp.clear();
                         showScreenTitlePosition = -1;
                         if (mounted) {
-                          setState(() {});
+                          reload(() {});
                         }
                       },
                     ),
@@ -383,7 +384,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
                   topItemOpacity = 0.0;
                 }
                 if (mounted) {
-                  setState(() {
+                  reload(() {
                     if (topItemOpacity == 0) {
                       topItemHeight = 0;
                     } else if (metrics.pixels > showBackTopBoxHeight && topItemHeight == 0) {
@@ -490,7 +491,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
                   }
                 }
                 if (mounted) {
-                  setState(() {});
+                  reload(() {});
                 }
               },
             ),
@@ -519,7 +520,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
                 _titleItemListTemp.clear();
                 showScreenTitlePosition = -1;
                 if (mounted) {
-                  setState(() {
+                  reload(() {
                     loadingStatus = LoadingStatus.STATUS_LOADING;
                     _onRefresh();
                   });
@@ -644,7 +645,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
           _titleItemListTemp.add(model);
         }
         if (mounted) {
-          setState(() {});
+          reload(() {});
         }
       },
     );
@@ -750,7 +751,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
           _refreshController.loadComplete();
         }
         if (mounted) {
-          setState(() {
+          reload(() {
             loadingStatus = LoadingStatus.STATUS_COMPLETED;
             if (count == videoModelArray.length) {
               isHaveMoreData = false;
@@ -769,7 +770,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
           _refreshController.loadNoData();
         }
         if (mounted) {
-          setState(() {
+          reload(() {
             loadingStatus = LoadingStatus.STATUS_IDEL;
           });
         }
@@ -784,7 +785,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
     //     } else {
     //       _refreshController.loadNoData();
     //     }
-    //     setState(() {
+    //     reload(() {
     //       loadingStatus = LoadingStatus.STATUS_IDEL;
     //     });
     //   });
@@ -839,7 +840,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
       if (titleItemSubSettingList[index].height < 1) {
         filterBoxOpacity = 0.0;
         if (mounted) {
-          setState(() {});
+          reload(() {});
         }
         Future.delayed(Duration(milliseconds: 100), () {
           _screenTitleOnclick(index, isSecond: true);
@@ -847,7 +848,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
       } else {
         filterBoxOpacity = 1.0;
         if (mounted) {
-          setState(() {});
+          reload(() {});
         }
       }
     } else {
@@ -856,7 +857,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
           titleItemSubSettingList[2].height < 1) {
         filterBoxOpacity = 0.0;
         if (mounted) {
-          setState(() {});
+          reload(() {});
         }
         Future.delayed(Duration(milliseconds: 100), () {
           _screenTitleOnclick(index, isSecond: true);
@@ -864,7 +865,7 @@ class VideoCourseListPageState extends State<VideoCourseListPage> {
       } else {
         filterBoxOpacity = 1.0;
         if (mounted) {
-          setState(() {});
+          reload(() {});
         }
       }
     }

@@ -24,9 +24,11 @@ import 'message_view/text_msg.dart';
 import 'message_view/user_msg.dart';
 import 'message_view/voice_msg.dart';
 
-///聊天-筛选这个消息的是哪一种消息
+
+
+
 // ignore: must_be_immutable
-class SendMessageView extends StatelessWidget {
+class SendMessageView extends StatefulWidget {
   final ChatDataModel model;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
@@ -38,6 +40,47 @@ class SendMessageView extends StatelessWidget {
   SendMessageView(this.model, this.position, this.voidMessageClickCallBack, this.voidItemLongClickCallBack,
       this.chatUserName, this.isShowChatUserName, this.conversationDtoType);
 
+
+  @override
+  State<StatefulWidget> createState() {
+    return SendMessageViewState(
+        model,
+        position,
+        voidMessageClickCallBack,
+        voidItemLongClickCallBack,
+        chatUserName,
+        isShowChatUserName,
+        conversationDtoType);
+  }
+}
+
+
+///聊天-筛选这个消息的是哪一种消息
+// ignore: must_be_immutable
+class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAliveClientMixin {
+
+  @override
+  bool get wantKeepAlive => true;
+
+
+   ChatDataModel model;
+   VoidMessageClickCallBack voidMessageClickCallBack;
+   VoidItemLongClickCallBack voidItemLongClickCallBack;
+   int position;
+   String chatUserName;
+   int conversationDtoType;
+   bool isShowChatUserName;
+
+  SendMessageViewState(
+      this.model,
+      this.position,
+      this.voidMessageClickCallBack,
+      this.voidItemLongClickCallBack,
+      this.chatUserName,
+      this.isShowChatUserName,
+      this.conversationDtoType
+  );
+
   bool isMyself;
   String userUrl;
   String name;
@@ -47,6 +90,20 @@ class SendMessageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
+    setSettingData();
+
+    //判断是不是临时的消息
+    if (model.isTemporary) {
+      return temporaryData();
+    } else {
+      return notTemporaryData();
+    }
+  }
+
+  //设置一些基础信息
+  void setSettingData(){
     userUrl = Application.profile.avatarUri;
     sendChatUserId = Application.profile.uid.toString();
     name = getChatUserName(sendChatUserId, Application.profile.nickName);
@@ -56,12 +113,10 @@ class SendMessageView extends StatelessWidget {
       isMyself = true;
       status = RCSentStatus.Sending;
       sendTime = new DateTime.now().add(new Duration(days: -1)).millisecondsSinceEpoch;
-      return temporaryData();
     } else if (Application.profile.uid.toString() == model.msg.senderUserId) {
       isMyself = true;
       sendTime=model.msg.sentTime;
       status = model.msg.sentStatus;
-      return notTemporaryData();
     } else {
       sendTime=model.msg.sentTime;
       isMyself = false;
@@ -83,36 +138,40 @@ class SendMessageView extends StatelessWidget {
         } catch (e) {
         }
       }
-      return notTemporaryData();
     }
   }
+
+
 
   //临时消息
   Widget temporaryData() {
     //普通消息
     if (model.type == ChatTypeModel.MESSAGE_TYPE_TEXT) {
-      //文字消息
+
+      // -----------------------------------------------文字消息-临时----------------------------------------------
       return getTextMsg(text: model.content, mentionedInfo: model.mentionedInfo);
+
     } else if (model.type == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
-      //图片消息
-      return getImgVideoMsg(
-          isTemporary: true,
-          isImgOrVideo: true,
-          mediaFileModel: model.mediaFileModel);
+
+      // -----------------------------------------------图片消息-临时----------------------------------------------
+      return getImgVideoMsg(isTemporary: true, isImg: true, mediaFileModel: model.mediaFileModel);
+
     } else if (model.type == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
-      //视频消息
-      return getImgVideoMsg(
-          isTemporary: true,
-          isImgOrVideo: false,
-          mediaFileModel: model.mediaFileModel);
+
+      // -----------------------------------------------视频消息-临时----------------------------------------------
+      return getImgVideoMsg(isTemporary: true, isImg: false, mediaFileModel: model.mediaFileModel);
+
     } else if (model.type == ChatTypeModel.MESSAGE_TYPE_VOICE) {
-      //语音消息
-      // return new Text('语音消息');
-      return getVoiceMsgData(null, model.chatVoiceModel.toJson(), true,
-          StringUtil.generateMd5(model.chatVoiceModel.filePath));
+
+      // -----------------------------------------------语音消息-临时----------------------------------------------
+      String playMd5String=StringUtil.generateMd5(model.chatVoiceModel.filePath);
+      return getVoiceMsgData(null, model.chatVoiceModel.toJson(), true, playMd5String);
+
     } else if (model.type == ChatTypeModel.MESSAGE_TYPE_SELECT) {
-      //可选择的列表
+
+      // -----------------------------------------------可选择的列表-临时----------------------------------------------
       return getSelectMsgData(model.content);
+
     } else {
       return new Text('未知消息');
     }
@@ -127,90 +186,140 @@ class SendMessageView extends StatelessWidget {
     }
     String msgType = msg.objectName;
 
-    //todo 目前是使用的是 TextMessage 等以后有了自定义的 再改
     if (msgType == ChatTypeModel.MESSAGE_TYPE_TEXT) {
-      TextMessage textMessage = ((msg.content) as TextMessage);
-      // return TextMsg(textMessage.content, model);
-      try {
-        Map<String, dynamic> mapModel = json.decode(textMessage.content);
-        if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_TEXT) {
-          //文字消息
-          return getTextMsg(text: mapModel["data"], mentionedInfo: msg.content.mentionedInfo);
-        } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_FEED) {
-          //动态消息
-          return getFeedMsgData(json.decode(mapModel["data"]));
-        } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_USER) {
-          //名片消息
-          return getUserMsgData(json.decode(mapModel["data"]));
-        } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_IMAGE ||
-            mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
-          //图片视频消息
-          Map<String, dynamic> sizeInfoMap = json.decode(mapModel["data"]);
-          return getImgVideoMsg(
-              isTemporary: false,
-              isImgOrVideo:
-              mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_IMAGE,
-              mediaFileModel: model.mediaFileModel,
-              sizeInfoMap: sizeInfoMap);
-        } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE ||
-            mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE) {
-          //直播和视频课程消息
-          Map<String, dynamic> liveVideoModelMap =
-          json.decode(mapModel["data"]);
-          return getLiveVideoCourseMsg(
-              liveVideoModelMap, mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE, msg.messageUId);
-        } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME ||
-            mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_INVITE ||
-            mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_NEW ||
-            mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT ||
-            mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME ||
-            mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_ALERT_REMOVE) {
-          // return new Text('提示消息');
-          return getAlertMsg(map: mapModel);
-        } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_SELECT) {
-          // return new Text('可选择的列表');
-          return getSelectMsgData(mapModel["data"]);
-        } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
-          // print("----------------------------------------------------------------------------");
-          // return new Text('群通知消息');
-          Map<String, dynamic> map = Map();
-          map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
-          map["data"] = json.decode(mapModel["data"]);
-          return getAlertMsg(map: map);
-        } else if (mapModel["name"] != null) {
-          //版本过低
-          return getTextMsg(text: mapModel["name"], mentionedInfo: msg.content.mentionedInfo);
-        }
-        print("map:${mapModel.toString()}");
-      } catch (e) {
-        return getTextMsg(text: "版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo);
-      }
+      // -----------------------------------------------自定义的-消息类型----------------------------------------------
+
+      return getTextMessage(msg);
     } else if (msgType == VoiceMessage.objectName) {
-      // return new Text('语音消息');
+      // -----------------------------------------------语音-消息----------------------------------------------
+
       return getVoiceMessage(msg);
     } else if (msgType == RecallNotificationMessage.objectName) {
-      // return new Text('提示消息--撤回');
+      // -----------------------------------------------撤回-消息-----------------------------------------------
+
       return getAlertMsg(recallNotificationMessage: ((msg.content) as RecallNotificationMessage));
     } else if (msgType == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
-      // return new Text('群通知');
+      // -----------------------------------------------群通知-群聊-第一种---------------------------------------------
+
       Map<String, dynamic> map = Map();
       map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
       map["data"] = msg.originContentMap;
       return getAlertMsg(map: map);
     } else if (msgType == ChatTypeModel.MESSAGE_TYPE_CMD) {
-      print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-      // return new Text('群通知');
+      // -----------------------------------------------通知-私聊-----------------------------------------------
+
       Map<String, dynamic> map = Map();
       map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
       map["data"] = msg.originContentMap;
       return getAlertMsg(map: map);
     }
+
+    //-------------------------------------------------消息类型未知--------------------------------------------
     if (msg.content == null || msg.content.mentionedInfo == null) {
       return getTextMsg(text: "版本过低请升级版本!");
     } else {
       return getTextMsg(text: "版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo ?? null);
     }
   }
+
+
+  //自定义的消息类型解析
+  Widget getTextMessage(Message msg){
+    TextMessage textMessage = ((msg.content) as TextMessage);
+    try {
+      Map<String, dynamic> mapModel = json.decode(textMessage.content);
+      if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_TEXT) {
+
+        //-------------------------------------------------文字消息--------------------------------------------
+        return getTextMsg(text: mapModel["data"], mentionedInfo: msg.content.mentionedInfo);
+
+      } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_FEED) {
+
+        //-------------------------------------------------动态消息--------------------------------------------
+        return getFeedMsgData(json.decode(mapModel["data"]));
+
+      } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_USER) {
+
+        //-------------------------------------------------名片消息--------------------------------------------
+        return getUserMsgData(json.decode(mapModel["data"]));
+
+      } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
+
+        //-------------------------------------------------图片消息--------------------------------------------
+        Map<String, dynamic> map = json.decode(mapModel["data"]);
+        return getImgVideoMsg(isTemporary: false, isImg:true, mediaFileModel: model.mediaFileModel, sizeInfoMap: map);
+
+      } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
+
+        //-------------------------------------------------视频消息--------------------------------------------
+        Map<String, dynamic> map = json.decode(mapModel["data"]);
+        return getImgVideoMsg(isTemporary: false, isImg:false, mediaFileModel: model.mediaFileModel, sizeInfoMap: map);
+
+      } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
+
+        //-------------------------------------------------直播课程消息--------------------------------------------
+        Map<String, dynamic> liveVideoModelMap = json.decode(mapModel["data"]);
+        return getLiveVideoCourseMsg(liveVideoModelMap, true, msg.messageUId);
+
+      } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE) {
+
+        //-------------------------------------------------视频课程消息--------------------------------------------
+        Map<String, dynamic> liveVideoModelMap = json.decode(mapModel["data"]);
+        return getLiveVideoCourseMsg(liveVideoModelMap, false, msg.messageUId);
+
+      } else if (getIsAlertMessage(mapModel["subObjectName"])) {
+        //-------------------------------------------------提示消息--------------------------------------------
+        return getAlertMsg(map: mapModel);
+
+      } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_SELECT) {
+        //-------------------------------------------------可选择的列表--------------------------------------------
+        return getSelectMsgData(mapModel["data"]);
+
+      } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
+        //-------------------------------------------------群通知消息-第二种-------------------------------------------
+        Map<String, dynamic> map = Map();
+        map["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_GROUP;
+        map["data"] = json.decode(mapModel["data"]);
+        return getAlertMsg(map: map);
+      } else if (mapModel["name"] != null) {
+        //-------------------------------------------------未知消息-------------------------------------------
+        return getTextMsg(text: mapModel["name"], mentionedInfo: msg.content.mentionedInfo);
+      }
+    } catch (e) {
+      //-------------------------------------------------消息解析失败-------------------------------------------
+      return getTextMsg(text: "版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo);
+    }
+
+    //-------------------------------------------------消息类型未知--------------------------------------------
+    if (msg.content == null || msg.content.mentionedInfo == null) {
+      return getTextMsg(text: "版本过低请升级版本!");
+    } else {
+      return getTextMsg(text: "版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo ?? null);
+    }
+  }
+
+
+  //判断这个消息是不是提示消息
+  bool getIsAlertMessage(String chatTypeModel) {
+    if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_TIME) {
+      return true;
+    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_INVITE) {
+      return true;
+    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_NEW) {
+      return true;
+    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT) {
+      return true;
+    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME) {
+      return true;
+    } else if (chatTypeModel == ChatTypeModel.MESSAGE_TYPE_ALERT_REMOVE) {
+      return true;
+    }
+    return false;
+  }
+
+
+
+
 
   //************************获取消息模块的方法 ----start
 
@@ -377,7 +486,7 @@ class SendMessageView extends StatelessWidget {
 
   //获取图片和视频的模块
   Widget getImgVideoMsg({bool isTemporary,
-    bool isImgOrVideo,
+    bool isImg,
     MediaFileModel mediaFileModel,
     ImageMessage imageMessage,
     Map<String, dynamic> sizeInfoMap}) {
@@ -390,7 +499,7 @@ class SendMessageView extends StatelessWidget {
       sendChatUserId: sendChatUserId,
       isCanLongClick: isCanLongClick(),
       isTemporary: isTemporary,
-      isImgOrVideo: isImgOrVideo,
+      isImgOrVideo: isImg,
       mediaFileModel: mediaFileModel,
       imageMessage: imageMessage,
       sizeInfoMap: sizeInfoMap,

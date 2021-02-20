@@ -70,6 +70,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
 
   @override
   Widget build(BuildContext context) {
+    print("TrainingPage_____________________________________________build");
     super.build(context);
     return Scaffold(
       appBar: CustomAppBar(
