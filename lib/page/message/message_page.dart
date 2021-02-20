@@ -135,6 +135,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
 
   @override
   Widget build(BuildContext context) {
+    print("MessagePage_____________________________________________build");
     print("消息列表页build");
     super.build(context);
     _listLength =

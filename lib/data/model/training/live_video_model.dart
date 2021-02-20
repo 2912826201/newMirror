@@ -100,6 +100,7 @@ class LiveVideoModel {
   }
 
   int _id;
+  int _type;
   String _title;
   String _picUrl;
   String _description;
@@ -144,6 +145,7 @@ class LiveVideoModel {
   double _vipprice;
 
   int get id => _id;
+  int get type => _type;
 
   String get title => _title;
 
@@ -227,6 +229,7 @@ class LiveVideoModel {
 
   LiveVideoModel(
       {int id,
+      int type,
       String title,
       String picUrl,
       String description,
@@ -270,6 +273,7 @@ class LiveVideoModel {
       int lastPracticeTime,
       double vipprice}) {
     _id = id;
+    _type = type;
     _title = title;
     _picUrl = picUrl;
     _description = description;
@@ -317,6 +321,7 @@ class LiveVideoModel {
 
   LiveVideoModel.fromJson(dynamic json) {
     _id = json["id"];
+    _type = json["type"];
     _title = json["title"];
     _picUrl = json["picUrl"];
     _description = json["description"];
@@ -374,6 +379,7 @@ class LiveVideoModel {
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
     map["id"] = _id;
+    map["type"] = _type;
     map["title"] = _title;
     map["picUrl"] = _picUrl;
     map["description"] = _description;

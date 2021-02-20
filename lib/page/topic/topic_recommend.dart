@@ -10,6 +10,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
+import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:provider/provider.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
@@ -37,87 +38,6 @@ class TopicRecommendState extends State<TopicRecommend> with AutomaticKeepAliveC
   bool get wantKeepAlive => true; //必须重写
   @override
   Widget build(BuildContext context) {
-    // Container child = Container(
-    //     child: RefreshIndicator(
-    //         onRefresh: () async {
-    //           widget.refreshCallBack(true);
-    //         },
-    //         child: Container(
-    //             margin: EdgeInsets.only(left: 16, right: 16),
-    //             child: WaterfallFlow.builder(
-    //               gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-    //                 crossAxisCount: 2,
-    //                 // 上下间隔
-    //                 mainAxisSpacing: 4.0,
-    //                 //   // 左右间隔
-    //                 crossAxisSpacing: 8.0,
-    //               ),
-    //               itemBuilder: (context, index) {
-    //                 // 获取动态id
-    //                 int id;
-    //                 // 获取动态id指定model
-    //                 HomeFeedModel model;
-    //                 if (index < widget.topicList.length) {
-    //                   id = widget.topicList[index].id;
-    //                   model = context.read<FeedMapNotifier>().feedMap[id];
-    //                 }
-    //                 // if (feedList.isNotEmpty) {
-    //                 if (index == widget.topicList.length) {
-    //                   return LoadingView(
-    //                     loadText: widget.loadText,
-    //                     loadStatus: widget.loadStatus,
-    //                   );
-    //                 } else if (index == widget.topicList.length + 1) {
-    //                   return Container();
-    //                 } else {
-    //                   return SearchFeeditem(
-    //                     model: model,
-    //                     list: widget.topicList,
-    //                     index: index,
-    //                     pageName: "topicRecommend",
-    //                   );
-    //                 }
-    //               },
-    //               itemCount: widget.topicList.length + 1,
-    //             )
-    //         )));
-                // child: StaggeredGridView.countBuilder(
-                //   itemCount: widget.topicList.length + 1,
-                //   crossAxisCount: 4,
-                //   // 上下间隔
-                //   mainAxisSpacing: 4.0,
-                //   // 左右间隔
-                //   crossAxisSpacing: 8.0,
-                //   itemBuilder: (context, index) {
-                //     // 获取动态id
-                //     int id;
-                //     // 获取动态id指定model
-                //     HomeFeedModel model;
-                //     if (index < widget.topicList.length) {
-                //       id = widget.topicList[index].id;
-                //       model = context.read<FeedMapNotifier>().feedMap[id];
-                //     }
-                //     // if (feedList.isNotEmpty) {
-                //     if (index == widget.topicList.length) {
-                //       return LoadingView(
-                //         loadText: widget.loadText,
-                //         loadStatus: widget.loadStatus,
-                //       );
-                //     } else if (index == widget.topicList.length + 1) {
-                //       return Container();
-                //     } else {
-                //       return SearchFeeditem(
-                //         model: model,
-                //         list: widget.topicList,
-                //         index: index,
-                //         pageName: "topicRecommend",
-                //       );
-                //     }
-                //   },
-                //   staggeredTileBuilder: (index) => StaggeredTile.fit(2),
-                // )
-
-
     return widget.topicList.isNotEmpty
         ? Container(
             child: RefreshIndicator(
@@ -125,45 +45,69 @@ class TopicRecommendState extends State<TopicRecommend> with AutomaticKeepAliveC
                   widget.refreshCallBack(true);
                 },
                 child: Container(
-                    margin: EdgeInsets.only(left: 16, right: 16),
-                    child: WaterfallFlow.builder(
-                      gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        // 上下间隔
-                        mainAxisSpacing: 4.0,
-                        //   // 左右间隔
-                        crossAxisSpacing: 8.0,
-                      ),
-                      itemBuilder: (context, index) {
-                        // 获取动态id
-                        int id;
-                        // 获取动态id指定model
-                        HomeFeedModel model;
-                        if (index < widget.topicList.length) {
-                          id = widget.topicList[index].id;
-                          model = context.read<FeedMapNotifier>().feedMap[id];
-                        }
-                        // if (feedList.isNotEmpty) {
-                        if (index == widget.topicList.length) {
-                          return LoadingView(
-                            loadText: widget.loadText,
-                            loadStatus: widget.loadStatus,
-                          );
-                        } else if (index == widget.topicList.length + 1) {
-                          return Container();
-                        } else {
-                          return SearchFeeditem(
-                            model: model,
-                            list: widget.topicList,
-                            index: index,
-                            pageName: "topicRecommend",
-                          );
-                        }
-                      },
-                      itemCount: widget.topicList.length + 1,
-                    ))))
-        // NestedScrollViewInnerScrollPositionKeyWidget(widget.tabKey, child)
-
+                  color: AppColor.white,
+                    child: MediaQuery.removePadding(
+                        removeTop: true,
+                        context: context,
+                        child: ListView.builder(
+                            itemCount: widget.topicList.length + 1,
+                            itemBuilder: (context, index) {
+                              if (index == widget.topicList.length) {
+                                return LoadingView(
+                                  loadText: widget.loadText,
+                                  loadStatus: widget.loadStatus,
+                                );
+                              } else if (index == widget.topicList.length + 1) {
+                                return Container();
+                              } else {
+                                return DynamicListLayout(
+                                  index: index,
+                                  pageName: "topicRecommend",
+                                  isShowRecommendUser: false,
+                                  model: widget.topicList[index],
+                                  // 可选参数 子Item的个数
+                                  key: GlobalObjectKey("attention$index"),
+                                );
+                              }
+                            }))
+                    // margin: EdgeInsets.only(left: 16, right: 16),
+                    // child: WaterfallFlow.builder(
+                    //   gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+                    //     crossAxisCount: 2,
+                    //     // 上下间隔
+                    //     mainAxisSpacing: 4.0,
+                    //     //   // 左右间隔
+                    //     crossAxisSpacing: 8.0,
+                    //   ),
+                    //   itemBuilder: (context, index) {
+                    //     // 获取动态id
+                    //     int id;
+                    //     // 获取动态id指定model
+                    //     HomeFeedModel model;
+                    //     if (index < widget.topicList.length) {
+                    //       id = widget.topicList[index].id;
+                    //       model = context.read<FeedMapNotifier>().feedMap[id];
+                    //     }
+                    //     // if (feedList.isNotEmpty) {
+                    //     if (index == widget.topicList.length) {
+                    //       return LoadingView(
+                    //         loadText: widget.loadText,
+                    //         loadStatus: widget.loadStatus,
+                    //       );
+                    //     } else if (index == widget.topicList.length + 1) {
+                    //       return Container();
+                    //     } else {
+                    //       return SearchFeeditem(
+                    //         model: model,
+                    //         list: widget.topicList,
+                    //         index: index,
+                    //         pageName: "topicRecommend",
+                    //       );
+                    //     }
+                    //   },
+                    //   itemCount: widget.topicList.length + 1,
+                    // )
+                )))
         : Container(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,

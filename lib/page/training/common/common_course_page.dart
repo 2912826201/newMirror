@@ -531,7 +531,7 @@ Widget getActionUiLive(LiveVideoModel liveModel,BuildContext context,
 
 //其他人完成的训练ui
 Widget getOtherUsersUi(List<HomeFeedModel> recommendTopicList,BuildContext context,
-    TextStyle titleTextStyle,Function onClick,GlobalKey globalKey) {
+    TextStyle titleTextStyle,Function(int onClickPosition) onClick,GlobalKey globalKey,String pageName) {
   if (recommendTopicList != null && recommendTopicList.length > 0) {
     var imageArray = <Widget>[];
     for (int i = 0; i < recommendTopicList.length; i++) {
@@ -542,77 +542,82 @@ Widget getOtherUsersUi(List<HomeFeedModel> recommendTopicList,BuildContext conte
         url=FileUtil.getVideoFirstPhoto(recommendTopicList[i].videos[0].url);
       }
       imageArray.add(
-        Container(
-          margin: const EdgeInsets.only(right: 8),
-          child: Image.network(
-            url,
-            fit: BoxFit.cover,
+        Hero(
+          tag:"$pageName${recommendTopicList[i].id}$i",
+          child: GestureDetector(
+            child: Container(
+              color: AppColor.transparent,
+              margin: const EdgeInsets.only(right: 8),
+              child: Image.network(
+                url,
+                fit: BoxFit.cover,
+              ),
+              width: (MediaQuery.of(context).size.width - 16 * 3) / 3,
+              height: (MediaQuery.of(context).size.width - 16 * 3) / 3,
+            ),
+            onTap: ()=>onClick(i),
           ),
-          width: (MediaQuery.of(context).size.width - 16 * 3) / 3,
-          height: (MediaQuery.of(context).size.width - 16 * 3) / 3,
         ),
       );
     }
 
     return SliverToBoxAdapter(
-      child: GestureDetector(
-        child: Container(
-          key: globalKey,
-          color: AppColor.transparent,
-          child: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                height: 12,
-                color: AppColor.bgWhite.withOpacity(0.65),
-              ),
-              SizedBox(
-                height: 23,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: Text(
-                      "TA们刚刚完成训练",
-                      style: titleTextStyle,
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.only(right: 16),
-                    child: Icon(
-                      Icons.chevron_right,
-                      color: AppColor.textHint,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 11,
-              ),
-              Container(
-                width: double.infinity,
-                height: 1,
-                margin: const EdgeInsets.only(left: 16, right: 16),
-                color: AppColor.bgWhite,
-              ),
-              SizedBox(
-                height: 12,
-              ),
-              Container(
-                padding: const EdgeInsets.only(left: 16, right: 8),
+      child: Container(
+        key: globalKey,
+        color: AppColor.transparent,
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              height: 12,
+              color: AppColor.bgWhite.withOpacity(0.65),
+            ),
+            GestureDetector(
+              child: Container(
+                color: Colors.transparent,
+                padding: const EdgeInsets.only(top: 23,bottom:11),
                 child: Row(
-                  children: imageArray,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.only(left: 16),
+                      child: Text(
+                        "TA们刚刚完成训练",
+                        style: titleTextStyle,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.only(right: 16),
+                      child: Icon(
+                        Icons.chevron_right,
+                        color: AppColor.textHint,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(
-                height: 16,
+              onTap: ()=>onClick(-1),
+            ),
+            Container(
+              width: double.infinity,
+              height: 1,
+              margin: const EdgeInsets.only(left: 16, right: 16),
+              color: AppColor.bgWhite,
+            ),
+            SizedBox(
+              height: 12,
+            ),
+            Container(
+              padding: const EdgeInsets.only(left: 16, right: 8),
+              child: Row(
+                children: imageArray,
               ),
-            ],
-          ),
+            ),
+            SizedBox(
+              height: 16,
+            ),
+          ],
         ),
-        onTap: onClick,
       ),
     );
   } else {
