@@ -90,28 +90,6 @@ class ChatTypeModel {
   static const String MESSAGE_TYPE_CLICK_ERROR_BTN = "IF:ClickMessageErrorBtn";
   static const String MESSAGE_TYPE_CLICK_ERROR_BTN_NAME = "消息列表-消息发送失败-点击了失败按钮";
 
-  //判断这个消息是不是提示消息
-  static bool getIsAlertMessage(String chatTypeModel) {
-    if (chatTypeModel == MESSAGE_TYPE_ALERT) {
-      return true;
-    } else if (chatTypeModel == MESSAGE_TYPE_ALERT_TIME) {
-      return true;
-    } else if (chatTypeModel == MESSAGE_TYPE_ALERT_INVITE) {
-      return true;
-    } else if (chatTypeModel == MESSAGE_TYPE_ALERT_REMOVE) {
-      return true;
-    } else if (chatTypeModel == MESSAGE_TYPE_ALERT_NEW) {
-      return true;
-    } else if (chatTypeModel == MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME) {
-      return true;
-    } else if (chatTypeModel == MESSAGE_TYPE_GRPNTF) {
-      return true;
-    } else if (chatTypeModel == MESSAGE_TYPE_CMD) {
-      return true;
-    } else if (chatTypeModel == MESSAGE_TYPE_RECALL_MSG1 || chatTypeModel == MESSAGE_TYPE_RECALL_MSG2) {
-      return true;
-    }
-    return false;
-  }
+
 
 }

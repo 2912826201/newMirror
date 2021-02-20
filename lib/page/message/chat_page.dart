@@ -738,7 +738,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   void initSetData() async {
     List msgList = new List();
     msgList = await RongCloud.init().getHistoryMessages(widget.conversation.getType(),
-        widget.conversation.conversationId, new DateTime.now().millisecondsSinceEpoch, 5, 0);
+        widget.conversation.conversationId, new DateTime.now().millisecondsSinceEpoch, 20, 0);
     print("历史记录${msgList.length}");
     if (msgList != null && msgList.length > 0) {
       for (int i = 0; i < msgList.length; i++) {
@@ -1598,7 +1598,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   _moreOnClickExitChatPage(){
     //退出群聊
     MessageManager.removeConversation(context, chatUserId, Application.profile.uid, widget.conversation.type);
-    Navigator.of(context).pop();
+    Future.delayed(Duration.zero, () {
+      Navigator.of(context).pop();
+    });
   }
 
   //头部显示的关注按钮的点击事件

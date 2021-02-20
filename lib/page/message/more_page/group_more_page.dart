@@ -538,7 +538,9 @@ class GroupMorePageState extends State<GroupMorePage> {
         widget.exitGroupListener();
       }
       ToastShow.show(msg: "退出成功", context: context);
-      Navigator.of(context).pop();
+      Future.delayed(Duration.zero, () {
+        Navigator.of(context).pop();
+      });
     } else {
       ToastShow.show(msg: "退出失败", context: context);
     }
