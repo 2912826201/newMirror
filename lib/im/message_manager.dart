@@ -136,16 +136,20 @@ class MessageManager {
   }
 
   static ConversationDto _convertMsgToConversation(Message msg) {
-    //TODO 如果content为空暂时先不更新会话
-    if (msg.content == null) {
+    //只处理以下几个ObjectName的消息
+    if (msg.objectName != ChatTypeModel.MESSAGE_TYPE_TEXT &&
+        msg.objectName != ChatTypeModel.MESSAGE_TYPE_VOICE &&
+        msg.objectName != ChatTypeModel.MESSAGE_TYPE_RECALL_MSG1 &&
+        msg.objectName != ChatTypeModel.MESSAGE_TYPE_RECALL_MSG2) {
       return null;
     }
 
     ConversationDto dto = ConversationDto();
-    //FIXME 私聊群聊 收信和发信的情况 targetId是否表示会话id需要测试
+    //私聊群聊 收信和发信的情况 targetId是否表示会话id需要测试 测试结果为是
     dto.conversationId = msg.targetId;
     dto.uid = Application.profile.uid;
-    dto.content = msg.content.encode();
+    //TODO 会话内容需要转化
+    dto.content = _convertMsgContent(msg);
     dto.avatarUri = "";
     dto.name = "";
     switch (msg.conversationType) {
@@ -153,12 +157,11 @@ class MessageManager {
         //FIXME 这里需要处理管家消息
         dto.type = PRIVATE_TYPE;
         if (msg.senderUserId == Application.profile.uid.toString()) {
-          //FIXME 如果发信人是自己。。。要从其他途径更新会话名字和头像
-        } else if (msg.content.sendUserInfo != null) {
+          //如果发信人是自己。。。要从其他途径更新会话名字和头像
+        } else if (msg.content?.sendUserInfo != null) {
           dto.avatarUri = msg.content.sendUserInfo.portraitUri;
           dto.name = msg.content.sendUserInfo.name;
         } else {
-          dto.name = msg.targetId;
         }
         break;
       case RCConversationType.Group:
@@ -188,8 +191,15 @@ class MessageManager {
     //暂时将时间写一样
     dto.createTime = msg.sentTime;
     dto.updateTime = msg.sentTime;
-    //本条未读则未读数为1
-    dto.unreadCount = msg.receivedStatus == RCReceivedStatus.Unread ? 1 : 0;
+
+    //撤回消息和已读的其他类型消息不计未读数，其他为未读计未读数1
+    if (msg.objectName == ChatTypeModel.MESSAGE_TYPE_RECALL_MSG1 ||
+        msg.objectName == ChatTypeModel.MESSAGE_TYPE_RECALL_MSG2 ||
+        msg.receivedStatus != RCReceivedStatus.Unread) {
+      dto.unreadCount = 0;
+    } else {
+      dto.unreadCount = 1;
+    }
 
     return dto;
   }
@@ -340,6 +350,48 @@ class MessageManager {
       //普通消息
       judgeIsHaveAtUserMes(message);
       Application.appContext.read<ChatMessageProfileNotifier>().judgeConversationMessage(message);
+    }
+  }
+
+  //根据类型区分转化内容文字
+  static String _convertMsgContent(Message msg) {
+    switch (msg.objectName) {
+      case ChatTypeModel.MESSAGE_TYPE_TEXT:
+        Map<String, dynamic> contentMap = json.decode((msg.content as TextMessage).content);
+        if (contentMap != null) {
+          switch (contentMap["subObjectName"]) {
+            case ChatTypeModel.MESSAGE_TYPE_TEXT:
+              return contentMap["data"];
+            case ChatTypeModel.MESSAGE_TYPE_IMAGE:
+              return "[图片]";
+            case ChatTypeModel.MESSAGE_TYPE_VIDEO:
+              return "[视频]";
+            case ChatTypeModel.MESSAGE_TYPE_FEED:
+              return "[动态]";
+            case ChatTypeModel.MESSAGE_TYPE_USER:
+              return "[用户名片]";
+            case ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE:
+              return "[直播课程]";
+            case ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE:
+              return "[视频课程]";
+            default:
+              return msg.content.encode();
+          }
+        } else {
+          return msg.content.encode();
+        }
+        break;
+      case ChatTypeModel.MESSAGE_TYPE_VOICE:
+        return "[语音]";
+      case ChatTypeModel.MESSAGE_TYPE_RECALL_MSG1:
+      case ChatTypeModel.MESSAGE_TYPE_RECALL_MSG2:
+        return "撤回了一条消息";
+      case ChatTypeModel.MESSAGE_TYPE_GRPNTF:
+        return "群聊通知";
+      case ChatTypeModel.MESSAGE_TYPE_CMD:
+        return "私聊通知";
+      default:
+        return msg.content.encode();
     }
   }
 }
