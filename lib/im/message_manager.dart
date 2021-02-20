@@ -113,9 +113,9 @@ class MessageManager {
           break;
         case GROUP_TYPE:
           //暂时只获取一个群
-          getGroupChatByIds(id: int.parse(dto.conversationId)).then((model) async {
-            if (model != null && model["list"] != null) {
-              GroupChatModel groupChatModel = GroupChatModel.fromJson(model["list"].first);
+          getGroupChatByIds(id: int.parse(dto.conversationId)).then((list) async {
+            if (list != null && list.isNotEmpty) {
+              GroupChatModel groupChatModel = list.first;
               dto.name = groupChatModel.modifiedName == null ? groupChatModel.name : groupChatModel.modifiedName;
               dto.avatarUri = groupChatModel.coverUrl;
               result = await ConversationDBHelper().updateConversation(dto);
