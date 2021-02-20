@@ -237,14 +237,6 @@ class _FriendsPageState extends State<FriendsPage> {
           ),
         ),
       ],
-      // MyIconBtn(
-      //   // width: 28,
-      //   // height: 28,
-      //   iconSting: "images/resource/2.0x/return2x.png",
-      //   onPressed: () {
-      //     Navigator.of(context).pop(true);
-      //   },
-      // ),
     );
   }
 

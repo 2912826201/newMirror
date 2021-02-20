@@ -129,16 +129,15 @@ Future _initApp() async {
           ? 1
           : -1;
 
-  // 申请通知权限
-  // 检查是否已有读写内存的权限
-  bool status = await Permission.notification.isGranted;
-  //判断如果还没拥有读写权限就申请获取权限
-  if(!status) {
-    return await Permission.notification.request().isGranted;
-  }
   //初始化SharedPreferences
   AppPrefs.init();
 
+  // 检查是否已有通知的权限
+  bool status = await Permission.notification.isGranted;
+  //判断如果还没拥有通知权限就申请获取权限
+  if (!status) {
+    await Permission.notification.request().isGranted;
+  }
   //初始化数据库
   await DBHelper.instance.initDB();
 
