@@ -86,7 +86,7 @@ class ChatTypeModel {
   static const String MESSAGE_TYPE_CMD_NAME = "通知消息-私聊，该版本较低请升级版本再行查看";
 
   //消息列表-消息发送失败-点击了失败按钮-----和消息类型没啥关系
-  static const String MESSAGE_TYPE_CLICK_ERROR_BTN = "if:ClickMessageErrorBtn";
+  static const String MESSAGE_TYPE_CLICK_ERROR_BTN = "IF:ClickMessageErrorBtn";
   static const String MESSAGE_TYPE_CLICK_ERROR_BTN_NAME = "消息列表-消息发送失败-点击了失败按钮";
 
   //判断这个消息是不是提示消息
@@ -107,7 +107,7 @@ class ChatTypeModel {
       return true;
     } else if (chatTypeModel == MESSAGE_TYPE_CMD) {
       return true;
-    } else if (chatTypeModel == RecallNotificationMessage.objectName) {
+    } else if (chatTypeModel == MESSAGE_TYPE_RECALL_MSG) {
       return true;
     }
     return false;
