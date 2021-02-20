@@ -111,12 +111,20 @@ Future<Map> getMembers({@required int groupChatId}) async {
 ///根据群聊id获取群聊信息
 ///请求参数
 ///groupChatId:群id
-Future<Map> getGroupChatByIds({@required int id}) async {
+Future<List<GroupChatModel>> getGroupChatByIds({@required int id}) async {
   Map<String, dynamic> params = {};
   params["ids"] = id;
   BaseResponseModel responseModel = await requestApi(GETGROUPCHATBYIDS, params);
   if (responseModel.isSuccess) {
-    return responseModel.data;
+    if (responseModel.data != null && responseModel.data["list"] != null) {
+      List<GroupChatModel> list = [];
+      responseModel.data["list"].forEach((v) {
+        list.add(GroupChatModel.fromJson(v));
+      });
+      return list;
+    } else {
+      return null;
+    }
   } else {
     return null;
   }
