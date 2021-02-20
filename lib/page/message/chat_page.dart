@@ -1858,7 +1858,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       ToastShow.show(msg: "跳转放大图片页-$content", context: context);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_USER) {
       // ToastShow.show(msg: "跳转用户界面", context: context);
-      jumpPage(ProfileDetailPage(userId: map["uid"]), false, context);
+      AppRouter.navigateToMineDetail(context,map["uid"]);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
       // ToastShow.show(msg: "跳转直播课详情界面", context: context);
       LiveVideoModel liveModel = LiveVideoModel.fromJson(map);
