@@ -1298,7 +1298,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         } else {
           Application.appContext.read<ChatMessageProfileNotifier>().clearMessage();
         }
-        if (message.messageUId == chatDataList[0].msg.messageUId) {
+        if (chatDataList.length>0&&message.messageUId == chatDataList[0].msg.messageUId) {
           return Container();
         }
         ChatDataModel chatDataModel = getMessage(message, isHaveAnimation: true);
