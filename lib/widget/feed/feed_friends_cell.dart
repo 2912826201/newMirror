@@ -121,15 +121,15 @@ class FriendsCell extends StatelessWidget {
   Widget getUserImagePr() {
     List<String> avatarList = imageUrl.split(",");
     return Container(
-      height: 45,
-      width: 45,
+      height: 38,
+      width: 38,
       child: Stack(
         children: [
           avatarList.length == 1
               ? ClipOval(
                   child: CachedNetworkImage(
-                    height: 45,
-                    width: 45,
+                    height: 38,
+                    width: 38,
                     imageUrl: avatarList.first,
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Image.asset(
