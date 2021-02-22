@@ -274,7 +274,7 @@ Future<BuddyListModel> GetFollowList(int size, {String uid, int lastTime}) async
 }
 
 ///好友列表--互相关注列表
-Future<BuddyListModel> GetFollowBothList(int size, {String uid, int lastTime}) async {
+Future<BuddyListModel> getFollowBothList(int size, {String uid, int lastTime}) async {
   Map<String, dynamic> map = Map();
   if (uid != null) {
     map["uid"] = uid;
