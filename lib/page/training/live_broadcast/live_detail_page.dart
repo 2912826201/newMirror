@@ -34,11 +34,12 @@ import 'package:provider/provider.dart';
 
 /// 直播详情页
 class LiveDetailPage extends StatefulWidget {
-  const LiveDetailPage({Key key,
+  const LiveDetailPage({
+    Key key,
+    @required this.liveCourseId,
     this.heroTag,
     this.commentDtoModel,
     this.fatherComment,
-    this.liveCourseId,
     this.liveModel,
     this.isHaveStartTime}) : super(key: key);
 

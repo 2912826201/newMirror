@@ -38,7 +38,12 @@ import 'package:mirror/constant/constants.dart';
 /// 视频详情页
 class VideoDetailPage extends StatefulWidget {
   const VideoDetailPage(
-      {Key key, this.heroTag, this.commentDtoModel, this.fatherComment, this.videoCourseId, this.videoModel})
+      {Key key,
+        @required this.videoCourseId,
+        this.heroTag,
+        this.commentDtoModel,
+        this.fatherComment,
+        this.videoModel})
       : super(key: key);
 
   final LiveVideoModel videoModel;
