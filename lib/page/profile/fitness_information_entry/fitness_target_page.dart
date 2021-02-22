@@ -6,6 +6,7 @@ import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/page/profile/fitness_information_entry/fitness_level_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:provider/provider.dart';
@@ -98,9 +99,7 @@ class _FitnessTargetState extends State<FitnessTargetPage>{
            beforIndex=index;
            model.target = targetList[index].id-1;
            /*context.read<FitnessInformationNotifier>().setTarget(targetList[index].id-1);*/
-           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-             return FitnessLevelPage(model: model,);
-           }));
+           AppRouter.navigateToFitnessLevelPage(context, model);
          });
         },
       child: Container(

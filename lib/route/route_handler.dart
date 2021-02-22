@@ -7,6 +7,7 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
+import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
@@ -29,10 +30,16 @@ import 'package:mirror/page/media_picker/preview_video_page.dart';
 import 'package:mirror/page/message/chat_page.dart';
 import 'package:mirror/page/message/link_failure/network_link_failure_page.dart';
 import 'package:mirror/page/message/more_page/group_qrcode_page.dart';
+import 'package:mirror/page/profile/fitness_information_entry/body_type_page.dart';
+import 'package:mirror/page/profile/fitness_information_entry/fitness_level_page.dart';
+import 'package:mirror/page/profile/fitness_information_entry/fitness_part_page.dart';
+import 'package:mirror/page/profile/fitness_information_entry/fitness_target_page.dart';
+import 'package:mirror/page/profile/fitness_information_entry/height_and_weight_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/login_success_page.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_introduction.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_name.dart';
 import 'package:mirror/page/profile/edit_information/edit_information_page.dart';
+import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
 import 'package:mirror/page/profile/login_test_page.dart';
 import 'package:mirror/page/profile/me_course/me_course_page.dart';
 import 'package:mirror/page/profile/me_course/me_download_video_page.dart';
@@ -217,7 +224,39 @@ var handlerVipNamePlatePage = Handler(handlerFunc: (BuildContext context, Map<St
     index: data["index"],
   );
 });
-
+var handlerHeightAndWeigetPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return HeightAndWeightPage();
+});
+var handlerFitnessLevelPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return FitnessLevelPage(
+   model: FitnessEntryModel.fromJson(data["model"]),
+  );
+});
+var handlerFitnessTargetPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return FitnessTargetPage(
+    model: FitnessEntryModel.fromJson(data["model"]),
+  );
+});
+var handlerFitnesspartPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return FitnesspartPage(
+    model: FitnessEntryModel.fromJson(data["model"]),
+  );
+});
+var handlerBodyTypePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return BodyTypePage(
+    model: FitnessEntryModel.fromJson(data["model"]),
+  );
+});
+var handlerTrainSeveralTimes = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
+  return TrainSeveralTimes(
+    model: FitnessEntryModel.fromJson(data["model"]),
+  );
+});
 var handlerTrainingRecord = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return TrainingRecordPage();
 });

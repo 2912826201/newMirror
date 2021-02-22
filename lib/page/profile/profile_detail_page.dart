@@ -250,15 +250,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                             return ProfileDetailsMore(
                               userId: widget.userId,
-                              isFollow:
-                                  context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.userId].isFollow,
                               userName: _textName,
                             );
-                          })).then((value) {
-                            _getUserInfo(false,id: widget.userId);
-                            _getFollowCount(id: widget.userId);
-                            _checkBlackStatus();
-                          });
+                          }));
                         },
                         child: Image.asset(
                           _imgMore,
@@ -535,7 +529,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           }
         },
         child: context.read<ProfilePageNotifier>()
-            .profileUiChangeModel[widget.userId].isBlack == 0
+            .profileUiChangeModel[widget.userId].isBlack == 0||context.read<ProfilePageNotifier>()
+            .profileUiChangeModel[widget.userId].isBlack == 2
             ? Container(
                 height: 28,
                 width: 72,

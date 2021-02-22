@@ -9,6 +9,7 @@ import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/page/profile/fitness_information_entry/fitness_part_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:provider/provider.dart';
@@ -92,9 +93,7 @@ class _FitnessLevelState extends State<FitnessLevelPage>{
                 model.hard = index;
               /*context.read<FitnessInformationNotifier>().setHard(index);*/
               print('index===============================$index');
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return FitnesspartPage(model: model,);
-              }));
+             AppRouter.navigateToFitnessPartPage(context, model);
             },
             child: Container(
             height: 95,

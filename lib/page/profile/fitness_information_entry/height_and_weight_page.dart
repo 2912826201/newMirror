@@ -6,6 +6,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/page/profile/fitness_information_entry/body_type_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
@@ -99,9 +100,7 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
                   /*context.read<FitnessInformationNotifier>().setHeightAndWeight(heights, weight);*/
                   model.height = heights;
                   model.weight = weight;
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                    return BodyTypePage(model: model,);
-                  }));
+                 AppRouter.navigateToBodyTypePage(context, model);
                 },
               ),
             ),

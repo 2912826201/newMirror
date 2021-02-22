@@ -6,6 +6,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/page/profile/fitness_information_entry/fitness_target_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
@@ -92,9 +93,7 @@ class _BodyTypeState extends State<BodyTypePage> {
                 onTap: (){
                   model.bodyType = bodyType;
                 /*  context.read<FitnessInformationNotifier>().setBodyType(bodyType);*/
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                    return FitnessTargetPage(model: model,);
-                  }));
+                  AppRouter.navigateToFitnessTargetPage(context, model);
                 },
               ),),
           ],
