@@ -214,7 +214,7 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
             top: 0,
             child: Container(
               color: this.makeStickyHeaderBgColor(shrinkOffset),
-              padding: const EdgeInsets.only(left: 10, right: 10, top: 2),
+              padding: const EdgeInsets.only(left: 20, right: 10, top: 2),
               child: SafeArea(
                 bottom: false,
                 child: Container(

@@ -30,6 +30,19 @@ class Friends {
   int oldIndex;
 
   Friends({this.imageUrl, this.name, this.indexLetter, this.uid, this.oldIndex});
+  Map<String, dynamic> toJson() {
+    var map = <String, dynamic>{};
+    map["uid"] = uid;
+    map["imageUrl"] = imageUrl;
+    map["indexLetter"] = indexLetter;
+    map["oldIndex"] = oldIndex;
+    map["name"] = name;
+    return map;
+  }
+  @override
+  String toString() {
+    return toJson().toString();
+  }
 }
 
 class FriendsPage extends StatefulWidget {
@@ -237,14 +250,6 @@ class _FriendsPageState extends State<FriendsPage> {
           ),
         ),
       ],
-      // MyIconBtn(
-      //   // width: 28,
-      //   // height: 28,
-      //   iconSting: "images/resource/2.0x/return2x.png",
-      //   onPressed: () {
-      //     Navigator.of(context).pop(true);
-      //   },
-      // ),
     );
   }
 
@@ -324,7 +329,7 @@ class _FriendsPageState extends State<FriendsPage> {
               if (index < _listUserDataList.length - 1 &&
                   _listUserDataList[index + 1].indexLetter !=
                       _listUserDataList[index].indexLetter) {
-                noBottomIndex = index;
+                noBottomIndex = index + 1;
               }
               return itemForRow(context, index, noBottomIndex,
                   _listUserDataList[index], index == 0 ? null : _listUserDataList[index - 1]);
@@ -470,18 +475,14 @@ class _FriendsPageState extends State<FriendsPage> {
         //第一个cell
         _groupOffsetMap.addAll({_listDatas[i].indexLetter: _groupOffset});
         //保存完了再加——groupOffset偏移
-        _groupOffset += 76.5;
+        _groupOffset += 76.0;
         _groupOffset += spacingHeight;
-      } else {
+      }  else {
         //此时没有头部，只需要加偏移量就好了
         _groupOffset += 48;
         _groupOffset += spacingHeight;
       }
     }
-
-    setState(() {
-      loadingStatus = LoadingStatus.STATUS_COMPLETED;
-    });
   }
 
   //初始化
@@ -491,7 +492,10 @@ class _FriendsPageState extends State<FriendsPage> {
     //对用户的数据进行排序
     sortListDatas();
     //设置每一个偏移量
-    setGroupOffsetMap();
+    setState(() {
+      loadingStatus = LoadingStatus.STATUS_COMPLETED;
+    });
+    // setGroupOffsetMap();
   }
 
   //获取所有的数据
@@ -522,7 +526,8 @@ class _FriendsPageState extends State<FriendsPage> {
 
   //获取网络数据好友
   void getNetData() async {
-    BuddyListModel listModel = await GetFollowBothList(100, lastTime: followListModel.lastTime);
+    print("获取网络数据好友");
+    BuddyListModel listModel = await getFollowBothList(100, lastTime: followListModel.lastTime);
     followListModel.list.addAll(listModel.list);
     followListModel.lastTime = listModel.lastTime;
 

@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 
 class FeedFlow extends StatefulWidget {
   FeedFlow(
-      {Key key, this.feedList, this.pageName, this.feedLastTime, this.searchKeyWords, this.feedHasNext, this.feedIndex})
+      {Key key, this.feedList, this.pageName, this.feedLastTime, this.searchKeyWords, this.feedHasNext, this.feedIndex,this.listHeight})
       : super(key: key);
 
   @override
@@ -37,6 +37,9 @@ class FeedFlow extends StatefulWidget {
 
   //  列表的索引值
   int feedIndex;
+
+  // 列表的高度
+  double listHeight;
 }
 
 class FeedFlowState extends State<FeedFlow> {

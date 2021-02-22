@@ -37,8 +37,9 @@ class ChatTypeModel {
   static const String MESSAGE_TYPE_VIDEO_COURSE = "IF:VideoCourseMessage";
   static const String MESSAGE_TYPE_VIDEO_COURSE_NAME = "视频课程消息，该版本较低请升级版本再行查看";
 
-  // 撤回的消息
-  static const String MESSAGE_TYPE_RECALL_MSG = "RC:RcNtf";
+  // 撤回的消息 不知为何会有两种ObjectName
+  static const String MESSAGE_TYPE_RECALL_MSG1 = "RC:RcNtf";
+  static const String MESSAGE_TYPE_RECALL_MSG2 = "RC:RcCmd";
   static const String MESSAGE_TYPE_RECALL_MSG_NAME = "撤回消息，该版本较低请升级版本再行查看";
 
   //自定义消息类型：提示信息
@@ -86,31 +87,9 @@ class ChatTypeModel {
   static const String MESSAGE_TYPE_CMD_NAME = "通知消息-私聊，该版本较低请升级版本再行查看";
 
   //消息列表-消息发送失败-点击了失败按钮-----和消息类型没啥关系
-  static const String MESSAGE_TYPE_CLICK_ERROR_BTN = "if:ClickMessageErrorBtn";
+  static const String MESSAGE_TYPE_CLICK_ERROR_BTN = "IF:ClickMessageErrorBtn";
   static const String MESSAGE_TYPE_CLICK_ERROR_BTN_NAME = "消息列表-消息发送失败-点击了失败按钮";
 
-  //判断这个消息是不是提示消息
-  static bool getIsAlertMessage(String chatTypeModel) {
-    if (chatTypeModel == MESSAGE_TYPE_ALERT) {
-      return true;
-    } else if (chatTypeModel == MESSAGE_TYPE_ALERT_TIME) {
-      return true;
-    } else if (chatTypeModel == MESSAGE_TYPE_ALERT_INVITE) {
-      return true;
-    } else if (chatTypeModel == MESSAGE_TYPE_ALERT_REMOVE) {
-      return true;
-    } else if (chatTypeModel == MESSAGE_TYPE_ALERT_NEW) {
-      return true;
-    } else if (chatTypeModel == MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME) {
-      return true;
-    } else if (chatTypeModel == MESSAGE_TYPE_GRPNTF) {
-      return true;
-    } else if (chatTypeModel == MESSAGE_TYPE_CMD) {
-      return true;
-    } else if (chatTypeModel == RecallNotificationMessage.objectName) {
-      return true;
-    }
-    return false;
-  }
+
 
 }

@@ -738,7 +738,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   void initSetData() async {
     List msgList = new List();
     msgList = await RongCloud.init().getHistoryMessages(widget.conversation.getType(),
-        widget.conversation.conversationId, new DateTime.now().millisecondsSinceEpoch, 5, 0);
+        widget.conversation.conversationId, new DateTime.now().millisecondsSinceEpoch, 20, 0);
     print("历史记录${msgList.length}");
     if (msgList != null && msgList.length > 0) {
       for (int i = 0; i < msgList.length; i++) {
@@ -1298,7 +1298,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         } else {
           Application.appContext.read<ChatMessageProfileNotifier>().clearMessage();
         }
-        if (message.messageUId == chatDataList[0].msg.messageUId) {
+        if (chatDataList.length>0&&message.messageUId == chatDataList[0].msg.messageUId) {
           return Container();
         }
         ChatDataModel chatDataModel = getMessage(message, isHaveAnimation: true);
@@ -1598,7 +1598,9 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   _moreOnClickExitChatPage(){
     //退出群聊
     MessageManager.removeConversation(context, chatUserId, Application.profile.uid, widget.conversation.type);
-    Navigator.of(context).pop();
+    Future.delayed(Duration.zero, () {
+      Navigator.of(context).pop();
+    });
   }
 
   //头部显示的关注按钮的点击事件
@@ -1859,7 +1861,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       ToastShow.show(msg: "跳转放大图片页-$content", context: context);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_USER) {
       // ToastShow.show(msg: "跳转用户界面", context: context);
-      jumpPage(ProfileDetailPage(userId: map["uid"]), false, context);
+      AppRouter.navigateToMineDetail(context,map["uid"]);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
       // ToastShow.show(msg: "跳转直播课详情界面", context: context);
       LiveVideoModel liveModel = LiveVideoModel.fromJson(map);

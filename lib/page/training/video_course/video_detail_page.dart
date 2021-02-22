@@ -1,22 +1,29 @@
 
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/database/download_video_course_db_helper.dart';
 import 'package:mirror/data/model/data_response_model.dart';
+import 'package:mirror/data/model/feed/feed_flow_data_notifier.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/page/feed/feed_flow/feed_flow_page.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
+import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/page/training/common/common_comment_page.dart';
 import 'package:mirror/page/training/common/common_course_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
@@ -25,6 +32,7 @@ import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/widget/sliver_custom_header_delegate_video.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
+import 'package:mirror/constant/constants.dart';
 
 /// 视频详情页
 class VideoDetailPage extends StatefulWidget {
@@ -37,27 +45,34 @@ class VideoDetailPage extends StatefulWidget {
         this.videoModel})
       : super(key: key);
 
+  final LiveVideoModel videoModel;
   final String heroTag;
   final int videoCourseId;
-  final LiveVideoModel videoModel;
   final CommentDtoModel commentDtoModel;
   final CommentDtoModel fatherComment;
 
   @override
   createState() {
-    return VideoDetailPageState(videoModel: videoModel);
+    return VideoDetailPageState(videoModel: videoModel,heroTag:heroTag,
+        videoCourseId:videoCourseId,commentDtoModel:commentDtoModel,
+        fatherComment:fatherComment);
   }
 }
 
-class VideoDetailPageState extends State<VideoDetailPage> {
-  VideoDetailPageState({Key key, this.videoModel});
+class VideoDetailPageState extends XCState {
+  VideoDetailPageState({Key key, this.videoModel,
+    this.heroTag,this.videoCourseId,this.commentDtoModel,this.fatherComment});
 
+
+  String heroTag;
+  int videoCourseId;
+  CommentDtoModel commentDtoModel;
+  CommentDtoModel fatherComment;
 
   //当前视频课程的model
   LiveVideoModel videoModel;
 
   //其他用户的完成训练
-  DataResponseModel dataResponseModel;
   List<HomeFeedModel> recommendTopicList = [];
 
   //加载状态
@@ -111,11 +126,13 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   //判断是否绑定了终端
   bool bindingTerminal;
 
+  String pageName="VideoDetailPage";
 
   @override
   void initState() {
     super.initState();
 
+    context.read<FeedFlowDataNotifier>().clear();
     isLoggedIn=context.read<TokenNotifier>().isLoggedIn;
     bindingTerminal=context.read<MachineNotifier>().machine!=null;
 
@@ -134,7 +151,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget shouldBuild(BuildContext context) {
     return Scaffold(
       appBar: null,
       body: _buildSuggestions(),
@@ -167,7 +184,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
               onTap: () {
                 loadingStatus = LoadingStatus.STATUS_LOADING;
                 if(mounted){
-                  setState(() {});
+                  reload(() {});
                 }
                 getDataAction();
               },
@@ -252,7 +269,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
               expandedHeight: 300,
               paddingTop: MediaQuery.of(context).padding.top,
               coverImgUrl: getCourseShowImage(videoModel),
-              heroTag: widget.heroTag,
+              heroTag: heroTag,
               startTime: videoModel.startTime,
               endTime: videoModel.endTime,
               shareBtnClick: _shareBtnClick,
@@ -266,7 +283,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
           getLineView(),
           getTrainingEquipmentUi(videoModel, context, titleTextStyle,globalKeyList[3]),
           getActionUiVideo(videoModel, context, titleTextStyle,globalKeyList[4]),
-          getOtherUsersUi(recommendTopicList, context, titleTextStyle, onClickOtherComplete,globalKeyList[5]),
+          getOtherUsersUi(recommendTopicList, context, titleTextStyle, onClickOtherComplete, globalKeyList[5],pageName),
           getLineView(),
           _getCourseCommentUi(),
           SliverToBoxAdapter(
@@ -313,7 +330,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
           bindingTerminal=true;
           Future.delayed(Duration(milliseconds: 300),(){
             if(mounted){
-              setState(() {});
+              reload(() {});
             }
           });
         }else{
@@ -335,13 +352,13 @@ class VideoDetailPageState extends State<VideoDetailPage> {
           key:childKey,
           scrollController: scrollController,
           refreshController: _refreshController,
-          fatherComment:widget.fatherComment,
+          fatherComment:fatherComment,
           targetId:videoModel.id,
           targetType:3,
           pageCommentSize:20,
           pageSubCommentSize:3,
           isShowHotOrTime:true,
-          commentDtoModel:widget.commentDtoModel,
+          commentDtoModel:commentDtoModel,
           isShowAt:false,
           globalKeyList: globalKeyList,
         ),
@@ -429,14 +446,14 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       if (isBouncingScrollPhysics) {
         isBouncingScrollPhysics = false;
         if(mounted){
-          setState(() {});
+          reload(() {});
         }
       }
     } else {
       if (!isBouncingScrollPhysics) {
         isBouncingScrollPhysics = true;
         if(mounted){
-          setState(() {});
+          reload(() {});
         }
       }
     }
@@ -469,7 +486,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     if (map != null && map["state"] != null && map["state"]) {
       isFavor = !isFavor;
       if(mounted){
-        setState(() {});
+        reload(() {});
       }
     }
   }
@@ -497,7 +514,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       print("[${DateTime.now().millisecondsSinceEpoch}]taskId:$taskId; received:$received; total:$total; "
           "progress:$_progress; allDownLoadCount:$allDownLoadCount; completeDownCount:$completeDownCount");
       if(mounted){
-        setState(() {});
+        reload(() {});
       }
     };
   }
@@ -720,14 +737,19 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   void getDataAction({bool isFold = false}) async {
     //其他人完成训练
     if (recommendTopicList == null || recommendTopicList.length < 1) {
-      dataResponseModel = await getPullList(
+      DataResponseModel dataResponseModel = await getPullList(
         type: 7,
         size: 3,
-        targetId: widget.videoCourseId,
+        targetId: videoCourseId,
       );
       if (dataResponseModel != null && dataResponseModel.list != null && dataResponseModel.list.length > 0) {
         dataResponseModel.list.forEach((v) {
-          recommendTopicList.add(HomeFeedModel.fromJson(v));
+          if(recommendTopicList.length<3) {
+            recommendTopicList.add(HomeFeedModel.fromJson(v));
+          }
+          context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
+          context.read<FeedFlowDataNotifier>().pageLastTime = dataResponseModel.lastTime;
+          context.read<FeedFlowDataNotifier>().pageSize = 1;
         });
       }
     }
@@ -737,12 +759,12 @@ class VideoDetailPageState extends State<VideoDetailPage> {
 
     //获取视频详情数据
     //加载数据
-    Map<String, dynamic> model = await getVideoCourseDetail(courseId: widget.videoCourseId);
+    Map<String, dynamic> model = await getVideoCourseDetail(courseId: videoCourseId);
     if (model == null) {
       loadingStatus = LoadingStatus.STATUS_IDEL;
       Future.delayed(Duration(seconds: 1), () {
         if(mounted){
-          setState(() {});
+          reload(() {});
         }
       });
     } else {
@@ -753,7 +775,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
       }
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
       if(mounted){
-        setState(() {});
+        reload(() {});
       }
     }
   }
@@ -777,7 +799,7 @@ class VideoDetailPageState extends State<VideoDetailPage> {
     if (attntionResult == 1 || attntionResult == 3) {
       videoModel.coachDto?.relation = 1;
       if(mounted){
-        setState(() {});
+        reload(() {});
       }
     }
   }
@@ -788,8 +810,126 @@ class VideoDetailPageState extends State<VideoDetailPage> {
   }
 
   ///点击了他人刚刚训练完成
-  onClickOtherComplete() {
-    AppRouter.navigateToOtherCompleteCoursePage(context, videoModel.id);
+  onClickOtherComplete(int onClickPosition) {
+    context.read<FeedFlowDataNotifier>().pageSelectPosition=onClickPosition;
+    double scrollHeight=specifyItemHeight(onClickPosition);
+    AppRouter.navigateToOtherCompleteCoursePage(context, videoModel.id,7,scrollHeight,pageName,duration: 1000);
   }
 
+
+
+  //计算高度
+  double specifyItemHeight(int onClickPosition) {
+    if(onClickPosition<1){
+      return 0.0;
+    }
+    double clickTopItemHeight=getClickTopItemHeight(onClickPosition);
+    double clickBottomItemHeight=judgeClickItemBottomHeightThenScreenHeight(onClickPosition);
+    if(clickBottomItemHeight>=ScreenUtil.instance.height){
+      return clickTopItemHeight;
+    }else{
+      return max(clickTopItemHeight-((ScreenUtil.instance.height-44-ScreenUtil.instance.statusBarHeight)-clickBottomItemHeight), 0.0);
+    }
+  }
+
+  //判断点击item以及他后面的item的高度是否大于手机屏幕
+  double judgeClickItemBottomHeightThenScreenHeight(int onClickPosition){
+    int itemLength=context.read<FeedFlowDataNotifier>().homeFeedModelList.length;
+    if(onClickPosition>=itemLength){
+      return 0.0;
+    }
+    double itemHeight = 0.0;
+    for(int i=onClickPosition;i<itemLength;i++){
+      itemHeight += getFeedItemHeight(context.read<FeedFlowDataNotifier>().homeFeedModelList[i]);
+      if(itemHeight>=(ScreenUtil.instance.height-44-ScreenUtil.instance.statusBarHeight)){
+        return itemHeight;
+      }
+    }
+    return itemHeight;
+  }
+
+
+  //获取点击item的顶部所有item的高度
+  double getClickTopItemHeight(int onClickPosition){
+    double itemHeight = 0.0;
+    for(int i=0;i<onClickPosition;i++){
+      itemHeight += getFeedItemHeight(recommendTopicList[i]);
+    }
+    return itemHeight;
+  }
+
+
+  //每一个动态流的item的高度
+  double getFeedItemHeight(HomeFeedModel v){
+    double itemHeight = 0.0;
+    // 头部
+    itemHeight += 62;
+    // 图片
+    if (v.picUrls.isNotEmpty) {
+      if (v.picUrls.first.height == 0) {
+        itemHeight += ScreenUtil.instance.width;
+      }  else {
+        itemHeight += (ScreenUtil.instance.width / v.picUrls[0].width) * v.picUrls[0].height;
+      }
+    }
+    // 视频
+    if(v.videos.isNotEmpty) {
+      itemHeight += _calculateHeight(v);
+    }
+    // 转发评论点赞
+    itemHeight += 48;
+
+    //地址和课程
+    if(v.address != null || v.courseDto != null){
+      itemHeight+=7;
+      itemHeight+=getTextSize("123",TextStyle(fontSize: 12),1).height;
+    }
+
+    //文本
+    if(v.content.length>0){
+      itemHeight+=12;
+      itemHeight+=getTextSize(v.content,TextStyle(fontSize: 14),2,ScreenUtil.instance.width-32).height;
+    }
+
+    //评论文本
+    if(v.comments!=null &&v.comments.length != 0){
+      itemHeight+=8;
+      itemHeight+=6;
+      itemHeight+=getTextSize("共0条评论",AppStyle.textHintRegular12,1).height;
+      itemHeight+=getTextSize("第一条评论",AppStyle.textHintRegular13,1).height;
+      if(v.comments.length>1){
+        itemHeight+=8;
+        itemHeight+=getTextSize("第二条评论",AppStyle.textHintRegular13,1).height;
+      }
+    }
+
+    // 输入框
+    itemHeight += 48;
+
+    //分割块
+    itemHeight += 18;
+    return itemHeight;
+  }
+
+  _calculateHeight(HomeFeedModel feedModel) {
+    double containerWidth = ScreenUtil.instance.width;
+    double containerHeight;
+    double videoRatio = feedModel.videos.first.width / feedModel.videos.first.height;
+    double containerRatio;
+
+    //如果有裁剪的比例 则直接用该比例
+    if (feedModel.videos.first.videoCroppedRatio != null) {
+      containerRatio = feedModel.videos.first.videoCroppedRatio;
+    } else {
+      if (videoRatio < minMediaRatio) {
+        containerRatio = minMediaRatio;
+      } else if (videoRatio > maxMediaRatio) {
+        containerRatio = maxMediaRatio;
+      } else {
+        containerRatio = videoRatio;
+      }
+    }
+    containerHeight = containerWidth / containerRatio;
+    return containerHeight;
+  }
 }

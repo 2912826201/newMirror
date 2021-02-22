@@ -10,7 +10,8 @@ class ExpandableText extends StatefulWidget {
   final TextStyle style;
   final bool expand;
   final HomeFeedModel model;
-  const ExpandableText({Key key, this.text, this.maxLines, this.style, this.expand,this.model}) : super(key: key);
+  final int topicId;
+  const ExpandableText({Key key, this.text, this.maxLines, this.style, this.expand,this.model,this.topicId}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -51,6 +52,9 @@ class _ExpandableTextState extends State<ExpandableText> {
         text.substring(toModel.index, toModel.len),
         style: TextStyle(color:  AppColor.mainBlue, fontSize: 14),
         onTap: () {
+          if(widget.topicId == toModel.id) {
+            return;
+          }
           AppRouter.navigateToTopicDetailPage(context, toModel.id);
           print("点击用户${toModel.id}");
         },

@@ -1,11 +1,14 @@
+import 'package:azlistview/azlistview.dart';
 
-class BuddyListModel{
+class BuddyListModel {
   int hasNext;
   int lastTime;
   int lastId;
   int lastScore;
   List<BuddyModel> list = [];
-  BuddyListModel({this.list,this.lastTime,this.hasNext,this.lastId,this.lastScore});
+
+  BuddyListModel({this.list, this.lastTime, this.hasNext, this.lastId, this.lastScore});
+
   BuddyListModel.fromJson(dynamic json) {
     hasNext = json["hasNext"];
     lastTime = json["lastTime"];
@@ -29,13 +32,16 @@ class BuddyListModel{
     return map;
   }
 }
-class BuddyModel{
+
+class BuddyModel with ISuspensionBean {
   int uid;
   String avatarUri;
   String nickName;
   String description;
   int relation;
-  BuddyModel({this.uid,this.avatarUri,this.nickName,this.description,this.relation});
+  String tagIndex;
+
+  BuddyModel({this.uid, this.avatarUri, this.nickName, this.description, this.relation, this.tagIndex});
 
   BuddyModel.fromJson(Map<String, dynamic> json) {
     uid = json["uid"];
@@ -44,6 +50,7 @@ class BuddyModel{
     description = json["description"];
     relation = json["relation"];
   }
+
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
     map["uid"] = uid;
@@ -53,4 +60,7 @@ class BuddyModel{
     map["relation"] = relation;
     return map;
   }
+
+  @override
+  String getSuspensionTag() => tagIndex;
 }

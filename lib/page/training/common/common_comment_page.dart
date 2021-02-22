@@ -149,6 +149,9 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
   @override
   Widget build(BuildContext context) {
+    print("11111111111111111111111111111111111111");
+
+
     if (courseCommentHot != null && isFirstScroll && widget.commentDtoModel != null) {
       Future.delayed(Duration(milliseconds: 100), () async {
         print("开始滚动------------------------------------------------------------------------");

@@ -14,6 +14,7 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
+import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/page/training/common/common_comment_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
@@ -50,12 +51,23 @@ class LiveDetailPage extends StatefulWidget {
 
   @override
   createState() {
-    return LiveDetailPageState(liveModel: liveModel);
+    return LiveDetailPageState(liveModel: liveModel,heroTag:heroTag,
+        liveCourseId:liveCourseId,commentDtoModel:commentDtoModel,
+        fatherComment:fatherComment);
   }
 }
 
-class LiveDetailPageState extends State<LiveDetailPage> {
-  LiveDetailPageState({Key key, this.liveModel,});
+class LiveDetailPageState extends XCState {
+  LiveDetailPageState({Key key, this.liveModel,this.heroTag,
+    this.liveCourseId,this.isHaveStartTime,this.commentDtoModel,this.fatherComment});
+
+
+  String heroTag;
+  int liveCourseId;
+  bool isHaveStartTime;
+  CommentDtoModel commentDtoModel;
+  CommentDtoModel fatherComment;
+
 
   //当前直播的model
   LiveVideoModel liveModel;
@@ -112,7 +124,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget shouldBuild(BuildContext context) {
     return Scaffold(
       appBar: null,
       body: _buildSuggestions(),
@@ -146,7 +158,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
                   onTap: () {
                     loadingStatus = LoadingStatus.STATUS_LOADING;
                     if(mounted){
-                      setState(() {});
+                      reload(() {});
                     }
                     getDataAction();
                   },
@@ -240,7 +252,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
               expandedHeight: 300,
               paddingTop: MediaQuery.of(context).padding.top,
               coverImgUrl: getCourseShowImage(liveModel),
-              heroTag: widget.heroTag,
+              heroTag: heroTag,
               startTime: liveModel.startTime,
               endTime: liveModel.endTime,
               shareBtnClick: _shareBtnClick,
@@ -270,13 +282,13 @@ class LiveDetailPageState extends State<LiveDetailPage> {
           key:childKey,
           scrollController: scrollController,
           refreshController: _refreshController,
-          fatherComment:widget.fatherComment,
+          fatherComment:fatherComment,
           targetId:liveModel.id,
           targetType:1,
           pageCommentSize:20,
           pageSubCommentSize:3,
           isShowHotOrTime:true,
-          commentDtoModel:widget.commentDtoModel,
+          commentDtoModel:commentDtoModel,
           isShowAt:false,
           globalKeyList: globalKeyList,
         ),
@@ -466,7 +478,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
           bindingTerminal=true;
           Future.delayed(Duration(milliseconds: 300),(){
             if(mounted){
-              setState(() {});
+              reload(() {});
             }
           });
         }else{
@@ -489,14 +501,14 @@ class LiveDetailPageState extends State<LiveDetailPage> {
         liveModel.isBooked=0;
         deleteAlertEvents(courseId,startTime);
         Future.delayed(Duration(milliseconds: 50),(){
-          if(mounted){setState(() {
+          if(mounted){reload(() {
           });}
         });
       }else if(liveModel.playType==2&&bookState==1){
         liveModel.playType=4;
         liveModel.isBooked=1;
         Future.delayed(Duration(milliseconds: 50),(){
-          if(mounted){setState(() {
+          if(mounted){reload(() {
           });}
         });
       }
@@ -513,14 +525,14 @@ class LiveDetailPageState extends State<LiveDetailPage> {
       if (isBouncingScrollPhysics) {
         isBouncingScrollPhysics = false;
         if(mounted){
-          setState(() {});
+          reload(() {});
         }
       }
     } else {
       if (!isBouncingScrollPhysics) {
         isBouncingScrollPhysics = true;
         if(mounted){
-          setState(() {});
+          reload(() {});
         }
       }
     }
@@ -736,7 +748,7 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     if (attntionResult == 1 || attntionResult == 3) {
       liveModel.coachDto?.relation = 1;
       if(mounted){
-        setState(() {});
+        reload(() {});
       }
     }
   }
@@ -747,13 +759,13 @@ class LiveDetailPageState extends State<LiveDetailPage> {
   }
   ///点击了他人刚刚训练完成
   onClickOtherComplete() {
-    AppRouter.navigateToOtherCompleteCoursePage(context,liveModel.id);
+    // AppRouter.navigateToOtherCompleteCoursePage(context,liveModel.id);
   }
 
   //显示全部的动作
   onClickShowAllAction(){
     isShowAllItemAction=true;
-    setState(() {});
+    reload(() {});
   }
 
   //加载网络数据
@@ -764,19 +776,19 @@ class LiveDetailPageState extends State<LiveDetailPage> {
     }
     recommendLoadingStatus=LoadingStatus.STATUS_COMPLETED;
     //加载数据
-    Map<String, dynamic> model = await (widget.isHaveStartTime?liveCourseDetail:getLatestLiveById)(courseId: widget.liveCourseId, startTime: startTime);
+    Map<String, dynamic> model = await (isHaveStartTime?liveCourseDetail:getLatestLiveById)(courseId: liveCourseId, startTime: startTime);
     if (model == null) {
       loadingStatus = LoadingStatus.STATUS_IDEL;
       Future.delayed(Duration(seconds: 1), () {
         if(mounted){
-          setState(() {});
+          reload(() {});
         }
       });
     } else {
       liveModel = LiveVideoModel.fromJson(model);
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
       if(mounted){
-        setState(() {});
+        reload(() {});
       }
     }
   }

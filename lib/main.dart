@@ -38,6 +38,7 @@ import 'config/config.dart';
 import 'config/shared_preferences.dart';
 import 'data/dto/profile_dto.dart';
 import 'data/dto/token_dto.dart';
+import 'data/model/feed/feed_flow_data_notifier.dart';
 import 'data/model/machine_model.dart';
 import 'data/model/message/chat_enter_notifier.dart';
 import 'data/model/message/chat_message_profile_notifier.dart';
@@ -89,6 +90,7 @@ void main() {
             ChangeNotifierProvider(create: (_) => GroupUserProfileNotifier()),
             //记录未读消息数 目前只记录3种互动通知的数量 从接口获取更新数据
             ChangeNotifierProvider(create: (_) => UnreadMessageNotifier()),
+            ChangeNotifierProvider(create: (_) => FeedFlowDataNotifier()),
           ],
           child: MyApp(),
         ),
@@ -139,6 +141,12 @@ Future _initApp() async {
   //初始化SharedPreferences
   AppPrefs.init();
 
+  // 检查是否已有通知的权限
+  bool status = await Permission.notification.isGranted;
+  //判断如果还没拥有通知权限就申请获取权限
+  if (!status) {
+    await Permission.notification.request().isGranted;
+  }
   //初始化数据库
   await DBHelper.instance.initDB();
 
@@ -303,6 +311,7 @@ class MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    print("Main_________________________________build");
     return MaterialApp(
       // title: 'Flutter Demo',
       theme: ThemeData(

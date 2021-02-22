@@ -28,15 +28,20 @@ class DynamicListLayout extends StatelessWidget {
       this.model,
       this.pageName,
       this.deleteFeedChanged,
+        this.isHero=false,
       this.removeFollowChanged,
       this.mineDetailId,
-      this.isMySelf})
+        this.topicId,
+        this.isMySelf})
       : super(key: key);
   final index;
   bool isShowRecommendUser;
   HomeFeedModel model;
   int mineDetailId;
   String pageName;
+  // 话题详情页id
+  int topicId;
+  bool isHero;
   bool isMySelf;
   // 删除动态
   ValueChanged<int> deleteFeedChanged;
@@ -54,6 +59,7 @@ class DynamicListLayout extends StatelessWidget {
     //     builder: (context, _) {
     // print("我要看model的值");
     //  print(model.toString());
+    print("index:$index,isHero:$isHero");
     return Column(
       children: [
         // 头部头像时间
@@ -75,7 +81,9 @@ class DynamicListLayout extends StatelessWidget {
         SlideBanner(
                 height: model.picUrls[0].height.toDouble(),
                 model: model,
+                index:index,
                 pageName:pageName,
+                isHero:isHero,
               )
             : Container(),
         // 视频区域
@@ -101,6 +109,7 @@ class DynamicListLayout extends StatelessWidget {
             width: ScreenUtil.instance.screenWidthDp,
             child: ExpandableText(
               text: model.content,
+              topicId: topicId,
               model: model,
               maxLines: 2,
               style: TextStyle(fontSize: 14, color: AppColor.textPrimary1),
@@ -109,7 +118,10 @@ class DynamicListLayout extends StatelessWidget {
         ),
 
         // 评论文本
-        context.watch<FeedMapNotifier>().feedMap[model.id].comments.length != 0
+        (context.watch<FeedMapNotifier>().feedMap!=null
+            &&context.watch<FeedMapNotifier>().feedMap[model.id]!=null
+            &&context.watch<FeedMapNotifier>().feedMap[model.id].comments!=null
+            &&context.watch<FeedMapNotifier>().feedMap[model.id].comments.length != 0)
             ? CommentLayout(model: model)
             : Container(),
         // 输入框

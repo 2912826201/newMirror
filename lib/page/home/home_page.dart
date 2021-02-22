@@ -1,3 +1,4 @@
+import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
@@ -49,6 +50,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
       backgroundColor: AppColor.white,
       appBar: CustomAppBar(
         leading: CustomAppBarIconButton(Icons.camera_alt_outlined, AppColor.black, true, () {
+          print("${FluroRouter.appRouter.hashCode}");
           AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
               publishMode: 1);
         }),

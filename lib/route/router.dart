@@ -177,13 +177,32 @@ class AppRouter {
 
   // 封装了入参，无论入参是什么格式都转成map
   static void _navigateToPage(BuildContext context, String path, Map<String, dynamic> params,
-      {Function(dynamic result) callback, bool replace = false}) {
+      {Function(dynamic result) callback, bool replace = false,int transitionDuration=250,bool isBuilder=false}) {
     String data = Uri.encodeComponent(json.encode(params));
     String uri = path + "?$paramData=" + data;
     if (callback == null) {
-      Application.router.navigateTo(context, uri, replace: replace);
+      if(isBuilder){
+        Application.router.navigateTo(context, uri, replace: replace,
+          transitionDuration: Duration(milliseconds: transitionDuration),
+          transition:TransitionType.custom,
+          transitionBuilder:getCurvedAnimationPageRouteBuilder(),
+        );
+      }else {
+        Application.router.navigateTo(context, uri, replace: replace,
+          transitionDuration: Duration(milliseconds: transitionDuration),);
+      }
     } else {
-      Application.router.navigateTo(context, uri, replace: replace).then(callback);
+      if(isBuilder){
+        Application.router.navigateTo(context, uri, replace: replace,
+          transitionDuration: Duration(milliseconds: transitionDuration),
+          transition:TransitionType.custom,
+          transitionBuilder: getCurvedAnimationPageRouteBuilder(),
+        ).then(callback);
+      }else {
+        Application.router.navigateTo(context, uri, replace: replace,
+          transitionDuration: Duration(milliseconds: transitionDuration),)
+            .then(callback);
+      }
     }
   }
 
@@ -534,10 +553,30 @@ class AppRouter {
     _navigateToPage(context, pathMeDownloadVideoCoursePage, {});
   }
 
-  static void navigateToOtherCompleteCoursePage(BuildContext context, int liveCourseId) {
+  //时间 毫秒级
+  static void navigateToOtherCompleteCoursePage(BuildContext context,
+      int pullFeedTargetId,int pullFeedType,double initScrollHeight,
+      String pageName,
+      {int duration=0}) {
     Map<String, dynamic> map = Map();
-    map["liveCourseId"] = liveCourseId;
-    _navigateToPage(context, pathOtherCompleteCourse, map);
+    map["pageName"] = pageName;
+    map["pullFeedTargetId"] = pullFeedTargetId;
+    map["pullFeedType"] = pullFeedType;
+    map["initScrollHeight"] = initScrollHeight;
+    _navigateToPage(context, pathOtherCompleteCourse, map,transitionDuration: duration,isBuilder: duration>0);
+  }
+
+  /// 自定义页面切换动画 - 渐变切换
+  static RouteTransitionsBuilder getCurvedAnimationPageRouteBuilder(){
+    return (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
+      return FadeTransition(
+          opacity: CurvedAnimation(
+            parent: animation,
+            curve: Curves.linear,
+          ),
+          child: child
+      );
+    };
   }
 
   // 话题详情页

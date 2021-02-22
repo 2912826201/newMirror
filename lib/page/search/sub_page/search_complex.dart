@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 // import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/search/search_api.dart';
@@ -15,6 +16,7 @@ import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
+import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/search/sub_page/search_course.dart';
 import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:mirror/page/search/sub_page/search_user.dart';
@@ -243,39 +245,63 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
               child: Offstage(
                   offstage: feedList.length == 0,
                   child: Container(
-                      margin: EdgeInsets.only(left: 16, right: 16),
+                      // margin: EdgeInsets.only(left: 16, right: 16),
                       child: MediaQuery.removePadding(
                           removeTop: true,
                           context: context,
-                          child: WaterfallFlow.builder(
-                            primary: false,
-                            shrinkWrap: true,
-                            gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              // 上下间隔
-                              mainAxisSpacing: 4.0,
-                              //   // 左右间隔
-                              crossAxisSpacing: 8.0,
-                            ),
-                            itemBuilder: (context, index) {
-                              if (index == feedList.length) {
-                                return LoadingView(
-                                  loadText: loadText,
-                                  loadStatus: loadStatus,
-                                );
-                              } else if (index == feedList.length + 1) {
-                                return Container();
-                              } else {
-                                return SearchFeeditem(
-                                  model: feedList[index],
-                                  list: feedList,
-                                  index: index,
-                                  pageName: "searchComplex",
-                                );
-                              }
-                            },
-                            itemCount: feedList.length + 1,
-                          )
+                          // 瀑布流
+                          // child: WaterfallFlow.builder(
+                          //   primary: false,
+                          //   shrinkWrap: true,
+                          //   gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+                          //     crossAxisCount: 2,
+                          //     // 上下间隔
+                          //     mainAxisSpacing: 4.0,
+                          //     //   // 左右间隔
+                          //     crossAxisSpacing: 8.0,
+                          //   ),
+                          //   itemBuilder: (context, index) {
+                          //     if (index == feedList.length) {
+                          //       return LoadingView(
+                          //         loadText: loadText,
+                          //         loadStatus: loadStatus,
+                          //       );
+                          //     } else if (index == feedList.length + 1) {
+                          //       return Container();
+                          //     } else {
+                          //       return SearchFeeditem(
+                          //         model: feedList[index],
+                          //         list: feedList,
+                          //         index: index,
+                          //         pageName: "searchComplex",
+                          //       );
+                          //     }
+                          //   },
+                          //   itemCount: feedList.length + 1,
+                          // )
+                          child: ListView.builder(
+                              primary: false,
+                              shrinkWrap: true,
+                              itemCount: feedList.length + 1,
+                              itemBuilder: (context, index) {
+                                if (index == feedList.length) {
+                                  return LoadingView(
+                                    loadText: loadText,
+                                    loadStatus: loadStatus,
+                                  );
+                                } else if (index == feedList.length + 1) {
+                                  return Container();
+                                } else {
+                                  return DynamicListLayout(
+                                    index: index,
+                                    pageName: "searchComplex",
+                                    isShowRecommendUser: false,
+                                    model: feedList[index],
+                                    // 可选参数 子Item的个数
+                                    key: GlobalObjectKey("attention$index"),
+                                  );
+                                }
+                              })
                           // child: StaggeredGridView.countBuilder(
                           //   shrinkWrap: true,
                           //   itemCount: feedList.length + 1,
