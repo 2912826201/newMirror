@@ -32,6 +32,7 @@ import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/page/feed/feed_detail_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
+import 'package:mirror/page/message/message_view/message_item_height_util.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/click_util.dart';
@@ -203,6 +204,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    print("0000000000000000000000000000000000000000000000000000000000");
     if (chatUserName == null) {
       initData();
     }
@@ -292,6 +294,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //获取列表内容
   Widget getChatDetailsBody() {
+    bool isShowName= widget.conversation.getType() == RCConversationType.Group;
     return ChatDetailsBody(
       scrollController: _scrollController,
       chatDataList: chatDataList,
@@ -305,11 +308,12 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       refreshController: _refreshController,
       isHaveAtMeMsg: isHaveAtMeMsg,
       isHaveAtMeMsgIndex: isHaveAtMeMsgIndex,
-      onRefresh:
-          (widget.conversation.getType() != RCConversationType.System) ? _onRefresh : _onRefreshSystemInformation,
+      isShowTop:!MessageItemHeightUtil.init().judgeMessageItemHeightIsThenScreenHeight(chatDataList, isShowName),
+      onRefresh: (widget.conversation.getType() != RCConversationType.System) ?
+        _onRefresh : _onRefreshSystemInformation,
       loadText: loadText,
       loadStatus: loadStatus,
-      isShowChatUserName: widget.conversation.getType() == RCConversationType.Group,
+      isShowChatUserName: isShowName,
       onAtUiClickListener: onAtUiClickListener,
       firstEndCallback: (int firstIndex, int lastIndex) {
         firstEndCallbackListView(firstIndex, lastIndex);
@@ -726,31 +730,31 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   //初始化一些数据
   void initSetData() async {
-    List msgList = new List();
-    msgList = await RongCloud.init().getHistoryMessages(widget.conversation.getType(),
-        widget.conversation.conversationId, new DateTime.now().millisecondsSinceEpoch, 20, 0);
-    print("历史记录${msgList.length}");
-    if (msgList != null && msgList.length > 0) {
-      for (int i = 0; i < msgList.length; i++) {
-        chatDataList.add(getMessage((msgList[i] as Message), isHaveAnimation: false));
+    Future.delayed(Duration(milliseconds: 200), ()async {
+      List msgList = new List();
+      msgList = await RongCloud.init().getHistoryMessages(widget.conversation.getType(),
+          widget.conversation.conversationId, new DateTime.now().millisecondsSinceEpoch, 20, 0);
+      print("历史记录${msgList.length}");
+      if (msgList != null && msgList.length > 0) {
+        for (int i = 0; i < msgList.length; i++) {
+          chatDataList.add(getMessage((msgList[i] as Message), isHaveAnimation: false));
+        }
       }
-    }
-    if (widget.shareMessage != null) {
-      chatDataList[0].isHaveAnimation = true;
-    }
+      if (widget.shareMessage != null&&chatDataList.length>0) {
+        chatDataList[0].isHaveAnimation = true;
+      }
 
-    //加入时间提示
-    getTimeAlert(chatDataList);
+      //加入时间提示
+      getTimeAlert(chatDataList);
 
-    //获取有没有at我的消息
-    judgeIsHaveAtMeMsg();
+      //获取有没有at我的消息
+      judgeIsHaveAtMeMsg();
 
-    //判断有没有显示关注按钮
-    await getRelation();
+      //判断有没有显示关注按钮
+      await getRelation();
 
-    //获取表情的数据
-    emojiModelList = await EmojiManager.getEmojiModelList();
-    Future.delayed(Duration(milliseconds: 300), () {
+      //获取表情的数据
+      emojiModelList = await EmojiManager.getEmojiModelList();
       if (mounted) {
         setState(() {
           _timerCount = 0;
