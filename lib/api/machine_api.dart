@@ -89,3 +89,28 @@ Future<bool> setMachineVolume(int machineId, int volume) async {
   data["volume"] = volume;
   return _sendOrder(machineId, "Setting", data);
 }
+
+//跳转到视频课详情页
+Future<bool> openVideoCourseDetailPage(int machineId, int courseId) async {
+  Map<String, dynamic> data = {};
+  data["courseId"] = courseId;
+  data["type"] = 1;
+  return _sendOrder(machineId, "Detail", data);
+}
+
+//跳转到直播课详情页
+Future<bool> openLiveCourseDetailPage(int machineId, int courseId, String startTime) async {
+  Map<String, dynamic> data = {};
+  data["courseId"] = courseId;
+  data["type"] = 0;
+  data["startTime"] = startTime;
+  return _sendOrder(machineId, "Detail", data);
+}
+
+//开始视频课
+Future<bool> startVideoCourse(int machineId, int courseId) async {
+  Map<String, dynamic> data = {};
+  data["courseId"] = courseId;
+  data["type"] = 1;
+  return _sendOrder(machineId, "Training", data);
+}
