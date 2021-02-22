@@ -15,12 +15,14 @@ import 'profile/profile_page.dart';
 import 'training/training_page.dart';
 
 class MainPage extends StatefulWidget {
-  MainPage({Key key}) : super(key: key);
-
-  MainPageState createState() => MainPageState();
+  MainPage({Key key,this.ifPageController}) : super(key: key);
+  TabController ifPageController;
+  MainPageState createState() => MainPageState(ifPageController: ifPageController);
 }
 
 class MainPageState extends XCState{
+  MainPageState({this.ifPageController});
+  TabController ifPageController;
   int currentIndex;
   bool isInit = false;
 
@@ -261,7 +263,7 @@ class MainPageState extends XCState{
         children: <Widget>[
           new Offstage(
             offstage: currentIndex != 0, //这里控制
-            child: HomePage(),
+            child: HomePage(ifPageController: ifPageController,),
           ),
           new Offstage(
             offstage: currentIndex != 1, //这里控制

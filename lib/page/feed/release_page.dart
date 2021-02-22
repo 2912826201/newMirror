@@ -305,7 +305,6 @@ class FeedHeader extends StatelessWidget {
       context.read<FeedMapNotifier>().setPublishFeedModel(feedModel);
       context.read<ReleaseFeedInputNotifier>().rules.clear();
       context.read<ReleaseFeedInputNotifier>().selectAddress = null;
-
       Navigator.pop(context, true);
       print("打印结束");
     } else {

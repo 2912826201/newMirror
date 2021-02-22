@@ -40,9 +40,9 @@ class IfPageState extends XCState with TickerProviderStateMixin,WidgetsBindingOb
     // 获取屏幕宽度，只能在home内才可调用。
     double screen_bottom = MediaQuery.of(context).padding.bottom;
     Size screen_size = MediaQuery.of(context).size;
-    if (context.watch<FeedMapNotifier>().postFeedModel != null) {
-      _controller.index = 1;
-    }
+    // if (context.watch<FeedMapNotifier>().postFeedModel != null) {
+    //   _controller.index = 1;
+    // }
     // 初始化获取屏幕数据
     if (isInit == false) {
       ScreenUtil.init(
@@ -138,7 +138,7 @@ class IfPageState extends XCState with TickerProviderStateMixin,WidgetsBindingOb
       false,
       publishMode: 2,
     ));
-    tabContent.add(MainPage());
+    tabContent.add(MainPage(ifPageController: _controller,));
     return tabContent;
   }
 
