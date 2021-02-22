@@ -618,8 +618,6 @@ class _FollowItemState extends State<QueryFollowItem> {
 
   String description;
 
-  int isBlack = 0;
-
   @override
   Widget build(BuildContext context) {
     print('=====================================item build');

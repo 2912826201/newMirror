@@ -449,7 +449,7 @@ class ScaleRouter<T> extends PageRouteBuilder<T> {
   final int duration_ms;
   final Curve curve;
 
-  ScaleRouter({this.child, this.duration_ms = 400, this.curve = Curves.fastOutSlowIn})
+  ScaleRouter({this.child, this.duration_ms = 500, this.curve = Curves.fastOutSlowIn})
       : super(
           pageBuilder: (context, animation, secondaryAnimation) => child,
           transitionDuration: Duration(milliseconds: duration_ms),

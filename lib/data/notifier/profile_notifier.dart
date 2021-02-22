@@ -26,7 +26,7 @@ class ProfileNotifier with ChangeNotifier {
     notifyListeners();
   }
   void setWeight(double weights) {
-    weight = weight;
+    weight = weights;
     notifyListeners();
   }
 

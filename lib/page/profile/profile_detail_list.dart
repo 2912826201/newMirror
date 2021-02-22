@@ -16,8 +16,8 @@ import 'package:provider/provider.dart';
 class ProfileDetailsList extends StatefulWidget {
   int type;
   int id;
-
-  ProfileDetailsList({this.type, this.id});
+  bool isMySelf;
+  ProfileDetailsList({this.type, this.id,this.isMySelf});
 
   @override
   State<StatefulWidget> createState() {
@@ -153,8 +153,12 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
                     pageName: "profileDetails",
                     isShowRecommendUser: false,
                     model: model,
+                    isMySelf: widget.isMySelf,
                     mineDetailId: widget.id,
                     key: GlobalObjectKey("attention$index"),
+                removeFollowChanged: (model){
+
+                },
                 deleteFeedChanged: (feedId){
                   print('====%%%%%%%%%%%%%%%%%%%%%%%%%%%_followListId${_followListId.length}');
                     _followListId.removeWhere((element){
