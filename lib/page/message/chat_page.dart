@@ -721,7 +721,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       getChatGroupUserModelList(chatUserId, context);
     }
     
-    print("----------------------------chatUserName:$chatUserName");
+    print("----------------------------chatUserName:$chatUserName$chatUserId");
   }
 
   //初始化一些数据

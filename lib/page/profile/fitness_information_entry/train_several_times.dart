@@ -135,11 +135,12 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes>{
       timesOfWeek: Application.fitnessEntryModel.timesOfWeek
     );
       if(getModel!=null){
+        Loading.hideLoading(context);
         print('===============================健身信息录入成功');
         AppRouter.popToBeforeLogin(context);
     }else{
+        Loading.hideLoading(context);
         print('================================健身信息录入失败');
     }
-    Loading.hideLoading(context);
   }
 }
