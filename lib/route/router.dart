@@ -8,6 +8,7 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
+import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
@@ -78,7 +79,12 @@ class AppRouter {
   static String pathVipNotOpenPage = "/profile/vip/notopenpage";
   static String pathVipOpenPage = "/profile/vip/openpage";
   static String pathVipNamePlatePage = "/profile/vip/nameplatepage";
-
+  static String pathHeightAndWeigetPage = "/login/heightandweightpage";
+  static String pathFitnessPartPage = "/login/fitnesspartpage";
+  static String pathFitnessLevelPage = "/login/fitnesslevelpage";
+  static String pathFitnessTargetPage = "/login/fitnesstargetpage";
+  static String pathBodyTypePage = "/login/bodytypepage";
+  static String pathTrainSeveralPage = "/login/trainseveralpage";
   // 话题详情页Pl
   static String pathTopicDetailPage = "topic/topicdetail";
 
@@ -159,6 +165,12 @@ class AppRouter {
     router.define(pathVipNotOpenPage, handler: handlerVipNotOpen);
     router.define(pathVipOpenPage, handler: handlerVipOpen);
     router.define(pathVipNamePlatePage, handler: handlerVipNamePlatePage);
+    router.define(pathFitnessLevelPage, handler: handlerFitnessLevelPage);
+    router.define(pathFitnessPartPage, handler: handlerFitnesspartPage);
+    router.define(pathFitnessTargetPage, handler: handlerFitnessTargetPage);
+    router.define(pathTrainSeveralPage, handler: handlerTrainSeveralTimes);
+    router.define(pathBodyTypePage, handler: handlerBodyTypePage);
+    router.define(pathHeightAndWeigetPage, handler: handlerHeightAndWeigetPage);
     // 话题详情页
     router.define(pathTopicDetailPage, handler: handlerTopicDetailPage);
     // 搜索页面
@@ -208,8 +220,10 @@ class AppRouter {
 
   static void popToBeforeLogin(BuildContext context) {
     if (Application.loginPopRouteName != null) {
+      print('========================loginPopRouteName${Application.loginPopRouteName}');
       Navigator.of(context).popUntil(ModalRoute.withName(Application.loginPopRouteName));
     } else {
+      print('=========================pathIfPage');
       Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
     }
   }
@@ -443,7 +457,24 @@ class AppRouter {
     map["index"] = index;
     _navigateToPage(context, pathVipNamePlatePage, map);
   }
-
+  static void navigateToHeightAndWeigetPage(BuildContext context) {
+    _navigateToPage(context, pathHeightAndWeigetPage, {});
+  }
+  static void navigateToFitnessTargetPage(BuildContext context) {
+    _navigateToPage(context, pathFitnessTargetPage, {});
+  }
+  static void navigateToFitnessPartPage(BuildContext context) {
+    _navigateToPage(context, pathFitnessPartPage, {});
+  }
+  static void navigateToFitnessLevelPage(BuildContext context) {
+    _navigateToPage(context, pathFitnessLevelPage, {});
+  }
+  static void navigateToBodyTypePage(BuildContext context) {
+    _navigateToPage(context, pathBodyTypePage, {});
+  }
+  static void navigateToTrainSeveralPage(BuildContext context) {
+    _navigateToPage(context, pathTrainSeveralPage, {});
+  }
   static void navigateToReleasePage(BuildContext context) {
     Map<String, dynamic> map = Map();
     _navigateToPage(context, pathRelease, map);

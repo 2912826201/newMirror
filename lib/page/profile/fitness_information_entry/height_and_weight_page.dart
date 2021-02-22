@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/page/profile/fitness_information_entry/body_type_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
@@ -23,7 +25,6 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
   int weight;
   int heights;
   FocusNode blankNode = FocusNode();
-  FitnessEntryModel model = FitnessEntryModel();
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -96,12 +97,9 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
                 onTap: () {
                   FocusScope.of(context).requestFocus(blankNode);
                   print('=height=======$heights===weight==========$weight');
-                  /*context.read<FitnessInformationNotifier>().setHeightAndWeight(heights, weight);*/
-                  model.height = heights;
-                  model.weight = weight;
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                    return BodyTypePage(model: model,);
-                  }));
+                  Application.fitnessEntryModel.height = heights;
+                  Application.fitnessEntryModel.weight = weight;
+                 AppRouter.navigateToBodyTypePage(context);
                 },
               ),
             ),

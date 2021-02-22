@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/fitness_entry_model.dart';
@@ -12,11 +13,9 @@ import 'package:mirror/widget/loading.dart';
 import 'package:provider/provider.dart';
 
 class TrainSeveralTimes extends StatefulWidget{
-  FitnessEntryModel model;
-  TrainSeveralTimes({this.model});
   @override
   State<StatefulWidget> createState() {
-    return _TrainSeveralTimesState(model: model);
+    return _TrainSeveralTimesState();
   }
 
 }
@@ -24,8 +23,6 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes>{
   bool three = false;
   bool four = false;
   bool fives = false;
-  FitnessEntryModel model;
-  _TrainSeveralTimesState({this.model});
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -110,15 +107,15 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes>{
                 switch(type){
                   case 3:
                      three = true;
-                     model.timesOfWeek = 3;
+                     Application.fitnessEntryModel.timesOfWeek = 3;
                     break;
                   case 4:
                       four = true;
-                     model.timesOfWeek = 4;
+                      Application.fitnessEntryModel.timesOfWeek = 4;
                     break;
                   case 5:
                       fives = true;
-                      model.timesOfWeek = 5;
+                      Application.fitnessEntryModel.timesOfWeek = 5;
                     break;
                 }
               });
@@ -129,57 +126,21 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes>{
 
       _fitnessEntry()async{
     FitnessEntryModel getModel = await userFitnessEntry(
-      height: model.height,
-      weight: model.weight,
-      bodyType: model.bodyType,
-      target: model.target,
-      level: model.hard,
-      keyPartList: model.keyPartList,
-      timesOfWeek: model.timesOfWeek
+      height: Application.fitnessEntryModel.height,
+      weight: Application.fitnessEntryModel.weight,
+      bodyType: Application.fitnessEntryModel.bodyType,
+      target: Application.fitnessEntryModel.target,
+      level: Application.fitnessEntryModel.hard,
+      keyPartList: Application.fitnessEntryModel.keyPartList,
+      timesOfWeek: Application.fitnessEntryModel.timesOfWeek
     );
       if(getModel!=null){
+        Loading.hideLoading(context);
         print('===============================健身信息录入成功');
         AppRouter.popToBeforeLogin(context);
     }else{
+        Loading.hideLoading(context);
         print('================================健身信息录入失败');
     }
-    Loading.hideLoading(context);
-  }
-}
-
-class FitnessInformationNotifier extends ChangeNotifier{
-  int height; //" : 180, 身高 cm
-  int weight; //" : 55,  体重 kg
-  int bodyType; //" : 1, 体型 0，1，2...
-  int target; //" : 1, 目标 0:减脂 1:塑型 2：增肌 3：健康
-  int level; //": 3, 难度 0：初级 1：中级 2：高级
-  List<int> keyPartList; //" : [1,2], 重点部位 0：全身 1：手臂 2：肩部 ...
-  int timeOfWeek;
-FitnessInformationNotifier({this.weight,this.timeOfWeek,this.keyPartList,this.target,this.bodyType,this.height,this.level});
-
-  void setHeightAndWeight(int heights,int weights){
-    height = heights;
-    weight = weights;
-    notifyListeners();
-  }
-  void setBodyType(int bodyTypes){
-    bodyType = bodyTypes;
-    notifyListeners();
-  }
-  void setTarget(int targets){
-    target = targets;
-    notifyListeners();
-  }
-  void setHard(int levels){
-    level = levels;
-    notifyListeners();
-  }
-  void setKeyPartList(List<int> keyPartLists){
-    keyPartList = keyPartLists;
-    notifyListeners();
-  }
-  void setTimeOfWeek(int timeWeek){
-    timeOfWeek = timeWeek;
-    notifyListeners();
   }
 }
