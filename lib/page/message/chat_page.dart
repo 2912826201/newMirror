@@ -319,20 +319,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   //获取appbar
   Widget getAppBar() {
     return CustomAppBar(
-      titleWidget: GestureDetector(
-        child: Text(
-          // chatUserName + "-" + chatType,
-          chatUserName??"",
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        onTap: () {
-          // Message msg = chatDataList[chatDataList.length - 2].msg;
-          // AtMsg atMsg = new AtMsg(groupId: int.parse(msg.targetId), sendTime: msg.sentTime, messageUId: msg.messageUId);
-          // Application.atMesGroupModel.add(atMsg);
-          // jumpPage(KeyboardSensitiveView(),false,context);
-        },
-      ),
+      titleString: chatUserName??"",
       actions: [
         CustomAppBarIconButton(Icons.more_horiz, AppColor.black, false, _topMoreBtnClick),
       ],
@@ -732,6 +719,8 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     if (chatTypeId == RCConversationType.Group) {
       getChatGroupUserModelList(chatUserId, context);
     }
+    
+    print("----------------------------chatUserName:$chatUserName");
   }
 
   //初始化一些数据
@@ -1298,6 +1287,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         } else {
           Application.appContext.read<ChatMessageProfileNotifier>().clearMessage();
         }
+        //当进入聊天界面,没有任何聊天记录,这时对方给我发消息就可能会照成崩溃
         if (chatDataList.length>0&&message.messageUId == chatDataList[0].msg.messageUId) {
           return Container();
         }
