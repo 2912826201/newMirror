@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
 class TopicNewest extends StatefulWidget {
-  TopicNewest({this.loadText, this.loadStatus, this.topicList, this.refreshCallBack});
+  TopicNewest({this.loadText, this.loadStatus, this.topicList, this.refreshCallBack,this.topicId});
 
   final ValueChanged<bool> refreshCallBack;
 
@@ -26,7 +26,8 @@ class TopicNewest extends StatefulWidget {
 
   // 加载状态
   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
-
+ // 话题ID
+  int topicId;
   @override
   TopicNewestState createState() => TopicNewestState();
 }
@@ -62,6 +63,7 @@ class TopicNewestState extends State<TopicNewest> with AutomaticKeepAliveClientM
                                 return DynamicListLayout(
                                   index: index,
                                   pageName: "topicNewest",
+                                  topicId: widget.topicId,
                                   isShowRecommendUser: false,
                                   model: widget.topicList[index],
                                   // 可选参数 子Item的个数

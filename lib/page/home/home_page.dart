@@ -76,7 +76,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
         ),
         actions: [
           CustomAppBarIconButton(Icons.search, AppColor.black, false, () {
-                print("${FluroRouter.appRouter.hashCode}");
             AppRouter.navigateSearchPage(context);
           }),
         ],
