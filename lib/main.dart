@@ -134,7 +134,7 @@ Future _initApp() async {
   bool status = await Permission.notification.isGranted;
   //判断如果还没拥有读写权限就申请获取权限
   if(!status) {
-    return await Permission.notification.request().isGranted;
+    await Permission.notification.request().isGranted;
   }
   //初始化SharedPreferences
   AppPrefs.init();

@@ -142,7 +142,9 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     courseCommentTime = null;
     isHotOrTime = true;
     loadingStatusComment = LoadingStatus.STATUS_LOADING;
-    getDataAction();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      getDataAction();
+    });
   }
 
   @override

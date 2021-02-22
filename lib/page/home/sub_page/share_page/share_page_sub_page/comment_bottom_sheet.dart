@@ -38,58 +38,6 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
     super.dispose();
   }
 
-  // // 获取热门评论
-  // getQueryListByHot() async {
-  //   // 评论总数
-  //   int totalCount = -1;
-  //   if (loadStatus == LoadingStatus.STATUS_IDEL) {
-  //     // 先设置状态，防止下拉就直接加载
-  //     setState(() {
-  //       loadStatus = LoadingStatus.STATUS_LOADING;
-  //     });
-  //   }
-  //   List<CommentDtoModel> modelList =
-  //   await queryListByHot(targetId: widget.feedId, targetType: 0, page: this.dataPage, size: 20);
-  //
-  //   print("打印返回值￥%${modelList.isNotEmpty}");
-  //
-  //   setState(() {
-  //     totalCount = modelList[0].totalCount;
-  //     modelList.removeAt(0);
-  //     if (this.dataPage == 1) {
-  //       if (modelList.isNotEmpty) {
-  //         for (CommentDtoModel model in modelList) {
-  //           if (model.replyCount > 0) {
-  //             model.isShowInteractiveButton = true;
-  //           } else {
-  //             model.isShowInteractiveButton = false;
-  //           }
-  //         }
-  //         commentModel.addAll(modelList);
-  //         print("数据长度${commentModel.length}");
-  //       }
-  //     } else if (this.dataPage > 1 && this.hasNext != 0) {
-  //       print("5data");
-  //       for (CommentDtoModel model in modelList) {
-  //         if (model.replyCount > 0) {
-  //           model.isShowInteractiveButton = true;
-  //         } else {
-  //           model.isShowInteractiveButton = false;
-  //         }
-  //       }
-  //       commentModel.addAll(modelList);
-  //       print("数据长度${commentModel.length}");
-  //       loadStatus = LoadingStatus.STATUS_IDEL;
-  //       loadText = "加载中...";
-  //     } else {
-  //       // 加载完毕
-  //       loadText = "已加载全部动态";
-  //       loadStatus = LoadingStatus.STATUS_COMPLETED;
-  //     }
-  //     context.read<FeedMapNotifier>().commensAssignment(widget.feedId, commentModel, totalCount);
-  //   });
-  // }
-
   //底部或滑动
   Widget footerWidget() {
     return CustomFooter(
@@ -120,6 +68,7 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
 
   // 创建中间视图
   createMiddleView() {
+
     print(context.select((FeedMapNotifier value) => value.feedMap[widget.feedId].totalCount));
     return Expanded(
       child:NotificationListener<ScrollNotification>(
@@ -160,6 +109,7 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    print('**********************************评论抽屉build、');
     return Container(
       child: Column(
         children: <Widget>[

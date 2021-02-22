@@ -24,25 +24,30 @@ class HeadView extends StatefulWidget{
   // 删除动态
   ValueChanged<int> deleteFeedChanged;
   int isBlack;
+  String pageName;
   // 取消关注
   ValueChanged<HomeFeedModel> removeFollowChanged;
+  ValueChanged<bool> followChanged;
   int mineDetailId;
-  HeadView({this.model,this.isDetail,this.deleteFeedChanged,this.removeFollowChanged,this.isBlack,this.mineDetailId,});
+  bool isMySelf;
+  HeadView({this.model,this.isDetail,this.deleteFeedChanged,this.removeFollowChanged,this.isBlack,this.mineDetailId,
+    this.pageName,this.isMySelf});
   @override
   State<StatefulWidget> createState() {
    return HeadViewState(deleteFeedChanged: deleteFeedChanged,removeFollowChanged: removeFollowChanged,isDetail:
-   isDetail,model: model,isBlack: isBlack);
+   isDetail,model: model,isBlack: isBlack,isMyself: isMySelf);
   }
 
 }
 class HeadViewState extends State<HeadView> {
   HeadViewState({Key key ,this.model, this.deleteFeedChanged,
-    this.removeFollowChanged,this.isDetail = true,this.isBlack});
+    this.removeFollowChanged,this.isDetail = true,this.isBlack,this.isMyself});
   HomeFeedModel model;
   bool isDetail;
   // 删除动态
   ValueChanged<int> deleteFeedChanged;
   int isBlack;
+  bool isMyself;
   // 取消关注
   ValueChanged<HomeFeedModel> removeFollowChanged;
   List<String> list = [];
@@ -59,39 +64,66 @@ class HeadViewState extends State<HeadView> {
     }
   }
   // 关注or取消关注
-  removeFollowAndFollow(int isFollow, int id, BuildContext context) async {
-    print("isFollow:::::::::$isFollow");
+  removeFollowAndFollow( int id, BuildContext context,bool isCancel) async {
     // 取消关注
-    if (isFollow == 1||isFollow==3) {
-      int relation = await ProfileCancelFollow(id);
-      if (relation == 0 || relation == 2) {
-        // context.read<FeedMapNotifier>().setIsFollow(id, isFollow);
-        removeFollowChanged(model);
-        model.isFollow = 0;
-        list.remove("取消关注");
-        setState(() {
-        });
-        ToastShow.show(msg: "已取消关注", context: context);
-      } else {
-        ToastShow.show(msg: "取消关注失败", context: context);
+    /*if(widget.pageName!="profileDetails"){
+      if (isFollow == 1||isFollow==3) {
+        int relation = await ProfileCancelFollow(id);
+        if (relation == 0 || relation == 2) {
+          // context.read<FeedMapNotifier>().setIsFollow(id, isFollow);
+            removeFollowChanged(model);
+          model.isFollow = 0;
+          list.remove("取消关注");
+          setState(() {
+          });
+          ToastShow.show(msg: "已取消关注", context: context);
+        } else {
+          ToastShow.show(msg: "取消关注失败", context: context);
+        }
+      }else if(isFollow == 0||isFollow==2){
+        int relation = await ProfileAddFollow(id);
+        if(relation!=null){
+          if(relation==1||relation==3){
+            model.isFollow = 1;
+            list.insert(0, "取消关注");
+            setState(() {
+            });
+            ToastShow.show(msg: "关注成功!", context: context);
+          }
+        }
       }
-    }else if(isFollow == 0||isFollow==2){
+    }else{*/
+    if(isCancel){
+      int relation = await ProfileCancelFollow(id);
+      if(relation==0||relation==2){
+        removeFollowChanged(model);
+        context.read<ProfilePageNotifier>().changeIsFollow(true,true,model.pushId);
+        ToastShow.show(msg: "取消关注成功", context: context);
+      }else{
+        ToastShow.show(msg: "取消关注失败,请重试", context: context);
+      }
+    }else{
       int relation = await ProfileAddFollow(id);
       if(relation!=null){
         if(relation==1||relation==3){
-          model.isFollow = 1;
-          list.insert(0, "取消关注");
-          setState(() {
-          });
+          context.read<ProfilePageNotifier>().changeIsFollow(true,false,model.pushId);
           ToastShow.show(msg: "关注成功!", context: context);
+        }else{
+          ToastShow.show(msg: "关注失败,请重试", context: context);
         }
       }
     }
+
+ /*   }*/
   }
 
   // 是否显示关注按钮
   isShowFollowButton(BuildContext context) {
-    if (isDetail && model.isFollow == 0&&model.pushId!=context.watch<ProfileNotifier>().profile.uid) {
+    if (isDetail && context.watch<ProfilePageNotifier>().profileUiChangeModel[model.pushId].isFollow == true&&model
+        .pushId!=context
+        .watch<ProfileNotifier>()
+        .profile
+        .uid) {
       return  GestureDetector(
         onTap: () {
           if(isBlack==1){
@@ -101,7 +133,7 @@ class HeadViewState extends State<HeadView> {
             ToastShow.show(msg: "你已被该用户拉黑", context: context);
             return false;
           }
-          removeFollowAndFollow(2, model.pushId, context);
+          removeFollowAndFollow(model.pushId, context,false);
         },
         child: Container(
           margin: EdgeInsets.only(right: 6),
@@ -145,13 +177,21 @@ class HeadViewState extends State<HeadView> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    print('===========================================model.isFollow==${model.isFollow}');
     if (model.pushId == context.read<ProfileNotifier>().profile.uid) {
-      list.add("删除");
-    } else {
-      if (model.isFollow == 1||model.isFollow==3) {
-        list.add("取消关注");
+      if(!context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(model.pushId)){
+        context.read<ProfilePageNotifier>().setFirstModel(model.pushId);
       }
-      list.add("举报");
+      if(!context.read<ProfilePageNotifier>().profileUiChangeModel[model.pushId].dynmicStringList.contains("删除")){
+        context.read<ProfilePageNotifier>().profileUiChangeModel[model.pushId].dynmicStringList.add("删除");
+      }
+    } else {
+        if(!context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(model.pushId)){
+          context.read<ProfilePageNotifier>().setFirstModel(model.pushId);
+          context.read<ProfilePageNotifier>().changeIsFollow(false,model.isFollow == 1||model.isFollow==3?false:true,
+              model
+              .pushId);
+        }
     }
   }
   @override
@@ -209,16 +249,20 @@ class HeadViewState extends State<HeadView> {
                 onTap: () {
                   openMoreBottomSheet(
                       context: context,
-                      lists: list,
+                      lists: context.read<ProfilePageNotifier>().profileUiChangeModel[model
+                          .pushId].dynmicStringList,
                       onItemClickListener: (index) {
-                        if (list[index] == "删除") {
-                          deleteFeed();
-                        }
-                        if (list[index] == "取消关注") {
-                          removeFollowAndFollow(model.isFollow, model.pushId, context);
-                        }
-                        if(list[index] == "举报"){
-                          _showDialog();
+                        switch(context.read<ProfilePageNotifier>().profileUiChangeModel[model
+                            .pushId].dynmicStringList[index]){
+                          case "删除":
+                            deleteFeed();
+                            break;
+                          case "取消关注":
+                            removeFollowAndFollow(model.pushId, context,true);
+                            break;
+                          case "举报":
+                            _showDialog();
+                            break;
                         }
                       });
                 },

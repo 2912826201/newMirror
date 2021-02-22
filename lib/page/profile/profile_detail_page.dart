@@ -30,7 +30,6 @@ import 'package:provider/provider.dart';
 
 enum StateResult { HAVERESULT, RESULTNULL }
 
-///判断lastTime，控件的controller冲突
 class ProfileDetailPage extends StatefulWidget {
   final int userId;
 
@@ -100,7 +99,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       });
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _getUserInfo(id: widget.userId);
+      _getUserInfo(true,id: widget.userId);
       _getFollowCount(id: widget.userId);
       if (!isMselfId) {
         _checkBlackStatus();
@@ -109,11 +108,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     scrollController.addListener(() {
       if (scrollController.offset >= ScreenUtil.instance.height * 0.33 + _signatureHeight) {
         if (!context.read<ProfilePageNotifier>().watchScroll) {
+          print('=====================================滚动大于');
           context.read<ProfilePageNotifier>().changeTitleColor(widget.userId, AppColor.black);
           context.read<ProfilePageNotifier>().changeOnClick(widget.userId, false);
         }
       } else {
         if (context.read<ProfilePageNotifier>().watchScroll) {
+          print('=====================================滚动小于');
           context.read<ProfilePageNotifier>().changeTitleColor(widget.userId, AppColor.transparent);
           context.read<ProfilePageNotifier>().changeOnClick(widget.userId, true);
         }
@@ -136,18 +137,17 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       print('inThisBlack===================${model.inThisBlack}');
       print('inYouBlack===================${model.inYouBlack}');
       if (model.inYouBlack == 1) {
-        isBlack = 1;
+        context.read<ProfilePageNotifier>().changeBlack(true, widget.userId, 1);
       } else if (model.inThisBlack == 1) {
-        isBlack = 2;
+        context.read<ProfilePageNotifier>().changeBlack(true, widget.userId, 2);
       } else {
-        isBlack = 0;
+        context.read<ProfilePageNotifier>().changeBlack(true, widget.userId, 0);
       }
-      setState(() {});
     }
   }
 
   ///获取用户信息
-  _getUserInfo({int id}) async {
+  _getUserInfo(bool needSetState,{int id}) async {
     userModel = await getUserInfo(uid: id);
     if (userModel != null) {
       print('获取relation=============================${userModel.relation}');
@@ -167,13 +167,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       if (!isMselfId) {
         print('判断relation=====================$relation');
       }
-      if (mounted) {
+      if (mounted&&needSetState) {
         setState(() {});
       }
       if (relation == 0 || relation == 2) {
-        context.read<ProfilePageNotifier>().changeIsFollow(true, widget.userId);
+        context.read<ProfilePageNotifier>().changeIsFollow(true,true, widget.userId);
       } else if (relation == 1 || relation == 3) {
-        context.read<ProfilePageNotifier>().changeIsFollow(false, widget.userId);
+        context.read<ProfilePageNotifier>().changeIsFollow(true,false, widget.userId);
       }
     }
   }
@@ -255,7 +255,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                               userName: _textName,
                             );
                           })).then((value) {
-                            _getUserInfo(id: widget.userId);
+                            _getUserInfo(false,id: widget.userId);
                             _getFollowCount(id: widget.userId);
                             _checkBlackStatus();
                           });
@@ -330,18 +330,20 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                     ProfileDetailsList(
                       type: 2,
                       id: widget.userId,
+                      isMySelf: isMselfId,
                     ),
                   ),
                   PrimaryScrollContainer(
                     scrollChildKeys[1],
                     ProfileDetailsList(
                       type: 6,
+                      isMySelf: isMselfId,
                       id: widget.userId,
                     ),
                   ),
                 ],
               )
-            : ProfileDetailsList(type: 3, id: widget.userId));
+            : ProfileDetailsList(type: 3,isMySelf: isMselfId, id: widget.userId));
   }
 
   ///高斯模糊
@@ -503,11 +505,12 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   Widget _mineButton(double height) {
     return GestureDetector(
         onTap: () {
-          print('=====================isBlack ==$isBlack');
-          if (isBlack == 1) {
+          if (context.read<ProfilePageNotifier>()
+              .profileUiChangeModel[widget.userId].isBlack == 1) {
             ToastShow.show(msg: "该用户已被拉黑", context: context);
             return false;
-          } else if (isBlack == 2) {
+          } else if (context.read<ProfilePageNotifier>()
+              .profileUiChangeModel[widget.userId].isBlack == 2) {
             ToastShow.show(msg: "你已被该用户拉黑", context: context);
             return false;
           }
@@ -515,7 +518,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             if (isMselfId) {
               ///这里跳转到编辑资料页
               AppRouter.navigateToEditInfomation(context, (result) {
-                _getUserInfo();
+                _getUserInfo(true);
               });
             } else {
               print(
@@ -531,7 +534,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             return false;
           }
         },
-        child: isBlack == 0
+        child: context.read<ProfilePageNotifier>()
+            .profileUiChangeModel[widget.userId].isBlack == 0
             ? Container(
                 height: 28,
                 width: 72,
@@ -649,7 +653,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     int attntionResult = await ProfileAddFollow(widget.userId);
     print('关注监听=========================================$attntionResult');
     if (attntionResult == 1 || attntionResult == 3) {
-      context.read<ProfilePageNotifier>().changeIsFollow(false, widget.userId);
+      context.read<ProfilePageNotifier>().changeIsFollow(true,false, widget.userId);
       _getFollowCount(id: widget.userId);
       ToastShow.show(msg: "关注成功!", context: context);
     }
@@ -659,6 +663,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 class ProfilePageNotifier extends ChangeNotifier {
   bool watchScroll = true;
   Map<int, ProfileUiChangeModel> profileUiChangeModel = {};
+
 
   void setFirstModel(int id) {
     profileUiChangeModel[id] = ProfileUiChangeModel();
@@ -673,10 +678,22 @@ class ProfilePageNotifier extends ChangeNotifier {
     profileUiChangeModel[id].titleColor = titleColor;
     notifyListeners();
   }
-
-  void changeIsFollow(bool bl, int id) {
+  void changeBlack(bool needNotify,int id,int black){
+    profileUiChangeModel[id].isBlack = black;
+    if(needNotify){
+      notifyListeners();
+    }
+  }
+  void changeIsFollow(bool needNotify,bool bl, int id) {
     profileUiChangeModel[id].isFollow = bl;
-    notifyListeners();
+    profileUiChangeModel[id].dynmicStringList.clear();
+      if(!bl){
+      profileUiChangeModel[id].dynmicStringList.add("取消关注");
+      }
+      profileUiChangeModel[id].dynmicStringList.add("举报");
+      if(needNotify){
+        notifyListeners();
+      }
   }
 
   void changeOnClick(int id, bool canClick) {
@@ -706,4 +723,6 @@ class ProfileUiChangeModel {
   Color titleColor = AppColor.transparent;
   ProfileModel attentionModel = ProfileModel();
   String backImage = "images/resource/2.0x/white_return@2x.png";
+  List<String> dynmicStringList = [];
+  int isBlack = 0;
 }

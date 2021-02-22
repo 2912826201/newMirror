@@ -501,7 +501,9 @@ class InteractiveNoticeItemState extends StatelessWidget {
         type: 2,
         fatherModel: fatherModel,
         callBack: (result) {
-          deleteCallBack(result);
+          if(result!=null){
+            deleteCallBack(result);
+          }
         });
   }
 }
