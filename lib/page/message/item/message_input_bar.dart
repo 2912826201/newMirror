@@ -59,7 +59,7 @@ class MessageInputBarState extends State<MessageInputBar> {
           children: [
             Container(
               constraints: BoxConstraints(
-                maxHeight: 4.0 * 16 + 16 + 18, //宽度尽可能大
+                maxHeight: 4.0 * 16 + 16 + 18,
                 //最小高度为50像素
               ),
               padding: EdgeInsets.symmetric(horizontal: 8.0),
