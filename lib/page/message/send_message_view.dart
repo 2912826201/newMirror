@@ -43,14 +43,7 @@ class SendMessageView extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return SendMessageViewState(
-        model,
-        position,
-        voidMessageClickCallBack,
-        voidItemLongClickCallBack,
-        chatUserName,
-        isShowChatUserName,
-        conversationDtoType);
+    return SendMessageViewState();
   }
 }
 
@@ -63,23 +56,6 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
   bool get wantKeepAlive => true;
 
 
-   ChatDataModel model;
-   VoidMessageClickCallBack voidMessageClickCallBack;
-   VoidItemLongClickCallBack voidItemLongClickCallBack;
-   int position;
-   String chatUserName;
-   int conversationDtoType;
-   bool isShowChatUserName;
-
-  SendMessageViewState(
-      this.model,
-      this.position,
-      this.voidMessageClickCallBack,
-      this.voidItemLongClickCallBack,
-      this.chatUserName,
-      this.isShowChatUserName,
-      this.conversationDtoType
-  );
 
   bool isMyself;
   String userUrl;
@@ -95,7 +71,7 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
     setSettingData();
 
     //判断是不是临时的消息
-    if (model.isTemporary) {
+    if (widget.model.isTemporary) {
       return temporaryData();
     } else {
       return notTemporaryData();
@@ -108,33 +84,33 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
     sendChatUserId = Application.profile.uid.toString();
     name = getChatUserName(sendChatUserId, Application.profile.nickName);
 
-    if (model.isTemporary) {
+    if (widget.model.isTemporary) {
       print("临时的");
       isMyself = true;
       status = RCSentStatus.Sending;
       sendTime = new DateTime.now().add(new Duration(days: -1)).millisecondsSinceEpoch;
-    } else if (Application.profile.uid.toString() == model.msg.senderUserId) {
+    } else if (Application.profile.uid.toString() == widget.model.msg.senderUserId) {
       isMyself = true;
-      sendTime=model.msg.sentTime;
-      status = model.msg.sentStatus;
+      sendTime=widget.model.msg.sentTime;
+      status = widget.model.msg.sentStatus;
     } else {
-      sendTime=model.msg.sentTime;
+      sendTime=widget.model.msg.sentTime;
       isMyself = false;
-      status = model.msg.sentStatus;
-      sendChatUserId = model.msg.senderUserId;
-      if (conversationDtoType == OFFICIAL_TYPE) {
+      status = widget.model.msg.sentStatus;
+      sendChatUserId = widget.model.msg.senderUserId;
+      if (widget.conversationDtoType == OFFICIAL_TYPE) {
         userUrl = "http://devpic.aimymusic.com/app/system_message_avatar.png";
         name = "系统消息";
-      } else if (conversationDtoType == LIVE_TYPE) {
+      } else if (widget.conversationDtoType == LIVE_TYPE) {
         userUrl = "http://devpic.aimymusic.com/app/group_notification_avatar.png";
         name = "官方直播";
-      } else if (conversationDtoType == TRAINING_TYPE) {
+      } else if (widget.conversationDtoType == TRAINING_TYPE) {
         userUrl = "http://devpic.aimymusic.com/app/stranger_message_avatar.png";
         name = "运动数据";
       } else {
         try {
-          userUrl = model.msg.content.sendUserInfo?.portraitUri;
-          name = getChatUserName(sendChatUserId, model.msg.content.sendUserInfo?.name);
+          userUrl = widget.model.msg.content.sendUserInfo?.portraitUri;
+          name = getChatUserName(sendChatUserId, widget.model.msg.content.sendUserInfo?.name);
         } catch (e) {
         }
       }
@@ -146,31 +122,31 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
   //临时消息
   Widget temporaryData() {
     //普通消息
-    if (model.type == ChatTypeModel.MESSAGE_TYPE_TEXT) {
+    if (widget.model.type == ChatTypeModel.MESSAGE_TYPE_TEXT) {
 
       // -----------------------------------------------文字消息-临时----------------------------------------------
-      return getTextMsg(text: model.content, mentionedInfo: model.mentionedInfo);
+      return getTextMsg(text: widget.model.content, mentionedInfo: widget.model.mentionedInfo);
 
-    } else if (model.type == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
+    } else if (widget.model.type == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
 
       // -----------------------------------------------图片消息-临时----------------------------------------------
-      return getImgVideoMsg(isTemporary: true, isImg: true, mediaFileModel: model.mediaFileModel);
+      return getImgVideoMsg(isTemporary: true, isImg: true, mediaFileModel: widget.model.mediaFileModel);
 
-    } else if (model.type == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
+    } else if (widget.model.type == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
 
       // -----------------------------------------------视频消息-临时----------------------------------------------
-      return getImgVideoMsg(isTemporary: true, isImg: false, mediaFileModel: model.mediaFileModel);
+      return getImgVideoMsg(isTemporary: true, isImg: false, mediaFileModel: widget.model.mediaFileModel);
 
-    } else if (model.type == ChatTypeModel.MESSAGE_TYPE_VOICE) {
+    } else if (widget.model.type == ChatTypeModel.MESSAGE_TYPE_VOICE) {
 
       // -----------------------------------------------语音消息-临时----------------------------------------------
-      String playMd5String=StringUtil.generateMd5(model.chatVoiceModel.filePath);
-      return getVoiceMsgData(null, model.chatVoiceModel.toJson(), true, playMd5String);
+      String playMd5String=StringUtil.generateMd5(widget.model.chatVoiceModel.filePath);
+      return getVoiceMsgData(null, widget.model.chatVoiceModel.toJson(), true, playMd5String);
 
-    } else if (model.type == ChatTypeModel.MESSAGE_TYPE_SELECT) {
+    } else if (widget.model.type == ChatTypeModel.MESSAGE_TYPE_SELECT) {
 
       // -----------------------------------------------可选择的列表-临时----------------------------------------------
-      return getSelectMsgData(model.content);
+      return getSelectMsgData(widget.model.content);
 
     } else {
       return new Text('未知消息');
@@ -179,7 +155,7 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
 
   //显示正式消息
   Widget notTemporaryData() {
-    Message msg = model.msg;
+    Message msg = widget.model.msg;
     if (msg == null) {
       print(msg.toString() + "为空");
       return Container();
@@ -247,13 +223,13 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
 
         //-------------------------------------------------图片消息--------------------------------------------
         Map<String, dynamic> map = json.decode(mapModel["data"]);
-        return getImgVideoMsg(isTemporary: false, isImg:true, mediaFileModel: model.mediaFileModel, sizeInfoMap: map);
+        return getImgVideoMsg(isTemporary: false, isImg:true, mediaFileModel: widget.model.mediaFileModel, sizeInfoMap: map);
 
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
 
         //-------------------------------------------------视频消息--------------------------------------------
         Map<String, dynamic> map = json.decode(mapModel["data"]);
-        return getImgVideoMsg(isTemporary: false, isImg:false, mediaFileModel: model.mediaFileModel, sizeInfoMap: map);
+        return getImgVideoMsg(isTemporary: false, isImg:false, mediaFileModel: widget.model.mediaFileModel, sizeInfoMap: map);
 
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
 
@@ -346,7 +322,7 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
   }
 
   String getChatUserName(String uId, String name) {
-    if (isShowChatUserName) {
+    if (widget.isShowChatUserName) {
       // print("uId:$uId---Application.chatGroupUserModelMap:${Application.chatGroupUserModelMap.toString()}");
       String userName = Application.chatGroupUserModelMap[uId];
       if (userName == null) {
@@ -359,9 +335,9 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
   }
 
   bool isCanLongClick() {
-    return conversationDtoType != LIVE_TYPE &&
-        conversationDtoType != OFFICIAL_TYPE &&
-        conversationDtoType != TRAINING_TYPE;
+    return widget.conversationDtoType != LIVE_TYPE &&
+        widget.conversationDtoType != OFFICIAL_TYPE &&
+        widget.conversationDtoType != TRAINING_TYPE;
   }
 
   //************************获取消息模块的方法 ----end
@@ -378,11 +354,11 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
         sendTime: sendTime,
         sendChatUserId: sendChatUserId,
         isCanLongClick: isCanLongClick(),
-        isShowChatUserName: isShowChatUserName,
+        isShowChatUserName: widget.isShowChatUserName,
         mentionedInfo: mentionedInfo,
-        voidMessageClickCallBack: voidMessageClickCallBack,
-        voidItemLongClickCallBack: voidItemLongClickCallBack,
-        position: position,
+        voidMessageClickCallBack: widget.voidMessageClickCallBack,
+        voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
+        position: widget.position,
         status: status);
   }
 
@@ -397,10 +373,10 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
         sendTime: sendTime,
         sendChatUserId: sendChatUserId,
         isCanLongClick: isCanLongClick(),
-        isShowChatUserName: isShowChatUserName,
-        voidMessageClickCallBack: voidMessageClickCallBack,
-        voidItemLongClickCallBack: voidItemLongClickCallBack,
-        position: position,
+        isShowChatUserName: widget.isShowChatUserName,
+        voidMessageClickCallBack: widget.voidMessageClickCallBack,
+        voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
+        position: widget.position,
         status: status);
   }
 
@@ -414,10 +390,10 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
         sendTime: sendTime,
         sendChatUserId: sendChatUserId,
         isCanLongClick: isCanLongClick(),
-        isShowChatUserName: isShowChatUserName,
-        voidMessageClickCallBack: voidMessageClickCallBack,
-        voidItemLongClickCallBack: voidItemLongClickCallBack,
-        position: position,
+        isShowChatUserName: widget.isShowChatUserName,
+        voidMessageClickCallBack: widget.voidMessageClickCallBack,
+        voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
+        position: widget.position,
         status: status);
   }
 
@@ -439,10 +415,10 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
         sendTime: sendTime,
         sendChatUserId: sendChatUserId,
         isCanLongClick: isCanLongClick(),
-        isShowChatUserName: isShowChatUserName,
-        voidMessageClickCallBack: voidMessageClickCallBack,
-        voidItemLongClickCallBack: voidItemLongClickCallBack,
-        position: position,
+        isShowChatUserName: widget.isShowChatUserName,
+        voidMessageClickCallBack: widget.voidMessageClickCallBack,
+        voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
+        position: widget.position,
         status: status);
   }
 
@@ -459,10 +435,10 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
         sendTime: sendTime,
         sendChatUserId: sendChatUserId,
         isCanLongClick: isCanLongClick(),
-        isShowChatUserName: isShowChatUserName,
-        voidMessageClickCallBack: voidMessageClickCallBack,
-        voidItemLongClickCallBack: voidItemLongClickCallBack,
-        position: position,
+        isShowChatUserName: widget.isShowChatUserName,
+        voidMessageClickCallBack: widget.voidMessageClickCallBack,
+        voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
+        position: widget.position,
         status: status);
   }
 
@@ -477,10 +453,10 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
         sendTime: sendTime,
         sendChatUserId: sendChatUserId,
         isCanLongClick: isCanLongClick(),
-        isShowChatUserName: isShowChatUserName,
-        voidMessageClickCallBack: voidMessageClickCallBack,
-        voidItemLongClickCallBack: voidItemLongClickCallBack,
-        position: position,
+        isShowChatUserName: widget.isShowChatUserName,
+        voidMessageClickCallBack: widget.voidMessageClickCallBack,
+        voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
+        position: widget.position,
         status: status);
   }
 
@@ -503,10 +479,10 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
       mediaFileModel: mediaFileModel,
       imageMessage: imageMessage,
       sizeInfoMap: sizeInfoMap,
-      isShowChatUserName: isShowChatUserName,
-      voidMessageClickCallBack: voidMessageClickCallBack,
-      voidItemLongClickCallBack: voidItemLongClickCallBack,
-      position: position,
+      isShowChatUserName: widget.isShowChatUserName,
+      voidMessageClickCallBack: widget.voidMessageClickCallBack,
+      voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
+      position: widget.position,
     );
   }
 
@@ -515,11 +491,11 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
   Widget getAlertMsg({Map<String,
       dynamic> map, RecallNotificationMessage recallNotificationMessage}) {
     return AlertMsg(
-      position: position,
-      chatUserName: chatUserName,
-      isShowChatUserName: isShowChatUserName,
-      voidMessageClickCallBack: voidMessageClickCallBack,
-      voidItemLongClickCallBack: voidItemLongClickCallBack,
+      position: widget.position,
+      chatUserName: widget.chatUserName,
+      isShowChatUserName: widget.isShowChatUserName,
+      voidMessageClickCallBack: widget.voidMessageClickCallBack,
+      voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
       map: map,
       recallNotificationMessage: recallNotificationMessage,
     );

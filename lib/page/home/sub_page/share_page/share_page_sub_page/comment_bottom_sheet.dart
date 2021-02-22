@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/commentInputBox.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/page/training/common/common_comment_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
@@ -19,14 +20,17 @@ class CommentBottomSheet extends StatefulWidget {
   // 动态id
   int feedId;
 
-  CommentBottomSheetState createState() => CommentBottomSheetState();
+  CommentBottomSheetState createState() => CommentBottomSheetState(feedId: feedId);
 }
 
-class CommentBottomSheetState extends State<CommentBottomSheet> {
-
+class CommentBottomSheetState extends XCState
+// State<CommentBottomSheet>
+{
+  CommentBottomSheetState({this.feedId});
   // 列表监听
   ScrollController _controller = new ScrollController();
-
+  // 动态id
+  int feedId;
   //上拉加载数据
   RefreshController _refreshController = RefreshController(initialRefresh: false);
   GlobalKey<CommonCommentPageState> childKey = GlobalKey();
@@ -37,7 +41,6 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
     print('================================底部弹窗dispose');
     super.dispose();
   }
-
   //底部或滑动
   Widget footerWidget() {
     return CustomFooter(
@@ -68,8 +71,7 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
 
   // 创建中间视图
   createMiddleView() {
-
-    print(context.select((FeedMapNotifier value) => value.feedMap[widget.feedId].totalCount));
+    // print(context.select((FeedMapNotifier value) => value.feedMap[feedId].totalCount));
     return Expanded(
       child:NotificationListener<ScrollNotification>(
         onNotification: _onDragNotification,
@@ -87,8 +89,8 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
                   key: childKey,
                   scrollController: _controller,
                   refreshController: _refreshController,
-                  targetId: widget.feedId,
-                  pushId: context.watch<FeedMapNotifier>().feedMap[widget.feedId].pushId,
+                  targetId: feedId,
+                  pushId: context.read<FeedMapNotifier>().feedMap[feedId].pushId,
                   targetType: 0,
                   pageCommentSize: 20,
                   pageSubCommentSize: 3,
@@ -107,9 +109,68 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
     return false;
   }
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Container(
+  //     child: Column(
+  //       children: <Widget>[
+  //         Container(
+  //           height: 48,
+  //           decoration: BoxDecoration(
+  //             border: Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
+  //           ),
+  //           child: Stack(
+  //             overflow: Overflow.clip,
+  //             children: [
+  //               // context.watch<FeedMapNotifier>().feedMap[widget.feedId].totalCount != -1
+  //               //     ?
+  //               Positioned(
+  //                       left: 16,
+  //                       top: 17,
+  //                       // DynamicModelNotifier
+  //                       child: Selector<FeedMapNotifier, int>(builder: (context, totalCount, child) {
+  //                         return Text(
+  //                           "共${StringUtil.getNumber(totalCount)}条评论",
+  //                           style: AppStyle.textRegular12,
+  //                         );
+  //                       }, selector: (context, notifier) {
+  //                         return notifier.feedMap[widget.feedId].totalCount;
+  //                       }),
+  //                       // Text(
+  //                       //    "共${commentModel != [] ?  commentModel[0].totalCount : 0}条评论",
+  //                       //   style: TextStyle(fontSize: 14),
+  //                       // )
+  //                     )
+  //                   // : Container()
+  //               ,
+  //               Positioned(
+  //                   top: 15,
+  //                   right: 16,
+  //                   child: GestureDetector(
+  //                     child: Image.asset("images/resource/2.0x/ic_big_nav_closepage@2x.png", width: 18, height: 18),
+  //                     onTap: () {
+  //                       Navigator.pop(context, true);
+  //                     },
+  //                   ))
+  //             ],
+  //           ),
+  //         ),
+  //         createMiddleView(),
+  //         CommentInputBox(
+  //           isUnderline: true,
+  //           feedModel: context.watch<FeedMapNotifier>().feedMap[widget.feedId],
+  //         ),
+  //         SizedBox(
+  //           height: ScreenUtil.instance.bottomHeight,
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
+
   @override
-  Widget build(BuildContext context) {
-    print('**********************************评论抽屉build、');
+  Widget shouldBuild(BuildContext context) {
+    print("底部弹窗抽屉");
     return Container(
       child: Column(
         children: <Widget>[
@@ -124,23 +185,23 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
                 // context.watch<FeedMapNotifier>().feedMap[widget.feedId].totalCount != -1
                 //     ?
                 Positioned(
-                        left: 16,
-                        top: 17,
-                        // DynamicModelNotifier
-                        child: Selector<FeedMapNotifier, int>(builder: (context, totalCount, child) {
-                          return Text(
-                            "共${StringUtil.getNumber(totalCount)}条评论",
-                            style: AppStyle.textRegular12,
-                          );
-                        }, selector: (context, notifier) {
-                          return notifier.feedMap[widget.feedId].totalCount;
-                        }),
-                        // Text(
-                        //    "共${commentModel != [] ?  commentModel[0].totalCount : 0}条评论",
-                        //   style: TextStyle(fontSize: 14),
-                        // )
-                      )
-                    // : Container()
+                  left: 16,
+                  top: 17,
+                  // DynamicModelNotifier
+                  child: Selector<FeedMapNotifier, int>(builder: (context, totalCount, child) {
+                    return Text(
+                      "共${StringUtil.getNumber(totalCount)}条评论",
+                      style: AppStyle.textRegular12,
+                    );
+                  }, selector: (context, notifier) {
+                    return notifier.feedMap[feedId].totalCount;
+                  }),
+                  // Text(
+                  //    "共${commentModel != [] ?  commentModel[0].totalCount : 0}条评论",
+                  //   style: TextStyle(fontSize: 14),
+                  // )
+                )
+                // : Container()
                 ,
                 Positioned(
                     top: 15,
@@ -157,7 +218,7 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
           createMiddleView(),
           CommentInputBox(
             isUnderline: true,
-            feedModel: context.watch<FeedMapNotifier>().feedMap[widget.feedId],
+            feedModel: context.watch<FeedMapNotifier>().feedMap[feedId],
           ),
           SizedBox(
             height: ScreenUtil.instance.bottomHeight,
