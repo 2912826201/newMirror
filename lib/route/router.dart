@@ -220,8 +220,10 @@ class AppRouter {
 
   static void popToBeforeLogin(BuildContext context) {
     if (Application.loginPopRouteName != null) {
+      print('========================loginPopRouteName${Application.loginPopRouteName}');
       Navigator.of(context).popUntil(ModalRoute.withName(Application.loginPopRouteName));
     } else {
+      print('=========================pathIfPage');
       Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
     }
   }
@@ -458,30 +460,20 @@ class AppRouter {
   static void navigateToHeightAndWeigetPage(BuildContext context) {
     _navigateToPage(context, pathHeightAndWeigetPage, {});
   }
-  static void navigateToFitnessTargetPage(BuildContext context, FitnessEntryModel model) {
-    Map<String, dynamic> map = Map();
-    map["model"] = model.toJson();
-    _navigateToPage(context, pathFitnessTargetPage, map);
+  static void navigateToFitnessTargetPage(BuildContext context) {
+    _navigateToPage(context, pathFitnessTargetPage, {});
   }
-  static void navigateToFitnessPartPage(BuildContext context, FitnessEntryModel model) {
-    Map<String, dynamic> map = Map();
-    map["model"] = model.toJson();
-    _navigateToPage(context, pathFitnessPartPage, map);
+  static void navigateToFitnessPartPage(BuildContext context) {
+    _navigateToPage(context, pathFitnessPartPage, {});
   }
-  static void navigateToFitnessLevelPage(BuildContext context, FitnessEntryModel model) {
-    Map<String, dynamic> map = Map();
-    map["model"] = model.toJson();
-    _navigateToPage(context, pathFitnessLevelPage, map);
+  static void navigateToFitnessLevelPage(BuildContext context) {
+    _navigateToPage(context, pathFitnessLevelPage, {});
   }
-  static void navigateToBodyTypePage(BuildContext context, FitnessEntryModel model) {
-    Map<String, dynamic> map = Map();
-    map["model"] = model.toJson();
-    _navigateToPage(context, pathBodyTypePage, map);
+  static void navigateToBodyTypePage(BuildContext context) {
+    _navigateToPage(context, pathBodyTypePage, {});
   }
-  static void navigateToTrainSeveralPage(BuildContext context, FitnessEntryModel model) {
-    Map<String, dynamic> map = Map();
-    map["model"] = model.toJson();
-    _navigateToPage(context, pathTrainSeveralPage, map);
+  static void navigateToTrainSeveralPage(BuildContext context) {
+    _navigateToPage(context, pathTrainSeveralPage, {});
   }
   static void navigateToReleasePage(BuildContext context) {
     Map<String, dynamic> map = Map();

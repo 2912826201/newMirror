@@ -1,22 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/data/model/profile/fitness_entry_model.dart';
-import 'package:mirror/page/profile/fitness_information_entry/fitness_target_page.dart';
-import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
-import 'package:provider/provider.dart';
 class BodyTypePage extends StatefulWidget {
-  FitnessEntryModel model;
-  BodyTypePage({this.model});
   @override
   State<StatefulWidget> createState() {
-    return _BodyTypeState(model: model);
+    return _BodyTypeState();
   }
 }
 
@@ -24,8 +19,6 @@ class _BodyTypeState extends State<BodyTypePage> {
   int startSize = 10;
   int endSize = 14;
   int bodyType = 1;
-  FitnessEntryModel model;
-  _BodyTypeState({this.model});
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -91,9 +84,8 @@ class _BodyTypeState extends State<BodyTypePage> {
                 backColor: AppColor.bgBlack,
                 color: AppColor.transparent,
                 onTap: (){
-                  model.bodyType = bodyType;
-                /*  context.read<FitnessInformationNotifier>().setBodyType(bodyType);*/
-                  AppRouter.navigateToFitnessTargetPage(context, model);
+                  Application.fitnessEntryModel.bodyType = bodyType;
+                  AppRouter.navigateToFitnessTargetPage(context);
                 },
               ),),
           ],

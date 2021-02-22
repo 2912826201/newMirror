@@ -313,7 +313,8 @@ class _SmsCodePageState extends LoginBasePageState {
     _getMoreInfo();
 
     //页面跳转至登录前的页面
-    AppRouter.popToBeforeLogin(context);
+    /*AppRouter.popToBeforeLogin(context);*/
+    AppRouter.navigateToLoginSucess(context);
   }
 
   _getMoreInfo() async {

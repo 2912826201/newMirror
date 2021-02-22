@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:fluro/fluro.dart';
@@ -127,6 +128,7 @@ class Application {
   // 定位所在城市Id
   static String cityId = "targetCityId";
 
+  static FitnessEntryModel fitnessEntryModel = FitnessEntryModel();
   //公共登出方法
   static appLogout({bool isKicked = false}) async {
     //先取个匿名token

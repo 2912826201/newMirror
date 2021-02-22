@@ -228,33 +228,27 @@ var handlerHeightAndWeigetPage = Handler(handlerFunc: (BuildContext context, Map
   return HeightAndWeightPage();
 });
 var handlerFitnessLevelPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return FitnessLevelPage(
-   model: FitnessEntryModel.fromJson(data["model"]),
   );
 });
 var handlerFitnessTargetPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return FitnessTargetPage(
-    model: FitnessEntryModel.fromJson(data["model"]),
   );
 });
 var handlerFitnesspartPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return FitnesspartPage(
-    model: FitnessEntryModel.fromJson(data["model"]),
   );
 });
 var handlerBodyTypePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return BodyTypePage(
-    model: FitnessEntryModel.fromJson(data["model"]),
   );
 });
 var handlerTrainSeveralTimes = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return TrainSeveralTimes(
-    model: FitnessEntryModel.fromJson(data["model"]),
   );
 });
 var handlerTrainingRecord = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {

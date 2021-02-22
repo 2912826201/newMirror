@@ -14,19 +14,15 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:provider/provider.dart';
 class FitnessLevelPage extends StatefulWidget{
-  FitnessEntryModel model;
-  FitnessLevelPage({this.model});
   @override
   State<StatefulWidget> createState() {
-    return _FitnessLevelState(model:model);
+    return _FitnessLevelState();
   }
 
 }
 class _FitnessLevelState extends State<FitnessLevelPage>{
   List<SubTagModel> levelList;
   int beforIndex;
-  FitnessEntryModel model;
-  _FitnessLevelState({this.model});
   @override
   void initState() {
     // TODO: implement initState
@@ -90,10 +86,10 @@ class _FitnessLevelState extends State<FitnessLevelPage>{
                 setState(() {
                   beforIndex = index;
                 });
-                model.hard = index;
+               Application.fitnessEntryModel.hard = index;
               /*context.read<FitnessInformationNotifier>().setHard(index);*/
               print('index===============================$index');
-             AppRouter.navigateToFitnessPartPage(context, model);
+             AppRouter.navigateToFitnessPartPage(context);
             },
             child: Container(
             height: 95,

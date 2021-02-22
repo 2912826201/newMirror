@@ -11,19 +11,15 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:provider/provider.dart';
 class FitnessTargetPage extends StatefulWidget{
-  FitnessEntryModel model;
-  FitnessTargetPage({this.model});
   @override
   State<StatefulWidget> createState() {
-   return _FitnessTargetState(model: this.model);
+   return _FitnessTargetState();
   }
 
 }
 class _FitnessTargetState extends State<FitnessTargetPage>{
   List<SubTagModel> targetList = [];
   int beforIndex;
-  FitnessEntryModel model;
-  _FitnessTargetState({this.model});
   @override
   void initState() {
     // TODO: implement initState
@@ -97,9 +93,9 @@ class _FitnessTargetState extends State<FitnessTargetPage>{
         onTap: (){
          setState(() {
            beforIndex=index;
-           model.target = targetList[index].id-1;
+           Application.fitnessEntryModel.target = targetList[index].id-1;
            /*context.read<FitnessInformationNotifier>().setTarget(targetList[index].id-1);*/
-           AppRouter.navigateToFitnessLevelPage(context, model);
+           AppRouter.navigateToFitnessLevelPage(context);
          });
         },
       child: Container(

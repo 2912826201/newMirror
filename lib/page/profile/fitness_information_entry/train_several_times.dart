@@ -13,11 +13,9 @@ import 'package:mirror/widget/loading.dart';
 import 'package:provider/provider.dart';
 
 class TrainSeveralTimes extends StatefulWidget{
-  FitnessEntryModel model;
-  TrainSeveralTimes({this.model});
   @override
   State<StatefulWidget> createState() {
-    return _TrainSeveralTimesState(model: model);
+    return _TrainSeveralTimesState();
   }
 
 }
@@ -25,8 +23,6 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes>{
   bool three = false;
   bool four = false;
   bool fives = false;
-  FitnessEntryModel model;
-  _TrainSeveralTimesState({this.model});
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -111,15 +107,15 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes>{
                 switch(type){
                   case 3:
                      three = true;
-                     model.timesOfWeek = 3;
+                     Application.fitnessEntryModel.timesOfWeek = 3;
                     break;
                   case 4:
                       four = true;
-                     model.timesOfWeek = 4;
+                      Application.fitnessEntryModel.timesOfWeek = 4;
                     break;
                   case 5:
                       fives = true;
-                      model.timesOfWeek = 5;
+                      Application.fitnessEntryModel.timesOfWeek = 5;
                     break;
                 }
               });
@@ -130,13 +126,13 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes>{
 
       _fitnessEntry()async{
     FitnessEntryModel getModel = await userFitnessEntry(
-      height: model.height,
-      weight: model.weight,
-      bodyType: model.bodyType,
-      target: model.target,
-      level: model.hard,
-      keyPartList: model.keyPartList,
-      timesOfWeek: model.timesOfWeek
+      height: Application.fitnessEntryModel.height,
+      weight: Application.fitnessEntryModel.weight,
+      bodyType: Application.fitnessEntryModel.bodyType,
+      target: Application.fitnessEntryModel.target,
+      level: Application.fitnessEntryModel.hard,
+      keyPartList: Application.fitnessEntryModel.keyPartList,
+      timesOfWeek: Application.fitnessEntryModel.timesOfWeek
     );
       if(getModel!=null){
         print('===============================健身信息录入成功');
