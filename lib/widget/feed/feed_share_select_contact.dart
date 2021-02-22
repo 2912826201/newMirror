@@ -527,7 +527,7 @@ class _FriendsPageState extends State<FriendsPage> {
   //获取网络数据好友
   void getNetData() async {
     print("获取网络数据好友");
-    BuddyListModel listModel = await GetFollowBothList(100, lastTime: followListModel.lastTime);
+    BuddyListModel listModel = await getFollowBothList(100, lastTime: followListModel.lastTime);
     followListModel.list.addAll(listModel.list);
     followListModel.lastTime = listModel.lastTime;
 

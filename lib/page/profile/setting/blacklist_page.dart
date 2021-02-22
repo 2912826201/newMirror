@@ -116,7 +116,7 @@ class _BlackListState extends State<BlackListPage>{
           Center(
             child: Text(blackList[index].nickName,style:AppStyle.textRegular16,),
           ),
-          Expanded(child: SizedBox()),
+          Spacer(),
            Center(
               child:InkWell(
                 onTap: (){

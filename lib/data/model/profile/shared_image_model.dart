@@ -15,7 +15,7 @@ class SharedImageModel{
 
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
-    map["file"] = file;
+    map["file"] = file.path;
     map["height"] = height;
     map["width"] = width;
     return map;

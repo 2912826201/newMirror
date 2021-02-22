@@ -8,6 +8,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
@@ -15,7 +16,7 @@ import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/loading_progress.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-
+import 'package:provider/provider.dart';
 ///私人聊天-更多界面--管家-系统消息
 class PrivateMorePage extends StatefulWidget {
   ///对话用户id
@@ -278,6 +279,13 @@ class PrivateMorePageState extends State<PrivateMorePage> {
           dismissProgressDialog();
         });
       }
+      print('====================================接下来走个人主页的方法');
+      if(context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(int.parse(widget.chatUserId))){
+        print('====================================个人主页的方法进了');
+        context.read<ProfilePageNotifier>().changeIsFollow(true, true, int.parse(widget.chatUserId));
+        context.read<ProfilePageNotifier>().changeBlack(true,int.parse( widget.chatUserId),1);
+      }
+      print('====================================个人主页的方法完了');
     } else {
       ToastShow.show(msg: "拉黑失败", context: context);
       dismissProgressDialog();
@@ -295,6 +303,9 @@ class PrivateMorePageState extends State<PrivateMorePage> {
         setState(() {
           dismissProgressDialog();
         });
+      }
+      if(context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(int.parse(widget.chatUserId))){
+        context.read<ProfilePageNotifier>().changeBlack(true,int.parse( widget.chatUserId),0);
       }
     } else {
       ToastShow.show(msg: "解除拉黑失败", context: context);

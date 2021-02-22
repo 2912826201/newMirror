@@ -1,11 +1,15 @@
+import 'package:azlistview/azlistview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lpinyin/lpinyin.dart';
 import 'package:mirror/api/message_api.dart';
+import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/database/conversation_db_helper.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
+import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
@@ -33,6 +37,47 @@ class _CreateGroupPopup extends StatefulWidget {
 class _CreateGroupPopupState extends State<_CreateGroupPopup> {
   final TextEditingController controller = TextEditingController();
   final FocusNode focusNode = FocusNode();
+  List<BuddyModel> _friendList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _getFriendList();
+  }
+
+  _getFriendList({int lastTime}) async {
+    BuddyListModel listModel;
+    if (lastTime == null) {
+      listModel = await getFollowBothList(100);
+    } else {
+      listModel = await getFollowBothList(100, lastTime: lastTime);
+    }
+    if (listModel != null) {
+      _friendList.addAll(listModel.list);
+      if (listModel.hasNext == 1) {
+        _getFriendList(lastTime: listModel.lastTime);
+      } else {
+        _sortFriendList();
+        if (mounted) {
+          setState(() {});
+        }
+      }
+    }
+  }
+
+  _sortFriendList(){
+    _friendList.forEach((friend) {
+      String pinyin = PinyinHelper.getPinyinE(friend.nickName);
+      String tag = pinyin.substring(0, 1).toUpperCase();
+      if (RegExp('[A-Z]').hasMatch(tag)) {
+        friend.tagIndex = tag;
+      } else {
+        friend.tagIndex = '#';
+      }
+    });
+    SuspensionUtil.sortListBySuspensionTag(_friendList);
+    SuspensionUtil.setShowSuspensionStatus(_friendList);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +134,9 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
             ],
           ),
         ),
-        SizedBox(height: 10,),
+        SizedBox(
+          height: 10,
+        ),
         Container(
           height: 48,
           child: Row(
@@ -106,7 +153,10 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
               SizedBox(
                 width: 4,
               ),
-              Text("已加入的群聊", style: AppStyle.textRegular16,),
+              Text(
+                "已加入的群聊",
+                style: AppStyle.textRegular16,
+              ),
               Spacer(),
               Icon(
                 Icons.chevron_right,
@@ -116,7 +166,16 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
             ],
           ),
         ),
-        Expanded(child: Container()),
+        Expanded(child: Container(
+          child: AzListView(
+            data: _friendList,
+            itemCount: _friendList.length,
+            padding: EdgeInsets.zero,
+            itemBuilder: _buildItem,
+            susItemBuilder: _buildHeader,
+            indexBarData: [],
+          ),
+        )),
         GestureDetector(
           onTap: _createGroupOrGoToChat,
           child: Container(
@@ -162,5 +221,13 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
     }
 
     Navigator.pop(context);
+  }
+
+  Widget _buildItem(BuildContext context, int index) {
+    return Text(_friendList[index].nickName, style: AppStyle.textRegular16,);
+  }
+
+  Widget _buildHeader(BuildContext context, int index) {
+    return Text(_friendList[index].getSuspensionTag(), style: AppStyle.redRegular16,);
   }
 }

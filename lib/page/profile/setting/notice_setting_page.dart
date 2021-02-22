@@ -123,12 +123,7 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
             children: [
               InkWell(
                 onTap: () {
-                  // if(!Platform.isIOS){
-                  //   SystemSetting.goto(SettingTarget.NOTIFICATION);
-                  // }else{
                   AppSettings.openNotificationSettings();
-                  // _iosGetNotice();
-                  // }
                 },
                 child: _getNotice(),
               ),

@@ -1610,6 +1610,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           if (mounted) {
             setState(() {});
           }
+          context.read<ProfilePageNotifier>().changeIsFollow(true,false, int.parse(chatUserId));
         }
       }
       ToastShow.show(msg: text, context: context);
