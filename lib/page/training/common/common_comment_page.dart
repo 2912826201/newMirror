@@ -141,16 +141,22 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     courseCommentHot = null;
     courseCommentTime = null;
     isHotOrTime = true;
+
     loadingStatusComment = LoadingStatus.STATUS_LOADING;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      getDataAction();
+      if (!widget.isShowHotOrTime) {
+        Future.delayed(Duration(milliseconds: 200), () async {
+          getDataAction();
+        });
+      } else {
+        getDataAction();
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     print("11111111111111111111111111111111111111");
-
 
     if (courseCommentHot != null && isFirstScroll && widget.commentDtoModel != null) {
       Future.delayed(Duration(milliseconds: 100), () async {
@@ -777,7 +783,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       replyCommentId: replyCommentId > 0 ? replyCommentId : null,
       commentModelCallback: (BaseResponseModel baseResponseModel) {
         if (baseResponseModel.code == CODE_BLACKED) {
-          ToastShow.show(msg: "发布失败，你已被对方加入黑名单", context: context,gravity: Toast.CENTER);
+          ToastShow.show(msg: "发布失败，你已被对方加入黑名单", context: context, gravity: Toast.CENTER);
         } else {
           if (baseResponseModel.data != null) {
             CommentDtoModel model;
@@ -993,7 +999,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         }
 
         setCommentListSubSetting(courseCommentHot, isFold: isFold);
-        if (widget.commentDtoModel != null &&widget.fatherComment != null && isFirstScroll && mounted) {
+        if (widget.commentDtoModel != null && widget.fatherComment != null && isFirstScroll && mounted) {
           onClickAddSubComment(courseCommentHot.list[choseIndex], choseIndex);
         }
         widget.refreshController.loadComplete();
