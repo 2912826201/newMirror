@@ -1,9 +1,10 @@
-
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/database/download_video_course_db_helper.dart';
@@ -38,10 +39,10 @@ import 'package:mirror/constant/constants.dart';
 class VideoDetailPage extends StatefulWidget {
   const VideoDetailPage(
       {Key key,
+        @required this.videoCourseId,
         this.heroTag,
         this.commentDtoModel,
         this.fatherComment,
-        this.videoCourseId,
         this.videoModel})
       : super(key: key);
 
@@ -53,16 +54,18 @@ class VideoDetailPage extends StatefulWidget {
 
   @override
   createState() {
-    return VideoDetailPageState(videoModel: videoModel,heroTag:heroTag,
-        videoCourseId:videoCourseId,commentDtoModel:commentDtoModel,
-        fatherComment:fatherComment);
+    return VideoDetailPageState(
+        videoModel: videoModel,
+        heroTag: heroTag,
+        videoCourseId: videoCourseId,
+        commentDtoModel: commentDtoModel,
+        fatherComment: fatherComment);
   }
 }
 
 class VideoDetailPageState extends XCState {
-  VideoDetailPageState({Key key, this.videoModel,
-    this.heroTag,this.videoCourseId,this.commentDtoModel,this.fatherComment});
-
+  VideoDetailPageState(
+      {Key key, this.videoModel, this.heroTag, this.videoCourseId, this.commentDtoModel, this.fatherComment});
 
   String heroTag;
   int videoCourseId;
@@ -115,10 +118,8 @@ class VideoDetailPageState extends XCState {
   //粘合剂控件滚动控制
   ScrollController scrollController = ScrollController();
 
-
   GlobalKey<CommonCommentPageState> childKey = GlobalKey();
-  List<GlobalKey> globalKeyList=<GlobalKey>[];
-
+  List<GlobalKey> globalKeyList = <GlobalKey>[];
 
   //判断用户登陆没有
   bool isLoggedIn;
@@ -126,21 +127,25 @@ class VideoDetailPageState extends XCState {
   //判断是否绑定了终端
   bool bindingTerminal;
 
-  String pageName="VideoDetailPage";
+  String pageName = "VideoDetailPage";
 
   @override
   void initState() {
     super.initState();
 
     context.read<FeedFlowDataNotifier>().clear();
-    isLoggedIn=context.read<TokenNotifier>().isLoggedIn;
-    bindingTerminal=context.read<MachineNotifier>().machine!=null;
+    isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
+    bindingTerminal = context.read<MachineNotifier>().machine != null;
 
+    //如果已登录且有关联的机器 发送指令让机器跳转页面
+    if(isLoggedIn && Application.machine != null){
+      openVideoCourseDetailPage(Application.machine.machineId, videoCourseId);
+    }
 
-    if(videoModel==null) {
+    if (videoModel == null) {
       loadingStatus = LoadingStatus.STATUS_LOADING;
-    }else{
-      if(videoModel.isInMyCourseList!=null) {
+    } else {
+      if (videoModel.isInMyCourseList != null) {
         isFavor = videoModel.isInMyCourseList == 1;
       }
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
@@ -183,7 +188,7 @@ class VideoDetailPageState extends XCState {
               child: Text("加载失败"),
               onTap: () {
                 loadingStatus = LoadingStatus.STATUS_LOADING;
-                if(mounted){
+                if (mounted) {
                   reload(() {});
                 }
                 getDataAction();
@@ -210,7 +215,7 @@ class VideoDetailPageState extends XCState {
           children: [
             Container(
               width: double.infinity,
-              height: MediaQuery.of(context).size.height - 50-ScreenUtil.instance.bottomBarHeight,
+              height: MediaQuery.of(context).size.height - 50 - ScreenUtil.instance.bottomBarHeight,
               child: ScrollConfiguration(
                 behavior: NoBlueEffectBehavior(),
                 child: NotificationListener<ScrollNotification>(
@@ -221,7 +226,7 @@ class VideoDetailPageState extends XCState {
             ),
             Container(
               width: double.infinity,
-              height: 50.0+ScreenUtil.instance.bottomBarHeight,
+              height: 50.0 + ScreenUtil.instance.bottomBarHeight,
               padding: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
               color: AppColor.white,
               child: _getBottomBar(),
@@ -232,16 +237,15 @@ class VideoDetailPageState extends XCState {
     );
   }
 
-
   //获取上拉下拉加载
   Widget getSmartRefresher() {
     globalKeyList.clear();
-    GlobalKey globalKey0=new GlobalKey();
-    GlobalKey globalKey1=new GlobalKey();
-    GlobalKey globalKey2=new GlobalKey();
-    GlobalKey globalKey3=new GlobalKey();
-    GlobalKey globalKey4=new GlobalKey();
-    GlobalKey globalKey5=new GlobalKey();
+    GlobalKey globalKey0 = new GlobalKey();
+    GlobalKey globalKey1 = new GlobalKey();
+    GlobalKey globalKey2 = new GlobalKey();
+    GlobalKey globalKey3 = new GlobalKey();
+    GlobalKey globalKey4 = new GlobalKey();
+    GlobalKey globalKey5 = new GlobalKey();
     globalKeyList.add(globalKey0);
     globalKeyList.add(globalKey1);
     globalKeyList.add(globalKey2);
@@ -253,7 +257,7 @@ class VideoDetailPageState extends XCState {
       enablePullUp: true,
       footer: footerWidget(),
       controller: _refreshController,
-      onLoading: (){
+      onLoading: () {
         childKey.currentState.onLoading();
       },
       child: CustomScrollView(
@@ -278,12 +282,13 @@ class VideoDetailPageState extends XCState {
               globalKey: globalKeyList[0],
             ),
           ),
-          getTitleWidget(videoModel, context,globalKeyList[1]),
-          getCoachItem(videoModel, context, onClickAttention, onClickCoach,globalKeyList[2]),
+          getTitleWidget(videoModel, context, globalKeyList[1]),
+          getCoachItem(videoModel, context, onClickAttention, onClickCoach, globalKeyList[2]),
           getLineView(),
-          getTrainingEquipmentUi(videoModel, context, titleTextStyle,globalKeyList[3]),
-          getActionUiVideo(videoModel, context, titleTextStyle,globalKeyList[4]),
-          getOtherUsersUi(recommendTopicList, context, titleTextStyle, onClickOtherComplete, globalKeyList[5],pageName),
+          getTrainingEquipmentUi(videoModel, context, titleTextStyle, globalKeyList[3]),
+          getActionUiVideo(videoModel, context, titleTextStyle, globalKeyList[4]),
+          getOtherUsersUi(
+              recommendTopicList, context, titleTextStyle, onClickOtherComplete, globalKeyList[5], pageName),
           getLineView(),
           _getCourseCommentUi(),
           SliverToBoxAdapter(
@@ -308,33 +313,37 @@ class VideoDetailPageState extends XCState {
     );
   }
 
-
   //当用户登陆成功后需要刷新数据
   Widget userLoginComplete() {
     return Consumer<TokenNotifier>(
       builder: (context, notifier, child) {
-        if(!isLoggedIn&&notifier.isLoggedIn){
+        if (!isLoggedIn && notifier.isLoggedIn) {
           getDataAction();
+          //如果已登录且有关联的机器 发送指令让机器跳转页面
+          if(Application.machine != null){
+            openVideoCourseDetailPage(Application.machine.machineId, videoCourseId);
+          }
         }
-        isLoggedIn=notifier.isLoggedIn;
+        isLoggedIn = notifier.isLoggedIn;
         return child;
       },
       child: Container(),
     );
   }
+
   //当用户绑定设备后
   Widget userBindingTerminal() {
     return Consumer<MachineNotifier>(
       builder: (context, notifier, child) {
-        if(notifier.machine!=null){
-          bindingTerminal=true;
-          Future.delayed(Duration(milliseconds: 300),(){
-            if(mounted){
+        if (notifier.machine != null) {
+          bindingTerminal = true;
+          Future.delayed(Duration(milliseconds: 300), () {
+            if (mounted) {
               reload(() {});
             }
           });
-        }else{
-          bindingTerminal=false;
+        } else {
+          bindingTerminal = false;
         }
         return child;
       },
@@ -342,30 +351,27 @@ class VideoDetailPageState extends XCState {
     );
   }
 
-
-  Widget _getCourseCommentUi(){
-
+  Widget _getCourseCommentUi() {
     return SliverToBoxAdapter(
       child: Visibility(
-        visible: recommendLoadingStatus==LoadingStatus.STATUS_COMPLETED,
+        visible: recommendLoadingStatus == LoadingStatus.STATUS_COMPLETED,
         child: CommonCommentPage(
-          key:childKey,
+          key: childKey,
           scrollController: scrollController,
           refreshController: _refreshController,
-          fatherComment:fatherComment,
-          targetId:videoModel.id,
-          targetType:3,
-          pageCommentSize:20,
-          pageSubCommentSize:3,
-          isShowHotOrTime:true,
-          commentDtoModel:commentDtoModel,
-          isShowAt:false,
+          fatherComment: fatherComment,
+          targetId: videoModel.id,
+          targetType: 3,
+          pageCommentSize: 20,
+          pageSubCommentSize: 3,
+          isShowHotOrTime: true,
+          commentDtoModel: commentDtoModel,
+          isShowAt: false,
           globalKeyList: globalKeyList,
         ),
       ),
     );
   }
-
 
   //获取下载中的ui
   Widget getDownloadingUi(String text) {
@@ -441,18 +447,18 @@ class VideoDetailPageState extends XCState {
   //滑动的回调
   bool _onDragNotification(ScrollNotification notification) {
     ScrollMetrics metrics = notification.metrics;
-    childKey.currentState.scrollHeightOld=metrics.pixels;
+    childKey.currentState.scrollHeightOld = metrics.pixels;
     if (metrics.pixels < 10) {
       if (isBouncingScrollPhysics) {
         isBouncingScrollPhysics = false;
-        if(mounted){
+        if (mounted) {
           reload(() {});
         }
       }
     } else {
       if (!isBouncingScrollPhysics) {
         isBouncingScrollPhysics = true;
-        if(mounted){
+        if (mounted) {
           reload(() {});
         }
       }
@@ -462,7 +468,7 @@ class VideoDetailPageState extends XCState {
 
   //分享的点击事件
   void _shareBtnClick() {
-    if(!(context!=null&&context.read<TokenNotifier>().isLoggedIn)){
+    if (!(context != null && context.read<TokenNotifier>().isLoggedIn)) {
       ToastShow.show(msg: "请先登陆app!", context: context);
       AppRouter.navigateToLoginPage(context);
       return;
@@ -476,7 +482,7 @@ class VideoDetailPageState extends XCState {
 
   //收藏按钮
   void _favorBtnClick() async {
-    if(!(mounted&&context.read<TokenNotifier>().isLoggedIn)){
+    if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
       ToastShow.show(msg: "请先登陆app!", context: context);
       AppRouter.navigateToLoginPage(context);
       return;
@@ -485,7 +491,7 @@ class VideoDetailPageState extends XCState {
     Map<String, dynamic> map = await (!isFavor ? addToMyCourse : deleteFromMyCourse)(videoModel.id);
     if (map != null && map["state"] != null && map["state"]) {
       isFavor = !isFavor;
-      if(mounted){
+      if (mounted) {
         reload(() {});
       }
     }
@@ -513,7 +519,7 @@ class VideoDetailPageState extends XCState {
       }
       print("[${DateTime.now().millisecondsSinceEpoch}]taskId:$taskId; received:$received; total:$total; "
           "progress:$_progress; allDownLoadCount:$allDownLoadCount; completeDownCount:$completeDownCount");
-      if(mounted){
+      if (mounted) {
         reload(() {});
       }
     };
@@ -584,7 +590,6 @@ class VideoDetailPageState extends XCState {
 
   //获取底部按钮
   Widget _getBottomBar() {
-
     //todo 判断用户是不是vip
     bool isVip = false;
 
@@ -634,6 +639,7 @@ class VideoDetailPageState extends XCState {
                 onTap: () {
                   print("绑定了终端");
                   ToastShow.show(msg: "使用终端训练", context: context);
+                  startVideoCourse(Application.machine.machineId, videoCourseId);
                 },
               ),
             )));
@@ -744,7 +750,7 @@ class VideoDetailPageState extends XCState {
       );
       if (dataResponseModel != null && dataResponseModel.list != null && dataResponseModel.list.length > 0) {
         dataResponseModel.list.forEach((v) {
-          if(recommendTopicList.length<3) {
+          if (recommendTopicList.length < 3) {
             recommendTopicList.add(HomeFeedModel.fromJson(v));
           }
           context.read<FeedFlowDataNotifier>().homeFeedModelList.add(HomeFeedModel.fromJson(v));
@@ -756,25 +762,24 @@ class VideoDetailPageState extends XCState {
 
     recommendLoadingStatus = LoadingStatus.STATUS_COMPLETED;
 
-
     //获取视频详情数据
     //加载数据
     Map<String, dynamic> model = await getVideoCourseDetail(courseId: videoCourseId);
     if (model == null) {
       loadingStatus = LoadingStatus.STATUS_IDEL;
       Future.delayed(Duration(seconds: 1), () {
-        if(mounted){
+        if (mounted) {
           reload(() {});
         }
       });
     } else {
       videoModel = LiveVideoModel.fromJson(model);
 
-      if(videoModel.isInMyCourseList!=null) {
+      if (videoModel.isInMyCourseList != null) {
         isFavor = videoModel.isInMyCourseList == 1;
       }
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
-      if(mounted){
+      if (mounted) {
         reload(() {});
       }
     }
@@ -782,7 +787,7 @@ class VideoDetailPageState extends XCState {
 
   ///这是关注的方法
   onClickAttention() {
-    if(!(mounted&&context.read<TokenNotifier>().isLoggedIn)){
+    if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
       ToastShow.show(msg: "请先登陆app!", context: context);
       AppRouter.navigateToLoginPage(context);
       return;
@@ -798,7 +803,7 @@ class VideoDetailPageState extends XCState {
     print('关注监听=========================================$attntionResult');
     if (attntionResult == 1 || attntionResult == 3) {
       videoModel.coachDto?.relation = 1;
-      if(mounted){
+      if (mounted) {
         reload(() {});
       }
     }
@@ -811,56 +816,55 @@ class VideoDetailPageState extends XCState {
 
   ///点击了他人刚刚训练完成
   onClickOtherComplete(int onClickPosition) {
-    context.read<FeedFlowDataNotifier>().pageSelectPosition=onClickPosition;
-    double scrollHeight=specifyItemHeight(onClickPosition);
-    AppRouter.navigateToOtherCompleteCoursePage(context, videoModel.id,7,scrollHeight,pageName,duration: 1000);
+    context.read<FeedFlowDataNotifier>().pageSelectPosition = onClickPosition;
+    double scrollHeight = specifyItemHeight(onClickPosition);
+    AppRouter.navigateToOtherCompleteCoursePage(context, videoModel.id, 7, scrollHeight, pageName, duration: 1000);
   }
-
-
 
   //计算高度
   double specifyItemHeight(int onClickPosition) {
-    if(onClickPosition<1){
+    if (onClickPosition < 1) {
       return 0.0;
     }
-    double clickTopItemHeight=getClickTopItemHeight(onClickPosition);
-    double clickBottomItemHeight=judgeClickItemBottomHeightThenScreenHeight(onClickPosition);
-    if(clickBottomItemHeight>=ScreenUtil.instance.height){
+    double clickTopItemHeight = getClickTopItemHeight(onClickPosition);
+    double clickBottomItemHeight = judgeClickItemBottomHeightThenScreenHeight(onClickPosition);
+    if (clickBottomItemHeight >= ScreenUtil.instance.height) {
       return clickTopItemHeight;
-    }else{
-      return max(clickTopItemHeight-((ScreenUtil.instance.height-44-ScreenUtil.instance.statusBarHeight)-clickBottomItemHeight), 0.0);
+    } else {
+      return max(
+          clickTopItemHeight -
+              ((ScreenUtil.instance.height - 44 - ScreenUtil.instance.statusBarHeight) - clickBottomItemHeight),
+          0.0);
     }
   }
 
   //判断点击item以及他后面的item的高度是否大于手机屏幕
-  double judgeClickItemBottomHeightThenScreenHeight(int onClickPosition){
-    int itemLength=context.read<FeedFlowDataNotifier>().homeFeedModelList.length;
-    if(onClickPosition>=itemLength){
+  double judgeClickItemBottomHeightThenScreenHeight(int onClickPosition) {
+    int itemLength = context.read<FeedFlowDataNotifier>().homeFeedModelList.length;
+    if (onClickPosition >= itemLength) {
       return 0.0;
     }
     double itemHeight = 0.0;
-    for(int i=onClickPosition;i<itemLength;i++){
+    for (int i = onClickPosition; i < itemLength; i++) {
       itemHeight += getFeedItemHeight(context.read<FeedFlowDataNotifier>().homeFeedModelList[i]);
-      if(itemHeight>=(ScreenUtil.instance.height-44-ScreenUtil.instance.statusBarHeight)){
+      if (itemHeight >= (ScreenUtil.instance.height - 44 - ScreenUtil.instance.statusBarHeight)) {
         return itemHeight;
       }
     }
     return itemHeight;
   }
 
-
   //获取点击item的顶部所有item的高度
-  double getClickTopItemHeight(int onClickPosition){
+  double getClickTopItemHeight(int onClickPosition) {
     double itemHeight = 0.0;
-    for(int i=0;i<onClickPosition;i++){
+    for (int i = 0; i < onClickPosition; i++) {
       itemHeight += getFeedItemHeight(recommendTopicList[i]);
     }
     return itemHeight;
   }
 
-
   //每一个动态流的item的高度
-  double getFeedItemHeight(HomeFeedModel v){
+  double getFeedItemHeight(HomeFeedModel v) {
     double itemHeight = 0.0;
     // 头部
     itemHeight += 62;
@@ -868,38 +872,38 @@ class VideoDetailPageState extends XCState {
     if (v.picUrls.isNotEmpty) {
       if (v.picUrls.first.height == 0) {
         itemHeight += ScreenUtil.instance.width;
-      }  else {
+      } else {
         itemHeight += (ScreenUtil.instance.width / v.picUrls[0].width) * v.picUrls[0].height;
       }
     }
     // 视频
-    if(v.videos.isNotEmpty) {
+    if (v.videos.isNotEmpty) {
       itemHeight += _calculateHeight(v);
     }
     // 转发评论点赞
     itemHeight += 48;
 
     //地址和课程
-    if(v.address != null || v.courseDto != null){
-      itemHeight+=7;
-      itemHeight+=getTextSize("123",TextStyle(fontSize: 12),1).height;
+    if (v.address != null || v.courseDto != null) {
+      itemHeight += 7;
+      itemHeight += getTextSize("123", TextStyle(fontSize: 12), 1).height;
     }
 
     //文本
-    if(v.content.length>0){
-      itemHeight+=12;
-      itemHeight+=getTextSize(v.content,TextStyle(fontSize: 14),2,ScreenUtil.instance.width-32).height;
+    if (v.content.length > 0) {
+      itemHeight += 12;
+      itemHeight += getTextSize(v.content, TextStyle(fontSize: 14), 2, ScreenUtil.instance.width - 32).height;
     }
 
     //评论文本
-    if(v.comments!=null &&v.comments.length != 0){
-      itemHeight+=8;
-      itemHeight+=6;
-      itemHeight+=getTextSize("共0条评论",AppStyle.textHintRegular12,1).height;
-      itemHeight+=getTextSize("第一条评论",AppStyle.textHintRegular13,1).height;
-      if(v.comments.length>1){
-        itemHeight+=8;
-        itemHeight+=getTextSize("第二条评论",AppStyle.textHintRegular13,1).height;
+    if (v.comments != null && v.comments.length != 0) {
+      itemHeight += 8;
+      itemHeight += 6;
+      itemHeight += getTextSize("共0条评论", AppStyle.textHintRegular12, 1).height;
+      itemHeight += getTextSize("第一条评论", AppStyle.textHintRegular13, 1).height;
+      if (v.comments.length > 1) {
+        itemHeight += 8;
+        itemHeight += getTextSize("第二条评论", AppStyle.textHintRegular13, 1).height;
       }
     }
 
