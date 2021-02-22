@@ -12,9 +12,9 @@ import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key, this.controller}) : super(key: key);
+  HomePage({Key key, this.controller,this.ifPageController}) : super(key: key);
   TabController controller;
-
+  TabController ifPageController;
   HomePageState createState() => HomePageState(controller: controller);
 }
 
@@ -45,6 +45,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     // print("首页");
     if (context.watch<FeedMapNotifier>().postFeedModel != null) {
       controller.index = 0;
+      widget.ifPageController.index = 1;
     }
     return Scaffold(
       backgroundColor: AppColor.white,

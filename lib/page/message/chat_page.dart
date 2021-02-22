@@ -247,6 +247,8 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   List<Widget> getBody() {
     List<Widget> bodyArray = [];
 
+    //接收当前会话的新的消息
+    bodyArray.add(getTopAttentionUi());
     //添加主体聊天界面
     bodyArray.add(Expanded(
       child: SizedBox(
@@ -254,7 +256,6 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           fit: StackFit.expand,
           children: [
             (chatDataList != null && chatDataList.length > 0) ? getChatDetailsBody() : Container(),
-            getTopAttentionUi(),
             ChatAtUserList(
               isShow: context.watch<ChatEnterNotifier>().keyWord == "@",
               onItemClickListener: atListItemClick,
@@ -339,7 +340,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           height: 48,
           padding: const EdgeInsets.only(right: 16),
           width: MediaQuery.of(context).size.width,
-          color: AppColor.colorb9b9b9,
+          color: AppColor.textSecondary.withOpacity(0.1),
           child: Row(
             children: [
               GestureDetector(
@@ -347,7 +348,7 @@ class ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                   height: 48,
                   width: 48,
                   color: AppColor.transparent,
-                  child: Icon(Icons.close, size: 16, color: AppColor.textSecondary),
+                  child: Icon(Icons.close, size: 16, color: AppColor.colorb9b9b9),
                 ),
                 onTap: () {
                   isShowTopAttentionUi = false;

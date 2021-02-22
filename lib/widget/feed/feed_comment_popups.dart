@@ -3,6 +3,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_bottom_sheet.dart';
+import 'package:mirror/page/training/common/common_comment_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +24,8 @@ Future openFeedCommentBottomSheet({
       builder: (BuildContext context) {
         return SizedBox(
           height: ScreenUtil.instance.height * 0.75,
-          child: CommentBottomSheet(
+          child:
+          CommentBottomSheet(
             feedId: feedId,
           ),
         );
