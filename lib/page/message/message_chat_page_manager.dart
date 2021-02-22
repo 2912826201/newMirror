@@ -79,7 +79,7 @@ Future<bool> jumpShareMessage(
     sizeInfo.height=map["height"];
     sizeInfo.width=map["width"];
     mediaFileModel.sizeInfo=sizeInfo;
-    UploadResultModel uploadResultModel=await onPostImgOrVideoSinge(map["file"]);
+    UploadResultModel uploadResultModel=await onPostImgOrVideoSinge(new File(map["file"]));
     message = await postMessageManagerImgOrVideo(
         conversation.conversationId,
         true,

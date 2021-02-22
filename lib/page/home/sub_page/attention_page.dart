@@ -316,11 +316,25 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
               themList.add(key);
             }
           });
-          setState(() {
-            attentionIdList = arrayDate(attentionIdList, themList);
+          print('arrayDate(attentionIdList,themList).length   ==== ${arrayDate(attentionIdList,themList).length}');
+          if(arrayDate(attentionIdList,themList).length==1){
+            print('=============================空 themList.length${themList.length} attentionIdList.length${attentionIdList.length}');
+            dataPage = 1;
+            attentionIdList.clear();
+            attentionModelList.clear();
             loadStatus = LoadingStatus.STATUS_IDEL;
+            lastTime = null;
             loadText = "";
-          });
+            getRecommendFeed();
+          }else{
+            print('=============================有');
+            print('=============================有 themList.length${themList.length} attentionIdList.length${attentionIdList.length}');
+            setState(() {
+              attentionIdList = arrayDate(attentionIdList, themList);
+              loadStatus = LoadingStatus.STATUS_IDEL;
+              loadText = "";
+            });
+          }
         },
       );
     }
@@ -330,7 +344,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
    * array1 数组一
    * array2 数组二
    * **/
-  arrayDate(List<int> array1, List<int> array2) {
+  List<int> arrayDate(List<int> array1, List<int> array2) {
     var arr1 = array1;
     var arr2 = array2;
     List<int> result = [];

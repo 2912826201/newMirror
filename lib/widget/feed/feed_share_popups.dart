@@ -103,7 +103,7 @@ class FeedSharePopups extends StatelessWidget {
                           AppRouter.navigateFriendsPage(context: context,shareMap: map,chatTypeModel: chatTypeModel);
                           break;
                         case "保存本地":
-                          var result = await ImageGallerySaver.saveFile(map["file"].path);
+                          var result = await ImageGallerySaver.saveFile(map["file"]);
                           if (result["isSuccess"] == true) {
                             ToastShow.show(msg: "保存成功", context: context);
                           }
