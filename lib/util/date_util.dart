@@ -222,13 +222,14 @@ class DateUtil {
     } else if (currentDateString.year - date.year == 0 &&
         currentDateString.month - date.month == 0 &&
         currentDateString.day - date.day > 0) {
+
       print(currentDateString.day - date.day);
       // 昨天
       if (currentDateString.day - date.day == 1) {
         result = "昨天" + " " + hour + ":" + minute;
       }
-      //超过48小时
-      if (currentDateString.day - date.day > 2) {
+      //前天及之前
+      if (currentDateString.day - date.day >= 2) {
         result = month + "${showText?"月":"-"}" + day +"${showText?"月":""}"+ " " + hour + ":" + minute;
       }
     } else if (currentDateString.year - date.year == 0 &&
@@ -246,6 +247,7 @@ class DateUtil {
         result = "刚刚";
       }
     }
+    print("result￥${result}");
     return result;
   }
 

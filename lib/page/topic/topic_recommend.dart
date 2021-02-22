@@ -16,7 +16,7 @@ import 'package:provider/provider.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
 class TopicRecommend extends StatefulWidget {
-  TopicRecommend({this.loadText, this.loadStatus, this.topicList, this.refreshCallBack});
+  TopicRecommend({this.loadText, this.loadStatus, this.topicList, this.refreshCallBack,this.topicId});
 
   final ValueChanged<bool> refreshCallBack;
 
@@ -29,6 +29,8 @@ class TopicRecommend extends StatefulWidget {
   // 加载状态
   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
 
+  // 话题ID
+  int topicId;
   @override
   TopicRecommendState createState() => TopicRecommendState();
 }
@@ -62,6 +64,7 @@ class TopicRecommendState extends State<TopicRecommend> with AutomaticKeepAliveC
                               } else {
                                 return DynamicListLayout(
                                   index: index,
+                                  topicId: widget.topicId,
                                   pageName: "topicRecommend",
                                   isShowRecommendUser: false,
                                   model: widget.topicList[index],
