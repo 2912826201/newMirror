@@ -46,11 +46,30 @@ android {
         multiDexEnabled true
     }
 
-    buildTypes {
+    //可以配置不同版本的keystore
+    signingConfigs {
+        debug {
+            storeFile file(DEBUG_STORE_FILE_AIMYMUSIC)
+            storePassword DEBUG_STORE_PASSWORD_AIMYMUSIC
+            keyAlias DEBUG_KEY_ALIAS_AIMYMUSIC
+            keyPassword DEBUG_KEY_PASSWORD_AIMYMUSIC
+        }
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            storeFile file(RELEASE_STORE_FILE_AIMYMUSIC)
+            storePassword RELEASE_STORE_PASSWORD_AIMYMUSIC
+            keyAlias RELEASE_KEY_ALIAS_AIMYMUSIC
+            keyPassword RELEASE_KEY_PASSWORD_AIMYMUSIC
+        }
+    }
+    //配置不同版本的build
+    buildTypes {
+        debug {
+            //签名
             signingConfig signingConfigs.debug
+        }
+        release {
+            //签名
+            signingConfig signingConfigs.release
         }
     }
 }
