@@ -241,18 +241,18 @@ class _SlideBannerState extends State<SlideBanner> {
       if(model.code == CODE_BLACKED) {
         ToastShow.show(msg: "你已被拉黑", context: context,gravity: Toast.CENTER);
       } else {
-        print("state:${model.data["state"]}");
-        if (model.data["state"]) {
+        // print("state:${model.data["state"]}");
+        // if (model.data["state"]) {
           context
               .read<FeedMapNotifier>()
               .setLaud(widget.model.isLaud, context
               .read<ProfileNotifier>()
               .profile
               .avatarUri, widget.model.id);
-        } else {
-          // 失败
-          print("shib ");
-        }
+        // } else {
+        //   // 失败
+        //   print("shib ");
+        // }
       }
     } else {
       // 去登录
@@ -303,6 +303,9 @@ class _SlideBannerState extends State<SlideBanner> {
                     loop: false,
                     onIndexChanged: (index) {
                       autoPlay(index);
+                    },
+                    onTap: (index) {
+
                     },
                   ),
                 ),

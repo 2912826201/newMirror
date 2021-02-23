@@ -129,15 +129,15 @@ class GetTripleAreaState extends State<GetTripleArea> {
         ToastShow.show(msg: "你已被拉黑", context: context,gravity:Toast.CENTER);
       } else {
         // 点赞/取消赞成功
-        print("state:${model.data["state"]}");
-        if (model.data["state"]) {
+        // print("state:${model.data["state"]}");
+        // if (model.data["state"]) {
           context.read<FeedMapNotifier>().setLaud(widget.model.isLaud, context
               .read<ProfileNotifier>()
               .profile
               .avatarUri, widget.model.id);
-        } else { // 失败
-          print("shib ");
-        }
+        // } else { // 失败
+        //   print("shib ");
+        // }
       }
     } else {
       // 去登录
@@ -193,10 +193,11 @@ class GetTripleAreaState extends State<GetTripleArea> {
                Icons.favorite,
                 color:
                 // widget.model.isLaud == 0
-                (context.select((FeedMapNotifier value) => value.feedMap)==null
-                    &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id])==null
-                    &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud)==null
-                    &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 0)
+                (
+                    context.select((FeedMapNotifier value) => value.feedMap)!=null
+                    &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id])!=null
+                    &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud)!=null
+                    && context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 0)
                     ? Colors.grey : Colors.redAccent,
                size: 24,
              ),

@@ -296,6 +296,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                                     index: index,
                                     pageName: "searchComplex",
                                     isShowRecommendUser: false,
+                                    isShowConcern:false,
                                     model: feedList[index],
                                     // 可选参数 子Item的个数
                                     key: GlobalObjectKey("attention$index"),

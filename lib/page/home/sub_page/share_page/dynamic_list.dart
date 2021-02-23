@@ -32,7 +32,8 @@ class DynamicListLayout extends StatelessWidget {
       this.removeFollowChanged,
       this.mineDetailId,
         this.topicId,
-        this.isMySelf})
+        this.isMySelf,
+      this.isShowConcern})
       : super(key: key);
   final index;
   bool isShowRecommendUser;
@@ -48,95 +49,95 @@ class DynamicListLayout extends StatelessWidget {
 
   // 取消关注
   ValueChanged<HomeFeedModel> removeFollowChanged;
-
+  // 是否显示关注按钮
+  bool isShowConcern;
   @override
   Widget build(BuildContext context) {
     // print('==============================动态itembuild');
-    double screen_width = ScreenUtil.instance.screenWidthDp;
-    // print("推荐页数据￥${ model.picUrls.isEmpty}");
-    // return ChangeNotifierProvider(
-    //     create: (_) => DynamicModelNotifier(model),
-    //     builder: (context, _) {
-    // print("我要看model的值");
-    //  print(model.toString());
-    print("index:$index,isHero:$isHero");
-    return Column(
-      children: [
-        // 头部头像时间
-        HeadView(
-            model: model,
-            isDetail: false,
-            pageName: pageName,
-            isMySelf: isMySelf,
-            mineDetailId: mineDetailId!=null?mineDetailId:0,
-            deleteFeedChanged: (id) {
-              deleteFeedChanged(id);
-            },
-            removeFollowChanged: (m) {
-              removeFollowChanged(m);
-            }),
-        // 图片区域
-        model.picUrls.isNotEmpty
-            ?
-        SlideBanner(
-                height: model.picUrls[0].height.toDouble(),
-                model: model,
-                index:index,
-                pageName:pageName,
-                isHero:isHero,
-              )
-            : Container(),
-        // 视频区域
-        model.videos.isNotEmpty ? getVideo(model.videos) : Container(),
-        // 点赞，转发，评论三连区域 getTripleArea
-        GetTripleArea( model: model, index: index),
-        // 课程信息和地址
-        Offstage(
-          offstage: (model.address == null && model.courseDto == null),
-          child: Container(
-            margin: EdgeInsets.only(left: 16, right: 16),
-            // color: Colors.orange,
-            width: ScreenUtil.instance.width,
-            child: getCourseInfo(model,context),
-          ),
-        ),
-
-        // 文本文案
-        Offstage(
-          offstage: model.content.length == 0,
-          child: Container(
-            margin: EdgeInsets.only(left: 16, right: 16, top: 12),
-            width: ScreenUtil.instance.screenWidthDp,
-            child: ExpandableText(
-              text: model.content,
-              topicId: topicId,
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: (){
+        if(mineDetailId==model.pushId){
+          return false;
+        }
+        AppRouter.navigateToMineDetail(context, model.pushId);
+      },
+      child: Column(
+        children: [
+          // 头部头像时间
+          HeadView(
               model: model,
-              maxLines: 2,
-              style: TextStyle(fontSize: 14, color: AppColor.textPrimary1),
+              isShowConcern: isShowConcern,
+              pageName: pageName,
+              isMySelf: isMySelf,
+              mineDetailId: mineDetailId!=null?mineDetailId:0,
+              deleteFeedChanged: (id) {
+                deleteFeedChanged(id);
+              },
+              removeFollowChanged: (m) {
+                removeFollowChanged(m);
+              }),
+          // 图片区域
+          model.picUrls.isNotEmpty
+              ?
+          SlideBanner(
+            height: model.picUrls[0].height.toDouble(),
+            model: model,
+            index:index,
+            pageName:pageName,
+            isHero:isHero,
+          )
+              : Container(),
+          // 视频区域
+          model.videos.isNotEmpty ? getVideo(model.videos) : Container(),
+          // 点赞，转发，评论三连区域 getTripleArea
+          GetTripleArea( model: model, index: index),
+          // 课程信息和地址
+          Offstage(
+            offstage: (model.address == null && model.courseDto == null),
+            child: Container(
+              margin: EdgeInsets.only(left: 16, right: 16),
+              // color: Colors.orange,
+              width: ScreenUtil.instance.width,
+              child: getCourseInfo(model,context),
             ),
           ),
-        ),
 
-        // 评论文本
-        (context.watch<FeedMapNotifier>().feedMap!=null
-            &&context.watch<FeedMapNotifier>().feedMap[model.id]!=null
-            &&context.watch<FeedMapNotifier>().feedMap[model.id].comments!=null
-            &&context.watch<FeedMapNotifier>().feedMap[model.id].comments.length != 0)
-            ? CommentLayout(model: model)
-            : Container(),
-        // 输入框
-        CommentInputBox(feedModel: model),
-        // 推荐用户
-        getAttention(this.index, this.isShowRecommendUser),
-        // 分割块
-        Container(
-          height: 18,
-          color: AppColor.white,
-        )
-      ],
+          // 文本文案
+          Offstage(
+            offstage: model.content.length == 0,
+            child: Container(
+              margin: EdgeInsets.only(left: 16, right: 16, top: 12),
+              width: ScreenUtil.instance.screenWidthDp,
+              child: ExpandableText(
+                text: model.content,
+                topicId: topicId,
+                model: model,
+                maxLines: 2,
+                style: TextStyle(fontSize: 14, color: AppColor.textPrimary1),
+              ),
+            ),
+          ),
+
+          // 评论文本
+          (context.watch<FeedMapNotifier>().feedMap!=null
+              &&context.watch<FeedMapNotifier>().feedMap[model.id]!=null
+              &&context.watch<FeedMapNotifier>().feedMap[model.id].comments!=null
+              &&context.watch<FeedMapNotifier>().feedMap[model.id].comments.length != 0)
+              ? CommentLayout(model: model)
+              : Container(),
+          // 输入框
+          CommentInputBox(feedModel: model),
+          // 推荐用户
+          getAttention(this.index, this.isShowRecommendUser),
+          // 分割块
+          Container(
+            height: 18,
+            color: AppColor.white,
+          )
+        ],
+      ),
     );
-    //     }
-    // );
   }
 
   // // 删除动态

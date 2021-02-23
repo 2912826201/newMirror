@@ -152,6 +152,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
                     index: index,
                     pageName: "profileDetails",
                     isShowRecommendUser: false,
+                    isShowConcern:false,
                     model: model,
                     isMySelf: widget.isMySelf,
                     mineDetailId: widget.id,

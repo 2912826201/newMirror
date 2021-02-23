@@ -67,6 +67,7 @@ class TopicRecommendState extends State<TopicRecommend> with AutomaticKeepAliveC
                                   topicId: widget.topicId,
                                   pageName: "topicRecommend",
                                   isShowRecommendUser: false,
+                                  isShowConcern:false,
                                   model: widget.topicList[index],
                                   // 可选参数 子Item的个数
                                   key: GlobalObjectKey("attention$index"),

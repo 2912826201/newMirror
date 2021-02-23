@@ -231,6 +231,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
                   } else {
                     return DynamicListLayout(
                       index: index,
+                      isShowConcern:false,
                       pageName: "searchFeed",
                       isShowRecommendUser: false,
                       model: feedList[index],

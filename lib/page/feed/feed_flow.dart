@@ -168,6 +168,7 @@ class FeedFlowState extends State<FeedFlow> {
                           child: DynamicListLayout(
                             index: index,
                             pageName: widget.pageName,
+                            isShowConcern:false,
                             isShowRecommendUser: false,
                             model: widget.feedList[index],
                             // 可选参数 子Item的个数
