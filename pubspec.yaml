@@ -189,6 +189,7 @@ flutter:
     - images/resource/2.0x/vip_open_icon@2x.png
     - images/resource/2.0x/vip_notopen_icon@2x.png
     - images/resource/2.0x/chose_pay@2x.png
+    - images/resource/2.0x/add_avatar_icon_@2x.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

@@ -85,7 +85,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   List<GlobalKey> scrollChildKeys;
   GlobalKey<PrimaryScrollContainerState> leftKey = GlobalKey();
   GlobalKey<PrimaryScrollContainerState> rightKey = GlobalKey();
-
+  bool bigOrSmallScroll = false;
   @override
   void dispose() {
     _tabController.dispose();
@@ -114,16 +114,14 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
         print("足控");
         print("_scrollController:::::::::${_scrollController.offset}");
         if (_scrollController.hasClients) {
-          setState(() {
             if (_scrollController.offset >= headSlideHeight - 3) {
               print("进了");
-              titleColor = AppColor.bgBlack;
-              iconColor = AppColor.bgBlack;
-            } else {
-              titleColor = AppColor.transparent;
-              iconColor = AppColor.bgWhite;
+              if(!context.read<TopicDetailNotifier>().scrollWatch){
+                context.read<TopicDetailNotifier>().ChangeColor(true);
+              }
+            } else if(context.read<TopicDetailNotifier>().scrollWatch){
+              context.read<TopicDetailNotifier>().ChangeColor(false);
             }
-          });
         }
         if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
           if (_tabController.index == 0) {
@@ -257,11 +255,11 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                     SliverAppBar(
                       expandedHeight: sliverAppBarHeight(),
                       pinned: true,
-                      title: Text(model.name, style: TextStyle(color: titleColor)),
+                      title: Text(model.name, style: TextStyle(color: context.watch<TopicDetailNotifier>().titleColor)),
                       leading: new IconButton(
                         icon: Icon(
                           Icons.arrow_back_ios,
-                          color: iconColor,
+                          color: context.watch<TopicDetailNotifier>().iconColor,
                         ),
                         onPressed: () {
                           Navigator.of(context).pop();
@@ -271,7 +269,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                         new IconButton(
                           icon: Icon(
                             Icons.wysiwyg,
-                            color: iconColor,
+                            color: context.watch<TopicDetailNotifier>().iconColor,
                           ),
                           onPressed: () {
                             print("更多");
@@ -759,5 +757,26 @@ class TopicDetailTabBarDelegate extends SliverPersistentHeaderDelegate {
   @override
   bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
     return true;
+  }
+}
+
+
+class TopicDetailNotifier extends ChangeNotifier{
+  Color titleColor=AppColor.transparent;
+  Color iconColor = AppColor.bgWhite;
+  bool scrollWatch = false;
+
+
+  void ChangeColor(bool scrollBig){
+    if(scrollBig){
+      titleColor = AppColor.bgBlack;
+      iconColor = AppColor.bgBlack;
+      scrollWatch = true;
+    }else{
+      titleColor=AppColor.transparent;
+      iconColor = AppColor.bgWhite;
+      scrollWatch = false;
+    }
+    notifyListeners();
   }
 }
