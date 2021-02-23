@@ -55,8 +55,7 @@ void main() {
   //设置状态栏透明
   SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
   SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
-  _initApp().then((value) => runApp(
-        MultiProvider(
+  _initApp().then((value) => runApp(MultiProvider(
           providers: [
             //当前用户的token信息 无论匿名用户还是登录用户都会有值
             ChangeNotifierProvider(create: (_) => TokenNotifier(Application.token)),

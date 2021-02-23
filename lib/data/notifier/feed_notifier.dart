@@ -10,6 +10,7 @@ class FeedMapNotifier extends ChangeNotifier {
   Map<int, HomeFeedModel> feedMap = {};
 
   Map<int, HomeFeedModel> oldFeedMap = {};
+
   // 点击评论图标记录此动态的Id用于请求评论列表
   int feedId;
 
@@ -17,6 +18,7 @@ class FeedMapNotifier extends ChangeNotifier {
   PostFeedModel postFeedModel;
 
   List<CommentDtoModel> commentList = [];
+
   // 发布动态进度
   double plannedSpeed = 0.0;
 
@@ -26,14 +28,17 @@ class FeedMapNotifier extends ChangeNotifier {
     feedMap[id].comments[index].itemChose = false;
     notifyListeners();
   }
-  void changeCommentList(List<CommentDtoModel> modelList){
+
+  void changeCommentList(List<CommentDtoModel> modelList) {
     commentList.addAll(modelList);
     notifyListeners();
   }
+
   void insertChildModel(CommentDtoModel model) {
     childModel = model;
     notifyListeners();
   }
+
 // 更新全局动态map
   void updateFeedMap(List<HomeFeedModel> _feedList) {
     _feedList.forEach((element) {
@@ -73,6 +78,7 @@ class FeedMapNotifier extends ChangeNotifier {
       feedMap[id].laudUserInfo.removeAt(0);
       laud = 0;
     }
+
     feedMap[id].isLaud = laud;
     notifyListeners();
   }

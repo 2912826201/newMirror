@@ -296,6 +296,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         index: index,
         isShowRecommendUser: true,
         model: feedmodel,
+        isShowConcern: false,
         pageName: "attentionPage",
         // 可选参数 子Item的个数
         key: GlobalObjectKey("attention$index"),

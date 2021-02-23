@@ -295,6 +295,11 @@ class _ImagePreviewViewState extends State<ImagePreviewView> with SingleTickerPr
     super.initState();
     _currentIndex = widget.initialIndex;
     _pageController = PageController(initialPage: widget.initialIndex);
+    // _pageController.addListener(() {
+    //
+    //  print(_pageController.page);
+    //  // if(_pageController.page)
+    // });
     _pageController.addListener(_reset);
     _reset();
   }
@@ -314,9 +319,11 @@ class _ImagePreviewViewState extends State<ImagePreviewView> with SingleTickerPr
   }
 
   _onPageChanged(int index) {
+    print("page滑动回调$index");
     _currentIndex = index;
     setState(() {});
     if (widget.onPageChanged != null) {
+      print("没进");
       widget.onPageChanged(_currentIndex);
     }
   }

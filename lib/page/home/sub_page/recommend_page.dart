@@ -9,9 +9,12 @@ import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 FocusNode commentFocus = FocusNode();
 
@@ -266,7 +269,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                         id = recommendIdList[index];
                         model = context.read<FeedMapNotifier>().feedMap[id];
                       }
-                      // if (model != null) {
                       if (index == recommendIdList.length) {
                         return LoadingView(
                           loadText: loadText,
@@ -277,14 +279,11 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                             index: index,
                             model: model,
                             pageName: "recommendPage",
+                            isShowConcern:true,
                             // 可选参数 子Item的个数
                             // key: GlobalObjectKey("recommend$index"),
                             isShowRecommendUser: false);
                       }
-                      // } else {
-                      //   // 缺省图
-                      //   return Container();
-                      // }
                     }, childCount: recommendIdList.length + 1),
                   )
                 ],
@@ -305,37 +304,46 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
         shrinkWrap: true,
         itemCount: liveVideoModel.length,
         itemBuilder: (context, index) {
-          return Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  margin: EdgeInsets.only(
-                      left: index > 0 ? 24 : 16, right: index == liveVideoModel.length - 1 ? 16 : 0, top: 0, bottom: 8.5),
-                  height: 53,
-                  width: 53,
-                  decoration: BoxDecoration(
-                    // color: Colors.redAccent,
-                    image:
-                        DecorationImage(image: NetworkImage(liveVideoModel[index].coachDto.avatarUri), fit: BoxFit.cover),
-                    // image
-                    borderRadius: BorderRadius.all(Radius.circular(26.5)),
-                  ),
-                ),
-                Container(
-                  width: 53,
-                  margin: EdgeInsets.only(
-                      left: index > 0 ? 24 : 16, right: index == liveVideoModel.length - 1 ? 16 : 0, top: 0, bottom: 8.5),
-                  child: Center(
-                    child: Text(
-                      liveVideoModel[index].coachDto.nickName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+          return  GestureDetector(
+            onTap: () {
+              if(liveVideoModel[index].coachDto.isLiving == 0) {
+                AppRouter.navigateToMineDetail(context, liveVideoModel[index].coachDto.uid);
+              } else {
+                ToastShow.show(msg: "直播页", context: context,gravity: Toast.CENTER);
+              }
+            },
+            child:   Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(
+                        left: index > 0 ? 24 : 16, right: index == liveVideoModel.length - 1 ? 16 : 0, top: 0, bottom: 8.5),
+                    height: 53,
+                    width: 53,
+                    decoration: BoxDecoration(
+                      // color: Colors.redAccent,
+                      image:
+                      DecorationImage(image: NetworkImage(liveVideoModel[index].coachDto.avatarUri), fit: BoxFit.cover),
+                      // image
+                      borderRadius: BorderRadius.all(Radius.circular(26.5)),
                     ),
                   ),
-                )
-              ],
-            ),
+                  Container(
+                    width: 53,
+                    margin: EdgeInsets.only(
+                        left: index > 0 ? 24 : 16, right: index == liveVideoModel.length - 1 ? 16 : 0, top: 0, bottom: 8.5),
+                    child: Center(
+                      child: Text(
+                        liveVideoModel[index].coachDto.nickName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ) ,
           );
         },
       ),

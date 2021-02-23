@@ -686,12 +686,7 @@ class _FollowItemState extends State<QueryFollowItem> {
                 if (widget.type == 1 || widget.type == 2) {
                   AppRouter.navigateToMineDetail(context, uid);
                 } else {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                    return TopicDetail(
-                      topicId: widget.tpcModel.id,
-                    );
-                  }));
-
+                  AppRouter.navigateToTopicDetailPage(context, widget.tpcModel.id);
                   ///这里处理话题跳转
                 }
               },

@@ -142,7 +142,6 @@ class _PerfectUserState extends LoginBasePageState {
                   print('===============================${fileList.length}');
                 }
                 print('model.croppedImageData 2===========================${model.croppedImageData}');
-                // context.read<InformationImageNotifier>().setImage(model.croppedImageData);
                 setState(() {
                   imageData = model.croppedImageData;
                 });
@@ -169,16 +168,7 @@ class _PerfectUserState extends LoginBasePageState {
                     child: Container(
                       width: 24,
                       height: 24,
-                      decoration: BoxDecoration(
-                          color: AppColor.black,
-                          borderRadius: BorderRadius.all(Radius.circular(59)),
-                          border: Border.all(width: 1, color: AppColor.white)),
-                      child: Center(
-                        child: Text(
-                          "+",
-                          style: AppStyle.whiteRegular16,
-                        ),
-                      ),
+                      child: Image.asset("images/resource/2.0x/add_avatar_icon_@2x.png"),
                     ))
               ],
             )));

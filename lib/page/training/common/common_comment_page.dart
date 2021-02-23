@@ -518,7 +518,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   _profileMoreDenounce(int targetId) async {
     bool isSucess = await ProfileMoreDenounce(targetId, 2);
     print("举报：isSucess:$isSucess");
-    if (isSucess) {
+    if (isSucess!=null&&isSucess) {
       ToastShow.show(msg: "举报成功", context: context);
     }
   }
@@ -1254,8 +1254,8 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       return;
     }
 
-    Map<String, dynamic> model = await laudComment(commentId: commentId, laud: laud ? 1 : 0);
-    if (model != null && model["state"]) {
+    int code = await laudComment(commentId: commentId, laud: laud ? 1 : 0);
+    if (code != null && code==200) {
       _laudCommentData(courseCommentHot, commentId, true, laud);
       _laudCommentData(courseCommentTime, commentId, false, laud);
       if (laud) {

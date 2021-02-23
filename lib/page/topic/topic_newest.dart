@@ -64,6 +64,7 @@ class TopicNewestState extends State<TopicNewest> with AutomaticKeepAliveClientM
                                   index: index,
                                   pageName: "topicNewest",
                                   topicId: widget.topicId,
+                                  isShowConcern:false,
                                   isShowRecommendUser: false,
                                   model: widget.topicList[index],
                                   // 可选参数 子Item的个数

@@ -20,7 +20,8 @@ import 'package:provider/provider.dart';
 
 class HeadView extends StatefulWidget{
   HomeFeedModel model;
-  bool isDetail;
+  // 是否显示关注按钮
+  bool isShowConcern;
   // 删除动态
   ValueChanged<int> deleteFeedChanged;
   int isBlack;
@@ -30,20 +31,20 @@ class HeadView extends StatefulWidget{
   ValueChanged<bool> followChanged;
   int mineDetailId;
   bool isMySelf;
-  HeadView({this.model,this.isDetail,this.deleteFeedChanged,this.removeFollowChanged,this.isBlack,this.mineDetailId,
+  HeadView({this.model,this.isShowConcern,this.deleteFeedChanged,this.removeFollowChanged,this.isBlack,this.mineDetailId,
     this.pageName,this.isMySelf});
   @override
   State<StatefulWidget> createState() {
-   return HeadViewState(deleteFeedChanged: deleteFeedChanged,removeFollowChanged: removeFollowChanged,isDetail:
-   isDetail,model: model,isBlack: isBlack,isMyself: isMySelf);
+   return HeadViewState(deleteFeedChanged: deleteFeedChanged,removeFollowChanged: removeFollowChanged,isShowConcern:
+   isShowConcern,model: model,isBlack: isBlack,isMyself: isMySelf);
   }
 
 }
 class HeadViewState extends State<HeadView> {
   HeadViewState({Key key ,this.model, this.deleteFeedChanged,
-    this.removeFollowChanged,this.isDetail = true,this.isBlack,this.isMyself});
+    this.removeFollowChanged,this.isShowConcern = true,this.isBlack,this.isMyself});
   HomeFeedModel model;
-  bool isDetail;
+  bool isShowConcern;
   // 删除动态
   ValueChanged<int> deleteFeedChanged;
   int isBlack;
@@ -56,7 +57,7 @@ class HeadViewState extends State<HeadView> {
     Map<String, dynamic> map = await deletefeed(id: model.id);
     if (map["state"]) {
       deleteFeedChanged(model.id);
-      if(isDetail){
+      if(isShowConcern){
         Navigator.pop(context,model.id);
       }
     } else {
@@ -96,7 +97,9 @@ class HeadViewState extends State<HeadView> {
     if(isCancel){
       int relation = await ProfileCancelFollow(id);
       if(relation==0||relation==2){
-        removeFollowChanged(model);
+        if(!isShowConcern){
+          removeFollowChanged(model);
+        }
         context.read<ProfilePageNotifier>().changeIsFollow(true,true,model.pushId);
         ToastShow.show(msg: "取消关注成功", context: context);
       }else{
@@ -119,7 +122,7 @@ class HeadViewState extends State<HeadView> {
 
   // 是否显示关注按钮
   isShowFollowButton(BuildContext context) {
-    if (isDetail && context.watch<ProfilePageNotifier>().profileUiChangeModel[model.pushId].isFollow == true&&model
+    if (isShowConcern && context.watch<ProfilePageNotifier>().profileUiChangeModel[model.pushId].isFollow == true&&model
         .pushId!=context
         .watch<ProfileNotifier>()
         .profile
@@ -201,15 +204,16 @@ class HeadViewState extends State<HeadView> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            GestureDetector(
-              onTap: () {
-                print('动态item的Id========================${model.pushId}');
-                if(widget.mineDetailId==model.pushId){
-                  return false;
-                }
-                AppRouter.navigateToMineDetail(context, model.pushId);
-              },
-              child: Container(
+            // GestureDetector(
+            //   onTap: () {
+            //     print('动态item的Id========================${model.pushId}');
+            //     if(widget.mineDetailId==model.pushId){
+            //       return false;
+            //     }
+            //     AppRouter.navigateToMineDetail(context, model.pushId);
+            //   },
+            //   child:
+              Container(
                 margin: EdgeInsets.only(left: 16, right: 11),
                 child: CircleAvatar(
                   // backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
@@ -218,19 +222,20 @@ class HeadViewState extends State<HeadView> {
                   maxRadius: 19,
                 ),
               ),
-            ),
+            // ),
             Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    GestureDetector(
-                      child: Text(
+                    // GestureDetector(
+                    //   child:
+                      Text(
                         model.name ?? "空名字",
                         style: TextStyle(fontSize: 15),
                       ),
-                      onTap: () {},
-                    ),
+                      // onTap: () {},
+                    // ),
                     Container(
                       padding: EdgeInsets.only(top: 2),
                       child: Text("${DateUtil.generateFormatDate(model.createTime,false)}",
@@ -287,7 +292,7 @@ class HeadViewState extends State<HeadView> {
   _denounceUser() async {
     bool isSucess = await ProfileMoreDenounce(model.pushId, 1);
     print('isSucess=======================================$isSucess');
-    if (isSucess) {
+    if (isSucess!=null&&isSucess) {
       ToastShow.show(msg: "举报成功", context: context);
     }
   }
