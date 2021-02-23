@@ -97,7 +97,9 @@ class HeadViewState extends State<HeadView> {
     if(isCancel){
       int relation = await ProfileCancelFollow(id);
       if(relation==0||relation==2){
-        removeFollowChanged(model);
+        if(!isShowConcern){
+          removeFollowChanged(model);
+        }
         context.read<ProfilePageNotifier>().changeIsFollow(true,true,model.pushId);
         ToastShow.show(msg: "取消关注成功", context: context);
       }else{
@@ -290,7 +292,7 @@ class HeadViewState extends State<HeadView> {
   _denounceUser() async {
     bool isSucess = await ProfileMoreDenounce(model.pushId, 1);
     print('isSucess=======================================$isSucess');
-    if (isSucess) {
+    if (isSucess!=null&&isSucess) {
       ToastShow.show(msg: "举报成功", context: context);
     }
   }

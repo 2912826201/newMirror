@@ -518,7 +518,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   _profileMoreDenounce(int targetId) async {
     bool isSucess = await ProfileMoreDenounce(targetId, 2);
     print("举报：isSucess:$isSucess");
-    if (isSucess) {
+    if (isSucess!=null&&isSucess) {
       ToastShow.show(msg: "举报成功", context: context);
     }
   }

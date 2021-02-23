@@ -452,7 +452,7 @@ var handlerMeDownloadVideoCoursePage = Handler(handlerFunc: (BuildContext contex
 // 话题详情页
 var handlerTopicDetailPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return TopicDetail(topicId: data["topicId"]);
+  return ChangeNotifierProvider(create: (_) => TopicDetailNotifier(),child: TopicDetail(topicId: data["topicId"]),);
 });
 // 搜索页面
 var handlerSearchPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
