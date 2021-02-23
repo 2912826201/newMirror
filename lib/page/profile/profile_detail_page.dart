@@ -99,7 +99,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       });
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _getUserInfo(true,id: widget.userId);
+      _getUserInfo(id: widget.userId);
       _getFollowCount(id: widget.userId);
       if (!isMselfId) {
         _checkBlackStatus();
@@ -122,10 +122,11 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     });
   }
 
-  ///获取关注、粉丝、动态数
+  ///获取关注、粉丝、获赞数数
   _getFollowCount({int id}) async {
     ProfileModel attentionModel = await ProfileFollowCount(id: id);
     if (attentionModel != null) {
+      print('  666666666666666666666666666666666666${attentionModel.toJson().toString()}');
       context.read<ProfilePageNotifier>().changeAttentionModel(attentionModel, widget.userId);
     }
   }
@@ -147,7 +148,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   }
 
   ///获取用户信息
-  _getUserInfo(bool needSetState,{int id}) async {
+  _getUserInfo({int id}) async {
     userModel = await getUserInfo(uid: id);
     if (userModel != null) {
       print('获取relation=============================${userModel.relation}');
@@ -167,7 +168,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       if (!isMselfId) {
         print('判断relation=====================$relation');
       }
-      if (mounted&&needSetState) {
+      if (mounted) {
         setState(() {});
       }
       if (relation == 0 || relation == 2) {
@@ -250,15 +251,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                             return ProfileDetailsMore(
                               userId: widget.userId,
-                              isFollow:
-                                  context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.userId].isFollow,
                               userName: _textName,
                             );
-                          })).then((value) {
-                            _getUserInfo(false,id: widget.userId);
-                            _getFollowCount(id: widget.userId);
-                            _checkBlackStatus();
-                          });
+                          }));
                         },
                         child: Image.asset(
                           _imgMore,
@@ -518,7 +513,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             if (isMselfId) {
               ///这里跳转到编辑资料页
               AppRouter.navigateToEditInfomation(context, (result) {
-                _getUserInfo(true);
+                _getUserInfo();
               });
             } else {
               print(
@@ -535,7 +530,8 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           }
         },
         child: context.read<ProfilePageNotifier>()
-            .profileUiChangeModel[widget.userId].isBlack == 0
+            .profileUiChangeModel[widget.userId].isBlack == 0||context.read<ProfilePageNotifier>()
+            .profileUiChangeModel[widget.userId].isBlack == 2
             ? Container(
                 height: 28,
                 width: 72,

@@ -9,23 +9,20 @@ import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/page/profile/fitness_information_entry/fitness_part_page.dart';
 import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:provider/provider.dart';
 class FitnessLevelPage extends StatefulWidget{
-  FitnessEntryModel model;
-  FitnessLevelPage({this.model});
   @override
   State<StatefulWidget> createState() {
-    return _FitnessLevelState(model:model);
+    return _FitnessLevelState();
   }
 
 }
 class _FitnessLevelState extends State<FitnessLevelPage>{
   List<SubTagModel> levelList;
   int beforIndex;
-  FitnessEntryModel model;
-  _FitnessLevelState({this.model});
   @override
   void initState() {
     // TODO: implement initState
@@ -89,12 +86,10 @@ class _FitnessLevelState extends State<FitnessLevelPage>{
                 setState(() {
                   beforIndex = index;
                 });
-                model.hard = index;
+               Application.fitnessEntryModel.hard = index;
               /*context.read<FitnessInformationNotifier>().setHard(index);*/
               print('index===============================$index');
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return FitnesspartPage(model: model,);
-              }));
+             AppRouter.navigateToFitnessPartPage(context);
             },
             child: Container(
             height: 95,

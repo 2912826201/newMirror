@@ -33,6 +33,7 @@ class ChatDetailsBody extends StatelessWidget {
   final bool isHaveAtMeMsg;
   final String loadText;
   final LoadingStatus loadStatus;
+  final bool isShowTop;
 
   ChatDetailsBody(
       {this.scrollController,
@@ -47,6 +48,7 @@ class ChatDetailsBody extends StatelessWidget {
       this.vsync,
       this.chatUserName,
       this.onTap,
+      this.isShowTop=false,
       this.isPersonalButler = false,
       this.voidMessageClickCallBack,
       this.onRefresh,
@@ -55,7 +57,6 @@ class ChatDetailsBody extends StatelessWidget {
       this.voidItemLongClickCallBack});
 
   List<ChatDataModel> chatData = <ChatDataModel>[];
-  int pageCount=15;
 
 
   @override
@@ -102,7 +103,7 @@ class ChatDetailsBody extends StatelessWidget {
               controller: scrollController,
               padding: EdgeInsets.symmetric(horizontal: 16),
               reverse: true,
-              shrinkWrap: chatData.length < pageCount,
+              shrinkWrap: isShowTop,
               childrenDelegate: FirstEndItemChildrenDelegate((BuildContext context, int index) {
                 if (index == chatData.length - 1) {
                   // print("------------");
@@ -183,7 +184,7 @@ class ChatDetailsBody extends StatelessWidget {
 
   //判断有没有动画
   Widget judgeStartAnimation(ChatDataModel model, int position) {
-    if (model.isHaveAnimation && chatData.length > pageCount) {
+    if (model.isHaveAnimation && !isShowTop) {
       AnimationController animationController = AnimationController(
         duration: new Duration(milliseconds: 200),
         vsync: vsync,

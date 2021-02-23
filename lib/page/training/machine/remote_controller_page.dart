@@ -305,9 +305,10 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                   Spacer(),
                   GestureDetector(
                     onTap: () {
-                      if (notifier.machine.status != 0) {
-                        AppRouter.navigateToMachineConnectionInfo(context);
-                      }
+                      // 需求修改 无论是否状态为已连接 都可以进入机器信息页
+                      // if (notifier.machine.status != 0) {
+                      AppRouter.navigateToMachineConnectionInfo(context);
+                      // }
                     },
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,

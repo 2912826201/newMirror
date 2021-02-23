@@ -66,6 +66,7 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
 
   @override
   Widget build(BuildContext context) {
+    print("------------------------------------------------------------------");
     super.build(context);
 
     setSettingData();
@@ -149,7 +150,7 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
       return getSelectMsgData(widget.model.content);
 
     } else {
-      return new Text('未知消息');
+      return getTextMsg(text: "版本过低请升级版本!");
     }
   }
 

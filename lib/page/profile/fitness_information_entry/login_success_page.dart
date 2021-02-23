@@ -97,9 +97,7 @@ class _LoginSucessState extends State<LoginSucessPage> {
               backColor: AppColor.bgBlack,
               color: AppColor.transparent,
               onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                  return HeightAndWeightPage();
-                }));
+                AppRouter.navigateToHeightAndWeigetPage(context);
               },
             )
           ],

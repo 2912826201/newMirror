@@ -385,6 +385,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
             top: 10,
             right: 10,
             child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onTap: () => _onCheckBoxTap(context, entity),
               child: notifier.selectedMap.containsKey(entity.id)
                   ? Container(

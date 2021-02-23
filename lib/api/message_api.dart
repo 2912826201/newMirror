@@ -70,10 +70,7 @@ Future<Unreads> getUnReads() async {
 }
 
 //请求创建群聊
-Future<GroupChatModel> createGroupChat(List<String> members) async {
-  print("createGroupChat");
-  final String parameterName = "uids";
-  print("members is $members");
+Future<GroupChatModel> createGroupChat(List<int> members) async {
   Map<String, dynamic> parameters = Map();
   String membersStringPre = "[";
   String membersStringSuffix = "]";
@@ -81,8 +78,7 @@ Future<GroupChatModel> createGroupChat(List<String> members) async {
     membersStringPre = membersStringPre + "$element,";
   });
   membersStringPre = membersStringPre.substring(0, membersStringPre.length - 1);
-  parameters[parameterName] = membersStringPre + membersStringSuffix;
-  print("final parameters: ${parameters.toString()}");
+  parameters["uids"] = membersStringPre + membersStringSuffix;
   BaseResponseModel responseModel = await requestApi(CREATE_GROUP_CHAT, parameters);
   if (responseModel.isSuccess) {
     print("request success");

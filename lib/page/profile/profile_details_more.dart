@@ -4,11 +4,12 @@ import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
-
+import 'package:provider/provider.dart';
 ///个人主页更多
 class ProfileDetailsMore extends StatefulWidget {
   int userId;
@@ -24,15 +25,10 @@ class ProfileDetailsMore extends StatefulWidget {
 }
 
 class _detailsMoreState extends State<ProfileDetailsMore> {
-  String _smarks = "未设置";
-  bool isBlack = false;
-  bool isNoChange = true;
-  bool isSucess = false;
-
   @override
   void initState() {
     super.initState();
-    _checkBlackStatus();
+   /* _checkBlackStatus();*/
   }
 
   @override
@@ -50,7 +46,9 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
             height: height,
             width: width,
             color: AppColor.white,
-            child: !widget.isFollow ? _follow(width) : _notFollow(width)));
+            child: !context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.userId].isFollow ? _follow(width) :
+        _notFollow
+        (width)));
   }
 
   ///没关注的布局
@@ -70,13 +68,15 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
         ),
         InkWell(
           onTap: () {
-            if (isBlack) {
+            if (context.read<ProfilePageNotifier>()
+                .profileUiChangeModel[widget.userId].isBlack == 1) {
               _cancelBlack();
             } else {
               _pullBlack();
             }
           },
-          child: _itemSelect(width, AppStyle.textRegular16, isBlack ? "取消拉黑" : "拉黑"),
+          child: _itemSelect(width, AppStyle.textRegular16, context.watch<ProfilePageNotifier>()
+              .profileUiChangeModel[widget.userId].isBlack == 1 ? "取消拉黑" : "拉黑"),
         ),
         Container(
           width: width,
@@ -115,13 +115,15 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
         ),
         InkWell(
           onTap: () {
-            if (isBlack) {
+            if (context.read<ProfilePageNotifier>()
+                .profileUiChangeModel[widget.userId].isBlack == 1) {
               _cancelBlack();
             } else {
               _pullBlack();
             }
           },
-          child: _itemSelect(width, AppStyle.textRegular16, isBlack ? "取消拉黑" : "拉黑"),
+          child: _itemSelect(width, AppStyle.textRegular16, context.watch<ProfilePageNotifier>()
+              .profileUiChangeModel[widget.userId].isBlack == 1? "取消拉黑" : "拉黑"),
         ),
         Container(
           width: width,
@@ -132,7 +134,9 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
           onTap: () {
             _cancelFollow();
           },
-          child: _itemSelect(width, AppStyle.redRegular16, "取消关注"),
+          child: !context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.userId].isFollow
+              ?_itemSelect(width,
+              AppStyle.redRegular16, "取消关注"):Container(),
         ),
         Container(
           padding: EdgeInsets.only(left: 16, right: 16),
@@ -177,7 +181,8 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
     print('取消关注监听==============================$cancelResult');
     if (cancelResult == 0 || cancelResult == 2) {
       ToastShow.show(msg: "已取消关注该用户", context: context);
-      Navigator.pop(context, true);
+      context.read<ProfilePageNotifier>().changeIsFollow(true, true, widget.userId);
+      Navigator.pop(context);
     }
   }
 
@@ -186,7 +191,11 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
     bool blackStatus = await ProfileAddBlack(widget.userId);
     print('拉黑是否成功====================================$blackStatus');
     if (blackStatus == true) {
-      _checkBlackStatus();
+      context.read<ProfilePageNotifier>().changeIsFollow(true, true, widget.userId);
+      context.read<ProfilePageNotifier>().changeBlack(true, widget.userId, 1);
+      ToastShow.show(msg: "拉黑成功", context: context);
+    }else{
+      ToastShow.show(msg: "操作失败", context: context);
     }
   }
 
@@ -197,7 +206,7 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
     if(blackStatus!=null){
       if (blackStatus == true) {
         ToastShow.show(msg: "解除拉黑成功", context: context);
-        _checkBlackStatus();
+        context.read<ProfilePageNotifier>().changeBlack(true, widget.userId, 0);
       }else{
         ToastShow.show(msg: "操作失败", context: context);
       }
@@ -212,13 +221,16 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
       print('inThisBlack===================${model.inThisBlack}');
       print('inYouBlack===================${model.inYouBlack}');
       if (model.inYouBlack == 1) {
-        isBlack = true;
-      } else {
-        isBlack = false;
+        context.read<ProfilePageNotifier>()
+            .changeBlack(true, widget.userId, 1);
+      } else if(model.inThisBlack==1){
+        context.read<ProfilePageNotifier>()
+            .changeBlack(true, widget.userId, 2);
+      }else{
+        context.read<ProfilePageNotifier>()
+            .changeBlack(true, widget.userId, 0);
       }
-      if (mounted) {
-        setState(() {});
-      }
+
     }
   }
 

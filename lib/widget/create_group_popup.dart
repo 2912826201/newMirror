@@ -1,4 +1,5 @@
 import 'package:azlistview/azlistview.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lpinyin/lpinyin.dart';
@@ -10,7 +11,10 @@ import 'package:mirror/data/database/conversation_db_helper.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/message/group_chat_model.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
+import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
+import 'package:mirror/page/message/message_chat_page_manager.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
 
@@ -38,6 +42,8 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
   final TextEditingController controller = TextEditingController();
   final FocusNode focusNode = FocusNode();
   List<BuddyModel> _friendList = [];
+  List<int> _selectedUidList = [];
+  bool _isRequesting = false;
 
   @override
   void initState() {
@@ -65,7 +71,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
     }
   }
 
-  _sortFriendList(){
+  _sortFriendList() {
     _friendList.forEach((friend) {
       String pinyin = PinyinHelper.getPinyinE(friend.nickName);
       String tag = pinyin.substring(0, 1).toUpperCase();
@@ -166,7 +172,8 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
             ],
           ),
         ),
-        Expanded(child: Container(
+        Expanded(
+            child: Container(
           child: AzListView(
             data: _friendList,
             itemCount: _friendList.length,
@@ -184,10 +191,10 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
             height: 36,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(3)),
-              color: AppColor.textPrimary1,
+              color: _selectedUidList.length > 0 ? AppColor.textPrimary1 : AppColor.bgWhite,
             ),
             child: Text(
-              "发起群聊",
+              _selectedUidList.length > 1 ? "发起聊天(${_selectedUidList.length})" : "发起聊天",
               style: TextStyle(color: AppColor.white, fontSize: 16),
             ),
           ),
@@ -200,34 +207,128 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
   }
 
   _createGroupOrGoToChat() async {
-    //临时测试用的 创建群聊方法
-    List<String> testGroupMemberList = ["1018240", "1005740", "1007890", "1004317", "1009100"];
+    if (_selectedUidList.length == 1) {
+      //只选中1人 私聊
+      //FIXME 按理说BuddyModel就是UserModel
+      for(BuddyModel friend in _friendList){
+        if(friend.uid == _selectedUidList.first){
+          UserModel user = UserModel();
+          user.uid = friend.uid;
+          user.avatarUri = friend.avatarUri;
+          user.nickName = friend.nickName;
 
-    GroupChatModel model = await createGroupChat(testGroupMemberList);
+          Navigator.pop(context);
+          jumpChatPageUser(context, user);
+          break;
+        }
+      }
+    } else if (_selectedUidList.length > 1) {
+      //选中大于等于2人 群聊
+      if (_isRequesting) {
+        return;
+      }
+      _isRequesting = true;
+      bool isSuccess = false;
+      try {
+        GroupChatModel model = await createGroupChat(_selectedUidList);
 
-    if (model == null) {
-      return;
-    }
+        if (model != null) {
+          ConversationDto cdto = ConversationDto.fromGroupChat(model);
 
-    ConversationDto cdto = ConversationDto.fromGroupChat(model);
-
-    bool result = await ConversationDBHelper().insertConversation(cdto);
-    if (result) {
-      if (cdto.isTop == 0) {
-        context.read<ConversationNotifier>().insertCommonList([cdto]);
-      } else {
-        context.read<ConversationNotifier>().insertTopList([cdto]);
+          bool result = await ConversationDBHelper().insertConversation(cdto);
+          if (result) {
+            if (cdto.isTop == 0) {
+              context.read<ConversationNotifier>().insertCommonList([cdto]);
+            } else {
+              context.read<ConversationNotifier>().insertTopList([cdto]);
+            }
+          }
+          isSuccess = true;
+        }
+      } catch (e) {
+        print(e);
+      } finally {
+        _isRequesting = false;
+        if (isSuccess) {
+          Navigator.pop(context);
+        }
       }
     }
-
-    Navigator.pop(context);
   }
 
   Widget _buildItem(BuildContext context, int index) {
-    return Text(_friendList[index].nickName, style: AppStyle.textRegular16,);
+    return Container(
+      height: 44,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          ClipOval(
+            child: CachedNetworkImage(
+              height: 32,
+              width: 32,
+              imageUrl: _friendList[index].avatarUri,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Image.asset(
+                "images/test.png",
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Text(
+            _friendList[index].nickName,
+            style: TextStyle(color: AppColor.textPrimary2, fontSize: 16),
+          ),
+          Spacer(),
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              if (_selectedUidList.contains(_friendList[index].uid)) {
+                _selectedUidList.remove(_friendList[index].uid);
+              } else {
+                _selectedUidList.add(_friendList[index].uid);
+              }
+              setState(() {});
+            },
+            child: _selectedUidList.contains(_friendList[index].uid)
+                ? Container(
+                    height: 20,
+                    width: 20,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: AppColor.mainRed,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColor.mainRed, width: 1),
+                    ),
+                    child: Icon(
+                      Icons.check,
+                      color: AppColor.white,
+                      size: 16,
+                    ),
+                  )
+                : Container(
+                    height: 20,
+                    width: 20,
+                    decoration: BoxDecoration(
+                      color: AppColor.transparent,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColor.textHint, width: 1),
+                    ),
+                  ),
+          )
+        ],
+      ),
+    );
   }
 
   Widget _buildHeader(BuildContext context, int index) {
-    return Text(_friendList[index].getSuspensionTag(), style: AppStyle.redRegular16,);
+    return Container(
+      alignment: Alignment.centerLeft,
+      padding: const EdgeInsets.only(left: 6),
+      height: 28,
+      child: Text(
+        _friendList[index].getSuspensionTag(),
+        style: AppStyle.textSecondaryRegular14,
+      ),
+    );
   }
 }

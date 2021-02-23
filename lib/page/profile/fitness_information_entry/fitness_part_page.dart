@@ -6,6 +6,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
@@ -13,19 +14,15 @@ import 'package:toast/toast.dart';
 import 'package:provider/provider.dart';
 
 class FitnesspartPage extends StatefulWidget {
-  FitnessEntryModel model;
-  FitnesspartPage({this.model});
   @override
   State<StatefulWidget> createState() {
-    return _FitnessPartState(model: model);
+    return _FitnessPartState();
   }
 }
 
 class _FitnessPartState extends State<FitnesspartPage> {
   List<int> choselist = [];
   List<SubTagModel> partList = [];
-  FitnessEntryModel model;
-  _FitnessPartState({this.model});
   @override
   void initState() {
     // TODO: implement initState
@@ -107,11 +104,9 @@ class _FitnessPartState extends State<FitnesspartPage> {
                   if(choselist.isEmpty){
                     Toast.show("请选择想要训练的部位", context);
                   }else{
-                    model.keyPartList = choselist;
+                   Application.fitnessEntryModel.keyPartList = choselist;
                   /*  context.read<FitnessInformationNotifier>().setKeyPartList(choselist);*/
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                      return TrainSeveralTimes(model: model,);
-                    }));
+                  AppRouter.navigateToTrainSeveralPage(context);
                   }
 
                 },

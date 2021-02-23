@@ -221,13 +221,9 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
                     ),
                   ),
                   Positioned(
-                    child: CustomAppBarIconButton(
-                        Icons.arrow_back_ios_outlined,
-                        AppColor.black,
-                        true,
-                        () {
-                          Navigator.pop(context);
-                        }),
+                    child: CustomAppBarIconButton(Icons.arrow_back_ios_outlined, AppColor.black, true, () {
+                      Navigator.pop(context);
+                    }),
                     left: 0,
                   ),
                   Positioned(
@@ -894,14 +890,17 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
           ),
           Positioned(
             child: Container(
-              height: 83,
+              height: 48 + ScreenUtil.instance.bottomBarHeight,
               width: MediaQuery.of(context).size.width,
               color: AppColor.textPrimary2,
               alignment: Alignment.topCenter,
-              padding: const EdgeInsets.only(top: 14),
-              child: Text(
-                "立即开始训练",
-                style: TextStyle(color: AppColor.white, fontSize: 16),
+              child: Container(
+                height: 48,
+                alignment: Alignment.center,
+                child: Text(
+                  "立即开始训练",
+                  style: TextStyle(color: AppColor.white, fontSize: 16),
+                ),
               ),
             ),
             bottom: 0,
