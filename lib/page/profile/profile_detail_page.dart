@@ -566,7 +566,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
               ));
   }
 
-  ///通过布尔值来判断该展示私聊按钮还是关注按钮
   Widget _buttonLayoutSelect() {
     return Stack(
       children: [
