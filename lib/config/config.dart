@@ -118,9 +118,11 @@ class AppConfig {
   }
 
   // 高德ioskey
-  static String amapIOSKey = "836c55dba7d3a44793ec9ae1e1dc2e82";
+  static String amapIOSKey = "ac34e91ffcc967d7dca12f5f8d4bd038";
   // 高德安卓key
-  static String amapAndroidKey = "836c55dba7d3a44793ec9ae1e1dc2e82";
+  static String amapAndroidKey = "18ddc6ba8332f5f7fab942b4fdf3ad9c";
+  // 高德服务端key
+  static String amapServerKey = "836c55dba7d3a44793ec9ae1e1dc2e82";
   // 获取当前系统的高德key
   static String getAmapKey() {
     if(Platform.isIOS){
