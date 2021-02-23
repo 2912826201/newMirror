@@ -42,13 +42,16 @@ class _SlideBannerState extends State<SlideBanner> {
 
   // scroll_to_index定位
   AutoScrollController controller;
-
+  SwiperController swiperController = SwiperController();
   // 指示器横向布局
   final scrollDirection = Axis.horizontal;
 
   @override
   void initState() {
     super.initState();
+    swiperController.addListener(() {
+      print(swiperController.index);
+    });
     controller = AutoScrollController(
         viewportBoundaryGetter: () => Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
         axis: scrollDirection);
@@ -175,18 +178,22 @@ class _SlideBannerState extends State<SlideBanner> {
 
       );
     });
-    int photoIndex = 0;
     return widget.isDynamicDetails ? CupertinoButton(
       borderRadius: BorderRadius.zero,
       padding: EdgeInsets.zero,
       onPressed: () {
         ImagePreview.preview(
           context,
+          initialIndex: indexs,
+          onIndexChanged: (ind) {
+            // 移动到指定下标，设置不播放动画
+            swiperController.move(ind,animation: false);
+            autoPlay(ind);
+          },
           images: List.generate(widget.model.picUrls.length, (index) {
-            photoIndex = index;
             return ImageOptions(
-        url: widget.model.picUrls[photoIndex].url != null ? widget.model.picUrls[photoIndex].url : "",
-        tag: widget.model.picUrls[photoIndex].url + "$indexs",
+        url: widget.model.picUrls[index].url != null ? widget.model.picUrls[index].url : "",
+        tag: widget.model.picUrls[index].url + "$indexs",
         );
       }),
         );
@@ -276,11 +283,10 @@ class _SlideBannerState extends State<SlideBanner> {
                   // setAspectRatio(widget.height)
 
                   child: Swiper(
+                    controller: swiperController,
                     itemCount: widget.model.picUrls.length,
                     itemBuilder: (BuildContext context, int index) {
-
                       print("index:${widget.index}-widget.isHero:${widget.isHero}- widget.isDynamicDetails:${ widget.isDynamicDetails}, widget.pageName :${widget.model.id}");
-
                       return widget.isDynamicDetails||(!widget.isHero)
                           ? buildShowItemContainer(
                               index,
@@ -297,8 +303,6 @@ class _SlideBannerState extends State<SlideBanner> {
                     loop: false,
                     onIndexChanged: (index) {
                       autoPlay(index);
-                    },
-                    onTap: (index) {
                     },
                   ),
                 ),

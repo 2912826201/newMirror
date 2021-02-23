@@ -150,6 +150,9 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> with SingleTickerPr
 
   _onPageChanged(int index) {
     _currentIndex = index;
+    if(widget.onIndexChanged != null) {
+      widget.onIndexChanged(_currentIndex);
+    }
   }
 
   _onBackPressed() {
