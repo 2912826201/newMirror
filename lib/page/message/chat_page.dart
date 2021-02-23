@@ -1876,7 +1876,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
       // ToastShow.show(msg: "跳转直播课详情界面", context: context);
       LiveVideoModel liveModel = LiveVideoModel.fromJson(map);
-      AppRouter.navigateToLiveDetail(context, liveModel.id, heroTag: msgId, liveModel: liveModel);
+      AppRouter.navigateToLiveDetail(context, liveModel.id, heroTag: msgId, liveModel: liveModel,isHaveStartTime:false);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE) {
       // ToastShow.show(msg: "跳转视频课详情界面", context: context);
       LiveVideoModel videoModel = LiveVideoModel.fromJson(map);

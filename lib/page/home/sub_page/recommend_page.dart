@@ -122,6 +122,13 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       newRecommendCoach(),
     ]).then((results) {
       if (mounted) {
+
+        if (recommendModelList.isNotEmpty) {
+          recommendIdList.clear();
+        }
+        if (liveVideoModel.isNotEmpty) {
+          liveVideoModel.clear();
+        }
         setState(() {
           if (results[0] != null) {
             List<HomeFeedModel> modelList = [];
@@ -231,12 +238,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
               onRefresh: () async {
                 print("推荐ye下拉刷新");
                 // dataPage = 1;
-                if (recommendModelList.isNotEmpty) {
-                  recommendIdList.clear();
-                }
-                if (liveVideoModel.isNotEmpty) {
-                  liveVideoModel.clear();
-                }
                 loadStatus = LoadingStatus.STATUS_LOADING;
                 loadText = "加载中...";
                 hasNext = null;
