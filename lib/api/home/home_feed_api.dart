@@ -310,13 +310,13 @@ Future<Map> deleteComment({@required int commentId}) async {
 }
 
 // 评论点赞or取消赞
-Future<Map> laudComment({@required int commentId, @required int laud}) async {
+Future<int> laudComment({@required int commentId, @required int laud}) async {
   Map<String, dynamic> params = {};
   params["commentId"] = commentId;
   params["laud"] = laud;
   BaseResponseModel responseModel = await requestApi(LAUDCOMMENT, params);
   if (responseModel.isSuccess) {
-    return responseModel.data;
+    return responseModel.code;
   } else {
     return null;
   }
