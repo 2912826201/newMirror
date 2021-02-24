@@ -40,7 +40,6 @@ class CommonCommentPage extends StatefulWidget {
   final int pageCommentSize;
   final int pageSubCommentSize;
   final bool isShowHotOrTime;
-  final bool isBottomSheet;
   //互动通知列表带过来的评论内容
   final CommentDtoModel commentDtoModel;
   final bool isShowAt;
@@ -59,7 +58,6 @@ class CommonCommentPage extends StatefulWidget {
     @required this.targetType,
     this.pushId = -1,
     this.globalKeyList,
-    this.isBottomSheet,
     this.externalScrollHeight = 0,
     this.pageCommentSize = 20,
     this.pageSubCommentSize = 3,
@@ -151,9 +149,6 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     courseCommentHot = null;
     courseCommentTime = null;
     isHotOrTime = true;
-    if(widget.isBottomSheet&&widget.commentDtoModel!=null){
-      bottomSheetCommentInit();
-    }
     loadingStatusComment = LoadingStatus.STATUS_LOADING;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (!widget.isShowHotOrTime) {
@@ -166,22 +161,11 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     });
   }
 
-  void bottomSheetCommentInit(){
-    if(widget.commentDtoModel!=null){
-      if(widget.commentDtoModel.type==2){
-        context.read<FeedMapNotifier>().feedMap[widget.targetId].comments.forEach((element) {
-          if(element.id==widget.commentDtoModel.targetId){
-            widget.fatherComment = element;
-          }
-        });
-      }
-    }
-  }
   @override
   Widget build(BuildContext context) {
     print("11111111111111111111111111111111111111");
 
-    if (courseCommentHot != null && isFirstScroll && widget.commentDtoModel != null &&!widget.isBottomSheet) {
+    if (courseCommentHot != null && isFirstScroll && widget.commentDtoModel != null) {
       Future.delayed(Duration(milliseconds: 100), () async {
         print("开始滚动------------------------------------------------------------------------");
         if (widget.commentDtoModel.type == 2) {
@@ -1037,7 +1021,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         }
         courseCommentPageHot++;
 
-        if (!widget.isShowHotOrTime&&!widget.isBottomSheet) {
+        if (!widget.isShowHotOrTime) {
           if (mounted) {
             context
                 .read<FeedMapNotifier>()
