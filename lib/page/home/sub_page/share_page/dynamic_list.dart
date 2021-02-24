@@ -28,11 +28,11 @@ class DynamicListLayout extends StatelessWidget {
       this.model,
       this.pageName,
       this.deleteFeedChanged,
-        this.isHero=false,
+      this.isHero = false,
       this.removeFollowChanged,
       this.mineDetailId,
-        this.topicId,
-        this.isMySelf,
+      this.topicId,
+      this.isMySelf,
       this.isShowConcern})
       : super(key: key);
   final index;
@@ -40,24 +40,28 @@ class DynamicListLayout extends StatelessWidget {
   HomeFeedModel model;
   int mineDetailId;
   String pageName;
+
   // 话题详情页id
   int topicId;
   bool isHero;
   bool isMySelf;
+
   // 删除动态
   ValueChanged<int> deleteFeedChanged;
 
   // 取消关注
   ValueChanged<HomeFeedModel> removeFollowChanged;
+
   // 是否显示关注按钮
   bool isShowConcern;
+
   @override
   Widget build(BuildContext context) {
     // print('==============================动态itembuild');
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: (){
-        if(mineDetailId==model.pushId){
+      onTap: () {
+        if (mineDetailId == model.pushId) {
           return false;
         }
         AppRouter.navigateToMineDetail(context, model.pushId);
@@ -70,7 +74,7 @@ class DynamicListLayout extends StatelessWidget {
               isShowConcern: isShowConcern,
               pageName: pageName,
               isMySelf: isMySelf,
-              mineDetailId: mineDetailId!=null?mineDetailId:0,
+              mineDetailId: mineDetailId != null ? mineDetailId : 0,
               deleteFeedChanged: (id) {
                 deleteFeedChanged(id);
               },
@@ -79,27 +83,25 @@ class DynamicListLayout extends StatelessWidget {
               }),
           // 图片区域
           model.picUrls.isNotEmpty
-              ?
-          SlideBanner(
-            height: model.picUrls[0].height.toDouble(),
-            model: model,
-            index:index,
-            pageName:pageName,
-            isHero:isHero,
-          )
+              ? SlideBanner(
+                  height: model.picUrls[0].height.toDouble(),
+                  model: model,
+                  index: index,
+                  pageName: pageName,
+                  isHero: isHero,
+                )
               : Container(),
           // 视频区域
           model.videos.isNotEmpty ? getVideo(model.videos) : Container(),
           // 点赞，转发，评论三连区域 getTripleArea
-          GetTripleArea( model: model, index: index),
+          GetTripleArea(model: model, index: index),
           // 课程信息和地址
           Offstage(
             offstage: (model.address == null && model.courseDto == null),
             child: Container(
               margin: EdgeInsets.only(left: 16, right: 16),
-              // color: Colors.orange,
               width: ScreenUtil.instance.width,
-              child: getCourseInfo(model,context),
+              child: getCourseInfo(model, context),
             ),
           ),
 
@@ -120,10 +122,10 @@ class DynamicListLayout extends StatelessWidget {
           ),
 
           // 评论文本
-          (context.watch<FeedMapNotifier>().feedMap!=null
-              &&context.watch<FeedMapNotifier>().feedMap[model.id]!=null
-              &&context.watch<FeedMapNotifier>().feedMap[model.id].comments!=null
-              &&context.watch<FeedMapNotifier>().feedMap[model.id].comments.length != 0)
+          (context.watch<FeedMapNotifier>().feedMap != null &&
+                  context.watch<FeedMapNotifier>().feedMap[model.id] != null &&
+                  context.watch<FeedMapNotifier>().feedMap[model.id].comments != null &&
+                  context.watch<FeedMapNotifier>().feedMap[model.id].comments.length != 0)
               ? CommentLayout(model: model)
               : Container(),
           // 输入框
@@ -175,19 +177,24 @@ class DynamicListLayout extends StatelessWidget {
     sizeInfo.offsetRatioX = videos.first.offsetRatioX ?? 0.0;
     sizeInfo.offsetRatioY = videos.first.offsetRatioY ?? 0.0;
     sizeInfo.videoCroppedRatio = videos.first.videoCroppedRatio;
-    return
-      FeedVideoPlayer(videos.last.url,sizeInfo,ScreenUtil.instance.width,isInListView: true,
+    return FeedVideoPlayer(
+      videos.last.url,
+      sizeInfo,
+      ScreenUtil.instance.width,
+      isInListView: true,
     );
   }
 
   // 课程信息和地址
-  Widget getCourseInfo(HomeFeedModel model,BuildContext context) {
+  Widget getCourseInfo(HomeFeedModel model, BuildContext context) {
     List<String> tags = [];
     double longitude;
     double latitude;
     bool isAddress = false;
+    bool isCourse = false;
     if (model.courseDto != null) {
       tags.add(model.courseDto.title);
+      isCourse = true;
     }
     if (model.address != null) {
       tags.add(model.address);
@@ -196,14 +203,38 @@ class DynamicListLayout extends StatelessWidget {
       isAddress = true;
     }
     return Row(
-      children: [for (String item in tags) GestureDetector(
-        onTap: () {
-          if (isAddress) {
-            AppRouter.navigateCreateMapScreenPage(context, longitude, latitude, model.address,);
-          }
-        },
-        child: CourseAddressLabel(item, tags),
-      )],
+      children: [
+        for (String item in tags)
+          GestureDetector(
+            onTap: () {
+              if (tags.length > 1) {
+                if (tags.indexOf(item) == 0) {
+                  AppRouter.navigateToVideoDetail(context, model.courseDto.id);
+                } else {
+                  AppRouter.navigateCreateMapScreenPage(
+                    context,
+                    longitude,
+                    latitude,
+                    model.address,
+                  );
+                }
+              } else {
+                if (isAddress) {
+                  AppRouter.navigateCreateMapScreenPage(
+                    context,
+                    longitude,
+                    latitude,
+                    model.address,
+                  );
+                }
+                if (isCourse) {
+                  AppRouter.navigateToVideoDetail(context, model.courseDto.id);
+                }
+              }
+            },
+            child: CourseAddressLabel(item, tags),
+          )
+      ],
     );
   }
 

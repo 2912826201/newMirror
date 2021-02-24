@@ -288,10 +288,11 @@ class HeadViewState extends State<HeadView> {
     );
   }
   _denounceUser() async {
-    bool isSucess = await ProfileMoreDenounce(model.pushId, 1);
+
+    bool isSucess = await ProfileMoreDenounce(model.id, 1);
     print('isSucess=======================================$isSucess');
     if (isSucess) {
-      ToastShow.show(msg: "举报成功", context: context);
+      ToastShow.show(msg: "感谢你的反馈，我们会尽快处理!", context: context);
     }
   }
 }

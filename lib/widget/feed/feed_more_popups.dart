@@ -192,6 +192,7 @@ class BottomopupState extends State<BottomPopup> {
     itemContainer = Container(height: itemHeight, decoration: decoration, child: center);
 
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap2,
       child: itemContainer,
     );

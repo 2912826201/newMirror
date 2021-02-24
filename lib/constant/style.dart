@@ -48,6 +48,8 @@ class AppStyle {
   // Regular primary3灰色
   static const textPrimary3Regular14 =
       TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.textPrimary3);
+  static const textPrimary3Regular13 =
+  TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textPrimary3);
   static const textPrimary3Regular12 =
       TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textPrimary3);
 
