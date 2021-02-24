@@ -57,7 +57,7 @@ class MyRichTextWidget extends StatelessWidget {
         _resultRichTexts
             .add(TextSpan(text: defaultSubStr, style: defaultText.style));
       }
-
+      print('@@@@@@@@@@@@@@@@@@@@@@model.start${model.start}  start$start  end${model.end}  defaultText$defaultText  ');
       String richSubStr = defaultStr.substring(
           model.start >= start ? model.start : start, model.end);
       _resultRichTexts.add(TextSpan(
