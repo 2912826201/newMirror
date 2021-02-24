@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/user_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
@@ -13,6 +14,7 @@ import 'package:mirror/data/model/profile/profile_model.dart';
 import 'package:mirror/data/model/user_extrainfo_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/profile/profile_detail_list.dart';
 import 'package:mirror/page/profile/profile_details_more.dart';
@@ -77,8 +79,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   @override
   void initState() {
     super.initState();
-    context.read<ProfilePageNotifier>().setFirstModel(widget.userId);
-
+    context.read<ProfilePageNotifier>().setFirstModel(widget.userId,ProfileUiChangeModel());
     ///判断是自己的页面还是别人的页面
     if (context.read<ProfileNotifier>().profile.uid == widget.userId) {
       isMselfId = true;
@@ -650,8 +651,8 @@ class ProfilePageNotifier extends ChangeNotifier {
   Map<int, ProfileUiChangeModel> profileUiChangeModel = {};
 
 
-  void setFirstModel(int id) {
-    profileUiChangeModel[id] = ProfileUiChangeModel();
+  void setFirstModel(int id,ProfileUiChangeModel model) {
+    profileUiChangeModel[id] = model;
   }
 
   void clear(int id) {
@@ -703,11 +704,12 @@ class ProfilePageNotifier extends ChangeNotifier {
 }
 
 class ProfileUiChangeModel {
-  bool isFollow = false;
+  bool isFollow;
   bool canOnClick = true;
   Color titleColor = AppColor.transparent;
   ProfileModel attentionModel = ProfileModel();
   String backImage = "images/resource/2.0x/white_return@2x.png";
-  List<String> dynmicStringList = [];
+  List<String> dynmicStringList;
   int isBlack = 0;
+  ProfileUiChangeModel({this.isFollow = false,this.dynmicStringList});
 }

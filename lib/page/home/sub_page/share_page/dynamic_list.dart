@@ -4,6 +4,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/feed/create_map_screen.dart';
 import 'package:mirror/page/feed/feed_detail_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/attention_user.dart';
@@ -60,7 +61,11 @@ class DynamicListLayout extends StatelessWidget {
         if(mineDetailId==model.pushId){
           return false;
         }
-        AppRouter.navigateToMineDetail(context, model.pushId);
+        if(!context.read<TokenNotifier>().isLoggedIn){
+          AppRouter.navigateToLoginPage(context);
+        }else{
+          AppRouter.navigateToMineDetail(context, model.pushId);
+        }
       },
       child: Column(
         children: [
