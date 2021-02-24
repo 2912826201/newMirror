@@ -211,21 +211,21 @@ class DateUtil {
     var date = new DateTime.fromMillisecondsSinceEpoch(time);
     String year = date.year.toString();
     String month = date.month.toString();
-    if (date.month <= 9) {
-      month = "0" + month;
-    }
+    // if (date.month <= 9) {
+    //   month = "0" + month;
+    // }
     String day = date.day.toString();
-    if (date.day <= 9) {
-      day = "0" + day;
-    }
+    // if (date.day <= 9) {
+    //   day = "0" + day;
+    // }
     String hour = date.hour.toString();
-    if (date.hour <= 9) {
-      hour = "0" + hour;
-    }
+    // if (date.hour <= 9) {
+    //   hour = "0" + hour;
+    // }
     String minute = date.minute.toString();
-    if (date.minute <= 9) {
-      minute = "0" + minute;
-    }
+    // if (date.minute <= 9) {
+    //   minute = "0" + minute;
+    // }
     if (currentDateString.year - date.year > 0) {
       result = year + "${showText?"年":"-"}" + month + "${showText?"月":"-"}" + day + "${showText?"日":""}"+" " + hour
           + ":" + minute;

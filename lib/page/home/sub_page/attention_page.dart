@@ -304,6 +304,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           setState(() {
             attentionIdList.remove(id);
             context.read<FeedMapNotifier>().deleteFeed(id);
+            if (attentionIdList.isEmpty) {
+              status = Status.noConcern;
+            }
           });
         },
         removeFollowChanged: (model) {

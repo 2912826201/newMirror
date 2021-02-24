@@ -37,7 +37,8 @@ class TopicNewestState extends State<TopicNewest> with AutomaticKeepAliveClientM
   bool get wantKeepAlive => true; //必须重写
   @override
   Widget build(BuildContext context) {
-    return widget.topicList.isNotEmpty
+    return widget.loadStatus == LoadingStatus.STATUS_LOADING ? Container() :
+      widget.topicList.isNotEmpty
         ? Container(
             child: RefreshIndicator(
                 onRefresh: () async {
