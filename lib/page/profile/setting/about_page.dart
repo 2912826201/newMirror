@@ -56,7 +56,7 @@ class _AboutPageState extends State<AboutPage>{
                       height: 64,
                       color: AppColor.bgBlack,
                     ),
-                      Text("${AppConfig.version}版",style: AppStyle.textHintRegular12,),
+                      Text("${AppConfig.version}-${AppConfig.buildNumber}",style: AppStyle.textHintRegular12,),
                         Spacer(),
                       ],),
                   ),

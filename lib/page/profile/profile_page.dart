@@ -50,7 +50,9 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     super.initState();
     uid = context.read<ProfileNotifier>()
         .profile.uid;
-    context.read<ProfilePageNotifier>().setFirstModel(uid,ProfileUiChangeModel());
+    if(!context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(uid)){
+      context.read<ProfilePageNotifier>().setFirstModel(uid);
+    }
     getProfileModel();
   }
 

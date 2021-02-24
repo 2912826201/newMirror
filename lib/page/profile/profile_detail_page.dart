@@ -79,7 +79,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   @override
   void initState() {
     super.initState();
-    context.read<ProfilePageNotifier>().setFirstModel(widget.userId,ProfileUiChangeModel());
+    if(!context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(widget.userId)){
+      context.read<ProfilePageNotifier>().setFirstModel(widget.userId);
+    }
     ///判断是自己的页面还是别人的页面
     if (context.read<ProfileNotifier>().profile.uid == widget.userId) {
       isMselfId = true;
@@ -651,8 +653,8 @@ class ProfilePageNotifier extends ChangeNotifier {
   Map<int, ProfileUiChangeModel> profileUiChangeModel = {};
 
 
-  void setFirstModel(int id,ProfileUiChangeModel model) {
-    profileUiChangeModel[id] = model;
+  void setFirstModel(int id) {
+    profileUiChangeModel[id] = ProfileUiChangeModel();
   }
 
   void clear(int id) {
@@ -704,12 +706,11 @@ class ProfilePageNotifier extends ChangeNotifier {
 }
 
 class ProfileUiChangeModel {
-  bool isFollow;
+  bool isFollow = false;
   bool canOnClick = true;
   Color titleColor = AppColor.transparent;
   ProfileModel attentionModel = ProfileModel();
   String backImage = "images/resource/2.0x/white_return@2x.png";
-  List<String> dynmicStringList;
+  List<String> dynmicStringList = [];
   int isBlack = 0;
-  ProfileUiChangeModel({this.isFollow = false,this.dynmicStringList});
 }

@@ -191,22 +191,21 @@ class HeadViewState extends State<HeadView> {
     // TODO: implement initState
     super.initState();
     print('===========================================model.isFollow==${model.isFollow}');
-    List<String> moreList = [];
     if (model.pushId == context.read<ProfileNotifier>().profile.uid) {
       if(!context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(model.pushId)){
-        moreList.add("删除");
-        context.read<ProfilePageNotifier>().setFirstModel(model.pushId,ProfileUiChangeModel(dynmicStringList: moreList));
+        context.read<ProfilePageNotifier>().setFirstModel(model.pushId);
       }
-    } else if(!context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(model.pushId)) {
-          if(model.isFollow == 1||model.isFollow==3){
-          moreList.add("取消关注");
-          }
-          moreList.add("举报");
-          context.read<ProfilePageNotifier>().setFirstModel(model.pushId,ProfileUiChangeModel(isFollow: model
-              .isFollow == 1||model.isFollow==3?false:true,dynmicStringList:moreList));
-          if(context.read<TokenNotifier>().isLoggedIn){
-            _checkBlackStatus();
-          }
+      if(!context.read<ProfilePageNotifier>().profileUiChangeModel[model.pushId].dynmicStringList.contains("删除")){
+        context.read<ProfilePageNotifier>().profileUiChangeModel[model.pushId].dynmicStringList.add("删除");
+      }
+    } else {
+        if(!context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(model.pushId)){
+          context.read<ProfilePageNotifier>().setFirstModel(model.pushId);
+          context.read<ProfilePageNotifier>().changeIsFollow(true,model.isFollow == 1||model.isFollow==3?false:true,
+              model
+              .pushId);
+          _checkBlackStatus();
+        }
     }
   }
   @override
