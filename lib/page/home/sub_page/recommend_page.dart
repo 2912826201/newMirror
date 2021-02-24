@@ -8,6 +8,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -307,11 +308,16 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
         itemBuilder: (context, index) {
           return  GestureDetector(
             onTap: () {
-              if(liveVideoModel[index].coachDto.isLiving == 0) {
-                AppRouter.navigateToMineDetail(context, liveVideoModel[index].coachDto.uid);
-              } else {
-                ToastShow.show(msg: "直播页", context: context,gravity: Toast.CENTER);
+              if(context.read<TokenNotifier>().isLoggedIn){
+                if(liveVideoModel[index].coachDto.isLiving == 0) {
+                  AppRouter.navigateToMineDetail(context, liveVideoModel[index].coachDto.uid);
+                } else {
+                  ToastShow.show(msg: "直播页", context: context,gravity: Toast.CENTER);
+                }
+              }else{
+                AppRouter.navigateToLoginPage(context);
               }
+
             },
             child:   Container(
               child: Column(

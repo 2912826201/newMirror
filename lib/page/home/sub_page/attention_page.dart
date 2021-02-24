@@ -19,7 +19,9 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 enum Status {
   notLoggedIn, //未登录
@@ -158,6 +160,25 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     }
     lastTime = model.lastTime;
     isRequestInterface = false;
+    // 更新动态数量
+    int addFeedNum = 0;
+    attentionModelList.forEach((element) {
+      var obj = element.id;
+      var isExist = false;
+      context.read<FeedMapNotifier>().feedMap.forEach((key, value) {
+        var aj = value.id;
+        if (obj == aj) {
+          isExist = true;
+          return;
+        }
+      });
+      if(!isExist) {
+        addFeedNum++;
+      }
+    });
+    if (addFeedNum != 0) {
+      ToastShow.show(msg: "更新了$addFeedNum条动态", context: context,gravity: Toast.CENTER);
+    }
     // 更新全局监听
     context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
   }

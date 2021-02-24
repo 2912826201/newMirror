@@ -73,11 +73,11 @@ class HeadViewState extends State<HeadView> {
       print('inThisBlack===================${blackModel.inThisBlack}');
       print('inYouBlack===================${blackModel.inYouBlack}');
       if (blackModel.inYouBlack == 1) {
-        context.read<ProfilePageNotifier>().changeBlack(true, model.pushId, 1);
+        context.read<ProfilePageNotifier>().changeBlack(false, model.pushId, 1);
       } else if (blackModel.inThisBlack == 1) {
-        context.read<ProfilePageNotifier>().changeBlack(true, model.pushId, 2);
+        context.read<ProfilePageNotifier>().changeBlack(false, model.pushId, 2);
       } else {
-        context.read<ProfilePageNotifier>().changeBlack(true, model.pushId, 0);
+        context.read<ProfilePageNotifier>().changeBlack(false, model.pushId, 0);
       }
     }
   }
@@ -182,6 +182,9 @@ class HeadViewState extends State<HeadView> {
         borderRadius:BorderRadius.circular((14.0)),
         ),
         child:Text("已关注",style: AppStyle.textRegular12,)),
+        onEnd: (){
+
+        },
       );
     }
   }
@@ -234,6 +237,8 @@ class HeadViewState extends State<HeadView> {
                       Text(
                         model.name ?? "空名字",
                         style: TextStyle(fontSize: 15),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                       // onTap: () {},
                     // ),
