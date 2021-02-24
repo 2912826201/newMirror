@@ -213,11 +213,11 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       child: Center(
           child: Row(
         children: [
-          CustomAppBarIconButton(Icons.qr_code, AppColor.black, true, () {
+          CustomAppBarIconButton(icon: Icons.qr_code, iconColor: AppColor.black, isLeading: true, onTap: () {
             AppRouter.navigateToScanCodePage(context);
           }),
           Spacer(),
-          CustomAppBarIconButton(Icons.menu, AppColor.black, false, () {
+          CustomAppBarIconButton(icon: Icons.menu, iconColor: AppColor.black, isLeading: false, onTap: () {
             AppRouter.navigateToSettingHomePage(context);
           }),
         ],

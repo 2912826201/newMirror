@@ -42,13 +42,7 @@ class _VipOpenPage extends State<VipOpenPage> {
       appBar: CustomAppBar(
         backgroundColor: AppColor.black,
         brightness: Brightness.dark,
-        leading: CustomAppBarIconButton(Icons.arrow_back_ios_outlined, AppColor.white, true, () {
-          Navigator.pop(context);
-        }),
-        titleWidget: Text(
-          "我的VIP会员",
-          style: AppStyle.whiteMedium18,
-        ),
+        titleString: "我的VIP会员",
       ),
       body: Container(
         height: ScreenUtil.instance.height,

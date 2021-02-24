@@ -54,7 +54,6 @@ import 'item/message_input_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
 
-
 ////////////////////////////////
 //
 /////////////聊天会话页面
@@ -69,20 +68,15 @@ class ChatPage extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return ChatPageState(conversation,shareMessage);
+    return ChatPageState(conversation, shareMessage);
   }
 }
 
 class ChatPageState extends XCState with TickerProviderStateMixin {
-
-
-
   ConversationDto conversation;
   Message shareMessage;
-  
+
   ChatPageState(this.conversation, this.shareMessage);
-  
-  
 
   ///所有的会话消息
   List<ChatDataModel> chatDataList = <ChatDataModel>[];
@@ -237,8 +231,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
     _scrollController.dispose();
     if (Application.appContext != null) {
       //清聊天未读数
-      MessageManager.clearUnreadCount(Application.appContext, conversation.conversationId,
-          Application.profile.uid, conversation.type);
+      MessageManager.clearUnreadCount(
+          Application.appContext, conversation.conversationId, Application.profile.uid, conversation.type);
       //清其他数据
       Application.appContext.read<GroupUserProfileNotifier>().clearAllUser();
       Application.appContext.read<VoiceSettingNotifier>().stop();
@@ -304,7 +298,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
 
   //获取列表内容
   Widget getChatDetailsBody() {
-    bool isShowName= conversation.getType() == RCConversationType.Group;
+    bool isShowName = conversation.getType() == RCConversationType.Group;
     return ChatDetailsBody(
       scrollController: _scrollController,
       chatDataList: chatDataList,
@@ -318,9 +312,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
       refreshController: _refreshController,
       isHaveAtMeMsg: isHaveAtMeMsg,
       isHaveAtMeMsgIndex: isHaveAtMeMsgIndex,
-      isShowTop:!MessageItemHeightUtil.init().judgeMessageItemHeightIsThenScreenHeight(chatDataList, isShowName),
-      onRefresh: (conversation.getType() != RCConversationType.System) ?
-        _onRefresh : _onRefreshSystemInformation,
+      isShowTop: !MessageItemHeightUtil.init().judgeMessageItemHeightIsThenScreenHeight(chatDataList, isShowName),
+      onRefresh: (conversation.getType() != RCConversationType.System) ? _onRefresh : _onRefreshSystemInformation,
       loadText: loadText,
       loadStatus: loadStatus,
       isShowChatUserName: isShowName,
@@ -334,9 +327,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
   //获取appbar
   Widget getAppBar() {
     return CustomAppBar(
-      titleString: chatUserName??"",
+      titleString: chatUserName ?? "",
       actions: [
-        CustomAppBarIconButton(Icons.more_horiz, AppColor.black, false, _topMoreBtnClick),
+        CustomAppBarIconButton(
+            icon: Icons.more_horiz, iconColor: AppColor.black, isLeading: false, onTap: _topMoreBtnClick),
       ],
     );
   }
@@ -468,7 +462,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
           hintStyle: TextStyle(fontSize: 14, color: AppColor.textHint),
           // 设置为true,contentPadding才会生效，TextField会有默认高度。
           isCollapsed: true,
-          contentPadding: EdgeInsets.only(top: 6, bottom: 4, left: 16,right: 16),
+          contentPadding: EdgeInsets.only(top: 6, bottom: 4, left: 16, right: 16),
         ),
 
         rangeStyles: getTextFieldStyle(Application.appContext.read<ChatEnterNotifier>().rules),
@@ -646,10 +640,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
             ),
           ),
           onTap: () {
-            int startIndex=_textController.text.length??0;
+            int startIndex = _textController.text.length ?? 0;
             context
                 .read<ChatEnterNotifier>()
-                .addRules(Rule(startIndex, startIndex+emojiModel.code.length, emojiModel.code, -1, true));
+                .addRules(Rule(startIndex, startIndex + emojiModel.code.length, emojiModel.code, -1, true));
             _textController.text += emojiModel.code;
             _changTextLen(_textController.text);
           },
@@ -720,10 +714,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
     if (conversation == null) {
       //print("未知信息");
     } else {
-      print("-*----------------------"+conversation.toMap().toString());
-      if(conversation.name==null||conversation.name.trim().length<1){
-        chatUserName=conversation.conversationId;
-      }else{
+      print("-*----------------------" + conversation.toMap().toString());
+      if (conversation.name == null || conversation.name.trim().length < 1) {
+        chatUserName = conversation.conversationId;
+      } else {
         chatUserName = conversation.name;
       }
       chatUserId = conversation.conversationId;
@@ -738,23 +732,23 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
     if (chatTypeId == RCConversationType.Group) {
       getChatGroupUserModelList(chatUserId, context);
     }
-    
+
     print("----------------------------chatUserName:$chatUserName$chatUserId");
   }
 
   //初始化一些数据
   void initSetData() async {
-    Future.delayed(Duration(milliseconds: 200), ()async {
+    Future.delayed(Duration(milliseconds: 200), () async {
       List msgList = new List();
-      msgList = await RongCloud.init().getHistoryMessages(conversation.getType(),
-          conversation.conversationId, new DateTime.now().millisecondsSinceEpoch, 20, 0);
+      msgList = await RongCloud.init().getHistoryMessages(
+          conversation.getType(), conversation.conversationId, new DateTime.now().millisecondsSinceEpoch, 20, 0);
       print("历史记录${msgList.length}");
       if (msgList != null && msgList.length > 0) {
         for (int i = 0; i < msgList.length; i++) {
           chatDataList.add(getMessage((msgList[i] as Message), isHaveAnimation: false));
         }
       }
-      if (shareMessage != null&&chatDataList.length>0) {
+      if (shareMessage != null && chatDataList.length > 0) {
         chatDataList[0].isHaveAnimation = true;
       }
 
@@ -941,8 +935,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
       while (isHaveAtMeMsg && isHaveAtMeMsgIndex < 0) {
         //print("chatDataList.len:${chatDataList.length}");
         List msgList = new List();
-        msgList = await RongCloud.init().getHistoryMessages(conversation.getType(),
-            conversation.conversationId, chatDataList[chatDataList.length - 1].msg.sentTime, 20, 0);
+        msgList = await RongCloud.init().getHistoryMessages(conversation.getType(), conversation.conversationId,
+            chatDataList[chatDataList.length - 1].msg.sentTime, 20, 0);
         List<ChatDataModel> dataList = <ChatDataModel>[];
         if (msgList != null && msgList.length > 0) {
           for (int i = 1; i < msgList.length; i++) {
@@ -1307,7 +1301,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
           Application.appContext.read<ChatMessageProfileNotifier>().clearMessage();
         }
         //当进入聊天界面,没有任何聊天记录,这时对方给我发消息就可能会照成崩溃
-        if (chatDataList.length>0&&message.messageUId == chatDataList[0].msg.messageUId) {
+        if (chatDataList.length > 0 && message.messageUId == chatDataList[0].msg.messageUId) {
           return Container();
         }
         ChatDataModel chatDataModel = getMessage(message, isHaveAnimation: true);
@@ -1573,15 +1567,15 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
   }
 
   //头部-更多按钮的点击事件
-  _topMoreBtnClick(){
+  _topMoreBtnClick() {
     _focusNode.unfocus();
     ToastShow.show(msg: "点击了更多那妞", context: context);
-    judgeJumpPage(chatTypeId, this.chatUserId, conversation.type, context, chatUserName,
-        _morePageOnClick, _moreOnClickExitChatPage);
+    judgeJumpPage(chatTypeId, this.chatUserId, conversation.type, context, chatUserName, _morePageOnClick,
+        _moreOnClickExitChatPage);
   }
 
   //更多的界面-里面进行了一些的点击事件
-  _morePageOnClick(int type, String name){
+  _morePageOnClick(int type, String name) {
     //type  0-用户名  1--群名 2--拉黑 3--邀请不是相互关注-进行提醒
     if (type == 0) {
       //修改了用户名
@@ -1604,7 +1598,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
   }
 
   //更多界面点击了退出群聊-要退出聊天界面
-  _moreOnClickExitChatPage(){
+  _moreOnClickExitChatPage() {
     //退出群聊
     MessageManager.removeConversation(context, chatUserId, Application.profile.uid, conversation.type);
     Future.delayed(Duration.zero, () {
@@ -1613,7 +1607,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
   }
 
   //头部显示的关注按钮的点击事件
-  _attntionOnClick()async{
+  _attntionOnClick() async {
     if (conversation.type == PRIVATE_TYPE) {
       BlackModel blackModel = await ProfileCheckBlack(int.parse(chatUserId));
       String text = "";
@@ -1629,10 +1623,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
           if (mounted) {
             reload(() {});
           }
-             if(context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(int.parse(chatUserId))){
-               print('=================个人主页同步');
-            context.read<ProfilePageNotifier>().changeIsFollow(true,false, int.parse(chatUserId));
-             }
+          if (context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(int.parse(chatUserId))) {
+            print('=================个人主页同步');
+            context.read<ProfilePageNotifier>().changeIsFollow(true, false, int.parse(chatUserId));
+          }
         }
       }
       ToastShow.show(msg: text, context: context);
@@ -1643,7 +1637,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
       }
     }
   }
-
 
   //at 了那个用户
   void atListItemClick(ChatGroupUserModel userModel, int index) {
@@ -1750,8 +1743,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
   //刷新数据--加载更多以前的数据
   _onRefresh() async {
     List msgList = new List();
-    msgList = await RongCloud.init().getHistoryMessages(conversation.getType(),
-        conversation.conversationId, chatDataList[chatDataList.length - 1].msg.sentTime, 20, 0);
+    msgList = await RongCloud.init().getHistoryMessages(
+        conversation.getType(), conversation.conversationId, chatDataList[chatDataList.length - 1].msg.sentTime, 20, 0);
     List<ChatDataModel> dataList = <ChatDataModel>[];
     if (msgList != null && msgList.length > 0) {
       dataList.clear();
@@ -1850,7 +1843,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
     context.read<FeedMapNotifier>().updateFeedMap(list);
     // print("----------feedModel:${feedModel.toJson().toString()}");
     // 跳转动态详情页
-    AppRouter.navigateFeedDetailPage(context: context, model:feedModel, type:1);
+    AppRouter.navigateFeedDetailPage(context: context, model: feedModel, type: 1);
   }
 
   //所有的item点击事件
@@ -1874,11 +1867,12 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
       ToastShow.show(msg: "跳转放大图片页-$content", context: context);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_USER) {
       // ToastShow.show(msg: "跳转用户界面", context: context);
-      AppRouter.navigateToMineDetail(context,map["uid"]);
+      AppRouter.navigateToMineDetail(context, map["uid"]);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
       // ToastShow.show(msg: "跳转直播课详情界面", context: context);
       LiveVideoModel liveModel = LiveVideoModel.fromJson(map);
-      AppRouter.navigateToLiveDetail(context, liveModel.id, heroTag: msgId, liveModel: liveModel,isHaveStartTime:false);
+      AppRouter.navigateToLiveDetail(context, liveModel.id,
+          heroTag: msgId, liveModel: liveModel, isHaveStartTime: false);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE) {
       // ToastShow.show(msg: "跳转视频课详情界面", context: context);
       LiveVideoModel videoModel = LiveVideoModel.fromJson(map);
