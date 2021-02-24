@@ -54,7 +54,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
         leading: CustomAppBarIconButton(
             icon: Icons.camera_alt_outlined,
             iconColor: AppColor.black,
-            isLeading: true,
             onTap: () {
               print("${FluroRouter.appRouter.hashCode}");
               AppRouter.navigateToMediaPickerPage(
@@ -85,7 +84,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
           CustomAppBarIconButton(
               icon: Icons.search,
               iconColor: AppColor.black,
-              isLeading: false,
               onTap: () {
                 AppRouter.navigateSearchPage(context);
               }),

@@ -67,7 +67,7 @@ class _ScanCodeState extends State<ScanCodePage> {
         appBar: CustomAppBar(
           titleString: "扫描二维码",
           actions: [
-            CustomAppBarTextButton("相册", AppColor.textPrimary2, false, () {
+            CustomAppBarTextButton("相册", AppColor.textPrimary2, () {
               _getImagePicker();
               /*getImage();*/
             }),

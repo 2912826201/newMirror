@@ -56,7 +56,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                           ? CustomAppBarIconButton(
                               icon: Icons.arrow_back_ios_outlined,
                               iconColor: brightness == Brightness.light ? AppColor.black : AppColor.white,
-                              isLeading: true,
                               onTap: leadingOnTap == null
                                   ? () {
                                       Navigator.pop(context);
@@ -101,7 +100,6 @@ class CustomAppBarIconButton extends StatefulWidget {
     this.icon,
     this.svgName,
     this.iconColor = AppColor.black,
-    this.isLeading = false,
     this.onTap,
   })  : assert(iconColor != null || svgName != null),
         super(key: key);
@@ -109,7 +107,6 @@ class CustomAppBarIconButton extends StatefulWidget {
   final IconData icon;
   final String svgName;
   final Color iconColor;
-  final bool isLeading;
   final Function() onTap;
 
   @override
@@ -125,7 +122,6 @@ class _CustomAppBarIconButtonState extends State<CustomAppBarIconButton> {
       width: CustomAppBar.appBarButtonWidth,
       //高度填充满整个AppBar
       height: CustomAppBar.appBarHeight,
-      alignment: widget.isLeading ? Alignment.centerRight : Alignment.centerLeft,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         child: Icon(
@@ -155,11 +151,10 @@ class _CustomAppBarIconButtonState extends State<CustomAppBarIconButton> {
 }
 
 class CustomAppBarTextButton extends StatefulWidget {
-  CustomAppBarTextButton(this.text, this.iconColor, this.isLeading, this.onTap, {Key key}) : super(key: key);
+  CustomAppBarTextButton(this.text, this.textColor, this.onTap, {Key key}) : super(key: key);
 
   final String text;
-  final Color iconColor;
-  final bool isLeading;
+  final Color textColor;
   final Function() onTap;
 
   @override
@@ -175,16 +170,15 @@ class _CustomAppBarTextButtonState extends State<CustomAppBarTextButton> {
       //高度填充满整个AppBar
       height: CustomAppBar.appBarHeight,
       alignment: Alignment.center,
-      padding: widget.isLeading
-          ? EdgeInsets.only(left: CustomAppBar.appBarIconPadding)
-          : EdgeInsets.only(right: CustomAppBar.appBarIconPadding),
+      padding: const EdgeInsets.only(
+          left: CustomAppBar.appBarHorizontalPadding, right: CustomAppBar.appBarHorizontalPadding),
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         child: Text(
           widget.text,
           style: TextStyle(
             fontSize: 16,
-            color: isPressed ? widget.iconColor.withOpacity(0.5) : widget.iconColor,
+            color: isPressed ? widget.textColor.withOpacity(0.5) : widget.textColor,
           ),
         ),
         onTapDown: (details) {

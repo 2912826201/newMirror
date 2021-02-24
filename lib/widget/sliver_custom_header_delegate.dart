@@ -194,14 +194,15 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
               child: SafeArea(
                 bottom: false,
                 child: Container(
+                  padding: const EdgeInsets.only(
+                      left: CustomAppBar.appBarHorizontalPadding, right: CustomAppBar.appBarHorizontalPadding),
                   height: this.collapsedHeight,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       CustomAppBarIconButton(
-                          icon: Icons.arrow_back_ios,
+                          icon: Icons.arrow_back_ios_outlined,
                           iconColor: this.makeStickyHeaderTextColor(shrinkOffset, true),
-                          isLeading: false,
                           onTap: () => Navigator.pop(context)),
                       Expanded(
                           child: SizedBox(
@@ -225,7 +226,6 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
                       CustomAppBarIconButton(
                         icon: Icons.share,
                         iconColor: this.makeStickyHeaderTextColor(shrinkOffset, true),
-                        isLeading: false,
                         onTap: shareBtnClick,
                       ),
                     ],

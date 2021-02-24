@@ -89,7 +89,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   _initAppBar() {
     _selectionModeAppBar = CustomAppBar(
       titleString: "健身相册",
-      leading: CustomAppBarTextButton("取消", AppColor.textPrimary2, true, () {
+      leading: CustomAppBarTextButton("取消", AppColor.textPrimary2, () {
         setState(() {
           _isSelectionMode = false;
         });
@@ -101,7 +101,6 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
         CustomAppBarIconButton(
             icon: Icons.camera_alt_outlined,
             iconColor: AppColor.black,
-            isLeading: false,
             onTap: () {
               AppRouter.navigateToMediaPickerPage(context, 1, typeImage, false, startPageGallery, false, _uploadImage);
             }),

@@ -224,11 +224,10 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
                     child: CustomAppBarIconButton(
                         icon: Icons.arrow_back_ios_outlined,
                         iconColor: AppColor.black,
-                        isLeading: true,
                         onTap: () {
                           Navigator.pop(context);
                         }),
-                    left: 0,
+                    left: CustomAppBar.appBarHorizontalPadding,
                   ),
                   Positioned(
                     child: Container(

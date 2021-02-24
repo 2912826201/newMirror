@@ -522,7 +522,6 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
           ? CustomAppBarIconButton(
               icon: Icons.close,
               iconColor: AppColor.white,
-              isLeading: true,
               onTap: () {
                 context
                     .read<SelectedMapNotifier>()
@@ -531,7 +530,6 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
           : CustomAppBarIconButton(
               icon: Icons.arrow_back_ios_outlined,
               iconColor: AppColor.white,
-              isLeading: true,
               onTap: () {
                 Navigator.pop(context);
               }),

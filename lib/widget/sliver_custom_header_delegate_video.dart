@@ -211,14 +211,15 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
               child: SafeArea(
                 bottom: false,
                 child: Container(
+                  padding: const EdgeInsets.only(
+                      left: CustomAppBar.appBarHorizontalPadding, right: CustomAppBar.appBarHorizontalPadding),
                   height: this.collapsedHeight,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       CustomAppBarIconButton(
-                        icon: Icons.arrow_back_ios,
+                        icon: Icons.arrow_back_ios_outlined,
                         iconColor: AppColor.white,
-                        isLeading: false,
                         onTap: () => Navigator.pop(context),
                       ),
                       Expanded(
@@ -246,7 +247,6 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
                           CustomAppBarIconButton(
                             icon: isFavor ? Icons.favorite : Icons.favorite_border_rounded,
                             iconColor: isFavor ? AppColor.mainRed : AppColor.white,
-                            isLeading: false,
                             onTap: () {
                               if (favorBtnClick != null) {
                                 favorBtnClick();
@@ -256,7 +256,6 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
                           CustomAppBarIconButton(
                             icon: Icons.share,
                             iconColor: AppColor.white,
-                            isLeading: false,
                             onTap: shareBtnClick,
                           ),
                         ],
