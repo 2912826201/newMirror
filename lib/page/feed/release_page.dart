@@ -330,7 +330,17 @@ class FeedHeader extends StatelessWidget {
               height: 28,
               iconSting: "images/resource/2.0x/shut_down@2x.png",
               onPressed: () {
-                Navigator.of(context).pop(true);
+                showAppDialog(context,
+                  confirm: AppDialogButton("确定",(){
+                    Navigator.of(context).pop(true);
+                    return true;
+                  }),
+                  cancel: AppDialogButton("取消", (){
+                    return true;
+                  }),
+                  title: "退出编辑",
+                  info: "退出后动态内容将不保存，确定放弃编辑动态吗？",
+                );
               },
             ),
           ),
