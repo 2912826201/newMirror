@@ -89,7 +89,6 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
   _initAppBar() {
     _selectionModeAppBar = CustomAppBar(
       titleString: "健身相册",
-      leadingWidth: 56.0,
       leading: CustomAppBarTextButton("取消", AppColor.textPrimary2, true, () {
         setState(() {
           _isSelectionMode = false;

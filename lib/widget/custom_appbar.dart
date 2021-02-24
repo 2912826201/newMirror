@@ -7,6 +7,7 @@ import 'package:mirror/constant/style.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   static const double appBarHeight = 44.0;
+  static const double appBarHorizontalPadding = 8.0;
   static const double appBarIconPadding = 16.0;
   static const double appBarIconSize = 28.0;
   static const double appBarButtonWidth = 44.0;
@@ -20,7 +21,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       this.brightness = Brightness.light,
       this.hasLeading = true,
       this.leading,
-      this.leadingWidth,
       this.leadingOnTap,
       this.hasDivider = true})
       : super(key: key);
@@ -32,7 +32,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Brightness brightness;
   final bool hasLeading;
   final Widget leading;
-  final double leadingWidth;
   final Function() leadingOnTap;
   final bool hasDivider;
 
@@ -43,31 +42,52 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return PreferredSize(
       child: AppBar(
-        title: titleWidget == null
-            ? Text(
-                titleString,
-                style: brightness == Brightness.light ? AppStyle.textMedium18 : AppStyle.whiteMedium18,
-              )
-            : titleWidget,
-        actions: actions,
+        title: Row(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              flex: 1,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  hasLeading
+                      ? leading == null
+                          ? CustomAppBarIconButton(
+                              icon: Icons.arrow_back_ios_outlined,
+                              iconColor: brightness == Brightness.light ? AppColor.black : AppColor.white,
+                              isLeading: true,
+                              onTap: leadingOnTap == null
+                                  ? () {
+                                      Navigator.pop(context);
+                                    }
+                                  : leadingOnTap)
+                          : leading
+                      : Container(),
+                ],
+              ),
+            ),
+            titleWidget == null
+                ? Text(
+                    titleString,
+                    style: brightness == Brightness.light ? AppStyle.textMedium18 : AppStyle.whiteMedium18,
+                  )
+                : titleWidget,
+            Expanded(
+              flex: 1,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: actions == null ? [] : actions,
+              ),
+            ),
+          ],
+        ),
         elevation: hasDivider ? 0.5 : 0,
         backgroundColor: backgroundColor,
         brightness: brightness,
         centerTitle: true,
-        leading: hasLeading
-            ? leading == null
-                ? CustomAppBarIconButton(
-                    icon: Icons.arrow_back_ios_outlined,
-                    iconColor: brightness == Brightness.light ? AppColor.black : AppColor.white,
-                    isLeading: true,
-                    onTap: leadingOnTap == null
-                        ? () {
-                            Navigator.pop(context);
-                          }
-                        : leadingOnTap)
-                : leading
-            : null,
-        leadingWidth: leadingWidth == null ? appBarButtonWidth : leadingWidth,
+        leading: null,
+        titleSpacing: appBarHorizontalPadding,
         automaticallyImplyLeading: false,
       ),
       preferredSize: preferredSize,
