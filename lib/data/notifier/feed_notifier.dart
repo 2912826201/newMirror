@@ -130,7 +130,9 @@ class FeedMapNotifier extends ChangeNotifier {
 
   // 动态评论详情页赋值
   void commensAssignment(int id, List<CommentDtoModel> commentList, int totalCount) {
-    feedMap[id].comments = commentList;
+    List<CommentDtoModel> listComment=<CommentDtoModel>[];
+    listComment.addAll(commentList);
+    feedMap[id].comments = listComment;
     feedMap[id].totalCount = totalCount;
     notifyListeners();
   }

@@ -63,6 +63,8 @@ class DateUtil {
     }
   }
 
+
+
   //获取今日的日期
   //列如：2020-12-10
   static String formatToDayDateString() {
@@ -115,6 +117,16 @@ class DateUtil {
     return aDate.isAfter(bDate);
   }
 
+  //获取两个时间的分钟相差数
+  static int twoDateTimeMinutes(DateTime aDate, DateTime bDate){
+    return ((bDate.millisecondsSinceEpoch-aDate.millisecondsSinceEpoch)/1000/60)~/1;
+  }
+  //获取两个时间的时钟相差数
+  static int twoDateTimeHours(DateTime aDate, DateTime bDate){
+    return ((bDate.millisecondsSinceEpoch-aDate.millisecondsSinceEpoch)/1000/60/60)~/1;
+  }
+
+
   //传入时间与现在时间进行比较 看谁大
   //传入的时间大 返回true
   //传入的时间小 返回false
@@ -124,9 +136,9 @@ class DateUtil {
   }
 
   //判断这个时间是不是两分钟内的时间
-  static bool judgeTwoMinuteNewDateTime(DateTime dateTime){
+  static bool judgeTwoMinuteNewDateTime(DateTime dateTime,{int minutes=2}){
     if(!compareNowDate(dateTime)){
-      DateTime newDateTime =dateTime.add(new Duration(minutes: 2));
+      DateTime newDateTime =dateTime.add(new Duration(minutes: minutes));
       if(compareNowDate(newDateTime)){
         return true;
       }
@@ -325,6 +337,29 @@ class DateUtil {
     alertString += " ${formatDateV(dateTime, format: "HH:mm")}";
     return alertString;
   }
+
+  //获取评论的日期显示
+  static String getCommentShowData(DateTime dateTime){
+    DateTime time=new DateTime.now();
+    String alertString="";
+    if(twoDateTimeMinutes(dateTime,time)<=1){
+      return "刚刚";
+    }else if(twoDateTimeMinutes(dateTime,time)<60){
+      return "${twoDateTimeMinutes(dateTime, new DateTime.now())}分钟前";
+    }else if(isToday(dateTime)){
+      return "${twoDateTimeHours(dateTime, new DateTime.now())}小时前";
+    }else if(isYesterday(dateTime)){
+      alertString = "昨天";
+    } else if (isToYear(dateTime)) {
+      alertString += formatDateV(dateTime, format: "M-d");
+    } else {
+      alertString += formatDateV(dateTime, format: "yy-M-d");
+    }
+    alertString += " ${formatDateV(dateTime, format: "HH:mm")}";
+    return alertString;
+  }
+
+
 
   static String full = "yyyy-MM-dd HH:mm:ss";
 

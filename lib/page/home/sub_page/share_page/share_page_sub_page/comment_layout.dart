@@ -109,7 +109,7 @@ class CommentLayout extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () {
-              openFeedCommentBottomSheet(context: context, feedId: model.id);
+              openFeedCommentBottomSheet(context: context, feedId: model.id,firstTopShowItem:0);
             },
               child: Container(
             child: model.comments.length > 0
@@ -129,7 +129,7 @@ class CommentLayout extends StatelessWidget {
           )),
           GestureDetector(
               onTap: () {
-                openFeedCommentBottomSheet(context: context, feedId: model.id);
+                openFeedCommentBottomSheet(context: context, feedId: model.id,firstTopShowItem:1);
               },
               child: Container(
             margin: EdgeInsets.only(top: 4, bottom: 4),

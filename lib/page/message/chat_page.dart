@@ -1656,7 +1656,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
     if (rules.isNotEmpty) {
       for (Rule rule in rules) {
         if (rule.clickIndex == userModel.uid && rule.isAt == true) {
-          //print("已经添加过了");
+          ToastShow.show(msg: "你已经@过Ta啦！", context: context, gravity: Toast.CENTER);
+          //print("你已经@过Ta啦！");
           return;
         }
       }
