@@ -94,4 +94,5 @@ class AppStyle {
     decorationColor: AppColor.textHint,
   );
   static const textSemibold23 = TextStyle(fontSize: 23, fontWeight: FontWeight.w500, color: AppColor.textVipSemibold);
+  static const textAddressText = TextStyle(color: Color(0xFF000046), fontSize: 16.0,fontWeight:FontWeight.w500);
 }

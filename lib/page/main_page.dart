@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/api/message_api.dart';
+import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/profile/profile_model.dart';
+import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/home/home_page.dart';
 import 'package:mirror/page/if_page.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/page/message/message_page.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
@@ -123,7 +127,14 @@ class MainPageState extends XCState{
   //     // returnView(currentIndex),
   //   );
   // }
-
+  _getFollowCount() async {
+    ProfileModel attentionModel = await ProfileFollowCount();
+    if (attentionModel != null) {
+      print('  666666666666666666666666666666666666${attentionModel.toJson().toString()}');
+      context.read<ProfilePageNotifier>().changeAttentionModel(attentionModel, context.read<ProfileNotifier>()
+          .profile.uid);
+    }
+  }
   // 自定义BottomAppBar
   Widget tabbar(int index, BuildContext context,double itemWidth) {
     //设置默认未选中的状态
@@ -182,6 +193,8 @@ class MainPageState extends XCState{
                         _start = 2 * itemWidth + itemWidth * 0.64;
                       }
                       if (index == 3) {
+                        //切换到我的页时刷新关注数
+                        _getFollowCount();
                         _start = 3 * itemWidth + itemWidth * 0.9;
                       }
                     });

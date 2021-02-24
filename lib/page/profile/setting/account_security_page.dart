@@ -111,8 +111,8 @@ class _AccouontSecurityState extends State<AccountSecurityPage>{
         child: Row(
           children: [
             Text(title,style: AppStyle.textRegular16,),
-            Expanded(child:SizedBox()),
-            Text(content,style: AppStyle.textRegular16,),
+           Spacer(),
+            Text(content,style: content=="去绑定"?AppStyle.textSecondaryRegular16:AppStyle.textRegular16,),
             SizedBox(width: 12,),
             Container(
               height: 18,

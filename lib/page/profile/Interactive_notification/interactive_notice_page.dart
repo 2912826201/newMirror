@@ -304,7 +304,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
     _getRefData(context);
     if (type == 0) {
       if (msgModel.refType == 2) {
-        commentState = "回复了  ";
+        commentState = "回复了 ${context.watch<ProfileNotifier>().profile.nickName}: ";
       } else {
         commentState = "";
       }
