@@ -256,7 +256,7 @@ class HeadViewState extends State<HeadView> {
             Container(
               margin: EdgeInsets.only(right: 16),
               child: GestureDetector(
-                child: Image.asset("images/test/ic_big_dynamic_more.png", fit: BoxFit.cover, width: 24, height: 24),
+                child: Image.asset("images/resource/2.0x/ic_dynamic_Set up@2x.png", fit: BoxFit.cover, width: 24, height: 24),
                 onTap: () {
                   openMoreBottomSheet(
                       context: context,
