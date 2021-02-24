@@ -85,7 +85,7 @@ class MessageInputBarState extends State<MessageInputBar> {
                               ? ScreenUtil.instance.screenWidthDp - 32 - 32 - 64
                               : ScreenUtil.instance.screenWidthDp - 32 - 32 - 64 - 52 - 12),
                       margin: const EdgeInsets.only(
-                          top: 8.0, bottom: 8.0, left: 13.0, right: 13.0),
+                          top: 12.0, bottom: 12.0, left: 13.0, right: 13.0),
                       decoration: BoxDecoration(
                           color: AppColor.bgWhite.withOpacity(0.65),
                           // color: Colors.red,
