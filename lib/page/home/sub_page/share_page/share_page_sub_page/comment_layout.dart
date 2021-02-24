@@ -15,80 +15,48 @@ import '../../../../if_page.dart';
 
 // 类容评论排版
 class CommentLayout extends StatelessWidget {
-  CommentLayout({Key key, this.model,}) : super(key: key);
-  final HomeFeedModel model;
+  CommentLayout({
+    Key key,
+    this.model,
+  }) : super(key: key);
+  HomeFeedModel model;
 
   setBaseRichText(CommentDtoModel model, BuildContext context) {
     List<BaseRichText> richTexts = [];
     String contextText;
     if (model.replyName != null) {
-      contextText = model.name + ": 回复 " + model.replyName + model.content;
+      contextText = model.name + ": 回复 " + model.replyName+" " + model.content;
       richTexts.add(BaseRichText(
         contextText.substring(0, model.name.length + 1),
         style: AppStyle.textMedium14,
         onTap: () {
           AppRouter.navigateToMineDetail(context, model.uid);
-          print("1点击用户${model.uid}");
         },
       ));
       richTexts.add(BaseRichText(
         contextText.substring(
-            model.name.length + ": 回复 ".length, model.name.length + ": 回复 ".length + model.replyName.length),
+            model.name.length + ": 回复".length, model.name.length + ": 回复 ".length  + model.replyName.length),
         // "${model.name + model.replyName}:",
         style: AppStyle.textMedium14,
         onTap: () {
           AppRouter.navigateToMineDetail(context, model.replyId);
-          print("1点击回复用户${model.replyId}");
         },
       ));
-      // if(model.atUsers.isNotEmpty && model.atUsers.last.len <= model.content.length) {
-      //   // at高亮
-      //   for ( AtUsersModel atModel in model.atUsers) {
-      //     richTexts.add(BaseRichText(
-      //       contextText.substring(atModel.index + model.name.length + ": 回复 ".length + model.replyName.length,atModel.len +  model.name.length + ": 回复 ".length + model.replyName.length),
-      //       style: TextStyle(color: AppColor.mainBlue, fontSize: 14),
-      //       onTap: () {
-      //         AppRouter.navigateToMineDetail(context, atModel.uid);
-      //         print("1点击At用户${atModel.uid}");
-      //       },
-      //     ));
-      //   }
-      // }
-      // richTexts.add(BaseRichText(
-      //
-      // ));
     } else {
-
       contextText = "${model.name}: ${model.content}";
-
       richTexts.add(BaseRichText(
-        contextText.substring(0, model.name.length + 1),
+        contextText.substring(0, model.name.length + 1 ),
         style: AppStyle.textMedium14,
         onTap: () {
           AppRouter.navigateToMineDetail(context, model.uid);
-          print("2点击用户${model.uid}");
         },
       ));
-      // if(model.atUsers.isNotEmpty && model.atUsers.last.len <= model.content.length) {
-      //   // at高亮
-      //   for ( AtUsersModel atModel in model.atUsers) {
-      //     richTexts.add(BaseRichText(
-      //       contextText.substring(atModel.index + model.name.length + 2,atModel.len+ model.name.length + 2),
-      //       style: TextStyle(color: AppColor.mainBlue, fontSize: 14),
-      //       onTap: () {
-      //         AppRouter.navigateToMineDetail(context, atModel.uid);
-      //         print("2点击AT用户${atModel.uid}");
-      //       },
-      //     ));
-      //   }
-      // }
     }
     return richTexts;
   }
 
   @override
   Widget build(BuildContext context) {
-    // print(context.select((DynamicModelNotifier value) => value.dynamicModel.comments).length);
     return Container(
       width: 400,
       margin: EdgeInsets.only(left: 16, right: 16, top: 8),
@@ -109,49 +77,28 @@ class CommentLayout extends StatelessWidget {
             }),
             // Text("共${model.commentCount}条评论", style: AppStyle.textHintRegular12)
           ),
-          GestureDetector(
-            onTap: () {
-              openFeedCommentBottomSheet(context: context, feedId: model.id);
-            },
-              child: Container(
-            child: model.comments.length > 0
-                ? MyRichTextWidget(
-                    Text(
-                      "${context.select((FeedMapNotifier value) => value.feedMap[model.id].comments.first.name)}: ${context.select((FeedMapNotifier value) => value.feedMap[model.id].comments.first.content)}",
-                      style: AppStyle.textPrimary3Regular13,
-                    ),
-                    maxLines: 1,
-                    textOverflow: TextOverflow.ellipsis,
-                    richTexts:
-                        setBaseRichText(context.select((FeedMapNotifier value) => value.feedMap[model.id].comments.first),context
-                            // model.comments[0]
-                            ),
-                  )
-                : Container(),
-          )),
-          GestureDetector(
-              onTap: () {
-                openFeedCommentBottomSheet(context: context, feedId: model.id);
-              },
-              child: Container(
-            margin: EdgeInsets.only(top: 4, bottom: 4),
-            child: model.comments.length > 1
-                ? MyRichTextWidget(
-                    Text(
-                      "${context.select((FeedMapNotifier value) => value.feedMap[model.id].comments[1].name)}: ${context.select((FeedMapNotifier value) => value.feedMap[model.id].comments[1].content)}",
-                      // "${model.comments[1].name}: ${model.comments[1].content}",
-                      overflow: TextOverflow.visible,
-                      style: AppStyle.textPrimary3Regular13,
-                    ),
-                    maxLines: 1,
-                    textOverflow: TextOverflow.ellipsis,
-                    richTexts:
-                        setBaseRichText(context.select((FeedMapNotifier value) => value.feedMap[model.id].comments[1]),context
-                            //   model.comments[1]
-                            ),
-                  )
-                : Container(),
-          ))
+          for (CommentDtoModel item in context.select((FeedMapNotifier value) => value.feedMap[model.id].comments))
+            GestureDetector(
+                onTap: () {
+                  openFeedCommentBottomSheet(context: context, feedId: model.id);
+                },
+                child: Container(
+                  child: model.comments.length > 0
+                      ? MyRichTextWidget(
+                          Text(
+                            item.replyName != null
+                                ? "${item.name + ": 回复 " + item.replyName+" " + item.content}"
+                                : "${item.name}: ${item.content}",
+                            style: AppStyle.textPrimary3Regular13,
+                          ),
+                          maxLines: 1,
+                          textOverflow: TextOverflow.ellipsis,
+                          richTexts: setBaseRichText(
+                              item, context
+                              ),
+                        )
+                      : Container(),
+                )),
         ],
       ),
     );
