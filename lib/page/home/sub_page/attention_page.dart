@@ -190,7 +190,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     List<PicUrlsModel> picUrls = [];
     List<VideosModel> videos = [];
     // 设置不可发布
-    context.watch<FeedMapNotifier>().setPublish(false);
+    context.watch<FeedMapNotifier>().isPublish = false;
     if (widget.postFeedModel != null) {
       PostFeedModel postModel = widget.postFeedModel;
       print("掉发布数据");
