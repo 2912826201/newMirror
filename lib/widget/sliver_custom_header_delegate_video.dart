@@ -6,6 +6,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/date_util.dart';
 
 import 'custom_appbar.dart';
+import 'icon.dart';
 
 ///视频课-头部折叠滑动
 class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
@@ -207,7 +208,6 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
             top: 0,
             child: Container(
               color: this.makeStickyHeaderBgColor(shrinkOffset),
-              padding: const EdgeInsets.only(left: 20, right: 10, top: 2),
               child: SafeArea(
                 bottom: false,
                 child: Container(
@@ -218,7 +218,7 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       CustomAppBarIconButton(
-                        icon: Icons.arrow_back_ios_outlined,
+                        svgName: AppIcon.nav_return,
                         iconColor: AppColor.white,
                         onTap: () => Navigator.pop(context),
                       ),

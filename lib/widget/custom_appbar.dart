@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 
+import 'icon.dart';
+
 /// custom_appbar
 /// Created by yangjiayi on 2021/2/2.
 
@@ -54,7 +56,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   hasLeading
                       ? leading == null
                           ? CustomAppBarIconButton(
-                              icon: Icons.arrow_back_ios_outlined,
+                              // icon: Icons.arrow_back_ios_outlined,
+                              svgName: AppIcon.nav_return,
                               iconColor: brightness == Brightness.light ? AppColor.black : AppColor.white,
                               onTap: leadingOnTap == null
                                   ? () {
@@ -120,17 +123,25 @@ class _CustomAppBarIconButtonState extends State<CustomAppBarIconButton> {
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      child: Container(
-        width: CustomAppBar.appBarButtonWidth,
-        //高度填充满整个AppBar
-        height: CustomAppBar.appBarHeight,
-        alignment: Alignment.center,
-        child: Icon(
-          widget.icon,
-          color: isPressed ? widget.iconColor.withOpacity(0.5) : widget.iconColor,
-          size: CustomAppBar.appBarIconSize,
-        ),
-      ),
+      child: widget.icon != null
+          ? Container(
+              width: CustomAppBar.appBarButtonWidth,
+              //高度填充满整个AppBar
+              height: CustomAppBar.appBarHeight,
+              alignment: Alignment.center,
+              child: Icon(
+                widget.icon,
+                color: isPressed ? widget.iconColor.withOpacity(0.5) : widget.iconColor,
+                size: CustomAppBar.appBarIconSize,
+              ),
+            )
+          : AppIcon.getAppIcon(
+              widget.svgName,
+              CustomAppBar.appBarIconSize,
+              containerHeight: CustomAppBar.appBarHeight,
+              containerWidth: CustomAppBar.appBarButtonWidth,
+              color: isPressed ? widget.iconColor.withOpacity(0.5) : widget.iconColor,
+            ),
       onTapDown: (details) {
         setState(() {
           isPressed = true;
