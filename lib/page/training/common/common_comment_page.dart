@@ -28,6 +28,7 @@ import 'package:mirror/widget/post_comments.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
+import 'package:mirror/util/click_util.dart';
 
 import 'common_course_page.dart';
 
@@ -452,6 +453,9 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                           ],
                         ),
                         onTap: () {
+                          if(ClickUtil.isFastClick()){
+                            return;
+                          }
                           _laudComment(value.id, value.isLaud == 0, value.uid);
                         },
                       ),
@@ -1277,6 +1281,9 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
   //输入框评论点击事件
   onEditBoxClickBtn() {
+    if(ClickUtil.isFastClick()){
+      return;
+    }
     if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
       ToastShow.show(msg: "请先登陆app!", context: context);
       AppRouter.navigateToLoginPage(context);
@@ -1297,6 +1304,9 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
   //输入框评论点击事件
   onPostComment(int targetId, int targetType, int replyId, int replyCommentId, {String hintText}) {
+    if(ClickUtil.isFastClick()){
+      return;
+    }
     if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
       ToastShow.show(msg: "请先登陆app!", context: context);
       AppRouter.navigateToLoginPage(context);

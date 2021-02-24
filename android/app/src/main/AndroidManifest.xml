@@ -25,6 +25,9 @@
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true">
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="18ddc6ba8332f5f7fab942b4fdf3ad9c"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
