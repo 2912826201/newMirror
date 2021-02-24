@@ -814,6 +814,18 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       commentModelCallback: (BaseResponseModel baseResponseModel) {
         if (baseResponseModel.code == CODE_BLACKED) {
           ToastShow.show(msg: "发布失败，你已被对方加入黑名单", context: context, gravity: Toast.CENTER);
+        }else if (baseResponseModel.code == CODE_NO_DATA) {
+          String alertString="";
+          if (targetId == widget.targetId){
+            if(widget.isShowHotOrTime){
+              alertString="原课程已删除或失效";
+            }else{
+              alertString="原动态已删除或失效";
+            }
+          }else{
+            alertString="原评论已删除或失效";
+          }
+          ToastShow.show(msg: alertString, context: context, gravity: Toast.CENTER);
         } else {
           if (baseResponseModel.data != null) {
             CommentDtoModel model;
