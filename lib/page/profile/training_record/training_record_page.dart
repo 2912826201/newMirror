@@ -221,9 +221,13 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
                     ),
                   ),
                   Positioned(
-                    child: CustomAppBarIconButton(Icons.arrow_back_ios_outlined, AppColor.black, true, () {
-                      Navigator.pop(context);
-                    }),
+                    child: CustomAppBarIconButton(
+                        icon: Icons.arrow_back_ios_outlined,
+                        iconColor: AppColor.black,
+                        isLeading: true,
+                        onTap: () {
+                          Navigator.pop(context);
+                        }),
                     left: 0,
                   ),
                   Positioned(

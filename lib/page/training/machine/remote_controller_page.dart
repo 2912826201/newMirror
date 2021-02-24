@@ -87,9 +87,13 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
         appBar: CustomAppBar(
           titleString: _title,
           actions: [
-            CustomAppBarIconButton(Icons.menu, AppColor.black, false, () {
-              AppRouter.navigateToMachineSetting(context);
-            }),
+            CustomAppBarIconButton(
+                icon: Icons.menu,
+                iconColor: AppColor.black,
+                isLeading: false,
+                onTap: () {
+                  AppRouter.navigateToMachineSetting(context);
+                }),
           ],
         ),
         body: Consumer<MachineNotifier>(

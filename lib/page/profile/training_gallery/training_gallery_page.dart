@@ -99,9 +99,13 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
     _normalModeAppBar = CustomAppBar(
       titleString: "健身相册",
       actions: [
-        CustomAppBarIconButton(Icons.camera_alt_outlined, AppColor.black, false, () {
-          AppRouter.navigateToMediaPickerPage(context, 1, typeImage, false, startPageGallery, false, _uploadImage);
-        }),
+        CustomAppBarIconButton(
+            icon: Icons.camera_alt_outlined,
+            iconColor: AppColor.black,
+            isLeading: false,
+            onTap: () {
+              AppRouter.navigateToMediaPickerPage(context, 1, typeImage, false, startPageGallery, false, _uploadImage);
+            }),
       ],
     );
   }

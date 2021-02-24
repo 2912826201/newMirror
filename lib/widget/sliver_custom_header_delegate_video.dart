@@ -64,9 +64,7 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
   }
 
   Color makeStickyHeaderBgColor(shrinkOffset) {
-    final int alpha = (shrinkOffset / (this.maxExtent - this.minExtent) * 255)
-        .clamp(0, 255)
-        .toInt();
+    final int alpha = (shrinkOffset / (this.maxExtent - this.minExtent) * 255).clamp(0, 255).toInt();
     if (alpha > 220) {
       titleSize = 20;
       isGoneTitle = false;
@@ -81,9 +79,7 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
     if (shrinkOffset <= 50) {
       return isIcon ? Colors.white : Colors.transparent;
     } else {
-      final int alpha = (shrinkOffset / (this.maxExtent - this.minExtent) * 255)
-          .clamp(0, 255)
-          .toInt();
+      final int alpha = (shrinkOffset / (this.maxExtent - this.minExtent) * 255).clamp(0, 255).toInt();
       return Color.fromARGB(alpha, 0, 0, 0);
     }
   }
@@ -92,9 +88,7 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
     if (shrinkOffset <= 160) {
       return isIcon ? Colors.white : Colors.transparent;
     } else {
-      final int alpha = (shrinkOffset / (this.maxExtent - this.minExtent) * 255)
-          .clamp(0, 255)
-          .toInt();
+      final int alpha = (shrinkOffset / (this.maxExtent - this.minExtent) * 255).clamp(0, 255).toInt();
       return Color.fromARGB(alpha, 51, 51, 51);
     }
   }
@@ -113,8 +107,7 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
             width: 10,
           ),
           Text(
-            DateUtil.formatDateNoYearString(
-                DateUtil.stringToDateTime(startTime)) +
+            DateUtil.formatDateNoYearString(DateUtil.stringToDateTime(startTime)) +
                 "${DateUtil.isToday(DateUtil.stringToDateTime(startTime)) ? " (今天) " : "  "}" +
                 "${DateUtil.formatTimeString(DateUtil.stringToDateTime(startTime))}"
                     "-"
@@ -223,48 +216,48 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       CustomAppBarIconButton(
-                        Icons.arrow_back_ios,
-                        AppColor.white,
-                        false,
-                        () => Navigator.pop(context),
+                        icon: Icons.arrow_back_ios,
+                        iconColor: AppColor.white,
+                        isLeading: false,
+                        onTap: () => Navigator.pop(context),
                       ),
                       Expanded(
                           child: SizedBox(
-                            child: Offstage(
-                              offstage: isGoneTitle,
-                              child: Container(
-                                padding: const EdgeInsets.only(left: 30),
-                                child: Text(
-                                  this.title,
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColor.white,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                        child: Offstage(
+                          offstage: isGoneTitle,
+                          child: Container(
+                            padding: const EdgeInsets.only(left: 30),
+                            child: Text(
+                              this.title,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                                color: AppColor.white,
                               ),
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          )),
+                          ),
+                        ),
+                      )),
                       Row(
                         children: [
                           CustomAppBarIconButton(
-                            isFavor ? Icons.favorite : Icons.favorite_border_rounded,
-                            isFavor ? AppColor.mainRed : AppColor.white,
-                            false,
-                            () {
+                            icon: isFavor ? Icons.favorite : Icons.favorite_border_rounded,
+                            iconColor: isFavor ? AppColor.mainRed : AppColor.white,
+                            isLeading: false,
+                            onTap: () {
                               if (favorBtnClick != null) {
                                 favorBtnClick();
                               }
                             },
                           ),
                           CustomAppBarIconButton(
-                            Icons.share,
-                            AppColor.white,
-                            false,
-                            shareBtnClick,
+                            icon: Icons.share,
+                            iconColor: AppColor.white,
+                            isLeading: false,
+                            onTap: shareBtnClick,
                           ),
                         ],
                       )

@@ -46,7 +46,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         title: titleWidget == null
             ? Text(
                 titleString,
-                style: AppStyle.textMedium18,
+                style: brightness == Brightness.light ? AppStyle.textMedium18 : AppStyle.whiteMedium18,
               )
             : titleWidget,
         actions: actions,
@@ -57,10 +57,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         leading: hasLeading
             ? leading == null
                 ? CustomAppBarIconButton(
-                    Icons.arrow_back_ios_outlined,
-                    AppColor.black,
-                    true,
-                    leadingOnTap == null
+                    icon: Icons.arrow_back_ios_outlined,
+                    iconColor: brightness == Brightness.light ? AppColor.black : AppColor.white,
+                    isLeading: true,
+                    onTap: leadingOnTap == null
                         ? () {
                             Navigator.pop(context);
                           }
@@ -76,9 +76,18 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class CustomAppBarIconButton extends StatefulWidget {
-  CustomAppBarIconButton(this.icon, this.iconColor, this.isLeading, this.onTap, {Key key}) : super(key: key);
+  CustomAppBarIconButton({
+    Key key,
+    this.icon,
+    this.svgName,
+    this.iconColor = AppColor.black,
+    this.isLeading = false,
+    this.onTap,
+  })  : assert(iconColor != null || svgName != null),
+        super(key: key);
 
   final IconData icon;
+  final String svgName;
   final Color iconColor;
   final bool isLeading;
   final Function() onTap;

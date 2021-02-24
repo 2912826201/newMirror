@@ -12,9 +12,10 @@ import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key, this.controller,this.ifPageController}) : super(key: key);
+  HomePage({Key key, this.controller, this.ifPageController}) : super(key: key);
   TabController controller;
   TabController ifPageController;
+
   HomePageState createState() => HomePageState(controller: controller);
 }
 
@@ -50,11 +51,16 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     return Scaffold(
       backgroundColor: AppColor.white,
       appBar: CustomAppBar(
-        leading: CustomAppBarIconButton(Icons.camera_alt_outlined, AppColor.black, true, () {
-          print("${FluroRouter.appRouter.hashCode}");
-          AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
-              publishMode: 1);
-        }),
+        leading: CustomAppBarIconButton(
+            icon: Icons.camera_alt_outlined,
+            iconColor: AppColor.black,
+            isLeading: true,
+            onTap: () {
+              print("${FluroRouter.appRouter.hashCode}");
+              AppRouter.navigateToMediaPickerPage(
+                  context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
+                  publishMode: 1);
+            }),
         titleWidget: Container(
           width: 140,
           child: TabBar(
@@ -76,9 +82,13 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
           ),
         ),
         actions: [
-          CustomAppBarIconButton(Icons.search, AppColor.black, false, () {
-            AppRouter.navigateSearchPage(context);
-          }),
+          CustomAppBarIconButton(
+              icon: Icons.search,
+              iconColor: AppColor.black,
+              isLeading: false,
+              onTap: () {
+                AppRouter.navigateSearchPage(context);
+              }),
         ],
       ),
       body: TabBarView(
