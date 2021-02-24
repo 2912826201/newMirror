@@ -1336,11 +1336,16 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(
-              Icons.where_to_vote_rounded,
-              size: 24,
-              color: seletedAddressText != "你在哪儿" ? AppColor.mainBlue : AppColor.textPrimary1,
+            Image.asset(
+              seletedAddressText != "你在哪儿" ? "images/resource/2.0x/ic_dynamic_big_address_blue@2x.png" :  "images/resource/2.0x/ic_dynamic_big_address_black@2x.png",
+              width: 24,
+              height: 24,
             ),
+            // Icon(
+            //   Icons.where_to_vote_rounded,
+            //   size: 24,
+            //   color: seletedAddressText != "你在哪儿" ? AppColor.mainBlue : AppColor.textPrimary1,
+            // ),
             SizedBox(
               width: 12,
             ),
@@ -1350,11 +1355,11 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
                   fontSize: 16, color: seletedAddressText != "你在哪儿" ? AppColor.mainBlue : AppColor.textPrimary1),
             ),
             Spacer(),
-            Icon(
-              Icons.arrow_forward_ios_sharp,
-              size: 18,
-              color: AppColor.textHint,
-            )
+            Image.asset(
+             "images/resource/2.0x/ic_dynamic_Right arrow@2x.png",
+              width: 18,
+              height: 18,
+            ),
           ],
         ),
       ),
