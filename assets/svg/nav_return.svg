@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #2b353d;
+        opacity: 0;
+      }
+
+      .cls-2 {
+        fill: #111;
+      }
+    </style>
+  </defs>
+  <g id="nav_return.png" transform="translate(20804 22465)">
+    <path id="路径_113" data-name="路径 113" class="cls-1" d="M0,0H56V56H0Z" transform="translate(-20804 -22465)"/>
+    <g id="icon_44_000_返回" data-name="icon/44+#000/返回" transform="translate(-20798 -22459)">
+      <path id="Page_1" data-name="Page 1" class="cls-2" d="M15.3,0,2.679,12.618l-.006-.006L0,15.285l.006.006L0,15.3,2.7,18l.006-.006L15.145,30.43l2.673-2.674L5.379,15.318,18,2.7Z" transform="translate(13 7)"/>
+    </g>
+  </g>
+</svg>
