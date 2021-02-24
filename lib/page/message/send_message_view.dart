@@ -66,7 +66,6 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
 
   @override
   Widget build(BuildContext context) {
-    print("------------------------------------------------------------------");
     super.build(context);
 
     setSettingData();
@@ -348,7 +347,7 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
   //获取普通文本模块
   Widget getTextMsg({String text, MentionedInfo mentionedInfo}) {
     return TextMsg(
-        text: text,
+        text: text.toString(),
         isMyself: isMyself,
         userUrl: userUrl,
         name: name,

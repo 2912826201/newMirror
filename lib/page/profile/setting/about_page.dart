@@ -63,22 +63,18 @@ class _AboutPageState extends State<AboutPage>{
                 ),
                 _itemRow("用户协议"),
                 _itemRow("隐私权政策"),
-                InkWell(
+                haveNewVersion?InkWell(
                   onTap: (){
-                    if(haveNewVersion){
                       showVersionDialog(
                         context: context,
                         content: content,
                         url: url,
                         strong: false
                       );
-                    }else{
-                      Toast.show("已是最新版本", context);
-                    }
                   },
                   child: _itemRow("版本更新"),
-                ),
-                Expanded(child: SizedBox()),
+                ):Container(),
+                Spacer(),
                 Center(
                   child: Text("Copyright@2019 iFitness.All rights Reserved",style: AppStyle.textSecondaryRegular13,),
                 )

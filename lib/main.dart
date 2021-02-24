@@ -55,8 +55,7 @@ void main() {
   //设置状态栏透明
   SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
   SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
-  _initApp().then((value) => runApp(
-        MultiProvider(
+  _initApp().then((value) => runApp(MultiProvider(
           providers: [
             //当前用户的token信息 无论匿名用户还是登录用户都会有值
             ChangeNotifierProvider(create: (_) => TokenNotifier(Application.token)),
@@ -78,8 +77,6 @@ void main() {
             ChangeNotifierProvider(create: (_) => ChatMessageProfileNotifier()),
             //群聊界面的@用户功能
             ChangeNotifierProvider(create: (_) => ChatEnterNotifier()),
-            //FIXME 省市地区选择器的状态 应该不需要在全局更新状态
-            ChangeNotifierProvider(create: (_) => AddressPickerNotifier()),
             //FIXME 个人空间页的状态 应该不需要在全局更新状态
             ChangeNotifierProvider(create: (_) => ProfilePageNotifier()),
             //群成员信息

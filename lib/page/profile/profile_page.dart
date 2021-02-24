@@ -48,32 +48,24 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   @override
   void initState() {
     super.initState();
+    uid = context.read<ProfileNotifier>()
+        .profile.uid;
+    context.read<ProfilePageNotifier>().setFirstModel(uid);
     getProfileModel();
   }
 
   getProfileModel() async {
-    ProfileModel attentionModel = await ProfileFollowCount();
     UserExtraInfoModel extraInfoModel = await ProfileGetExtraInfo();
     userModel = await getUserInfo();
-    if (attentionModel != null) {
-      uid = attentionModel.uid;
-      followingCount = attentionModel.followingCount;
-      followerCount = attentionModel.followerCount;
-      print('个人主页粉丝数================================$followerCount');
-      feedCount = attentionModel.feedCount;
-    }
     if(extraInfoModel != null){
       context.read<ProfileNotifier>().setExtraInfo(extraInfoModel);
     }
-    if (mounted) {
-      setState(() {});
-    }
   }
-
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     super.build(context);
+  /*  _getFollowCount();*/
     print("ProfileState_____________________________________________build");
     print('===============================我的页build');
     double width = ScreenUtil.instance.screenWidthDp;
@@ -275,7 +267,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 bottom: 0,
                 child: Row(children: [
                   InkWell(
-                    child: _textAndNumber("关注", StringUtil.getNumber(followingCount)),
+                    child: _textAndNumber("关注", StringUtil.getNumber(context.watch<ProfilePageNotifier>()
+                        .profileUiChangeModel[uid].attentionModel.followingCount)),
                     onTap: () {
                       AppRouter.navigateToQueryFollowList(context, 1, uid);
                     },
@@ -287,7 +280,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                     onTap: () {
                       AppRouter.navigateToQueryFollowList(context, 2, uid);
                     },
-                    child: _textAndNumber("粉丝", StringUtil.getNumber(followerCount)),
+                    child: _textAndNumber("粉丝", StringUtil.getNumber(context.watch<ProfilePageNotifier>()
+                        .profileUiChangeModel[uid].attentionModel.followerCount)),
                   ),
                   SizedBox(
                     width: width * 0.12,
@@ -296,7 +290,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                     onTap: () {
                       AppRouter.navigateToMineDetail(context, uid);
                     },
-                    child: _textAndNumber("动态", StringUtil.getNumber(feedCount)),
+                    child: _textAndNumber("动态", StringUtil.getNumber(context.watch<ProfilePageNotifier>()
+                        .profileUiChangeModel[uid].attentionModel.feedCount)),
                   )
                 ]))
           ],
@@ -310,12 +305,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       height: height * 0.11,
       child: InkWell(
           onTap: () {
-            Navigator.push(
-                context,
-                ScaleRouter(
-                    child: ProfileDetailPage(
-                  userId: uid,
-                )));
+            AppRouter.navigateToMineDetail(context, uid);
           },
           child: Stack(
             children: [
@@ -342,17 +332,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
               }, selector: (context, notifier) {
                 return notifier.profile.avatarUri;
               }),
-              Positioned(
-                  bottom: height * 0.11 * 0.04,
-                  right: height * 0.11 * 0.04,
-                  child: Container(
-                    width: height * 0.11 * 0.26,
-                    height: height * 0.11 * 0.26,
-                    decoration: BoxDecoration(
-                      color: AppColor.black,
-                      borderRadius: BorderRadius.all(Radius.circular(59)),
-                    ),
-                  ))
             ],
           )),
     );
@@ -444,18 +423,4 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   }
 }
 
-class ScaleRouter<T> extends PageRouteBuilder<T> {
-  final Widget child;
-  final int duration_ms;
-  final Curve curve;
 
-  ScaleRouter({this.child, this.duration_ms = 500, this.curve = Curves.fastOutSlowIn})
-      : super(
-          pageBuilder: (context, animation, secondaryAnimation) => child,
-          transitionDuration: Duration(milliseconds: duration_ms),
-          transitionsBuilder: (context, a1, a2, child) => ScaleTransition(
-            scale: Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: a1, curve: curve)),
-            child: child,
-          ),
-        );
-}

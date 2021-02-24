@@ -186,9 +186,9 @@ Future<bool> ProfileMoreDenounce(int targetId, int targetType) async {
     "targetType": targetType,
   });
   if (responseModel.isSuccess&&responseModel.data!=null) {
-    return true;
+    return responseModel.data["state"];
   } else {
-    return false;
+    return null;
   }
 }
 

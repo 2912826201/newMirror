@@ -54,7 +54,7 @@ class LiveDetailPage extends StatefulWidget {
   createState() {
     return LiveDetailPageState(liveModel: liveModel,heroTag:heroTag,
         liveCourseId:liveCourseId,commentDtoModel:commentDtoModel,
-        fatherComment:fatherComment);
+        fatherComment:fatherComment,isHaveStartTime: isHaveStartTime);
   }
 }
 

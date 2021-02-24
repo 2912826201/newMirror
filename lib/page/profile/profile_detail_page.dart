@@ -32,7 +32,6 @@ enum StateResult { HAVERESULT, RESULTNULL }
 
 class ProfileDetailPage extends StatefulWidget {
   final int userId;
-
   ProfileDetailPage({this.userId});
 
   @override
@@ -529,10 +528,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             return false;
           }
         },
-        child: context.read<ProfilePageNotifier>()
-            .profileUiChangeModel[widget.userId].isBlack == 0||context.read<ProfilePageNotifier>()
-            .profileUiChangeModel[widget.userId].isBlack == 2
-            ? Container(
+        child: Container(
                 height: 28,
                 width: 72,
                 decoration: BoxDecoration(
@@ -560,13 +556,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       )
                     : _buttonLayoutSelect(),
               )
-            : Text(
-                "已拉黑",
-                style: AppStyle.textMedium16,
-              ));
+            );
   }
 
-  ///通过布尔值来判断该展示私聊按钮还是关注按钮
   Widget _buttonLayoutSelect() {
     return Stack(
       children: [
@@ -612,17 +604,14 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///头像
   Widget _mineAvatar(double height) {
     return Container(
-        child: Hero(
-      tag: "我的头像",
-      child: ClipOval(
-        child: CachedNetworkImage(
-            height: height * 0.09,
-            width: height * 0.09,
-            imageUrl: isMselfId ? context.read<ProfileNotifier>().profile.avatarUri : _avatar,
-            fit: BoxFit.cover,
-            placeholder: (context, url) => CircularProgressIndicator()),
-      ),
-    ));
+        child:ClipOval(
+          child: CachedNetworkImage(
+              height: height * 0.09,
+              width: height * 0.09,
+              imageUrl: isMselfId ? context.read<ProfileNotifier>().profile.avatarUri : _avatar,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => CircularProgressIndicator()),
+        ),);
   }
 
   ///这是关注粉丝获赞

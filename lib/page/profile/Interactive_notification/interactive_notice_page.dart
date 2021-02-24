@@ -279,6 +279,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
   List<BaseRichText> _atText(BuildContext context) {
     List<BaseRichText> richList = [];
     atUserList.forEach((element) {
+      print('atUserList=========================${element.index}                   ${element.len}');
       richList.add(BaseRichText(
         comment.substring(element.index, element.len),
         style: type == 0 ? AppStyle.textMedium13 : AppStyle.textMediumBlue13,
@@ -303,7 +304,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
     _getRefData(context);
     if (type == 0) {
       if (msgModel.refType == 2) {
-        commentState = "回复了  ";
+        commentState = "回复了 ${context.watch<ProfileNotifier>().profile.nickName}: ";
       } else {
         commentState = "";
       }

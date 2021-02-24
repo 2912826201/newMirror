@@ -28,6 +28,7 @@ import 'package:mirror/widget/post_comments.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
+import 'package:mirror/util/click_util.dart';
 
 import 'common_course_page.dart';
 
@@ -452,6 +453,9 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                           ],
                         ),
                         onTap: () {
+                          if(ClickUtil.isFastClick()){
+                            return;
+                          }
                           _laudComment(value.id, value.isLaud == 0, value.uid);
                         },
                       ),
@@ -518,7 +522,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   _profileMoreDenounce(int targetId) async {
     bool isSucess = await ProfileMoreDenounce(targetId, 2);
     print("举报：isSucess:$isSucess");
-    if (isSucess) {
+    if (isSucess!=null&&isSucess) {
       ToastShow.show(msg: "举报成功", context: context);
     }
   }
@@ -981,7 +985,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
               print('=================不在第一页的父评论');
               widget.commentDtoModel.itemChose = true;
               courseCommentHot.list.insert(0, widget.commentDtoModel);
-              screenOutHotIds.add(widget.fatherComment.id);
+              screenOutHotIds.add(widget.commentDtoModel.id);
             }
           }
         }
@@ -1254,8 +1258,8 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       return;
     }
 
-    Map<String, dynamic> model = await laudComment(commentId: commentId, laud: laud ? 1 : 0);
-    if (model != null && model["state"]) {
+    int code = await laudComment(commentId: commentId, laud: laud ? 1 : 0);
+    if (code != null && code==200) {
       _laudCommentData(courseCommentHot, commentId, true, laud);
       _laudCommentData(courseCommentTime, commentId, false, laud);
       if (laud) {
@@ -1277,6 +1281,9 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
   //输入框评论点击事件
   onEditBoxClickBtn() {
+    if(ClickUtil.isFastClick()){
+      return;
+    }
     if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
       ToastShow.show(msg: "请先登陆app!", context: context);
       AppRouter.navigateToLoginPage(context);
@@ -1297,6 +1304,9 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
   //输入框评论点击事件
   onPostComment(int targetId, int targetType, int replyId, int replyCommentId, {String hintText}) {
+    if(ClickUtil.isFastClick()){
+      return;
+    }
     if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
       ToastShow.show(msg: "请先登陆app!", context: context);
       AppRouter.navigateToLoginPage(context);
