@@ -386,7 +386,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                             if (rules.isNotEmpty) {
                               for (Rule rule in rules) {
                                 if (rule.id == followList[index].uid && rule.isAt == true) {
-                                  ToastShow.show(msg: "已经添加过了", context: context, gravity: Toast.CENTER);
+                                  ToastShow.show(msg: "你已经@过Ta啦！", context: context, gravity: Toast.CENTER);
                                   return;
                                 }
                               }

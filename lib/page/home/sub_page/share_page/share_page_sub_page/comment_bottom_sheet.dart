@@ -15,22 +15,23 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 
 class CommentBottomSheet extends StatefulWidget {
-  CommentBottomSheet({Key key, this.feedId}) : super(key: key);
-
+  CommentBottomSheet({Key key, this.feedId,this.firstTopShowItem}) : super(key: key);
+  int firstTopShowItem;
   // 动态id
   int feedId;
 
-  CommentBottomSheetState createState() => CommentBottomSheetState(feedId: feedId);
+  CommentBottomSheetState createState() => CommentBottomSheetState(feedId: feedId,firstTopShowItem:firstTopShowItem);
 }
 
 class CommentBottomSheetState extends XCState
 // State<CommentBottomSheet>
 {
-  CommentBottomSheetState({this.feedId});
+  CommentBottomSheetState({this.feedId,this.firstTopShowItem});
   // 列表监听
   ScrollController _controller = new ScrollController();
   // 动态id
   int feedId;
+  int firstTopShowItem;
   //上拉加载数据
   RefreshController _refreshController = RefreshController(initialRefresh: false);
   GlobalKey<CommonCommentPageState> childKey = GlobalKey();
@@ -93,6 +94,7 @@ class CommentBottomSheetState extends XCState
                   pushId: context.read<FeedMapNotifier>().feedMap[feedId].pushId,
                   targetType: 0,
                   pageCommentSize: 20,
+                  firstTopShowItem:firstTopShowItem,
                   pageSubCommentSize: 3,
                   externalBoxHeight:MediaQuery.of(context).size.height*0.75,
                 ),

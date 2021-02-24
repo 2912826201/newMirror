@@ -12,6 +12,7 @@ import '../bottom_sheet.dart';
 Future openFeedCommentBottomSheet({
   @required BuildContext context,
   @required int feedId,
+  int firstTopShowItem,
   ValueChangedCallback callback
 }) async {
   await showModalBottomSheet(
@@ -27,9 +28,12 @@ Future openFeedCommentBottomSheet({
           child:
           CommentBottomSheet(
             feedId: feedId,
+            firstTopShowItem:firstTopShowItem,
           ),
         );
       }).then((value){
+        if(callback!=null) {
           callback();
+        }
   });
 }

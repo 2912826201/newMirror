@@ -9,6 +9,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
@@ -99,6 +100,7 @@ class HeadViewState extends State<HeadView> {
         if(relation==1||relation==3){
           context.read<ProfilePageNotifier>().changeIsFollow(true,false,model.pushId);
           ToastShow.show(msg: "关注成功!", context: context);
+          opacity = 1;
           Future.delayed(Duration(milliseconds: 1000),(){
             opacity = 0;
             setState(() {
@@ -120,9 +122,11 @@ class HeadViewState extends State<HeadView> {
         .watch<ProfileNotifier>()
         .profile
         .uid) {
-      opacity = 1;
       return  GestureDetector(
         onTap: () {
+          if(!context.read<TokenNotifier>().isLoggedIn){
+            AppRouter.navigateToLoginPage(context);
+          }
           if( context.read<ProfilePageNotifier>().profileUiChangeModel[model.pushId].isBlack==1){
             ToastShow.show(msg: "该用户已被你拉黑", context: context);
           }else if(context.read<ProfilePageNotifier>().profileUiChangeModel[model.pushId].isBlack==2){
@@ -187,21 +191,22 @@ class HeadViewState extends State<HeadView> {
     // TODO: implement initState
     super.initState();
     print('===========================================model.isFollow==${model.isFollow}');
+    List<String> moreList = [];
     if (model.pushId == context.read<ProfileNotifier>().profile.uid) {
       if(!context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(model.pushId)){
-        context.read<ProfilePageNotifier>().setFirstModel(model.pushId);
+        moreList.add("删除");
+        context.read<ProfilePageNotifier>().setFirstModel(model.pushId,ProfileUiChangeModel(dynmicStringList: moreList));
       }
-      if(!context.read<ProfilePageNotifier>().profileUiChangeModel[model.pushId].dynmicStringList.contains("删除")){
-        context.read<ProfilePageNotifier>().profileUiChangeModel[model.pushId].dynmicStringList.add("删除");
-      }
-    } else {
-        if(!context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(model.pushId)){
-          context.read<ProfilePageNotifier>().setFirstModel(model.pushId);
-          context.read<ProfilePageNotifier>().changeIsFollow(true,model.isFollow == 1||model.isFollow==3?false:true,
-              model
-              .pushId);
-          _checkBlackStatus();
-        }
+    } else if(!context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(model.pushId)) {
+          if(model.isFollow == 1||model.isFollow==3){
+          moreList.add("取消关注");
+          }
+          moreList.add("举报");
+          context.read<ProfilePageNotifier>().setFirstModel(model.pushId,ProfileUiChangeModel(isFollow: model
+              .isFollow == 1||model.isFollow==3?false:true,dynmicStringList:moreList));
+          if(context.read<TokenNotifier>().isLoggedIn){
+            _checkBlackStatus();
+          }
     }
   }
   @override
