@@ -43,7 +43,7 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: CustomAppBar(
-          backgroundColor: AppColor.bgBlack,
+          backgroundColor: AppColor.black,
           brightness: Brightness.dark,
           actions: [
             Container(

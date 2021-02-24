@@ -66,9 +66,7 @@ class CameraVideoState extends State<CameraVideoPage> with WidgetsBindingObserve
       appBar: CustomAppBar(
         backgroundColor: AppColor.black,
         brightness: Brightness.dark,
-        leading: CustomAppBarIconButton(Icons.arrow_back_ios_outlined, AppColor.white, true, () {
-          Navigator.pop(context);
-        }),
+        hasLeading: widget.publishMode == 2 ? false : true,
       ),
       body: (_controller == null || !_controller.value.isInitialized)
           ? Container(

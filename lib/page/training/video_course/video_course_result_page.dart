@@ -42,9 +42,13 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
       appBar: CustomAppBar(
         backgroundColor: AppColor.bgBlack,
         brightness: Brightness.dark,
-        leading: CustomAppBarIconButton(Icons.close, AppColor.white, true, () {
-          Navigator.pop(context);
-        }),
+        leading: CustomAppBarIconButton(
+            icon: Icons.close,
+            iconColor: AppColor.white,
+            isLeading: true,
+            onTap: () {
+              Navigator.pop(context);
+            }),
         titleWidget: Text(
           "训练结束",
           style: TextStyle(color: AppColor.white, fontSize: 16),
@@ -114,13 +118,12 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
             alignment: Alignment.centerLeft,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppColor.textPrimary1, AppColor.textPrimary2],
-                stops: [0, 1],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              )
-            ),
+                gradient: LinearGradient(
+              colors: [AppColor.textPrimary1, AppColor.textPrimary2],
+              stops: [0, 1],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            )),
             child: Text(
               "恭喜你，${Application.profile.nickName}\n第${widget.result.no}次完成\n$_videoCourseName",
               style: TextStyle(color: AppColor.white, fontSize: 18, fontWeight: FontWeight.w500),

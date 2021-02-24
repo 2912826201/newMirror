@@ -62,45 +62,42 @@ class _VipPageState extends State<VipNotOpenPage> {
 
   @override
   Widget build(BuildContext context) {
-    return  ChangeNotifierProvider(
-        create: (_)=>VipTitleChangeNotifier(),
+    return ChangeNotifierProvider(
+        create: (_) => VipTitleChangeNotifier(),
         child: Scaffold(
-      appBar: CustomAppBar(
-        backgroundColor: AppColor.black,
-        brightness: Brightness.dark,
-        leading: CustomAppBarIconButton(Icons.arrow_back_ios_outlined, AppColor.white, true, () {
-          Navigator.pop(context);
-        }),
-        titleWidget: Opacity(
-          opacity: context.watch<VipTitleChangeNotifier>().opacity,
-          child: Container(
-            height: CustomAppBar.appBarHeight,
-            width: 28,
-            alignment: Alignment.center,
-            child: ClipOval(
-              child: CachedNetworkImage(
-                height: 28,
+          appBar: CustomAppBar(
+            backgroundColor: AppColor.black,
+            brightness: Brightness.dark,
+            titleWidget: Opacity(
+              opacity: context.watch<VipTitleChangeNotifier>().opacity,
+              child: Container(
+                height: CustomAppBar.appBarHeight,
                 width: 28,
-                imageUrl: context.watch<ProfileNotifier>().profile.avatarUri,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Image.asset(
-                  "images/test.png",
-                  fit: BoxFit.cover,
+                alignment: Alignment.center,
+                child: ClipOval(
+                  child: CachedNetworkImage(
+                    height: 28,
+                    width: 28,
+                    imageUrl: context.watch<ProfileNotifier>().profile.avatarUri,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Image.asset(
+                      "images/test.png",
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      ),
-      backgroundColor: AppColor.white,
-      body:Container(
-        height: ScreenUtil.instance.height,
-        width: ScreenUtil.instance.screenWidthDp,
-        child: Stack(
-          children: [_body(), Positioned(bottom: 0, child: _bottomButton())],
-        ),
-      ),
-    ));
+          backgroundColor: AppColor.white,
+          body: Container(
+            height: ScreenUtil.instance.height,
+            width: ScreenUtil.instance.screenWidthDp,
+            child: Stack(
+              children: [_body(), Positioned(bottom: 0, child: _bottomButton())],
+            ),
+          ),
+        ));
   }
 
   Widget _bottomButton() {
@@ -307,7 +304,7 @@ class _VipPageState extends State<VipNotOpenPage> {
   }
 }
 
-class  VipTitleChangeNotifier extends ChangeNotifier {
+class VipTitleChangeNotifier extends ChangeNotifier {
   double opacity = 0;
 
   void changeOpacity(double op) {
