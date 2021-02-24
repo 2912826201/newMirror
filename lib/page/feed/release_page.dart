@@ -848,10 +848,10 @@ class TopicListState extends State<TopicList> {
                             print(atRule.params);
                             print(list[index].name);
                             if (atRule.id != -1 && atRule.id == list[index].id && atRule.isAt == false) {
-                              ToastShow.show(msg: "你已经@过Ta啦！", context: context, gravity: Toast.CENTER);
+                              ToastShow.show(msg: "你已添加此话题", context: context, gravity: Toast.CENTER);
                               return;
                             } else if (atRule.id == -1 && atRule.params == list[index].name) {
-                              ToastShow.show(msg: "你已经@过Ta啦！", context: context, gravity: Toast.CENTER);
+                              ToastShow.show(msg: "你已添加此话题", context: context, gravity: Toast.CENTER);
                               return;
                             }
                           }
@@ -945,7 +945,7 @@ class TopicListState extends State<TopicList> {
                               style: AppStyle.textSecondaryRegular12,
                             ),
                             SizedBox(
-                              height: 6,
+                              height: 4,
                             ),
                           ],
                         ),
