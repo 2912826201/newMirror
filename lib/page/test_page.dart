@@ -3,11 +3,11 @@ import 'dart:math';
 
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
-import 'package:launch_review/launch_review.dart';
 import 'package:mirror/api/version_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/config/shared_preferences.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/model/version_model.dart';
@@ -18,7 +18,6 @@ import 'package:mirror/page/download_test_page.dart';
 import 'package:mirror/page/media_test_page.dart';
 import 'package:mirror/page/qiniu_test_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_page.dart';
-import 'package:mirror/page/training/video_course/video_course_result_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -26,6 +25,7 @@ import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/version_update_dialog.dart';
 
 import 'package:mirror/widget/volume_popup.dart';
@@ -355,14 +355,19 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                 ),
               ]),
 
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Row(mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
                 RaisedButton(
                   onPressed: () {
                     _getNewVersion(context);
-
                   },
                   child: Text("获取最新版本"),
                 ),
+                AppIcon.getAppIcon("assets/svg/favorite-black-24dp.svg", 22,
+                    color: AppColor.mainBlue, containerSize: 44),
+                AppIcon.getAppIcon("assets/svg/shoucang.svg", 22, color: AppColor.mainBlue, containerSize: 44),
+                AppIcon.getAppIcon(AppIcon.nav_return, 22, color: AppColor.mainBlue, containerSize: 44),
               ]),
             ],
           ),
@@ -400,16 +405,17 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
               showVersionDialog(
                   barrierDismissible: false,
                   content: model.description,
-                  strong: model.isForceUpdate==0?false:true,
+                  strong: model.isForceUpdate == 0 ? false : true,
                   context: context,
                   url: url);
             }
           } else {
             showVersionDialog(
-                barrierDismissible: false,
-                content: model.description,
-                strong: model.isForceUpdate==0?false:true,
-                context: context,);
+              barrierDismissible: false,
+              content: model.description,
+              strong: model.isForceUpdate == 0 ? false : true,
+              context: context,
+            );
           }
         }
       }

@@ -136,6 +136,15 @@ class FeedMapNotifier extends ChangeNotifier {
     feedMap[id].totalCount = totalCount;
     notifyListeners();
   }
+  // 同步不同的评论数据
+  void commensUpdate(int id, List<CommentDtoModel> commentList, int totalCount) {
+    feedMap[id].comments.forEach((element) {
+      feedMap[id].comments.addAll(commentList);
+    });
+    // feedMap[id].comments = commentList;
+    feedMap[id].totalCount = totalCount;
+    notifyListeners();
+  }
 
   // 评论动态的评论
   void commentFeedCom(int id, int index, CommentDtoModel model) {

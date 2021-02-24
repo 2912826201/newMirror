@@ -353,7 +353,7 @@ class _SlideBannerState extends State<SlideBanner> {
                             height: elementSize(index),
                             margin: const EdgeInsets.only(right: 3),
                             decoration: BoxDecoration(
-                                color: index == zindex ? Colors.black : Colors.grey, shape: BoxShape.circle)));
+                                color: index == zindex ? AppColor.black : AppColor.textPrimary1.withOpacity(0.12), shape: BoxShape.circle)));
                   }),
             ),
           )

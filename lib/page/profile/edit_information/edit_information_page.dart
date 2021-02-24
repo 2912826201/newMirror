@@ -400,7 +400,7 @@ class _EditInformationState extends State<EditInformation> {
       //选择器上可选择的最早时间
       maxDateTime: DateTime.parse(DateUtil.formatToDayDateString()),
       //选择器上可选择的最晚时间
-      initialDateTime: _selectedDateTime,
+      initialDateTime: DateTime.parse("1900-01-01"),
       //选择器的当前选中时间
       dateFormat: "yyyy年,MM月,dd日",
       //时间格式

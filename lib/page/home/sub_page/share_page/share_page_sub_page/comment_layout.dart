@@ -28,7 +28,7 @@ class CommentLayout extends StatelessWidget {
         style: AppStyle.textMedium14,
         onTap: () {
           AppRouter.navigateToMineDetail(context, model.uid);
-          print("点击用户${model.uid}");
+          print("1点击用户${model.uid}");
         },
       ));
       richTexts.add(BaseRichText(
@@ -38,48 +38,50 @@ class CommentLayout extends StatelessWidget {
         style: AppStyle.textMedium14,
         onTap: () {
           AppRouter.navigateToMineDetail(context, model.replyId);
-          print("点击用户${model.replyId}");
+          print("1点击回复用户${model.replyId}");
         },
       ));
-      if(model.atUsers.isNotEmpty && model.atUsers.last.len <= model.content.length) {
-        // at高亮
-        for ( AtUsersModel atModel in model.atUsers) {
-          richTexts.add(BaseRichText(
-            contextText.substring(atModel.index + model.name.length + ": 回复 ".length + model.replyName.length,atModel.len +  model.name.length + ": 回复 ".length + model.replyName.length),
-            style: TextStyle(color: AppColor.mainBlue, fontSize: 14),
-            onTap: () {
-              AppRouter.navigateToMineDetail(context, atModel.uid);
-              print("点击用户${atModel.uid}");
-            },
-          ));
-        }
-      }
+      // if(model.atUsers.isNotEmpty && model.atUsers.last.len <= model.content.length) {
+      //   // at高亮
+      //   for ( AtUsersModel atModel in model.atUsers) {
+      //     richTexts.add(BaseRichText(
+      //       contextText.substring(atModel.index + model.name.length + ": 回复 ".length + model.replyName.length,atModel.len +  model.name.length + ": 回复 ".length + model.replyName.length),
+      //       style: TextStyle(color: AppColor.mainBlue, fontSize: 14),
+      //       onTap: () {
+      //         AppRouter.navigateToMineDetail(context, atModel.uid);
+      //         print("1点击At用户${atModel.uid}");
+      //       },
+      //     ));
+      //   }
+      // }
       // richTexts.add(BaseRichText(
       //
       // ));
     } else {
+
       contextText = "${model.name}: ${model.content}";
+
       richTexts.add(BaseRichText(
         contextText.substring(0, model.name.length + 1),
         style: AppStyle.textMedium14,
         onTap: () {
           AppRouter.navigateToMineDetail(context, model.uid);
-          print("点击用户${model.uid}");
+          print("2点击用户${model.uid}");
         },
       ));
-      if(model.atUsers.isNotEmpty && model.atUsers.last.len <= model.content.length) {
-        // at高亮
-        for ( AtUsersModel atModel in model.atUsers) {
-          richTexts.add(BaseRichText(
-            contextText.substring(atModel.index + model.name.length + 2,atModel.len+ model.name.length + 2),
-            style: TextStyle(color: AppColor.mainBlue, fontSize: 14),
-            onTap: () {
-              AppRouter.navigateToMineDetail(context, atModel.uid);
-              print("点击用户${atModel.uid}");
-            },
-          ));
-        }
-      }
+      // if(model.atUsers.isNotEmpty && model.atUsers.last.len <= model.content.length) {
+      //   // at高亮
+      //   for ( AtUsersModel atModel in model.atUsers) {
+      //     richTexts.add(BaseRichText(
+      //       contextText.substring(atModel.index + model.name.length + 2,atModel.len+ model.name.length + 2),
+      //       style: TextStyle(color: AppColor.mainBlue, fontSize: 14),
+      //       onTap: () {
+      //         AppRouter.navigateToMineDetail(context, atModel.uid);
+      //         print("2点击AT用户${atModel.uid}");
+      //       },
+      //     ));
+      //   }
+      // }
     }
     return richTexts;
   }
@@ -100,7 +102,7 @@ class CommentLayout extends StatelessWidget {
                 onTap: () {
                   openFeedCommentBottomSheet(context: context, feedId: model.id);
                 },
-                child: Text("共${StringUtil.getNumber(commentCount)}条评论", style: AppStyle.textHintRegular12),
+                child: Text("共${StringUtil.getNumber(commentCount)}条评论", style: AppStyle.textSecondaryRegular12),
               );
             }, selector: (context, notifier) {
               return notifier.feedMap[model.id].commentCount;
@@ -115,13 +117,13 @@ class CommentLayout extends StatelessWidget {
             child: model.comments.length > 0
                 ? MyRichTextWidget(
                     Text(
-                      "${context.select((FeedMapNotifier value) => value.feedMap[model.id].comments[0].name)}: ${context.select((FeedMapNotifier value) => value.feedMap[model.id].comments[0].content)}",
-                      style: AppStyle.textHintRegular13,
+                      "${context.select((FeedMapNotifier value) => value.feedMap[model.id].comments.first.name)}: ${context.select((FeedMapNotifier value) => value.feedMap[model.id].comments.first.content)}",
+                      style: AppStyle.textPrimary3Regular13,
                     ),
                     maxLines: 1,
                     textOverflow: TextOverflow.ellipsis,
                     richTexts:
-                        setBaseRichText(context.select((FeedMapNotifier value) => value.feedMap[model.id].comments[0]),context
+                        setBaseRichText(context.select((FeedMapNotifier value) => value.feedMap[model.id].comments.first),context
                             // model.comments[0]
                             ),
                   )
@@ -139,7 +141,7 @@ class CommentLayout extends StatelessWidget {
                       "${context.select((FeedMapNotifier value) => value.feedMap[model.id].comments[1].name)}: ${context.select((FeedMapNotifier value) => value.feedMap[model.id].comments[1].content)}",
                       // "${model.comments[1].name}: ${model.comments[1].content}",
                       overflow: TextOverflow.visible,
-                      style: AppStyle.textHintRegular13,
+                      style: AppStyle.textPrimary3Regular13,
                     ),
                     maxLines: 1,
                     textOverflow: TextOverflow.ellipsis,

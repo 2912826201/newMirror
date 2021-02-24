@@ -484,7 +484,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                   margin: EdgeInsets.only(top: 32),
                   child: Center(
                     child: Text(
-                      "Login",
+                      "登录",
                       style: TextStyle(color: Colors.white),
                     ),
                   ),

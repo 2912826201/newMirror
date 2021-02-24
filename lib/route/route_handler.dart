@@ -78,6 +78,7 @@ import 'package:mirror/page/training/video_course/video_course_play_page.dart';
 import 'package:mirror/page/training/video_course/video_course_result_page.dart';
 import 'package:mirror/page/training/video_course/video_detail_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/widget/address_Picker.dart';
 import 'package:mirror/widget/feed/feed_share_select_contact.dart';
 import 'package:provider/provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -159,7 +160,7 @@ var handlerProfileDetailMore = Handler(handlerFunc: (BuildContext context, Map<S
 });
 
 var handlerEditInformation = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return EditInformation();
+  return ChangeNotifierProvider(create: (_)=>AddressPickerNotifier(),child: EditInformation(),);
 });
 
 var handlerEditInformationName = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {

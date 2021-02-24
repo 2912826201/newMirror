@@ -106,15 +106,17 @@ class CommentInputBoxState extends State<CommentInputBox> {
                     postComments(
                         targetId: widget.feedModel.id,
                         targetType: 0,
-                        contentext: StringUtil.breakWord(text),
+                        contentext: text,
                         atUsers: jsonEncode(atListModel),
                         commentModelCallback: (BaseResponseModel commentModel) {
                           CommentDtoModel comModel;
                           if (commentModel.code == CODE_BLACKED) {
                             ToastShow.show(msg: "发布失败，你已被对方加入黑名单", context: context, gravity: Toast.CENTER);
                           } else {
+
                             if (commentModel.data != null) {
                               comModel = (CommentDtoModel.fromJson(commentModel.data));
+                              print("发布成功：${comModel.toString()}");
                               context.read<FeedMapNotifier>().feedPublishComment(comModel, widget.feedModel.id);
                             }
                           }
