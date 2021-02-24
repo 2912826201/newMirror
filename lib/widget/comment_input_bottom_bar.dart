@@ -568,7 +568,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                             ),
                           ),
                           Positioned(
-                              right: 16,
+                              right: 44,
                               bottom: 6,
                               child: GestureDetector(
                                   onTap: () {
@@ -582,10 +582,21 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                     context.read<CommentEnterNotifier>().getAtCursorIndex(cursorIndex + 1);
                                     context.read<CommentEnterNotifier>().openAtCallback("@");
                                   },
-                                  child: Container(
+                                  child: Image.asset(
+                                    "images/resource/2.0x/ic_dynamic_at@2x.png",
                                     width: 24,
                                     height: 24,
-                                    color: Colors.redAccent,
+                                  ))),
+                          Positioned(
+                              right: 16,
+                              bottom: 6,
+                              child: GestureDetector(
+                                  onTap: () {
+                                  },
+                                  child: Image.asset(
+                                    "images/resource/2.0x/ic_dynamic_expression@2x.png",
+                                    width: 24,
+                                    height: 24,
                                   ))),
                           // MyIconBtn()
                         ],

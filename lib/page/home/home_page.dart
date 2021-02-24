@@ -7,9 +7,11 @@ import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/search/search_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.controller, this.ifPageController}) : super(key: key);
@@ -56,9 +58,22 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
             iconColor: AppColor.black,
             onTap: () {
               print("${FluroRouter.appRouter.hashCode}");
-              AppRouter.navigateToMediaPickerPage(
-                  context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
-                  publishMode: 1);
+              if (context.read<FeedMapNotifier>().postFeedModel != null) {
+                if(context.read<FeedMapNotifier>().plannedSpeed != -1) {
+                  ToastShow.show(msg: "你有动态正在发送中，请稍等", context: context, gravity: Toast.CENTER);
+                } else {
+                  ToastShow.show(msg: "动态发送失败", context: context, gravity: Toast.CENTER);
+                }
+              } else {
+                AppRouter.navigateToMediaPickerPage(
+                    context,
+                    9,
+                    typeImageAndVideo,
+                    true,
+                    startPageGallery,
+                    false, (result) {},
+                    publishMode: 1);
+              }
             }),
         titleWidget: Container(
           width: 140,

@@ -361,11 +361,12 @@ class LocationItem extends StatelessWidget {
           Spacer(),
           Offstage(
             offstage: index != checkIndex,
-            child: Icon(
-              Icons.clear,
-              size: 18,
-              color: AppColor.mainRed,
-            ),
+            child: Image.asset(
+              "images/resource/2.0x/ic_address_Selected@2x.png",
+              width: 18,
+              height: 18,
+            )
+
           ),
           SizedBox(
             width: 12,

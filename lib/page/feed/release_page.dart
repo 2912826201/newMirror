@@ -259,10 +259,59 @@ class FeedHeader extends StatelessWidget {
     List<TopicDtoModel> topics = [];
     print("输入框文字￥$inputText");
     feedModel.content = inputText;
-    // 检测文本
-    Map<String, dynamic> textModel = await feedTextScan(text: inputText);
-    if (textModel["state"]) {
-      print("feedModel.content${feedModel.content}");
+    if (inputText.length > 0) {
+      // 检测文本
+      Map<String, dynamic> textModel = await feedTextScan(text: inputText);
+      if (textModel["state"]) {
+        print("feedModel.content${feedModel.content}");
+        for (Rule rule in rules) {
+          if (rule.isAt) {
+            AtUsersModel atModel = AtUsersModel();
+            atModel.index = rule.startIndex;
+            atModel.len = rule.endIndex;
+            atModel.uid = rule.id;
+            atUsersModel.add(atModel);
+          } else {
+            print("查看发布话题动态——————————————————————————————");
+            print(rule.toString());
+            TopicDtoModel topicDtoModel = TopicDtoModel();
+
+            if (rule.id != -1) {
+              topicDtoModel.id = rule.id;
+              topicDtoModel.index = rule.startIndex;
+              topicDtoModel.len = rule.endIndex;
+            } else {
+              topicDtoModel.name = rule.params.substring(1, rule.params.length);
+              topicDtoModel.index = rule.startIndex;
+              topicDtoModel.len = rule.endIndex - 1;
+            }
+            topics.add(topicDtoModel);
+          }
+        }
+        if (poi != null) {
+          address = poi.name;
+          longitude = poi.location.split(",")[0];
+          latitude = poi.location.split(",")[1];
+          cityCode = poi.citycode;
+        }
+        feedModel.selectedMediaFiles = selectedMediaFiles;
+        feedModel.atUsersModel = atUsersModel;
+        feedModel.address = address;
+        feedModel.cityCode = cityCode;
+        feedModel.latitude = latitude;
+        feedModel.longitude = longitude;
+        feedModel.topics = topics;
+        print("打印一下￥￥${(feedModel.selectedMediaFiles.list.length)}");
+        // 传入发布动态model
+        context.read<FeedMapNotifier>().setPublishFeedModel(feedModel);
+        context.read<ReleaseFeedInputNotifier>().rules.clear();
+        context.read<ReleaseFeedInputNotifier>().selectAddress = null;
+        Navigator.pop(context, true);
+        print("打印结束");
+      } else {
+        ToastShow.show(msg: "你发布的动态可能存在敏感内容", context: context, gravity: Toast.CENTER);
+      }
+    } else {
       for (Rule rule in rules) {
         if (rule.isAt) {
           AtUsersModel atModel = AtUsersModel();
@@ -306,9 +355,6 @@ class FeedHeader extends StatelessWidget {
       context.read<ReleaseFeedInputNotifier>().rules.clear();
       context.read<ReleaseFeedInputNotifier>().selectAddress = null;
       Navigator.pop(context, true);
-      print("打印结束");
-    } else {
-      ToastShow.show(msg: "你发布的动态可能存在敏感内容", context: context, gravity: Toast.CENTER);
     }
   }
 
@@ -330,46 +376,60 @@ class FeedHeader extends StatelessWidget {
               height: 28,
               iconSting: "images/resource/2.0x/shut_down@2x.png",
               onPressed: () {
-                Navigator.of(context).pop(true);
+                showAppDialog(
+                  context,
+                  confirm: AppDialogButton("确定", () {
+                    Navigator.of(context).pop(true);
+                    return true;
+                  }),
+                  cancel: AppDialogButton("取消", () {
+                    return true;
+                  }),
+                  title: "退出编辑",
+                  info: "退出后动态内容将不保存，确定放弃编辑动态吗？",
+                );
               },
             ),
           ),
           Spacer(),
           GestureDetector(
-              onTap: () {
-                // 读取输入框最新的值
-                var inputText = context.read<ReleaseFeedInputNotifier>().inputText;
+            onTap: () {
+              // 读取输入框最新的值
+              var inputText = context.read<ReleaseFeedInputNotifier>().inputText;
 
-                // 获取输入框内的规则
-                var rules = context.read<ReleaseFeedInputNotifier>().rules;
+              // 获取输入框内的规则
+              var rules = context.read<ReleaseFeedInputNotifier>().rules;
 
-                // 获取选择的地址
-                var poi = context.read<ReleaseFeedInputNotifier>().selectAddress;
-                print("点击生效");
-                print(poi.toString());
-                pulishFeed(inputText, rules, context, poi);
-              },
-              child: IgnorePointer(
-                // 监听输入框的值==""使外层点击不生效。非""手势生效。
-                ignoring: context.watch<ReleaseFeedInputNotifier>().inputText == "",
-                child: Container(
-                    // padding: EdgeInsets.only(top: 6,left: 12,bottom: 6,right: 12),
-                    height: 28,
-                    width: 60,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(14)),
-                      // 监听输入框的值动态改变样式
-                      color: context.watch<ReleaseFeedInputNotifier>().inputText != ""
-                          ? AppColor.mainRed
-                          : AppColor.mainRed.withOpacity(0.65),
+              // 获取选择的地址
+              var poi = context.read<ReleaseFeedInputNotifier>().selectAddress;
+              print("点击生效");
+              print(poi.toString());
+              pulishFeed(inputText, rules, context, poi);
+            },
+            // child: IgnorePointer(
+            // 监听输入框的值==""使外层点击不生效。非""手势生效。
+            // ignoring: context.watch<ReleaseFeedInputNotifier>().inputText == "",
+            child: Container(
+                // padding: EdgeInsets.only(top: 6,left: 12,bottom: 6,right: 12),
+                height: 28,
+                width: 60,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(14)),
+                    // 监听输入框的值动态改变样式
+                    color:
+                        // context.watch<ReleaseFeedInputNotifier>().inputText != ""
+                        //     ?
+                        AppColor.mainRed
+                    // : AppColor.mainRed.withOpacity(0.65),
                     ),
-                    child: Center(
-                      child: Text(
-                        "发布",
-                        style: TextStyle(color: AppColor.white, fontSize: 14, decoration: TextDecoration.none),
-                      ),
-                    )),
-              )),
+                child: Center(
+                  child: Text(
+                    "发布",
+                    style: TextStyle(color: AppColor.white, fontSize: 14, decoration: TextDecoration.none),
+                  ),
+                )),
+            // )
+          ),
           SizedBox(
             width: 16,
           )
@@ -848,10 +908,10 @@ class TopicListState extends State<TopicList> {
                             print(atRule.params);
                             print(list[index].name);
                             if (atRule.id != -1 && atRule.id == list[index].id && atRule.isAt == false) {
-                              ToastShow.show(msg: "你已经@过Ta啦！", context: context, gravity: Toast.CENTER);
+                              ToastShow.show(msg: "你已添加此话题", context: context, gravity: Toast.CENTER);
                               return;
                             } else if (atRule.id == -1 && atRule.params == list[index].name) {
-                              ToastShow.show(msg: "你已经@过Ta啦！", context: context, gravity: Toast.CENTER);
+                              ToastShow.show(msg: "你已添加此话题", context: context, gravity: Toast.CENTER);
                               return;
                             }
                           }
@@ -945,7 +1005,7 @@ class TopicListState extends State<TopicList> {
                               style: AppStyle.textSecondaryRegular12,
                             ),
                             SizedBox(
-                              height: 6,
+                              height: 4,
                             ),
                           ],
                         ),
@@ -1336,11 +1396,18 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(
-              Icons.where_to_vote_rounded,
-              size: 24,
-              color: seletedAddressText != "你在哪儿" ? AppColor.mainBlue : AppColor.textPrimary1,
+            Image.asset(
+              seletedAddressText != "你在哪儿"
+                  ? "images/resource/2.0x/ic_dynamic_big_address_blue@2x.png"
+                  : "images/resource/2.0x/ic_dynamic_big_address_black@2x.png",
+              width: 24,
+              height: 24,
             ),
+            // Icon(
+            //   Icons.where_to_vote_rounded,
+            //   size: 24,
+            //   color: seletedAddressText != "你在哪儿" ? AppColor.mainBlue : AppColor.textPrimary1,
+            // ),
             SizedBox(
               width: 12,
             ),
@@ -1350,11 +1417,11 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
                   fontSize: 16, color: seletedAddressText != "你在哪儿" ? AppColor.mainBlue : AppColor.textPrimary1),
             ),
             Spacer(),
-            Icon(
-              Icons.arrow_forward_ios_sharp,
-              size: 18,
-              color: AppColor.textHint,
-            )
+            Image.asset(
+              "images/resource/2.0x/ic_dynamic_Right arrow@2x.png",
+              width: 18,
+              height: 18,
+            ),
           ],
         ),
       ),
