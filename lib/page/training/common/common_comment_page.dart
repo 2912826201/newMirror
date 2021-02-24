@@ -985,7 +985,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
               print('=================不在第一页的父评论');
               widget.commentDtoModel.itemChose = true;
               courseCommentHot.list.insert(0, widget.commentDtoModel);
-              screenOutHotIds.add(widget.fatherComment.id);
+              screenOutHotIds.add(widget.commentDtoModel.id);
             }
           }
         }

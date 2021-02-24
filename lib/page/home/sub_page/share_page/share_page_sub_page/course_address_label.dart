@@ -56,9 +56,9 @@ class CourseAddressLabel extends StatelessWidget {
   // 虽然有属性可设置，但是有个问题是汉字和数字，或者汉字和英文混排时，flutter 设置属性超出显示...数字和英文会自动换行。
   String interceptText(String textStr) {
     // 获取文本宽度
-    double textWidth = getTextSize(text, TextStyle(fontSize: 12),1).width;
+    double textWidth = getTextSize(text, TextStyle(fontSize: 12),1,getTextWidth()).width;
     if (textWidth > getTextWidth()) {
-      String frontText = textStr.substring(0, getTextWidth() ~/ 12);
+      String frontText = textStr.substring(0, getTextWidth() ~/ 13);
       if (interceptNum(frontText) > 0) {
         return textStr.substring(
             0, (getTextWidth() ~/ 12 + (interceptNum(frontText) ~/ (Platform.isIOS ? 2.1 : 1.5)))) +

@@ -48,6 +48,8 @@ class AppStyle {
   // Regular primary3灰色
   static const textPrimary3Regular14 =
       TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.textPrimary3);
+  static const textPrimary3Regular13 =
+  TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textPrimary3);
   static const textPrimary3Regular12 =
       TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textPrimary3);
 
@@ -94,4 +96,5 @@ class AppStyle {
     decorationColor: AppColor.textHint,
   );
   static const textSemibold23 = TextStyle(fontSize: 23, fontWeight: FontWeight.w500, color: AppColor.textVipSemibold);
+  static const textAddressText = TextStyle(color: Color(0xFF000046), fontSize: 16.0,fontWeight:FontWeight.w500);
 }

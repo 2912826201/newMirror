@@ -106,7 +106,7 @@ class _ExpandableTextState extends State<ExpandableText> {
                 padding: EdgeInsets.only(top: 6),
                 child: Text(expand ? '收起' : '展开', style: TextStyle(
                     fontSize: style != null ? style.fontSize : null,
-                    color: Color.fromRGBO(48, 209, 139, 1))),
+                    color: AppColor.textSecondary)),
               ),
             ),
           ],
