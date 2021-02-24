@@ -8,16 +8,20 @@ import 'package:mirror/constant/color.dart';
 class AppIcon {
   static const String nav_return = "assets/svg/nav_return.svg";
 
-  static Widget getAppIcon(String svgName, double iconSize, {@required double containerSize, @required Color color}) {
-    if (containerSize == null) {
-      containerSize = iconSize;
+  static Widget getAppIcon(String svgName, double iconSize,
+      {double containerHeight, double containerWidth, Color color}) {
+    if (containerHeight == null) {
+      containerHeight = iconSize;
+    }
+    if (containerWidth == null) {
+      containerWidth = iconSize;
     }
     if (color == null) {
       color = AppColor.black;
     }
     return Container(
-      height: containerSize,
-      width: containerSize,
+      height: containerHeight,
+      width: containerWidth,
       alignment: Alignment.center,
       child: SvgPicture.asset(
         svgName,

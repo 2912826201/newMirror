@@ -355,20 +355,23 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                 ),
               ]),
 
-              Row(mainAxisAlignment: MainAxisAlignment.center,
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                RaisedButton(
-                  onPressed: () {
-                    _getNewVersion(context);
-                  },
-                  child: Text("获取最新版本"),
-                ),
-                AppIcon.getAppIcon("assets/svg/favorite-black-24dp.svg", 22,
-                    color: AppColor.mainBlue, containerSize: 44),
-                AppIcon.getAppIcon("assets/svg/shoucang.svg", 22, color: AppColor.mainBlue, containerSize: 44),
-                AppIcon.getAppIcon(AppIcon.nav_return, 22, color: AppColor.mainBlue, containerSize: 44),
-              ]),
+                    RaisedButton(
+                      onPressed: () {
+                        _getNewVersion(context);
+                      },
+                      child: Text("获取最新版本"),
+                    ),
+                    AppIcon.getAppIcon("assets/svg/favorite-black-24dp.svg", 22,
+                        color: AppColor.mainBlue, containerHeight: 44, containerWidth: 44),
+                    AppIcon.getAppIcon("assets/svg/shoucang.svg", 22,
+                        color: AppColor.mainBlue, containerHeight: 44, containerWidth: 44),
+                    AppIcon.getAppIcon(AppIcon.nav_return, 22,
+                        color: AppColor.mainBlue, containerHeight: 44, containerWidth: 44),
+                  ]),
             ],
           ),
         ),

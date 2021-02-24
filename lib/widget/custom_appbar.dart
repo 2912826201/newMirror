@@ -118,34 +118,35 @@ class _CustomAppBarIconButtonState extends State<CustomAppBarIconButton> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: CustomAppBar.appBarButtonWidth,
-      //高度填充满整个AppBar
-      height: CustomAppBar.appBarHeight,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        width: CustomAppBar.appBarButtonWidth,
+        //高度填充满整个AppBar
+        height: CustomAppBar.appBarHeight,
+        alignment: Alignment.center,
         child: Icon(
           widget.icon,
           color: isPressed ? widget.iconColor.withOpacity(0.5) : widget.iconColor,
           size: CustomAppBar.appBarIconSize,
         ),
-        onTapDown: (details) {
-          setState(() {
-            isPressed = true;
-          });
-        },
-        onTapUp: (details) {
-          setState(() {
-            isPressed = false;
-          });
-        },
-        onTapCancel: () {
-          setState(() {
-            isPressed = false;
-          });
-        },
-        onTap: widget.onTap,
       ),
+      onTapDown: (details) {
+        setState(() {
+          isPressed = true;
+        });
+      },
+      onTapUp: (details) {
+        setState(() {
+          isPressed = false;
+        });
+      },
+      onTapCancel: () {
+        setState(() {
+          isPressed = false;
+        });
+      },
+      onTap: widget.onTap,
     );
   }
 }
@@ -166,14 +167,14 @@ class _CustomAppBarTextButtonState extends State<CustomAppBarTextButton> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      //高度填充满整个AppBar
-      height: CustomAppBar.appBarHeight,
-      alignment: Alignment.center,
-      padding: const EdgeInsets.only(
-          left: CustomAppBar.appBarHorizontalPadding, right: CustomAppBar.appBarHorizontalPadding),
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        //高度填充满整个AppBar
+        height: CustomAppBar.appBarHeight,
+        alignment: Alignment.center,
+        padding: const EdgeInsets.only(
+            left: CustomAppBar.appBarHorizontalPadding, right: CustomAppBar.appBarHorizontalPadding),
         child: Text(
           widget.text,
           style: TextStyle(
@@ -181,23 +182,23 @@ class _CustomAppBarTextButtonState extends State<CustomAppBarTextButton> {
             color: isPressed ? widget.textColor.withOpacity(0.5) : widget.textColor,
           ),
         ),
-        onTapDown: (details) {
-          setState(() {
-            isPressed = true;
-          });
-        },
-        onTapUp: (details) {
-          setState(() {
-            isPressed = false;
-          });
-        },
-        onTapCancel: () {
-          setState(() {
-            isPressed = false;
-          });
-        },
-        onTap: widget.onTap,
       ),
+      onTapDown: (details) {
+        setState(() {
+          isPressed = true;
+        });
+      },
+      onTapUp: (details) {
+        setState(() {
+          isPressed = false;
+        });
+      },
+      onTapCancel: () {
+        setState(() {
+          isPressed = false;
+        });
+      },
+      onTap: widget.onTap,
     );
   }
 }
