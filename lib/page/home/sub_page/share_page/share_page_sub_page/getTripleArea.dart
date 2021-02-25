@@ -197,16 +197,13 @@ class GetTripleAreaState extends State<GetTripleArea> {
             onTap: () {
               setUpLuad();
             },
-            child: Image.asset(
-              "images/resource/2.0x/ic_dynamic_like@2x.png",
+            child: Image.asset( (context.select((FeedMapNotifier value) => value.feedMap) != null &&
+                context.select((FeedMapNotifier value) => value.feedMap[widget.model.id]) != null &&
+                context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) != null &&
+                context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 0) ?
+              "images/resource/2.0x/ic_dynamic_like@2x.png" : "images/resource/2.0x/ic_comment_like_Selected@2x.png",
               width: 24,
               height: 24,
-              color:  (context.select((FeedMapNotifier value) => value.feedMap) != null &&
-                  context.select((FeedMapNotifier value) => value.feedMap[widget.model.id]) != null &&
-                  context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) != null &&
-                  context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 0)
-              ? Colors.black
-              : Colors.redAccent,
             ),
             // child: Icon(
             //   Icons.favorite,

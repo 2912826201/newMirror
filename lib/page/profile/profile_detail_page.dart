@@ -255,7 +255,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                               userId: widget.userId,
                               userName: _textName,
                             );
-                          }));
+                          })).then((value){
+                            _getFollowCount(id: widget.userId);
+                          });
                         },
                         child: Image.asset(
                           _imgMore,

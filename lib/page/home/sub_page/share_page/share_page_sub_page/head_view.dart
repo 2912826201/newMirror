@@ -73,11 +73,11 @@ class HeadViewState extends State<HeadView> {
       print('inThisBlack===================${blackModel.inThisBlack}');
       print('inYouBlack===================${blackModel.inYouBlack}');
       if (blackModel.inYouBlack == 1) {
-        context.watch<ProfilePageNotifier>().changeBlack(false, model.pushId, 1);
+        context.read<ProfilePageNotifier>().changeBlack(false, model.pushId, 1);
       } else if (blackModel.inThisBlack == 1) {
-        context.watch<ProfilePageNotifier>().changeBlack(false, model.pushId, 2);
+        context.read<ProfilePageNotifier>().changeBlack(false, model.pushId, 2);
       } else {
-        context.watch<ProfilePageNotifier>().changeBlack(false, model.pushId, 0);
+        context.read<ProfilePageNotifier>().changeBlack(false, model.pushId, 0);
       }
     }
   }

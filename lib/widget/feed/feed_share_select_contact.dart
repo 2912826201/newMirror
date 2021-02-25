@@ -534,7 +534,7 @@ class _FriendsPageState extends State<FriendsPage> {
     // 去除本来就在群内的好友
     if (widget.type == 3) {
       for (int i = 0; i < followListModel.list.length; i++) {
-        String userName = Application.chatGroupUserModelMap[followListModel.list[i].uid.toString()];
+        String userName = Application.chatGroupUserNameMap[followListModel.list[i].uid.toString()];
         if (userName != null) {
           followListModel.list.removeAt(i);
           i--;

@@ -167,7 +167,7 @@ Future<Message> postMessageManagerUpdateGroupName(String targetId, String text) 
   textMap["toUserId"] = targetId;
   textMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME;
   textMap["name"] = ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME_NAME;
-  textMap["nickName"] = Application.chatGroupUserModelMap[msg.sendUserInfo.userId.toString()];
+  textMap["nickName"] = Application.chatGroupUserNameMap[msg.sendUserInfo.userId.toString()];
   textMap["data"] = text;
   msg.content = jsonEncode(textMap);
   return await postGroupMessageManager(targetId, msg);
@@ -697,9 +697,11 @@ void initChatGroupUserModelMap(List<ChatGroupUserModel> chatGroupUserModelList) 
       }
     }
   }
-  Application.chatGroupUserModelMap.clear();
+  Application.chatGroupUserNameMap.clear();
+  Application.chatGroupUserUrlMap.clear();
   for (ChatGroupUserModel userModel in chatGroupUserModelList) {
-    Application.chatGroupUserModelMap[userModel.uid.toString()] = userModel.groupNickName;
+    Application.chatGroupUserNameMap[userModel.uid.toString()] = userModel.groupNickName;
+    Application.chatGroupUserUrlMap[userModel.uid.toString()] = userModel.avatarUri;
   }
 }
 
