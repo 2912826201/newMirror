@@ -111,7 +111,6 @@ class VideoCourseListPageState extends XCState {
           CustomAppBarIconButton(
             icon:Icons.search,
             iconColor:AppColor.black,
-            isLeading:false,
             onTap:() {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return SearchPage(defaultIndex:1);

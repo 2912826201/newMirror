@@ -6,6 +6,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/date_util.dart';
 
 import 'custom_appbar.dart';
+import 'icon.dart';
 
 ///视频课-头部折叠滑动
 class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
@@ -207,18 +208,18 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
             top: 0,
             child: Container(
               color: this.makeStickyHeaderBgColor(shrinkOffset),
-              padding: const EdgeInsets.only(left: 20, right: 10, top: 2),
               child: SafeArea(
                 bottom: false,
                 child: Container(
+                  padding: const EdgeInsets.only(
+                      left: CustomAppBar.appBarHorizontalPadding, right: CustomAppBar.appBarHorizontalPadding),
                   height: this.collapsedHeight,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       CustomAppBarIconButton(
-                        icon: Icons.arrow_back_ios,
+                        svgName: AppIcon.nav_return,
                         iconColor: AppColor.white,
-                        isLeading: false,
                         onTap: () => Navigator.pop(context),
                       ),
                       Expanded(
@@ -246,7 +247,6 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
                           CustomAppBarIconButton(
                             icon: isFavor ? Icons.favorite : Icons.favorite_border_rounded,
                             iconColor: isFavor ? AppColor.mainRed : AppColor.white,
-                            isLeading: false,
                             onTap: () {
                               if (favorBtnClick != null) {
                                 favorBtnClick();
@@ -256,7 +256,6 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
                           CustomAppBarIconButton(
                             icon: Icons.share,
                             iconColor: AppColor.white,
-                            isLeading: false,
                             onTap: shareBtnClick,
                           ),
                         ],
