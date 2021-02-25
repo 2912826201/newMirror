@@ -97,7 +97,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-class CustomAppBarIconButton extends StatefulWidget {
+class CustomAppBarIconButton extends StatelessWidget {
   CustomAppBarIconButton({
     Key key,
     this.icon,
@@ -113,51 +113,15 @@ class CustomAppBarIconButton extends StatefulWidget {
   final Function() onTap;
 
   @override
-  _CustomAppBarIconButtonState createState() => _CustomAppBarIconButtonState();
-}
-
-class _CustomAppBarIconButtonState extends State<CustomAppBarIconButton> {
-  bool isPressed = false;
-
-  @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      child: widget.icon != null
-          ? Container(
-              width: CustomAppBar.appBarButtonWidth,
-              //高度填充满整个AppBar
-              height: CustomAppBar.appBarHeight,
-              alignment: Alignment.center,
-              child: Icon(
-                widget.icon,
-                color: isPressed ? widget.iconColor.withOpacity(0.5) : widget.iconColor,
-                size: CustomAppBar.appBarIconSize,
-              ),
-            )
-          : AppIcon.getAppIcon(
-              widget.svgName,
-              CustomAppBar.appBarIconSize,
-              containerHeight: CustomAppBar.appBarHeight,
-              containerWidth: CustomAppBar.appBarButtonWidth,
-              color: isPressed ? widget.iconColor.withOpacity(0.5) : widget.iconColor,
-            ),
-      onTapDown: (details) {
-        setState(() {
-          isPressed = true;
-        });
-      },
-      onTapUp: (details) {
-        setState(() {
-          isPressed = false;
-        });
-      },
-      onTapCancel: () {
-        setState(() {
-          isPressed = false;
-        });
-      },
-      onTap: widget.onTap,
+    return AppIconButton(
+      icon: icon,
+      svgName: svgName,
+      iconSize: CustomAppBar.appBarIconSize,
+      iconColor: iconColor,
+      buttonHeight: CustomAppBar.appBarHeight,
+      buttonWidth: CustomAppBar.appBarButtonWidth,
+      onTap: onTap,
     );
   }
 }
