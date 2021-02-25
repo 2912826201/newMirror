@@ -242,7 +242,9 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     if (loadingStatusComment == LoadingStatus.STATUS_LOADING) {
       widgetArray.add(Container());
     } else {
-      if ((isHotOrTime ? (courseCommentHot) : (courseCommentTime)) == null) {
+      if ((isHotOrTime ? (courseCommentHot) : (courseCommentTime)) == null||
+          (isHotOrTime ? (courseCommentHot) : (courseCommentTime)).list==null||
+          (isHotOrTime ? (courseCommentHot) : (courseCommentTime)).list.length<1) {
         widgetArray.add(getCommentNoData());
       } else {
         widgetArray.addAll(getBigCommentList());
@@ -591,6 +593,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       for (int i = 0; i < commentModel.list.length; i++) {
         if (commentModel.list[i].id == commentId) {
           commentModel.list.removeAt(i);
+          commentModel.totalCount--;
           break;
         }
         int judge = 0;
@@ -848,20 +851,24 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
               if (isHotOrTime) {
                 if (courseCommentHot != null) {
                   courseCommentHot.list.insert(0, model);
+                  courseCommentHot.totalCount++;
                 } else {
                   courseCommentHot = new CommentModel();
                   courseCommentHot.list = [];
                   courseCommentHot.list.add(model);
+                  courseCommentHot.totalCount=1;
                 }
                 screenOutHotIds.add(model.id);
                 setCommentListSubSettingSingle(model.id);
               } else {
                 if (courseCommentTime != null) {
                   courseCommentTime.list.insert(0, model);
+                  courseCommentTime.totalCount++;
                 } else {
                   courseCommentTime = new CommentModel();
                   courseCommentTime.list = [];
                   courseCommentTime.list.add(model);
+                  courseCommentTime.totalCount=1;
                 }
                 screenOutTimeIds.add(model.id);
                 setCommentListSubSettingSingle(model.id);
@@ -1351,20 +1358,20 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     if (code != null && code==200) {
       _laudCommentData(courseCommentHot, commentId, true, laud);
       _laudCommentData(courseCommentTime, commentId, false, laud);
-      if (laud) {
-        ToastShow.show(msg: "点赞成功", context: context);
-      } else {
-        ToastShow.show(msg: "取消点赞成功", context: context);
-      }
+      // if (laud) {
+      //   // ToastShow.show(msg: "点赞成功", context: context);
+      // } else {
+      //   // ToastShow.show(msg: "取消点赞成功", context: context);
+      // }
       if (mounted) {
         setState(() {});
       }
     } else {
-      if (laud) {
-        ToastShow.show(msg: "点赞失败", context: context);
-      } else {
-        ToastShow.show(msg: "取消点赞失败", context: context);
-      }
+      // if (laud) {
+      //   ToastShow.show(msg: "点赞失败", context: context);
+      // } else {
+      //   ToastShow.show(msg: "取消点赞失败", context: context);
+      // }
     }
   }
 

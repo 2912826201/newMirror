@@ -30,6 +30,11 @@ class IfPageState extends XCState with TickerProviderStateMixin,WidgetsBindingOb
     // 最外层TabBar 默认定位到第二页
     _controller = TabController(length: 2, vsync: this, initialIndex: 1);
     super.initState();
+    // _controller.addListener(() {
+    //   if(context.watch<FeedMapNotifier>().postFeedModel != null) {
+    //     _controller.
+    //   }
+    // });
     //初始化
     WidgetsBinding.instance.addObserver(this);
   }
@@ -80,52 +85,6 @@ class IfPageState extends XCState with TickerProviderStateMixin,WidgetsBindingOb
       // )
     );
   }
-  // @override
-  // Widget build(BuildContext context) {
-  //   print("if_page_____________________________________________build");
-  //   // 获取屏幕宽度，只能在home内才可调用。
-  //   double screen_bottom = MediaQuery.of(context).padding.bottom;
-  //   Size screen_size = MediaQuery.of(context).size;
-  //   if (context.watch<FeedMapNotifier>().postFeedModel != null) {
-  //     _controller.index = 1;
-  //   }
-  //   // 初始化获取屏幕数据
-  //   if (isInit == false) {
-  //     ScreenUtil.init(
-  //         width: screen_size.width,
-  //         height: screen_size.height,
-  //         maxPhysicalSize: screen_size.width,
-  //         bottomHeight: screen_bottom);
-  //     isInit = true;
-  //   }
-  //   ;
-  //   return AnnotatedRegion<SystemUiOverlayStyle>(
-  //       value: SystemUiOverlayStyle.dark,
-  //       // child: Scaffold(
-  //       //     resizeToAvoidBottomInset: false,
-  //
-  //       child: Container(
-  //             child: Stack(children: [
-  //               ChangeNotifierProvider(
-  //                   create: (_) => SelectedbottomNavigationBarNotifier(0),
-  //                   builder: (context, _) {
-  //                     return ScrollConfiguration(
-  //                       behavior: NoBlueEffectBehavior(),
-  //                       child: UnionOuterTabBarView(
-  //                         physics: context.watch<SelectedbottomNavigationBarNotifier>().selectedIndex == 0
-  //                             //ClampingScrollPhysics 禁止回弹效果 NeverScrollableScrollPhysics 禁止滚动效果
-  //                             ? ClampingScrollPhysics()
-  //                             : NeverScrollableScrollPhysics(),
-  //                         controller: _controller,
-  //                         children: _createTabContent(),
-  //                       ),
-  //                     );
-  //                   })
-  //             ]),
-  //           )
-  //       // )
-  //   );
-  // }
 
   List<Widget> _createTabContent() {
     List<Widget> tabContent = List();

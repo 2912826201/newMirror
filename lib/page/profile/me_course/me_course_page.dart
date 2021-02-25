@@ -105,7 +105,7 @@ class _MeCoursePageState extends State<MeCoursePage> {
               child: getItem(_videoCourseList[index]),
               splashColor: AppColor.textHint,
               onTap: () {
-                AppRouter.navigateToVideoDetail(context, _videoCourseList[index].id);
+                AppRouter.navigateToVideoDetail(context, _videoCourseList[index].id,callback: (result)=>_onRefresh());
               },
             ));
       }, childCount: _videoCourseList.length),
@@ -185,7 +185,7 @@ class _MeCoursePageState extends State<MeCoursePage> {
     );
   }
 
-  //进入我学过的课程ui
+  //进入我收藏的课程ui
   Widget getMeLearnCourseTitleUi() {
     return SliverToBoxAdapter(
       child: Container(
@@ -273,18 +273,20 @@ class _MeCoursePageState extends State<MeCoursePage> {
   }
 
   _onRefresh() {
-    _videoCourseList.clear();
     _isVideoCourseLastTime = null;
-    _isVideoCoursePage=0;
-    loadData();
+    _isVideoCoursePage=1;
+    loadData(isRefresh:true);
   }
 
-  void loadData() {
+  void loadData({bool isRefresh=false}) {
     _isVideoCourseRequesting = true;
     if(_isVideoCoursePage>1&&_isVideoCourseLastTime==null){
       return;
     }
     getMyCourse(_isVideoCoursePage,20, lastTime: _isVideoCourseLastTime).then((result) {
+      if(isRefresh){
+        _videoCourseList.clear();
+      }
       _isVideoCourseRequesting = false;
       if (result != null) {
         _isVideoCoursePage++;
