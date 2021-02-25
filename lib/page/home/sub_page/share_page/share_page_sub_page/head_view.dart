@@ -73,11 +73,11 @@ class HeadViewState extends State<HeadView> {
       print('inThisBlack===================${blackModel.inThisBlack}');
       print('inYouBlack===================${blackModel.inYouBlack}');
       if (blackModel.inYouBlack == 1) {
-        context.read<ProfilePageNotifier>().changeBlack(false, model.pushId, 1);
+        context.watch<ProfilePageNotifier>().changeBlack(false, model.pushId, 1);
       } else if (blackModel.inThisBlack == 1) {
-        context.read<ProfilePageNotifier>().changeBlack(false, model.pushId, 2);
+        context.watch<ProfilePageNotifier>().changeBlack(false, model.pushId, 2);
       } else {
-        context.read<ProfilePageNotifier>().changeBlack(false, model.pushId, 0);
+        context.watch<ProfilePageNotifier>().changeBlack(false, model.pushId, 0);
       }
     }
   }
@@ -139,12 +139,12 @@ class HeadViewState extends State<HeadView> {
           margin: EdgeInsets.only(right: 6),
           height: 28,
           padding: EdgeInsets.only(left: 12,top: 6,right: 12,bottom: 6),
-          alignment: Alignment(0,0),
           decoration:  BoxDecoration(
             border: new Border.all(color: AppColor.textPrimary1, width: 1),
             borderRadius:BorderRadius.circular((14.0)),
           ),
-          child: Row(
+          child: Center(
+            child: Row(
             children: [
               Icon(Icons.add,color: AppColor.textPrimary1,size: 16,),
               // Container(
@@ -165,7 +165,7 @@ class HeadViewState extends State<HeadView> {
                 ),
               ),
             ],
-          ),
+          ),),
         ),
       );
     } else {
@@ -176,12 +176,11 @@ class HeadViewState extends State<HeadView> {
         margin: EdgeInsets.only(right: 6),
         height: 28,
         padding: EdgeInsets.only(left: 12,top: 6,right: 12,bottom: 6),
-        alignment: Alignment(0,0),
         decoration:  BoxDecoration(
         border: new Border.all(color: AppColor.textPrimary1, width: 1),
         borderRadius:BorderRadius.circular((14.0)),
         ),
-        child:Text("已关注",style: AppStyle.textRegular12,)),
+        child:Center(child: Text("已关注",style: AppStyle.textRegular12,),)),
         onEnd: (){
 
         },
@@ -194,25 +193,27 @@ class HeadViewState extends State<HeadView> {
     // TODO: implement initState
     super.initState();
     print('===========================================model.isFollow==${model.isFollow}');
-    if (model.pushId == context.read<ProfileNotifier>().profile.uid) {
-      if(!context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(model.pushId)){
-        context.read<ProfilePageNotifier>().setFirstModel(model.pushId);
-      }
-      if(!context.read<ProfilePageNotifier>().profileUiChangeModel[model.pushId].dynmicStringList.contains("删除")){
-        context.read<ProfilePageNotifier>().profileUiChangeModel[model.pushId].dynmicStringList.add("删除");
-      }
-    } else {
-        if(!context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(model.pushId)){
-          context.read<ProfilePageNotifier>().setFirstModel(model.pushId);
-          context.read<ProfilePageNotifier>().changeIsFollow(true,model.isFollow == 1||model.isFollow==3?false:true,
-              model
-              .pushId);
-          _checkBlackStatus();
-        }
-    }
   }
   @override
   Widget build(BuildContext context) {
+    if (model.pushId == context.watch<ProfileNotifier>().profile.uid) {
+      if(!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey(model.pushId)){
+        context.watch<ProfilePageNotifier>().setFirstModel(model.pushId);
+      }
+      if(!context.watch<ProfilePageNotifier>().profileUiChangeModel[model.pushId].dynmicStringList.contains("删除")){
+        context.watch<ProfilePageNotifier>().profileUiChangeModel[model.pushId].dynmicStringList.add("删除");
+      }
+    } else {
+      if(!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey(model.pushId)){
+        context.watch<ProfilePageNotifier>().setFirstModel(model.pushId);
+        context.watch<ProfilePageNotifier>().changeIsFollow(false,model.isFollow == 1||model.isFollow==3?false:true,
+            model
+                .pushId);
+        if(context.watch<TokenNotifier>().isLoggedIn){
+          _checkBlackStatus();
+        }
+      }
+    }
     return Container(
         height: 62,
         child: Row(

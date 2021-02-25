@@ -537,7 +537,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                       return true;
                     }),
                     confirm: AppDialogButton("确定", () {
-                      _deleteComment(value.id);
+                      _deleteComment(value.id,value);
                       return true;
                     }));
               } else if (list[index] == "举报") {
@@ -562,7 +562,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   }
 
   //删除评论
-  _deleteComment(int commentId) async {
+  _deleteComment(int commentId,CommentDtoModel commentDtoModel) async {
     Map<String, dynamic> model = await deleteComment(commentId: commentId);
     print(model);
     if (model != null && model["state"] == true) {
@@ -572,6 +572,12 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         context
             .read<FeedMapNotifier>()
             .commensAssignment(widget.targetId, courseCommentHot.list, courseCommentHot.totalCount);
+      }
+      for(int i=0;i< context.read<FeedMapNotifier>().feedMap[widget.targetId].hotComment.length;i++){
+        if(context.read<FeedMapNotifier>().feedMap[widget.targetId].hotComment[i].id == commentId){
+          context.read<FeedMapNotifier>().updateHotComment(widget.targetId,commentDtoModel:commentDtoModel,
+              isDelete: true);
+        }
       }
       ToastShow.show(msg: "已删除", context: context);
       setState(() {});
@@ -906,6 +912,10 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                   }
                 }
               }
+            }
+            if(context.read<FeedMapNotifier>().feedMap[widget.targetId].hotComment.length<2){
+              context.read<FeedMapNotifier>().updateHotComment(widget.targetId,commentDtoModel: model,isDelete:
+              false);
             }
             ToastShow.show(msg: "发布成功", context: context);
             if (mounted) {
