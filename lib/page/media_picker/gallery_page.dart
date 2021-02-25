@@ -165,8 +165,8 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
       if (_galleryList.isEmpty) {
         // 列表为空 则清空
         context.read<SelectedMapNotifier>().setCurrentEntity(null);
-      } else {
-        // 列表不为空 选中第一条
+      } else if (context.read<SelectedMapNotifier>().currentEntity == null) {
+        // 列表不为空 且当前没有选中任何一条 则选中第一条
         _onGridItemTap(context, _galleryList.first);
       }
     }
@@ -366,104 +366,110 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
 
   Widget _buildGridItemCell(BuildContext context, AssetEntity entity) {
     SelectedMapNotifier notifier = context.watch<SelectedMapNotifier>();
-    return GestureDetector(
-      onTap: () => _onGridItemTap(context, entity),
-      child: Stack(overflow: Overflow.clip, children: [
-        // Builder(builder: (context){
-        //   if(_thumbMap[entity.id] == null){
-        //     return Image.memory(
-        //       _thumbMap[entity.id],
-        //       fit: BoxFit.cover,
-        //       height: _itemSize,
-        //       width: _itemSize,
-        //     );
-        //   }else{
-        //     print("缩略图是空的！！！");
-        //     print("${entity.relativePath}");
-        //     return Container();
-        //   }
-        //
-        //
-        // }),
-        _thumbMap[entity.id] != null
-            ? Image.memory(
-                _thumbMap[entity.id],
-                fit: BoxFit.cover,
-                height: _itemSize,
-                width: _itemSize,
-              )
-            : Container(),
-        Container(
-          height: _itemSize,
-          width: _itemSize,
-          decoration: BoxDecoration(
-            border: Border.all(
-                color: notifier.currentEntity == null || notifier.currentEntity.id != entity.id
-                    ? AppColor.transparent
-                    : AppColor.mainRed,
-                width: 2,
-                style: BorderStyle.solid),
-          ),
-        ),
-        Positioned(
-          bottom: 3.5,
-          right: 4,
-          child: Text(
-            entity.type == AssetType.video
-                ? "${DateFormat("mm:ss").format(DateTime.fromMillisecondsSinceEpoch(entity.duration * 1000))}"
-                : entity.type == AssetType.image
-                    ? ""
-                    : "",
-            style: TextStyle(color: AppColor.white, fontSize: 9),
-          ),
+    return Stack(
+      children: [
+        GestureDetector(
+          onTap: () => _onGridItemTap(context, entity),
+          child: Stack(overflow: Overflow.clip, children: [
+            // Builder(builder: (context){
+            //   if(_thumbMap[entity.id] == null){
+            //     return Image.memory(
+            //       _thumbMap[entity.id],
+            //       fit: BoxFit.cover,
+            //       height: _itemSize,
+            //       width: _itemSize,
+            //     );
+            //   }else{
+            //     print("缩略图是空的！！！");
+            //     print("${entity.relativePath}");
+            //     return Container();
+            //   }
+            //
+            //
+            // }),
+            _thumbMap[entity.id] != null
+                ? Image.memory(
+                    _thumbMap[entity.id],
+                    fit: BoxFit.cover,
+                    height: _itemSize,
+                    width: _itemSize,
+                  )
+                : Container(),
+            Container(
+              height: _itemSize,
+              width: _itemSize,
+              decoration: BoxDecoration(
+                border: Border.all(
+                    color: notifier.currentEntity == null || notifier.currentEntity.id != entity.id
+                        ? AppColor.transparent
+                        : AppColor.mainRed,
+                    width: 2,
+                    style: BorderStyle.solid),
+              ),
+            ),
+            Positioned(
+              bottom: 3.5,
+              right: 4,
+              child: Text(
+                entity.type == AssetType.video
+                    ? "${DateFormat("mm:ss").format(DateTime.fromMillisecondsSinceEpoch(entity.duration * 1000))}"
+                    : entity.type == AssetType.image
+                        ? ""
+                        : "",
+                style: TextStyle(color: AppColor.white, fontSize: 9),
+              ),
+            ),
+            Positioned(
+              top: 10,
+              right: 10,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => _onCheckBoxTap(context, entity),
+                child: notifier.selectedMap.containsKey(entity.id)
+                    ? Container(
+                        height: 20,
+                        width: 20,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: AppColor.mainRed,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: AppColor.mainRed, width: 1),
+                        ),
+                        child: widget.maxImageAmount == 1
+                            ? Icon(
+                                Icons.check,
+                                color: AppColor.white,
+                                size: 16,
+                              )
+                            : Text(
+                                notifier.selectedMap[entity.id].order.toString(),
+                                style: TextStyle(color: AppColor.white, fontSize: 16),
+                              ),
+                      )
+                    : Container(
+                        height: 20,
+                        width: 20,
+                        decoration: BoxDecoration(
+                          color: AppColor.black.withOpacity(0.36),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: AppColor.white, width: 1),
+                        ),
+                      ),
+              ),
+            ),
+          ]),
         ),
         //选满了 但该item没有被选 则显示蒙层
-        notifier.selectedMap.length >=
-                    (notifier.selectedType == AssetType.image ? widget.maxImageAmount : widget.maxVideoAmount) &&
-                !notifier.selectedMap.containsKey(entity.id)
+        //当选了图片则视频显示蒙层，选了视频则图片显示蒙层
+        (notifier.selectedType != null && entity.type != notifier.selectedType) ||
+                (notifier.selectedMap.length >=
+                        (notifier.selectedType == AssetType.image ? widget.maxImageAmount : widget.maxVideoAmount) &&
+                    !notifier.selectedMap.containsKey(entity.id))
             ? Container(
                 color: AppColor.textPrimary2.withOpacity(0.45),
               )
             : Container(),
-        Positioned(
-          top: 10,
-          right: 10,
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () => _onCheckBoxTap(context, entity),
-            child: notifier.selectedMap.containsKey(entity.id)
-                ? Container(
-                    height: 20,
-                    width: 20,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: AppColor.mainRed,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: AppColor.mainRed, width: 1),
-                    ),
-                    child: widget.maxImageAmount == 1
-                        ? Icon(
-                            Icons.check,
-                            color: AppColor.white,
-                            size: 16,
-                          )
-                        : Text(
-                            notifier.selectedMap[entity.id].order.toString(),
-                            style: TextStyle(color: AppColor.white, fontSize: 16),
-                          ),
-                  )
-                : Container(
-                    height: 20,
-                    width: 20,
-                    decoration: BoxDecoration(
-                      color: AppColor.black.withOpacity(0.36),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: AppColor.white, width: 1),
-                    ),
-                  ),
-          ),
-        ),
-      ]),
+      ],
     );
   }
 
