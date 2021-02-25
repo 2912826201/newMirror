@@ -43,7 +43,7 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
       appBar: CustomAppBar(
         titleString: "下载课程",
         actions: [
-          CustomAppBarTextButton(topText, AppColor.textPrimary3, false, () {
+          CustomAppBarTextButton(topText, AppColor.textPrimary3, () {
             if (courseVideoModelList != null && courseVideoModelList.length > 0) {
               if (topText == "选择") {
                 topText = "取消";

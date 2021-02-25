@@ -74,9 +74,12 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
             Navigator.pop(context, _galleryResult);
           },
           actions: [
-            CustomAppBarIconButton(Icons.more_horiz, AppColor.black, false, () {
-              _showMorePopup(context, _imageList[_currentIndex]);
-            }),
+            CustomAppBarIconButton(
+                icon: Icons.more_horiz,
+                iconColor: AppColor.black,
+                onTap: () {
+                  _showMorePopup(context, _imageList[_currentIndex]);
+                }),
           ],
         ),
         body: _buildBody(),

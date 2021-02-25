@@ -115,8 +115,10 @@ class CommentInputBoxState extends State<CommentInputBox> {
                           CommentDtoModel comModel;
                           if (commentModel.code == CODE_BLACKED) {
                             ToastShow.show(msg: "发布失败，你已被对方加入黑名单", context: context, gravity: Toast.CENTER);
+                          }else if (commentModel.code == CODE_NO_DATA) {
+                            String alertString="原动态已删除或失效";
+                            ToastShow.show(msg: alertString, context: context, gravity: Toast.CENTER);
                           } else {
-
                             if (commentModel.data != null) {
                               comModel = (CommentDtoModel.fromJson(commentModel.data));
                               print("发布成功：${comModel.toString()}");

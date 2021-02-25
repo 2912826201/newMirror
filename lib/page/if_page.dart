@@ -80,7 +80,7 @@ class IfPageState extends XCState with TickerProviderStateMixin,WidgetsBindingOb
       // )
     );
   }
-  @override
+  // @override
   // Widget build(BuildContext context) {
   //   print("if_page_____________________________________________build");
   //   // 获取屏幕宽度，只能在home内才可调用。
@@ -134,7 +134,7 @@ class IfPageState extends XCState with TickerProviderStateMixin,WidgetsBindingOb
       9,
       typeImageAndVideo,
       true,
-      startPagePhoto,
+      startPageGallery,
       false,
       publishMode: 2,
     ));

@@ -4,7 +4,7 @@ import 'package:mirror/data/model/feed/post_feed.dart';
 import 'package:provider/provider.dart';
 
 class FeedMapNotifier extends ChangeNotifier {
-  FeedMapNotifier({this.feedMap, this.feedId, this.postFeedModel});
+  FeedMapNotifier({this.feedMap, this.feedId, this.postFeedModel,this.isPublish = true});
 
   // 动态的id加model组成的Map
   Map<int, HomeFeedModel> feedMap = {};
@@ -48,7 +48,7 @@ class FeedMapNotifier extends ChangeNotifier {
   }
 
   // 是否可以发布动态
-  bool isPublish = true;
+  bool isPublish;
 
   // 删除动态
   void deleteFeed(int id) {

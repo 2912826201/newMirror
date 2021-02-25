@@ -208,16 +208,18 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   ///这是扫一扫
   Widget _getTopText(double width, double height) {
     return Container(
+      padding: const EdgeInsets.only(
+          left: CustomAppBar.appBarHorizontalPadding, right: CustomAppBar.appBarHorizontalPadding),
       height: CustomAppBar.appBarHeight,
       width: width,
       child: Center(
           child: Row(
         children: [
-          CustomAppBarIconButton(Icons.qr_code, AppColor.black, true, () {
+          CustomAppBarIconButton(icon: Icons.qr_code, iconColor: AppColor.black, onTap: () {
             AppRouter.navigateToScanCodePage(context);
           }),
           Spacer(),
-          CustomAppBarIconButton(Icons.menu, AppColor.black, false, () {
+          CustomAppBarIconButton(icon: Icons.menu, iconColor: AppColor.black, onTap: () {
             AppRouter.navigateToSettingHomePage(context);
           }),
         ],

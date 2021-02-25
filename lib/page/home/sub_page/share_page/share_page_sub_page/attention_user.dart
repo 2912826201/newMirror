@@ -294,7 +294,7 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
                 child: MyIconBtn(
                   width: 18,
                   height: 18,
-                  iconSting: "images/resource/2.0x/ic_big_nav_closepage@2x.png",
+                  iconSting: "images/resource/2.0x/ic_recommend_Close_small@2x.png",
                   onPressed: () {
                     // _slideController.forward().whenComplete(() {
                     //   setState(() {
@@ -365,8 +365,8 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
                                 height: 16,
                                 child: Image.asset(
                                   isToggle
-                                      ? "images/resource/2.0x/return2x.png"
-                                      : "images/resource/2.0x/ic_big_nav_closepage@2x.png",
+                                      ? "images/resource/2.0x/ic_recommend_Followed@2x.png"
+                                      : "images/resource/2.0x/ic_recommend_follow@2x.png",
                                   fit: BoxFit.cover,
                                 ),
                               ),

@@ -197,25 +197,36 @@ class GetTripleAreaState extends State<GetTripleArea> {
             onTap: () {
               setUpLuad();
             },
-            child: Icon(
-              Icons.favorite,
-              color:
-                  // widget.model.isLaud == 0
-                  (context.select((FeedMapNotifier value) => value.feedMap) != null &&
-                          context.select((FeedMapNotifier value) => value.feedMap[widget.model.id]) != null &&
-                          context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) != null &&
-                          context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 0)
-                      ? Colors.grey
-                      : Colors.redAccent,
-              size: 24,
+            child: Image.asset(
+              "images/resource/2.0x/ic_dynamic_like@2x.png",
+              width: 24,
+              height: 24,
+              color:  (context.select((FeedMapNotifier value) => value.feedMap) != null &&
+                  context.select((FeedMapNotifier value) => value.feedMap[widget.model.id]) != null &&
+                  context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) != null &&
+                  context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 0)
+              ? Colors.black
+              : Colors.redAccent,
             ),
+            // child: Icon(
+            //   Icons.favorite,
+            //   color:
+            //       // widget.model.isLaud == 0
+            //       (context.select((FeedMapNotifier value) => value.feedMap) != null &&
+            //               context.select((FeedMapNotifier value) => value.feedMap[widget.model.id]) != null &&
+            //               context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) != null &&
+            //               context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 0)
+            //           ? Colors.grey
+            //           : Colors.redAccent,
+            //   size: 24,
+            // ),
           ),
         ),
         Container(
             margin: EdgeInsets.only(left: 16),
             child: GestureDetector(
                 child: Image.asset(
-                  "images/test/消息.png",
+                  "images/resource/2.0x/ic_dynamic_review@2x.png",
                   width: 24,
                   height: 24,
                 ),
@@ -254,7 +265,7 @@ class GetTripleAreaState extends State<GetTripleArea> {
                     });
               },
               child: Image.asset(
-                "images/test/分享.png",
+                "images/resource/2.0x/ic_dynamic_Forward@2x.png",
                 width: 24,
                 height: 24,
               )),

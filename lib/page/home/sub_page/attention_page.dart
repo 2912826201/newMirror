@@ -19,7 +19,9 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 enum Status {
   notLoggedIn, //未登录
@@ -158,6 +160,25 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     }
     lastTime = model.lastTime;
     isRequestInterface = false;
+    // 更新动态数量
+    int addFeedNum = 0;
+    attentionModelList.forEach((element) {
+      var obj = element.id;
+      var isExist = false;
+      context.read<FeedMapNotifier>().feedMap.forEach((key, value) {
+        var aj = value.id;
+        if (obj == aj) {
+          isExist = true;
+          return;
+        }
+      });
+      if(!isExist) {
+        addFeedNum++;
+      }
+    });
+    if (addFeedNum != 0) {
+      ToastShow.show(msg: "更新了$addFeedNum条动态", context: context,gravity: Toast.CENTER);
+    }
     // 更新全局监听
     context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
   }
@@ -168,11 +189,10 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     UploadResults results;
     List<PicUrlsModel> picUrls = [];
     List<VideosModel> videos = [];
-
-    if (widget.postFeedModel != null && context.watch<FeedMapNotifier>().isPublish) {
+    // 设置不可发布
+    context.watch<FeedMapNotifier>().isPublish = false;
+    if (widget.postFeedModel != null) {
       PostFeedModel postModel = widget.postFeedModel;
-      // 设置不可发布
-      context.watch<FeedMapNotifier>().isPublish = false;
       print("掉发布数据");
       // 上传图片
       if (postModel.selectedMediaFiles.type == mediaTypeKeyImage) {
@@ -236,22 +256,25 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             cityCode: postModel.cityCode,
             topics: jsonEncode(postModel.topics));
         print("发不接受发布结束：feedModel$feedModel");
-        // 清空发布model
-        context.read<FeedMapNotifier>().setPublishFeedModel(null);
+
         if (feedModel != null) {
           _process = 1.0;
           context.read<FeedMapNotifier>().getPostPlannedSpeed(_process);
-          // 设置可发布
-          context.read<FeedMapNotifier>().setPublish(true);
           status = Status.concern;
           // 发布完成
           // 延迟器:
-          new Future.delayed(Duration(seconds: 1), () {
+          new Future.delayed(Duration(seconds: 3), () {
+            // 清空发布model
+            context.read<FeedMapNotifier>().setPublishFeedModel(null);
             widget.postFeedModel = null;
             postModel = null;
             //还原进度条
             _process = 0.0;
             context.read<FeedMapNotifier>().getPostPlannedSpeed(_process);
+            // 设置可发布
+            context.read<FeedMapNotifier>().isPublish = true;
+          });
+          // new Future.delayed(Duration(seconds: 1), () {
             // 插入数据
             attentionIdList.insert(1, HomeFeedModel
                 .fromJson(feedModel)
@@ -261,10 +284,12 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                 .PublishInsertData(HomeFeedModel
                 .fromJson(feedModel)
                 .id, HomeFeedModel.fromJson(feedModel));
-          });
+          // });
         } else {
           // 发布失败
           print('================================发布失败');
+          // 清空发布model
+          context.read<FeedMapNotifier>().setPublishFeedModel(null);
           // 设置不可发布
           context.read<FeedMapNotifier>().setPublish(false);
           context.read<FeedMapNotifier>().setPublishFeedModel(postModel);

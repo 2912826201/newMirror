@@ -145,9 +145,12 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         hasLeading: false,
         titleString: "消息${context.watch<RongCloudStatusNotifier>().statusString}",
         actions: [
-          CustomAppBarIconButton(Icons.group_add, AppColor.black, false, () async {
-            showCreateGroupPopup(context);
-          }),
+          CustomAppBarIconButton(
+              icon: Icons.group_add,
+              iconColor: AppColor.black,
+              onTap: () async {
+                showCreateGroupPopup(context);
+              }),
         ],
       ),
       backgroundColor: AppColor.white,
@@ -213,7 +216,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
             ],
           ),
         ),
-        onTap: (){
+        onTap: () {
           AppRouter.navigateToNetworkLinkFailure(context: context);
         },
       );

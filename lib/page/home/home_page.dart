@@ -7,14 +7,17 @@ import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/search/search_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key, this.controller,this.ifPageController}) : super(key: key);
+  HomePage({Key key, this.controller, this.ifPageController}) : super(key: key);
   TabController controller;
   TabController ifPageController;
+
   HomePageState createState() => HomePageState(controller: controller);
 }
 
@@ -50,11 +53,28 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     return Scaffold(
       backgroundColor: AppColor.white,
       appBar: CustomAppBar(
-        leading: CustomAppBarIconButton(Icons.camera_alt_outlined, AppColor.black, true, () {
-          print("${FluroRouter.appRouter.hashCode}");
-          AppRouter.navigateToMediaPickerPage(context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
-              publishMode: 1);
-        }),
+        leading: CustomAppBarIconButton(
+            icon: Icons.camera_alt_outlined,
+            iconColor: AppColor.black,
+            onTap: () {
+              print("${FluroRouter.appRouter.hashCode}");
+              if (context.read<FeedMapNotifier>().postFeedModel != null) {
+                if(context.read<FeedMapNotifier>().plannedSpeed != -1) {
+                  ToastShow.show(msg: "你有动态正在发送中，请稍等", context: context, gravity: Toast.CENTER);
+                } else {
+                  ToastShow.show(msg: "动态发送失败", context: context, gravity: Toast.CENTER);
+                }
+              } else {
+                AppRouter.navigateToMediaPickerPage(
+                    context,
+                    9,
+                    typeImageAndVideo,
+                    true,
+                    startPageGallery,
+                    false, (result) {},
+                    publishMode: 1);
+              }
+            }),
         titleWidget: Container(
           width: 140,
           child: TabBar(
@@ -76,9 +96,12 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
           ),
         ),
         actions: [
-          CustomAppBarIconButton(Icons.search, AppColor.black, false, () {
-            AppRouter.navigateSearchPage(context);
-          }),
+          CustomAppBarIconButton(
+              icon: Icons.search,
+              iconColor: AppColor.black,
+              onTap: () {
+                AppRouter.navigateSearchPage(context);
+              }),
         ],
       ),
       body: TabBarView(

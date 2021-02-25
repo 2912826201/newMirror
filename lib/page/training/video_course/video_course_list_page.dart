@@ -109,10 +109,9 @@ class VideoCourseListPageState extends XCState {
         titleString: "课程库",
         actions: [
           CustomAppBarIconButton(
-            Icons.search,
-            AppColor.black,
-            false,
-            () {
+            icon:Icons.search,
+            iconColor:AppColor.black,
+            onTap:() {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return SearchPage(defaultIndex:1);
               }));

@@ -6,6 +6,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/date_util.dart';
 
 import 'custom_appbar.dart';
+import 'icon.dart';
 
 ///直播详情页的头部滑动
 class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
@@ -68,9 +69,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
   }
 
   Color makeStickyHeaderBgColor(shrinkOffset) {
-    final int alpha = (shrinkOffset / (this.maxExtent - this.minExtent) * 255)
-        .clamp(0, 255)
-        .toInt();
+    final int alpha = (shrinkOffset / (this.maxExtent - this.minExtent) * 255).clamp(0, 255).toInt();
     if (alpha > 220) {
       titleSize = 20;
       isGoneTitle = false;
@@ -85,9 +84,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
     if (shrinkOffset <= 50) {
       return isIcon ? Colors.white : Colors.transparent;
     } else {
-      final int alpha = (shrinkOffset / (this.maxExtent - this.minExtent) * 255)
-          .clamp(0, 255)
-          .toInt();
+      final int alpha = (shrinkOffset / (this.maxExtent - this.minExtent) * 255).clamp(0, 255).toInt();
       return Color.fromARGB(alpha, 0, 0, 0);
     }
   }
@@ -96,9 +93,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
     if (shrinkOffset <= 160) {
       return isIcon ? Colors.white : Colors.transparent;
     } else {
-      final int alpha = (shrinkOffset / (this.maxExtent - this.minExtent) * 255)
-          .clamp(0, 255)
-          .toInt();
+      final int alpha = (shrinkOffset / (this.maxExtent - this.minExtent) * 255).clamp(0, 255).toInt();
       return Color.fromARGB(alpha, 0, 0, 0);
     }
   }
@@ -117,8 +112,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
             width: 10,
           ),
           Text(
-            DateUtil.formatDateNoYearString(
-                DateUtil.stringToDateTime(startTime)) +
+            DateUtil.formatDateNoYearString(DateUtil.stringToDateTime(startTime)) +
                 "${DateUtil.isToday(DateUtil.stringToDateTime(startTime)) ? " (今天) " : "  "}" +
                 "${DateUtil.formatTimeString(DateUtil.stringToDateTime(startTime))}"
                     "-"
@@ -184,10 +178,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
           //数据显示
           Positioned(
             child: Container(
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
+              width: MediaQuery.of(context).size.width,
               child: _getTitleWidgetArray(),
             ),
             bottom: 0,
@@ -200,45 +191,42 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
             top: 0,
             child: Container(
               color: this.makeStickyHeaderBgColor(shrinkOffset),
-              padding: const EdgeInsets.only(left: 20, right: 10, top: 2),
               child: SafeArea(
                 bottom: false,
                 child: Container(
+                  padding: const EdgeInsets.only(
+                      left: CustomAppBar.appBarHorizontalPadding, right: CustomAppBar.appBarHorizontalPadding),
                   height: this.collapsedHeight,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       CustomAppBarIconButton(
-                          Icons.arrow_back_ios,
-                          this.makeStickyHeaderTextColor(shrinkOffset, true),
-                          false,
-                          () => Navigator.pop(context)
-                      ),
+                          svgName: AppIcon.nav_return,
+                          iconColor: this.makeStickyHeaderTextColor(shrinkOffset, true),
+                          onTap: () => Navigator.pop(context)),
                       Expanded(
                           child: SizedBox(
-                            child: Offstage(
-                              offstage: isGoneTitle,
-                              child: Container(
-                                child: Text(
-                                  this.title,
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500,
-                                    color: this.makeStickyHeaderTextColor(
-                                        shrinkOffset, false),
-                                  ),
-                                  textAlign: TextAlign.center,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                        child: Offstage(
+                          offstage: isGoneTitle,
+                          child: Container(
+                            child: Text(
+                              this.title,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                                color: this.makeStickyHeaderTextColor(shrinkOffset, false),
                               ),
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          )),
+                          ),
+                        ),
+                      )),
                       CustomAppBarIconButton(
-                          Icons.share,
-                          this.makeStickyHeaderTextColor(shrinkOffset, true),
-                          false,
-                          shareBtnClick,
+                        icon: Icons.share,
+                        iconColor: this.makeStickyHeaderTextColor(shrinkOffset, true),
+                        onTap: shareBtnClick,
                       ),
                     ],
                   ),
@@ -249,10 +237,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
           //中间文字
           Positioned(
             child: Container(
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
+              width: MediaQuery.of(context).size.width,
               padding: const EdgeInsets.only(left: 16, right: 16),
               child: Offstage(
                   offstage: !isGoneTitle,
@@ -265,8 +250,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                  )
-              ),
+                  )),
             ),
             bottom: 53,
             left: 0,

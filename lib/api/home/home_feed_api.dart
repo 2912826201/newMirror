@@ -54,7 +54,7 @@ Future<DataResponseModel> getPullList({@required int type, @required int size, i
   }
   BaseResponseModel responseModel = await requestApi(PULLLISTFEED, params);
   if (responseModel.isSuccess) {
-    DataResponseModel dataResponseModel;
+    DataResponseModel dataResponseModel = DataResponseModel();
     if (responseModel.data != null) {
       dataResponseModel = DataResponseModel.fromJson(responseModel.data);
     }

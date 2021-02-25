@@ -29,6 +29,8 @@ const int CODE_NO_AUTH = 305;
 const int CODE_PARAMETER_ERROR = 300;
 // 拉黑
 const int CODE_BLACKED = 353;
+// 没有找到回复的主体
+const int CODE_NO_DATA = 404;
 
 //身份认证的类型
 const int AUTH_TYPE_COMMON = 0;

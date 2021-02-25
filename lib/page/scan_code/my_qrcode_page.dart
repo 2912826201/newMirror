@@ -84,13 +84,19 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
       appBar: CustomAppBar(
         titleString: "我的二维码",
         actions: [
-          CustomAppBarIconButton(Icons.ios_share, AppColor.black, false, () {
-            model.width = int.parse("$width".substring(0, "$width".indexOf(".")));
-            model.height = int.parse("$height".substring(0, "$height".indexOf(".")));
-            model.file = imageFile;
-            openShareBottomSheet(
-                context: context, chatTypeModel: ChatTypeModel.MESSAGE_TYPE_IMAGE, map: model.toJson(), sharedType: 2);
-          }),
+          CustomAppBarIconButton(
+              icon: Icons.ios_share,
+              iconColor: AppColor.black,
+              onTap: () {
+                model.width = int.parse("$width".substring(0, "$width".indexOf(".")));
+                model.height = int.parse("$height".substring(0, "$height".indexOf(".")));
+                model.file = imageFile;
+                openShareBottomSheet(
+                    context: context,
+                    chatTypeModel: ChatTypeModel.MESSAGE_TYPE_IMAGE,
+                    map: model.toJson(),
+                    sharedType: 2);
+              }),
         ],
       ),
       body: Selector<ProfileNotifier, ProfileDto>(builder: (context, profileDto, child) {

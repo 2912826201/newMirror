@@ -46,7 +46,7 @@ class _PreviewVideoState extends State<PreviewVideoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: CustomAppBar(
-          backgroundColor: AppColor.bgBlack,
+          backgroundColor: AppColor.black,
           brightness: Brightness.dark,
           actions: [
             Container(

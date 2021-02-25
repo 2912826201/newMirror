@@ -142,7 +142,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                       decoration: new InputDecoration(
                           isCollapsed: true,
                           contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
-                          hintText: '搜索结果的样式',
+                          hintText: '搜索用户、话题、课程、动态',
                           border: InputBorder.none),
                       inputFormatters: inputFormatters == null ? [_formatter] : (inputFormatters..add(_formatter)),
                       // inputFormatters: [
@@ -153,24 +153,29 @@ class _SearchHeaderState extends State<SearchHeader> {
                   ),
                 ),
                 SizedBox(width: 12),
-                IconButton(
-                  icon: new Icon(Icons.cancel),
-                  color: Color.fromRGBO(220, 221, 224, 1),
-                  iconSize: 18.0,
-                  onPressed: () {
-                    print("清空数据");
-                    controller.clear();
-                    print(controller.text);
-                    context.read<SearchEnterNotifier>().changeCallback("");
-                  },
+                Visibility(
+                  visible: context.watch<SearchEnterNotifier>().enterText!=null&&
+                      context.watch<SearchEnterNotifier>().enterText.length>0,
+                  child: IconButton(
+                    icon: new Icon(Icons.cancel),
+                    color: Color.fromRGBO(220, 221, 224, 1),
+                    iconSize: 18.0,
+                    onPressed: () {
+                      print("清空数据");
+                      controller.clear();
+                      print(controller.text);
+                      context.read<SearchEnterNotifier>().changeCallback("");
+                    },
+                  ),
                 ),
               ],
             ),
           ),
           Spacer(),
-          CustomAppBarTextButton("取消", AppColor.textPrimary1, false, () {
+          CustomAppBarTextButton("取消", AppColor.textPrimary1, () {
             Navigator.of(context).pop(true);
           }),
+          SizedBox(width: CustomAppBar.appBarHorizontalPadding,)
         ],
       ),
     );
