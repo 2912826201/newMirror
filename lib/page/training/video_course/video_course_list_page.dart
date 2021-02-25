@@ -215,6 +215,10 @@ class VideoCourseListPageState extends XCState {
       }
     }
 
+    if(showScreenTitlePosition<0){
+      filterBoxHeight=100;
+    }
+
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -257,21 +261,21 @@ class VideoCourseListPageState extends XCState {
                   ),
                   Expanded(
                       child: SizedBox(
-                    child: GestureDetector(
-                      child: Container(
-                        width: double.infinity,
-                        height: double.infinity,
-                        color: AppColor.transparent,
-                      ),
-                      onTap: () {
-                        _titleItemListTemp.clear();
-                        showScreenTitlePosition = -1;
-                        if (mounted) {
-                          reload(() {});
-                        }
-                      },
-                    ),
-                  ))
+                        child: GestureDetector(
+                          child: Container(
+                            width: double.infinity,
+                            height: double.infinity,
+                            color: AppColor.transparent,
+                          ),
+                          onTap: () {
+                            _titleItemListTemp.clear();
+                            showScreenTitlePosition = -1;
+                            if (mounted) {
+                              reload(() {});
+                            }
+                          },
+                        ),
+                      ))
                 ],
               ),
             ),
@@ -305,7 +309,7 @@ class VideoCourseListPageState extends XCState {
                 height: 16,
               ),
               Text(
-                "暂无视频课程，去看看其他的吧~",
+                "暂无符合条件的课程",
                 style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
               )
             ],
@@ -432,8 +436,8 @@ class VideoCourseListPageState extends XCState {
           //上半部分可滑动区域
           Expanded(
               child: SizedBox(
-            child: _filterBoxItem(),
-          )),
+                child: _filterBoxItem(),
+              )),
           //底部按钮
           _filterBoxBottomBtn(),
         ],
@@ -490,7 +494,12 @@ class VideoCourseListPageState extends XCState {
                   }
                 }
                 if (mounted) {
-                  reload(() {});
+                  reload(() {
+                    _titleItemList.clear();
+                    _titleItemList.addAll(_titleItemListTemp);
+                    loadingStatus = LoadingStatus.STATUS_LOADING;
+                    _onRefresh();
+                  });
                 }
               },
             ),
@@ -820,6 +829,9 @@ class VideoCourseListPageState extends XCState {
   _screenTitleOnclick(int index, {bool isSecond = false}) {
     if (showScreenTitlePosition == index && !isSecond) {
       showScreenTitlePosition = -1;
+      if (mounted) {
+        reload(() {});
+      }
       return;
     }
     if (showScreenTitlePosition < 0) {
