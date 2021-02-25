@@ -223,12 +223,12 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
                         ? Expanded(
                             child: Container(
                                 child: AtList(controller: _controller),
-                                margin: EdgeInsets.only(bottom: Application.keyboardHeight)))
+                                margin: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom)))
                         : str == "#"
                             ? Expanded(
                                 child: Container(
                                     child: TopicList(controller: _controller),
-                                    margin: EdgeInsets.only(bottom: Application.keyboardHeight)))
+                                    margin: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom)))
                             : ReleaseFeedMainView(
                                 selectedMediaFiles: _selectedMediaFiles,
                                 permissions: permissions,
