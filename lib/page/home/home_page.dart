@@ -53,53 +53,29 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     return Scaffold(
       backgroundColor: AppColor.white,
       appBar: CustomAppBar(
-        leading: Container(
-          child:GestureDetector(
+        leading: CustomAppBarIconButton(
+            icon: Icons.camera_alt_outlined,
+            iconColor: AppColor.black,
+            isLeading: true,
             onTap: () {
+              print("${FluroRouter.appRouter.hashCode}");
               if (context.read<FeedMapNotifier>().postFeedModel != null) {
-                if (context.read<FeedMapNotifier>().plannedSpeed != -1) {
+                if(context.read<FeedMapNotifier>().plannedSpeed != -1) {
                   ToastShow.show(msg: "你有动态正在发送中，请稍等", context: context, gravity: Toast.CENTER);
                 } else {
                   ToastShow.show(msg: "动态发送失败", context: context, gravity: Toast.CENTER);
                 }
               } else {
                 AppRouter.navigateToMediaPickerPage(
-                    context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
+                    context,
+                    9,
+                    typeImageAndVideo,
+                    true,
+                    startPageGallery,
+                    false, (result) {},
                     publishMode: 1);
               }
-            },
-            child: Image.asset(
-              "images/resource/2.0x/Nav_Camera_icon@2x.png",
-              width: 28,
-              height: 28,
-            ),
-          ),
-        ),
-
-        leadingWidth:44,
-        // CustomAppBarIconButton(
-        //     icon: Icons.camera_alt_outlined,
-        //     iconColor: AppColor.black,
-        //     isLeading: true,
-        //     onTap: () {
-        //       print("${FluroRouter.appRouter.hashCode}");
-        //       if (context.read<FeedMapNotifier>().postFeedModel != null) {
-        //         if(context.read<FeedMapNotifier>().plannedSpeed != -1) {
-        //           ToastShow.show(msg: "你有动态正在发送中，请稍等", context: context, gravity: Toast.CENTER);
-        //         } else {
-        //           ToastShow.show(msg: "动态发送失败", context: context, gravity: Toast.CENTER);
-        //         }
-        //       } else {
-        //         AppRouter.navigateToMediaPickerPage(
-        //             context,
-        //             9,
-        //             typeImageAndVideo,
-        //             true,
-        //             startPageGallery,
-        //             false, (result) {},
-        //             publishMode: 1);
-        //       }
-        //     }),
+            }),
         titleWidget: Container(
           width: 140,
           child: TabBar(
