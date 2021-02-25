@@ -32,6 +32,7 @@ class HomeFeedModel {
   int isLaud = 0; // 是否点赞
   List<String> laudUserInfo = []; // 点赞头像
   List<CommentDtoModel> comments = [];
+  List<CommentDtoModel> hotComment = [];
   String address;
 
   // 添加字段
@@ -62,6 +63,7 @@ class HomeFeedModel {
     this.laudUserInfo,
     this.comments,
     this.address,
+    this.hotComment
   });
 
   HomeFeedModel.fromJson(Map<String, dynamic> json) {
