@@ -80,7 +80,7 @@ class CommentLayout extends StatelessWidget {
           for (CommentDtoModel item in context.select((FeedMapNotifier value) => value.feedMap[model.id].comments))
             GestureDetector(
                 onTap: () {
-                  openFeedCommentBottomSheet(context: context, feedId: model.id);
+                  openFeedCommentBottomSheet(context: context, feedId: model.id,commentDtoModel:item);
                 },
                 child: Container(
                   child: model.comments.length > 0
