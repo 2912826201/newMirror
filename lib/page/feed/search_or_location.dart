@@ -196,39 +196,43 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
         _refreshController.refreshCompleted();
         print('请求成功');
         pageIndex = 1;
-        searchPois = locationInformationEntity.pois;
-        // 城市信息导入
-        PeripheralInformationPoi poi1 = PeripheralInformationPoi();
-        poi1.name = searchPois.first.cityname;
-        poi1.id = Application.cityId;
-        poi1.citycode = locationInformationEntity.pois.first.citycode;
-        // 获取城市经纬度
-        Application.cityMap.forEach((key, value) {
-          value.forEach((v) {
-            if (v.regionCode == poi1.citycode) {
-              poi1.location = v.longitude.toString() + "," + v.latitude.toString();
-            }
+        print(locationInformationEntity.pois);
+        if(locationInformationEntity.pois.isNotEmpty) {
+          searchPois = locationInformationEntity.pois;
+          // 城市信息导入
+          PeripheralInformationPoi poi1 = PeripheralInformationPoi();
+          poi1.name = searchPois.first.cityname;
+          poi1.id = Application.cityId;
+          poi1.citycode = locationInformationEntity.pois.first.citycode;
+          // 获取城市经纬度
+          Application.cityMap.forEach((key, value) {
+            value.forEach((v) {
+              if (v.regionCode == poi1.citycode) {
+                poi1.location = v.longitude.toString() + "," + v.latitude.toString();
+              }
+            });
           });
-        });
-        searchPois.insert(0, poi1);
+          searchPois.insert(0, poi1);
 
-        // 不显示位置
-        PeripheralInformationPoi poi2 = PeripheralInformationPoi();
-        poi2.name = '不显示所在位置';
-        searchPois.insert(0, poi2);
-        if (widget.selectAddress.id != Application.cityId && widget.selectAddress.name != null) {
-          searchPois.removeWhere((v) => widget.selectAddress.id == v.id);
-          searchPois.insert(1, widget.selectAddress);
-        }
-        int total = int.parse(locationInformationEntity.count) + 2;
-        print(total);
+          // 不显示位置
+          PeripheralInformationPoi poi2 = PeripheralInformationPoi();
+          poi2.name = '不显示所在位置';
+          searchPois.insert(0, poi2);
+          if (widget.selectAddress.id != Application.cityId && widget.selectAddress.name != null) {
+            searchPois.removeWhere((v) => widget.selectAddress.id == v.id);
+            searchPois.insert(1, widget.selectAddress);
+          }
+          int total = int.parse(locationInformationEntity.count) + 2;
+          print(total);
 
-        //整页
-        if (total % pageSize == 0) {
-          pages = (total / pageSize).floor();
-        } else {
-          pages = (total / pageSize).floor() + 1;
+          //整页
+          if (total % pageSize == 0) {
+            pages = (total / pageSize).floor();
+          } else {
+            pages = (total / pageSize).floor() + 1;
+          }
         }
+
       } else {
         _refreshController.refreshFailed();
         // Fluttertoast.showToast(msg: "请求失败");
