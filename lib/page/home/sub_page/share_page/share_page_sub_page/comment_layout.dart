@@ -77,28 +77,29 @@ class CommentLayout extends StatelessWidget {
             }),
             // Text("共${model.commentCount}条评论", style: AppStyle.textHintRegular12)
           ),
-          for (CommentDtoModel item in context.select((FeedMapNotifier value) => value.feedMap[model.id].comments))
+          for (CommentDtoModel item in context.select((FeedMapNotifier value) => value.feedMap[model.id].hotComment))
+
             GestureDetector(
-                onTap: () {
-                  openFeedCommentBottomSheet(context: context, feedId: model.id,commentDtoModel:item);
-                },
-                child: Container(
-                  child: model.comments.length > 0
-                      ? MyRichTextWidget(
-                          Text(
-                            item.replyName != null
-                                ? "${item.name + ": 回复 " + item.replyName+" " + item.content}"
-                                : "${item.name}: ${item.content}",
-                            style: AppStyle.textPrimary3Regular13,
-                          ),
-                          maxLines: 1,
-                          textOverflow: TextOverflow.ellipsis,
-                          richTexts: setBaseRichText(
-                              item, context
-                              ),
-                        )
-                      : Container(),
-                )),
+              onTap: () {
+                openFeedCommentBottomSheet(context: context, feedId: model.id,commentDtoModel:item);
+              },
+              child: Container(
+                child: model.hotComment.length > 0
+                    ? MyRichTextWidget(
+                  Text(
+                    item.replyName != null
+                        ? "${item.name + ": 回复 " + item.replyName+" " + item.content}"
+                        : "${item.name}: ${item.content}",
+                    style: AppStyle.textPrimary3Regular13,
+                  ),
+                  maxLines: 1,
+                  textOverflow: TextOverflow.ellipsis,
+                  richTexts: setBaseRichText(
+                      item, context
+                  ),
+                )
+                    : Container(),
+              )),
         ],
       ),
     );

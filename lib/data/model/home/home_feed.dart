@@ -63,7 +63,6 @@ class HomeFeedModel {
     this.laudUserInfo,
     this.comments,
     this.address,
-    this.hotComment
   });
 
   HomeFeedModel.fromJson(Map<String, dynamic> json) {
