@@ -24,7 +24,7 @@ import 'package:video_player/video_player.dart';
 /// Created by yangjiayi on 2020/11/12.
 
 final int _horizontalCount = 4;
-final double _itemMargin = 0;
+final double _itemMargin = 1;
 final int _galleryPageSize = 100;
 
 // 相册的选择GridView视图 需要能够区分选择图片或视频 选择图片数量 是否裁剪 裁剪是否只是正方形
@@ -122,7 +122,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
       //TODO 获取相册后还是空的情况需要测试是什么情况
       if (_albums.isNotEmpty) {
         _mediaAmount = _albums[_currentAlbumIndex].assetCount;
-        if(isNew){
+        if (isNew) {
           // 如果是该相册第一次请求 清空列表数据
           _galleryList.clear();
           _galleryListLength = 0;
@@ -337,19 +337,29 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
     AssetEntity entity = _galleryList[index];
     // 一定要返回某种形式的Builder 不然context.select会报错
     if (_thumbMap[entity.id] == null) {
-      return FutureBuilder(
-        future: entity.thumbDataWithSize(_itemSize.toInt(), _itemSize.toInt()),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            _thumbMap[entity.id] = snapshot.data;
-            return _buildGridItemCell(context, entity);
-          } else {
-            return Container();
-          }
-        },
+      return Container(
+        height: _itemSize,
+        width: _itemSize,
+        color: AppColor.textPrimary2,
+        child: FutureBuilder(
+          future: entity.thumbDataWithSize(_itemSize.toInt(), _itemSize.toInt()),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              _thumbMap[entity.id] = snapshot.data;
+              return _buildGridItemCell(context, entity);
+            } else {
+              return Container();
+            }
+          },
+        ),
       );
     } else {
-      return Builder(builder: (context) => _buildGridItemCell(context, entity));
+      return Container(
+        height: _itemSize,
+        width: _itemSize,
+        color: AppColor.textPrimary2,
+        child: Builder(builder: (context) => _buildGridItemCell(context, entity)),
+      );
     }
   }
 
@@ -374,12 +384,14 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
         //
         //
         // }),
-        Image.memory(
-          _thumbMap[entity.id],
-          fit: BoxFit.cover,
-          height: _itemSize,
-          width: _itemSize,
-        ),
+        _thumbMap[entity.id] != null
+            ? Image.memory(
+                _thumbMap[entity.id],
+                fit: BoxFit.cover,
+                height: _itemSize,
+                width: _itemSize,
+              )
+            : Container(),
         Container(
           height: _itemSize,
           width: _itemSize,
@@ -694,7 +706,7 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                   context
                       .read<SelectedMapNotifier>()
                       .setIsAlbumListShow(!context.read<SelectedMapNotifier>().isAlbumListShow);
-                  if(_currentAlbumIndex != index){
+                  if (_currentAlbumIndex != index) {
                     _currentAlbumIndex = index;
                     _fetchGalleryData(true);
                   }
@@ -707,10 +719,50 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
                       width: 16,
                     ),
                     Container(
-                      height: 93,
-                      width: 93,
-                      color: AppColor.mainBlue,
-                    ),
+                        height: 93,
+                        width: 93,
+                        color: AppColor.textPrimary2,
+                        //先拿第一个文件
+                        child: FutureBuilder(
+                          future: _albums[index].getAssetListRange(start: 0, end: 1),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.done) {
+                              List<AssetEntity> entityList = snapshot.data;
+                              if (entityList.isNotEmpty) {
+                                //文件不为空时 加载缩略图 复用缩略图map 不存在则请求缩略图
+                                if (_thumbMap[entityList.first.id] == null) {
+                                  return FutureBuilder(
+                                    future: entityList.first.thumbDataWithSize(_itemSize.toInt(), _itemSize.toInt()),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.done) {
+                                        _thumbMap[entityList.first.id] = snapshot.data;
+                                        return Image.memory(
+                                          _thumbMap[entityList.first.id],
+                                          fit: BoxFit.cover,
+                                          height: 93,
+                                          width: 93,
+                                        );
+                                      } else {
+                                        return Container();
+                                      }
+                                    },
+                                  );
+                                } else {
+                                  return Image.memory(
+                                    _thumbMap[entityList.first.id],
+                                    fit: BoxFit.cover,
+                                    height: 93,
+                                    width: 93,
+                                  );
+                                }
+                              } else {
+                                return Container();
+                              }
+                            } else {
+                              return Container();
+                            }
+                          },
+                        )),
                     SizedBox(
                       width: 16,
                     ),
