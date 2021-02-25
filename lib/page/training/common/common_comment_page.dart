@@ -587,6 +587,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       for (int i = 0; i < commentModel.list.length; i++) {
         if (commentModel.list[i].id == commentId) {
           commentModel.list.removeAt(i);
+          commentModel.totalCount--;
           break;
         }
         int judge = 0;
