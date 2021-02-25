@@ -72,8 +72,8 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
           }
           requestSearchCourse();
         }
-        lastString = widget.keyWord;
       });
+      lastString = widget.keyWord;
     });
     super.initState();
   }
@@ -166,25 +166,22 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
               ])));
     } else {
       return Container(
-        margin: const EdgeInsets.only(top: 100),
-        child: Center(
-          child: Column(
-            children: [
-              Image.asset(
-                "images/test/bg.png",
-                fit: BoxFit.cover,
-                width: 224,
-                height: 224,
-              ),
-              SizedBox(
-                height: 16,
-              ),
-              Text(
-                "暂无视频课程，去看看其他的吧~",
-                style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
-              )
-            ],
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 224,
+              height: 224,
+              color: AppColor.color246,
+              // margin: EdgeInsets.only(bottom: 16, top: 188),
+            ),
+            Text(
+              "你的放大镜陨落星辰了",
+              style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+            ),
+            Text("换一个试一试", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
+          ],
         ),
       );
     }
