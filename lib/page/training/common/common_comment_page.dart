@@ -577,6 +577,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       for (int i = 0; i < commentModel.list.length; i++) {
         if (commentModel.list[i].id == commentId) {
           commentModel.list.removeAt(i);
+          commentModel.totalCount--;
           break;
         }
         int judge = 0;
@@ -903,7 +904,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                 }
               }
             }
-            ToastShow.show(msg: "发布成功", context: context);
+            // ToastShow.show(msg: "发布成功", context: context);
             if (mounted) {
               setState(() {});
               if (targetId != widget.targetId) {
@@ -1305,20 +1306,20 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     if (code != null && code==200) {
       _laudCommentData(courseCommentHot, commentId, true, laud);
       _laudCommentData(courseCommentTime, commentId, false, laud);
-      if (laud) {
-        ToastShow.show(msg: "点赞成功", context: context);
-      } else {
-        ToastShow.show(msg: "取消点赞成功", context: context);
-      }
+      // if (laud) {
+      //   // ToastShow.show(msg: "点赞成功", context: context);
+      // } else {
+      //   // ToastShow.show(msg: "取消点赞成功", context: context);
+      // }
       if (mounted) {
         setState(() {});
       }
     } else {
-      if (laud) {
-        ToastShow.show(msg: "点赞失败", context: context);
-      } else {
-        ToastShow.show(msg: "取消点赞失败", context: context);
-      }
+      // if (laud) {
+      //   ToastShow.show(msg: "点赞失败", context: context);
+      // } else {
+      //   ToastShow.show(msg: "取消点赞失败", context: context);
+      // }
     }
   }
 
