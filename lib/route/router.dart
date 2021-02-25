@@ -338,7 +338,8 @@ class AppRouter {
   }
 
   static void navigateToVideoDetail(BuildContext context, int liveCourseId,
-      {String heroTag, LiveVideoModel videoModel, CommentDtoModel commentDtoModel, CommentDtoModel fatherComment}) {
+      {String heroTag, LiveVideoModel videoModel, CommentDtoModel commentDtoModel, CommentDtoModel fatherComment,
+      Function(dynamic result) callback}) {
     Map<String, dynamic> map = Map();
     map["videoCourseId"] = liveCourseId;
     if (videoModel != null) {
@@ -353,7 +354,7 @@ class AppRouter {
     if (fatherComment != null) {
       map["fatherComment"] = fatherComment.toJson();
     }
-    _navigateToPage(context, pathVideoDetail, map);
+    _navigateToPage(context, pathVideoDetail, map,callback:callback);
   }
 
   static void navigateToScanCodePage(BuildContext context) {
