@@ -118,7 +118,7 @@ class _QueryFollowState extends State<QueryFollowList> {
     refreshOver = false;
     print('====开始请求搜索用户接口============================');
     SearchUserModel model = await searchFollowUser(text, 6, uids: widget.userId.toString(), lastTime: _lastTime);
-    setState(() {
+
       if (listPage == 1) {
         _refreshController.loadComplete();
         if (model.list.isNotEmpty) {
@@ -146,6 +146,7 @@ class _QueryFollowState extends State<QueryFollowList> {
         } else {
           buddyList.clear();
           buddyList.insert(0, BuddyModel());
+          _refreshController.refreshCompleted();
         }
       } else if (listPage > 1 && _lastTime != null) {
         if (model.list != null) {
@@ -170,6 +171,7 @@ class _QueryFollowState extends State<QueryFollowList> {
         }
       }
       refreshOver = true;
+    setState(() {
     });
   }
 
@@ -263,7 +265,6 @@ class _QueryFollowState extends State<QueryFollowList> {
     refreshOver = false;
     print('====开始请求搜索用户关注话题接口============================');
     TopicListModel model = await searchTopicUser(text, 15, lastScore: _lastScore);
-    setState(() {
       if (listPage == 1) {
         _refreshController.loadComplete();
         _refreshController.isRefresh;
@@ -278,6 +279,7 @@ class _QueryFollowState extends State<QueryFollowList> {
           _refreshController.refreshCompleted();
         } else {
           topicList.clear();
+          _refreshController.resetNoData();
         }
       } else if (listPage > 1 && _lastScore != null) {
         _refreshController.isLoading;
@@ -292,6 +294,7 @@ class _QueryFollowState extends State<QueryFollowList> {
         }
       }
       refreshOver = true;
+    setState(() {
     });
   }
 
@@ -570,7 +573,7 @@ class _QueryFollowState extends State<QueryFollowList> {
             isMySelf ? "这里是我关注的所有话题" : "这里是他关注的所有话题",
             style: AppStyle.textMedium15,
           ),
-          Expanded(child: SizedBox()),
+          Spacer(),
           Image.asset("images/resource/news_icon_arrow-red.png")
         ],
       ),
@@ -633,36 +636,11 @@ class _FollowItemState extends State<QueryFollowItem> {
       } else {
         isFollow = true;
       }
-
       ///判断是否有签名，好改变布局
       if (widget.buddyModel.description != null) {
         haveIntroduction = true;
       } else {
         haveIntroduction = false;
-      }
-      if (widget.type == 1) {
-        if (widget.isMySelf) {
-          ///自己的关注列表是没有按钮的
-          isCanOnclick = false;
-        } else {
-          if (widget.buddyModel.uid == context
-              .watch<ProfileNotifier>()
-              .profile
-              .uid) {
-            isCanOnclick = false;
-          } else {
-            isCanOnclick = true;
-          }
-        }
-      } else {
-        if (widget.buddyModel.uid == context
-            .watch<ProfileNotifier>()
-            .profile
-            .uid) {
-          isCanOnclick = false;
-        } else {
-          isCanOnclick = true;
-        }
       }
       //话题列表
     } else {
@@ -672,7 +650,6 @@ class _FollowItemState extends State<QueryFollowItem> {
       } else {
         haveIntroduction = false;
       }
-      isCanOnclick = false;
     }
 
     return Container(
@@ -751,15 +728,15 @@ class _FollowItemState extends State<QueryFollowItem> {
                 ],
               )),
           Spacer(),
-          isCanOnclick
-              ? FollowButton(
+          FollowButton(
             id:uid,
-            isFollow:isFollow,
+            isFollow: isFollow,
             isMysList:widget.isMySelf,
             buttonType:widget.type==1
                 ?FollowButtonType.FOLLOW
-                :FollowButtonType.FANS,)
-              : Container(),
+                :widget.type==2
+                ?FollowButtonType.FANS
+                :FollowButtonType.TOPIC,)
         ],
       ),
     );
