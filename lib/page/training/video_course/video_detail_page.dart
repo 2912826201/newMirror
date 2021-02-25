@@ -16,6 +16,7 @@ import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/page/feed/feed_flow/feed_flow_page.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/page/training/common/common_comment_page.dart';
@@ -317,11 +318,6 @@ class VideoDetailPageState extends XCState {
     return Consumer<TokenNotifier>(
       builder: (context, notifier, child) {
         if (!isLoggedIn && notifier.isLoggedIn) {
-          Future.delayed(Duration(milliseconds: 100), () {
-            if (mounted) {
-              reload(() {});
-            }
-          });
           getDataAction();
           //如果已登录且有关联的机器 发送指令让机器跳转页面
           if(Application.machine != null){
@@ -339,7 +335,7 @@ class VideoDetailPageState extends XCState {
   Widget userBindingTerminal() {
     return Consumer<MachineNotifier>(
       builder: (context, notifier, child) {
-        if (!bindingTerminal && notifier.machine != null) {
+        if (notifier.machine != null) {
           bindingTerminal = true;
           Future.delayed(Duration(milliseconds: 300), () {
             if (mounted) {
@@ -472,7 +468,7 @@ class VideoDetailPageState extends XCState {
 
   //分享的点击事件
   void _shareBtnClick() {
-    if (!(context != null && isLoggedIn)) {
+    if (!(context != null && context.read<TokenNotifier>().isLoggedIn)) {
       ToastShow.show(msg: "请先登陆app!", context: context);
       AppRouter.navigateToLoginPage(context);
       return;
@@ -486,7 +482,7 @@ class VideoDetailPageState extends XCState {
 
   //收藏按钮
   void _favorBtnClick() async {
-    if (!(mounted &&isLoggedIn)) {
+    if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
       ToastShow.show(msg: "请先登陆app!", context: context);
       AppRouter.navigateToLoginPage(context);
       return;
@@ -791,7 +787,7 @@ class VideoDetailPageState extends XCState {
 
   ///这是关注的方法
   onClickAttention() {
-    if (!(mounted && isLoggedIn)) {
+    if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
       ToastShow.show(msg: "请先登陆app!", context: context);
       AppRouter.navigateToLoginPage(context);
       return;

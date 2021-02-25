@@ -172,10 +172,9 @@ class _SearchHeaderState extends State<SearchHeader> {
             ),
           ),
           Spacer(),
-          CustomAppBarTextButton("取消", AppColor.textPrimary1, () {
+          CustomAppBarTextButton("取消", AppColor.textPrimary1, false, () {
             Navigator.of(context).pop(true);
           }),
-          SizedBox(width: CustomAppBar.appBarHorizontalPadding,)
         ],
       ),
     );

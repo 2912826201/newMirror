@@ -12,7 +12,6 @@ import '../bottom_sheet.dart';
 Future openFeedCommentBottomSheet({
   @required BuildContext context,
   @required int feedId,
-  CommentDtoModel commentDtoModel,
   int firstTopShowItem,
   ValueChangedCallback callback
 }) async {
@@ -29,7 +28,7 @@ Future openFeedCommentBottomSheet({
           child:
           CommentBottomSheet(
             feedId: feedId,
-            commentDtoModel: commentDtoModel,
+            firstTopShowItem:firstTopShowItem,
           ),
         );
       }).then((value){

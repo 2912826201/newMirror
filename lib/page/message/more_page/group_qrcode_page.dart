@@ -86,6 +86,7 @@ class _GroupQrCodePageState extends State<GroupQrCodePage> {
           CustomAppBarIconButton(
               icon: Icons.ios_share,
               iconColor: AppColor.black,
+              isLeading: false,
               onTap: () {
                 model.width = int.parse("$width".substring(0, "$width".indexOf(".")));
                 model.height = int.parse("$height".substring(0, "$height".indexOf(".")));

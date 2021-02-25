@@ -148,6 +148,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
           CustomAppBarIconButton(
               icon: Icons.group_add,
               iconColor: AppColor.black,
+              isLeading: false,
               onTap: () async {
                 showCreateGroupPopup(context);
               }),

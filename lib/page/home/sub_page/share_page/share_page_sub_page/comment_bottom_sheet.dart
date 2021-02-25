@@ -4,7 +4,6 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/commentInputBox.dart';
 import 'package:mirror/constant/style.dart';
@@ -16,22 +15,23 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 
 class CommentBottomSheet extends StatefulWidget {
-  CommentBottomSheet({Key key, this.feedId,this.commentDtoModel}) : super(key: key);
+  CommentBottomSheet({Key key, this.feedId,this.firstTopShowItem}) : super(key: key);
+  int firstTopShowItem;
   // 动态id
   int feedId;
-  CommentDtoModel commentDtoModel;
-  CommentBottomSheetState createState() => CommentBottomSheetState(feedId: feedId,commentDtoModel: commentDtoModel);
+
+  CommentBottomSheetState createState() => CommentBottomSheetState(feedId: feedId,firstTopShowItem:firstTopShowItem);
 }
 
 class CommentBottomSheetState extends XCState
 // State<CommentBottomSheet>
 {
-  CommentBottomSheetState({this.feedId,this.commentDtoModel});
+  CommentBottomSheetState({this.feedId,this.firstTopShowItem});
   // 列表监听
   ScrollController _controller = new ScrollController();
   // 动态id
   int feedId;
-  CommentDtoModel commentDtoModel;
+  int firstTopShowItem;
   //上拉加载数据
   RefreshController _refreshController = RefreshController(initialRefresh: false);
   GlobalKey<CommonCommentPageState> childKey = GlobalKey();
@@ -91,11 +91,10 @@ class CommentBottomSheetState extends XCState
                   scrollController: _controller,
                   refreshController: _refreshController,
                   targetId: feedId,
-                  commentDtoModel: commentDtoModel,
-                  isBottomSheet: true,
                   pushId: context.read<FeedMapNotifier>().feedMap[feedId].pushId,
                   targetType: 0,
                   pageCommentSize: 20,
+                  firstTopShowItem:firstTopShowItem,
                   pageSubCommentSize: 3,
                   externalBoxHeight:MediaQuery.of(context).size.height*0.75,
                 ),

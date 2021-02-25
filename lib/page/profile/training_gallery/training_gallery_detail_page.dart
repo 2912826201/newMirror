@@ -77,6 +77,7 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
             CustomAppBarIconButton(
                 icon: Icons.more_horiz,
                 iconColor: AppColor.black,
+                isLeading: false,
                 onTap: () {
                   _showMorePopup(context, _imageList[_currentIndex]);
                 }),

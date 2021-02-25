@@ -463,11 +463,6 @@ class LiveDetailPageState extends XCState {
     return Consumer<TokenNotifier>(
       builder: (context, notifier, child) {
         if(!isLoggedIn&&notifier.isLoggedIn){
-          Future.delayed(Duration(milliseconds: 100), () {
-            if (mounted) {
-              reload(() {});
-            }
-          });
           getDataAction();
         }
         isLoggedIn=notifier.isLoggedIn;
@@ -737,7 +732,7 @@ class LiveDetailPageState extends XCState {
 
   ///这是关注的方法
   onClickAttention() {
-    if(!(mounted&&isLoggedIn)){
+    if(!(mounted&&context.read<TokenNotifier>().isLoggedIn)){
       ToastShow.show(msg: "请先登陆app!", context: context);
       AppRouter.navigateToLoginPage(context);
       return;

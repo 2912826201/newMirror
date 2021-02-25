@@ -13,7 +13,6 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
-import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/image_cropper.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:provider/provider.dart';
@@ -523,14 +522,16 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
           ? CustomAppBarIconButton(
               icon: Icons.close,
               iconColor: AppColor.white,
+              isLeading: true,
               onTap: () {
                 context
                     .read<SelectedMapNotifier>()
                     .setIsAlbumListShow(!context.read<SelectedMapNotifier>().isAlbumListShow);
               })
           : CustomAppBarIconButton(
-              svgName: AppIcon.nav_return,
+              icon: Icons.arrow_back_ios_outlined,
               iconColor: AppColor.white,
+              isLeading: true,
               onTap: () {
                 Navigator.pop(context);
               }),

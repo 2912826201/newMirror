@@ -330,7 +330,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
       titleString: chatUserName ?? "",
       actions: [
         CustomAppBarIconButton(
-            icon: Icons.more_horiz, iconColor: AppColor.black, onTap: _topMoreBtnClick),
+            icon: Icons.more_horiz, iconColor: AppColor.black, isLeading: false, onTap: _topMoreBtnClick),
       ],
     );
   }
