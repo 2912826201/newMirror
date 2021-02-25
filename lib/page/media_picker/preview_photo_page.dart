@@ -45,12 +45,19 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
         appBar: CustomAppBar(
           backgroundColor: AppColor.black,
           brightness: Brightness.dark,
+          leading: CustomAppBarIconButton(
+            icon: Icons.close,
+            iconColor: AppColor.white,
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
           actions: [
             Container(
               alignment: Alignment.center,
               padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding),
               child: CustomRedButton(
-                "下一步",
+                "继续",
                 CustomRedButton.buttonStateNormal,
                 () async {
                   MediaFileModel model = MediaFileModel();

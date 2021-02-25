@@ -29,6 +29,7 @@ final int _galleryPageSize = 100;
 
 // 相册的选择GridView视图 需要能够区分选择图片或视频 选择图片数量 是否裁剪 裁剪是否只是正方形
 //TODO 目前没有做响应实时相册变化时的处理 完善时可以考虑实现
+//FIXME 当有文件损坏等情况发生的场景需要应对
 class GalleryPage extends StatefulWidget {
   GalleryPage(
       {Key key,
