@@ -191,7 +191,7 @@ class VideoCourseListPageState extends XCState {
             children: expandedArray,
           ),
           Container(
-            color: AppColor.textHint,
+            color: AppColor.textHint.withOpacity(0.24),
             height: 0.5,
             width: double.infinity,
           ),
@@ -207,11 +207,11 @@ class VideoCourseListPageState extends XCState {
       if (showScreenTitlePosition < 0 || showScreenTitlePosition >= 3) {
         double itemHeight =
             titleItemSubSettingList[0].height + titleItemSubSettingList[1].height + titleItemSubSettingList[2].height;
-        if (itemHeight + 20 < filterBoxHeight) {
-          filterBoxHeight = itemHeight + 20;
+        if (itemHeight + 100 < filterBoxHeight) {
+          filterBoxHeight = itemHeight + 100;
         }
       } else {
-        filterBoxHeight = titleItemSubSettingList[showScreenTitlePosition].height + 80;
+        filterBoxHeight = titleItemSubSettingList[showScreenTitlePosition].height + 100;
       }
     }
 
