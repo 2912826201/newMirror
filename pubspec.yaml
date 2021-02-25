@@ -210,6 +210,7 @@ flutter:
     - images/resource/2.0x/ic_dynamic_big_address_blue@2x.png
     - images/resource/2.0x/ic_dynamic_Right arrow@2x.png
     - images/resource/2.0x/ic_dynamic_Up arrow@2x.png
+    - images/resource/2.0x/ic_comment_like_Selected@2x.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 
