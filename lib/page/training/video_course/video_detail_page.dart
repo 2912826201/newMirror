@@ -244,13 +244,11 @@ class VideoDetailPageState extends XCState {
     GlobalKey globalKey2 = new GlobalKey();
     GlobalKey globalKey3 = new GlobalKey();
     GlobalKey globalKey4 = new GlobalKey();
-    GlobalKey globalKey5 = new GlobalKey();
     globalKeyList.add(globalKey0);
     globalKeyList.add(globalKey1);
     globalKeyList.add(globalKey2);
     globalKeyList.add(globalKey3);
     globalKeyList.add(globalKey4);
-    globalKeyList.add(globalKey5);
     return SmartRefresher(
       enablePullDown: false,
       enablePullUp: true,
@@ -285,9 +283,9 @@ class VideoDetailPageState extends XCState {
           getCoachItem(videoModel, context, onClickAttention, onClickCoach, globalKeyList[2]),
           getLineView(),
           getTrainingEquipmentUi(videoModel, context, titleTextStyle, globalKeyList[3]),
-          getActionUiVideo(videoModel, context, titleTextStyle, globalKeyList[4]),
+          getActionUiVideo(videoModel, context, titleTextStyle),
           getOtherUsersUi(
-              recommendTopicList, context, titleTextStyle, onClickOtherComplete, globalKeyList[5], pageName),
+              recommendTopicList, context, titleTextStyle, onClickOtherComplete, globalKeyList[4], pageName),
           getLineView(),
           _getCourseCommentUi(),
           SliverToBoxAdapter(
@@ -372,6 +370,7 @@ class VideoDetailPageState extends XCState {
           commentDtoModel: commentDtoModel,
           isShowAt: false,
           globalKeyList: globalKeyList,
+          isVideoCoursePage:true,
         ),
       ),
     );

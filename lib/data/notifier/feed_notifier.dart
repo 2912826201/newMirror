@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/feed/post_feed.dart';
@@ -41,12 +43,34 @@ class FeedMapNotifier extends ChangeNotifier {
 
 // 更新全局动态map
   void updateFeedMap(List<HomeFeedModel> _feedList) {
+    print('========================}}}}}}}}}}}}}}}}}}}}}=======updateFeedMap');
     _feedList.forEach((element) {
       feedMap[element.id] = element;
+      feedMap[element.id].hotComment = [];
+      feedMap[element.id].hotComment.addAll(element.comments);
+      print('=========================${element.comments.hashCode}-----${feedMap[element.id].hotComment.hashCode}');
+      print('==============feedMap[element.id].hotComment === ${feedMap[element.id].hotComment}');
     });
     notifyListeners();
   }
 
+  void updateHotComment(int feedId,{CommentDtoModel commentDtoModel,bool isDelete}){
+    print('9(((((((((((((((((((((((9updateHotComment');
+    if(isDelete){
+        feedMap[feedId].commentCount -= 1 + commentDtoModel.replyCount;
+      feedMap[feedId].hotComment.removeWhere((element){
+        return element.id == commentDtoModel.id||element.targetId==commentDtoModel.id;
+      });
+    }else{
+      if(!feedMap[feedId].hotComment.contains(commentDtoModel)){
+        print('))))))))))))))))))))))))))))))))))))))))))添加');
+        feedMap[feedId].hotComment.add(commentDtoModel);
+      }
+     print('===============hotComment============${feedMap[feedId].hotComment.length}');
+     print('===============hotComment============${feedMap[feedId].hotComment.toString()}');
+    }
+    notifyListeners();
+  }
   // 是否可以发布动态
   bool isPublish;
 
