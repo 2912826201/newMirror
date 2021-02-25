@@ -78,11 +78,9 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
       _refreshController.loadNoData();
       return;
     }
-
     refreshOver = false;
     print('====开始请求搜索用户接口============================');
     SearchUserModel model = await ProfileSearchUser(text, 15, lastTime: _lastTime);
-    setState(() {
       if (dataPage == 1) {
         _refreshController.loadComplete();
         _refreshController.isRefresh;
@@ -120,6 +118,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
         }
       }
       refreshOver = true;
+    setState(() {
     });
   }
 
@@ -234,6 +233,7 @@ class _SearchState extends State<SearchUserItem> {
   }
   @override
   Widget build(BuildContext context) {
+    print('=========================搜索itembuid');
     int relation = widget.model.relation;
       if (relation == 0 || relation == 2) {
         isFollow = false;

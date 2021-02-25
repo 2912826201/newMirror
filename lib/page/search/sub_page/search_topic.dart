@@ -78,8 +78,8 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
           }
           requestFeednIterface();
         }
-        lastString = widget.keyWord;
       });
+      lastString = widget.keyWord;
     });
     super.initState();
   }
@@ -138,51 +138,53 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
                 requestFeednIterface();
               },
               child:
-              CustomScrollView(controller: _scrollController, physics: AlwaysScrollableScrollPhysics(), slivers: [
+                  CustomScrollView(controller: _scrollController, physics: AlwaysScrollableScrollPhysics(), slivers: [
                 SliverToBoxAdapter(
                     child: Container(
-                      margin: EdgeInsets.only(left: 16, right: 16),
-                      child: MediaQuery.removePadding(
-                          removeTop: true,
-                          context: context,
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            primary: false,
-                            itemCount: topicList.length + 1,
-                            itemBuilder: (context, index) {
-                              // if (feedList.isNotEmpty) {
-                              if (index == topicList.length) {
-                                return LoadingView(
-                                  loadText: loadText,
-                                  loadStatus: loadStatus,
-                                );
-                              } else if (index == topicList.length + 1) {
-                                return Container();
-                              } else {
-                                return SearchTopiciItem(
-                                  model: topicList[index],
-                                );
-                              }
-                              // }
-                            },
-                          )),
-                    ))
+                  margin: EdgeInsets.only(left: 16, right: 16),
+                  child: MediaQuery.removePadding(
+                      removeTop: true,
+                      context: context,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        primary: false,
+                        itemCount: topicList.length + 1,
+                        itemBuilder: (context, index) {
+                          // if (feedList.isNotEmpty) {
+                          if (index == topicList.length) {
+                            return LoadingView(
+                              loadText: loadText,
+                              loadStatus: loadStatus,
+                            );
+                          } else if (index == topicList.length + 1) {
+                            return Container();
+                          } else {
+                            return SearchTopiciItem(
+                              model: topicList[index],
+                            );
+                          }
+                          // }
+                        },
+                      )),
+                ))
               ])));
     } else {
       return Container(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
               width: 224,
               height: 224,
               color: AppColor.color246,
-              margin: EdgeInsets.only(bottom: 16, top: 188),
+              // margin: EdgeInsets.only(bottom: 16, top: 188),
             ),
             Text(
-              "这里空空如也，去推荐看看吧",
+              "你的放大镜陨落星辰了",
               style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
             ),
+            Text("换一个试一试", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
           ],
         ),
       );

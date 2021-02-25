@@ -153,7 +153,7 @@ class LikeListViewItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                "${model.uid}",
+                "${model.nickName}",
                 // '用户昵称显示',
                 style: TextStyle(color: AppColor.textPrimary1, fontSize: 15, decoration: TextDecoration.none),
               ),

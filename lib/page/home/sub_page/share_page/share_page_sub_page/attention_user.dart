@@ -33,7 +33,7 @@ class AttentionUserState extends State<AttentionUser> {
         child: Column(
           children: [
             Container(
-              margin: EdgeInsets.only(left: 16, right: 16),
+              margin: EdgeInsets.only(left: 16, right: 16,top: 18),
               height: 25,
               width: ScreenUtil.instance.screenWidthDp,
               child: Row(

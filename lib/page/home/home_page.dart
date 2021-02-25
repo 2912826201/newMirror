@@ -252,7 +252,9 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
       // 定位到关注页
       controller.index = 0;
       // 关注页回到顶部
-      attentionKey.currentState.backToTheTop();
+      if (attentionKey.currentState != null) {
+        attentionKey.currentState.backToTheTop();
+      }
       // 发布动态
       pulishFeed();
     }
@@ -281,8 +283,16 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
             width: 140,
             child: TabBar(
               controller: controller,
-              tabs: [Text("关注"), Text("推荐")],
-              labelStyle: TextStyle(fontSize: 18),
+              tabs: [
+                Text("关注"),
+                Text(
+                  "推荐",
+                )
+              ],
+              labelStyle: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
               labelColor: Colors.black,
               // indicatorPadding: EdgeInsets.symmetric(horizontal: 24),
               // unselectedLabelColor: Color.fromRGBO(153, 153, 153, 1),
