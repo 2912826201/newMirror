@@ -41,8 +41,9 @@ class CommonCommentPage extends StatefulWidget {
   final int pageSubCommentSize;
   final bool isShowHotOrTime;
   //互动通知列表带过来的评论内容
-   CommentDtoModel commentDtoModel;
+  CommentDtoModel commentDtoModel;
   final bool isShowAt;
+  final bool isVideoCoursePage;
   CommentDtoModel fatherComment;
   final ScrollController scrollController;
   final int externalScrollHeight;
@@ -65,6 +66,7 @@ class CommonCommentPage extends StatefulWidget {
     this.isShowAt = true,
     this.fatherComment,
     this.isBottomSheet = false,
+    this.isVideoCoursePage = false,
     this.commentDtoModel,
   }) : super(key: key);
 
@@ -194,9 +196,6 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         }
         isFirstScroll = false;
       });
-    } else {
-      print('========================条件不满足 --courseCommentHot${courseCommentHot != null}--isFirstScroll$isFirstScroll'
-          '---widget.commentDtoModel${widget.commentDtoModel != null}');
     }
     if (!widget.isShowHotOrTime &&
         courseCommentHot != null &&
@@ -952,6 +951,9 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
               scrollHeight += element.currentContext.size.height;
             }
           });
+          if(widget.isVideoCoursePage){
+            scrollHeight += 160;
+          }
           scrollHeight += 24;
         }
         scrollHeight += widget.externalScrollHeight;

@@ -316,7 +316,7 @@ Widget getTrainingEquipmentUi(LiveVideoModel videoModel,BuildContext context,
 
 //获取动作的ui
 Widget getActionUiVideo(LiveVideoModel videoModel,BuildContext context,
-    TextStyle titleTextStyle,GlobalKey globalKey) {
+    TextStyle titleTextStyle) {
   // ignore: null_aware_before_operator
   if (videoModel.coursewareDto?.actionMapList == null || videoModel.coursewareDto?.actionMapList?.length < 1) {
     return SliverToBoxAdapter();
@@ -363,13 +363,13 @@ Widget getActionUiVideo(LiveVideoModel videoModel,BuildContext context,
               height: 66,
               padding: const EdgeInsets.all(12),
               margin: index == 0
-                  ? const EdgeInsets.only(left: 15.5)
+                  ? const EdgeInsets.only(left: 15.5,right: 4)
               // ignore: null_aware_before_operator
                   : (index ==
                   // ignore: null_aware_before_operator
                   videoModel.coursewareDto?.actionMapList?.length - 1
-                  ? const EdgeInsets.only(left: 8)
-                  : const EdgeInsets.only(left: 8, right: 15.5)),
+                  ? const EdgeInsets.only(left: 4, right: 15.5)
+                  : const EdgeInsets.only(left: 4, right: 4)),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(4),
                 color: AppColor.bgWhite,
@@ -401,7 +401,6 @@ Widget getActionUiVideo(LiveVideoModel videoModel,BuildContext context,
 
   return SliverToBoxAdapter(
     child: Container(
-      key: globalKey,
       width: double.infinity,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
