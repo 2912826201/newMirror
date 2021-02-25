@@ -115,14 +115,19 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
       // load the album list
       //TODO 这里需要设置路径
       if (_albums.isEmpty) {
-        _albums = await PhotoManager.getAssetPathList(hasAll: true, onlyAll: true, type: widget.requestType);
+        _albums = await PhotoManager.getAssetPathList(hasAll: true, onlyAll: false, type: widget.requestType);
         print(_albums);
       }
 
       //TODO 获取相册后还是空的情况需要测试是什么情况
       if (_albums.isNotEmpty) {
         _mediaAmount = _albums[_currentAlbumIndex].assetCount;
-        // 用_galleryListLength最为已加载数量来进行分页请求
+        if(isNew){
+          // 如果是该相册第一次请求 清空列表数据
+          _galleryList.clear();
+          _galleryListLength = 0;
+        }
+        // 用_galleryListLength做为已加载数量来进行分页请求
         List<AssetEntity> media = await _albums[_currentAlbumIndex]
             .getAssetListRange(start: _galleryListLength, end: _galleryListLength + _galleryPageSize);
         print(media);
@@ -273,12 +278,6 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
 
   @override
   bool get wantKeepAlive => true;
-
-  Widget _buildAlbumList() {
-    return Container(
-      color: AppColor.bgBlack,
-    );
-  }
 
   // item本体点击事件
   _onGridItemTap(BuildContext context, AssetEntity entity) async {
@@ -536,30 +535,35 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
               }),
       titleWidget: _albums.length > 0
           ? GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onTap: () {
                 context
                     .read<SelectedMapNotifier>()
                     .setIsAlbumListShow(!context.read<SelectedMapNotifier>().isAlbumListShow);
               },
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    _albums[_currentAlbumIndex].name,
-                    style: AppStyle.whiteRegular16,
-                  ),
-                  SizedBox(
-                    width: 6,
-                  ),
-                  Icon(
-                    context.select((SelectedMapNotifier value) => value.isAlbumListShow)
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
-                    size: 16,
-                    color: AppColor.white,
-                  ),
-                ],
+              child: Container(
+                height: CustomAppBar.appBarHeight,
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      _albums[_currentAlbumIndex].name,
+                      style: AppStyle.whiteRegular16,
+                    ),
+                    SizedBox(
+                      width: 6,
+                    ),
+                    Icon(
+                      context.select((SelectedMapNotifier value) => value.isAlbumListShow)
+                          ? Icons.keyboard_arrow_up
+                          : Icons.keyboard_arrow_down,
+                      size: 16,
+                      color: AppColor.white,
+                    ),
+                  ],
+                ),
               ),
             )
           : Container(),
@@ -671,6 +675,72 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
           ),
         )
       ],
+    );
+  }
+
+  //构建选相册目录列表
+  Widget _buildAlbumList() {
+    return Container(
+      color: AppColor.bgBlack,
+      child: ListView.builder(
+          itemCount: _albums.length,
+          itemBuilder: (context, index) {
+            return Container(
+              height: 103,
+              padding: const EdgeInsets.only(bottom: 10),
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  context
+                      .read<SelectedMapNotifier>()
+                      .setIsAlbumListShow(!context.read<SelectedMapNotifier>().isAlbumListShow);
+                  if(_currentAlbumIndex != index){
+                    _currentAlbumIndex = index;
+                    _fetchGalleryData(true);
+                  }
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 16,
+                    ),
+                    Container(
+                      height: 93,
+                      width: 93,
+                      color: AppColor.mainBlue,
+                    ),
+                    SizedBox(
+                      width: 16,
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "${_albums[index].name}",
+                          style: TextStyle(
+                            color: AppColor.white,
+                            fontSize: 13,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 2,
+                        ),
+                        Text("${_albums[index].assetCount}",
+                            style: TextStyle(
+                              color: AppColor.white.withOpacity(0.35),
+                              fontSize: 12,
+                            )),
+                      ],
+                    ),
+                    Spacer(),
+                  ],
+                ),
+              ),
+            );
+          }),
     );
   }
 
