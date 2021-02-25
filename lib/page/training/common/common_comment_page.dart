@@ -834,20 +834,24 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
               if (isHotOrTime) {
                 if (courseCommentHot != null) {
                   courseCommentHot.list.insert(0, model);
+                  courseCommentHot.totalCount++;
                 } else {
                   courseCommentHot = new CommentModel();
                   courseCommentHot.list = [];
                   courseCommentHot.list.add(model);
+                  courseCommentHot.totalCount=1;
                 }
                 screenOutHotIds.add(model.id);
                 setCommentListSubSettingSingle(model.id);
               } else {
                 if (courseCommentTime != null) {
                   courseCommentTime.list.insert(0, model);
+                  courseCommentTime.totalCount++;
                 } else {
                   courseCommentTime = new CommentModel();
                   courseCommentTime.list = [];
                   courseCommentTime.list.add(model);
+                  courseCommentTime.totalCount=1;
                 }
                 screenOutTimeIds.add(model.id);
                 setCommentListSubSettingSingle(model.id);
