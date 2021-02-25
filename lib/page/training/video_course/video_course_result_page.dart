@@ -45,7 +45,6 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
         leading: CustomAppBarIconButton(
             icon: Icons.close,
             iconColor: AppColor.white,
-            isLeading: true,
             onTap: () {
               Navigator.pop(context);
             }),

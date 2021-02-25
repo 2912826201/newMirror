@@ -11,6 +11,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -222,13 +223,12 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
                   ),
                   Positioned(
                     child: CustomAppBarIconButton(
-                        icon: Icons.arrow_back_ios_outlined,
+                        svgName: AppIcon.nav_return,
                         iconColor: AppColor.black,
-                        isLeading: true,
                         onTap: () {
                           Navigator.pop(context);
                         }),
-                    left: 0,
+                    left: CustomAppBar.appBarHorizontalPadding,
                   ),
                   Positioned(
                     child: Container(
