@@ -99,8 +99,8 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
           }
           requestFeednIterface();
         }
-        lastString = widget.keyWord;
       });
+      lastString = widget.keyWord;
     });
     super.initState();
   }
@@ -220,7 +220,8 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
                 //       )
                 //      ),
                 // )),
-                SliverList(delegate: SliverChildBuilderDelegate((content, index) {
+                SliverList(
+                    delegate: SliverChildBuilderDelegate((content, index) {
                   if (index == feedList.length) {
                     return LoadingView(
                       loadText: loadText,
@@ -231,7 +232,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
                   } else {
                     return DynamicListLayout(
                       index: index,
-                      isShowConcern:false,
+                      isShowConcern: false,
                       pageName: "searchFeed",
                       isShowRecommendUser: false,
                       model: feedList[index],
@@ -239,23 +240,25 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
                       key: GlobalObjectKey("attention$index"),
                     );
                   }
-                },childCount: feedList.length + 1))
+                }, childCount: feedList.length + 1))
               ])));
     } else {
       return Container(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
               width: 224,
               height: 224,
               color: AppColor.color246,
-              margin: EdgeInsets.only(bottom: 16, top: 188),
+              // margin: EdgeInsets.only(bottom: 16, top: 188),
             ),
             Text(
-              "这里空空如也，去推荐看看吧",
+              "你的放大镜陨落星辰了",
               style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
             ),
+            Text("换一个试一试", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
           ],
         ),
       );
@@ -402,6 +405,7 @@ class SearchFeeditemState extends State<SearchFeeditem> {
     }
     return (((ScreenUtil.instance.screenWidthDp - 32) / 2 - 4) / width) * height;
   }
+
   // 算出到置顶item的高度
   specifyItemHeight() {
     double itemHeight = 0.0;
@@ -412,38 +416,36 @@ class SearchFeeditemState extends State<SearchFeeditem> {
       if (v.picUrls.isNotEmpty) {
         if (v.picUrls.first.height == 0) {
           itemHeight += ScreenUtil.instance.width;
-        }  else {
+        } else {
           itemHeight += (ScreenUtil.instance.width / v.picUrls[0].width) * v.picUrls[0].height;
         }
       }
       // 视频
-      if(v.videos.isNotEmpty) {
-
-      }
+      if (v.videos.isNotEmpty) {}
       // 转发评论点赞
       itemHeight += 48;
 
       //地址和课程
-      if(v.address != null || v.courseDto != null){
-        itemHeight+=7;
-        itemHeight+=getTextSize("123",TextStyle(fontSize: 12),1).height;
+      if (v.address != null || v.courseDto != null) {
+        itemHeight += 7;
+        itemHeight += getTextSize("123", TextStyle(fontSize: 12), 1).height;
       }
 
       //文本
-      if(v.content.length>0){
-        itemHeight+=12;
-        itemHeight+=getTextSize(v.content,TextStyle(fontSize: 14),2,ScreenUtil.instance.width-32).height;
+      if (v.content.length > 0) {
+        itemHeight += 12;
+        itemHeight += getTextSize(v.content, TextStyle(fontSize: 14), 2, ScreenUtil.instance.width - 32).height;
       }
 
       //评论文本
-      if(v.comments!=null &&v.comments.length != 0){
-        itemHeight+=8;
-        itemHeight+=6;
-        itemHeight+=getTextSize("共0条评论",AppStyle.textHintRegular12,1).height;
-        itemHeight+=getTextSize("第一条评论",AppStyle.textHintRegular13,1).height;
-        if(v.comments.length>1){
-          itemHeight+=8;
-          itemHeight+=getTextSize("第二条评论",AppStyle.textHintRegular13,1).height;
+      if (v.comments != null && v.comments.length != 0) {
+        itemHeight += 8;
+        itemHeight += 6;
+        itemHeight += getTextSize("共0条评论", AppStyle.textHintRegular12, 1).height;
+        itemHeight += getTextSize("第一条评论", AppStyle.textHintRegular13, 1).height;
+        if (v.comments.length > 1) {
+          itemHeight += 8;
+          itemHeight += getTextSize("第二条评论", AppStyle.textHintRegular13, 1).height;
         }
       }
 
@@ -452,9 +454,9 @@ class SearchFeeditemState extends State<SearchFeeditem> {
 
       //分割块
       itemHeight += 18;
-
     });
-}
+  }
+
   // @override
   Widget build(BuildContext context) {
     if (model.videos.isNotEmpty) {
@@ -638,10 +640,10 @@ class LaudItemState extends State<LaudItem> {
           },
           child: Icon(
             Icons.favorite,
-            color: (context.select((FeedMapNotifier value) => value.feedMap) != null
-                &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id]) != null
-                &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) != null
-                &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 1)
+            color: (context.select((FeedMapNotifier value) => value.feedMap) != null &&
+                    context.select((FeedMapNotifier value) => value.feedMap[widget.model.id]) != null &&
+                    context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) != null &&
+                    context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 1)
                 ? Colors.red
                 : Colors.grey,
             size: 16,
@@ -651,10 +653,10 @@ class LaudItemState extends State<LaudItem> {
           width: 2,
         ),
         Offstage(
-          offstage: (context.select((FeedMapNotifier value) => value.feedMap) != null
-                  &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id]) != null
-                  &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].laudCount) != null
-                  &&context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].laudCount) == 0),
+          offstage: (context.select((FeedMapNotifier value) => value.feedMap) != null &&
+              context.select((FeedMapNotifier value) => value.feedMap[widget.model.id]) != null &&
+              context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].laudCount) != null &&
+              context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].laudCount) == 0),
           child: //用Selector的方式监听数据
               Selector<FeedMapNotifier, int>(builder: (context, laudCount, child) {
             return Text(
@@ -665,10 +667,11 @@ class LaudItemState extends State<LaudItem> {
               ),
             );
           }, selector: (context, notifier) {
-            return (notifier.feedMap!=null&&
-                notifier.feedMap[widget.model.id]!=null&&
-                notifier.feedMap[widget.model.id].laudCount!=null)?
-            notifier.feedMap[widget.model.id].laudCount:0;
+            return (notifier.feedMap != null &&
+                    notifier.feedMap[widget.model.id] != null &&
+                    notifier.feedMap[widget.model.id].laudCount != null)
+                ? notifier.feedMap[widget.model.id].laudCount
+                : 0;
           }),
         ),
         // SizedBox(width: 2,)

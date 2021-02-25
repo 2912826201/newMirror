@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/search/search_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -94,8 +95,8 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
           feedList.clear();
           mergeRequest();
         }
-        lastString = widget.keyWord;
       });
+      lastString = widget.keyWord;
     });
     // 上拉加载
     _scrollController.addListener(() {
@@ -195,147 +196,170 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: CustomScrollView(
-        controller: _scrollController,
-        slivers: [
-          SliverToBoxAdapter(
-              child: Offstage(
-            offstage: liveVideoList.length == 0,
-            child: ItemTitle("相关课程", 12, 1, widget.controller),
-          )),
-          SliverList(
-            delegate: SliverChildBuilderDelegate((content, index) {
-              return Offstage(
+    return liveVideoList.length == 0 && userList.length == 0 && topicList.length == 0 && feedList.length == 0
+        ? Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 224,
+                  height: 224,
+                  color: AppColor.color246,
+                  // margin: EdgeInsets.only(bottom: 16, top: 188),
+                ),
+                Text(
+                  "你的放大镜陨落星辰了",
+                  style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+                ),
+                Text("换一个试一试", style: TextStyle(color: AppColor.textSecondary, fontSize: 14)),
+              ],
+            ),
+          )
+        : Container(
+            child: CustomScrollView(
+              controller: _scrollController,
+              slivers: [
+                SliverToBoxAdapter(
+                    child: Offstage(
                   offstage: liveVideoList.length == 0,
-                  child: SearchCourseItem(
-                    videoModel: liveVideoList[index],
-                    index: index,
-                    count: liveVideoList.length,
-                  ));
-            }, childCount: liveVideoList.length),
-          ),
-          SliverToBoxAdapter(
-              child: Offstage(offstage: userList.length == 0, child: ItemTitle("相关用户", 16, 4, widget.controller))),
-          SliverList(
-              delegate: SliverChildBuilderDelegate((content, index) {
-            return Offstage(
-                offstage: userList.length == 0,
-                child: Container(
-                    width: ScreenUtil.instance.width,
-                    margin: EdgeInsets.only(left: 16, right: 16),
-                    child: SearchUserItem(
-                      model: userList[index],
-                      width: ScreenUtil.instance.width,
-                    )));
-          }, childCount: userList.length)),
-          SliverToBoxAdapter(
-              child: Offstage(offstage: topicList.length == 0, child: ItemTitle("相关话题", 16, 2, widget.controller))),
-          SliverList(
-              delegate: SliverChildBuilderDelegate((content, index) {
-            return Offstage(
-                offstage: topicList.length == 0,
-                child: SearchTopiciItem(
-                  model: topicList[index],
-                ));
-          }, childCount: topicList.length)),
-          SliverToBoxAdapter(
-              child: Offstage(offstage: feedList.length == 0, child: ItemTitle("相关动态", 16, 3, widget.controller))),
-          SliverToBoxAdapter(
-              child: Offstage(
-                  offstage: feedList.length == 0,
-                  child: Container(
-                      // margin: EdgeInsets.only(left: 16, right: 16),
-                      child: MediaQuery.removePadding(
-                          removeTop: true,
-                          context: context,
-                          // 瀑布流
-                          // child: WaterfallFlow.builder(
-                          //   primary: false,
-                          //   shrinkWrap: true,
-                          //   gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-                          //     crossAxisCount: 2,
-                          //     // 上下间隔
-                          //     mainAxisSpacing: 4.0,
-                          //     //   // 左右间隔
-                          //     crossAxisSpacing: 8.0,
-                          //   ),
-                          //   itemBuilder: (context, index) {
-                          //     if (index == feedList.length) {
-                          //       return LoadingView(
-                          //         loadText: loadText,
-                          //         loadStatus: loadStatus,
-                          //       );
-                          //     } else if (index == feedList.length + 1) {
-                          //       return Container();
-                          //     } else {
-                          //       return SearchFeeditem(
-                          //         model: feedList[index],
-                          //         list: feedList,
-                          //         index: index,
-                          //         pageName: "searchComplex",
-                          //       );
-                          //     }
-                          //   },
-                          //   itemCount: feedList.length + 1,
-                          // )
-                          child: ListView.builder(
-                              primary: false,
-                              shrinkWrap: true,
-                              itemCount: feedList.length + 1,
-                              itemBuilder: (context, index) {
-                                if (index == feedList.length) {
-                                  return LoadingView(
-                                    loadText: loadText,
-                                    loadStatus: loadStatus,
-                                  );
-                                } else if (index == feedList.length + 1) {
-                                  return Container();
-                                } else {
-                                  return DynamicListLayout(
-                                    index: index,
-                                    pageName: "searchComplex",
-                                    isShowRecommendUser: false,
-                                    isShowConcern:false,
-                                    model: feedList[index],
-                                    // 可选参数 子Item的个数
-                                    key: GlobalObjectKey("attention$index"),
-                                  );
-                                }
-                              })
-                          // child: StaggeredGridView.countBuilder(
-                          //   shrinkWrap: true,
-                          //   itemCount: feedList.length + 1,
-                          //   primary: false,
-                          //   crossAxisCount: 4,
-                          //   // 上下间隔
-                          //   mainAxisSpacing: 4.0,
-                          //   // 左右间隔
-                          //   crossAxisSpacing: 8.0,
-                          //   itemBuilder: (context, index) {
-                          //     if (index == feedList.length) {
-                          //       return LoadingView(
-                          //         loadText: loadText,
-                          //         loadStatus: loadStatus,
-                          //       );
-                          //     } else if (index == feedList.length + 1) {
-                          //       return Container();
-                          //     } else {
-                          //       return SearchFeeditem(
-                          //         model: feedList[index],
-                          //         list: feedList,
-                          //         index: index,
-                          //         focusNode: widget.focusNode,
-                          //         pageName: "searchComplex",
-                          //       );
-                          //     }
-                          //   },
-                          //   staggeredTileBuilder: (index) => StaggeredTile.fit(2),
-                          // )
-                          )))),
-        ],
-      ),
-    );
+                  child: ItemTitle("相关课程", 12, 1, widget.controller),
+                )),
+                SliverList(
+                  delegate: SliverChildBuilderDelegate((content, index) {
+                    return Offstage(
+                        offstage: liveVideoList.length == 0,
+                        child: SearchCourseItem(
+                          videoModel: liveVideoList[index],
+                          index: index,
+                          count: liveVideoList.length,
+                        ));
+                  }, childCount: liveVideoList.length),
+                ),
+                SliverToBoxAdapter(
+                    child:
+                        Offstage(offstage: userList.length == 0, child: ItemTitle("相关用户", 16, 4, widget.controller))),
+                SliverList(
+                    delegate: SliverChildBuilderDelegate((content, index) {
+                  return Offstage(
+                      offstage: userList.length == 0,
+                      child: Container(
+                          width: ScreenUtil.instance.width,
+                          margin: EdgeInsets.only(left: 16, right: 16),
+                          child: SearchUserItem(
+                            model: userList[index],
+                            width: ScreenUtil.instance.width,
+                          )));
+                }, childCount: userList.length)),
+                SliverToBoxAdapter(
+                    child:
+                        Offstage(offstage: topicList.length == 0, child: ItemTitle("相关话题", 16, 2, widget.controller))),
+                SliverList(
+                    delegate: SliverChildBuilderDelegate((content, index) {
+                  return Offstage(
+                      offstage: topicList.length == 0,
+                      child: SearchTopiciItem(
+                        model: topicList[index],
+                      ));
+                }, childCount: topicList.length)),
+                SliverToBoxAdapter(
+                    child:
+                        Offstage(offstage: feedList.length == 0, child: ItemTitle("相关动态", 16, 3, widget.controller))),
+                SliverToBoxAdapter(
+                    child: Offstage(
+                        offstage: feedList.length == 0,
+                        child: Container(
+                            // margin: EdgeInsets.only(left: 16, right: 16),
+                            child: MediaQuery.removePadding(
+                                removeTop: true,
+                                context: context,
+                                // 瀑布流
+                                // child: WaterfallFlow.builder(
+                                //   primary: false,
+                                //   shrinkWrap: true,
+                                //   gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+                                //     crossAxisCount: 2,
+                                //     // 上下间隔
+                                //     mainAxisSpacing: 4.0,
+                                //     //   // 左右间隔
+                                //     crossAxisSpacing: 8.0,
+                                //   ),
+                                //   itemBuilder: (context, index) {
+                                //     if (index == feedList.length) {
+                                //       return LoadingView(
+                                //         loadText: loadText,
+                                //         loadStatus: loadStatus,
+                                //       );
+                                //     } else if (index == feedList.length + 1) {
+                                //       return Container();
+                                //     } else {
+                                //       return SearchFeeditem(
+                                //         model: feedList[index],
+                                //         list: feedList,
+                                //         index: index,
+                                //         pageName: "searchComplex",
+                                //       );
+                                //     }
+                                //   },
+                                //   itemCount: feedList.length + 1,
+                                // )
+                                child: ListView.builder(
+                                    primary: false,
+                                    shrinkWrap: true,
+                                    itemCount: feedList.length + 1,
+                                    itemBuilder: (context, index) {
+                                      if (index == feedList.length) {
+                                        return LoadingView(
+                                          loadText: loadText,
+                                          loadStatus: loadStatus,
+                                        );
+                                      } else if (index == feedList.length + 1) {
+                                        return Container();
+                                      } else {
+                                        return DynamicListLayout(
+                                          index: index,
+                                          pageName: "searchComplex",
+                                          isShowRecommendUser: false,
+                                          isShowConcern: false,
+                                          model: feedList[index],
+                                          // 可选参数 子Item的个数
+                                          key: GlobalObjectKey("attention$index"),
+                                        );
+                                      }
+                                    })
+                                // child: StaggeredGridView.countBuilder(
+                                //   shrinkWrap: true,
+                                //   itemCount: feedList.length + 1,
+                                //   primary: false,
+                                //   crossAxisCount: 4,
+                                //   // 上下间隔
+                                //   mainAxisSpacing: 4.0,
+                                //   // 左右间隔
+                                //   crossAxisSpacing: 8.0,
+                                //   itemBuilder: (context, index) {
+                                //     if (index == feedList.length) {
+                                //       return LoadingView(
+                                //         loadText: loadText,
+                                //         loadStatus: loadStatus,
+                                //       );
+                                //     } else if (index == feedList.length + 1) {
+                                //       return Container();
+                                //     } else {
+                                //       return SearchFeeditem(
+                                //         model: feedList[index],
+                                //         list: feedList,
+                                //         index: index,
+                                //         focusNode: widget.focusNode,
+                                //         pageName: "searchComplex",
+                                //       );
+                                //     }
+                                //   },
+                                //   staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+                                // )
+                                )))),
+              ],
+            ),
+          );
   }
 }
 
