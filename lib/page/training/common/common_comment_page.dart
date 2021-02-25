@@ -242,7 +242,9 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     if (loadingStatusComment == LoadingStatus.STATUS_LOADING) {
       widgetArray.add(Container());
     } else {
-      if ((isHotOrTime ? (courseCommentHot) : (courseCommentTime)) == null) {
+      if ((isHotOrTime ? (courseCommentHot) : (courseCommentTime)) == null||
+          (isHotOrTime ? (courseCommentHot) : (courseCommentTime)).list==null||
+          (isHotOrTime ? (courseCommentHot) : (courseCommentTime)).list.length<1) {
         widgetArray.add(getCommentNoData());
       } else {
         widgetArray.addAll(getBigCommentList());
