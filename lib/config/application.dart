@@ -113,8 +113,11 @@ class Application {
   //用户所登录的机器
   static MachineModel machine;
 
-  //群成员的id--群昵称
-  static Map<String, String> chatGroupUserModelMap = Map();
+  //群成员的id--群成员昵称
+  static Map<String, String> chatGroupUserNameMap = Map();
+
+  //群成员的id--群成员头像
+  static Map<String, String> chatGroupUserUrlMap = Map();
 
   //群组at的列表
   static AtMesGroupModel atMesGroupModel = AtMesGroupModel();
@@ -177,7 +180,8 @@ class Application {
   static _clearUserRuntimeCache() {
     appContext.read<MachineNotifier>().setMachine(null);
     //TODO 其他的provider还需整理出来清掉
-    chatGroupUserModelMap.clear();
+    chatGroupUserNameMap.clear();
+    chatGroupUserUrlMap.clear();
     atMesGroupModel?.atMsgMap?.clear();
     topChatModelList.clear();
     queryNoPromptUidList.clear();

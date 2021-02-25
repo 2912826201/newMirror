@@ -80,7 +80,7 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
 
   //设置一些基础信息
   void setSettingData(){
-    userUrl = Application.profile.avatarUri;
+    userUrl = getChatUserUrl(sendChatUserId, Application.profile.avatarUri);
     sendChatUserId = Application.profile.uid.toString();
     name = getChatUserName(sendChatUserId, Application.profile.nickName);
 
@@ -109,7 +109,7 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
         name = "运动数据";
       } else {
         try {
-          userUrl = widget.model.msg.content.sendUserInfo?.portraitUri;
+          userUrl = getChatUserUrl(sendChatUserId, widget.model.msg.content.sendUserInfo?.portraitUri);
           name = getChatUserName(sendChatUserId, widget.model.msg.content.sendUserInfo?.name);
         } catch (e) {
         }
@@ -324,7 +324,7 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
   String getChatUserName(String uId, String name) {
     if (widget.isShowChatUserName) {
       // print("uId:$uId---Application.chatGroupUserModelMap:${Application.chatGroupUserModelMap.toString()}");
-      String userName = Application.chatGroupUserModelMap[uId];
+      String userName = Application.chatGroupUserNameMap[uId];
       if (userName == null) {
         return name;
       } else {
@@ -332,6 +332,15 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
       }
     }
     return name;
+  }
+
+  String getChatUserUrl(String uId, String url) {
+    String userUrl = Application.chatGroupUserUrlMap[uId];
+    if (userUrl == null) {
+      return url;
+    } else {
+      return userUrl;
+    }
   }
 
   bool isCanLongClick() {

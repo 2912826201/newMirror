@@ -1579,9 +1579,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
     //type  0-用户名  1--群名 2--拉黑 3--邀请不是相互关注-进行提醒
     if (type == 0) {
       //修改了用户名
-      Application.chatGroupUserModelMap.clear();
+      Application.chatGroupUserNameMap.clear();
       for (ChatGroupUserModel userModel in context.read<GroupUserProfileNotifier>().chatGroupUserModelList) {
-        Application.chatGroupUserModelMap[userModel.uid.toString()] = userModel.groupNickName;
+        Application.chatGroupUserNameMap[userModel.uid.toString()] = userModel.groupNickName;
       }
       delayedSetState();
     } else if (type == 1) {
