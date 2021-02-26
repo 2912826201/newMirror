@@ -75,6 +75,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     return Scaffold(
       appBar: null,
       body: SingleChildScrollView(
+
         physics: BouncingScrollPhysics(),
         child: _buildSuggestions(width, height),
       ),
@@ -107,7 +108,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                         style: AppStyle.textRegular12,
                       ),
                     ),
-                    Expanded(child: Container()),
+                    Spacer(),
                     Container(
                       width: width * 0.27,
                       alignment: Alignment.centerLeft,
@@ -116,7 +117,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                         style: AppStyle.textRegular12,
                       ),
                     ),
-                    Expanded(child: Container()),
+                    Spacer(),
                     Container(
                       width: width * 0.27,
                       alignment: Alignment.centerLeft,

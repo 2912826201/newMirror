@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:amap_map_fluttify/amap_map_fluttify.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:dio/dio.dart';
+import 'package:drag_list/drag_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -37,6 +38,8 @@ import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:reorderables/reorderables.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:text_span_field/range_style.dart';
 import 'package:text_span_field/text_span_field.dart';
 import 'package:toast/toast.dart';
@@ -1539,6 +1542,7 @@ class SeletedPhoto extends StatefulWidget {
 }
 
 class SeletedPhotoState extends State<SeletedPhoto> {
+  ScrollController scrollController = ScrollController();
   // 解析数据
   resolveData() async {
     for (MediaFileModel model in widget.selectedMediaFiles.list) {
@@ -1554,6 +1558,7 @@ class SeletedPhotoState extends State<SeletedPhoto> {
   @override
   void initState() {
     resolveData();
+
   }
 
   // 进入相册的添加视图
@@ -1561,6 +1566,7 @@ class SeletedPhotoState extends State<SeletedPhoto> {
     if ((widget.selectedMediaFiles.type == mediaTypeKeyImage && widget.selectedMediaFiles.list.length < 9) ||
         (widget.selectedMediaFiles.type == null)) {
       return GestureDetector(
+        key: ValueKey("addView"),
         onTap: () {
           int type = typeImage;
           if (widget.selectedMediaFiles.type == null) {
@@ -1614,6 +1620,8 @@ class SeletedPhotoState extends State<SeletedPhoto> {
           ),
         ),
       );
+    }else{
+      return Container();
     }
   }
 
@@ -1622,16 +1630,32 @@ class SeletedPhotoState extends State<SeletedPhoto> {
     return Container(
       height: 95,
       margin: EdgeInsets.only(top: 14),
-      child: ListView.builder(
-          shrinkWrap: true,
-          scrollDirection: Axis.horizontal,
-          itemCount:
-              widget.selectedMediaFiles.type == mediaTypeKeyVideo ? 1 : widget.selectedMediaFiles.list.length + 1,
-          itemBuilder: (context, index) {
-            if (index == widget.selectedMediaFiles.list.length) {
-              return addView();
-            }
-            return Container(
+      child:SingleChildScrollView(
+        scrollDirection:Axis.horizontal,
+        child: Row(
+          children: [
+            _canPullReorderRow(),
+            addView(),
+            SizedBox(width: 8,)
+          ],
+        ),
+      ) ,
+      );
+  }
+  void _onReorder(int oldIndex, int newIndex) {
+    setState(() {
+      MediaFileModel model = widget.selectedMediaFiles.list.removeAt(oldIndex);
+      widget.selectedMediaFiles.list.insert(newIndex, model);
+    });
+  }
+  Widget _canPullReorderRow(){
+    return ReorderableRow(
+      scrollController: scrollController,
+      children: List<Widget>.generate(
+          widget.selectedMediaFiles.list.length,
+              (int index) {
+            return  Container(
+              key: ValueKey(index),
               width: 92,
               height: 92,
               margin: EdgeInsets.only(left: index == 0 ? 16 : 10),
@@ -1649,26 +1673,26 @@ class SeletedPhotoState extends State<SeletedPhoto> {
                     left: 0,
                     child: widget.selectedMediaFiles.type == mediaTypeKeyVideo
                         ? Image.memory(
-                            widget.selectedMediaFiles.list[index].thumb,
-                            fit: BoxFit.cover,
-                            width: 86,
-                            height: 86,
-                          )
+                      widget.selectedMediaFiles.list[index].thumb,
+                      fit: BoxFit.cover,
+                      width: 86,
+                      height: 86,
+                    )
                         : widget.selectedMediaFiles.list[index].croppedImageData != null
-                            ? Image.memory(
-                                widget.selectedMediaFiles.list[index].croppedImageData,
-                                fit: BoxFit.cover,
-                                width: 86,
-                                height: 86,
-                              )
-                            : widget.selectedMediaFiles.list[index].file != null
-                                ? Image.file(
-                                    widget.selectedMediaFiles.list[index].file,
-                                    fit: BoxFit.cover,
-                                    width: 86,
-                                    height: 86,
-                                  )
-                                : Container(),
+                        ? Image.memory(
+                      widget.selectedMediaFiles.list[index].croppedImageData,
+                      fit: BoxFit.cover,
+                      width: 86,
+                      height: 86,
+                    )
+                        : widget.selectedMediaFiles.list[index].file != null
+                        ? Image.file(
+                      widget.selectedMediaFiles.list[index].file,
+                      fit: BoxFit.cover,
+                      width: 86,
+                      height: 86,
+                    )
+                        : Container(),
                   ),
                   Positioned(
                       right: 0,
@@ -1692,19 +1716,23 @@ class SeletedPhotoState extends State<SeletedPhoto> {
                               color: AppColor.bgBlack, borderRadius: BorderRadius.all(Radius.circular(8))),
                           child: Center(
                               child: Icon(
-                            Icons.close,
-                            color: AppColor.white,
-                            size: 12,
-                          )),
+                                Icons.close,
+                                color: AppColor.white,
+                                size: 12,
+                              )),
                         ),
                       ))
                 ],
               ),
             );
-          }),
+          },
+      ),
+      onReorder: _onReorder,
     );
   }
 }
+
+
 
 // 发布动态文本监听
 class ReleaseFeedInputNotifier extends ChangeNotifier {
