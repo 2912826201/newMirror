@@ -214,26 +214,6 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
 
   }
 
-  ///请求黑名单关系
-  _checkBlackStatus() async {
-    BlackModel model = await ProfileCheckBlack(widget.userId);
-    if (model != null) {
-      print('inThisBlack===================${model.inThisBlack}');
-      print('inYouBlack===================${model.inYouBlack}');
-      if (model.inYouBlack == 1) {
-        context.read<ProfilePageNotifier>()
-            .changeBlack(true, widget.userId, 1);
-      } else if(model.inThisBlack==1){
-        context.read<ProfilePageNotifier>()
-            .changeBlack(true, widget.userId, 2);
-      }else{
-        context.read<ProfilePageNotifier>()
-            .changeBlack(true, widget.userId, 0);
-      }
-
-    }
-  }
-
   ///举报
   _denounceUser() async {
     bool isSucess = await ProfileMoreDenounce(widget.userId, 0);

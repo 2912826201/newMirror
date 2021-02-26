@@ -8,6 +8,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:provider/provider.dart';
@@ -396,7 +397,8 @@ class _CustomRedButtonState extends State<CustomRedButton> {
 enum FollowButtonType{
   FANS,
   FOLLOW,
-  SERCH
+  SERCH,
+  TOPIC
 }
 class FollowButton extends StatefulWidget{
   bool isFollow;
@@ -415,17 +417,21 @@ class _FollowButtonState extends State<FollowButton>{
   bool isMySelf = false;
   int id;
   FollowButtonType buttonType;
-  int isBlack = 0;
   _FollowButtonState({this.isFollow,this.id,this.buttonType});
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    if(!context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(id)){
+      context.read<ProfilePageNotifier>().setFirstModel(id);
+    }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context.read<ProfilePageNotifier>().changeIsFollow(true, !isFollow, id);
+    });
     if(context.read<ProfileNotifier>().profile.uid==id){
       isMySelf = true;
     }
-    _checkBlackStatus();
   }
   ///请求黑名单关系
   _checkBlackStatus() async {
@@ -434,12 +440,11 @@ class _FollowButtonState extends State<FollowButton>{
       print('inThisBlack===================${model.inThisBlack}');
       print('inYouBlack===================${model.inYouBlack}');
       if (model.inYouBlack == 1) {
-        isBlack = 1;
+       ToastShow.show(msg: "该用户已被你拉黑", context:context);
       } else if(model.inThisBlack == 1){
-        isBlack = 2;
-      }
-      if (mounted) {
-        setState(() {});
+        ToastShow.show(msg: "你已被该用户拉黑", context: context);
+      }else{
+        _getAttention(id);
       }
     }
   }
@@ -449,14 +454,12 @@ class _FollowButtonState extends State<FollowButton>{
     print('关注监听=========================================$attntionResult');
     if (attntionResult == 1 || attntionResult == 3) {
       ToastShow.show(msg: "关注成功!", context: context);
-      setState(() {
-        isFollow = true;
-      });
+      context.read<ProfilePageNotifier>().changeIsFollow(true, false, id);
     }
   }
   @override
   Widget build(BuildContext context) {
-    if(isMySelf){
+    if(isMySelf||(widget.buttonType==FollowButtonType.FOLLOW&&widget.isMysList)||widget.buttonType==FollowButtonType.TOPIC){
       return Container();
     }
     return  GestureDetector(
@@ -465,20 +468,23 @@ class _FollowButtonState extends State<FollowButton>{
       height: 24,
       alignment: Alignment.centerRight,
       decoration: BoxDecoration(
-        color: !isFollow ? AppColor.textPrimary1 : AppColor.transparent,
+        color: context.watch<ProfilePageNotifier>().profileUiChangeModel[id].isFollow ? AppColor.textPrimary1 : AppColor
+            .transparent,
         borderRadius: BorderRadius.all(Radius.circular(14)),
-        border: Border.all(width: !isFollow ? 0.5 : 0.0),
+        border: Border.all(width: context.watch<ProfilePageNotifier>().profileUiChangeModel[id].isFollow ? 0.5 : 0.0),
       ),
       child: Center(
         child: Text(
-            !isFollow
+            context.watch<ProfilePageNotifier>().profileUiChangeModel[id].isFollow
                 ? buttonType==FollowButtonType.FOLLOW||buttonType==FollowButtonType.SERCH
                 ? "关注"
                 : widget.isMysList
                 ? "回粉"
                 : "关注"
                 : "已关注",
-            style: !isFollow ? AppStyle.whiteRegular12 : AppStyle.textSecondaryRegular12),
+            style: context.watch<ProfilePageNotifier>().profileUiChangeModel[id].isFollow
+                ? AppStyle.whiteRegular12
+                : AppStyle.textSecondaryRegular12),
       ),
     ),
       onTap: (){
@@ -487,15 +493,8 @@ class _FollowButtonState extends State<FollowButton>{
           AppRouter.navigateToLoginPage(context);
           return false;
         }
-        if(isBlack==1){
-          ToastShow.show(msg: "该用户已被你拉黑", context:context);
-          return false;
-        }else if(isBlack == 2){
-          ToastShow.show(msg: "你已被该用户拉黑", context: context);
-          return false;
-        }
-        if (!isFollow) {
-          _getAttention(id);
+        if (context.read<ProfilePageNotifier>().profileUiChangeModel[id].isFollow) {
+         _checkBlackStatus();
         }
       },
     );

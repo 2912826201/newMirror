@@ -203,34 +203,11 @@ class SearchUserItem extends StatefulWidget {
 
 class _SearchState extends State<SearchUserItem> {
   bool isFollow = false;
-  bool isMySelf = false;
-  int isBlack = 0;
   @override
   void initState() {
     super.initState();
-    _checkBlackStatus();
-    if(widget.model.uid==context.read<ProfileNotifier>().profile.uid){
-        isMySelf = true;
-    }else{
-      isMySelf = false;
-    }
   }
-  ///请求黑名单关系
-  _checkBlackStatus() async {
-    BlackModel model = await ProfileCheckBlack(widget.model.uid);
-    if (model != null) {
-      print('inThisBlack===================${model.inThisBlack}');
-      print('inYouBlack===================${model.inYouBlack}');
-      if (model.inYouBlack == 1) {
-        isBlack = 1;
-      } else if(model.inThisBlack == 1){
-        isBlack = 2;
-      }
-      if (mounted) {
-        setState(() {});
-      }
-    }
-  }
+
   @override
   Widget build(BuildContext context) {
     print('=========================搜索itembuid');
@@ -309,10 +286,10 @@ class _SearchState extends State<SearchUserItem> {
           ),
           ],)),
           Spacer(),
-          !isMySelf? FollowButton(
+           FollowButton(
               id:widget.model.uid,
               isFollow:isFollow,
-              buttonType:FollowButtonType.SERCH,):Container()
+              buttonType:FollowButtonType.SERCH,)
         ],
       ),
     );
