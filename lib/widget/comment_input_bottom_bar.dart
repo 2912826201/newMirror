@@ -141,6 +141,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
 
       List<Rule> rules = context.read<CommentEnterNotifier>().rules;
       int atIndex = context.read<CommentEnterNotifier>().atCursorIndex;
+      print(context.read<CommentEnterNotifier>().atCursorIndex);
       print("当前值￥${_textEditingController.text}");
       print(context.read<CommentEnterNotifier>().textFieldStr);
       // 获取光标位置
@@ -152,6 +153,14 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
         var setCursor = TextSelection(
           baseOffset: _textEditingController.text.length,
           extentOffset: _textEditingController.text.length,
+        );
+        _textEditingController.selection = setCursor;
+      }
+      if(Platform.isAndroid && isClickAtUser) {
+        print("at位置&${atIndex}");
+        var setCursor = TextSelection(
+          baseOffset: atIndex,
+          extentOffset: atIndex,
         );
         _textEditingController.selection = setCursor;
       }
@@ -331,8 +340,13 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       backupFollowList = followList;
     }
     if (hasNext == 0) {
-      loadText = "已加载全部好友";
-      loadStatus = LoadingStatus.STATUS_COMPLETED;
+      if(followList.isNotEmpty) {
+        loadText = "已加载全部好友";
+        loadStatus = LoadingStatus.STATUS_COMPLETED;
+      } else {
+        loadText = "";
+        loadStatus = LoadingStatus.STATUS_COMPLETED;
+      }
       print("返回不请求数据");
     }
 
@@ -580,9 +594,10 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                       String text = _textEditingController.text;
                                       // 获取光标位置
                                       int cursorIndex = _textEditingController.selection.baseOffset;
+                                      print("cursorIndex关闭：${cursorIndex}");
+                                      context.read<CommentEnterNotifier>().getAtCursorIndex(cursorIndex + 1);
                                       _textEditingController.text =
                                           text.substring(0, cursorIndex) + "@" + text.substring(cursorIndex, text.length);
-                                      context.read<CommentEnterNotifier>().getAtCursorIndex(cursorIndex + 1);
                                       context.read<CommentEnterNotifier>().openAtCallback("@");
                                     },
                                     child: Image.asset(
