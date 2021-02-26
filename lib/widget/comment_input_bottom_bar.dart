@@ -190,6 +190,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       isSwitchCursor = true;
     });
     _formatter = ReleaseFeedInputFormatter(
+      isMonitorTop: false,
       controller: _textEditingController,
       rules: context.read<CommentEnterNotifier>().rules,
       // @回调

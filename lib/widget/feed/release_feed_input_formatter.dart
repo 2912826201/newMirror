@@ -26,6 +26,8 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
   List<Rule> rules;
   final String triggerAtSymbol;
   final String triggerTopicSymbol;
+  // 是否监听#话题
+  final bool isMonitorTop;
 
   // 记录@的光标
   int atIndex = 0;
@@ -49,6 +51,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     @required this.controller,
     this.triggerAtSymbol = "@",
     this.triggerTopicSymbol = "#",
+    this.isMonitorTop = true,
     this.rules,
   })  : assert(triggerAtCallback != null && controller != null),
         _triggerAtCallback = triggerAtCallback,
@@ -84,7 +87,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
         _triggerAtCallback(triggerAtSymbol);
       }
       if (newValue.text.length - oldValue.text.length == 1 &&
-          newValue.text.substring(newValue.selection.start - 1, newValue.selection.end) == triggerTopicSymbol) {
+          newValue.text.substring(newValue.selection.start - 1, newValue.selection.end) == triggerTopicSymbol && isMonitorTop) {
         print("输入了#");
         topicIndex = newValue.selection.end;
         atIndex = 0;
@@ -105,7 +108,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
         atSearchStr = newValue.text.substring(atIndex, newValue.selection.start);
         print(atSearchStr);
       }
-      if (topicIndex > 0 && newValue.selection.start >= topicIndex) {
+      if (topicIndex > 0 && newValue.selection.start >= topicIndex && isMonitorTop) {
         topicSearchStr = newValue.text.substring(topicIndex, newValue.selection.start);
       }
     } else {
