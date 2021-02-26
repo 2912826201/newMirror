@@ -621,7 +621,9 @@ class KeyboardInputState extends State<KeyboardInput> {
     context.read<ReleaseFeedInputNotifier>().searchLastTime = model.lastTime;
     context.read<ReleaseFeedInputNotifier>().searchHasNext = model.hasNext;
     // 列表回到顶部，不然无法上拉加载下一页
-    context.read<ReleaseFeedInputNotifier>().atScrollController.jumpTo(0);
+    if (context.read<ReleaseFeedInputNotifier>().atScrollController.hasClients) {
+      context.read<ReleaseFeedInputNotifier>().atScrollController.jumpTo(0);
+    }
     // 获取关注@数据
     List<BuddyModel> followList = [];
     context.read<ReleaseFeedInputNotifier>().backupFollowList.forEach((v) {
@@ -678,7 +680,9 @@ class KeyboardInputState extends State<KeyboardInput> {
     context.read<ReleaseFeedInputNotifier>().searchLastScore = model.lastScore;
     context.read<ReleaseFeedInputNotifier>().searchTopHasNext = model.hasNext;
     // 列表回到顶部，不然无法上拉加载下一页
-    context.read<ReleaseFeedInputNotifier>().topScrollController.jumpTo(0);
+    if (context.read<ReleaseFeedInputNotifier>().topScrollController.hasClients) {
+      context.read<ReleaseFeedInputNotifier>().topScrollController.jumpTo(0);
+    }
     context.read<ReleaseFeedInputNotifier>().setTopicList(searchTopicList);
   }
 
@@ -1419,7 +1423,6 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
                     fontSize: 16, color: seletedAddressText != "你在哪儿" ? AppColor.mainBlue : AppColor.textPrimary1),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-
               ),
             ),
 
