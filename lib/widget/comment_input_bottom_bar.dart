@@ -140,7 +140,14 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       print("监听文字光标${_textEditingController.selection}");
 
       List<Rule> rules = context.read<CommentEnterNotifier>().rules;
-      int atIndex = context.read<CommentEnterNotifier>().atCursorIndex;
+      int atIndex = 0;
+      if(context.read<CommentEnterNotifier>().atindexs.isNotEmpty) {
+        atIndex = context
+            .read<CommentEnterNotifier>()
+            .atindexs
+            .first
+            .index;
+      }
       print("当前值￥${_textEditingController.text}");
       print(context.read<CommentEnterNotifier>().textFieldStr);
       // 获取光标位置
@@ -152,6 +159,14 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
         var setCursor = TextSelection(
           baseOffset: _textEditingController.text.length,
           extentOffset: _textEditingController.text.length,
+        );
+        _textEditingController.selection = setCursor;
+      }
+      if(Platform.isAndroid && isClickAtUser) {
+        print("at位置&${atIndex}");
+        var setCursor = TextSelection(
+          baseOffset: atIndex,
+          extentOffset: atIndex,
         );
         _textEditingController.selection = setCursor;
       }
@@ -190,6 +205,8 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       isSwitchCursor = true;
     });
     _formatter = ReleaseFeedInputFormatter(
+      atIndexs: context.read<CommentEnterNotifier>().atindexs,
+      isMonitorTop: false,
       controller: _textEditingController,
       rules: context.read<CommentEnterNotifier>().rules,
       // @回调
@@ -330,8 +347,13 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       backupFollowList = followList;
     }
     if (hasNext == 0) {
-      loadText = "已加载全部好友";
-      loadStatus = LoadingStatus.STATUS_COMPLETED;
+      if(followList.isNotEmpty) {
+        loadText = "已加载全部好友";
+        loadStatus = LoadingStatus.STATUS_COMPLETED;
+      } else {
+        loadText = "";
+        loadStatus = LoadingStatus.STATUS_COMPLETED;
+      }
       print("返回不请求数据");
     }
 
@@ -392,7 +414,14 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                               }
                             }
                             // 获取@的光标
-                            int atIndex = context.read<CommentEnterNotifier>().atCursorIndex;
+                            int atIndex = 0;
+                            if(context.read<CommentEnterNotifier>().atindexs.isNotEmpty) {
+                               atIndex = context
+                                  .read<CommentEnterNotifier>()
+                                  .atindexs
+                                  .first
+                                  .index;
+                            }
                             // 获取实时搜索文本
                             String searchStr = context.read<CommentEnterNotifier>().atSearchStr;
                             // @前的文字
@@ -579,9 +608,10 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                       String text = _textEditingController.text;
                                       // 获取光标位置
                                       int cursorIndex = _textEditingController.selection.baseOffset;
+                                      print("cursorIndex关闭：${cursorIndex}");
+                                      context.read<CommentEnterNotifier>().getAtCursorIndex(cursorIndex + 1);
                                       _textEditingController.text =
                                           text.substring(0, cursorIndex) + "@" + text.substring(cursorIndex, text.length);
-                                      context.read<CommentEnterNotifier>().getAtCursorIndex(cursorIndex + 1);
                                       context.read<CommentEnterNotifier>().openAtCallback("@");
                                     },
                                     child: Image.asset(
@@ -658,8 +688,7 @@ class CommentEnterNotifier extends ChangeNotifier {
   String keyWord = "";
 
   // 记录@唤醒页面时光标的位置
-  int atCursorIndex;
-
+  List<AtIndex> atindexs = [];
   // 记录规则
   List<Rule> rules = [];
 
@@ -677,11 +706,17 @@ class CommentEnterNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  // getAtCursorIndex(int atIndex) {
+  //   this.atCursorIndex = atIndex;
+  //   print("this.atCursorIndex::￥${this.atCursorIndex}");
+  //   notifyListeners();
+  // }
   getAtCursorIndex(int atIndex) {
-    this.atCursorIndex = atIndex;
+    this.atindexs.clear();
+    AtIndex ind = AtIndex(atIndex);
+    this.atindexs.add(ind);
     notifyListeners();
   }
-
   addRules(Rule role) {
     this.rules.add(role);
     notifyListeners();
