@@ -1411,11 +1411,18 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
             SizedBox(
               width: 12,
             ),
-            Text(
-              seletedAddressText,
-              style: TextStyle(
-                  fontSize: 16, color: seletedAddressText != "你在哪儿" ? AppColor.mainBlue : AppColor.textPrimary1),
+            Container(
+              width: ScreenUtil.instance.width - 32 - 24 - 24 - 18,
+              child: Text(
+                seletedAddressText,
+                style: TextStyle(
+                    fontSize: 16, color: seletedAddressText != "你在哪儿" ? AppColor.mainBlue : AppColor.textPrimary1),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+
+              ),
             ),
+
             Spacer(),
             Image.asset(
               "images/resource/2.0x/ic_dynamic_Right arrow@2x.png",
