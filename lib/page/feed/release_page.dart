@@ -4,7 +4,6 @@ import 'dart:ui' as ui;
 import 'package:amap_map_fluttify/amap_map_fluttify.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:dio/dio.dart';
-import 'package:drag_list/drag_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
