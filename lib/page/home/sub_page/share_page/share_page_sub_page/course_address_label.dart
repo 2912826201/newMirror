@@ -109,8 +109,8 @@ class CourseAddressLabel extends StatelessWidget {
             child: Text(
               interceptText(text),
               style: TextStyle(fontSize: 12),
-              // maxLines: 1,
-              // overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             margin: EdgeInsets.only(left: 3),
           ),

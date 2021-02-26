@@ -26,10 +26,12 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
   List<Rule> rules;
   final String triggerAtSymbol;
   final String triggerTopicSymbol;
+  // 是否监听#话题
+  final bool isMonitorTop;
 
   // 记录@的光标
+  List<AtIndex> atIndexs;
   int atIndex = 0;
-
   // @后跟随的实时搜索文本
   String atSearchStr = "";
 
@@ -49,6 +51,8 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     @required this.controller,
     this.triggerAtSymbol = "@",
     this.triggerTopicSymbol = "#",
+    this.isMonitorTop = true,
+    this.atIndexs,
     this.rules,
   })  : assert(triggerAtCallback != null && controller != null),
         _triggerAtCallback = triggerAtCallback,
@@ -67,7 +71,14 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     print("旧值$oldValue");
     print("旧值前光标${oldValue.selection.start}");
     print("旧值后光标${oldValue.selection.end}");
-
+    print("at光标$atIndex");
+    print("rules￥￥${rules.toString()}");
+    print("atIndexs${atIndexs.toString()}");
+    if (!isMonitorTop) {
+      if (atIndexs.isNotEmpty && atIndexs != null) {
+        atIndex = atIndexs.first.index;
+      }
+    }
     // if (oldValue.text == newValue.text && Platform.isIOS) {
     //   return oldValue;
     // }
@@ -84,7 +95,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
         _triggerAtCallback(triggerAtSymbol);
       }
       if (newValue.text.length - oldValue.text.length == 1 &&
-          newValue.text.substring(newValue.selection.start - 1, newValue.selection.end) == triggerTopicSymbol) {
+          newValue.text.substring(newValue.selection.start - 1, newValue.selection.end) == triggerTopicSymbol && isMonitorTop) {
         print("输入了#");
         topicIndex = newValue.selection.end;
         atIndex = 0;
@@ -105,7 +116,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
         atSearchStr = newValue.text.substring(atIndex, newValue.selection.start);
         print(atSearchStr);
       }
-      if (topicIndex > 0 && newValue.selection.start >= topicIndex) {
+      if (topicIndex > 0 && newValue.selection.start >= topicIndex && isMonitorTop) {
         topicSearchStr = newValue.text.substring(topicIndex, newValue.selection.start);
       }
     } else {
@@ -363,5 +374,14 @@ class Rule {
   @override
   String toString() {
     return "startIndex : $startIndex , endIndex : $endIndex, param :$params ,clickIndex :$clickIndex , isAt:$isAt, id : $id";
+  }
+}
+
+class AtIndex {
+  final int index;
+  AtIndex(this.index);
+  @override
+  String toString() {
+    return "index : $index";
   }
 }
