@@ -435,7 +435,7 @@ class LiveDetailPageState extends XCState {
 
 
 
-  //判断是否退出界面加入群聊
+  //这个直播是否有预约的回调
   Widget judgeResetPage() {
     return Consumer<ChatMessageProfileNotifier>(
       builder: (context, notifier, child) {
@@ -580,6 +580,8 @@ class LiveDetailPageState extends XCState {
             return true;
           }));
       }
+    }else{
+      getDataAction();
     }
     return;
   }
@@ -775,7 +777,7 @@ class LiveDetailPageState extends XCState {
   }
 
   //加载网络数据
-  void getDataAction({bool isFold = false}) async {
+  void getDataAction() async {
     String startTime="";
     if(liveModel!=null){
       startTime=liveModel.startTime;
