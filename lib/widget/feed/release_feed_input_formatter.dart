@@ -30,8 +30,8 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
   final bool isMonitorTop;
 
   // 记录@的光标
+  List<AtIndex> atIndexs;
   int atIndex = 0;
-
   // @后跟随的实时搜索文本
   String atSearchStr = "";
 
@@ -52,6 +52,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     this.triggerAtSymbol = "@",
     this.triggerTopicSymbol = "#",
     this.isMonitorTop = true,
+    this.atIndexs,
     this.rules,
   })  : assert(triggerAtCallback != null && controller != null),
         _triggerAtCallback = triggerAtCallback,
@@ -70,7 +71,14 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     print("旧值$oldValue");
     print("旧值前光标${oldValue.selection.start}");
     print("旧值后光标${oldValue.selection.end}");
-
+    print("at光标$atIndex");
+    print("rules￥￥${rules.toString()}");
+    print("atIndexs${atIndexs.toString()}");
+    if (!isMonitorTop) {
+      if (atIndexs.isNotEmpty && atIndexs != null) {
+        atIndex = atIndexs.first.index;
+      }
+    }
     // if (oldValue.text == newValue.text && Platform.isIOS) {
     //   return oldValue;
     // }
@@ -366,5 +374,14 @@ class Rule {
   @override
   String toString() {
     return "startIndex : $startIndex , endIndex : $endIndex, param :$params ,clickIndex :$clickIndex , isAt:$isAt, id : $id";
+  }
+}
+
+class AtIndex {
+  final int index;
+  AtIndex(this.index);
+  @override
+  String toString() {
+    return "index : $index";
   }
 }
