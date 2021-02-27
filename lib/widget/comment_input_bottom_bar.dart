@@ -40,7 +40,6 @@ Future openInputBottomSheet({
             create: (_) => CommentEnterNotifier(),
             builder: (providerContext, _) {
               return Container(
-                padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom), // !important
                 child: CommentInputBottomBar(
                   hintText: hintText,
                   isShowAt: isShowAt,
@@ -368,7 +367,9 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
   Widget build(BuildContext context) {
     List<Rule> rules = context.watch<CommentEnterNotifier>().rules;
     String atStr = context.watch<CommentEnterNotifier>().atSearchStr;
+    print("键盘高度${ MediaQuery.of(context).viewInsets.bottom}");
     return Container(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         decoration: BoxDecoration(
           color: AppColor.white,
           borderRadius: BorderRadius.only(
@@ -525,7 +526,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
             Container(
                 width: ScreenUtil.instance.screenWidthDp,
                 padding:
-                    EdgeInsets.only(top: context.watch<CommentEnterNotifier>().keyWord != "@" ? 12 : 244, bottom: 12),
+                    EdgeInsets.only(top: context.watch<CommentEnterNotifier>().keyWord != "@" ? 12 : 244, bottom:MediaQuery.of(context).viewInsets.bottom == 0 && Platform.isIOS ? ScreenUtil.instance.bottomBarHeight + 12 :  12),
                 child: Stack(
                   children: [
                     Container(
