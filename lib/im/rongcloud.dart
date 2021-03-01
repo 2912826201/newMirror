@@ -140,6 +140,14 @@ class RongCloud {
     RongIMClient.deleteMessageByIds(messageIds, finished);
   }
 
+  /// 清空指定类型，targetId 的某一会话所有聊天消息记录
+  void clearMessages(int conversationType,String targetId,Function(int code) finished){
+    if (conversationType == null||targetId == null) {
+      return;
+    }
+    RongIMClient.clearMessages(conversationType, targetId,finished);
+  }
+
   //插入发送的消息
   void insertOutgoingMessage(
       int conversationType, String targetId, MessageContent content, Function(Message msg, int code) finished,
