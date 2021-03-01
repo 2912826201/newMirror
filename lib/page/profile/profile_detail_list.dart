@@ -17,7 +17,8 @@ class ProfileDetailsList extends StatefulWidget {
   int type;
   int id;
   bool isMySelf;
-  ProfileDetailsList({this.type, this.id,this.isMySelf});
+
+  ProfileDetailsList({this.type, this.id, this.isMySelf});
 
   @override
   State<StatefulWidget> createState() {
@@ -74,13 +75,12 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
     });
     followlastTime = model.lastTime;
     List<HomeFeedModel> feedList = [];
-     context.read<FeedMapNotifier>().feedMap.forEach((key, value) {
-       feedList.add(value);
-     });
-     // 只同步没有的数据
-    context.read<FeedMapNotifier>().updateFeedMap(StringUtil.followModelFilterDeta(followModel,feedList));
+    context.read<FeedMapNotifier>().feedMap.forEach((key, value) {
+      feedList.add(value);
+    });
+    // 只同步没有的数据
+    context.read<FeedMapNotifier>().updateFeedMap(StringUtil.followModelFilterDeta(followModel, feedList));
   }
-
 
   ///上拉加载
   _onLoadding() {
@@ -149,26 +149,24 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
                 );
               } else {
                 return DynamicListLayout(
-                    index: index,
-                    pageName: "profileDetails",
-                    isShowRecommendUser: false,
-                    isShowConcern:false,
-                    model: model,
-                    isMySelf: widget.isMySelf,
-                    mineDetailId: widget.id,
-                    key: GlobalObjectKey("attention$index"),
-                removeFollowChanged: (model){
-
-                },
-                deleteFeedChanged: (feedId){
-                  print('====%%%%%%%%%%%%%%%%%%%%%%%%%%%_followListId${_followListId.length}');
-                    _followListId.removeWhere((element){
-                        return element==feedId;
-                      });
-                    setState(() {
+                  index: index,
+                  pageName: "profileDetails",
+                  isShowRecommendUser: false,
+                  isShowConcern: false,
+                  model: model,
+                  isMySelf: widget.isMySelf,
+                  mineDetailId: widget.id,
+                  key: GlobalObjectKey("attention$index"),
+                  removeFollowChanged: (model) {},
+                  deleteFeedChanged: (feedId) {
+                    print('====%%%%%%%%%%%%%%%%%%%%%%%%%%%_followListId${_followListId.length}');
+                    _followListId.removeWhere((element) {
+                      return element == feedId;
                     });
-                   print('====%%%%%%%%%%%%%%%%%%%%%%%%%%%_followListId${_followListId.length}');
-                  },);
+                    setState(() {});
+                    print('====%%%%%%%%%%%%%%%%%%%%%%%%%%%_followListId${_followListId.length}');
+                  },
+                );
               }
             }),
       ),

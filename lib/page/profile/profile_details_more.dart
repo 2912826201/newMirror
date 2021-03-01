@@ -10,6 +10,7 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:provider/provider.dart';
+
 ///个人主页更多
 class ProfileDetailsMore extends StatefulWidget {
   int userId;
@@ -28,7 +29,7 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
   @override
   void initState() {
     super.initState();
-   /* _checkBlackStatus();*/
+    /* _checkBlackStatus();*/
   }
 
   @override
@@ -39,16 +40,16 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
         appBar: CustomAppBar(
           titleString: "更多",
           leadingOnTap: () {
-              Navigator.pop(this.context);
+            Navigator.pop(this.context);
           },
         ),
         body: Container(
             height: height,
             width: width,
             color: AppColor.white,
-            child: !context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.userId].isFollow ? _follow(width) :
-        _notFollow
-        (width)));
+            child: !context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.userId].isFollow
+                ? _follow(width)
+                : _notFollow(width)));
   }
 
   ///没关注的布局
@@ -68,15 +69,14 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
         ),
         InkWell(
           onTap: () {
-            if (context.read<ProfilePageNotifier>()
-                .profileUiChangeModel[widget.userId].isBlack == 1) {
+            if (context.read<ProfilePageNotifier>().profileUiChangeModel[widget.userId].isBlack == 1) {
               _cancelBlack();
             } else {
               _pullBlack();
             }
           },
-          child: _itemSelect(width, AppStyle.textRegular16, context.watch<ProfilePageNotifier>()
-              .profileUiChangeModel[widget.userId].isBlack == 1 ? "取消拉黑" : "拉黑"),
+          child: _itemSelect(width, AppStyle.textRegular16,
+              context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.userId].isBlack == 1 ? "取消拉黑" : "拉黑"),
         ),
         Container(
           width: width,
@@ -115,15 +115,14 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
         ),
         InkWell(
           onTap: () {
-            if (context.read<ProfilePageNotifier>()
-                .profileUiChangeModel[widget.userId].isBlack == 1) {
+            if (context.read<ProfilePageNotifier>().profileUiChangeModel[widget.userId].isBlack == 1) {
               _cancelBlack();
             } else {
               _pullBlack();
             }
           },
-          child: _itemSelect(width, AppStyle.textRegular16, context.watch<ProfilePageNotifier>()
-              .profileUiChangeModel[widget.userId].isBlack == 1? "取消拉黑" : "拉黑"),
+          child: _itemSelect(width, AppStyle.textRegular16,
+              context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.userId].isBlack == 1 ? "取消拉黑" : "拉黑"),
         ),
         Container(
           width: width,
@@ -135,8 +134,8 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
             _cancelFollow();
           },
           child: !context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.userId].isFollow
-              ?_itemSelect(width,
-              AppStyle.redRegular16, "取消关注"):Container(),
+              ? _itemSelect(width, AppStyle.redRegular16, "取消关注")
+              : Container(),
         ),
         Container(
           padding: EdgeInsets.only(left: 16, right: 16),
@@ -149,17 +148,18 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
   }
 
   void _showDialog() {
-   showAppDialog(context,
-   confirm: AppDialogButton("必须举报!",(){
+    showAppDialog(
+      context,
+      confirm: AppDialogButton("必须举报!", () {
         _denounceUser();
         return true;
-       }),
-     cancel: AppDialogButton("再想想", (){
-       return true;
-     }),
+      }),
+      cancel: AppDialogButton("再想想", () {
+        return true;
+      }),
       title: "提交举报",
       info: "确认举报用户",
-   );
+    );
   }
 
   Widget _itemSelect(double width, TextStyle style, String text) {
@@ -194,7 +194,7 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
       context.read<ProfilePageNotifier>().changeIsFollow(true, true, widget.userId);
       context.read<ProfilePageNotifier>().changeBlack(true, widget.userId, 1);
       ToastShow.show(msg: "拉黑成功", context: context);
-    }else{
+    } else {
       ToastShow.show(msg: "操作失败", context: context);
     }
   }
@@ -203,22 +203,21 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
   _cancelBlack() async {
     bool blackStatus = await ProfileCancelBlack(widget.userId);
     print('取消拉黑是否成功====================================$blackStatus');
-    if(blackStatus!=null){
+    if (blackStatus != null) {
       if (blackStatus == true) {
         ToastShow.show(msg: "解除拉黑成功", context: context);
         context.read<ProfilePageNotifier>().changeBlack(true, widget.userId, 0);
-      }else{
+      } else {
         ToastShow.show(msg: "操作失败", context: context);
       }
     }
-
   }
 
   ///举报
   _denounceUser() async {
     bool isSucess = await ProfileMoreDenounce(widget.userId, 0);
     print('isSucess=======================================$isSucess');
-    if (isSucess!=null&&isSucess) {
+    if (isSucess != null && isSucess) {
       ToastShow.show(msg: "感谢你的反馈，我们会尽快处理!", context: context);
     }
   }
