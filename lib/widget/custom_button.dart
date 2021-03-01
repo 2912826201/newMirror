@@ -394,34 +394,34 @@ class _CustomRedButtonState extends State<CustomRedButton> {
   }
 }
 
-enum FollowButtonType{
-  FANS,
-  FOLLOW,
-  SERCH,
-  TOPIC
-}
-class FollowButton extends StatefulWidget{
+enum FollowButtonType { FANS, FOLLOW, SERCH, TOPIC }
+
+class FollowButton extends StatefulWidget {
   bool isFollow;
   int id;
   FollowButtonType buttonType;
   bool isMysList;
   int type;
-  FollowButton({this.isFollow,this.id,this.buttonType,this.isMysList,this.type});
+
+  FollowButton({this.isFollow, this.id, this.buttonType, this.isMysList, this.type});
+
   @override
   State<StatefulWidget> createState() {
-   return _FollowButtonState();
+    return _FollowButtonState();
   }
-
 }
-class _FollowButtonState extends State<FollowButton>{
-bool isMySelf = false;
+
+class _FollowButtonState extends State<FollowButton> {
+  bool isMySelf = false;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    print('==============***********================$widget.id-----${widget.isFollow}    ${widget.buttonType}-------${widget.type}');
+    print(
+        '==============***********================$widget.id-----${widget.isFollow}    ${widget.buttonType}-------${widget.type}');
   }
+
   ///请求黑名单关系
   _checkBlackStatus() async {
     BlackModel model = await ProfileCheckBlack(widget.id);
@@ -429,14 +429,15 @@ bool isMySelf = false;
       print('inThisBlack===================${model.inThisBlack}');
       print('inYouBlack===================${model.inYouBlack}');
       if (model.inYouBlack == 1) {
-       ToastShow.show(msg: "该用户已被你拉黑", context:context);
-      } else if(model.inThisBlack == 1){
+        ToastShow.show(msg: "该用户已被你拉黑", context: context);
+      } else if (model.inThisBlack == 1) {
         ToastShow.show(msg: "你已被该用户拉黑", context: context);
-      }else{
+      } else {
         _getAttention(widget.id);
       }
     }
   }
+
   ///这是关注
   _getAttention(int id) async {
     int attntionResult = await ProfileAddFollow(id);
@@ -446,53 +447,59 @@ bool isMySelf = false;
       context.read<ProfilePageNotifier>().changeIsFollow(true, false, id);
     }
   }
+
   @override
   Widget build(BuildContext context) {
-    print('==============***********================${widget.id}-----${widget.isFollow}    ${widget.buttonType}-------${widget.type}');
-    if(context.watch<ProfileNotifier>().profile.uid == widget.id){
+    print('====########################################'
+        '############${widget.id}-----${widget.isFollow}-----${widget.buttonType}-------${widget.type}');
+    if (context.watch<ProfileNotifier>().profile.uid == widget.id) {
       isMySelf = true;
     }
-    if(isMySelf||(widget.buttonType==FollowButtonType.FOLLOW&&widget.isMysList)||widget.buttonType==FollowButtonType.TOPIC){
+    if (isMySelf ||
+        (widget.buttonType == FollowButtonType.FOLLOW && widget.isMysList) ||
+        widget.buttonType == FollowButtonType.TOPIC) {
       return Container();
     }
-    if(!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey(widget.id)){
+    if (!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey(widget.id)) {
       print('====####################################################${widget.id}');
       context.watch<ProfilePageNotifier>().setFirstModel(widget.id);
       context.watch<ProfilePageNotifier>().changeIsFollow(true, !widget.isFollow, widget.id);
     }
-    return  GestureDetector(
-      child:Container(
-      width: 56,
-      height: 24,
-      alignment: Alignment.centerRight,
-      decoration: BoxDecoration(
-        color: context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].isFollow ? AppColor.textPrimary1 : AppColor
-            .transparent,
-        borderRadius: BorderRadius.all(Radius.circular(14)),
-        border: Border.all(width: context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].isFollow ? 0.5 : 0.0),
+    return GestureDetector(
+      child: Container(
+        width: 56,
+        height: 24,
+        alignment: Alignment.centerRight,
+        decoration: BoxDecoration(
+          color: context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].isFollow
+              ? AppColor.textPrimary1
+              : AppColor.transparent,
+          borderRadius: BorderRadius.all(Radius.circular(14)),
+          border: Border.all(
+              width: context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].isFollow ? 0.5 : 0.0),
+        ),
+        child: Center(
+          child: Text(
+              context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].isFollow
+                  ? widget.buttonType == FollowButtonType.FOLLOW || widget.buttonType == FollowButtonType.SERCH
+                      ? "关注"
+                      : widget.isMysList
+                          ? "回粉"
+                          : "关注"
+                  : "已关注",
+              style: context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].isFollow
+                  ? AppStyle.whiteRegular12
+                  : AppStyle.textSecondaryRegular12),
+        ),
       ),
-      child: Center(
-        child: Text(
-            context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].isFollow
-                ? widget.buttonType==FollowButtonType.FOLLOW||widget.buttonType==FollowButtonType.SERCH
-                ? "关注"
-                : widget.isMysList
-                ? "回粉"
-                : "关注"
-                : "已关注",
-            style: context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].isFollow
-                ? AppStyle.whiteRegular12
-                : AppStyle.textSecondaryRegular12),
-      ),
-    ),
-      onTap: (){
-        if(!context.read<TokenNotifier>().isLoggedIn){
-          ToastShow.show(msg: "请先登录", context:context);
+      onTap: () {
+        if (!context.read<TokenNotifier>().isLoggedIn) {
+          ToastShow.show(msg: "请先登录", context: context);
           AppRouter.navigateToLoginPage(context);
           return false;
         }
         if (context.read<ProfilePageNotifier>().profileUiChangeModel[widget.id].isFollow) {
-         _checkBlackStatus();
+          _checkBlackStatus();
         }
       },
     );
