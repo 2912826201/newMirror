@@ -204,11 +204,14 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
         }
       }
     });
+
+    //清聊天未读数
+    MessageManager.clearUnreadCount(
+        Application.appContext, conversation.conversationId, Application.profile.uid, conversation.type);
   }
 
   @override
   Widget shouldBuild(BuildContext context) {
-    print("0000000000000000000000000000000000000000000000000000000000");
     if (chatUserName == null) {
       initData();
     }
@@ -1569,7 +1572,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
   //头部-更多按钮的点击事件
   _topMoreBtnClick() {
     _focusNode.unfocus();
-    ToastShow.show(msg: "点击了更多那妞", context: context);
+    // ToastShow.show(msg: "点击了更多按钮", context: context);
     judgeJumpPage(chatTypeId, this.chatUserId, conversation.type, context, chatUserName, _morePageOnClick,
         _moreOnClickExitChatPage);
   }
@@ -1601,6 +1604,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
   _moreOnClickExitChatPage() {
     //退出群聊
     MessageManager.removeConversation(context, chatUserId, Application.profile.uid, conversation.type);
+    // Application.rongCloud.clearMessages(getRCConversationType(chatUserId??10),Application.profile.uid.toString(),null);
     Future.delayed(Duration.zero, () {
       Navigator.of(context).pop();
     });

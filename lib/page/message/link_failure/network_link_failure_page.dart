@@ -80,8 +80,8 @@ class _NetworkLinkFailureState extends State<NetworkLinkFailure> {
                   text: TextSpan(
                       style: textStyle14,
                       children:[
-                        TextSpan(text: "请检查您的设备是否允许“咪哒”使用数据，进入设备"),
-                        TextSpan(text: "“设置”-“无线局域网”-“使用WLAN与蜂窝移动网的应用”-“咪哒”",style: textStyle14bold),
+                        TextSpan(text: "请检查您的设备是否允许“iF”使用数据，进入设备"),
+                        TextSpan(text: "“设置”-“无线局域网”-“使用WLAN与蜂窝移动网的应用”-“iF”",style: textStyle14bold),
                         TextSpan(text: "允许使用数据"),
                       ]
                   ),

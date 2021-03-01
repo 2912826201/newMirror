@@ -627,12 +627,21 @@ class ProfilePageNotifier extends ChangeNotifier {
   bool watchScroll = true;
   Map<int, ProfileUiChangeModel> profileUiChangeModel = {};
 
-  void setFirstModel(int id) {
-    profileUiChangeModel[id] = ProfileUiChangeModel();
+  void setFirstModel(int id, {bool isFollow}) {
+    ProfileUiChangeModel model = ProfileUiChangeModel();
+    if(isFollow!=null){
+      model.isFollow = isFollow;
+      model.dynmicStringList.clear();
+      if (!isFollow) {
+        model.dynmicStringList.add("取消关注");
+      }
+      model.dynmicStringList.add("举报");
+    }
+    profileUiChangeModel[id] = model;
   }
 
-  void clear(int id) {
-    profileUiChangeModel[id] = null;
+  void clearProfileUiChangeModel(int id) {
+    profileUiChangeModel[id] =  ProfileUiChangeModel();
     notifyListeners();
   }
 
@@ -648,14 +657,14 @@ class ProfilePageNotifier extends ChangeNotifier {
     }
   }
 
-  void changeIsFollow(bool needNotify, bool bl, int id) {
+  void changeIsFollow(bool needNotify,bool bl, int id) {
     profileUiChangeModel[id].isFollow = bl;
     profileUiChangeModel[id].dynmicStringList.clear();
     if (!bl) {
       profileUiChangeModel[id].dynmicStringList.add("取消关注");
     }
     profileUiChangeModel[id].dynmicStringList.add("举报");
-    if (needNotify) {
+    if(needNotify){
       notifyListeners();
     }
   }

@@ -96,6 +96,7 @@ class CupertinoLeftScrollState extends State<CupertinoLeftScroll> with TickerPro
 
   LeftScrollStatus get _ct => globalMap[widget.closeTag][widget.key];
 
+
   setCloseListener() {
     if (widget.closeTag == null) return;
     if (globalMap[widget.closeTag] == null) {
@@ -131,7 +132,13 @@ class CupertinoLeftScrollState extends State<CupertinoLeftScroll> with TickerPro
     gestures[TapGestureRecognizer] = GestureRecognizerFactoryWithHandlers<TapGestureRecognizer>(
       () => TapGestureRecognizer(debugOwner: this),
       (TapGestureRecognizer instance) {
-        instance..onTap = widget.onTap;
+        instance..onTap = (){
+          if(_ct.value!=null&& _ct.value){
+            close();
+          }else if(widget.onTap!=null){
+            widget.onTap();
+          }
+        };
       },
     );
 
@@ -250,10 +257,10 @@ class CupertinoLeftScrollState extends State<CupertinoLeftScroll> with TickerPro
 
   // 打开
   void open({bool isOnOpen = true, double v = 0}) async {
-    // print('open2');
     if (isOnOpen && widget.onOpen != null) {
       widget.onOpen();
     }
+    // print('open2');
     // if (v < 0) {
     //   // //TODO: 弹簧动画
     //   // var phy = BouncingScrollSimulation(
@@ -280,11 +287,11 @@ class CupertinoLeftScrollState extends State<CupertinoLeftScroll> with TickerPro
   // 关闭
   void close() {
     // print('close2');
-    if (widget.onOpen != null) {
-      widget.onOpen();
-    }
     if (translateX != 0) {
       animationController.animateTo(0);
+    }
+    if (widget.onClose != null) {
+      widget.onClose();
     }
     if (widget.closeTag == null) return;
     if (_ct.value == true) {

@@ -370,15 +370,13 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         itemKey: conversation.id,
         itemTag: "conversation",
         itemIndex: index,
-        itemChild: GestureDetector(
-          child: _conversationItem(index, conversation),
-          onTap: () {
-            getMessageType(conversation, context);
-            jumpChatPageConversationDto(context, conversation);
-          },
-        ),
+        isDoubleDelete:true,
+        itemChild: _conversationItem(index, conversation),
+        onTap: (){
+          getMessageType(conversation, context);
+          jumpChatPageConversationDto(context, conversation);
+        },
         onClickRightBtn: () {
-          print("3333333333333333333333333333333333333333333");
           MessageManager.removeConversation(context, conversation.conversationId, conversation.uid, conversation.type);
         },
       );
@@ -510,7 +508,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                       style: AppStyle.textRegular14,
                     )),
                     Text(
-                      DateUtil.formatDateTimeString(DateTime.fromMillisecondsSinceEpoch(conversation.updateTime)),
+                      DateUtil.getShowMessageDateString(DateTime.fromMillisecondsSinceEpoch(conversation.updateTime)),
                       style: AppStyle.textHintRegular12,
                     )
                   ],
