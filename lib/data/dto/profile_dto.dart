@@ -28,6 +28,7 @@ const String COLUMN_NAME_PROFILE_AGE = 'age';
 const String COLUMN_NAME_PROFILE_ISPERFECT = 'isPerfect';
 const String COLUMN_NAME_PROFILE_ISPHONE = 'isPhone';
 const String COLUMN_NAME_PROFILE_RELATION = 'relation';
+const String COLUMN_NAME_PROFILE_ISVIP = 'isVip';
 const String COLUMN_NAME_PROFILE_MUTUALFRIENDCOUNT = 'mutualFriendCount';
 
 
@@ -59,6 +60,7 @@ class ProfileDto {
   int isPhone; // 是否绑定手机号 0-未绑定 1-已绑定
 
   int relation; //与用户关系 0-没关系 1-关注 2-粉丝 3-好友
+  int isVip; // 是否是Vip 0-不是 1-是
   int mutualFriendCount; //共同好友数
 
   Map<String, dynamic> toMap() {
@@ -87,6 +89,7 @@ class ProfileDto {
     COLUMN_NAME_PROFILE_ISPERFECT : isPerfect,
     COLUMN_NAME_PROFILE_ISPHONE : isPhone,
     COLUMN_NAME_PROFILE_RELATION : relation,
+    COLUMN_NAME_PROFILE_ISVIP : isVip,
     COLUMN_NAME_PROFILE_MUTUALFRIENDCOUNT : mutualFriendCount,
     };
     return map;
@@ -117,6 +120,7 @@ class ProfileDto {
     isPerfect = map[COLUMN_NAME_PROFILE_ISPERFECT];
     isPhone = map[COLUMN_NAME_PROFILE_ISPHONE];
     relation = map[COLUMN_NAME_PROFILE_RELATION];
+    isVip = map[COLUMN_NAME_PROFILE_ISVIP];
     mutualFriendCount = map[COLUMN_NAME_PROFILE_MUTUALFRIENDCOUNT];
   }
 
@@ -146,6 +150,7 @@ class ProfileDto {
       isPerfect: isPerfect,
       isPhone: isPhone,
       relation: relation,
+      isVip: isVip,
       mutualFriendCount: mutualFriendCount,
     );
     return model;
@@ -176,6 +181,7 @@ class ProfileDto {
     isPerfect = model.isPerfect;
     isPhone = model.isPhone;
     relation = model.relation;
+    isVip = model.isVip;
     mutualFriendCount = model.mutualFriendCount;
   }
 }
