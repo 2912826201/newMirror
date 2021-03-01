@@ -508,7 +508,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                       style: AppStyle.textRegular14,
                     )),
                     Text(
-                      DateUtil.formatDateTimeString(DateTime.fromMillisecondsSinceEpoch(conversation.updateTime)),
+                      DateUtil.getShowMessageDateString(DateTime.fromMillisecondsSinceEpoch(conversation.updateTime)),
                       style: AppStyle.textHintRegular12,
                     )
                   ],
