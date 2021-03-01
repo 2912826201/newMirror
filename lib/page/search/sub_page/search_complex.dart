@@ -130,7 +130,10 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
         });
       }
       if (userModel != null && userModel.list.isNotEmpty) {
-        userList = userModel.list;
+        userModel.list.forEach((element) {
+          print('model================ ${element.relation}');
+        });
+        userList.addAll(userModel.list);
       }
       if (topicModel != null && topicModel.list.isNotEmpty) {
         topicModel.list.forEach((v) {
@@ -249,6 +252,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
                           child: SearchUserItem(
                             model: userList[index],
                             width: ScreenUtil.instance.width,
+                            type: 1,
                           )));
                 }, childCount: userList.length)),
                 SliverToBoxAdapter(

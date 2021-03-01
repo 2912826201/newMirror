@@ -79,9 +79,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   @override
   void initState() {
     super.initState();
-    if(!context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(widget.userId)){
       context.read<ProfilePageNotifier>().setFirstModel(widget.userId);
-    }
     ///判断是自己的页面还是别人的页面
     if (context.read<ProfileNotifier>().profile.uid == widget.userId) {
       isMselfId = true;
@@ -675,6 +673,7 @@ class ProfilePageNotifier extends ChangeNotifier {
     }
   }
   void changeIsFollow(bool needNotify,bool bl, int id) {
+    print('&&&&&&&&&&&&&&&&&&&关注改变-------------$id');
     profileUiChangeModel[id].isFollow = bl;
     profileUiChangeModel[id].dynmicStringList.clear();
       if(!bl){

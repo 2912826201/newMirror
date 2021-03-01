@@ -1,5 +1,6 @@
 import 'dart:io';
-
+import 'package:mirror/page/profile/profile_detail_page.dart';
+import 'package:provider/provider.dart';
 import 'package:mirror/api/version_api.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/data/model/version_model.dart';
