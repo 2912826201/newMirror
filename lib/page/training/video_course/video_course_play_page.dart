@@ -225,7 +225,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Text(
-                                  "训练时长",
+                                  "试听时长",
                                   style: TextStyle(
                                     color: AppColor.white.withOpacity(0.35),
                                     fontSize: 10,
