@@ -1572,7 +1572,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
   //头部-更多按钮的点击事件
   _topMoreBtnClick() {
     _focusNode.unfocus();
-    ToastShow.show(msg: "点击了更多那妞", context: context);
+    // ToastShow.show(msg: "点击了更多按钮", context: context);
     judgeJumpPage(chatTypeId, this.chatUserId, conversation.type, context, chatUserName, _morePageOnClick,
         _moreOnClickExitChatPage);
   }
