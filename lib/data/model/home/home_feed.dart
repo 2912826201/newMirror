@@ -35,9 +35,10 @@ class HomeFeedModel {
   List<CommentDtoModel> hotComment = [];
   String address;
 
+
   // 添加字段
   int totalCount = -1;
-
+  bool isShowInputBox = true;
   HomeFeedModel({
     this.id,
     this.type,
