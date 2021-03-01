@@ -449,6 +449,9 @@ bool isMySelf = false;
   @override
   Widget build(BuildContext context) {
     print('==============***********================${widget.id}-----${widget.isFollow}    ${widget.buttonType}-------${widget.type}');
+    if(context.watch<ProfileNotifier>().profile.uid == widget.id){
+      isMySelf = true;
+    }
     if(isMySelf||(widget.buttonType==FollowButtonType.FOLLOW&&widget.isMysList)||widget.buttonType==FollowButtonType.TOPIC){
       return Container();
     }
@@ -456,9 +459,6 @@ bool isMySelf = false;
       print('====####################################################${widget.id}');
       context.watch<ProfilePageNotifier>().setFirstModel(widget.id);
       context.watch<ProfilePageNotifier>().changeIsFollow(true, !widget.isFollow, widget.id);
-    }
-    if(context.watch<ProfileNotifier>().profile.uid == widget.id){
-      isMySelf = true;
     }
     return  GestureDetector(
       child:Container(
