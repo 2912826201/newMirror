@@ -5,6 +5,7 @@ import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
@@ -300,8 +301,8 @@ class LiveDetailPageState extends XCState {
   //获取底部按钮
   Widget _getBottomBar() {
 
-    //todo 判断用户是不是vip
-    bool isVip = false;
+    //todo 判断用户是不是vip缺少开通vip的回调
+    bool isVip = Application.profile.isVip==1;
 
     var textStyle = const TextStyle(color: AppColor.white, fontSize: 16);
     var textStyleEnd = const TextStyle(color: AppColor.black, fontSize: 16);

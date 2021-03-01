@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
@@ -20,53 +19,81 @@ import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
 
-class HeadView extends StatefulWidget{
+class HeadView extends StatefulWidget {
   HomeFeedModel model;
+
   // 是否显示关注按钮
   bool isShowConcern;
+
   // 删除动态
   ValueChanged<int> deleteFeedChanged;
   int isBlack;
   String pageName;
+
   // 取消关注
   ValueChanged<HomeFeedModel> removeFollowChanged;
   ValueChanged<bool> followChanged;
   int mineDetailId;
   bool isMySelf;
-  HeadView({this.model,this.isShowConcern,this.deleteFeedChanged,this.removeFollowChanged,this.isBlack,this.mineDetailId,
-    this.pageName,this.isMySelf});
+
+  HeadView(
+      {this.model,
+      this.isShowConcern,
+      this.deleteFeedChanged,
+      this.removeFollowChanged,
+      this.isBlack,
+      this.mineDetailId,
+      this.pageName,
+      this.isMySelf});
+
   @override
   State<StatefulWidget> createState() {
-   return HeadViewState(deleteFeedChanged: deleteFeedChanged,removeFollowChanged: removeFollowChanged,isShowConcern:
-   isShowConcern,model: model,isBlack: isBlack,isMyself: isMySelf);
+    return HeadViewState(
+        deleteFeedChanged: deleteFeedChanged,
+        removeFollowChanged: removeFollowChanged,
+        isShowConcern: isShowConcern,
+        model: model,
+        isBlack: isBlack,
+        isMyself: isMySelf);
   }
-
 }
+
 class HeadViewState extends State<HeadView> {
-  HeadViewState({Key key ,this.model, this.deleteFeedChanged,
-    this.removeFollowChanged,this.isShowConcern = true,this.isBlack,this.isMyself});
+  HeadViewState(
+      {Key key,
+      this.model,
+      this.deleteFeedChanged,
+      this.removeFollowChanged,
+      this.isShowConcern = true,
+      this.isBlack,
+      this.isMyself});
+
   HomeFeedModel model;
   bool isShowConcern;
+
   // 删除动态
   ValueChanged<int> deleteFeedChanged;
   int isBlack;
   bool isMyself;
   double opacity = 0;
+
   // 取消关注
   ValueChanged<HomeFeedModel> removeFollowChanged;
   List<String> list = [];
+
   // 删除动态
   deleteFeed() async {
     Map<String, dynamic> map = await deletefeed(id: model.id);
     if (map["state"]) {
       deleteFeedChanged(model.id);
-      if(isShowConcern){
-        Navigator.pop(context,model.id);
+      if (isShowConcern) {
+        Navigator.pop(context, model.id);
       }
     } else {
       print("删除失败");
     }
   }
+
   _checkBlackStatus() async {
     BlackModel blackModel = await ProfileCheckBlack(widget.model.pushId);
     if (model != null) {
@@ -81,91 +108,92 @@ class HeadViewState extends State<HeadView> {
       }
     }
   }
+
   // 关注or取消关注
-  removeFollowAndFollow( int id, BuildContext context,bool isCancel) async {
-    if(isCancel){
+  removeFollowAndFollow(int id, BuildContext context, bool isCancel) async {
+    if (isCancel) {
       int relation = await ProfileCancelFollow(id);
-      if(relation==0||relation==2){
-        if(!isShowConcern){
+      if (relation == 0 || relation == 2) {
+        if (!isShowConcern) {
           removeFollowChanged(model);
         }
-        context.read<ProfilePageNotifier>().changeIsFollow(true,true,model.pushId);
+        context.read<ProfilePageNotifier>().changeIsFollow(true, true, model.pushId);
         ToastShow.show(msg: "取消关注成功", context: context);
-      }else{
+      } else {
         ToastShow.show(msg: "取消关注失败,请重试", context: context);
       }
-    }else{
+    } else {
       int relation = await ProfileAddFollow(id);
-      if(relation!=null){
-        if(relation==1||relation==3){
-          context.read<ProfilePageNotifier>().changeIsFollow(true,false,model.pushId);
+      if (relation != null) {
+        if (relation == 1 || relation == 3) {
+          context.read<ProfilePageNotifier>().changeIsFollow(true, false, model.pushId);
           ToastShow.show(msg: "关注成功!", context: context);
           opacity = 1;
-          Future.delayed(Duration(milliseconds: 1000),(){
+          Future.delayed(Duration(milliseconds: 1000), () {
             opacity = 0;
-            setState(() {
-            });
+            setState(() {});
           });
-        }else{
+        } else {
           ToastShow.show(msg: "关注失败,请重试", context: context);
         }
       }
     }
-
   }
-
 
   // 是否显示关注按钮
   isShowFollowButton(BuildContext context) {
-    if (isShowConcern && context.watch<ProfilePageNotifier>().profileUiChangeModel[model.pushId].isFollow == true&&model
-        .pushId!=context
-        .watch<ProfileNotifier>()
-        .profile
-        .uid) {
-      return  GestureDetector(
+    if (isShowConcern &&
+        context.watch<ProfilePageNotifier>().profileUiChangeModel[model.pushId].isFollow == true &&
+        model.pushId != context.watch<ProfileNotifier>().profile.uid) {
+      return GestureDetector(
         onTap: () {
-          if(!context.read<TokenNotifier>().isLoggedIn){
+          if (!context.read<TokenNotifier>().isLoggedIn) {
             AppRouter.navigateToLoginPage(context);
           }
-          if( context.read<ProfilePageNotifier>().profileUiChangeModel[model.pushId].isBlack==1){
+          if (context.read<ProfilePageNotifier>().profileUiChangeModel[model.pushId].isBlack == 1) {
             ToastShow.show(msg: "该用户已被你拉黑", context: context);
-          }else if(context.read<ProfilePageNotifier>().profileUiChangeModel[model.pushId].isBlack==2){
+          } else if (context.read<ProfilePageNotifier>().profileUiChangeModel[model.pushId].isBlack == 2) {
             ToastShow.show(msg: "你已被该用户拉黑", context: context);
-          }else{
-            removeFollowAndFollow(model.pushId, context,false);
+          } else {
+            removeFollowAndFollow(model.pushId, context, false);
           }
         },
         child: Container(
           margin: EdgeInsets.only(right: 6),
           height: 28,
-          padding: EdgeInsets.only(left: 12,top: 6,right: 12,bottom: 6),
-          decoration:  BoxDecoration(
+          padding: EdgeInsets.only(left: 12, top: 6, right: 12, bottom: 6),
+          decoration: BoxDecoration(
             border: new Border.all(color: AppColor.textPrimary1, width: 1),
-            borderRadius:BorderRadius.circular((14.0)),
+            borderRadius: BorderRadius.circular((14.0)),
           ),
           child: Center(
             child: Row(
-            children: [
-              Icon(Icons.add,color: AppColor.textPrimary1,size: 16,),
-              // Container(
-              //   width: 16,
-              //   height: 16,
-              //   child: Image.asset(name),
-              // ),
-              SizedBox(
-                width: 4,
-              ),
-              Container(
-                child: Text(
-                  "关注",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColor.textPrimary1,
+              children: [
+                Icon(
+                  Icons.add,
+                  color: AppColor.textPrimary1,
+                  size: 16,
+                ),
+                // Container(
+                //   width: 16,
+                //   height: 16,
+                //   child: Image.asset(name),
+                // ),
+                SizedBox(
+                  width: 4,
+                ),
+                Container(
+                  child: Text(
+                    "关注",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColor.textPrimary1,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),),
+              ],
+            ),
+          ),
         ),
       );
     } else {
@@ -173,17 +201,20 @@ class HeadViewState extends State<HeadView> {
         opacity: opacity,
         duration: Duration(milliseconds: 2000),
         child: Container(
-        margin: EdgeInsets.only(right: 6),
-        height: 28,
-        padding: EdgeInsets.only(left: 12,top: 6,right: 12,bottom: 6),
-        decoration:  BoxDecoration(
-        border: new Border.all(color: AppColor.textPrimary1, width: 1),
-        borderRadius:BorderRadius.circular((14.0)),
-        ),
-        child:Center(child: Text("已关注",style: AppStyle.textRegular12,),)),
-        onEnd: (){
-
-        },
+            margin: EdgeInsets.only(right: 6),
+            height: 28,
+            padding: EdgeInsets.only(left: 12, top: 6, right: 12, bottom: 6),
+            decoration: BoxDecoration(
+              border: new Border.all(color: AppColor.textPrimary1, width: 1),
+              borderRadius: BorderRadius.circular((14.0)),
+            ),
+            child: Center(
+              child: Text(
+                "已关注",
+                style: AppStyle.textRegular12,
+              ),
+            )),
+        onEnd: () {},
       );
     }
   }
@@ -194,17 +225,18 @@ class HeadViewState extends State<HeadView> {
     super.initState();
     print('===========================================model.isFollow==${model.isFollow}');
   }
+
   @override
   Widget build(BuildContext context) {
     if (model.pushId == context.watch<ProfileNotifier>().profile.uid) {
-      if(!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey(model.pushId)){
+      if (!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey(model.pushId)) {
         context.watch<ProfilePageNotifier>().setFirstModel(model.pushId);
       }
-      if(!context.watch<ProfilePageNotifier>().profileUiChangeModel[model.pushId].dynmicStringList.contains("删除")){
+      if (!context.watch<ProfilePageNotifier>().profileUiChangeModel[model.pushId].dynmicStringList.contains("删除")) {
         context.watch<ProfilePageNotifier>().profileUiChangeModel[model.pushId].dynmicStringList.add("删除");
       }
     } else {
-      if(!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey(model.pushId)){
+      if (!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey(model.pushId)) {
         context.watch<ProfilePageNotifier>().setFirstModel(model.pushId);
         context.watch<ProfilePageNotifier>().changeIsFollow(true,model.isFollow == 1||model.isFollow==3?false:true,
             model
@@ -214,38 +246,50 @@ class HeadViewState extends State<HeadView> {
         }
       }
     }
-    return Container(
-        height: 62,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-              Container(
-                margin: EdgeInsets.only(left: 16, right: 11),
-                child: CircleAvatar(
-                  // backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
-                  backgroundImage:
-                  model.avatarUrl != null ? NetworkImage(model.avatarUrl) : NetworkImage("images/test.png"),
-                  maxRadius: 19,
+    return GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          if (widget.mineDetailId == model.pushId) {
+            return false;
+          }
+          if (!context.read<TokenNotifier>().isLoggedIn) {
+            AppRouter.navigateToLoginPage(context);
+          } else {
+            AppRouter.navigateToMineDetail(context, model.pushId);
+          }
+        },
+        child: Container(
+            height: 62,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  margin: EdgeInsets.only(left: 16, right: 11),
+                  child: CircleAvatar(
+                    // backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
+                    backgroundImage:
+                        model.avatarUrl != null ? NetworkImage(model.avatarUrl) : NetworkImage("images/test.png"),
+                    maxRadius: 19,
+                  ),
                 ),
-              ),
-            Expanded(
-                child: Column(
+                Expanded(
+                    child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // GestureDetector(
                     //   child:
-                      Text(
-                        model.name ?? "空名字",
-                        style: TextStyle(fontSize: 15),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                      // onTap: () {},
+                    Text(
+                      model.name ?? "空名字",
+                      style: TextStyle(fontSize: 15),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                    // onTap: () {},
                     // ),
                     Container(
                       padding: EdgeInsets.only(top: 2),
-                      child: Text("${DateUtil.generateFormatDate(model.createTime,false)}",
+                      child: Text("${DateUtil.generateFormatDate(model.createTime, false)}",
                           style: TextStyle(
                             fontSize: 12,
                             color: AppColor.textSecondary,
@@ -253,51 +297,56 @@ class HeadViewState extends State<HeadView> {
                     )
                   ],
                 )),
-            isShowFollowButton(context),
-            Container(
-              margin: EdgeInsets.only(right: 16),
-              child: GestureDetector(
-                child: Image.asset("images/resource/2.0x/ic_dynamic_Set up@2x.png", fit: BoxFit.cover, width: 24, height: 24),
-                onTap: () {
-                  openMoreBottomSheet(
-                      context: context,
-                      lists: context.read<ProfilePageNotifier>().profileUiChangeModel[model
-                          .pushId].dynmicStringList,
-                      onItemClickListener: (index) {
-                        switch(context.read<ProfilePageNotifier>().profileUiChangeModel[model
-                            .pushId].dynmicStringList[index]){
-                          case "删除":
-                            deleteFeed();
-                            break;
-                          case "取消关注":
-                            removeFollowAndFollow(model.pushId, context,true);
-                            break;
-                          case "举报":
-                            _showDialog();
-                            break;
-                        }
-                      });
-                },
-              ),
-            )
-          ],
-        ));
+                isShowFollowButton(context),
+                Container(
+                  margin: EdgeInsets.only(right: 16),
+                  child: GestureDetector(
+                    child: Image.asset("images/resource/2.0x/ic_dynamic_Set up@2x.png",
+                        fit: BoxFit.cover, width: 24, height: 24),
+                    onTap: () {
+                      openMoreBottomSheet(
+                          context: context,
+                          lists:
+                              context.read<ProfilePageNotifier>().profileUiChangeModel[model.pushId].dynmicStringList,
+                          onItemClickListener: (index) {
+                            switch (context
+                                .read<ProfilePageNotifier>()
+                                .profileUiChangeModel[model.pushId]
+                                .dynmicStringList[index]) {
+                              case "删除":
+                                deleteFeed();
+                                break;
+                              case "取消关注":
+                                removeFollowAndFollow(model.pushId, context, true);
+                                break;
+                              case "举报":
+                                _showDialog();
+                                break;
+                            }
+                          });
+                    },
+                  ),
+                )
+              ],
+            )));
   }
+
   void _showDialog() {
-    showAppDialog(context,
-      confirm: AppDialogButton("必须举报!",(){
+    showAppDialog(
+      context,
+      confirm: AppDialogButton("必须举报!", () {
         _denounceUser();
         return true;
       }),
-      cancel: AppDialogButton("再想想", (){
+      cancel: AppDialogButton("再想想", () {
         return true;
       }),
       title: "提交举报",
       info: "确认举报用户",
     );
   }
-  _denounceUser() async {
 
+  _denounceUser() async {
     bool isSucess = await ProfileMoreDenounce(model.id, 1);
     print('isSucess=======================================$isSucess');
     if (isSucess) {

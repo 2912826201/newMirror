@@ -5,6 +5,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/feed/feed_comment_popups.dart';
 import 'package:mirror/widget/rich_text_widget.dart';
@@ -25,7 +26,7 @@ class CommentLayout extends StatelessWidget {
     List<BaseRichText> richTexts = [];
     String contextText;
     if (model.replyName != null) {
-      contextText = model.name + ": 回复 " + model.replyName+" " + model.content;
+      contextText = model.name + ": 回复 " + model.replyName + " " + model.content;
       richTexts.add(BaseRichText(
         contextText.substring(0, model.name.length + 1),
         style: AppStyle.textMedium14,
@@ -35,7 +36,7 @@ class CommentLayout extends StatelessWidget {
       ));
       richTexts.add(BaseRichText(
         contextText.substring(
-            model.name.length + ": 回复".length, model.name.length + ": 回复 ".length  + model.replyName.length),
+            model.name.length + ": 回复".length, model.name.length + ": 回复 ".length + model.replyName.length),
         // "${model.name + model.replyName}:",
         style: AppStyle.textMedium14,
         onTap: () {
@@ -45,7 +46,7 @@ class CommentLayout extends StatelessWidget {
     } else {
       contextText = "${model.name}: ${model.content}";
       richTexts.add(BaseRichText(
-        contextText.substring(0, model.name.length + 1 ),
+        contextText.substring(0, model.name.length + 1),
         style: AppStyle.textMedium14,
         onTap: () {
           AppRouter.navigateToMineDetail(context, model.uid);
@@ -58,12 +59,13 @@ class CommentLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 400,
+      width: ScreenUtil.instance.width,
       margin: EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
+            width: ScreenUtil.instance.width,
             margin: EdgeInsets.only(bottom: 6),
             child: Selector<FeedMapNotifier, int>(builder: (context, commentCount, child) {
               return GestureDetector(
@@ -78,28 +80,28 @@ class CommentLayout extends StatelessWidget {
             // Text("共${model.commentCount}条评论", style: AppStyle.textHintRegular12)
           ),
           for (CommentDtoModel item in context.select((FeedMapNotifier value) => value.feedMap[model.id].hotComment))
-
-            GestureDetector(
-              onTap: () {
-                openFeedCommentBottomSheet(context: context, feedId: model.id,commentDtoModel:item);
-              },
-              child: Container(
-                child: model.hotComment.length > 0
-                    ? MyRichTextWidget(
-                  Text(
-                    item.replyName != null
-                        ? "${item.name + ": 回复 " + item.replyName+" " + item.content}"
-                        : "${item.name}: ${item.content}",
-                    style: AppStyle.textPrimary3Regular13,
-                  ),
-                  maxLines: 1,
-                  textOverflow: TextOverflow.ellipsis,
-                  richTexts: setBaseRichText(
-                      item, context
-                  ),
-                )
-                    : Container(),
-              )),
+            Container(
+              width: ScreenUtil.instance.width,
+              child: GestureDetector(
+                  onTap: () {
+                    openFeedCommentBottomSheet(context: context, feedId: model.id, commentDtoModel: item);
+                  },
+                  child: Container(
+                    child: model.hotComment.length > 0
+                        ? MyRichTextWidget(
+                            Text(
+                              item.replyName != null
+                                  ? "${item.name + ": 回复 " + item.replyName + " " + item.content}"
+                                  : "${item.name}: ${item.content}",
+                              style: AppStyle.textPrimary3Regular13,
+                            ),
+                            maxLines: 1,
+                            textOverflow: TextOverflow.ellipsis,
+                            richTexts: setBaseRichText(item, context),
+                          )
+                        : Container(),
+                  )),
+            ),
         ],
       ),
     );

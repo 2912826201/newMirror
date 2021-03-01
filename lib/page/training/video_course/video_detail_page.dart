@@ -593,8 +593,8 @@ class VideoDetailPageState extends XCState {
 
   //获取底部按钮
   Widget _getBottomBar() {
-    //todo 判断用户是不是vip
-    bool isVip = false;
+    //todo 判断用户是不是vip缺少开通vip的回调
+    bool isVip = Application.profile.isVip==1;
 
     TextStyle textStyle = const TextStyle(color: AppColor.white, fontSize: 16);
     TextStyle textStyleVip = const TextStyle(color: AppColor.textVipPrimary1, fontSize: 16);
