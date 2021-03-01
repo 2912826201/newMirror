@@ -454,6 +454,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
           if (text.isNotEmpty) {
             _postText(text);
           }
+          // 重新获取焦点 避免键盘收回
+          FocusScope.of(context).requestFocus(_focusNode);
         },
         // 装饰器修改外观
         decoration: InputDecoration(
