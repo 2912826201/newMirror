@@ -35,9 +35,10 @@ class HomeFeedModel {
   List<CommentDtoModel> hotComment = [];
   String address;
 
+
   // 添加字段
   int totalCount = -1;
-
+  bool isShowInputBox = true;
   HomeFeedModel({
     this.id,
     this.type,
@@ -63,6 +64,7 @@ class HomeFeedModel {
     this.laudUserInfo,
     this.comments,
     this.address,
+    this.isShowInputBox,
   });
 
   HomeFeedModel.fromJson(Map<String, dynamic> json) {
@@ -145,6 +147,7 @@ class HomeFeedModel {
     map["laudUserInfo"] = laudUserInfo;
     map["comments"] = comments;
     map["address"] = address;
+    map['isShowInputBox'] = isShowInputBox;
     return map;
   }
 

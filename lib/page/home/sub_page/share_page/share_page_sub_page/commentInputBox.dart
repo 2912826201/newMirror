@@ -35,11 +35,11 @@ class CommentInputBox extends StatefulWidget {
 }
 
 class CommentInputBoxState extends State<CommentInputBox> {
-  var offstage = true;
+  var offstage = false;
 
   inputHide() {
     setState(() {
-      offstage = false;
+      offstage = true;
     });
   }
 
