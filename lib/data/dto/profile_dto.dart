@@ -25,10 +25,10 @@ const String COLUMN_NAME_PROFILE_UPDATETIME = 'updateTime';
 const String COLUMN_NAME_PROFILE_DELETEDTIME = 'deletedTime';
 const String COLUMN_NAME_PROFILE_STATUS = 'status';
 const String COLUMN_NAME_PROFILE_AGE = 'age';
+const String COLUMN_NAME_PROFILE_ISVIP = 'isVip';
 const String COLUMN_NAME_PROFILE_ISPERFECT = 'isPerfect';
 const String COLUMN_NAME_PROFILE_ISPHONE = 'isPhone';
 const String COLUMN_NAME_PROFILE_RELATION = 'relation';
-const String COLUMN_NAME_PROFILE_ISVIP = 'isVip';
 const String COLUMN_NAME_PROFILE_MUTUALFRIENDCOUNT = 'mutualFriendCount';
 
 
@@ -56,11 +56,12 @@ class ProfileDto {
   int status; //用户状态，0-删除，1-不可使用，2-正常
   int age; //年龄
 
+  int isVip; // 是否是Vip 0-不是 1-是
+
   int isPerfect; //0 未完善 1 完善
   int isPhone; // 是否绑定手机号 0-未绑定 1-已绑定
 
   int relation; //与用户关系 0-没关系 1-关注 2-粉丝 3-好友
-  int isVip; // 是否是Vip 0-不是 1-是
   int mutualFriendCount; //共同好友数
 
   Map<String, dynamic> toMap() {
@@ -86,10 +87,10 @@ class ProfileDto {
     COLUMN_NAME_PROFILE_DELETEDTIME : deletedTime,
     COLUMN_NAME_PROFILE_STATUS : status,
     COLUMN_NAME_PROFILE_AGE : age,
+    COLUMN_NAME_PROFILE_ISVIP : isVip,
     COLUMN_NAME_PROFILE_ISPERFECT : isPerfect,
     COLUMN_NAME_PROFILE_ISPHONE : isPhone,
     COLUMN_NAME_PROFILE_RELATION : relation,
-    COLUMN_NAME_PROFILE_ISVIP : isVip,
     COLUMN_NAME_PROFILE_MUTUALFRIENDCOUNT : mutualFriendCount,
     };
     return map;
@@ -117,10 +118,10 @@ class ProfileDto {
     deletedTime = map[COLUMN_NAME_PROFILE_DELETEDTIME];
     status = map[COLUMN_NAME_PROFILE_STATUS];
     age = map[COLUMN_NAME_PROFILE_AGE];
+    isVip = map[COLUMN_NAME_PROFILE_ISVIP];
     isPerfect = map[COLUMN_NAME_PROFILE_ISPERFECT];
     isPhone = map[COLUMN_NAME_PROFILE_ISPHONE];
     relation = map[COLUMN_NAME_PROFILE_RELATION];
-    isVip = map[COLUMN_NAME_PROFILE_ISVIP];
     mutualFriendCount = map[COLUMN_NAME_PROFILE_MUTUALFRIENDCOUNT];
   }
 
@@ -147,10 +148,10 @@ class ProfileDto {
       deletedTime: deletedTime,
       status: status,
       age: age,
+      isVip: isVip,
       isPerfect: isPerfect,
       isPhone: isPhone,
       relation: relation,
-      isVip: isVip,
       mutualFriendCount: mutualFriendCount,
     );
     return model;
@@ -178,10 +179,10 @@ class ProfileDto {
     deletedTime = model.deletedTime;
     status = model.status;
     age = model.age;
+    isVip = model.isVip;
     isPerfect = model.isPerfect;
     isPhone = model.isPhone;
     relation = model.relation;
-    isVip = model.isVip;
     mutualFriendCount = model.mutualFriendCount;
   }
 }
