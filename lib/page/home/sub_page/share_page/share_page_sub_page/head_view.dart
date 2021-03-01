@@ -18,6 +18,7 @@ import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 class HeadView extends StatefulWidget {
   HomeFeedModel model;
@@ -94,17 +95,21 @@ class HeadViewState extends State<HeadView> {
     }
   }
 
-  _checkBlackStatus() async {
-    BlackModel blackModel = await ProfileCheckBlack(widget.model.pushId);
-    if (model != null) {
-      print('inThisBlack===================${blackModel.inThisBlack}');
-      print('inYouBlack===================${blackModel.inYouBlack}');
-      if (blackModel.inYouBlack == 1) {
-        context.read<ProfilePageNotifier>().changeBlack(false, model.pushId, 1);
-      } else if (blackModel.inThisBlack == 1) {
-        context.read<ProfilePageNotifier>().changeBlack(false, model.pushId, 2);
-      } else {
-        context.read<ProfilePageNotifier>().changeBlack(false, model.pushId, 0);
+  _checkBlackStatus(int id, BuildContext context,bool isCancel) async {
+    if(isCancel){
+      removeFollowAndFollow(id, context, isCancel);
+    }else{
+      BlackModel blackModel = await ProfileCheckBlack(widget.model.pushId);
+      if (model != null) {
+        print('inThisBlack===================${blackModel.inThisBlack}');
+        print('inYouBlack===================${blackModel.inYouBlack}');
+        if (blackModel.inYouBlack == 1) {
+            Toast.show("你已将该用户拉黑", context);
+        } else if (blackModel.inThisBlack == 1) {
+          Toast.show("该用户已将你拉黑", context);
+        } else {
+          removeFollowAndFollow(id, context, isCancel);
+        }
       }
     }
   }
@@ -150,13 +155,7 @@ class HeadViewState extends State<HeadView> {
           if (!context.read<TokenNotifier>().isLoggedIn) {
             AppRouter.navigateToLoginPage(context);
           }
-          if (context.read<ProfilePageNotifier>().profileUiChangeModel[model.pushId].isBlack == 1) {
-            ToastShow.show(msg: "该用户已被你拉黑", context: context);
-          } else if (context.read<ProfilePageNotifier>().profileUiChangeModel[model.pushId].isBlack == 2) {
-            ToastShow.show(msg: "你已被该用户拉黑", context: context);
-          } else {
-            removeFollowAndFollow(model.pushId, context, false);
-          }
+          _checkBlackStatus(model.pushId, context, false);
         },
         child: Container(
           margin: EdgeInsets.only(right: 6),
@@ -223,7 +222,6 @@ class HeadViewState extends State<HeadView> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print('===========================================model.isFollow==${model.isFollow}');
   }
 
   @override
@@ -241,9 +239,6 @@ class HeadViewState extends State<HeadView> {
         context.watch<ProfilePageNotifier>().changeIsFollow(true,model.isFollow == 1||model.isFollow==3?false:true,
             model
                 .pushId);
-        if(context.watch<TokenNotifier>().isLoggedIn){
-          _checkBlackStatus();
-        }
       }
     }
     return GestureDetector(
@@ -317,7 +312,7 @@ class HeadViewState extends State<HeadView> {
                                 deleteFeed();
                                 break;
                               case "取消关注":
-                                removeFollowAndFollow(model.pushId, context, true);
+                                _checkBlackStatus(model.pushId, context, true);
                                 break;
                               case "举报":
                                 _showDialog();
