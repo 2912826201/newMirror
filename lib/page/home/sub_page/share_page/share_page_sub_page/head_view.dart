@@ -49,62 +49,36 @@ class HeadView extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return HeadViewState(
-        deleteFeedChanged: deleteFeedChanged,
-        removeFollowChanged: removeFollowChanged,
-        isShowConcern: isShowConcern,
-        model: model,
-        isBlack: isBlack,
-        isMyself: isMySelf);
+    return HeadViewState();
   }
 }
 
 class HeadViewState extends State<HeadView> {
-  HeadViewState(
-      {Key key,
-      this.model,
-      this.deleteFeedChanged,
-      this.removeFollowChanged,
-      this.isShowConcern = true,
-      this.isBlack,
-      this.isMyself});
-
-  HomeFeedModel model;
-  bool isShowConcern;
-
-  // 删除动态
-  ValueChanged<int> deleteFeedChanged;
-  int isBlack;
-  bool isMyself;
   double opacity = 0;
-
-  // 取消关注
-  ValueChanged<HomeFeedModel> removeFollowChanged;
-  List<String> list = [];
 
   // 删除动态
   deleteFeed() async {
-    Map<String, dynamic> map = await deletefeed(id: model.id);
+    Map<String, dynamic> map = await deletefeed(id: widget.model.id);
     if (map["state"]) {
-      deleteFeedChanged(model.id);
-      if (isShowConcern) {
-        Navigator.pop(context, model.id);
+      widget.deleteFeedChanged(widget.model.id);
+      if (widget.isShowConcern) {
+        Navigator.pop(context, widget.model.id);
       }
     } else {
       print("删除失败");
     }
   }
 
-  _checkBlackStatus(int id, BuildContext context,bool isCancel) async {
-    if(isCancel){
+  _checkBlackStatus(int id, BuildContext context, bool isCancel) async {
+    if (isCancel) {
       removeFollowAndFollow(id, context, isCancel);
-    }else{
+    } else {
       BlackModel blackModel = await ProfileCheckBlack(widget.model.pushId);
-      if (model != null) {
+      if (widget.model != null) {
         print('inThisBlack===================${blackModel.inThisBlack}');
         print('inYouBlack===================${blackModel.inYouBlack}');
         if (blackModel.inYouBlack == 1) {
-            Toast.show("你已将该用户拉黑", context);
+          Toast.show("你已将该用户拉黑", context);
         } else if (blackModel.inThisBlack == 1) {
           Toast.show("该用户已将你拉黑", context);
         } else {
@@ -119,10 +93,10 @@ class HeadViewState extends State<HeadView> {
     if (isCancel) {
       int relation = await ProfileCancelFollow(id);
       if (relation == 0 || relation == 2) {
-        if (!isShowConcern) {
-          removeFollowChanged(model);
+        if (!widget.isShowConcern) {
+          widget.removeFollowChanged(widget.model);
         }
-        context.read<ProfilePageNotifier>().changeIsFollow(true, true, model.pushId);
+        context.read<ProfilePageNotifier>().changeIsFollow(true, true, widget.model.pushId);
         ToastShow.show(msg: "取消关注成功", context: context);
       } else {
         ToastShow.show(msg: "取消关注失败,请重试", context: context);
@@ -131,7 +105,7 @@ class HeadViewState extends State<HeadView> {
       int relation = await ProfileAddFollow(id);
       if (relation != null) {
         if (relation == 1 || relation == 3) {
-          context.read<ProfilePageNotifier>().changeIsFollow(true, false, model.pushId);
+          context.read<ProfilePageNotifier>().changeIsFollow(true, false, widget.model.pushId);
           ToastShow.show(msg: "关注成功!", context: context);
           opacity = 1;
           Future.delayed(Duration(milliseconds: 1000), () {
@@ -147,15 +121,15 @@ class HeadViewState extends State<HeadView> {
 
   // 是否显示关注按钮
   isShowFollowButton(BuildContext context) {
-    if (isShowConcern &&
-        context.watch<ProfilePageNotifier>().profileUiChangeModel[model.pushId].isFollow == true &&
-        model.pushId != context.watch<ProfileNotifier>().profile.uid) {
+    if (widget.isShowConcern &&
+        context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.model.pushId].isFollow == true &&
+        widget.model.pushId != context.watch<ProfileNotifier>().profile.uid) {
       return GestureDetector(
         onTap: () {
           if (!context.read<TokenNotifier>().isLoggedIn) {
             AppRouter.navigateToLoginPage(context);
           }
-          _checkBlackStatus(model.pushId, context, false);
+          _checkBlackStatus(widget.model.pushId, context, false);
         },
         child: Container(
           margin: EdgeInsets.only(right: 6),
@@ -226,31 +200,31 @@ class HeadViewState extends State<HeadView> {
 
   @override
   Widget build(BuildContext context) {
-    if (model.pushId == context.watch<ProfileNotifier>().profile.uid) {
-      if (!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey(model.pushId)) {
-        context.watch<ProfilePageNotifier>().setFirstModel(model.pushId);
+    if (widget.model.pushId == context.watch<ProfileNotifier>().profile.uid) {
+      if (!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey(widget.model.pushId)) {
+        context.watch<ProfilePageNotifier>().setFirstModel(widget.model.pushId);
       }
-      if (!context.watch<ProfilePageNotifier>().profileUiChangeModel[model.pushId].dynmicStringList.contains("删除")) {
-        context.watch<ProfilePageNotifier>().profileUiChangeModel[model.pushId].dynmicStringList.add("删除");
+      if (!context
+          .watch<ProfilePageNotifier>()
+          .profileUiChangeModel[widget.model.pushId]
+          .dynmicStringList
+          .contains("删除")) {
+        context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.model.pushId].dynmicStringList.add("删除");
       }
-    } else {
-      if (!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey(model.pushId)) {
-        context.watch<ProfilePageNotifier>().setFirstModel(model.pushId);
-        context.watch<ProfilePageNotifier>().changeIsFollow(true,model.isFollow == 1||model.isFollow==3?false:true,
-            model
-                .pushId);
-      }
+    } else if (!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey(widget.model.pushId)) {
+      context.watch<ProfilePageNotifier>().setFirstModel(widget.model.pushId,
+          isFollow: widget.model.isFollow == 1 || widget.model.isFollow == 3 ? false : true);
     }
     return GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {
-          if (widget.mineDetailId == model.pushId) {
+          if (widget.mineDetailId == widget.model.pushId) {
             return false;
           }
           if (!context.read<TokenNotifier>().isLoggedIn) {
             AppRouter.navigateToLoginPage(context);
           } else {
-            AppRouter.navigateToMineDetail(context, model.pushId);
+            AppRouter.navigateToMineDetail(context, widget.model.pushId);
           }
         },
         child: Container(
@@ -262,8 +236,9 @@ class HeadViewState extends State<HeadView> {
                   margin: EdgeInsets.only(left: 16, right: 11),
                   child: CircleAvatar(
                     // backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
-                    backgroundImage:
-                        model.avatarUrl != null ? NetworkImage(model.avatarUrl) : NetworkImage("images/test.png"),
+                    backgroundImage: widget.model.avatarUrl != null
+                        ? NetworkImage(widget.model.avatarUrl)
+                        : NetworkImage("images/test.png"),
                     maxRadius: 19,
                   ),
                 ),
@@ -275,7 +250,7 @@ class HeadViewState extends State<HeadView> {
                     // GestureDetector(
                     //   child:
                     Text(
-                      model.name ?? "空名字",
+                      widget.model.name ?? "空名字",
                       style: TextStyle(fontSize: 15),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
@@ -284,7 +259,7 @@ class HeadViewState extends State<HeadView> {
                     // ),
                     Container(
                       padding: EdgeInsets.only(top: 2),
-                      child: Text("${DateUtil.generateFormatDate(model.createTime, false)}",
+                      child: Text("${DateUtil.generateFormatDate(widget.model.createTime, false)}",
                           style: TextStyle(
                             fontSize: 12,
                             color: AppColor.textSecondary,
@@ -301,18 +276,20 @@ class HeadViewState extends State<HeadView> {
                     onTap: () {
                       openMoreBottomSheet(
                           context: context,
-                          lists:
-                              context.read<ProfilePageNotifier>().profileUiChangeModel[model.pushId].dynmicStringList,
+                          lists: context
+                              .read<ProfilePageNotifier>()
+                              .profileUiChangeModel[widget.model.pushId]
+                              .dynmicStringList,
                           onItemClickListener: (index) {
                             switch (context
                                 .read<ProfilePageNotifier>()
-                                .profileUiChangeModel[model.pushId]
+                                .profileUiChangeModel[widget.model.pushId]
                                 .dynmicStringList[index]) {
                               case "删除":
                                 deleteFeed();
                                 break;
                               case "取消关注":
-                                _checkBlackStatus(model.pushId, context, true);
+                                _checkBlackStatus(widget.model.pushId, context, true);
                                 break;
                               case "举报":
                                 _showDialog();
@@ -342,7 +319,7 @@ class HeadViewState extends State<HeadView> {
   }
 
   _denounceUser() async {
-    bool isSucess = await ProfileMoreDenounce(model.id, 1);
+    bool isSucess = await ProfileMoreDenounce(widget.model.id, 1);
     print('isSucess=======================================$isSucess');
     if (isSucess) {
       ToastShow.show(msg: "感谢你的反馈，我们会尽快处理!", context: context);

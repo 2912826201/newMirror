@@ -15,6 +15,7 @@ import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -125,6 +126,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           //fixme model.list为空 null 会报错
           if (model.list!=null&&model.list.isNotEmpty) {
             model.list.forEach((v) {
+              context.read<ProfilePageNotifier>().profileUiChangeModel.remove(HomeFeedModel.fromJson(v).pushId);
               attentionIdList.add(HomeFeedModel.fromJson(v).id);
               attentionModelList.add(HomeFeedModel.fromJson(v));
               print("接口赶回");

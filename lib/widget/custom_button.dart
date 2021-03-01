@@ -462,8 +462,7 @@ class _FollowButtonState extends State<FollowButton> {
     }
     if (!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey(widget.id)) {
       print('====####################################################${widget.id}');
-      context.watch<ProfilePageNotifier>().setFirstModel(widget.id);
-      context.watch<ProfilePageNotifier>().changeIsFollow(true, !widget.isFollow, widget.id);
+      context.watch<ProfilePageNotifier>().setFirstModel(widget.id, isFollow: !widget.isFollow);
     }
     return GestureDetector(
       child: Container(
