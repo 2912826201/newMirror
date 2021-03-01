@@ -340,6 +340,23 @@ class DateUtil {
   }
 
   //获取聊天框内消息提示的格式
+  //小时数，十位数为0时，不显示十位；
+  //
+  // 分钟数，十位要显示0；
+  //
+  // - 今天、昨天、前天：x天 + 时分，如
+  //
+  // 今天： 今天  5:01
+  //
+  // 昨天： 昨天 23:59
+  //
+  // 前天： 前天 15:01
+  //
+  // - 超过3天且是本年内显示月-日  时间：  7-7  00:00
+  //
+  // - 非本年内显示：年月日时分
+  //
+  // 2017-7-7  12:01
   static String formatMessageAlertTime(String millisecondsSinceEpoch) {
     DateTime dateTime = getDateTimeByMs(int.parse(millisecondsSinceEpoch));
     String alertString = "";
@@ -358,7 +375,19 @@ class DateUtil {
     return alertString;
   }
 
+
   //获取评论的日期显示
+  //- 1分钟之类都显示刚刚
+  //
+  // - 1小时之内的动态，显示 2分钟前，59分钟前；
+  //
+  // - 在1-24小时期间的显示 n小时前。
+  //
+  // - 超过24小时则显示“昨天 时分 ”，如 昨天 14:21 ；
+  //
+  // - 超过48小时则显示为月日 时分 ，如7-8  7:21；
+  //
+  // - 往年的显示 年-月-⽇ 如 16-5-21 12:12
   static String getCommentShowData(DateTime dateTime){
     DateTime time=new DateTime.now();
     String alertString="";
@@ -379,7 +408,14 @@ class DateUtil {
     return alertString;
   }
 
-  //获取评论的日期显示
+  //获取消息界面-消息列表的日期展示
+  //①今日消息展示时分：15:57
+  //
+  // ②昨日消息展示：昨天
+  //
+  // ③前天-7日内消息展示星期几（如今天是周五，最远到上周六）：星期三
+  //
+  // ④7日前消息展示年月日：2019-10-20
   static String getShowMessageDateString(DateTime dateTime){
     // DateTime time=new DateTime.now();
     if(isToday(dateTime)){
