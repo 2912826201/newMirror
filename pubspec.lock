@@ -760,6 +760,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.0.1"
+  reorderables:
+    dependency: "direct main"
+    description:
+      name: reorderables
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.3.2"
   rich_text_widget:
     dependency: "direct main"
     description:
