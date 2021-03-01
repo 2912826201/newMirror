@@ -206,7 +206,7 @@ class HeadViewState extends State<HeadView> {
     } else {
       if(!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey(model.pushId)){
         context.watch<ProfilePageNotifier>().setFirstModel(model.pushId);
-        context.watch<ProfilePageNotifier>().changeIsFollow(false,model.isFollow == 1||model.isFollow==3?false:true,
+        context.watch<ProfilePageNotifier>().changeIsFollow(true,model.isFollow == 1||model.isFollow==3?false:true,
             model
                 .pushId);
         if(context.watch<TokenNotifier>().isLoggedIn){
