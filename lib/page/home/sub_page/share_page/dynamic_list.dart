@@ -34,7 +34,7 @@ class DynamicListLayout extends StatelessWidget {
       this.mineDetailId,
       this.topicId,
       this.isMySelf,
-      this.isShowConcern})
+      this.isShowConcern = false})
       : super(key: key);
   final index;
   bool isShowRecommendUser;
