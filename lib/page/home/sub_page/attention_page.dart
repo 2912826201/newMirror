@@ -128,6 +128,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           //fixme model.list为空 null 会报错
           if (model.list != null && model.list.isNotEmpty) {
             model.list.forEach((v) {
+              HomeFeedModel.fromJson(v).isShowInputBox = true;
               attentionIdList.add(HomeFeedModel.fromJson(v).id);
               attentionModelList.add(HomeFeedModel.fromJson(v));
               print("接口赶回");
@@ -145,6 +146,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         } else if (dataPage > 1 && lastTime != null) {
           if (model.list.isNotEmpty) {
             model.list.forEach((v) {
+              HomeFeedModel.fromJson(v).isShowInputBox = true;
               attentionIdList.add(HomeFeedModel.fromJson(v).id);
               attentionModelList.add(HomeFeedModel.fromJson(v));
             });
@@ -454,44 +456,22 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           },
           child: CustomScrollView(controller: _controller, physics: AlwaysScrollableScrollPhysics(), slivers: [
             SliverList(
-                // controller: _controller,
-                delegate: FirstEndItemChildrenDelegate((context, index) {
-              if (status == Status.noConcern || status == Status.notLoggedIn || status == Status.noConcern) {
-                return pageDisplay(0, HomeFeedModel());
-              }
-              // 获取动态id
-              int id;
-              // 获取动态id指定model
-              HomeFeedModel feedModel;
-              if (index < attentionIdList.length) {
-                id = attentionIdList[index];
-                feedModel = context.read<FeedMapNotifier>().feedMap[id];
-                print(feedModel.toString());
-                if (feedModel != null) {
-                  feedModel.isShowInputBox = true;
+              // controller: _controller,
+              delegate: SliverChildBuilderDelegate((content, index) {
+                if (status == Status.noConcern || status == Status.notLoggedIn || status == Status.noConcern) {
+                  return pageDisplay(0, HomeFeedModel());
                 }
-              }
-              return pageDisplay(index, feedModel);
-            }, firstEndCallback: (int firstIndex, int lastIndex) {
-              context.read<FeedMapNotifier>().feedMap[lastIndex - 1].isShowInputBox = false;
-              print("firstIndex:$firstIndex, lastIndex:$lastIndex");
-            }, childCount: itemcount())
-
-                // SliverChildBuilderDelegate((content, index) {
-                //   if (status == Status.noConcern || status == Status.notLoggedIn || status == Status.noConcern) {
-                //     return pageDisplay(0, HomeFeedModel());
-                //   }
-                //   // 获取动态id
-                //   int id;
-                //   // 获取动态id指定model
-                //   HomeFeedModel feedModel;
-                //   if (index < attentionIdList.length) {
-                //     id = attentionIdList[index];
-                //     feedModel = context.read<FeedMapNotifier>().feedMap[id];
-                //   }
-                //   return pageDisplay(index, feedModel);
-                // }, childCount: itemcount()),
-                )
+                // 获取动态id
+                int id;
+                // 获取动态id指定model
+                HomeFeedModel feedModel;
+                if (index < attentionIdList.length) {
+                  id = attentionIdList[index];
+                  feedModel = context.read<FeedMapNotifier>().feedMap[id];
+                }
+                return pageDisplay(index, feedModel);
+              }, childCount: itemcount()),
+            )
             // )
           ])),
     ));
