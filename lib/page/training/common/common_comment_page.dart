@@ -445,6 +445,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                                     children: [
                                       Container(
                                         child: Text(
+                                          //todo 刚发的评论日期会出现比现在获取的日期大0.3毫秒--原因未知
                                           DateUtil.getCommentShowData(DateUtil.getDateTimeByMs(value.createTime)),
                                           style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
                                         ),
