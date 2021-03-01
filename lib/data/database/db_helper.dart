@@ -74,6 +74,7 @@ Future<void> _createDB(Database db, int version) async {
       "$COLUMN_NAME_PROFILE_DELETEDTIME bigint(20)," +
       "$COLUMN_NAME_PROFILE_STATUS tinyint(1)," +
       "$COLUMN_NAME_PROFILE_AGE smallint(1)," +
+      "$COLUMN_NAME_PROFILE_ISVIP tinyint(1)," +
       "$COLUMN_NAME_PROFILE_SUBTYPE tinyint(1)," +
       "$COLUMN_NAME_PROFILE_CITYCODE varchar(16)," +
       "$COLUMN_NAME_PROFILE_LONGITUDE decimal(10,6)," +

@@ -263,7 +263,7 @@ class InteractiveNoticeItemState extends StatelessWidget {
         comment = "赞了你的评论";
       }
     }
-    if (msgModel.refData.isNotEmpty) {
+    if (msgModel.refData!=null) {
       if (msgModel.refType == 0) {
         feedModel = HomeFeedModel.fromJson(msgModel.refData);
       } else if (msgModel.refType == 2) {

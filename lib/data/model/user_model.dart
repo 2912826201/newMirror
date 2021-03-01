@@ -24,10 +24,12 @@ class UserModel {
   int status; //用户状态，0-删除，1-不可使用，2-正常
   int age; //年龄
 
+  int isVip; // 是否是Vip 0-不是 1-是
+  int isLiving; // 是否在直播 0-没有直播 1-正在直播
+
   int isPerfect; //0 未完善 1 完善
   int isPhone; // 是否绑定手机号 0-未绑定 1-已绑定
-  int isLiving; // 是否在直播 0-没有直播 1-正在直播
-  int isVip; // 是否是Vip 0-不是 1-是
+
   int relation; //与用户关系 0-没关系 1-关注 2-粉丝 3-好友
   int mutualFriendCount; //共同好友数
 
@@ -35,7 +37,6 @@ class UserModel {
     this.uid = -1, //默认给个uid为-1
     this.phone,
     this.type,
-    this.isVip,
     this.subType,
     this.nickName,
     this.avatarUri,
@@ -54,10 +55,11 @@ class UserModel {
     this.deletedTime,
     this.status,
     this.age,
+    this.isVip,
+    this.isLiving,
     this.isPerfect,
     this.isPhone,
     this.relation,
-    this.isLiving,
     this.mutualFriendCount,
   });
 
@@ -71,7 +73,6 @@ class UserModel {
     description = json["description"];
     birthday = json["birthday"];
     sex = json["sex"];
-    isVip = json["isVip"];
     constellation = json["constellation"];
     cityCode = json["cityCode"];
     longitude = json["longitude"];
@@ -84,10 +85,11 @@ class UserModel {
     deletedTime = json["deletedTime"];
     status = json["status"];
     age = json["age"];
+    isVip = json["isVip"];
+    isLiving = json["isLiving"];
     isPerfect = json["isPerfect"];
     isPhone = json["isPhone"];
     relation = json["relation"];
-    isLiving = json["isLiving"];
     mutualFriendCount = json["mutualFriendCount"];
   }
 
@@ -102,7 +104,6 @@ class UserModel {
     map["description"] = description;
     map["birthday"] = birthday;
     map["sex"] = sex;
-    map["isVip"] = isVip;
     map["constellation"] = constellation;
     map["cityCode"] = cityCode;
     map["longitude"] = longitude;
@@ -115,10 +116,11 @@ class UserModel {
     map["deletedTime"] = deletedTime;
     map["status"] = status;
     map["age"] = age;
+    map["isVip"] = isVip;
+    map["isLiving"] = isLiving;
     map["isPerfect"] = isPerfect;
     map["isPhone"] = isPhone;
     map["relation"] = relation;
-    map["isLiving"] = isLiving;
     map["mutualFriendCount"] = mutualFriendCount;
     return map;
   }

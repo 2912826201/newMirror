@@ -96,9 +96,13 @@ class CameraPhotoState extends State<CameraPhotoPage> with WidgetsBindingObserve
                                   //避免切换摄像头过于频繁
                                   return;
                                 }
-                                _latestSwitchCameraTime = currentTime;
+                                if (_controller.value.isTakingPicture || _controller.value.isRecordingVideo) {
+                                  //拍照或录像过程中不能切换
+                                  return;
+                                }
                                 //FIXME 模拟器会有切到后置摄像头后第一次点击无反应的问题 要持续关注
                                 print("切换摄像头！");
+                                _latestSwitchCameraTime = currentTime;
                                 _cameraIndex = (_cameraIndex + 1) % Application.cameras.length;
                                 onCameraSelected(Application.cameras[_cameraIndex]);
                               },

@@ -21,6 +21,7 @@ import 'package:provider/provider.dart';
 class SearchUser extends StatefulWidget {
   String text;
   double width;
+
   TextEditingController textController;
   SearchUser({this.text, this.width, this.textController});
 
@@ -94,7 +95,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
             print('===================== =============model有值');
             hashNext = model.hasNext;
             model.list.forEach((element) {
-              print('model================ ${element.nickName}');
+              print('model================ ${element.relation}');
               modelList.add(element);
             });
             _lastTime = model.lastTime;
@@ -159,7 +160,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
         child: ListView.builder(
           itemCount: modelList.length,
           itemBuilder: (context, index) {
-            return SearchUserItem(model: modelList[index],  width: widget.width,);
+            return SearchUserItem(model: modelList[index],  width: widget.width,type: 1,);
           }),
       ))
       : Expanded(
@@ -192,8 +193,8 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
 class SearchUserItem extends StatefulWidget {
   UserModel model;
   double width;
-
-  SearchUserItem({this.model, this.width});
+  int type;
+  SearchUserItem({this.model, this.width,this.type});
 
   @override
   State<StatefulWidget> createState() {
@@ -206,17 +207,17 @@ class _SearchState extends State<SearchUserItem> {
   @override
   void initState() {
     super.initState();
+    print('=========================搜索iteminitState${widget.model.uid}');
+    if (widget.model.relation == 0 || widget.model.relation == 2) {
+      isFollow = false;
+    } else if (widget.model.relation == 1 || widget.model.relation == 3) {
+      isFollow = true;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    print('=========================搜索itembuid');
-    int relation = widget.model.relation;
-      if (relation == 0 || relation == 2) {
-        isFollow = false;
-      } else if (relation == 1 || relation == 3) {
-        isFollow = true;
-      }
+    print('=========================搜索itembuid${widget.model.uid}');
     return Container(
       height: 58,
       padding: EdgeInsets.only(top: 5, bottom: 5),
@@ -226,7 +227,6 @@ class _SearchState extends State<SearchUserItem> {
           InkWell(
             onTap: () {
               AppRouter.navigateToMineDetail(context, widget.model.uid);
-
             },
             child: Row(
               children: [
@@ -270,7 +270,8 @@ class _SearchState extends State<SearchUserItem> {
                       ),
                   widget.model.description != null?Spacer():Container(),
                   //签名
-                  widget.model.description != null?Container(
+                  widget.model.description != null
+                      ?Container(
                       alignment: Alignment.centerLeft,
                       child: Text(
                         widget.model.description,
@@ -289,7 +290,8 @@ class _SearchState extends State<SearchUserItem> {
            FollowButton(
               id:widget.model.uid,
               isFollow:isFollow,
-              buttonType:FollowButtonType.SERCH,)
+              buttonType:FollowButtonType.SERCH,
+            type: widget.type,)
         ],
       ),
     );
