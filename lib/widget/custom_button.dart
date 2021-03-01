@@ -418,16 +418,12 @@ class _FollowButtonState extends State<FollowButton> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print(
-        '==============***********================$widget.id-----${widget.isFollow}    ${widget.buttonType}-------${widget.type}');
   }
 
   ///请求黑名单关系
   _checkBlackStatus() async {
     BlackModel model = await ProfileCheckBlack(widget.id);
     if (model != null) {
-      print('inThisBlack===================${model.inThisBlack}');
-      print('inYouBlack===================${model.inYouBlack}');
       if (model.inYouBlack == 1) {
         ToastShow.show(msg: "该用户已被你拉黑", context: context);
       } else if (model.inThisBlack == 1) {
@@ -450,8 +446,6 @@ class _FollowButtonState extends State<FollowButton> {
 
   @override
   Widget build(BuildContext context) {
-    print('====########################################'
-        '############${widget.id}-----${widget.isFollow}-----${widget.buttonType}-------${widget.type}');
     if (context.watch<ProfileNotifier>().profile.uid == widget.id) {
       isMySelf = true;
     }
@@ -461,7 +455,6 @@ class _FollowButtonState extends State<FollowButton> {
       return Container();
     }
     if (!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey(widget.id)) {
-      print('====####################################################${widget.id}');
       context.watch<ProfilePageNotifier>().setFirstModel(widget.id, isFollow: !widget.isFollow);
     }
     return GestureDetector(

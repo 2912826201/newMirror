@@ -248,7 +248,9 @@ class DateUtil {
         currentDateString.month - date.month == 0 &&
         currentDateString.day - date.day == 0 &&
         currentDateString.hour - date.hour > 0) {
+
       result = "${currentDateString.hour - date.hour}小时前";
+
     } else if (currentDateString.year - date.year == 0 &&
         currentDateString.month - date.month == 0 &&
         currentDateString.day - date.day == 0 &&
