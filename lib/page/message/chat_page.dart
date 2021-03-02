@@ -5,12 +5,14 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
@@ -1844,13 +1846,19 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
 
   // 请求动态详情页数据
   getFeedDetail(int feedId) async {
-    HomeFeedModel feedModel = await feedDetail(id: feedId);
-    List<HomeFeedModel> list = [];
-    list.add(feedModel);
-    context.read<FeedMapNotifier>().updateFeedMap(list);
+    BaseResponseModel feedModel = await feedDetail(id: feedId);
+    if(feedModel.data!=null){
+      List<HomeFeedModel> list = [];
+      list.add(HomeFeedModel.fromJson(feedModel.data));
+      context.read<FeedMapNotifier>().updateFeedMap(list);
+    }
     // print("----------feedModel:${feedModel.toJson().toString()}");
     // 跳转动态详情页
-    AppRouter.navigateFeedDetailPage(context: context, model: feedModel, type: 1);
+    if( feedModel.code==CODE_SUCCESS||feedModel.code==CODE_NO_DATA){
+      AppRouter.navigateFeedDetailPage(context: context, model:feedModel.data!=null?HomeFeedModel.fromJson(feedModel
+          .data):null, type: 1,
+          errorCode: feedModel.code);
+    }
   }
 
   //所有的item点击事件
