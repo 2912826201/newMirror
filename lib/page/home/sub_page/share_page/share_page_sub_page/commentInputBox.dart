@@ -40,7 +40,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
   Widget build(BuildContext context) {
     // print("底部键盘高度${MediaQuery.of(context).viewInsets.bottom}");
     return Offstage(
-      offstage: widget.isUnderline ? false : context.watch<FeedMapNotifier>().feedMap[widget.feedModel.id].isShowInputBox,
+      offstage: context.watch<FeedMapNotifier>().feedMap[widget.feedModel.id].isShowInputBox,
       child: Container(
         height: widget.isFeedDetail ? 48 + ScreenUtil.instance.bottomBarHeight : 48,
         width: ScreenUtil.instance.width,
