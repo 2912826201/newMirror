@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mirror/config/application.dart';
-import 'package:mirror/data/notifier/feed_notifier.dart';
-import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_bottom_sheet.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:union_tabs/union_tabs.dart';
 import 'package:provider/provider.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'media_picker/media_picker_page.dart';
 
@@ -29,6 +26,7 @@ class IfPageState extends XCState with TickerProviderStateMixin,WidgetsBindingOb
   void initState() {
     // 最外层TabBar 默认定位到第二页
     _controller = TabController(length: 2, vsync: this, initialIndex: 1);
+    Application.ifPageController = _controller;
     super.initState();
     // _controller.addListener(() {
     //   if(context.watch<FeedMapNotifier>().postFeedModel != null) {
@@ -97,7 +95,7 @@ class IfPageState extends XCState with TickerProviderStateMixin,WidgetsBindingOb
       false,
       publishMode: 2,
     ));
-    tabContent.add(MainPage(ifPageController: _controller,));
+    tabContent.add(MainPage());
     return tabContent;
   }
 

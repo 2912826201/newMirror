@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/feed/post_feed.dart';
@@ -24,16 +25,11 @@ import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key, this.controller, this.ifPageController}) : super(key: key);
-  TabController controller;
-  TabController ifPageController;
 
-  HomePageState createState() => HomePageState(controller: controller);
+  HomePageState createState() => HomePageState();
 }
 
 class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin {
-  HomePageState({TabController controller});
-
   // taBar和TabBarView必要的
   TabController controller;
 
@@ -243,11 +239,12 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     print("HomePage_____________________________________________build");
     // 发布动态
     if (context.watch<FeedMapNotifier>().postFeedModel != null && context.watch<FeedMapNotifier>().isPublish) {
       // 定位到main_page页
-      widget.ifPageController.index = 1;
+      Application.ifPageController.index = Application.ifPageController.length - 1;
       // 定位到关注页
       controller.index = 0;
       // 关注页回到顶部
@@ -277,8 +274,8 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                   // AppRouter.navigateToMediaPickerPage(
                   //     context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
                   //     publishMode: 1);
-                  if(context.read<TokenNotifier>().isLoggedIn){
-                    widget.ifPageController.animateTo(0);
+                  if (context.read<TokenNotifier>().isLoggedIn) {
+                    Application.ifPageController.animateTo(0);
                   } else {
                     AppRouter.navigateToLoginPage(context);
                   }
