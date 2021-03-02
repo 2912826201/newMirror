@@ -74,7 +74,7 @@ class ChatPage extends StatefulWidget {
   }
 }
 
-class ChatPageState extends XCState with TickerProviderStateMixin {
+class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBindingObserver {
   ConversationDto conversation;
   Message shareMessage;
 
@@ -176,7 +176,12 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+
+    //初始化
+    WidgetsBinding.instance.addObserver(this);
+
     initData();
+
     context.read<ChatMessageProfileNotifier>().isResetPage = false;
     if (conversation.getType() != RCConversationType.System) {
       initSetData();
@@ -249,7 +254,29 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
       _timer.cancel();
       _timer = null;
     }
+    //销毁
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  // @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (this.context != null) {
+        if (MediaQuery.of(this.context).viewInsets.bottom == 0) {
+          //关闭键盘
+        } else {
+          //显示键盘
+          if (Application.keyboardHeight <= MediaQuery.of(this.context).viewInsets.bottom) {
+            Application.keyboardHeight = MediaQuery.of(this.context).viewInsets.bottom;
+            if(Application.keyboardHeight>300) {
+              reload(() {});
+            }
+          }
+        }
+      }
+    });
   }
 
   ///----------------------------------------ui start---------------------------------------------///
@@ -1349,6 +1376,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
       },
     );
   }
+
+
+
 
   initTextController() {
     // print("值改变了");
