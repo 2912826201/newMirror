@@ -306,8 +306,6 @@ class SelectedbottomNavigationBarNotifier extends ChangeNotifier {
   changeIndex(int index) {
     print("changeIndex $index");
     this.selectedIndex = index;
-    SingletonForWholePages.singleton().index = index;
-    SingletonForWholePages.singleton().IfPagekey.currentState.setState(() {});
     //控制panel的控制器对象
     notifyListeners();
   }
