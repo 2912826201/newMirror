@@ -55,6 +55,9 @@ class Application {
   //TODO 评论输入框等提示语 需要考量是否有更合适的方式管理
   static String hintText = "";
 
+  //IfPage的TabController
+  static TabController ifPageController;
+
   //相机列表
   static List<CameraDescription> cameras;
   static bool isCameraInUse = false;
