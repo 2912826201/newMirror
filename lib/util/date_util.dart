@@ -297,7 +297,9 @@ class DateUtil {
       int minute = ms % 3600 ~/ 60;
       int second = ms % 60;
       if (hour > 0) {
-        return "${hour > 10 ? hour : "0" + hour.toString()}:${minute > 10 ? minute : "0" + minute.toString()}:${second > 10 ? second : "0" + second.toString()}";
+        return "${hour > 10 ? hour : "0" + hour.toString()}:"
+            "${minute > 10 ? minute : "0" + minute.toString()}:"
+            "${second > 10 ? second : "0" + second.toString()}";
       } else if (minute > 0) {
         return "${minute > 10 ? minute : "0" + minute.toString()}:${second > 10 ? second : "0" + second.toString()}";
       } else {
@@ -332,7 +334,9 @@ class DateUtil {
       int minute = ms % 3600 ~/ 60;
       int second = ms % 60;
       if (hour > 0) {
-        return "${hour > 10 ? hour : "0" + hour.toString()}:${minute > 10 ? minute : "0" + minute.toString()}:${second > 10 ? second : "0" + second.toString()}";
+        return "${hour > 10 ? hour : "0" + hour.toString()}:"
+            "${minute > 10 ? minute : "0" + minute.toString()}:"
+            "${second > 10 ? second : "0" + second.toString()}";
       } else if (minute > 0) {
         return "${minute > 10 ? minute : "0" + minute.toString()}:${second > 10 ? second : "0" + second.toString()}";
       } else {
@@ -408,8 +412,8 @@ class DateUtil {
       if (isToYear(dateTime)) {
         alertString += formatDateV(dateTime, format: "M${isShowText?"月":"-"}d${isShowText?"日":""}");
       } else {
-        alertString += formatDateV(dateTime, format: "yy${isShowText?"年":"-"}M${isShowText?"月":"-"}d${isShowText?"日":"-"
-            ""}");
+        alertString += formatDateV(dateTime,
+            format: "yy${isShowText?"年":"-"}M${isShowText?"月":"-"}d${isShowText?"日":"-"}");
       }
     }
     alertString += " ${formatDateV(dateTime, format: "HH:mm")}";

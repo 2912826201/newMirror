@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
@@ -89,19 +91,28 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
 
   // 请求下一页
   int lastTime;
- // 是否存在下一页
+
+  // 是否存在下一页
   int hasNext;
+
   // 加载中默认文字
   String loadText = "";
   bool isLogin = true;
   // 加载状态
   LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
 
-@override
+  // 初始化的第一个item上的间距
+  double initHeight = 0.0;
+
+  // 声明定时器
+  Timer timer;
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
+
   @override
   void initState() {
     // 合并请求
@@ -125,7 +136,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       newRecommendCoach(),
     ]).then((results) {
       if (mounted) {
-
         if (recommendModelList.isNotEmpty) {
           recommendIdList.clear();
         }
@@ -133,6 +143,12 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
           liveVideoModel.clear();
         }
         setState(() {
+          if (results[1] != null) {
+            initHeight += 93;
+            liveVideoModel = results[1];
+            print("推荐教练书剑返回");
+            print(liveVideoModel.toString());
+          }
           if (results[0] != null) {
             List<HomeFeedModel> modelList = [];
             DataResponseModel dataModel = results[0];
@@ -154,13 +170,9 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
               loadStatus = LoadingStatus.STATUS_COMPLETED;
               loadText = "";
             }
+            recommendModelList = StringUtil.getFeedItemHeight(initHeight, recommendModelList);
             // 更新全局监听
             context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
-          }
-          if (results[1] != null) {
-            liveVideoModel = results[1];
-            print("推荐教练书剑返回");
-            print(liveVideoModel.toString());
           }
         });
       }
@@ -202,13 +214,14 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       loadStatus = LoadingStatus.STATUS_IDEL;
       loadText = "加载中...";
     }
-    if (hasNext == 0){
+    if (hasNext == 0) {
       loadText = "已加载全部动态";
       loadStatus = LoadingStatus.STATUS_COMPLETED;
     }
     if (mounted) {
       setState(() {});
     }
+    recommendModelList = StringUtil.getFeedItemHeight(initHeight, recommendModelList);
     // 更新全局监听
     context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
   }
@@ -241,9 +254,22 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                     } else if (notification is ScrollUpdateNotification) {
                       // 滚动位置更新
                       // print('滚动位置更新');
+                      if (timer != null) {
+                        timer.cancel();
+                      }
                       // 当前位置
                       // print("当前位置${metrics.pixels}");
                     } else if (notification is ScrollEndNotification) {
+                      timer = Timer(Duration(milliseconds: 3000), () {
+                        print("定时1秒到了");
+                        for (int i = 0; i < recommendModelList.length; i++) {
+                          HomeFeedModel value = recommendModelList[i];
+                          if (metrics.pixels >= value.headOffset && metrics.pixels < value.bottomOffset) {
+                            print("进了");
+                            context.read<FeedMapNotifier>().showInputBox(value.id);
+                          }
+                        }
+                      });
                       // 滚动结束
                       // print('滚动结束');
                     }
@@ -321,32 +347,34 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
         shrinkWrap: true,
         itemCount: liveVideoModel.length,
         itemBuilder: (context, index) {
-          return  GestureDetector(
+          return GestureDetector(
             onTap: () {
-              if(context.read<TokenNotifier>().isLoggedIn){
-                if(liveVideoModel[index].coachDto.isLiving == 0) {
+              if (context.read<TokenNotifier>().isLoggedIn) {
+                if (liveVideoModel[index].coachDto.isLiving == 0) {
                   AppRouter.navigateToMineDetail(context, liveVideoModel[index].coachDto.uid);
                 } else {
-                  ToastShow.show(msg: "直播页", context: context,gravity: Toast.CENTER);
+                  ToastShow.show(msg: "直播页", context: context, gravity: Toast.CENTER);
                 }
-              }else{
+              } else {
                 AppRouter.navigateToLoginPage(context);
               }
-
             },
-            child:   Container(
+            child: Container(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
                     margin: EdgeInsets.only(
-                        left: index > 0 ? 24 : 16, right: index == liveVideoModel.length - 1 ? 16 : 0, top: 0, bottom: 8.5),
+                        left: index > 0 ? 24 : 16,
+                        right: index == liveVideoModel.length - 1 ? 16 : 0,
+                        top: 0,
+                        bottom: 8.5),
                     height: 53,
                     width: 53,
                     decoration: BoxDecoration(
                       // color: Colors.redAccent,
-                      image:
-                      DecorationImage(image: NetworkImage(liveVideoModel[index].coachDto.avatarUri), fit: BoxFit.cover),
+                      image: DecorationImage(
+                          image: NetworkImage(liveVideoModel[index].coachDto.avatarUri), fit: BoxFit.cover),
                       // image
                       borderRadius: BorderRadius.all(Radius.circular(26.5)),
                     ),
@@ -354,7 +382,10 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                   Container(
                     width: 53,
                     margin: EdgeInsets.only(
-                        left: index > 0 ? 24 : 16, right: index == liveVideoModel.length - 1 ? 16 : 0, top: 0, bottom: 8.5),
+                        left: index > 0 ? 24 : 16,
+                        right: index == liveVideoModel.length - 1 ? 16 : 0,
+                        top: 0,
+                        bottom: 8.5),
                     child: Center(
                       child: Text(
                         liveVideoModel[index].coachDto.nickName,
@@ -365,7 +396,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                   )
                 ],
               ),
-            ) ,
+            ),
           );
         },
       ),
