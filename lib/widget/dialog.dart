@@ -107,6 +107,7 @@ class _AppDialog extends StatelessWidget {
           title,
           style: AppStyle.textRegular18,
           softWrap: false,
+          maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
       ));
@@ -170,6 +171,7 @@ class _AppDialog extends StatelessWidget {
                 cancel.text,
                 style: AppStyle.textRegular18,
                 softWrap: false,
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             )),
@@ -194,6 +196,7 @@ class _AppDialog extends StatelessWidget {
                 confirm.text,
                 style: TextStyle(color: AppColor.mainRed, fontSize: 18),
                 softWrap: false,
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             )),
@@ -252,6 +255,7 @@ class _AppDialog extends StatelessWidget {
                 element.text,
                 style: TextStyle(color: AppColor.mainBlue, fontSize: 18),
                 softWrap: false,
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             )));

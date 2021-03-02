@@ -535,6 +535,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
               "继续播放：普拉提产后恢复系列高速燃脂普拉提产后恢复系列高速燃脂",
               softWrap: false,
               overflow: TextOverflow.ellipsis,
+              maxLines: 1,
               style: TextStyle(color: AppColor.white, fontSize: 14),
             )),
             SizedBox(

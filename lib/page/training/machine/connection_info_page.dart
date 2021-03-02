@@ -122,6 +122,7 @@ class _ConnectionInfoState extends State<ConnectionInfoPage> {
                           child: Text(
                         notifier.machine.wifi == null ? "未连接" : "${notifier.machine.wifi}",
                         softWrap: false,
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.end,
                         style: AppStyle.textSecondaryRegular16,
