@@ -493,12 +493,14 @@ var handlerFeedDetailPage = Handler(handlerFunc: (BuildContext context, Map<Stri
   if (data["model"] != null) {
     model = HomeFeedModel.fromJson(data["model"]);
   }
+
   return FeedDetailPage(
     fatherModel: fatherModel,
     comment: comment,
     model: model,
     index: data['index'],
     type: data['type'],
+    errorCode: data["errorCode"],
   );
 });
 // 所在位置页面

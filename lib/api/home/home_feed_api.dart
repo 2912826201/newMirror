@@ -388,16 +388,12 @@ Future<Map> deletefeed({@required int id}) async {
   }
 }
 // 获取动态详情 DETAIL
-Future<HomeFeedModel> feedDetail({@required int id}) async {
+Future<BaseResponseModel> feedDetail({@required int id}) async {
   Map<String, dynamic> params = {};
   params["id"] = id;
   BaseResponseModel responseModel = await requestApi(DETAIL, params);
   if (responseModel.isSuccess) {
-    HomeFeedModel feedModel;
-    if (responseModel.data != null) {
-      feedModel = HomeFeedModel.fromJson(responseModel.data);
-    }
-    return feedModel;
+    return responseModel;
   } else {
     return null;
   }
