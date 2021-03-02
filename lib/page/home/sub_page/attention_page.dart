@@ -193,7 +193,15 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
 
   // 插入数据
   insertData(int id) {
-    attentionIdList.insert(1, id);
+    setState(() {
+      print("插入数据");
+      print(  attentionIdList.toString());
+      if(attentionIdList.isEmpty) {
+        attentionIdList.insert(0, -1);
+      }
+      attentionIdList.insert(1, id);
+      status = Status.concern;
+    });
   }
 
   // 回到顶部
@@ -227,6 +235,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             if (attentionIdList.length == 1 && attentionIdList.first == -1) {
               loadStatus = LoadingStatus.STATUS_IDEL;
               loadText = "";
+              attentionIdList.clear();
+              attentionModelList.clear();
               status = Status.noConcern;
             }
           });
