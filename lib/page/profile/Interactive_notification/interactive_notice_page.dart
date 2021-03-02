@@ -475,27 +475,27 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     try{
       if (widget.msgModel.refType == 0) {
         print('=====================动态');
-        getFeedDetail(context, feedModel.id, comment: widget.type == 0 ? widget.msgModel.commentData : null);
+        getFeedDetail(context, feedModel.id, comment: widget.msgModel.commentData);
       } else if (widget.msgModel.refType == 2) {
         if (fatherCommentModel.type == 0) {
           getFeedDetail(context, fatherCommentModel.targetId,
-              comment: widget.type == 0 ? widget.msgModel.commentData : null, fatherModel: fatherCommentModel);
+              comment:widget.msgModel.commentData, fatherModel: fatherCommentModel);
         } else if (fatherCommentModel.type == 1) {
           AppRouter.navigateToLiveDetail(context, fatherCommentModel.targetId,
               isHaveStartTime: false,
-              commentDtoModel: widget.type == 0 ? widget.msgModel.commentData : null,
+              commentDtoModel: widget.msgModel.commentData,
               fatherComment: fatherCommentModel);
         } else if (fatherCommentModel.type == 3) {
           AppRouter.navigateToVideoDetail(context, fatherCommentModel.targetId,
-              commentDtoModel: widget.type == 0 ? widget.msgModel.commentData : null, fatherComment: fatherCommentModel);
+              commentDtoModel:widget.msgModel.commentData , fatherComment: fatherCommentModel);
         }
       } else if (widget.msgModel.refType == 1 && liveVideoModel != null && liveVideoModel.id != null) {
         AppRouter.navigateToLiveDetail(context, liveVideoModel.id,
-            isHaveStartTime: false, commentDtoModel: widget.type == 0 ? widget.msgModel.commentData : null);
+            isHaveStartTime: false, commentDtoModel:  widget.msgModel.commentData);
       } else {
         if (liveVideoModel != null && liveVideoModel.id != null) {
           AppRouter.navigateToVideoDetail(context, liveVideoModel.id,
-              commentDtoModel: widget.type == 0 ? widget.msgModel.commentData : null);
+              commentDtoModel:widget.msgModel.commentData);
         }
       }
       widget.msgModel.isRead = 1;
