@@ -197,20 +197,20 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         isFirstScroll = false;
       });
     }
-    if (!widget.isShowHotOrTime &&
-        courseCommentHot != null &&
-        context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments != null &&
-        context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length > 0) {
-
-
-      if (context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length != courseCommentHot.list.length ||
-          courseCommentHot.list.length != commentListSubSettingList.length) {
-        List<CommentDtoModel> list=<CommentDtoModel>[];
-        list.addAll(context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments);
-        courseCommentHot.list = list;
-        resetSubSetting(courseCommentHot);
-      }
-    }
+    // if (!widget.isShowHotOrTime &&
+    //     courseCommentHot != null &&
+    //     context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments != null &&
+    //     context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length > 0) {
+    //
+    //
+    //   if (context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length != courseCommentHot.list.length ||
+    //       courseCommentHot.list.length != commentListSubSettingList.length) {
+    //     List<CommentDtoModel> list=<CommentDtoModel>[];
+    //     list.addAll(context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments);
+    //     courseCommentHot.list = list;
+    //     resetSubSetting(courseCommentHot);
+    //   }
+    // }
 
     int count = isHotOrTime ? (courseCommentHot?.totalCount) : (courseCommentTime?.totalCount);
     if (count == null) {
