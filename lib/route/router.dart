@@ -669,6 +669,7 @@ class AppRouter {
     HomeFeedModel model,
     int index,
     int type,
+    int errorCode,
     Function(dynamic result) callBack
   }) {
     Map<String, dynamic> map = Map();
@@ -685,6 +686,8 @@ class AppRouter {
       map['index'] = index;
     }
     map['type'] = type;
+
+    map["errorCode"] = errorCode;
     _navigateToPage(context, pathFeedDetailPage, map,callback: callBack);
   }
 

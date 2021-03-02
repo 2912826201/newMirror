@@ -20,7 +20,7 @@ class ChatDetailsBody extends StatelessWidget {
   final TickerProvider vsync;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
-  final String chatUserName;
+  final String chatName;
   final bool isShowChatUserName;
   final bool isPersonalButler;
   final GestureTapCallback onTap;
@@ -32,12 +32,14 @@ class ChatDetailsBody extends StatelessWidget {
   final int conversationDtoType;
   final bool isHaveAtMeMsg;
   final String loadText;
+  final String chatId;
   final LoadingStatus loadStatus;
   final bool isShowTop;
 
   ChatDetailsBody(
       {this.scrollController,
       this.chatDataList,
+      this.chatId,
       this.conversationDtoType,
       this.loadText,
       this.loadStatus,
@@ -46,7 +48,7 @@ class ChatDetailsBody extends StatelessWidget {
       this.isHaveAtMeMsg,
       this.firstEndCallback,
       this.vsync,
-      this.chatUserName,
+      this.chatName,
       this.onTap,
       this.isShowTop=false,
       this.isPersonalButler = false,
@@ -58,6 +60,8 @@ class ChatDetailsBody extends StatelessWidget {
 
   List<ChatDataModel> chatData = <ChatDataModel>[];
 
+
+  bool isScroll=false;
 
   @override
   Widget build(BuildContext context) {
@@ -86,14 +90,17 @@ class ChatDetailsBody extends StatelessWidget {
                 // }
                 // 滚动开始
                 // print('滚动开始');
+                isScroll=true;
               } else if (notification is ScrollUpdateNotification) {
                 // 滚动位置更新
                 // print('滚动位置更新');
                 // 当前位置
                 // print("当前位置${metrics.pixels}");
+                isScroll=true;
               } else if (notification is ScrollEndNotification) {
                 // 滚动结束
                 // print('滚动结束');
+                isScroll=false;
               }
               return false;
             },
@@ -125,7 +132,11 @@ class ChatDetailsBody extends StatelessWidget {
                   );
                 }
               },
-                firstEndCallback: firstEndCallback,
+                firstEndCallback: (int firstIndex, int lastIndex){
+                  if(isScroll){
+                    firstEndCallback(firstIndex,lastIndex);
+                  }
+                },
                 childCount: chatData.length,
               ),
               dragStartBehavior: DragStartBehavior.down,
@@ -214,10 +225,11 @@ class ChatDetailsBody extends StatelessWidget {
 
     return SendMessageView(
         model,
+        chatId,
         position,
         voidMessageClickCallBack,
         voidItemLongClickCallBack,
-        chatUserName,
+        chatName,
         isShowChatUserName,
         conversationDtoType);
   }

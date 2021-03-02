@@ -7,6 +7,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/data/dto/group_chat_user_information_dto.dart';
 import 'package:mirror/data/model/message/message_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
@@ -527,11 +528,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                     Expanded(
                         child: Text(
                       //FIXME 这个逻辑需要在群成员数据库写好后替换掉
-                      conversation.type == GROUP_TYPE &&
-                              conversation.senderUid != null &&
-                              conversation.senderUid != Application.profile.uid
-                          ? "${conversation.senderUid}:${conversation.content}"
-                          : "${conversation.content}",
+                      _getItemContent(conversation)??"",
                       overflow: TextOverflow.ellipsis,
                       softWrap: false,
                       maxLines: 1,
@@ -557,5 +554,36 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         ],
       ),
     );
+  }
+
+
+
+  String _getItemContent(ConversationDto conversation){
+    if(conversation.type == GROUP_TYPE &&
+        conversation.senderUid != null &&
+        conversation.senderUid != Application.profile.uid){
+      // print("用户id:${conversation.senderUid.toString()},群id:${conversation.conversationId}");
+      return _getChatUserName(conversation.conversationId,
+          conversation.senderUid.toString(),conversation.senderUid.toString())+":${conversation.content}";
+    }else{
+      return conversation.content;
+    }
+  }
+
+  String _getChatUserName(String groupId,String uId, String name) {
+    // print("${groupId}_$uId");
+    // print(Application.chatGroupUserInformationMap);
+    // print(Application.chatGroupUserInformationMap["${groupId}_$uId"].toString());
+    // print(GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME);
+    // print((Application.chatGroupUserInformationMap["${groupId}_$uId"]??Map())[GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
+    String userName = (Application.chatGroupUserInformationMap["${groupId}_$uId"]??Map())
+    [GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]??
+        (Application.chatGroupUserInformationMap["${groupId}_$uId"]??Map())
+        [GROUP_CHAT_USER_INFORMATION_USER_NAME];
+    if (userName == null) {
+      return name;
+    } else {
+      return userName;
+    }
   }
 }

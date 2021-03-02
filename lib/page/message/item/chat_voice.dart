@@ -5,6 +5,7 @@ import 'package:flutter_sound_lite/flutter_sound.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/voice_alert_date_model.dart';
+import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -108,7 +109,9 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     costTime = 0;
     context.read<VoiceAlertData>().changeCallback(
         showDataTime: DateUtil.formatSecondToStringNum(costTime));
-    print("showVoiceView");
+    context.read<VoiceAlertData>().changeCallback(alertText: "手指上滑,取消发送");
+
+    // print("showVoiceView");
 
     _mPath = AppConfig.getAppVoiceFilePath();
     var outputFile = File(_mPath);
@@ -119,7 +122,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     isUp = false;
     int index;
     setState(() {
-      textShow = "松开结束";
+      textShow = "松开发送";
       voiceState = false;
       DateTime now = new DateTime.now();
       int date = now.millisecondsSinceEpoch;
@@ -140,7 +143,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       return;
     }
     this.automaticPost=automaticPost;
-    print("hideVoiceView");
+    // print("hideVoiceView");
     setState(() {
       textShow = "按住说话";
       voiceState = true;
@@ -148,28 +151,36 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
 
     stopRecorder();
 
-    if (overlayEntry != null) {
-      overlayEntry.remove();
-      overlayEntry = null;
-    }
+
     if (_timer != null) {
       costTime = _timer.tick + 1;
       _timer.cancel();
       _timer = null;
     }
     if (costTime < 2) {
-      ToastShow.show(msg: "录制时长不够", context: context);
+      context.read<VoiceAlertData>().changeCallback(alertText: "说话时间太短");
       var outputFile = File(_mPath);
       if (outputFile.existsSync()) {
         await outputFile.delete();
       }
+      Future.delayed(Duration(milliseconds: 600),(){
+        if (overlayEntry != null) {
+          overlayEntry.remove();
+          overlayEntry = null;
+        }
+      });
     } else {
+      if (overlayEntry != null) {
+        overlayEntry.remove();
+        overlayEntry = null;
+      }
       if (isUp) {
         print("取消发送");
         records.removeLast();
       } else {
         print("进行发送");
         widget.voiceFile(_mPath, costTime);
+        // print("进行发送：_mPath：$_mPath");
       }
     }
     print(records.toString());
@@ -184,7 +195,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
         toastShow = textShow;
         context.read<VoiceAlertData>().changeCallback(alertText: "松开手指,取消发送");
       } else {
-        textShow = "松开结束";
+        textShow = "松开发送";
         toastShow = "手指上滑,取消发送";
         context.read<VoiceAlertData>().changeCallback(alertText: "手指上滑,取消发送");
       }
@@ -203,6 +214,9 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
         if (status != PermissionStatus.granted) {
           throw RecordingPermissionException('Microphone permission not granted');
         }else {
+          if(ClickUtil.isFastClick()){
+            return;
+          }
           startY = details.globalPosition.dy;
           showVoiceView();
         }
@@ -214,7 +228,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
         moveVoiceView();
       },
       child: new Container(
-        height: 32.0,
+        height: 28.0,
         alignment: Alignment.center,
         width: MediaQuery
             .of(context)

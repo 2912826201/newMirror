@@ -5,12 +5,14 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
@@ -109,10 +111,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
   List<EmojiModel> emojiModelList = <EmojiModel>[];
 
   ///对话的用户的名字
-  String chatUserName;
+  String chatName;
 
   ///对话用户id
-  String chatUserId;
+  String chatId;
 
   ///这个是什么类型的对话--中文
   ///[chatType] 会话类型，参见类型 [OFFICIAL_TYPE]
@@ -212,7 +214,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
 
   @override
   Widget shouldBuild(BuildContext context) {
-    if (chatUserName == null) {
+    if (chatName == null) {
       initData();
     }
     return WillPopScope(
@@ -268,7 +270,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
             ChatAtUserList(
               isShow: context.read<ChatEnterNotifier>().keyWord == "@",
               onItemClickListener: atListItemClick,
-              groupChatId: chatUserId,
+              groupChatId: chatId,
             ),
           ],
         ),
@@ -305,11 +307,12 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
     return ChatDetailsBody(
       scrollController: _scrollController,
       chatDataList: chatDataList,
+      chatId:chatId,
       onTap: () => _messageInputBodyClick(),
       vsync: this,
       voidItemLongClickCallBack: onItemLongClickCallBack,
       voidMessageClickCallBack: onMessageClickCallBack,
-      chatUserName: chatUserName,
+      chatName: chatName,
       conversationDtoType: conversation.type,
       isPersonalButler: isPersonalButler,
       refreshController: _refreshController,
@@ -321,16 +324,14 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
       loadStatus: loadStatus,
       isShowChatUserName: isShowName,
       onAtUiClickListener: onAtUiClickListener,
-      firstEndCallback: (int firstIndex, int lastIndex) {
-        firstEndCallbackListView(firstIndex, lastIndex);
-      },
+      firstEndCallback:firstEndCallbackListView,
     );
   }
 
   //获取appbar
   Widget getAppBar() {
     return CustomAppBar(
-      titleString: chatUserName ?? "",
+      titleString: chatName ?? "",
       actions: [
         CustomAppBarIconButton(
             icon: Icons.more_horiz, iconColor: AppColor.black, onTap: _topMoreBtnClick),
@@ -711,8 +712,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
 
   //初始化一些数据
   void initData() {
-    chatUserName = "聊天界面";
-    chatUserId = "-1";
+    chatName = "聊天界面";
+    chatId = "-1";
     chatType = "测试聊天";
     chatTypeId = RCConversationType.Private;
     isPersonalButler = false;
@@ -721,11 +722,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
     } else {
       print("-*----------------------" + conversation.toMap().toString());
       if (conversation.name == null || conversation.name.trim().length < 1) {
-        chatUserName = conversation.conversationId;
+        chatName = conversation.conversationId;
       } else {
-        chatUserName = conversation.name;
+        chatName = conversation.name;
       }
-      chatUserId = conversation.conversationId;
+      chatId = conversation.conversationId;
       chatType = getMessageType(conversation, context);
       chatTypeId = conversation.getType();
 
@@ -733,12 +734,12 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
         isPersonalButler = true;
       }
     }
-    context.read<ChatMessageProfileNotifier>().setData(chatTypeId, chatUserId);
+    context.read<ChatMessageProfileNotifier>().setData(chatTypeId, chatId);
     if (chatTypeId == RCConversationType.Group) {
-      getChatGroupUserModelList(chatUserId, context);
+      getChatGroupUserModelList(chatId, context);
     }
 
-    print("----------------------------chatUserName:$chatUserName$chatUserId");
+    print("----------------------------chatUserName:$chatName$chatId");
   }
 
   //初始化一些数据
@@ -781,7 +782,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
     if (conversation.type != PRIVATE_TYPE) {
       isShowTopAttentionUi = false;
     } else {
-      Map<String, dynamic> map = await relation(Application.profile.uid, int.parse(chatUserId));
+      Map<String, dynamic> map = await relation(Application.profile.uid, int.parse(chatId));
       if (map == null || map["relation"] == null || map["relation"] == 1 || map["relation"] == 3) {
         isShowTopAttentionUi = false;
       } else {
@@ -835,7 +836,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
   ChatDataModel getTimeAlertModel(int sentTime) {
     ChatDataModel dataModel = new ChatDataModel();
     dataModel.msg = getAlertTimeMsg(
-        time: sentTime, sendTime: sentTime, targetId: chatUserId, conversationType: RCConversationType.Private);
+        time: sentTime, sendTime: sentTime, targetId: chatId, conversationType: RCConversationType.Private);
     return dataModel;
   }
 
@@ -857,7 +858,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
       isHaveAtMeMsg = false;
       isHaveAtMeMsgPr = false;
     } else {
-      atMeMsg = Application.atMesGroupModel.getAtMsg(chatUserId);
+      atMeMsg = Application.atMesGroupModel.getAtMsg(chatId);
       if (atMeMsg == null) {
         isHaveAtMeMsg = false;
         isHaveAtMeMsgPr = false;
@@ -1275,7 +1276,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
       builder: (context, notifier, child) {
         Message message = context.select((ChatMessageProfileNotifier value) => value.message);
         bool isSettingStatus = context.select((ChatMessageProfileNotifier value) => value.isSettingStatus);
-        if (message == null || message.targetId != this.chatUserId && message.conversationType != chatTypeId) {
+        if (message == null || message.targetId != this.chatId && message.conversationType != chatTypeId) {
           //是不是更新消息的状态
           if (isSettingStatus) {
             Application.appContext.read<ChatMessageProfileNotifier>().setSettingStatus(false);
@@ -1316,7 +1317,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
           //判断是不是群通知
           if (chatTypeId == RCConversationType.Group) {
             print("--------------------------------");
-            getChatGroupUserModelList1(chatUserId, context);
+            getChatGroupUserModelList1(chatId, context);
           }
         }
         delayedSetState();
@@ -1335,8 +1336,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
           context.watch<ChatMessageProfileNotifier>().isResetPage = false;
           context.watch<ChatMessageProfileNotifier>().resetMessage = null;
           if (message != null) {
-            getChatGroupUserModelList1(chatUserId, context);
-            insertExitGroupMsg(message, chatUserId, (Message msg, int code) {
+            getChatGroupUserModelList1(chatId, context);
+            insertExitGroupMsg(message, chatId, (Message msg, int code) {
               if (code == 0) {
                 chatDataList.insert(0, getMessage(msg));
                 delayedSetState();
@@ -1474,7 +1475,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
   //检查黑名单状态
   void profileCheckBlack() async {
     if (conversation.type == PRIVATE_TYPE) {
-      BlackModel blackModel = await ProfileCheckBlack(int.parse(chatUserId));
+      BlackModel blackModel = await ProfileCheckBlack(int.parse(chatId));
       String text = "";
       if (blackModel.inYouBlack == 1) {
         text = "你已经将他拉黑了！";
@@ -1575,7 +1576,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
   _topMoreBtnClick() {
     _focusNode.unfocus();
     // ToastShow.show(msg: "点击了更多按钮", context: context);
-    judgeJumpPage(chatTypeId, this.chatUserId, conversation.type, context, chatUserName, _morePageOnClick,
+    judgeJumpPage(chatTypeId, this.chatId, conversation.type, context, chatName, _morePageOnClick,
         _moreOnClickExitChatPage);
   }
 
@@ -1584,13 +1585,13 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
     //type  0-用户名  1--群名 2--拉黑 3--邀请不是相互关注-进行提醒
     if (type == 0) {
       //修改了用户名
-      Application.chatGroupUserNameMap.clear();
-      for (ChatGroupUserModel userModel in context.read<GroupUserProfileNotifier>().chatGroupUserModelList) {
-        Application.chatGroupUserNameMap[userModel.uid.toString()] = userModel.groupNickName;
-      }
+      // Application.chatGroupUserNameMap.clear();
+      // for (ChatGroupUserModel userModel in context.read<GroupUserProfileNotifier>().chatGroupUserModelList) {
+      //   Application.chatGroupUserNameMap[userModel.uid.toString()] = userModel.groupNickName;
+      // }
       delayedSetState();
     } else if (type == 1) {
-      chatUserName = name;
+      chatName = name;
       //修改了群名
       // _postUpdateGroupName(name);
     } else if (type == 2) {
@@ -1605,7 +1606,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
   //更多界面点击了退出群聊-要退出聊天界面
   _moreOnClickExitChatPage() {
     //退出群聊
-    MessageManager.removeConversation(context, chatUserId, Application.profile.uid, conversation.type);
+    MessageManager.removeConversation(context, chatId, Application.profile.uid, conversation.type);
     // Application.rongCloud.clearMessages(getRCConversationType(chatUserId??10),Application.profile.uid.toString(),null);
     Future.delayed(Duration.zero, () {
       Navigator.of(context).pop();
@@ -1615,23 +1616,23 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
   //头部显示的关注按钮的点击事件
   _attntionOnClick() async {
     if (conversation.type == PRIVATE_TYPE) {
-      BlackModel blackModel = await ProfileCheckBlack(int.parse(chatUserId));
+      BlackModel blackModel = await ProfileCheckBlack(int.parse(chatId));
       String text = "";
       if (blackModel.inYouBlack == 1) {
         text = "关注失败，你已将对方加入黑名单";
       } else if (blackModel.inThisBlack == 1) {
         text = "关注失败，你已被对方加入黑名单";
       } else {
-        int attntionResult = await ProfileAddFollow(int.parse(chatUserId));
+        int attntionResult = await ProfileAddFollow(int.parse(chatId));
         if (attntionResult == 1 || attntionResult == 3) {
           text = "关注成功!";
           isShowTopAttentionUi = false;
           if (mounted) {
             reload(() {});
           }
-          if (context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(int.parse(chatUserId))) {
+          if (context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(int.parse(chatId))) {
             print('=================个人主页同步');
-            context.read<ProfilePageNotifier>().changeIsFollow(true, false, int.parse(chatUserId));
+            context.read<ProfilePageNotifier>().changeIsFollow(true, false, int.parse(chatId));
           }
         }
       }
@@ -1843,13 +1844,19 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
 
   // 请求动态详情页数据
   getFeedDetail(int feedId) async {
-    HomeFeedModel feedModel = await feedDetail(id: feedId);
-    List<HomeFeedModel> list = [];
-    list.add(feedModel);
-    context.read<FeedMapNotifier>().updateFeedMap(list);
+    BaseResponseModel feedModel = await feedDetail(id: feedId);
+    if(feedModel.data!=null){
+      List<HomeFeedModel> list = [];
+      list.add(HomeFeedModel.fromJson(feedModel.data));
+      context.read<FeedMapNotifier>().updateFeedMap(list);
+    }
     // print("----------feedModel:${feedModel.toJson().toString()}");
     // 跳转动态详情页
-    AppRouter.navigateFeedDetailPage(context: context, model: feedModel, type: 1);
+    if( feedModel.code==CODE_SUCCESS||feedModel.code==CODE_NO_DATA){
+      AppRouter.navigateFeedDetailPage(context: context, model:feedModel.data!=null?HomeFeedModel.fromJson(feedModel
+          .data):null, type: 1,
+          errorCode: feedModel.code);
+    }
   }
 
   //所有的item点击事件

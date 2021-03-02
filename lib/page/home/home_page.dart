@@ -23,6 +23,7 @@ import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
+import 'package:union_tabs/union_tabs.dart';
 
 class HomePage extends StatefulWidget {
 
@@ -66,29 +67,94 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Container(
-                        width: 48,
-                        height: 48,
-                        color: AppColor.mainRed,
-                        margin: EdgeInsets.only(right: 16),
-                      ),
+                      context.watch<FeedMapNotifier>().postFeedModel.selectedMediaFiles != null
+                          ? Container(
+                              width: 36,
+                              height: 36,
+                              margin: EdgeInsets.only(right: 6),
+                              child: Stack(
+                                children: [
+                                  context.watch<FeedMapNotifier>().postFeedModel.selectedMediaFiles.type ==
+                                          mediaTypeKeyVideo
+                                      ? Image.memory(
+                                          context
+                                              .watch<FeedMapNotifier>()
+                                              .postFeedModel
+                                              .selectedMediaFiles
+                                              .list
+                                              .first
+                                              .thumb,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : context
+                                                  .watch<FeedMapNotifier>()
+                                                  .postFeedModel
+                                                  .selectedMediaFiles
+                                                  .list
+                                                  .first
+                                                  .croppedImageData !=
+                                              null
+                                          ? Image.memory(
+                                              context
+                                                  .watch<FeedMapNotifier>()
+                                                  .postFeedModel
+                                                  .selectedMediaFiles
+                                                  .list
+                                                  .first
+                                                  .croppedImageData,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : context
+                                                      .watch<FeedMapNotifier>()
+                                                      .postFeedModel
+                                                      .selectedMediaFiles
+                                                      .list
+                                                      .first
+                                                      .file !=
+                                                  null
+                                              ? Image.file(
+                                                  context
+                                                      .watch<FeedMapNotifier>()
+                                                      .postFeedModel
+                                                      .selectedMediaFiles
+                                                      .list
+                                                      .first
+                                                      .file,
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : Container(),
+                                  context.watch<FeedMapNotifier>().postFeedModel.selectedMediaFiles.type ==
+                                          mediaTypeKeyVideo
+                                      ? Positioned(
+                                          top: 15,
+                                          bottom: 15,
+                                          child: Container(
+                                            width: 13,
+                                            height: 13,
+                                            color: AppColor.mainRed,
+                                          ))
+                                      : Container()
+                                ],
+                              ),
+                            )
+                          : Container(),
                       publishTextStatus(context.watch<FeedMapNotifier>().plannedSpeed),
                       Spacer(),
                       Offstage(
                           offstage: context.watch<FeedMapNotifier>().plannedSpeed != -1,
                           child: Container(
-                            width: 76,
+                            width: 48,
                             child: Row(
                               children: [
                                 Container(
-                                  width: 24,
-                                  height: 24,
+                                  width: 18,
+                                  height: 18,
                                   color: Colors.lime,
                                 ),
                                 Spacer(),
                                 Container(
-                                  width: 24,
-                                  height: 24,
+                                  width: 18,
+                                  height: 18,
                                   color: Colors.lime,
                                 ),
                               ],
@@ -112,17 +178,17 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     if (plannedSpeed >= 0 && plannedSpeed < 1) {
       return Text(
         "正在发布",
-        style: AppStyle.textRegular16,
+        style: AppStyle.textSecondaryRegular14,
       );
     } else if (plannedSpeed == 1) {
       return Text(
         "完成",
-        style: AppStyle.textRegular16,
+        style: AppStyle.textSecondaryRegular14,
       );
     } else if (plannedSpeed == -1) {
       return Text(
         "我们会在网络信号改善时重试",
-        style: AppStyle.textHintRegular16,
+        style: AppStyle.textSecondaryRegular11,
       );
     }
   }
@@ -218,7 +284,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
           });
           // new Future.delayed(Duration(seconds: 1), () {
           // 插入数据
-          attentionKey.currentState.insertData(HomeFeedModel.fromJson(feedModel).id);
+          attentionKey.currentState.insertData(HomeFeedModel.fromJson(feedModel).id, HomeFeedModel.fromJson(feedModel));
           context
               .read<FeedMapNotifier>()
               .PublishInsertData(HomeFeedModel.fromJson(feedModel).id, HomeFeedModel.fromJson(feedModel));
@@ -321,12 +387,14 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
         ),
         body: Column(
           children: [
-            Offstage(
-              offstage: context.watch<FeedMapNotifier>().postFeedModel == null,
-              child: createdPostPromptView(),
-            ),
+            context.watch<FeedMapNotifier>().postFeedModel != null
+                ? Offstage(
+                    offstage: context.watch<FeedMapNotifier>().postFeedModel == null,
+                    child: createdPostPromptView(),
+                  )
+                : Container(),
             Expanded(
-              child: TabBarView(
+              child: UnionInnerTabBarView(
                 controller: this.controller,
                 children: [
                   AttentionPage(
