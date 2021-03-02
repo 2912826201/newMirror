@@ -324,9 +324,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
       loadStatus: loadStatus,
       isShowChatUserName: isShowName,
       onAtUiClickListener: onAtUiClickListener,
-      firstEndCallback: (int firstIndex, int lastIndex) {
-        firstEndCallbackListView(firstIndex, lastIndex);
-      },
+      firstEndCallback:firstEndCallbackListView,
     );
   }
 

@@ -5,6 +5,7 @@ import 'package:flutter_sound_lite/flutter_sound.dart';
 import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/voice_alert_date_model.dart';
+import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -110,7 +111,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
         showDataTime: DateUtil.formatSecondToStringNum(costTime));
     context.read<VoiceAlertData>().changeCallback(alertText: "手指上滑,取消发送");
 
-    print("showVoiceView");
+    // print("showVoiceView");
 
     _mPath = AppConfig.getAppVoiceFilePath();
     var outputFile = File(_mPath);
@@ -142,7 +143,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       return;
     }
     this.automaticPost=automaticPost;
-    print("hideVoiceView");
+    // print("hideVoiceView");
     setState(() {
       textShow = "按住说话";
       voiceState = true;
@@ -179,6 +180,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       } else {
         print("进行发送");
         widget.voiceFile(_mPath, costTime);
+        // print("进行发送：_mPath：$_mPath");
       }
     }
     print(records.toString());
@@ -212,6 +214,9 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
         if (status != PermissionStatus.granted) {
           throw RecordingPermissionException('Microphone permission not granted');
         }else {
+          if(ClickUtil.isFastClick()){
+            return;
+          }
           startY = details.globalPosition.dy;
           showVoiceView();
         }
@@ -223,7 +228,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
         moveVoiceView();
       },
       child: new Container(
-        height: 32.0,
+        height: 28.0,
         alignment: Alignment.center,
         width: MediaQuery
             .of(context)

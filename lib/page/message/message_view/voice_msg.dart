@@ -8,6 +8,7 @@ import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
+import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:provider/provider.dart';
 
@@ -74,9 +75,9 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    if (urlMd5String == null) {
+    // if (urlMd5String == null) {
       _getUrlMd5String();
-    }
+    // }
 
     return getContentBoxItem(context);
   }
@@ -234,6 +235,10 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
                           ? AppColor.textPrimary1
                           : AppColor.textHint,
                       onTap: () {
+                        if(ClickUtil.isFastClick(time: 300)){
+                          return;
+                        }
+
                         widget.voidMessageClickCallBack(
                             contentType: ChatTypeModel.MESSAGE_TYPE_VOICE,
                             position: widget.position);
@@ -430,13 +435,17 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
     if (widget.isTemporary) {
       urlString = widget.chatVoiceModel.filePath;
       urlMd5String = StringUtil.generateMd5(widget.chatVoiceModel.filePath);
+      // print("地址Benin：${widget.chatVoiceModel.filePath}");
     } else {
       if (widget.chatVoiceModel.pathUrl != null) {
         urlString = widget.chatVoiceModel.pathUrl;
         urlMd5String = StringUtil.generateMd5(widget.chatVoiceModel.pathUrl);
+        // print("地址Benin：${widget.chatVoiceModel.pathUrl}");
       } else {
         urlString = widget.chatVoiceModel.filePath;
         urlMd5String = StringUtil.generateMd5(widget.chatVoiceModel.filePath);
+        // print("地址Benin：${widget.chatVoiceModel.filePath}");
+        // print("urlMd5String：$urlMd5String");
       }
     }
   }
