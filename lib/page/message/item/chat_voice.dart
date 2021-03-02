@@ -106,8 +106,8 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
 
   showVoiceView() async {
     costTime = 0;
-    context.read<VoiceAlertData>().changeCallback(
-        showDataTime: DateUtil.formatSecondToStringNum(costTime));
+
+    context.read<VoiceAlertData>().changeCallback(alertText: "手指上滑,取消发送");
     print("showVoiceView");
 
     _mPath = AppConfig.getAppVoiceFilePath();
@@ -148,22 +148,29 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
 
     stopRecorder();
 
-    if (overlayEntry != null) {
-      overlayEntry.remove();
-      overlayEntry = null;
-    }
+
     if (_timer != null) {
       costTime = _timer.tick + 1;
       _timer.cancel();
       _timer = null;
     }
     if (costTime < 2) {
-      ToastShow.show(msg: "录制时长不够", context: context);
+      context.read<VoiceAlertData>().changeCallback(alertText: "说话时间太短");
       var outputFile = File(_mPath);
       if (outputFile.existsSync()) {
         await outputFile.delete();
       }
+      Future.delayed(Duration(milliseconds: 600),(){
+        if (overlayEntry != null) {
+          overlayEntry.remove();
+          overlayEntry = null;
+        }
+      });
     } else {
+      if (overlayEntry != null) {
+        overlayEntry.remove();
+        overlayEntry = null;
+      }
       if (isUp) {
         print("取消发送");
         records.removeLast();
