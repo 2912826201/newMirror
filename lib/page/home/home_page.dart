@@ -222,7 +222,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
           });
           // new Future.delayed(Duration(seconds: 1), () {
           // 插入数据
-          attentionKey.currentState.insertData(HomeFeedModel.fromJson(feedModel).id);
+          attentionKey.currentState.insertData(HomeFeedModel.fromJson(feedModel).id,HomeFeedModel.fromJson(feedModel));
           context
               .read<FeedMapNotifier>()
               .PublishInsertData(HomeFeedModel.fromJson(feedModel).id, HomeFeedModel.fromJson(feedModel));

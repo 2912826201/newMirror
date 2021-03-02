@@ -192,7 +192,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   }
 
   // 插入数据
-  insertData(int id) {
+  insertData(int id ,HomeFeedModel model) {
     setState(() {
       print("插入数据");
       print(  attentionIdList.toString());
@@ -200,8 +200,13 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         attentionIdList.insert(0, -1);
       }
       attentionIdList.insert(1, id);
+      attentionModelList.insert(0, model);
       status = Status.concern;
     });
+    // 重新计算
+    attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList);
+    // 更新全局监听
+    context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
   }
 
   // 回到顶部
@@ -231,6 +236,11 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           setState(() {
             attentionIdList.remove(id);
             context.read<FeedMapNotifier>().deleteFeed(id);
+            attentionModelList.removeWhere((v) => v.id == id);
+            // 重新计算
+            attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList);
+            // 更新全局监听
+            context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
             print(attentionIdList.toString());
             if (attentionIdList.length == 1 && attentionIdList.first == -1) {
               loadStatus = LoadingStatus.STATUS_IDEL;
@@ -247,15 +257,14 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
 
           ///临时的空数组
           List<int> themList = [];
+          List<HomeFeedModel> feedList = [];
           feedMap.forEach((key, value) {
             if (value.pushId == pushId) {
               themList.add(key);
+              feedList.add(value);
             }
           });
-          print('arrayDate(attentionIdList,themList).length   ==== ${arrayDate(attentionIdList, themList).length}');
           if (arrayDate(attentionIdList, themList).length == 1) {
-            print(
-                '=============================空 themList.length${themList.length} attentionIdList.length${attentionIdList.length}');
             dataPage = 1;
             attentionIdList.clear();
             attentionModelList.clear();
@@ -264,13 +273,15 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             loadText = "";
             getRecommendFeed();
           } else {
-            print('=============================有');
-            print(
-                '=============================有 themList.length${themList.length} attentionIdList.length${attentionIdList.length}');
             setState(() {
               attentionIdList = arrayDate(attentionIdList, themList);
               loadStatus = LoadingStatus.STATUS_IDEL;
               loadText = "";
+              attentionModelList = StringUtil.followModelFilterDeta(attentionModelList, feedList);
+              // 重新计算
+              attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList);
+              // 更新全局监听
+              context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
             });
           }
         },
