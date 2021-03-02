@@ -6,6 +6,7 @@ import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/database/conversation_db_helper.dart';
+import 'package:mirror/data/database/group_chat_user_information_helper.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
@@ -229,6 +230,13 @@ class MessageManager {
     }
   }
 
+  //判断是不是群聊的消息-更新群成员的信息
+  static void judgeIsGroupUpdateUserInformation(Message msg) {
+    if (msg != null && msg.conversationType ==RCConversationType.Group) {
+      GroupChatUserInformationDBHelper().update(message:msg);
+    }
+  }
+
   //移除指定一条会话信息 type是ConversationDto的type 不是Message的
   static removeConversation(BuildContext context, String conversationId, int uid, int type) async {
     print("44444444444444444444444444444444444444444444444444444");
@@ -266,10 +274,15 @@ class MessageManager {
           break;
         case 1:
           //1-退出群聊
+          //判断是不是群通知-移除群成员的消息
+          GroupChatUserInformationDBHelper().removeGroupAllInformation(message.targetId);
           break;
         case 2:
           //2-移除群聊
           Application.appContext.read<ChatMessageProfileNotifier>().removeGroup(message);
+
+          //判断是不是群通知-移除群成员的消息
+          GroupChatUserInformationDBHelper().removeMessageGroup(message);
           break;
         case 3:
           //3-登陆机器
@@ -357,6 +370,7 @@ class MessageManager {
     } else {
       //普通消息
       judgeIsHaveAtUserMes(message);
+      judgeIsGroupUpdateUserInformation(message);
       Application.appContext.read<ChatMessageProfileNotifier>().judgeConversationMessage(message);
     }
   }

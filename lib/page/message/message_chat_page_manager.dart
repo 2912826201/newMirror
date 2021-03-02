@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/data/database/group_chat_user_information_helper.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
@@ -158,20 +159,7 @@ Future<Message> postMessageManagerText(String targetId, String text,
   return await (isPrivate ? postPrivateMessageManager : postGroupMessageManager)(targetId, msg);
 }
 
-//发送谁修改群名
-Future<Message> postMessageManagerUpdateGroupName(String targetId, String text) async {
-  TextMessage msg = TextMessage();
-  msg.sendUserInfo = getChatUserInfo();
-  Map<String, dynamic> textMap = Map();
-  textMap["fromUserId"] = msg.sendUserInfo.userId.toString();
-  textMap["toUserId"] = targetId;
-  textMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME;
-  textMap["name"] = ChatTypeModel.MESSAGE_TYPE_ALERT_UPDATE_GROUP_NAME_NAME;
-  textMap["nickName"] = Application.chatGroupUserNameMap[msg.sendUserInfo.userId.toString()];
-  textMap["data"] = text;
-  msg.content = jsonEncode(textMap);
-  return await postGroupMessageManager(targetId, msg);
-}
+
 
 //发送可选择的消息
 Future<Message> postMessageManagerSelect(String targetId, String text,
@@ -401,12 +389,7 @@ void postText(ChatDataModel chatDataModel, String targetId, int chatTypeId,
   voidCallback();
 }
 
-//发送修改群名消息
-void postGroupUpdateName(ChatDataModel chatDataModel, String targetId,VoidCallback voidCallback)async{
-  chatDataModel.msg = await postMessageManagerUpdateGroupName(targetId, chatDataModel.content);
-  chatDataModel.isTemporary = false;
-  voidCallback();
-}
+
 
 //生成消息的model
 ChatDataModel getMessage(Message message, {bool isHaveAnimation = true}) {
@@ -656,7 +639,9 @@ Future<void> getChatGroupUserModelList(String groupChatId, BuildContext context)
   // print("------model:${model.toString()}");
   if (model != null && model["list"] != null) {
     model["list"].forEach((v) {
-      chatGroupUserModelList.add(ChatGroupUserModel.fromJson(v));
+      ChatGroupUserModel model=ChatGroupUserModel.fromJson(v);
+      chatGroupUserModelList.add(model);
+      GroupChatUserInformationDBHelper().update(chatGroupUserModel: model,groupId: groupChatId);
     });
     context.read<GroupUserProfileNotifier>().addAll(chatGroupUserModelList, chatGroupUserModelList.length);
     initChatGroupUserModelMap(chatGroupUserModelList);
@@ -675,7 +660,9 @@ Future<void> getChatGroupUserModelList1(String groupChatId, BuildContext context
   print("------model:${model.toString()}");
   if (model != null && model["list"] != null) {
     model["list"].forEach((v) {
-      chatGroupUserModelList.add(ChatGroupUserModel.fromJson(v));
+      ChatGroupUserModel model=ChatGroupUserModel.fromJson(v);
+      chatGroupUserModelList.add(model);
+      GroupChatUserInformationDBHelper().update(chatGroupUserModel: model,groupId: groupChatId);
     });
     context.read<GroupUserProfileNotifier>().addAll(chatGroupUserModelList, chatGroupUserModelList.length);
     initChatGroupUserModelMap(chatGroupUserModelList);
@@ -698,10 +685,8 @@ void initChatGroupUserModelMap(List<ChatGroupUserModel> chatGroupUserModelList) 
     }
   }
   Application.chatGroupUserNameMap.clear();
-  Application.chatGroupUserUrlMap.clear();
   for (ChatGroupUserModel userModel in chatGroupUserModelList) {
     Application.chatGroupUserNameMap[userModel.uid.toString()] = userModel.groupNickName;
-    Application.chatGroupUserUrlMap[userModel.uid.toString()] = userModel.avatarUri;
   }
 }
 

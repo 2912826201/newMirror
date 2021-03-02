@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/data/database/group_chat_user_information_helper.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import 'chat_type_model.dart';
@@ -138,6 +139,8 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
         notifyListeners();
       }
     }
+    //判断是不是群通知-移除群成员的消息
+    GroupChatUserInformationDBHelper().removeMessageGroup(message);
   }
 
   //插入被移除群聊或者加入群聊的消息

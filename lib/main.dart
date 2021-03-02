@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/data/database/db_helper.dart';
+import 'package:mirror/data/database/group_chat_user_information_helper.dart';
 import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/database/region_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
@@ -210,6 +211,10 @@ Future _initApp() async {
     iosKey: AppConfig.amapIOSKey,
     androidKey: AppConfig.amapAndroidKey,
   );
+
+   Application.chatGroupUserInformationMap=await GroupChatUserInformationDBHelper().queryAllMap();
+
+
   //todo 获取视频课标签列表 其实在没有登录时无法获取
   try {
     Map<String, dynamic> videoCourseTagMap = await getAllTags();

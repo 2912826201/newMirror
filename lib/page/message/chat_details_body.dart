@@ -20,7 +20,7 @@ class ChatDetailsBody extends StatelessWidget {
   final TickerProvider vsync;
   final VoidMessageClickCallBack voidMessageClickCallBack;
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
-  final String chatUserName;
+  final String chatName;
   final bool isShowChatUserName;
   final bool isPersonalButler;
   final GestureTapCallback onTap;
@@ -32,12 +32,14 @@ class ChatDetailsBody extends StatelessWidget {
   final int conversationDtoType;
   final bool isHaveAtMeMsg;
   final String loadText;
+  final String chatId;
   final LoadingStatus loadStatus;
   final bool isShowTop;
 
   ChatDetailsBody(
       {this.scrollController,
       this.chatDataList,
+      this.chatId,
       this.conversationDtoType,
       this.loadText,
       this.loadStatus,
@@ -46,7 +48,7 @@ class ChatDetailsBody extends StatelessWidget {
       this.isHaveAtMeMsg,
       this.firstEndCallback,
       this.vsync,
-      this.chatUserName,
+      this.chatName,
       this.onTap,
       this.isShowTop=false,
       this.isPersonalButler = false,
@@ -214,10 +216,11 @@ class ChatDetailsBody extends StatelessWidget {
 
     return SendMessageView(
         model,
+        chatId,
         position,
         voidMessageClickCallBack,
         voidItemLongClickCallBack,
-        chatUserName,
+        chatName,
         isShowChatUserName,
         conversationDtoType);
   }
