@@ -106,8 +106,10 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
 
   showVoiceView() async {
     costTime = 0;
-
+    context.read<VoiceAlertData>().changeCallback(
+        showDataTime: DateUtil.formatSecondToStringNum(costTime));
     context.read<VoiceAlertData>().changeCallback(alertText: "手指上滑,取消发送");
+
     print("showVoiceView");
 
     _mPath = AppConfig.getAppVoiceFilePath();
