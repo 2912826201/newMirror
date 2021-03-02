@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
@@ -28,14 +29,14 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 // 动态详情页
 class FeedDetailPage extends StatefulWidget {
-  FeedDetailPage({Key key, this.model, this.type, this.index, this.comment, this.fatherModel});
+  FeedDetailPage({Key key, this.model, this.type, this.index, this.comment, this.fatherModel,this.errorCode});
 
   CommentDtoModel fatherModel;
   CommentDtoModel comment;
   HomeFeedModel model;
   int index;
   int type;
-
+  int errorCode;
   @override
   FeedDetailPageState createState() => FeedDetailPageState();
 }
@@ -62,21 +63,23 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   @override
   void initState() {
     print("进入详情页");
-    feedModel = context.read<FeedMapNotifier>().feedMap[widget.model.id];
-    _checkBlackStatus();
-    itemHeight += ScreenUtil.instance.statusBarHeight + kToolbarHeight + 76 + 48 + 18 + 16;
-    if (feedModel.picUrls.isNotEmpty) {
-      itemHeight += setAspectRatio(feedModel.picUrls.first.height.toDouble());
-    }
-    if (feedModel.videos.isNotEmpty) {
-      itemHeight += _calculateHeight();
-    }
-    if (feedModel.content != null) {
-      itemHeight +=
-          getTextSize(feedModel.content, TextStyle(fontSize: 14), 2, ScreenUtil.instance.width - 32).height + 12;
-    }
-    if (feedModel.address == null || feedModel.courseDto == null) {
-      itemHeight += 23;
+    if(widget.errorCode==CODE_SUCCESS){
+      feedModel = context.read<FeedMapNotifier>().feedMap[widget.model.id];
+      _checkBlackStatus();
+      itemHeight += ScreenUtil.instance.statusBarHeight + kToolbarHeight + 76 + 48 + 18 + 16;
+      if (feedModel.picUrls.isNotEmpty) {
+        itemHeight += setAspectRatio(feedModel.picUrls.first.height.toDouble());
+      }
+      if (feedModel.videos.isNotEmpty) {
+        itemHeight += _calculateHeight();
+      }
+      if (feedModel.content != null) {
+        itemHeight +=
+            getTextSize(feedModel.content, TextStyle(fontSize: 14), 2, ScreenUtil.instance.width - 32).height + 12;
+      }
+      if (feedModel.address == null || feedModel.courseDto == null) {
+        itemHeight += 23;
+      }
     }
   }
 
@@ -102,7 +105,6 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   }
   @override
   Widget build(BuildContext context) {
-    print("动态详情页build---------------------------------------------${feedModel}");
     return Scaffold(
         backgroundColor: AppColor.white,
         appBar: CustomAppBar(
@@ -111,7 +113,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
             Navigator.of(context).pop(true);
           },
         ),
-        body: Stack(
+        body: widget.errorCode!=CODE_NO_DATA?Stack(
           children: [
             Container(
               height: ScreenUtil.instance.height,
@@ -223,7 +225,23 @@ class FeedDetailPageState extends State<FeedDetailPage> {
               ),
             )
           ],
-        ));
+        ):Container(
+      width: ScreenUtil.instance.screenWidthDp,
+      height: ScreenUtil.instance.height,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Spacer(),
+          Container(
+            height: ScreenUtil.instance.screenWidthDp * 0.59,
+            width: ScreenUtil.instance.screenWidthDp * 0.59,
+            color: AppColor.bgWhite,
+          ),
+          Text("该动态已失效",style: AppStyle.textHintRegular16,),
+          Spacer()
+        ],
+      ),
+    ));
   }
 
   Widget _getCourseCommentUi() {
