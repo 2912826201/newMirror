@@ -58,7 +58,9 @@ class GalleryPage extends StatefulWidget {
 }
 
 // AutomaticKeepAliveClientMixin支持重新切回页面后保持之前页面状态
-class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClientMixin {
+// 需求修改 去掉了保留状态的需求
+// class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClientMixin {
+class _GalleryPageState extends State<GalleryPage> {
   var _cropperKey = GlobalKey<_GalleryPageState>();
 
   double _screenWidth = 0;
@@ -87,6 +89,9 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
 
   // 已经请求的数据数量 因为要做过滤所以不能用_galleryList的长度
   int _galleryListLength = 0;
+
+  // @override
+  // bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -174,7 +179,8 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
+    // 保留状态需要执行父方法
+    // super.build(context);
     // 获取屏幕宽以设置各布局大小
     _screenWidth = ScreenUtil.instance.screenWidthDp;
     print("屏幕宽为：$_screenWidth");
@@ -276,9 +282,6 @@ class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClient
           }),
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 
   // item本体点击事件
   _onGridItemTap(BuildContext context, AssetEntity entity) async {
