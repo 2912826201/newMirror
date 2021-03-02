@@ -30,6 +30,7 @@ const String COLUMN_NAME_CONVERSATION_UPDATETIME = 'updateTime';
 const String COLUMN_NAME_CONVERSATION_CREATETIME = 'createTime';
 const String COLUMN_NAME_CONVERSATION_ISTOP = 'isTop';
 const String COLUMN_NAME_CONVERSATION_UNREADCOUNT = 'unreadCount';
+const String COLUMN_NAME_CONVERSATION_SENDERUID = 'senderUid';
 // 这个表是用来存放当前用户的会话列表信息
 class ConversationDto {
   ConversationDto();
@@ -46,6 +47,7 @@ class ConversationDto {
     this.createTime = gdto.createTime;
     this.isTop = 0;
     this.unreadCount = 0;
+    this.senderUid = null;
   }
 
   String conversationId;
@@ -58,13 +60,14 @@ class ConversationDto {
   int createTime;
   int isTop;
   int unreadCount;
+  int senderUid;
 
   int getType() {
     switch (this.type) {
-      case 100:
-      case 10:
+      case PRIVATE_TYPE:
+      case MANAGER_TYPE:
         return RCConversationType.Private;
-      case 101:
+      case GROUP_TYPE:
         return RCConversationType.Group;
       default:
         return RCConversationType.System;
@@ -86,6 +89,7 @@ class ConversationDto {
       COLUMN_NAME_CONVERSATION_CREATETIME: createTime,
       COLUMN_NAME_CONVERSATION_ISTOP: isTop,
       COLUMN_NAME_CONVERSATION_UNREADCOUNT:unreadCount,
+      COLUMN_NAME_CONVERSATION_SENDERUID:senderUid,
     };
     return map;
   }
@@ -101,5 +105,6 @@ class ConversationDto {
     createTime = map[COLUMN_NAME_CONVERSATION_CREATETIME];
     isTop = map[COLUMN_NAME_CONVERSATION_ISTOP];
     unreadCount = map[COLUMN_NAME_CONVERSATION_UNREADCOUNT];
+    senderUid = map[COLUMN_NAME_CONVERSATION_SENDERUID];
   }
 }
