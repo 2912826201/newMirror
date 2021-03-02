@@ -183,5 +183,7 @@ class Application {
     atMesGroupModel?.atMsgMap?.clear();
     topChatModelList.clear();
     queryNoPromptUidList.clear();
+    chatGroupUserNameMap.clear();
+    chatGroupUserInformationMap.clear();
   }
 }

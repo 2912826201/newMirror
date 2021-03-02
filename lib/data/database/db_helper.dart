@@ -550,7 +550,7 @@ Future<void> _createDB(Database db, int version) async {
       ")");
   //group_chat_user_information
   await db.execute("create table $TABLE_NAME_GROUP_CHAT_USER_INFORMATION (" +
-      "$GROUP_CHAT_USER_INFORMATION_ID varchar(256) primary key autoincrement," +
+      "$GROUP_CHAT_USER_INFORMATION_ID varchar(256) primary key," +
       "$GROUP_CHAT_USER_INFORMATION_USER_ID varchar(256) not null," +
       "$GROUP_CHAT_USER_INFORMATION_USER_IMAGE varchar(256) not null," +
       "$GROUP_CHAT_USER_INFORMATION_GROUP_ID varchar(256) not null," +

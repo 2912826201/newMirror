@@ -158,8 +158,8 @@ class GroupChatUserInformationDBHelper {
       ..groupChatUserId=message.content.sendUserInfo.userId
       ..groupChatUserName=message.content.sendUserInfo.name
       ..groupChatUserImage=message.content.sendUserInfo.portraitUri
-      ..groupChatGroupUserName=json.decode(message.content.sendUserInfo.extra)
-      [GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME];
+      ..groupChatGroupUserName=message.content.sendUserInfo.extra==null?"":
+      json.decode(message.content.sendUserInfo.extra)[GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME];
     return dto;
   }
 

@@ -332,9 +332,9 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
 
   String getChatUserName(String uId, String name) {
     if (widget.isShowChatUserName) {
-      String userName = Application.chatGroupUserInformationMap["${widget.chatId}_$uId"]
-      [GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]??
-          Application.chatGroupUserInformationMap["${widget.chatId}_$uId"]
+      String userName = ((Application.chatGroupUserInformationMap["${widget.chatId}_$uId"]??Map())
+      [GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME])??
+          (Application.chatGroupUserInformationMap["${widget.chatId}_$uId"]??Map())
           [GROUP_CHAT_USER_INFORMATION_USER_NAME];
       if (userName == null) {
         return name;
@@ -346,7 +346,7 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
   }
 
   String getChatUserUrl(String uId, String url) {
-    String userUrl = Application.chatGroupUserInformationMap["${widget.chatId}_$uId"]
+    String userUrl = (Application.chatGroupUserInformationMap["${widget.chatId}_$uId"]??Map())
       [GROUP_CHAT_USER_INFORMATION_USER_IMAGE];
     if (userUrl == null) {
       return url;
