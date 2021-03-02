@@ -390,21 +390,27 @@ class DateUtil {
   // - 超过48小时则显示为月日 时分 ，如7-8  7:21；
   //
   // - 往年的显示 年-月-⽇ 如 16-5-21 12:12
-  static String getCommentShowData(DateTime dateTime){
+  static String getCommentShowData(DateTime dateTime,{bool isShowText = false}){
     DateTime time=new DateTime.now();
     String alertString="";
-    if(twoDateTimeMinutes(dateTime,time)<=1){
-      return "刚刚";
-    }else if(twoDateTimeMinutes(dateTime,time)<60){
-      return "${twoDateTimeMinutes(dateTime, new DateTime.now())}分钟前";
-    }else if(isToday(dateTime)){
-      return "${twoDateTimeHours(dateTime, new DateTime.now())}小时前";
-    }else if(isYesterday(dateTime)){
-      alertString = "昨天";
-    } else if (isToYear(dateTime)) {
-      alertString += formatDateV(dateTime, format: "M-d");
-    } else {
-      alertString += formatDateV(dateTime, format: "yy-M-d");
+    if(!isShowText){
+      if(twoDateTimeMinutes(dateTime,time)<=1){
+        return "刚刚";
+      }else if(twoDateTimeMinutes(dateTime,time)<60){
+        return "${twoDateTimeMinutes(dateTime, new DateTime.now())}分钟前";
+      }else if(isToday(dateTime)){
+        return "${twoDateTimeHours(dateTime, new DateTime.now())}小时前";
+      }else if(isYesterday(dateTime)){
+        alertString = "昨天";
+      }
+    }
+    if(!isToday(dateTime)||!isShowText){
+      if (isToYear(dateTime)) {
+        alertString += formatDateV(dateTime, format: "M${isShowText?"月":"-"}d${isShowText?"日":""}");
+      } else {
+        alertString += formatDateV(dateTime, format: "yy${isShowText?"年":"-"}M${isShowText?"月":"-"}d${isShowText?"日":"-"
+            ""}");
+      }
     }
     alertString += " ${formatDateV(dateTime, format: "HH:mm")}";
     return alertString;

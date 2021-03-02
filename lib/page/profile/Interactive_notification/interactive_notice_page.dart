@@ -412,7 +412,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                     height: 7,
                   ),
                   Text(
-                    DateUtil.generateFormatDate(widget.msgModel.createTime, true),
+                    DateUtil.getCommentShowData(DateUtil.getDateTimeByMs(widget.msgModel.createTime), isShowText: true),
                     style: AppStyle.textHintRegular12,
                   )
                 ],

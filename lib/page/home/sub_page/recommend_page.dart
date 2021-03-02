@@ -280,7 +280,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                               int id;
                               // 获取动态id指定model
                               HomeFeedModel model;
-                              if (index < recommendModelList.length) {
+                              if (index < recommendIdList.length) {
                                 id = recommendIdList[index];
                                 model = context.read<FeedMapNotifier>().feedMap[id];
                               }
