@@ -1,5 +1,7 @@
+import 'package:mirror/constant/constants.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/util/screen_util.dart';
 
 enum CommentTypes {
   commentFeed, // 评论动态
@@ -39,6 +41,10 @@ class HomeFeedModel {
   // 添加字段
   int totalCount = -1;
   bool isShowInputBox = true;
+  // 头部偏移值
+  double headOffset;
+  // 尾部偏移值
+  double bottomOffset;
   HomeFeedModel({
     this.id,
     this.type,
@@ -65,6 +71,8 @@ class HomeFeedModel {
     this.comments,
     this.address,
     this.isShowInputBox,
+    this.bottomOffset,
+    this.headOffset,
   });
 
   HomeFeedModel.fromJson(Map<String, dynamic> json) {
@@ -148,6 +156,8 @@ class HomeFeedModel {
     map["comments"] = comments;
     map["address"] = address;
     map['isShowInputBox'] = isShowInputBox;
+    map['headOffset'] = headOffset;
+    map['bottomOffset'] = bottomOffset;
     return map;
   }
 

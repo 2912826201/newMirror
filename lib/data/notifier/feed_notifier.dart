@@ -31,7 +31,7 @@ class FeedMapNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  void aa(int id) {
+  void showInputBox(int id) {
     feedMap[id].isShowInputBox = false;
     notifyListeners();
   }
@@ -48,13 +48,12 @@ class FeedMapNotifier extends ChangeNotifier {
 
 // 更新全局动态map
   void updateFeedMap(List<HomeFeedModel> _feedList) {
-    print('========================}}}}}}}}}}}}}}}}}}}}}=======updateFeedMap');
     _feedList.forEach((element) {
       feedMap[element.id] = element;
       feedMap[element.id].hotComment = [];
       feedMap[element.id].hotComment.addAll(element.comments);
-      print('=========================${element.comments.hashCode}-----${feedMap[element.id].hotComment.hashCode}');
-      print('==============feedMap[element.id].hotComment === ${feedMap[element.id].hotComment}');
+     print("headOffset:::${element.headOffset}");
+      print("bottomOffset:::${element.bottomOffset}");
     });
     notifyListeners();
   }
