@@ -281,11 +281,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
         width: 12,
       ),
       Text(
-        context
-                .watch<VoiceSettingNotifier>()
-                .getShowTime(widget.chatVoiceModel.longTime, urlMd5String)
-                .toString() +
-            "\"",
+        widget.chatVoiceModel.longTime.toString(),
         style: TextStyle(
             color: widget.isMyself ? AppColor.white : AppColor.textPrimary1,
             fontSize: 16),
