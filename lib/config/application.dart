@@ -116,8 +116,8 @@ class Application {
   //群成员的id--群成员昵称
   static Map<String, String> chatGroupUserNameMap = Map();
 
-  //群成员的id--群成员头像
-  static Map<String, String> chatGroupUserUrlMap = Map();
+  //聊天群的群成员信息
+  static Map<String, Map<String, dynamic>> chatGroupUserInformationMap = Map();
 
   //群组at的列表
   static AtMesGroupModel atMesGroupModel = AtMesGroupModel();
@@ -180,10 +180,10 @@ class Application {
   static _clearUserRuntimeCache() {
     appContext.read<MachineNotifier>().setMachine(null);
     //TODO 其他的provider还需整理出来清掉
-    chatGroupUserNameMap.clear();
-    chatGroupUserUrlMap.clear();
     atMesGroupModel?.atMsgMap?.clear();
     topChatModelList.clear();
     queryNoPromptUidList.clear();
+    chatGroupUserNameMap.clear();
+    chatGroupUserInformationMap.clear();
   }
 }

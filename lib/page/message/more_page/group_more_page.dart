@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/database/group_chat_user_information_helper.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
@@ -539,6 +540,8 @@ class GroupMorePageState extends State<GroupMorePage> {
       if (widget.exitGroupListener != null) {
         widget.exitGroupListener();
       }
+
+      GroupChatUserInformationDBHelper().removeGroupAllInformation(widget.chatGroupId);
       ToastShow.show(msg: "退出成功", context: context);
       Future.delayed(Duration.zero, () {
         Navigator.of(context).pop();

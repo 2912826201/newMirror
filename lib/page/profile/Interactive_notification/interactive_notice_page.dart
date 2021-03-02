@@ -1,10 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/query_msglist_model.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
@@ -171,7 +173,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                             type: widget.type,
                             msgModel: msgList[index],
                             deleteCallBack: (value) {
-                              List<QueryModel> list = [];
+                             /* List<QueryModel> list = [];
                               for (int i = 0; i < msgList.length; i++) {
                                 if (msgList[i].refType == 0 && msgList[i].refId != value.toString()) {
                                   list.add(msgList[i]);
@@ -184,7 +186,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                               }
                               msgList.clear();
                               msgList.addAll(list);
-                              setState(() {});
+                              setState(() {});*/
                             });
                       }),
                 )
@@ -473,27 +475,27 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     try{
       if (widget.msgModel.refType == 0) {
         print('=====================动态');
-        getFeedDetail(context, feedModel.id, comment: widget.type == 0 ? widget.msgModel.commentData : null);
+        getFeedDetail(context, feedModel.id, comment: widget.msgModel.commentData);
       } else if (widget.msgModel.refType == 2) {
         if (fatherCommentModel.type == 0) {
           getFeedDetail(context, fatherCommentModel.targetId,
-              comment: widget.type == 0 ? widget.msgModel.commentData : null, fatherModel: fatherCommentModel);
+              comment:widget.msgModel.commentData, fatherModel: fatherCommentModel);
         } else if (fatherCommentModel.type == 1) {
           AppRouter.navigateToLiveDetail(context, fatherCommentModel.targetId,
               isHaveStartTime: false,
-              commentDtoModel: widget.type == 0 ? widget.msgModel.commentData : null,
+              commentDtoModel: widget.msgModel.commentData,
               fatherComment: fatherCommentModel);
         } else if (fatherCommentModel.type == 3) {
           AppRouter.navigateToVideoDetail(context, fatherCommentModel.targetId,
-              commentDtoModel: widget.type == 0 ? widget.msgModel.commentData : null, fatherComment: fatherCommentModel);
+              commentDtoModel:widget.msgModel.commentData , fatherComment: fatherCommentModel);
         }
       } else if (widget.msgModel.refType == 1 && liveVideoModel != null && liveVideoModel.id != null) {
         AppRouter.navigateToLiveDetail(context, liveVideoModel.id,
-            isHaveStartTime: false, commentDtoModel: widget.type == 0 ? widget.msgModel.commentData : null);
+            isHaveStartTime: false, commentDtoModel:  widget.msgModel.commentData);
       } else {
         if (liveVideoModel != null && liveVideoModel.id != null) {
           AppRouter.navigateToVideoDetail(context, liveVideoModel.id,
-              commentDtoModel: widget.type == 0 ? widget.msgModel.commentData : null);
+              commentDtoModel:widget.msgModel.commentData);
         }
       }
       widget.msgModel.isRead = 1;
@@ -506,22 +508,26 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
 
   getFeedDetail(BuildContext context, int feedId, {CommentDtoModel comment, CommentDtoModel fatherModel}) async {
     print('==============================feedId==$feedId');
-    HomeFeedModel feedModel = await feedDetail(id: feedId);
-    List<HomeFeedModel> list = [];
-    list.add(feedModel);
-    context.read<FeedMapNotifier>().updateFeedMap(list);
+    BaseResponseModel feedModel = await feedDetail(id: feedId);
+    if(feedModel.data!=null){
+      List<HomeFeedModel> list = [];
+      list.add(HomeFeedModel.fromJson(feedModel.data));
+      context.read<FeedMapNotifier>().updateFeedMap(list);
+    }
     // print("----------feedModel:${feedModel.toJson().toString()}");
     // 跳转动态详情页
+    if( feedModel.code==CODE_SUCCESS||feedModel.code==CODE_NO_DATA){
     AppRouter.navigateFeedDetailPage(
         context: context,
-        model: feedModel,
+        model: feedModel.data!=null?HomeFeedModel.fromJson(feedModel.data):null,
         comment: comment,
         type: 2,
         fatherModel: fatherModel,
+        errorCode: feedModel.code,
         callBack: (result) {
           if(result!=null){
             widget.deleteCallBack(result);
           }
         });
   }
-}
+}}

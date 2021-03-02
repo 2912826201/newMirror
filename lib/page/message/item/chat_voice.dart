@@ -119,7 +119,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     isUp = false;
     int index;
     setState(() {
-      textShow = "松开结束";
+      textShow = "松开发送";
       voiceState = false;
       DateTime now = new DateTime.now();
       int date = now.millisecondsSinceEpoch;
@@ -184,7 +184,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
         toastShow = textShow;
         context.read<VoiceAlertData>().changeCallback(alertText: "松开手指,取消发送");
       } else {
-        textShow = "松开结束";
+        textShow = "松开发送";
         toastShow = "手指上滑,取消发送";
         context.read<VoiceAlertData>().changeCallback(alertText: "手指上滑,取消发送");
       }
