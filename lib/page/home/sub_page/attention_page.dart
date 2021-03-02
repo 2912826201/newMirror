@@ -87,6 +87,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
 
   // 声明定时器
   Timer timer;
+
   @override
   void initState() {
     print("初始化一下啊");
@@ -107,8 +108,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     });
     super.initState();
   }
-
-
 
   // 请求关注接口
   getRecommendFeed() async {
@@ -163,10 +162,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             loadStatus = LoadingStatus.STATUS_COMPLETED;
           }
         }
-        attentionModelList =  StringUtil.getFeedItemHeight(14.0, attentionModelList);
-        // getFeedItemHeight(attentionModelList);
+        attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList);
       });
-
     }
     lastTime = model.lastTime;
     isRequestInterface = false;
@@ -221,7 +218,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         isShowConcern: false,
         pageName: "attentionPage",
         // 可选参数 子Item的个数
-        key: GlobalObjectKey("attention$index"),
+        // key: GlobalObjectKey("attention$index"),
         deleteFeedChanged: (id) {
           setState(() {
             attentionIdList.remove(id);
@@ -296,7 +293,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     print("result${result.toString()}");
     return result;
   }
-
 
   // 缺省图未登录关注视图切换
   Widget pageDisplay(int index, HomeFeedModel feedModel) {
@@ -425,26 +421,34 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           // 滚动开始
           print('滚动开始');
         } else if (notification is ScrollUpdateNotification) {
-          // 滚动位置更新
-          if(timer != null) {
-            timer.cancel();
+          // 纵向滚动
+          if (metrics.axis == Axis.vertical) {
+            // 取消延时器
+            if (timer != null) {
+              timer.cancel();
+            }
           }
           print('滚动位置更新');
           // 当前位置
           print("当前位置${metrics.pixels}");
         } else if (notification is ScrollEndNotification) {
           print("本地存储的数据长度2:${context.read<FeedMapNotifier>().feedMap.length}");
-          // 延迟器:
-          timer = Timer(Duration(milliseconds: 3000), () {
-            print("定时1秒到了");
-            for(int i = 0 ; i < attentionModelList.length; i++) {
-              HomeFeedModel value = attentionModelList[i];
-              if(metrics.pixels >= value.headOffset && metrics.pixels < value.bottomOffset ) {
-                print("进了");
-                context.read<FeedMapNotifier>().showInputBox(value.id);
+          // 纵向滚动
+          if (metrics.axis == Axis.vertical) {
+            // 延迟器:
+            timer = Timer(Duration(milliseconds: 3000), () {
+              print("定时3秒到了");
+              for (int i = 0; i < attentionModelList.length; i++) {
+                HomeFeedModel value = attentionModelList[i];
+                // 屏幕的一半偏移值
+                double screenOffser = metrics.pixels + (ScreenUtil.instance.height / 2);
+                if (screenOffser >= value.headOffset && screenOffser < value.bottomOffset) {
+                  print("进了");
+                  context.read<FeedMapNotifier>().showInputBox(value.id);
+                }
               }
-            }
-          });
+            });
+          }
           // 滚动结束
           print('滚动结束');
         }
