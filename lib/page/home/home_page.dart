@@ -11,10 +11,9 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/home/sub_page/attention_page.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
-import 'package:mirror/page/media_picker/media_picker_page.dart';
-import 'package:mirror/page/search/search_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -274,9 +273,15 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                     ToastShow.show(msg: "动态发送失败", context: context, gravity: Toast.CENTER);
                   }
                 } else {
-                  AppRouter.navigateToMediaPickerPage(
-                      context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
-                      publishMode: 1);
+                  // 从打开新页面改成滑到负一屏
+                  // AppRouter.navigateToMediaPickerPage(
+                  //     context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
+                  //     publishMode: 1);
+                  if(context.read<TokenNotifier>().isLoggedIn){
+                    widget.ifPageController.animateTo(0);
+                  } else {
+                    AppRouter.navigateToLoginPage(context);
+                  }
                 }
               }),
           titleWidget: Container(
