@@ -269,14 +269,14 @@ class AppRouter {
     _navigateToPage(context, pathMediaPicker, map, callback: callback);
   }
 
-  static void navigateToLoginPage(BuildContext context) {
+  static void navigateToLoginPage(BuildContext context, {Function(dynamic result) callback}) {
     Map<String, dynamic> map = Map();
     //将当前页面路由名字存起来 登录完成后直接返回到该页面
     var route = ModalRoute.of(context);
     if (route != null) {
       Application.loginPopRouteName = route.settings.name;
     }
-    _navigateToPage(context, pathLogin, map);
+    _navigateToPage(context, pathLogin, map,callback: callback);
   }
 
   static void navigateToPhoneLoginPage(BuildContext context) {

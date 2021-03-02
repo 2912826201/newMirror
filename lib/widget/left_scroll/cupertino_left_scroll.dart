@@ -21,7 +21,7 @@ class BounceStyle {
   });
 
   /// k为1意味着阻止任何回弹
-  BounceStyle.disable() : this(k: 1);
+  BounceStyle.disable() : this(k: 0.8);
 }
 
 class CupertinoLeftScroll extends StatefulWidget {
@@ -257,7 +257,7 @@ class CupertinoLeftScrollState extends State<CupertinoLeftScroll> with TickerPro
 
   // 打开
   void open({bool isOnOpen = true, double v = 0}) async {
-    if (isOnOpen && widget.onOpen != null) {
+    if (isOnOpen && widget.onOpen != null&&_ct.value!=null&&!_ct.value) {
       widget.onOpen();
     }
     // print('open2');

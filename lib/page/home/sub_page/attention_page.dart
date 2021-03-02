@@ -137,7 +137,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           //fixme model.list为空 null 会报错
           if (model.list != null && model.list.isNotEmpty) {
             model.list.forEach((v) {
-              context.read<ProfilePageNotifier>().profileUiChangeModel.remove(HomeFeedModel.fromJson(v).pushId);
               attentionIdList.add(HomeFeedModel.fromJson(v).id);
               attentionModelList.add(HomeFeedModel.fromJson(v));
             });
