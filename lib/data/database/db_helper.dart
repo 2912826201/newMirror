@@ -1,6 +1,7 @@
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/download_dto.dart';
 import 'package:mirror/data/dto/download_video_dto.dart';
+import 'package:mirror/data/dto/group_chat_user_information_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/region_dto.dart';
 import 'package:mirror/data/dto/search_history_dto.dart';
@@ -545,6 +546,15 @@ Future<void> _createDB(Database db, int version) async {
       "$COLUMN_NAME_DOWNLOAD_COURSE_FILEPATHS varchar(256) not null," +
       "$COLUMN_NAME_DOWNLOAD_COURSE_MODEL varchar(256) not null," +
       "$COLUMN_NAME_DOWNLOAD_COURSE_DOWNLOAD_TIME bigint(20) not null" +
+      ")");
+  //group_chat_user_information
+  await db.execute("create table $TABLE_NAME_GROUP_CHAT_USER_INFORMATION (" +
+      "$GROUP_CHAT_USER_INFORMATION_ID varchar(256) primary key autoincrement," +
+      "$GROUP_CHAT_USER_INFORMATION_USER_ID varchar(256) not null," +
+      "$GROUP_CHAT_USER_INFORMATION_USER_IMAGE varchar(256) not null," +
+      "$GROUP_CHAT_USER_INFORMATION_GROUP_ID varchar(256) not null," +
+      "$GROUP_CHAT_USER_INFORMATION_USER_NAME varchar(256)," +
+      "$GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME varchar(256)" +
       ")");
 }
 

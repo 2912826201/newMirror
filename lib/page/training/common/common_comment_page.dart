@@ -875,6 +875,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                 screenOutTimeIds.add(model.id);
                 setCommentListSubSettingSingle(model.id);
               }
+              print("5555555555555555555555");
             } else {
               if (isHotOrTime) {
                 if (courseCommentHot != null) {

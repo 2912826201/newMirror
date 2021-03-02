@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/data/dto/group_chat_user_information_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
@@ -34,11 +35,19 @@ class SendMessageView extends StatefulWidget {
   final VoidItemLongClickCallBack voidItemLongClickCallBack;
   final int position;
   final String chatUserName;
+  final String chatId;
   final int conversationDtoType;
   final bool isShowChatUserName;
 
-  SendMessageView(this.model, this.position, this.voidMessageClickCallBack, this.voidItemLongClickCallBack,
-      this.chatUserName, this.isShowChatUserName, this.conversationDtoType);
+  SendMessageView(
+      this.model,
+      this.chatId,
+      this.position,
+      this.voidMessageClickCallBack,
+      this.voidItemLongClickCallBack,
+      this.chatUserName,
+      this.isShowChatUserName,
+      this.conversationDtoType);
 
 
   @override
@@ -323,8 +332,10 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
 
   String getChatUserName(String uId, String name) {
     if (widget.isShowChatUserName) {
-      // print("uId:$uId---Application.chatGroupUserModelMap:${Application.chatGroupUserModelMap.toString()}");
-      String userName = Application.chatGroupUserNameMap[uId];
+      String userName = Application.chatGroupUserInformationMap["${widget.chatId}_$uId"]
+      [GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]??
+          Application.chatGroupUserInformationMap["${widget.chatId}_$uId"]
+          [GROUP_CHAT_USER_INFORMATION_USER_NAME];
       if (userName == null) {
         return name;
       } else {
@@ -335,7 +346,8 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
   }
 
   String getChatUserUrl(String uId, String url) {
-    String userUrl = Application.chatGroupUserUrlMap[uId];
+    String userUrl = Application.chatGroupUserInformationMap["${widget.chatId}_$uId"]
+      [GROUP_CHAT_USER_INFORMATION_USER_IMAGE];
     if (userUrl == null) {
       return url;
     } else {
