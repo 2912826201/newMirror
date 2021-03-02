@@ -378,6 +378,7 @@ class _VideoCoursePlayState extends State<VideoCoursePlayPage> {
                   Text(_partList[_currentPartIndex] == null ? "" : _partList[_currentPartIndex].name,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                       style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 16)),
                   SizedBox(
                     width: 8,

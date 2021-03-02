@@ -158,14 +158,22 @@ class MessageManager {
         dto.type = PRIVATE_TYPE;
         if (msg.senderUserId == Application.profile.uid.toString()) {
           //如果发信人是自己。。。要从其他途径更新会话名字和头像
+          dto.senderUid = Application.profile.uid;
         } else if (msg.content?.sendUserInfo != null) {
           dto.avatarUri = msg.content.sendUserInfo.portraitUri;
           dto.name = msg.content.sendUserInfo.name;
+          //不用senderUserId而用sendUserInfo的原因是区分系统通知类消息和用户发的消息
+          dto.senderUid = msg.content.sendUserInfo.userId == null? null : int.parse(msg.content.sendUserInfo.userId);
         } else {
         }
         break;
       case RCConversationType.Group:
         dto.type = GROUP_TYPE;
+        if (msg.content?.sendUserInfo != null) {
+          //不用senderUserId而用sendUserInfo的原因是区分系统通知类消息和用户发的消息
+          dto.senderUid = msg.content.sendUserInfo.userId == null? null : int.parse(msg.content.sendUserInfo.userId);
+          //TODO 去更新群成员的本地数据库
+        }
         break;
       case RCConversationType.System:
         if (msg.senderUserId == "1") {

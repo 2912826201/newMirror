@@ -140,12 +140,8 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
 
       List<Rule> rules = context.read<CommentEnterNotifier>().rules;
       int atIndex = 0;
-      if(context.read<CommentEnterNotifier>().atindexs.isNotEmpty) {
-        atIndex = context
-            .read<CommentEnterNotifier>()
-            .atindexs
-            .first
-            .index;
+      if (context.read<CommentEnterNotifier>().atindexs.isNotEmpty) {
+        atIndex = context.read<CommentEnterNotifier>().atindexs.first.index;
       }
       print("当前值￥${_textEditingController.text}");
       print(context.read<CommentEnterNotifier>().textFieldStr);
@@ -161,7 +157,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
         );
         _textEditingController.selection = setCursor;
       }
-      if(Platform.isAndroid && isClickAtUser) {
+      if (Platform.isAndroid && isClickAtUser) {
         print("at位置&${atIndex}");
         var setCursor = TextSelection(
           baseOffset: atIndex,
@@ -346,7 +342,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       backupFollowList = followList;
     }
     if (hasNext == 0) {
-      if(followList.isNotEmpty) {
+      if (followList.isNotEmpty) {
         loadText = "已加载全部好友";
         loadStatus = LoadingStatus.STATUS_COMPLETED;
       } else {
@@ -356,7 +352,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       print("返回不请求数据");
     }
 
-    Future.delayed(Duration(milliseconds: 300),(){
+    Future.delayed(Duration(milliseconds: 300), () {
       if (mounted) {
         setState(() {});
       }
@@ -367,7 +363,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
   Widget build(BuildContext context) {
     List<Rule> rules = context.watch<CommentEnterNotifier>().rules;
     String atStr = context.watch<CommentEnterNotifier>().atSearchStr;
-    print("键盘高度${ MediaQuery.of(context).viewInsets.bottom}");
+    print("键盘高度${MediaQuery.of(context).viewInsets.bottom}");
     return Container(
         padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         decoration: BoxDecoration(
@@ -416,12 +412,8 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                             }
                             // 获取@的光标
                             int atIndex = 0;
-                            if(context.read<CommentEnterNotifier>().atindexs.isNotEmpty) {
-                               atIndex = context
-                                  .read<CommentEnterNotifier>()
-                                  .atindexs
-                                  .first
-                                  .index;
+                            if (context.read<CommentEnterNotifier>().atindexs.isNotEmpty) {
+                              atIndex = context.read<CommentEnterNotifier>().atindexs.first.index;
                             }
                             // 获取实时搜索文本
                             String searchStr = context.read<CommentEnterNotifier>().atSearchStr;
@@ -525,8 +517,11 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
             ),
             Container(
                 width: ScreenUtil.instance.screenWidthDp,
-                padding:
-                    EdgeInsets.only(top: context.watch<CommentEnterNotifier>().keyWord != "@" ? 12 : 244, bottom:MediaQuery.of(context).viewInsets.bottom == 0 && Platform.isIOS ? ScreenUtil.instance.bottomBarHeight + 12 :  12),
+                padding: EdgeInsets.only(
+                    top: context.watch<CommentEnterNotifier>().keyWord != "@" ? 12 : 244,
+                    bottom: MediaQuery.of(context).viewInsets.bottom == 0 && Platform.isIOS
+                        ? ScreenUtil.instance.bottomBarHeight + 12
+                        : 12),
                 child: Stack(
                   children: [
                     Container(
@@ -545,8 +540,8 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                 maxHeight: 80.0,
                                 minHeight: 16.0,
                                 maxWidth: Platform.isIOS
-                                    ? ScreenUtil.instance.screenWidthDp - 32 - 32 - 64
-                                    : ScreenUtil.instance.screenWidthDp - 32 - 32 - 64 - 52 - 12),
+                                    ? ScreenUtil.instance.screenWidthDp - 32 - 76
+                                    : ScreenUtil.instance.screenWidthDp - 32 - 76 - 52 - 12),
                             child: TextSpanField(
                               controller: _textEditingController,
                               focusNode: commentFocus,
@@ -611,8 +606,9 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                       int cursorIndex = _textEditingController.selection.baseOffset;
                                       print("cursorIndex关闭：${cursorIndex}");
                                       context.read<CommentEnterNotifier>().getAtCursorIndex(cursorIndex + 1);
-                                      _textEditingController.text =
-                                          text.substring(0, cursorIndex) + "@" + text.substring(cursorIndex, text.length);
+                                      _textEditingController.text = text.substring(0, cursorIndex) +
+                                          "@" +
+                                          text.substring(cursorIndex, text.length);
                                       context.read<CommentEnterNotifier>().openAtCallback("@");
                                     },
                                     child: Image.asset(
@@ -625,8 +621,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                               right: 16,
                               bottom: 6,
                               child: GestureDetector(
-                                  onTap: () {
-                                  },
+                                  onTap: () {},
                                   child: Image.asset(
                                     "images/resource/2.0x/ic_dynamic_expression@2x.png",
                                     width: 24,
@@ -690,6 +685,7 @@ class CommentEnterNotifier extends ChangeNotifier {
 
   // 记录@唤醒页面时光标的位置
   List<AtIndex> atindexs = [];
+
   // 记录规则
   List<Rule> rules = [];
 
@@ -718,6 +714,7 @@ class CommentEnterNotifier extends ChangeNotifier {
     this.atindexs.add(ind);
     notifyListeners();
   }
+
   addRules(Rule role) {
     this.rules.add(role);
     notifyListeners();

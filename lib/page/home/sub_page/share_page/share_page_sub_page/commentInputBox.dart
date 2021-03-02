@@ -35,19 +35,12 @@ class CommentInputBox extends StatefulWidget {
 }
 
 class CommentInputBoxState extends State<CommentInputBox> {
-  var offstage = false;
-
-  inputHide() {
-    setState(() {
-      offstage = true;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     // print("底部键盘高度${MediaQuery.of(context).viewInsets.bottom}");
     return Offstage(
-      offstage: false,
+      offstage: widget.isUnderline ? false : context.watch<FeedMapNotifier>().feedMap[widget.feedModel.id].isShowInputBox,
       child: Container(
         height: widget.isFeedDetail ? 48 + ScreenUtil.instance.bottomBarHeight : 48,
         width: ScreenUtil.instance.width,
