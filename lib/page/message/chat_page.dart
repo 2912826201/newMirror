@@ -1522,6 +1522,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
       FocusScope.of(context).requestFocus(new FocusNode());
     }
     isContentClickOrEmojiClick = false;
+    _focusNode.unfocus();
+    _isVoiceState = false;
     if (mounted) {
       reload(() {
         _timerCount = 0;
