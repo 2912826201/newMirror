@@ -370,9 +370,9 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         itemKey: conversation.id,
         itemTag: "conversation",
         itemIndex: index,
-        isDoubleDelete:true,
+        isDoubleDelete: true,
         itemChild: _conversationItem(index, conversation),
-        onTap: (){
+        onTap: () {
           getMessageType(conversation, context);
           jumpChatPageConversationDto(context, conversation);
         },
@@ -505,6 +505,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                       StringUtil.strNoEmpty(conversation.name) ? conversation.name : conversation.conversationId,
                       overflow: TextOverflow.ellipsis,
                       softWrap: false,
+                      maxLines: 1,
                       style: AppStyle.textRegular14,
                     )),
                     Text(
@@ -525,9 +526,15 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
                         : Container(),
                     Expanded(
                         child: Text(
-                      "${conversation.content}",
+                      //FIXME 这个逻辑需要在群成员数据库写好后替换掉
+                      conversation.type == GROUP_TYPE &&
+                              conversation.senderUid != null &&
+                              conversation.senderUid != Application.profile.uid
+                          ? "${conversation.senderUid}:${conversation.content}"
+                          : "${conversation.content}",
                       overflow: TextOverflow.ellipsis,
                       softWrap: false,
+                      maxLines: 1,
                       style: AppStyle.textSecondaryRegular13,
                     )),
                     SizedBox(

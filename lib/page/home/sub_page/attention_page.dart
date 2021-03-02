@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -5,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/constant/constants.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -20,6 +22,8 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/util/string_util.dart';
+import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/first_end_item_children_delegate.dart';
 import 'package:provider/provider.dart';
@@ -81,6 +85,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   // 是否请求接口
   bool isRequestInterface = false;
 
+  // 声明定时器
+  Timer timer;
+
   @override
   void initState() {
     print("初始化一下啊");
@@ -131,8 +138,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             model.list.forEach((v) {
               attentionIdList.add(HomeFeedModel.fromJson(v).id);
               attentionModelList.add(HomeFeedModel.fromJson(v));
-              print("接口赶回");
-              print(HomeFeedModel.fromJson(v).comments);
             });
             if (model.hasNext == 0) {
               loadText = "";
@@ -157,6 +162,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             loadStatus = LoadingStatus.STATUS_COMPLETED;
           }
         }
+        attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList);
       });
     }
     lastTime = model.lastTime;
@@ -182,11 +188,20 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     }
     // 更新全局监听
     context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
+    print("本地存储的数据长度1:${context.read<FeedMapNotifier>().feedMap.length}");
   }
 
   // 插入数据
   insertData(int id) {
-    attentionIdList.insert(1, id);
+    setState(() {
+      print("插入数据");
+      print(  attentionIdList.toString());
+      if(attentionIdList.isEmpty) {
+        attentionIdList.insert(0, -1);
+      }
+      attentionIdList.insert(1, id);
+      status = Status.concern;
+    });
   }
 
   // 回到顶部
@@ -200,15 +215,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   // 返回关注视图
   backToView(int index, HomeFeedModel feedmodel) {
     if (index == 0) {
-      // return
-      //   FlatButton(
-      //     child: Text(context.read<TokenNotifier>().token.anonymous == 0 ? "登出" : "登录"),
-      //     onPressed: () async {
-      //        Application.token.anonymous = 1;
-      //       //先取个匿名token
-      //        context.read<TokenNotifier>().setToken(Application.token);
-      //       }
-      //   );
       return Container(
         height: 14,
       );
@@ -220,7 +226,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         isShowConcern: false,
         pageName: "attentionPage",
         // 可选参数 子Item的个数
-        key: GlobalObjectKey("attention$index"),
+        // key: GlobalObjectKey("attention$index"),
         deleteFeedChanged: (id) {
           setState(() {
             attentionIdList.remove(id);
@@ -229,6 +235,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             if (attentionIdList.length == 1 && attentionIdList.first == -1) {
               loadStatus = LoadingStatus.STATUS_IDEL;
               loadText = "";
+              attentionIdList.clear();
+              attentionModelList.clear();
               status = Status.noConcern;
             }
           });
@@ -294,17 +302,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     }
     print("result${result.toString()}");
     return result;
-  }
-
-  // 缺省图未登录关注视图的长度。
-  int itemcount() {
-    int count = 0;
-    // if (status == Status.noConcern || status == Status.notLoggedIn || status == Status.loggedIn) {
-    //   count = 1;
-    // } else if (status == Status.concern) {
-    count = attentionIdList.length + 1;
-    // }
-    return count;
   }
 
   // 缺省图未登录关注视图切换
@@ -434,11 +431,34 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
           // 滚动开始
           print('滚动开始');
         } else if (notification is ScrollUpdateNotification) {
-          // 滚动位置更新
+          // 纵向滚动
+          if (metrics.axis == Axis.vertical) {
+            // 取消延时器
+            if (timer != null) {
+              timer.cancel();
+            }
+          }
           print('滚动位置更新');
           // 当前位置
           print("当前位置${metrics.pixels}");
         } else if (notification is ScrollEndNotification) {
+          print("本地存储的数据长度2:${context.read<FeedMapNotifier>().feedMap.length}");
+          // 纵向滚动
+          if (metrics.axis == Axis.vertical) {
+            // 延迟器:
+            timer = Timer(Duration(milliseconds: 3000), () {
+              print("定时3秒到了");
+              for (int i = 0; i < attentionModelList.length; i++) {
+                HomeFeedModel value = attentionModelList[i];
+                // 屏幕的一半偏移值
+                double screenOffser = metrics.pixels + (ScreenUtil.instance.height / 2);
+                if (screenOffser >= value.headOffset && screenOffser < value.bottomOffset) {
+                  print("进了");
+                  context.read<FeedMapNotifier>().showInputBox(value.id);
+                }
+              }
+            });
+          }
           // 滚动结束
           print('滚动结束');
         }
@@ -469,7 +489,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                   feedModel = context.read<FeedMapNotifier>().feedMap[id];
                 }
                 return pageDisplay(index, feedModel);
-              }, childCount: itemcount()),
+              }, childCount: attentionIdList.length + 1),
             )
             // )
           ])),

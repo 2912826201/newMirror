@@ -90,7 +90,6 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 // 例：Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
 var handlerIfPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   GlobalKey thekey = GlobalKey();
-  SingletonForWholePages.singleton().IfPagekey = thekey;
   return IfPage(
     key: thekey,
   );

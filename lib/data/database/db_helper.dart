@@ -111,7 +111,8 @@ Future<void> _createDB(Database db, int version) async {
       "$COLUMN_NAME_CONVERSATION_UPDATETIME bigint(20)," +
       "$COLUMN_NAME_CONVERSATION_CREATETIME bigint(20)," +
       "$COLUMN_NAME_CONVERSATION_ISTOP tinyint(1)," +
-      "$COLUMN_NAME_CONVERSATION_UNREADCOUNT int" +
+      "$COLUMN_NAME_CONVERSATION_UNREADCOUNT int," +
+      "$COLUMN_NAME_CONVERSATION_SENDERUID bigint(20)" +
       ")");
   //region
   await db.execute("create table $TABLE_NAME_REGION (" +
