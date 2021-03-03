@@ -6,6 +6,7 @@ import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
+import 'package:mirror/page/message/message_view/message_item_height_util.dart';
 import 'package:mirror/util/date_util.dart';
 
 import 'currency_msg.dart';
@@ -154,6 +155,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
       isMySelf: isMyself,
       actions: longClickStringList,
       contentWidth: 180.0,
+      contentHeight: MessageItemHeightUtil.init().getLiveVideoCourseMsgHeight(isShowChatUserName),
       child: GestureDetector(
         child: _getLiveVideoCourseUi(),
         onTap: () {

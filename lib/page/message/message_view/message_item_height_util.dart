@@ -28,15 +28,15 @@ class MessageItemHeightUtil{
   //判断获取消息的高度是否大于等于展示区域的高度
   bool judgeMessageItemHeightIsThenScreenHeight(List<ChatDataModel> chatDataList,bool isShowChatUserName){
     double chatListPageHeight=ScreenUtil.instance.height-ScreenUtil.instance.statusBarHeight-44.0;
-    return judgeMessageItemHeight(chatDataList,isShowChatUserName,chatListPageHeight)>=chatListPageHeight;
+    return _judgeMessageItemHeight(chatDataList,isShowChatUserName,chatListPageHeight)>=chatListPageHeight;
   }
 
   //获取消息的高度
-  double judgeMessageItemHeight(List<ChatDataModel> chatDataList,bool isShowChatUserName,double chatListPageHeight){
+  double _judgeMessageItemHeight(List<ChatDataModel> chatDataList,bool isShowChatUserName,double chatListPageHeight){
     double itemHeight=0.0;
     if(chatDataList!=null&&chatDataList.length>0){
       chatDataList.forEach((element) {
-        itemHeight+=judgeTemporaryData(element,isShowChatUserName);
+        itemHeight+=_judgeTemporaryData(element,isShowChatUserName);
         if(itemHeight>=chatListPageHeight){
           return itemHeight;
         }
@@ -47,17 +47,17 @@ class MessageItemHeightUtil{
 
 
 
-  double judgeTemporaryData(ChatDataModel model,bool isShowName){
+  double _judgeTemporaryData(ChatDataModel model,bool isShowName){
     if (model.isTemporary) {
-      return temporaryData(model,isShowName);
+      return _temporaryData(model,isShowName);
     } else {
-      return notTemporaryData(model,isShowName);
+      return _notTemporaryData(model,isShowName);
     }
   }
 
 
   //临时消息
-  double temporaryData(ChatDataModel model,bool isShowName) {
+  double _temporaryData(ChatDataModel model,bool isShowName) {
     //普通消息
     if (model.type == ChatTypeModel.MESSAGE_TYPE_TEXT) {
 
@@ -91,7 +91,7 @@ class MessageItemHeightUtil{
 
 
   //显示正式消息
-  double notTemporaryData(ChatDataModel model,bool isShowName) {
+  double _notTemporaryData(ChatDataModel model,bool isShowName) {
     Message msg = model.msg;
     if (msg == null) {
       return 0.0;
@@ -101,7 +101,7 @@ class MessageItemHeightUtil{
     if (msgType == ChatTypeModel.MESSAGE_TYPE_TEXT) {
       // -----------------------------------------------自定义的-消息类型----------------------------------------------
 
-      return getTextMessageHeight(msg,isShowName,model);
+      return _getTextMessageHeight(msg,isShowName,model);
     } else if (msgType == VoiceMessage.objectName) {
       // -----------------------------------------------语音-消息----------------------------------------------
 
@@ -126,7 +126,7 @@ class MessageItemHeightUtil{
 
 
   //自定义的消息类型高度
-  double getTextMessageHeight(Message msg,bool isShowName,ChatDataModel model){
+  double _getTextMessageHeight(Message msg,bool isShowName,ChatDataModel model){
     TextMessage textMessage = ((msg.content) as TextMessage);
     try {
       Map<String, dynamic> mapModel = json.decode(textMessage.content);
