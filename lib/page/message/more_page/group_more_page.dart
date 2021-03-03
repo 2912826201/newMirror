@@ -315,23 +315,28 @@ class GroupMorePageState extends State<GroupMorePage> {
       userName = userModel.groupNickName ?? "";
     }
 
-    return Container(
-      child: Column(
-        children: [
-          getUserImage(userModel.avatarUri, 47, 47),
-          SizedBox(
-            height: 6,
-          ),
-          SizedBox(
-            width: 47,
-            child: Text(
-              userName,
-              style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+    return GestureDetector(
+      onTap: (){
+        AppRouter.navigateToMineDetail(context, userModel.uid);
+      },
+      child: Container(
+        child: Column(
+          children: [
+            getUserImage(userModel.avatarUri, 47, 47),
+            SizedBox(
+              height: 6,
             ),
-          )
-        ],
+            SizedBox(
+              width: 47,
+              child: Text(
+                userName,
+                style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
