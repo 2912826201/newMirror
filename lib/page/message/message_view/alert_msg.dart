@@ -261,6 +261,18 @@ class AlertMsg extends StatelessWidget {
       }
     } else if (mapGroupModel["subType"] == 2) {
       textArray.add("移出了群聊");
+      if(!isHaveUserSelf){
+        if(context.watch<GroupUserProfileNotifier>().loadingStatus==LoadingStatus.STATUS_COMPLETED&&
+            context.watch<GroupUserProfileNotifier>().chatGroupUserModelList!=null&&
+            context.watch<GroupUserProfileNotifier>().chatGroupUserModelList.length>0) {
+          ChatGroupUserModel chatGroupUserModel = context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[0];
+          if(chatGroupUserModel.uid!=Application.profile.uid){
+            textArray.clear();
+          }
+        }else{
+          textArray.clear();
+        }
+      }
     } else if (mapGroupModel["subType"] == 3) {
       textArray.add("已成为新群主");
     }
