@@ -1690,7 +1690,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   _moreOnClickExitChatPage() {
     //退出群聊
     MessageManager.removeConversation(context, chatId, Application.profile.uid, conversation.type);
-    // Application.rongCloud.clearMessages(getRCConversationType(chatUserId??10),Application.profile.uid.toString(),null);
+    Application.rongCloud.clearMessages(chatTypeId,chatId.toString(),null);
     Future.delayed(Duration.zero, () {
       Navigator.of(context).pop();
     });

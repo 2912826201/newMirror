@@ -379,6 +379,7 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
         },
         onClickRightBtn: () {
           MessageManager.removeConversation(context, conversation.conversationId, conversation.uid, conversation.type);
+          Application.rongCloud.clearMessages(conversation.getType(), conversation.conversationId,null);
         },
       );
     } else {
