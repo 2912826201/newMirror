@@ -244,7 +244,7 @@ class AlertMsg extends StatelessWidget {
     } else if (mapGroupModel["subType"] == 1) {
       textArray.add("退出群聊");
     } else if (mapGroupModel["subType"] == 2) {
-      textArray.add("移除了群聊");
+      textArray.add("移出了群聊");
     } else if (mapGroupModel["subType"] == 3) {
       textArray.add("已成为新群主");
     }
