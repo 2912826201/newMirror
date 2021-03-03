@@ -270,7 +270,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     bool blackStatus = await ProfileAddBlack(int.parse(widget.chatUserId));
     if (blackStatus!=null&&blackStatus) {
       isBlackList = true;
-      ToastShow.show(msg: "拉黑了这个人", context: context);
+      ToastShow.show(msg: "已拉黑", context: context);
       if(widget.listener!=null){
         widget.listener(2,"拉黑");
       }
