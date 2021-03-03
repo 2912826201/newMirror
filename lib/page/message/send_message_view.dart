@@ -515,7 +515,7 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
       dynamic> map, RecallNotificationMessage recallNotificationMessage}) {
     return AlertMsg(
       position: widget.position,
-      chatUserName: widget.chatUserName,
+      chatUserName: name,
       isShowChatUserName: widget.isShowChatUserName,
       voidMessageClickCallBack: widget.voidMessageClickCallBack,
       voidItemLongClickCallBack: widget.voidItemLongClickCallBack,
