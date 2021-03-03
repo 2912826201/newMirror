@@ -576,10 +576,12 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     // print(Application.chatGroupUserInformationMap["${groupId}_$uId"].toString());
     // print(GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME);
     // print((Application.chatGroupUserInformationMap["${groupId}_$uId"]??Map())[GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
-    String userName = (Application.chatGroupUserInformationMap["${groupId}_$uId"]??Map())
-    [GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]??
-        (Application.chatGroupUserInformationMap["${groupId}_$uId"]??Map())
-        [GROUP_CHAT_USER_INFORMATION_USER_NAME];
+    String userName = ((Application.chatGroupUserInformationMap["${groupId}_$uId"]??Map())
+    [GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
+    if(userName==null||userName.length<1){
+      userName =(Application.chatGroupUserInformationMap["${groupId}_$uId"]??Map())
+      [GROUP_CHAT_USER_INFORMATION_USER_NAME];
+    }
     if (userName == null) {
       return name;
     } else {

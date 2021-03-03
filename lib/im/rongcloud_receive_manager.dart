@@ -76,5 +76,7 @@ class RongCloudReceiveManager {
   //消息撤回监听
   onRecallMessageReceived(Message message) {
     print("撤回消息====${message.objectName}");
+    Application.appContext.read<ChatMessageProfileNotifier>().withdrawMessage(message);
+    MessageManager.updateConversationByMessageList(_context, [message]);
   }
 }

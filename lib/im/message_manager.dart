@@ -199,7 +199,7 @@ class MessageManager {
     dto.isTop = 0;
     //暂时将时间写一样
     dto.createTime = msg.sentTime;
-    dto.updateTime = msg.sentTime;
+    dto.updateTime = new DateTime.now().millisecondsSinceEpoch;
 
     //撤回消息和已读的其他类型消息不计未读数，其他为未读计未读数1
     if (msg.objectName == ChatTypeModel.MESSAGE_TYPE_RECALL_MSG1 ||

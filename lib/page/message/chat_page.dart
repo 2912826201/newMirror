@@ -173,6 +173,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   //是否可以显示头部关注box
   bool isShowTopAttentionUi = false;
 
+
+  double scrollPositionPixels=0;
+  bool isHaveReceiveChatDataList=false;
+
   @override
   void initState() {
     super.initState();
@@ -193,6 +197,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     }
 
     _scrollController.addListener(() {
+      scrollPositionPixels=_scrollController.position.pixels;
+      // print("scrollPositionPixels3：$scrollPositionPixels");
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
         if (loadStatus == LoadingStatus.STATUS_IDEL) {
           // 先设置状态，防止下拉就直接加载reload
@@ -208,6 +214,13 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
           } else {
             _onRefreshSystemInformation();
           }
+        }
+      }else if(_scrollController.position.pixels<=0){
+        print("isHaveReceiveChatDataList:$isHaveReceiveChatDataList");
+        if (mounted&&isHaveReceiveChatDataList) {
+          reload(() {
+            isHaveReceiveChatDataList=false;
+          });
         }
       }
     });
@@ -1163,6 +1176,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     } else {
       chatDataList[position].msg.objectName = RecallNotificationMessage.objectName;
       chatDataList[position].msg.content = recallNotificationMessage;
+      MessageManager.updateConversationByMessageList(context, [chatDataList[position].msg]);
       if (mounted) {
         reload(() {
           _timerCount = 0;
@@ -1333,21 +1347,40 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         } else {
           Application.appContext.read<ChatMessageProfileNotifier>().clearMessage();
         }
-        //当进入聊天界面,没有任何聊天记录,这时对方给我发消息就可能会照成崩溃
-        if (chatDataList.length > 0 && message.messageUId == chatDataList[0].msg.messageUId) {
-          return Container();
-        }
-        ChatDataModel chatDataModel = getMessage(message, isHaveAnimation: true);
-        judgeAddAlertTime();
-        chatDataList.insert(0, chatDataModel);
-        if (message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
-          //判断是不是群通知
-          if (chatTypeId == RCConversationType.Group) {
-            print("--------------------------------");
-            getChatGroupUserModelList1(chatId, context);
+        if(message.objectName==ChatTypeModel.MESSAGE_TYPE_RECALL_MSG1||
+            message.objectName==ChatTypeModel.MESSAGE_TYPE_RECALL_MSG2){
+          //撤回消息
+          for(ChatDataModel model in chatDataList){
+            if(model.msg.messageUId==message.messageUId){
+              model.msg=message;
+              delayedSetState();
+              break;
+            }
+          }
+        }else {
+          //不是撤回消息
+
+          //当进入聊天界面,没有任何聊天记录,这时对方给我发消息就可能会照成崩溃
+          if (chatDataList.length > 0 && message.messageUId == chatDataList[0].msg.messageUId) {
+            return Container();
+          }
+          ChatDataModel chatDataModel = getMessage(message, isHaveAnimation: scrollPositionPixels < 500);
+          print("scrollPositionPixels：$scrollPositionPixels");
+          judgeAddAlertTime();
+          chatDataList.insert(0, chatDataModel);
+          if (message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
+            //判断是不是群通知
+            if (chatTypeId == RCConversationType.Group) {
+              print("--------------------------------");
+              getChatGroupUserModelList1(chatId, context);
+            }
+          }
+          isHaveReceiveChatDataList = true;
+          if (scrollPositionPixels < 500) {
+            isHaveReceiveChatDataList = false;
+            delayedSetState();
           }
         }
-        delayedSetState();
         return Container();
       },
     );
@@ -1366,8 +1399,13 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
             getChatGroupUserModelList1(chatId, context);
             insertExitGroupMsg(message, chatId, (Message msg, int code) {
               if (code == 0) {
-                chatDataList.insert(0, getMessage(msg));
-                delayedSetState();
+                print("scrollPositionPixels1：$scrollPositionPixels");
+                chatDataList.insert(0, getMessage(msg,isHaveAnimation: scrollPositionPixels<500));
+                isHaveReceiveChatDataList=true;
+                if(scrollPositionPixels<500){
+                  isHaveReceiveChatDataList=false;
+                  delayedSetState();
+                }
               }
             });
           }
@@ -1923,7 +1961,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       LiveVideoModel videoModel = LiveVideoModel.fromJson(map);
       AppRouter.navigateToVideoDetail(context, videoModel.id, heroTag: msgId, videoModel: videoModel);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VOICE) {
-      ToastShow.show(msg: "播放录音", context: context);
+      // ToastShow.show(msg: "播放录音", context: context);
       updateMessage(chatDataList[position], (code) {
         if (mounted) {
           reload(() {
@@ -1934,7 +1972,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     } else if (contentType == RecallNotificationMessage.objectName) {
       recallNotificationMessagePosition = position;
       print("position:$position");
-      ToastShow.show(msg: "重新编辑消息", context: context);
+      // ToastShow.show(msg: "重新编辑消息", context: context);
       // FocusScope.of(context).requestFocus(_focusNode);
       _textController.text = json.decode(map["content"])["data"];
       var setCursor = TextSelection(

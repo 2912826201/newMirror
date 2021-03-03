@@ -129,6 +129,15 @@ class ChatMessageProfileNotifier extends ChangeNotifier {
     }
   }
 
+  //撤回消息
+  withdrawMessage(Message message){
+    if (this.chatUserId==message.targetId) {
+      this.message = message;
+      this.isSettingStatus = false;
+      notifyListeners();
+    }
+  }
+
 
   //获取新的消息--判断是不是当前会话的消息
   judgeConversationMessage(Message message) {
