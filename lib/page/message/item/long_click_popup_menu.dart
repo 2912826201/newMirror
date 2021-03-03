@@ -47,16 +47,16 @@ class _LongClickPopupMenuState extends State<LongClickPopupMenu> {
   @override
   void initState() {
     super.initState();
-    try {
-      WidgetsBinding.instance.addPostFrameCallback((call) {
-        if (context != null) {
-          width = context?.size?.width;
-          height = context?.size?.height;
+    WidgetsBinding.instance.addPostFrameCallback((call) {
+      try {
+        if (context != null&&context.size!=null) {
+          width = context.size.width;
+          height = context.size.height;
           button = context.findRenderObject();
           overlay = Overlay.of(context).context?.findRenderObject();
         }
-      });
-    } catch (e) {}
+      } catch (e) {}
+    });
   }
 
   @override
