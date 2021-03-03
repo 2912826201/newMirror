@@ -73,6 +73,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                               height: 36,
                               margin: EdgeInsets.only(right: 6),
                               child: Stack(
+                                alignment: const FractionalOffset(0.5,0.5),
                                 children: [
                                   context.watch<FeedMapNotifier>().postFeedModel.selectedMediaFiles.type ==
                                           mediaTypeKeyVideo
@@ -125,14 +126,17 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                                               : Container(),
                                   context.watch<FeedMapNotifier>().postFeedModel.selectedMediaFiles.type ==
                                           mediaTypeKeyVideo
-                                      ? Positioned(
-                                          top: 15,
-                                          bottom: 15,
-                                          child: Container(
+                                      ?
+                                  // Positioned(
+                                      //     top: 15,
+                                      //     bottom: 15,
+                                      //     child:
+                                          Container(
                                             width: 13,
                                             height: 13,
                                             color: AppColor.mainRed,
-                                          ))
+                                          // )
+              )
                                       : Container()
                                 ],
                               ),
@@ -164,7 +168,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                   ))),
           LinearProgressIndicator(
             value: context.watch<FeedMapNotifier>().plannedSpeed,
-            valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
+            valueColor: new AlwaysStoppedAnimation<Color>(AppColor.mainRed),
             backgroundColor: AppColor.white,
           ),
         ],
@@ -284,10 +288,10 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
           });
           // new Future.delayed(Duration(seconds: 1), () {
           // 插入数据
-          attentionKey.currentState.insertData(HomeFeedModel.fromJson(feedModel).id, HomeFeedModel.fromJson(feedModel));
-          context
-              .read<FeedMapNotifier>()
-              .PublishInsertData(HomeFeedModel.fromJson(feedModel).id, HomeFeedModel.fromJson(feedModel));
+          attentionKey.currentState.insertData( HomeFeedModel.fromJson(feedModel));
+          // context
+          //     .read<FeedMapNotifier>()
+          //     .PublishInsertData(HomeFeedModel.fromJson(feedModel).id, HomeFeedModel.fromJson(feedModel));
           // });
         } else {
           // 发布失败
