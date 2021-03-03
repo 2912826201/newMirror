@@ -25,6 +25,17 @@ class FeedMapNotifier extends ChangeNotifier {
   double plannedSpeed = 0.0;
 
   CommentDtoModel childModel;
+  // 是否是左滑
+  bool isSwipeLeft;
+  double metricsPixels;
+  storageIsSwipeLeft(bool offset) {
+    this.isSwipeLeft = offset;
+    notifyListeners();
+  }
+  storage(double offset) {
+    this.metricsPixels = offset;
+    notifyListeners();
+  }
 
   void changeFatherItemChose(int id, int index) {
     feedMap[id].comments[index].itemChose = false;

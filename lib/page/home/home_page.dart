@@ -417,7 +417,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                 : Container(),
             Expanded(
               child: UnionInnerTabBarView(
-                controller: this.controller,
+                controller: controller,
                 children: [
                   AttentionPage(
                     key: attentionKey,
