@@ -5,6 +5,7 @@ import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/page/login/sms_code_page.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 
 class PhoneLoginPage extends StatefulWidget {
@@ -156,6 +157,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
       //手机号前后对不上
       if (applicationPhone != this.inputController.text) {
         print("手机号前后对不上，无法发送验证码！");
+        ToastShow.show(msg: "发送频繁，请稍候重试。", context: context);
         return;
       }
       print("发送验证码页面重入");
@@ -175,11 +177,11 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
     }
     bool result = false;
     result = await sendSms(inputController.text, 0);
-    if (this.mounted) {
-      setState(() {
-        _titleOfSendTextBtn = _loggingTitle;
-      });
-    }
+    // if (this.mounted) {
+    //   setState(() {
+    //     _titleOfSendTextBtn = _loggingTitle;
+    //   });
+    // }
     if (result) {
       print("发送验证码成功");
       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
