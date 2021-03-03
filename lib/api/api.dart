@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/model/base_response_model.dart';
@@ -90,6 +92,18 @@ Dio _getDioPostInstance() {
     //TODO 还需要更多详细的参数
     //设置拦截器用于打印log
     _dioPost.interceptors.add(_LogInterceptors());
+
+    // (_dioPost.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+    //     (client) {
+    //   //这一段是解决安卓https抓包的问题
+    //   client.badCertificateCallback =
+    //       (X509Certificate cert, String host, int port) {
+    //     return Platform.isAndroid;
+    //   };
+    //   client.findProxy = (uri) {
+    //     return "PROXY 192.168.10.117:8888";
+    //   };
+    // };
   }
   return _dioPost;
 }
@@ -102,6 +116,18 @@ Dio _getDioGetInstance() {
     //TODO 还需要更多详细的参数
     //设置拦截器用于打印log
     _dioGet.interceptors.add(_LogInterceptors());
+
+    // (_dioGet.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+    //     (client) {
+    //   //这一段是解决安卓https抓包的问题
+    //   client.badCertificateCallback =
+    //       (X509Certificate cert, String host, int port) {
+    //     return Platform.isAndroid;
+    //   };
+    //   client.findProxy = (uri) {
+    //     return "PROXY 192.168.10.117:8888";
+    //   };
+    // };
   }
   return _dioGet;
 }
