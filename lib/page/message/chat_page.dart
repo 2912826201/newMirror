@@ -350,6 +350,13 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   //获取列表内容
   Widget getChatDetailsBody() {
     bool isShowName = conversation.getType() == RCConversationType.Group;
+    if(chatDataList.length>1){
+      if(!(chatDataList[0].isTemporary||chatDataList[1].isTemporary)){
+        if(chatDataList[0].msg.messageUId==chatDataList[1].msg.messageUId){
+          chatDataList.removeAt(0);
+        }
+      }
+    }
     return ChatDetailsBody(
       scrollController: _scrollController,
       chatDataList: chatDataList,
@@ -1483,6 +1490,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
                 isHaveReceiveChatDataList=true;
                 if(scrollPositionPixels<500){
                   isHaveReceiveChatDataList=false;
+
                   delayedSetState();
                 }
               }

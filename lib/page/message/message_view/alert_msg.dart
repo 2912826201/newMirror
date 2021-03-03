@@ -110,7 +110,7 @@ class AlertMsg extends StatelessWidget {
       //2--移除群聊
       //3--群主转移
       //4--群名改变
-      //4--扫码加入群聊
+      //5--扫码加入群聊
       //群通知
       Map<String, dynamic> mapGroupModel = json.decode(map["data"]["data"]);
       if (mapGroupModel["subType"] == 5) {
