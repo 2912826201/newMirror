@@ -26,7 +26,6 @@ import 'package:toast/toast.dart';
 import 'package:union_tabs/union_tabs.dart';
 
 class HomePage extends StatefulWidget {
-
   HomePageState createState() => HomePageState();
 }
 
@@ -66,6 +65,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                   margin: EdgeInsets.only(left: 16, right: 16),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       context.watch<FeedMapNotifier>().postFeedModel.selectedMediaFiles != null
                           ? Container(
@@ -73,7 +73,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                               height: 36,
                               margin: EdgeInsets.only(right: 6),
                               child: Stack(
-                                alignment: const FractionalOffset(0.5,0.5),
+                                alignment: const FractionalOffset(0.5, 0.5),
                                 children: [
                                   context.watch<FeedMapNotifier>().postFeedModel.selectedMediaFiles.type ==
                                           mediaTypeKeyVideo
@@ -127,16 +127,16 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                                   context.watch<FeedMapNotifier>().postFeedModel.selectedMediaFiles.type ==
                                           mediaTypeKeyVideo
                                       ?
-                                  // Positioned(
+                                      // Positioned(
                                       //     top: 15,
                                       //     bottom: 15,
                                       //     child:
-                                          Container(
-                                            width: 13,
-                                            height: 13,
-                                            color: AppColor.mainRed,
+                                      Container(
+                                          width: 13,
+                                          height: 13,
+                                          color: AppColor.mainRed,
                                           // )
-              )
+                                        )
                                       : Container()
                                 ],
                               ),
@@ -167,8 +167,10 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                     ],
                   ))),
           LinearProgressIndicator(
-            value: context.watch<FeedMapNotifier>().plannedSpeed,
-            valueColor: new AlwaysStoppedAnimation<Color>(AppColor.mainRed),
+            value:
+                context.watch<FeedMapNotifier>().plannedSpeed != -1 ? context.watch<FeedMapNotifier>().plannedSpeed : 1,
+            valueColor: new AlwaysStoppedAnimation<Color>(
+                context.watch<FeedMapNotifier>().plannedSpeed != -1 ? AppColor.mainRed : Colors.amberAccent),
             backgroundColor: AppColor.white,
           ),
         ],
@@ -190,10 +192,26 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
         style: AppStyle.textSecondaryRegular14,
       );
     } else if (plannedSpeed == -1) {
-      return Text(
-        "我们会在网络信号改善时重试",
-        style: AppStyle.textSecondaryRegular11,
+      return Container(
+        height: 36,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "发布失败",
+              style: AppStyle.textMedium14,
+            ),
+            Text(
+              "我们会在网络信号改善时重试",
+              style: AppStyle.textSecondaryRegular11,
+            )
+          ],
+        ),
       );
+      // return Text(
+      //   "我们会在网络信号改善时重试",
+      //   style: AppStyle.textSecondaryRegular11,
+      // );
     }
   }
 
@@ -288,7 +306,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
           });
           // new Future.delayed(Duration(seconds: 1), () {
           // 插入数据
-          attentionKey.currentState.insertData( HomeFeedModel.fromJson(feedModel));
+          attentionKey.currentState.insertData(HomeFeedModel.fromJson(feedModel));
           // context
           //     .read<FeedMapNotifier>()
           //     .PublishInsertData(HomeFeedModel.fromJson(feedModel).id, HomeFeedModel.fromJson(feedModel));
@@ -297,7 +315,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
           // 发布失败
           print('================================发布失败');
           // 清空发布model
-          context.read<FeedMapNotifier>().setPublishFeedModel(null);
+          // context.read<FeedMapNotifier>().setPublishFeedModel(null);
           // 设置不可发布
           context.read<FeedMapNotifier>().setPublish(false);
           _process = -1.0;
