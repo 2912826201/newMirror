@@ -372,6 +372,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   Widget getAppBar() {
     return CustomAppBar(
       titleString: chatName ?? "",
+      subtitleString: "(${context.read<GroupUserProfileNotifier>().chatGroupUserModelList.length})",
       actions: [
         CustomAppBarIconButton(
             icon: Icons.more_horiz, iconColor: AppColor.black, onTap: _topMoreBtnClick),
