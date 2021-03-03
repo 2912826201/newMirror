@@ -306,30 +306,31 @@ class MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     print("Main_________________________________build");
     return MaterialApp(
-        // title: 'Flutter Demo',
-        theme: ThemeData(
-          // primarySwatch: Colors.blue,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
-        navigatorKey: Application.navigatorKey,
-        //通过统一方法处理页面跳转路由
-        onGenerateRoute: Application.router.generator,
-        localizationsDelegates: [
-          /*
-            本地化的代理类
-           */
-          GlobalMaterialLocalizations.delegate,// 指定本地化的字符串和一些其他的值
-          GlobalCupertinoLocalizations.delegate, // 对应的Cupertino风格
-          GlobalWidgetsLocalizations.delegate, // 指定默认的文本排列方向, 由左到右或由右到左
-          /// 注册我们的Delegate
-          FZLocalizationDelegate.delegate
-        ],
-        supportedLocales: [
-          const Locale('zh', 'CN'),
-          const Locale('en', 'US'),
-        ],
+      // title: 'Flutter Demo',
+      theme: ThemeData(
+        // primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      navigatorKey: Application.navigatorKey,
+      //通过统一方法处理页面跳转路由
+      onGenerateRoute: Application.router.generator,
+      /*
+       本地化的代理类
+      */
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate, // 指定本地化的字符串和一些其他的值
+        GlobalCupertinoLocalizations.delegate, // 对应的Cupertino风格
+        GlobalWidgetsLocalizations.delegate, // 指定默认的文本排列方向, 由左到右或由右到左
+        /// 注册我们的Delegate
+        FZLocalizationDelegate.delegate
+      ],
+      supportedLocales: [
+        const Locale('zh', 'CN'),
+        const Locale('en', 'US'),
+      ],
+
       /// 监听系统语言切换
-      localeListResolutionCallback: (deviceLocale, supportedLocales){
+      localeListResolutionCallback: (deviceLocale, supportedLocales) {
         print('deviceLocale: $deviceLocale');
         // 系统语言是英语： deviceLocale: [en_CN, en_CN, zh_Hans_CN]
         // 系统语言是中文： deviceLocale: [zh_CN, zh_Hans_CN, en_CN]
