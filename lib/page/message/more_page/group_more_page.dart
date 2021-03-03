@@ -78,7 +78,7 @@ class GroupMorePageState extends State<GroupMorePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        titleString: "群聊消息",
+        titleString: "群聊消息 (${context.watch<GroupUserProfileNotifier>().chatGroupUserModelList.length})",
       ),
       body: getBodyUi(),
     );
