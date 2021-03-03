@@ -274,11 +274,13 @@ class MessageManager {
           break;
         case 1:
           //1-退出群聊
+          // print("1111退出群聊");
           //判断是不是群通知-移除群成员的消息
           GroupChatUserInformationDBHelper().removeGroupAllInformation(message.targetId);
           break;
         case 2:
           //2-移除群聊
+          // print("22222移除群聊");
           Application.appContext.read<ChatMessageProfileNotifier>().removeGroup(message);
 
           //判断是不是群通知-移除群成员的消息

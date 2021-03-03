@@ -118,17 +118,16 @@ class AlertMsg extends StatelessWidget {
       }else if (mapGroupModel["subType"] == 4) {
         updateGroupName(mapGroupModel, context);
       } else {
+        getGroupText(mapGroupModel, context);
+
         if(context.watch<GroupUserProfileNotifier>().loadingStatus==LoadingStatus.STATUS_COMPLETED) {
-          ChatGroupUserModel chatGroupUserModel = context
-              .watch<GroupUserProfileNotifier>()
-              .chatGroupUserModelList[0];
-          if (mapGroupModel["subType"] == 1 && !chatGroupUserModel.isGroupLeader()) {
+          ChatGroupUserModel chatGroupUserModel = context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[0];
+          if (mapGroupModel["subType"] == 1 && chatGroupUserModel.uid!=Application.profile.uid) {
             textArray.clear();
           } else {
             if(mapGroupModel["subType"] == 0&&map["data"]["name"]=="Entry"){
               textArray.clear();
             }else {
-              getGroupText(mapGroupModel, context);
             }
           }
         }else{
@@ -180,6 +179,8 @@ class AlertMsg extends StatelessWidget {
 
     int userCount = 0;
 
+    bool isHaveUserSelf=false;
+
     List<dynamic> users = mapGroupModel["users"];
     if (users == null || users.length < 1) {
       textArray.clear();
@@ -193,6 +194,7 @@ class AlertMsg extends StatelessWidget {
       if (mapGroupModel["operator"].toString() == Application.profile.uid.toString()) {
         textArray.add("你邀请了");
         isChangColorArray.add(false);
+        isHaveUserSelf=true;
       } else {
         textArray.add(mapGroupModel["operatorName"].toString());
         isChangColorArray.add(true);
@@ -205,6 +207,7 @@ class AlertMsg extends StatelessWidget {
       if (mapGroupModel["operator"].toString() == Application.profile.uid.toString()) {
         textArray.add("你将");
         isChangColorArray.add(false);
+        isHaveUserSelf=true;
       } else {
         textArray.add(mapGroupModel["operatorName"].toString());
         isChangColorArray.add(true);
@@ -219,6 +222,7 @@ class AlertMsg extends StatelessWidget {
         if (d != null) {
           if (d["uid"] == Application.profile.uid) {
             textArray.add("你${userCount >= users.length ? " " : "、"}");
+            isHaveUserSelf=true;
           } else {
             if (mapGroupModel["subType"] == 3) {
               textArray.add("${d["currentMasterName"]}${userCount >= users.length ? " " : "、"}");
@@ -243,6 +247,18 @@ class AlertMsg extends StatelessWidget {
       textArray.add("加入群聊");
     } else if (mapGroupModel["subType"] == 1) {
       textArray.add("退出群聊");
+      if(!isHaveUserSelf){
+        if(context.watch<GroupUserProfileNotifier>().loadingStatus==LoadingStatus.STATUS_COMPLETED&&
+            context.watch<GroupUserProfileNotifier>().chatGroupUserModelList!=null&&
+            context.watch<GroupUserProfileNotifier>().chatGroupUserModelList.length>0) {
+          ChatGroupUserModel chatGroupUserModel = context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[0];
+          if(chatGroupUserModel.uid!=Application.profile.uid){
+            textArray.clear();
+          }
+        }else{
+          textArray.clear();
+        }
+      }
     } else if (mapGroupModel["subType"] == 2) {
       textArray.add("移出了群聊");
     } else if (mapGroupModel["subType"] == 3) {

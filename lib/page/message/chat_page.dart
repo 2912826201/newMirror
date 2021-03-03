@@ -180,6 +180,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   double scrollPositionPixels=0;
   bool isHaveReceiveChatDataList=false;
 
+  int userNumber=0;
+
   @override
   void initState() {
     super.initState();
@@ -374,14 +376,26 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
   //获取appbar
   Widget getAppBar() {
-    return CustomAppBar(
-      titleString: chatName ?? "",
-      subtitleString: "(${context.read<GroupUserProfileNotifier>().chatGroupUserModelList.length})",
-      actions: [
-        CustomAppBarIconButton(
-            icon: Icons.more_horiz, iconColor: AppColor.black, onTap: _topMoreBtnClick),
-      ],
-    );
+
+    if(conversation.getType()==RCConversationType.Group){
+      userNumber=context.read<GroupUserProfileNotifier>().chatGroupUserModelList.length;
+      return CustomAppBar(
+        titleString: chatName ?? "",
+        subtitleString: userNumber>0? "($userNumber)":null,
+        actions: [
+          CustomAppBarIconButton(
+              icon: Icons.more_horiz, iconColor: AppColor.black, onTap: _topMoreBtnClick),
+        ],
+      );
+    }else{
+      return CustomAppBar(
+        titleString: chatName ?? "",
+        actions: [
+          CustomAppBarIconButton(
+              icon: Icons.more_horiz, iconColor: AppColor.black, onTap: _topMoreBtnClick),
+        ],
+      );
+    }
   }
 
   //头部显示关注遮挡
@@ -1352,6 +1366,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   initTime() {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       _timerCount++;
+
+      if(conversation.getType()==RCConversationType.Group
+          &&userNumber!=context.read<GroupUserProfileNotifier>().chatGroupUserModelList.length){
+        delayedSetState();
+      }
       // print(_timerCount.toString());
       if (_timerCount >= 150) {
         _timerCount = 0;
