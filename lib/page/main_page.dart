@@ -193,23 +193,6 @@ class MainPageState extends XCState{
                         _start = 3 * itemWidth + itemWidth * 0.9;
                       }
                     });
-                    // setState(() {
-                    //   currentIndex = index;
-                    //   if (index == 0) {
-                    //     _start = itemWidth / 7;
-                    //   }
-                    //   if (index == 1) {
-                    //     _start = itemWidth + itemWidth * 0.4;
-                    //   }
-                    //   if (index == 2) {
-                    //     //在切换到消息页时 请求未读互动通知数
-                    //     getUnReads();
-                    //     _start = 2 * itemWidth + itemWidth * 0.64;
-                    //   }
-                    //   if (index == 3) {
-                    //     _start = 3 * itemWidth + itemWidth * 0.9;
-                    //   }
-                    // });
                   }
                 }
               },

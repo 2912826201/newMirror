@@ -60,6 +60,8 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
 
   bool automaticPost=false;
 
+  int maxTimeSecond=10;
+
   @override
   void initState() {
     super.initState();
@@ -106,6 +108,11 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   }
 
   showVoiceView() async {
+    print("55555555555555555");
+    if(this.automaticPost){
+      return;
+    }
+    print("444444444444444");
     costTime = 0;
     context.read<VoiceAlertData>().changeCallback(
         showDataTime: DateUtil.formatSecondToStringNum(costTime));
@@ -140,6 +147,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
 
   hideVoiceView(bool automaticPost) async {
     if(this.automaticPost){
+      this.automaticPost=automaticPost;
       return;
     }
     this.automaticPost=automaticPost;
@@ -153,7 +161,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
 
 
     if (_timer != null) {
-      costTime = _timer.tick + 1;
+      // costTime = _timer.tick + 1;
       _timer.cancel();
       _timer = null;
     }
@@ -188,18 +196,32 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
 
   moveVoiceView() {
     print("moveVoiceView");
-    setState(() {
-      isUp = startY - offset > 80 ? true : false;
-      if (isUp) {
-        textShow = "松开手指,取消发送";
-        toastShow = textShow;
-        context.read<VoiceAlertData>().changeCallback(alertText: "松开手指,取消发送");
-      } else {
-        textShow = "松开发送";
-        toastShow = "手指上滑,取消发送";
-        context.read<VoiceAlertData>().changeCallback(alertText: "手指上滑,取消发送");
-      }
-    });
+    String textShow;
+    isUp = startY - offset > 80 ? true : false;
+    if(this.automaticPost){
+      textShow = "按住说话";
+    }else if (isUp) {
+      textShow = "松开手指,取消发送";
+    } else {
+      textShow = "松开发送";
+    }
+    if(textShow!=this.textShow){
+      setState(() {
+        if(this.automaticPost){
+          this.textShow = "按住说话";
+          toastShow = "手指上滑,取消发送";
+          context.read<VoiceAlertData>().changeCallback(alertText: "手指上滑,取消发送");
+        }if (isUp) {
+          this.textShow = "松开手指,取消发送";
+          toastShow = textShow;
+          context.read<VoiceAlertData>().changeCallback(alertText: "松开手指,取消发送");
+        } else {
+          this.textShow = "松开发送";
+          toastShow = "手指上滑,取消发送";
+          context.read<VoiceAlertData>().changeCallback(alertText: "手指上滑,取消发送");
+        }
+      });
+    }
   }
 
   @override
@@ -265,13 +287,17 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       _timer.cancel();
       _timer = null;
     }
-    costTime = 1;
+    costTime = 0;
+    context.read<VoiceAlertData>().changeCallback(showDataTime: DateUtil.formatSecondToStringNum(costTime));
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      context.read<VoiceAlertData>().changeCallback(showDataTime: DateUtil.formatSecondToStringNum(costTime));
       setState(() {
-        costTime++;
-        if(costTime>=60){
+        if(costTime+1>maxTimeSecond){
+          _timer.cancel();
+          context.read<VoiceAlertData>().changeCallback(showDataTime: DateUtil.formatSecondToStringNum(costTime+1));
           hideVoiceView(true);
+        }else{
+          costTime++;
+          context.read<VoiceAlertData>().changeCallback(showDataTime: DateUtil.formatSecondToStringNum(costTime));
         }
       });
     });

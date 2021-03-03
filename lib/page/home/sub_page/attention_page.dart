@@ -192,21 +192,20 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   }
 
   // 插入数据
-  insertData(int id ,HomeFeedModel model) {
-    setState(() {
+  insertData(HomeFeedModel model) {
+    print("发布插入model:${model.toString()}");
       print("插入数据");
       print(  attentionIdList.toString());
       if(attentionIdList.isEmpty) {
         attentionIdList.insert(0, -1);
       }
-      attentionIdList.insert(1, id);
+      attentionIdList.insert(1, model.id);
       attentionModelList.insert(0, model);
+      // // 重新计算
+      attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList);
+      // // 更新全局监听
+      context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
       status = Status.concern;
-    });
-    // 重新计算
-    attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList);
-    // 更新全局监听
-    context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
   }
 
   // 回到顶部
@@ -231,7 +230,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         isShowConcern: false,
         pageName: "attentionPage",
         // 可选参数 子Item的个数
-        // key: GlobalObjectKey("attention$index"),
+        key: GlobalObjectKey("attention$index"),
         deleteFeedChanged: (id) {
           setState(() {
             attentionIdList.remove(id);
@@ -461,8 +460,10 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
               print("定时3秒到了");
               for (int i = 0; i < attentionModelList.length; i++) {
                 HomeFeedModel value = attentionModelList[i];
+                // 屏幕可滑动区域
+               double slidingArea = ScreenUtil.instance.height - ScreenUtil.instance.statusBarHeight - ScreenUtil.instance.bottomBarHeight - 44 - 51;
                 // 屏幕的一半偏移值
-                double screenOffser = metrics.pixels + (ScreenUtil.instance.height / 2);
+                double screenOffser = metrics.pixels + (slidingArea / 2) ;
                 if (screenOffser >= value.headOffset && screenOffser < value.bottomOffset) {
                   print("进了");
                   context.read<FeedMapNotifier>().showInputBox(value.id);
