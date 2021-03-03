@@ -1,18 +1,13 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/data/model/profile/fitness_entry_model.dart';
-import 'package:mirror/page/profile/fitness_information_entry/body_type_page.dart';
-import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/precision_limit_Formatter.dart';
-import 'package:provider/provider.dart';
 
 class HeightAndWeightPage extends StatefulWidget {
   @override
@@ -25,6 +20,7 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
   int weight;
   int heights;
   FocusNode blankNode = FocusNode();
+
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -33,6 +29,7 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
       resizeToAvoidBottomPadding: true,
       backgroundColor: AppColor.white,
       appBar: CustomAppBar(
+        hasDivider: false,
         leadingOnTap: () {
           FocusScope.of(context).requestFocus(blankNode);
           Navigator.pop(context);
@@ -99,7 +96,7 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
                   print('=height=======$heights===weight==========$weight');
                   Application.fitnessEntryModel.height = heights;
                   Application.fitnessEntryModel.weight = weight;
-                 AppRouter.navigateToBodyTypePage(context);
+                  AppRouter.navigateToBodyTypePage(context);
                 },
               ),
             ),

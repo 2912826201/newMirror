@@ -5,8 +5,8 @@ import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/page/login/sms_code_page.dart';
 import 'package:mirror/util/string_util.dart';
-
-import 'login_base_page_state.dart';
+import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 
 class PhoneLoginPage extends StatefulWidget {
   @override
@@ -15,10 +15,10 @@ class PhoneLoginPage extends StatefulWidget {
   }
 }
 
-class _PhoneLoginPageState extends LoginBasePageState {
-
+class _PhoneLoginPageState extends State<PhoneLoginPage> {
   //本页面的一些常量及文本
-  String _titleOfSendTextBtn ;
+  String _titleOfSendTextBtn;
+
   final _conspicousGreeting = "Hello";
   final _stringOfSubtitle = "此刻开始分享你的健身生活和经验吧~";
   final _placeholderOfInputField = "请输入你的手机号";
@@ -27,6 +27,7 @@ class _PhoneLoginPageState extends LoginBasePageState {
   final _sendSmsInitialtitle = "发送验证码";
   final _sendFaildTitle = "发送失败";
   final _resendTitle = "重新发送";
+
   //
   //"高亮"时的按钮颜色
   final _sendSmsHighLightedColor = Color.fromRGBO(17, 17, 17, 1);
@@ -68,7 +69,7 @@ class _PhoneLoginPageState extends LoginBasePageState {
 
   //UI复位
   _recoverUi() {
-    if(this.mounted){
+    if (this.mounted) {
       setState(() {
         _smsBtnColor = _sendSmsOriginColor;
         _smsBtnTitleColor = _sendSmsOriginTitleColor;
@@ -86,7 +87,7 @@ class _PhoneLoginPageState extends LoginBasePageState {
 
   //条件满足时的需要做的事情
   _everythingReady() {
-    if(this.mounted){
+    if (this.mounted) {
       setState(() {
         _smsBtnColor = _sendSmsHighLightedColor;
         _smsBtnTitleColor = _sendSmsHighLightedTitleColor;
@@ -97,120 +98,113 @@ class _PhoneLoginPageState extends LoginBasePageState {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomAppBar(hasDivider: false,),
         body: InkWell(
       onTap: () {
         FocusScope.of(context).unfocus();
       },
-         child: Container(
-          padding: EdgeInsets.only(top: 40),
-          color: Colors.white,
-          child: Column(
-            children: [
-              navigationBar(),
-              //去除导航栏以外的地方
-              Container(
-                margin:const EdgeInsets.only(top: 42.5),
-                //整体居中
-                child: Center(
-                    child: Padding(
-                  padding: EdgeInsets.only(left: 41, right: 41),
-                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                      _sloganArea(),
-                      //文本和下方的输入框等小胡控件需要分开布局，因为文本的显示效果比较灵活
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          //输入框
-                          _inputFields(),
-                          //发送按钮区域
-                          _certificateBtn()
-                        ],
-                      ),
-                    ],
-                  ),
-                )),
-              )
-            ],
+      child: Container(
+        padding: EdgeInsets.only(top: 40),
+        color: Colors.white,
+        child: Container(
+          margin: const EdgeInsets.only(top: 42.5),
+          //整体居中
+          child: Center(
+              child: Padding(
+            padding: EdgeInsets.only(left: 41, right: 41),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _sloganArea(),
+                //文本和下方的输入框等小胡控件需要分开布局，因为文本的显示效果比较灵活
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    //输入框
+                    _inputFields(),
+                    //发送按钮区域
+                    _certificateBtn()
+                  ],
+                ),
+              ],
+            ),
           )),
+        ),
+      ),
     ));
   }
 
-  //返回函数
-  @override
-  popAction() {
-    super.popAction();
-  }
   //判断是否重新进入发送验证码的界面
-  bool _reEnterSendSmsPage(){
+  bool _reEnterSendSmsPage() {
     int currentTime = DateTime.now().millisecondsSinceEpoch;
     int lastTime = Application.smsCodeSendTime;
-    lastTime ??= currentTime - 60*1000;
+    lastTime ??= currentTime - 60 * 1000;
     //是否是重入发送验证码的情况
-    if((currentTime - lastTime)<60*1000){
+    if ((currentTime - lastTime) < 60 * 1000) {
       print("reEnter SmsPage true");
       return true;
     }
     print("reEnter SmsPage false");
     return false;
   }
+
   //发送验证码的函数
   _sendMessage() async {
     //如果是发送验证码可以重入的情况，则重新进入，此时不会触发相应的接口
-     if(_reEnterSendSmsPage() == true){
-       String applicationPhone = Application.sendSmsPhoneNum;
-       applicationPhone ??= this.inputController.text;
-       //手机号前后对不上
-       if(applicationPhone != this.inputController.text){
-         print("手机号前后对不上，无法发送验证码！");
-         return;
-       }
-       print("发送验证码页面重入");
-       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-         return SmsCodePage(
-           phoneNumber: inputController.text,sended: true,
-         );
-       }));
-       return;
-     }
-     //下方是非重入验证码页面的情况，需要触发相应的接口
-      if(this.mounted){
+    if (_reEnterSendSmsPage() == true) {
+      String applicationPhone = Application.sendSmsPhoneNum;
+      applicationPhone ??= this.inputController.text;
+      //手机号前后对不上
+      if (applicationPhone != this.inputController.text) {
+        print("手机号前后对不上，无法发送验证码！");
+        ToastShow.show(msg: "发送频繁，请稍候重试。", context: context);
+        return;
+      }
+      print("发送验证码页面重入");
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+        return SmsCodePage(
+          phoneNumber: inputController.text,
+          isSent: true,
+        );
+      }));
+      return;
+    }
+    //下方是非重入验证码页面的情况，需要触发相应的接口
+    if (this.mounted) {
+      setState(() {
+        _titleOfSendTextBtn = _sendingTitle;
+      });
+    }
+    bool result = false;
+    result = await sendSms(inputController.text, 0);
+    // if (this.mounted) {
+    //   setState(() {
+    //     _titleOfSendTextBtn = _loggingTitle;
+    //   });
+    // }
+    if (result) {
+      print("发送验证码成功");
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+        return SmsCodePage(
+          phoneNumber: inputController.text,
+          isSent: true,
+        );
+      }));
+    } else {
+      if (this.mounted) {
         setState(() {
-          _titleOfSendTextBtn = _sendingTitle;
+          _titleOfSendTextBtn = _sendFaildTitle;
         });
       }
-      bool result = false;
-      result = await sendSms(inputController.text, 0);
-      if(this.mounted){
-        setState(() {
-          _titleOfSendTextBtn = _loggingTitle;
-        });
-      }
-      if (result) {
-        print("发送验证码成功");
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return SmsCodePage(
-            phoneNumber: inputController.text,
-            sended: true,
-          );
-        }));
-      } else {
-        if(this.mounted){
+      Timer.periodic(Duration(seconds: 1), (timer) {
+        if (this.mounted) {
           setState(() {
-            _titleOfSendTextBtn = _sendFaildTitle;
+            _titleOfSendTextBtn = _resendTitle;
           });
         }
-        Timer.periodic(Duration(seconds: 1), (timer) {
-         if(this.mounted){
-           setState(() {
-             _titleOfSendTextBtn = _resendTitle;
-           });
-         }
-       });
-        print("发送验证码失败");
-      }
-
+      });
+      print("发送验证码失败");
+    }
   }
 
   // Widget _navigationBar(){
@@ -251,7 +245,7 @@ class _PhoneLoginPageState extends LoginBasePageState {
   //一键清除输入框
   _clearAllText() {
     inputController.text = "";
-    if(this.mounted){
+    if (this.mounted) {
       setState(() {
         inputController.text = "";
       });
@@ -276,7 +270,8 @@ class _PhoneLoginPageState extends LoginBasePageState {
         TextStyle(color: Color.fromRGBO(204, 204, 204, 1), fontFamily: 'PingFangSC', fontSize: 16);
     //输入框的样式
     var inputFieldDecoration = InputDecoration(
-        counterText: "", // 不显示计数文字
+        counterText: "",
+        // 不显示计数文字
         hintText: _placeholderOfInputField,
         hintStyle: palceholderTextStyle,
         suffix: Container(
@@ -302,7 +297,7 @@ class _PhoneLoginPageState extends LoginBasePageState {
     }
     var encapsulateBoxArea = Container(
       child: _textField,
-      margin:const EdgeInsets.only(top: 38, bottom: 32),
+      margin: const EdgeInsets.only(top: 38, bottom: 32),
       width: 292.75,
       height: 44,
     );

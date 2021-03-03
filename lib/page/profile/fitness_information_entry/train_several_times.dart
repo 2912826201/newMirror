@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
@@ -10,26 +9,28 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/loading.dart';
-import 'package:provider/provider.dart';
 
-class TrainSeveralTimes extends StatefulWidget{
+class TrainSeveralTimes extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     return _TrainSeveralTimesState();
   }
-
 }
-class _TrainSeveralTimesState extends State<TrainSeveralTimes>{
+
+class _TrainSeveralTimesState extends State<TrainSeveralTimes> {
   bool three = false;
   bool four = false;
   bool fives = false;
+
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return Scaffold(
       backgroundColor: AppColor.white,
-      appBar: CustomAppBar(),
+      appBar: CustomAppBar(
+        hasDivider: false,
+      ),
       body: Container(
         width: width,
         height: height,
@@ -60,87 +61,89 @@ class _TrainSeveralTimesState extends State<TrainSeveralTimes>{
                 child: Text(
                   "我们将以此为你推荐训练计划，让你一试身手。",
                   style: AppStyle.textRegular14,
-                ),),),
-
+                ),
+              ),
+            ),
             SizedBox(
               height: height * 0.05,
             ),
             InkWell(
-              onTap: (){
-
-              },
-              child: _button("训练3次",three,3),
+              onTap: () {},
+              child: _button("训练3次", three, 3),
             ),
-            SizedBox(height: 28,),
+            SizedBox(
+              height: 28,
+            ),
             InkWell(
-              onTap: (){
-
-              },
-              child: _button("训练4次",four,4),),
-            SizedBox(height: 28,),
+              onTap: () {},
+              child: _button("训练4次", four, 4),
+            ),
+            SizedBox(
+              height: 28,
+            ),
             InkWell(
-              onTap: (){
-
-              },
-              child: _button("训练5次",fives,5),),
+              onTap: () {},
+              child: _button("训练5次", fives, 5),
+            ),
           ],
         ),
       ),
     );
   }
-      Widget _button(String text,bool selected,int type){
-        return Container(
-          width: ScreenUtil.instance.screenWidthDp,
-          padding: EdgeInsets.only(left: 41,right: 41),
-          child: ClickLineBtn(
-            title: text,
-            height: 44.0,
-            width: ScreenUtil.instance.screenWidthDp,
-            circular:3.0,
-            textColor: selected?AppColor.white:AppColor.textHint,
-            fontSize: 16,
-            backColor: selected?AppColor.bgBlack:AppColor.transparent,
-            color: selected?AppColor.transparent:AppColor.textHint,
-            onTap: (){
-              Loading.showLoading(context);
-              setState(() {
-                switch(type){
-                  case 3:
-                     three = true;
-                     Application.fitnessEntryModel.timesOfWeek = 3;
-                    break;
-                  case 4:
-                      four = true;
-                      Application.fitnessEntryModel.timesOfWeek = 4;
-                    break;
-                  case 5:
-                      fives = true;
-                      Application.fitnessEntryModel.timesOfWeek = 5;
-                    break;
-                }
-              });
-              _fitnessEntry();
-            },
-          ),);
-      }
 
-      _fitnessEntry()async{
-    FitnessEntryModel getModel = await userFitnessEntry(
-      height: Application.fitnessEntryModel.height,
-      weight: Application.fitnessEntryModel.weight,
-      bodyType: Application.fitnessEntryModel.bodyType,
-      target: Application.fitnessEntryModel.target,
-      level: Application.fitnessEntryModel.hard,
-      keyPartList: Application.fitnessEntryModel.keyPartList,
-      timesOfWeek: Application.fitnessEntryModel.timesOfWeek
+  Widget _button(String text, bool selected, int type) {
+    return Container(
+      width: ScreenUtil.instance.screenWidthDp,
+      padding: EdgeInsets.only(left: 41, right: 41),
+      child: ClickLineBtn(
+        title: text,
+        height: 44.0,
+        width: ScreenUtil.instance.screenWidthDp,
+        circular: 3.0,
+        textColor: selected ? AppColor.white : AppColor.textHint,
+        fontSize: 16,
+        backColor: selected ? AppColor.bgBlack : AppColor.transparent,
+        color: selected ? AppColor.transparent : AppColor.textHint,
+        onTap: () {
+          Loading.showLoading(context);
+          setState(() {
+            switch (type) {
+              case 3:
+                three = true;
+                Application.fitnessEntryModel.timesOfWeek = 3;
+                break;
+              case 4:
+                four = true;
+                Application.fitnessEntryModel.timesOfWeek = 4;
+                break;
+              case 5:
+                fives = true;
+                Application.fitnessEntryModel.timesOfWeek = 5;
+                break;
+            }
+          });
+          _fitnessEntry();
+        },
+      ),
     );
-      if(getModel!=null){
-        Loading.hideLoading(context);
-        print('===============================健身信息录入成功');
-        AppRouter.popToBeforeLogin(context);
-    }else{
-        Loading.hideLoading(context);
-        print('================================健身信息录入失败');
+  }
+
+  _fitnessEntry() async {
+    FitnessEntryModel getModel = await userFitnessEntry(
+        height: Application.fitnessEntryModel.height,
+        weight: Application.fitnessEntryModel.weight,
+        bodyType: Application.fitnessEntryModel.bodyType,
+        target: Application.fitnessEntryModel.target,
+        level: Application.fitnessEntryModel.hard,
+        keyPartList: Application.fitnessEntryModel.keyPartList,
+        timesOfWeek: Application.fitnessEntryModel.timesOfWeek);
+    if (getModel != null) {
+      Loading.hideLoading(context);
+      print('===============================健身信息录入成功');
+      AppRouter.popToBeforeLogin(context);
+    } else {
+      Loading.hideLoading(context);
+      print('================================健身信息录入失败');
     }
   }
 }
