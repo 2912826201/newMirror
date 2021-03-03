@@ -305,9 +305,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
             width: double.infinity,
             // ignore: null_aware_before_operator
             child: Text(liveVideoModel.coursewareDto?.levelDto?.name +
-                "·" +
-                DateUtil.formatSecondToStringCn(
-                    liveVideoModel.totalTrainingTime)),
+                "·${((liveVideoModel.times??0) ~/ 60000)}分钟"),
           ),
         ],
       ),

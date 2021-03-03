@@ -74,7 +74,7 @@ class ChatPage extends StatefulWidget {
   }
 }
 
-class ChatPageState extends XCState with TickerProviderStateMixin {
+class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBindingObserver {
   ConversationDto conversation;
   Message shareMessage;
 
@@ -176,7 +176,12 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+
+    //初始化
+    WidgetsBinding.instance.addObserver(this);
+
     initData();
+
     context.read<ChatMessageProfileNotifier>().isResetPage = false;
     if (conversation.getType() != RCConversationType.System) {
       initSetData();
@@ -249,7 +254,29 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
       _timer.cancel();
       _timer = null;
     }
+    //销毁
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  // @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (this.context != null) {
+        if (MediaQuery.of(this.context).viewInsets.bottom == 0) {
+          //关闭键盘
+        } else {
+          //显示键盘
+          if (Application.keyboardHeight <= MediaQuery.of(this.context).viewInsets.bottom) {
+            Application.keyboardHeight = MediaQuery.of(this.context).viewInsets.bottom;
+            if(Application.keyboardHeight>300) {
+              reload(() {});
+            }
+          }
+        }
+      }
+    });
   }
 
   ///----------------------------------------ui start---------------------------------------------///
@@ -324,9 +351,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
       loadStatus: loadStatus,
       isShowChatUserName: isShowName,
       onAtUiClickListener: onAtUiClickListener,
-      firstEndCallback: (int firstIndex, int lastIndex) {
-        firstEndCallbackListView(firstIndex, lastIndex);
-      },
+      firstEndCallback:firstEndCallbackListView,
     );
   }
 
@@ -1352,6 +1377,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
     );
   }
 
+
+
+
   initTextController() {
     // print("值改变了");
     print("监听文字光标${_textController.selection}");
@@ -1524,6 +1552,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
       FocusScope.of(context).requestFocus(new FocusNode());
     }
     isContentClickOrEmojiClick = false;
+    _focusNode.unfocus();
+    _isVoiceState = false;
     if (mounted) {
       reload(() {
         _timerCount = 0;
@@ -1874,7 +1904,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin {
     if (contentType == ChatTypeModel.MESSAGE_TYPE_TEXT && isUrl) {
       ToastShow.show(msg: "跳转网页地址: $content", context: context);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_FEED) {
-      ToastShow.show(msg: "跳转动态详情页", context: context);
+      // ToastShow.show(msg: "跳转动态详情页", context: context);
       getFeedDetail(map["id"]);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
       ToastShow.show(msg: "跳转播放视频页-$content", context: context);
