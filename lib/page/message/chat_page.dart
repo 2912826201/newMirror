@@ -30,6 +30,7 @@ import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
+import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/im/rongcloud.dart';
@@ -1675,6 +1676,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       chatName = name;
       //修改了群名
       // _postUpdateGroupName(name);
+      context.read<ConversationNotifier>().updateConversationName(name, conversation);
     } else if (type == 2) {
       //拉黑
       _insertMessageMenu("你拉黑了这个用户!");
