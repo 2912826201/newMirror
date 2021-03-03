@@ -1,14 +1,11 @@
 import 'dart:io';
-import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/api/message_api.dart';
-import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
@@ -16,10 +13,8 @@ import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
-import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
-import 'package:mirror/page/login/login_base_page_state.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
@@ -28,7 +23,6 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/loading.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
@@ -49,7 +43,7 @@ class PerfectUserPage extends StatefulWidget {
   }
 }
 
-class _PerfectUserState extends LoginBasePageState {
+class _PerfectUserState extends State<PerfectUserPage> {
   final inputCotroller = TextEditingController();
 
   //输入的最长字符
@@ -71,7 +65,7 @@ class _PerfectUserState extends LoginBasePageState {
     double height = ScreenUtil.instance.height;
     return Scaffold(
       backgroundColor: AppColor.white,
-      appBar: CustomAppBar(),
+      appBar: CustomAppBar(hasDivider: false,),
       body: Container(
           width: width,
           height: height,

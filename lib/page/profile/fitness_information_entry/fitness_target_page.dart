@@ -2,24 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/data/model/video_tag_madel.dart';
-import 'package:mirror/page/profile/fitness_information_entry/fitness_level_page.dart';
-import 'package:mirror/page/profile/fitness_information_entry/train_several_times.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
-import 'package:provider/provider.dart';
-class FitnessTargetPage extends StatefulWidget{
+
+class FitnessTargetPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-   return _FitnessTargetState();
+    return _FitnessTargetState();
   }
-
 }
-class _FitnessTargetState extends State<FitnessTargetPage>{
+
+class _FitnessTargetState extends State<FitnessTargetPage> {
   List<SubTagModel> targetList = [];
   int beforIndex;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -39,14 +37,16 @@ class _FitnessTargetState extends State<FitnessTargetPage>{
 
     return Scaffold(
       backgroundColor: AppColor.white,
-      appBar: CustomAppBar(),
+      appBar: CustomAppBar(
+        hasDivider: false,
+      ),
       body: Container(
-          width: width,
+        width: width,
         height: height,
-        child:Column(
+        child: Column(
           children: [
             SizedBox(
-              height: height*0.05,
+              height: height * 0.05,
             ),
             Center(
               child: Container(
@@ -67,65 +67,83 @@ class _FitnessTargetState extends State<FitnessTargetPage>{
               child: Container(
                 width: width * 0.78,
                 alignment: Alignment.centerLeft,
-                child:Text(
-                "我们将以此为你推荐训练计划,让你一试身手。",
-                style: AppStyle.textRegular14,
-              ) ,
+                child: Text(
+                  "我们将以此为你推荐训练计划,让你一试身手。",
+                  style: AppStyle.textRegular14,
+                ),
               ),
             ),
-            SizedBox(height: height*0.05,),
-            Expanded(
-              child:ListView.builder(
-                itemCount: targetList.length,
-                itemBuilder:(context,index){
-                  return _choseItem(targetList[index].id,targetList[index].name,"体脂偏高，像快熟减掉赘肉，击退小肚腩",index );
-                } )
-
+            SizedBox(
+              height: height * 0.05,
             ),
+            Expanded(
+                child: ListView.builder(
+                    itemCount: targetList.length,
+                    itemBuilder: (context, index) {
+                      return _choseItem(targetList[index].id, targetList[index].name, "体脂偏高，像快熟减掉赘肉，击退小肚腩", index);
+                    })),
           ],
         ),
       ),
     );
   }
 
-  Widget _choseItem(int order,String title,String introduction,int index){
+  Widget _choseItem(int order, String title, String introduction, int index) {
     return InkWell(
-        onTap: (){
-         setState(() {
-           beforIndex=index;
-           Application.fitnessEntryModel.target = targetList[index].id-1;
-           /*context.read<FitnessInformationNotifier>().setTarget(targetList[index].id-1);*/
-           AppRouter.navigateToFitnessLevelPage(context);
-         });
-        },
+      onTap: () {
+        setState(() {
+          beforIndex = index;
+          Application.fitnessEntryModel.target = targetList[index].id - 1;
+          /*context.read<FitnessInformationNotifier>().setTarget(targetList[index].id-1);*/
+          AppRouter.navigateToFitnessLevelPage(context);
+        });
+      },
       child: Container(
-      height: 78,
-      color: beforIndex==index?AppColor.bgWhite:AppColor.white,
-      margin: EdgeInsets.only(left:ScreenUtil.instance.screenWidthDp*0.10,right: ScreenUtil.instance.screenWidthDp*0.10),
-      padding: EdgeInsets.only(left: 7,right: 7),
-      child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-       Container(
-         margin: EdgeInsets.only(top: 12),
-         child: Text("$order",style:beforIndex==index?AppStyle.textMedium29:AppStyle.textPrimary3Medium29,),) ,
-          SizedBox(width: ScreenUtil.instance.screenWidthDp*0.78*0.04,),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        height: 78,
+        color: beforIndex == index ? AppColor.bgWhite : AppColor.white,
+        margin: EdgeInsets.only(
+            left: ScreenUtil.instance.screenWidthDp * 0.10, right: ScreenUtil.instance.screenWidthDp * 0.10),
+        padding: EdgeInsets.only(left: 7, right: 7),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              margin: EdgeInsets.only(top: 12),
+              child: Text(
+                "$order",
+                style: beforIndex == index ? AppStyle.textMedium29 : AppStyle.textPrimary3Medium29,
+              ),
+            ),
+            SizedBox(
+              width: ScreenUtil.instance.screenWidthDp * 0.78 * 0.04,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Expanded(child: SizedBox()),
-                Text(title,style:beforIndex==index?AppStyle.textMedium21:AppStyle.textPrimary3Medium21,),
-                SizedBox(height: 8,),
-                Text(introduction,style:AppStyle.textSecondaryRegular12,maxLines: 1,overflow: TextOverflow.ellipsis,),
+                Text(
+                  title,
+                  style: beforIndex == index ? AppStyle.textMedium21 : AppStyle.textPrimary3Medium21,
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                Text(
+                  introduction,
+                  style: AppStyle.textSecondaryRegular12,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 Expanded(child: SizedBox()),
-            ],
-          ),
-          Spacer(),
-          Center(
+              ],
+            ),
+            Spacer(),
+            Center(
               child: Icon(Icons.arrow_forward_ios),
             ),
-      ],
-    ),),);
-
+          ],
+        ),
+      ),
+    );
   }
 }
