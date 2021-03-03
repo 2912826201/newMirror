@@ -1904,7 +1904,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     if (contentType == ChatTypeModel.MESSAGE_TYPE_TEXT && isUrl) {
       ToastShow.show(msg: "跳转网页地址: $content", context: context);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_FEED) {
-      ToastShow.show(msg: "跳转动态详情页", context: context);
+      // ToastShow.show(msg: "跳转动态详情页", context: context);
       getFeedDetail(map["id"]);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
       ToastShow.show(msg: "跳转播放视频页-$content", context: context);

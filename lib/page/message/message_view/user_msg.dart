@@ -253,7 +253,7 @@ class UserMsg extends StatelessWidget {
               Text(
                 userModel.description != null
                     ? userModel.description
-                    : "暂无简介" * 10,
+                    : "",
                 style: subtitleStyle,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
