@@ -324,7 +324,6 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                         alignment: alignment,
                         height: menuHeight + _triangleHeight,
                         margin: widget.isMySelf ? marginMySelf : marginNoMySelf,
-                        color: Colors.red.withOpacity(0.24),
                         width: double.infinity,
                         child: UnconstrainedBox(
                           child: GestureDetector(

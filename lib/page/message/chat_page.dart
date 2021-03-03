@@ -270,6 +270,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       _timer.cancel();
       _timer = null;
     }
+    _deletePostCompleteMessage();
     //销毁
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
@@ -798,10 +799,12 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
           chatDataList.add(getMessage((msgList[i] as Message), isHaveAnimation: false));
         }
       }
+
+      _addPostNoCompleteMessage();
+
       if (shareMessage != null && chatDataList.length > 0) {
         chatDataList[0].isHaveAnimation = true;
       }
-
       //加入时间提示
       getTimeAlert(chatDataList);
 
@@ -1047,6 +1050,47 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
   ///------------------------------------发送消息  start-----------------------------------------------------------------------///
 
+  //将发送的临时消息加入全局
+  _addTemporaryMessage(ChatDataModel chatDataModel){
+    if(Application.postChatDataModelList[conversation.id]==null){
+      List<ChatDataModel> modelList=<ChatDataModel>[];
+      modelList.add(chatDataModel);
+      Application.postChatDataModelList[conversation.id]=modelList;
+    }else{
+      Application.postChatDataModelList[conversation.id].add(chatDataModel);
+    }
+  }
+
+  //从全局的临时消息中删除发送完成的消息
+  _deletePostCompleteMessage(){
+    if(Application.postChatDataModelList[conversation.id]==null
+    ||Application.postChatDataModelList[conversation.id].length<1){
+      return;
+    }else{
+      for(int i=0;i<Application.postChatDataModelList[conversation.id].length;i++){
+        if(!Application.postChatDataModelList[conversation.id][i].isTemporary){
+          Application.postChatDataModelList[conversation.id].removeAt(i);
+        }
+      }
+    }
+  }
+
+  //加入发送未完成的消息
+  _addPostNoCompleteMessage(){
+    if(Application.postChatDataModelList[conversation.id]==null
+        ||Application.postChatDataModelList[conversation.id].length<1){
+      return;
+    }else{
+      for(int i=0;i<Application.postChatDataModelList[conversation.id].length;i++){
+        if(!Application.postChatDataModelList[conversation.id][i].isTemporary){
+          Application.postChatDataModelList[conversation.id].removeAt(i);
+        }else{
+          chatDataList.insert(0, Application.postChatDataModelList[conversation.id][i]);
+        }
+      }
+    }
+  }
+
   //发送文字消息
   _postText(String text) {
     if (text == null || text.isEmpty || text.length < 1) {
@@ -1073,9 +1117,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     mentionedInfo.mentionedContent =
         gteAtUserName(atUserIdList, context.read<GroupUserProfileNotifier>().chatGroupUserModelList);
     chatDataModel.mentionedInfo = mentionedInfo;
-
     judgeAddAlertTime();
     chatDataList.insert(0, chatDataModel);
+    _addTemporaryMessage(chatDataModel);
     animateToBottom();
 
     if (recallNotificationMessagePosition >= 0) {
@@ -1116,6 +1160,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       chatDataModel.isTemporary = true;
       chatDataModel.isHaveAnimation = true;
       modelList.add(chatDataModel);
+      _addTemporaryMessage(chatDataModel);
     }
     if (modelList != null) {
       judgeAddAlertTime();
@@ -1145,6 +1190,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     chatDataModel.isHaveAnimation = true;
     judgeAddAlertTime();
     chatDataList.insert(0, chatDataModel);
+    _addTemporaryMessage(chatDataModel);
     animateToBottom();
     if (mounted) {
       reload(() {
@@ -1167,6 +1213,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     chatDataModel.isHaveAnimation = true;
     judgeAddAlertTime();
     chatDataList.insert(0, chatDataModel);
+    _addTemporaryMessage(chatDataModel);
     animateToBottom();
     if (mounted) {
       reload(() {
@@ -1283,6 +1330,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     judgeAddAlertTime();
     chatDataList.removeAt(position);
     chatDataList.insert(0, chatDataModel);
+    _addTemporaryMessage(chatDataModel);
     animateToBottom();
 
     if (mounted) {
