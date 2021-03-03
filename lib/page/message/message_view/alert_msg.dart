@@ -214,17 +214,16 @@ class AlertMsg extends StatelessWidget {
       }
     }
     for (dynamic d in users) {
+      userCount++;
       try {
         if (d != null) {
-          userCount++;
           if (d["uid"] == Application.profile.uid) {
-            textArray.add("你");
+            textArray.add("你${userCount >= users.length ? " " : "、"}");
           } else {
             if (mapGroupModel["subType"] == 3) {
-              textArray.add("${d["currentMasterName"]} ");
+              textArray.add("${d["currentMasterName"]}${userCount >= users.length ? " " : "、"}");
             } else {
-              textArray.add("${d["groupNickName"]}${userCount >= 3 ?
-              "等" : "、"}");
+              textArray.add("${d["groupNickName"]}${userCount >= users.length ? " " : "、"}");
             }
           }
           isChangColorArray.add(true);
@@ -232,9 +231,9 @@ class AlertMsg extends StatelessWidget {
       } catch (e) {
         break;
       }
-      if (userCount >= 3) {
-        break;
-      }
+      // if (userCount >= 3) {
+      //   break;
+      // }
     }
     if (textArray.length > 0) {
       textArray[textArray.length - 1] = textArray[textArray.length - 1].trim().replaceAll("、", "");
