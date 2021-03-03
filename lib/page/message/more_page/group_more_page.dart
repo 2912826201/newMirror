@@ -651,7 +651,7 @@ class GroupMorePageState extends State<GroupMorePage> {
             }
           });
         }
-      }, title: "修改群聊名称");
+      }, title: "编辑群聊名称");
       // ToastShow.show(msg: subtitle, context: context);
     } else if (title == "群昵称") {
       AppRouter.navigateToEditInfomationName(context, subtitle, (result) {
@@ -662,7 +662,7 @@ class GroupMorePageState extends State<GroupMorePage> {
             }
           });
         }
-      }, title: "修改群昵称");
+      }, title: "编辑群昵称");
       // ToastShow.show(msg: subtitle, context: context);
     } else if (title == "删除并退出") {
       showAppDialog(context,
