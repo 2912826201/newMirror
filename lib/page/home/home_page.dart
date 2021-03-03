@@ -244,6 +244,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
           }
           picUrls.add(PicUrlsModel(width: element.sizeInfo.width, height: element.sizeInfo.height));
         });
+        print("uploadPics111111");
         results = await FileUtil().uploadPics(fileList, (percent) {
           context.read<FeedMapNotifier>().getPostPlannedSpeed(percent);
         });

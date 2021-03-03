@@ -92,12 +92,20 @@ class HomeFeedModel {
     readCount = json["readCount"];
     if (json["picUrls"] != null) {
       json["picUrls"].forEach((v) {
-        picUrls.add(PicUrlsModel.fromJson(v));
+        if(v is PicUrlsModel){
+          picUrls.add(v);
+        }else{
+          picUrls.add(PicUrlsModel.fromJson(v));
+        }
       });
     }
     if (json["videos"] != null) {
       json["videos"].forEach((v) {
-        videos.add(VideosModel.fromJson(v));
+        if(v is VideosModel){
+          videos.add(v);
+        }else{
+          videos.add(VideosModel.fromJson(v));
+        }
       });
     }
     if (json["comments"] != null) {

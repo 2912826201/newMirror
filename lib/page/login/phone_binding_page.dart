@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/page/login/login_base_page_state.dart';
 import 'package:mirror/page/login/sms_code_page.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 
 class PhoneBindingPage extends StatefulWidget {
   @override
@@ -10,7 +10,7 @@ class PhoneBindingPage extends StatefulWidget {
   }
 }
 
-class _PhoneBindingPageState extends LoginBasePageState {
+class _PhoneBindingPageState extends State<PhoneBindingPage> {
   ///发送短信的按钮激活颜色
   Color _sendSmsBtnColor;
 
@@ -111,20 +111,17 @@ class _PhoneBindingPageState extends LoginBasePageState {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomAppBar(
+        hasDivider: false,
+      ),
       body: Container(
         child: InkWell(
           onTap: () {
             FocusScope.of(context).unfocus();
           },
-          child: Column(
-            children: [
-              //导航栏需要和页面上方具有间距
-              Container(
-                child: navigationBar(),
-                margin:const EdgeInsets.only(top: 40),
-              ),
-              _mainBody()
-            ],
+          child: Container(
+            child: _mainBody(),
+            margin: const EdgeInsets.only(top: 40),
           ),
         ),
       ),
@@ -164,7 +161,7 @@ class _PhoneBindingPageState extends LoginBasePageState {
               _mainTitle,
               style: _mainTitleStyle,
             ),
-            margin:const EdgeInsets.only(bottom: 9),
+            margin: const EdgeInsets.only(bottom: 9),
           ),
           Text(
             _circumstancialState,
@@ -202,7 +199,7 @@ class _PhoneBindingPageState extends LoginBasePageState {
         ));
     return Container(
       child: putfield,
-      margin:const EdgeInsets.only(top: 38, bottom: 32, left: 41, right: 41),
+      margin: const EdgeInsets.only(top: 38, bottom: 32, left: 41, right: 41),
     );
   }
 

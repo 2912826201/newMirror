@@ -92,10 +92,11 @@ class GroupChatUserInformationDBHelper {
   }
 
   void _remove(String groupId,String userId) async {
+    print("清楚群友信息：${Application.chatGroupUserInformationMap["${groupId}_$userId"]}");
     if(groupId==null||userId==null){
       return;
     }
-    Application.chatGroupUserInformationMap["${groupId}_$userId"].clear();
+    Application.chatGroupUserInformationMap["${groupId}_$userId"]=null;
     DBHelper.instance.db
         .delete(TABLE_NAME_GROUP_CHAT_USER_INFORMATION,
         where: "$GROUP_CHAT_USER_INFORMATION_ID = '${groupId}_$userId'");
@@ -103,10 +104,11 @@ class GroupChatUserInformationDBHelper {
 
   //移除某一个或者某几个 被移除群成员信息
   void removeMessageGroup(Message message){
+    // print("移除好友");
     if(message==null||message.objectName==ChatTypeModel.MESSAGE_TYPE_GRPNTF){
       Map<String, dynamic> mapGroupModel = json.decode(message.originContentMap["data"]);
       //移除
-      if (mapGroupModel["subType"] == 2) {
+      if (mapGroupModel["subType"] == 2||mapGroupModel["subType"]==1) {
         List<dynamic> users = mapGroupModel["users"];
         if (users == null || users.length < 1) {
           return;

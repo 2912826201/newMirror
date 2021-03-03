@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mirror/page/login/login_base_page.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -10,8 +12,7 @@ class LoginPage extends StatefulWidget {
   }
 }
 
-class _LoginPageState extends LoginBasePageState {
-  final double _backImageHeight = 1000.0;
+class _LoginPageState extends State<LoginPage> {
   final _subTitleTextStyle = TextStyle(
       fontFamily: "PingFangSC",
       fontSize: 14,
@@ -39,16 +40,18 @@ class _LoginPageState extends LoginBasePageState {
       children: [
         _backImage(),
         Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Container(
-                  child: this.popBtn,
-                  width: 28,
-                  height: 28,
-                  margin: EdgeInsets.only(top: ScreenUtil.instance.statusBarHeight + 10, left: 16),
-                )
-              ],
+            Padding(
+              padding:
+                  EdgeInsets.only(top: ScreenUtil.instance.statusBarHeight, left: CustomAppBar.appBarHorizontalPadding),
+              child: CustomAppBarIconButton(
+                svgName: AppIcon.nav_return,
+                iconColor: AppColor.black,
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
             ),
             Spacer(),
             _interactiveItems(),

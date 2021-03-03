@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +30,7 @@ import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/message/chat_voice_setting.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
+import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/im/rongcloud.dart';
@@ -177,6 +180,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   double scrollPositionPixels=0;
   bool isHaveReceiveChatDataList=false;
 
+  int userNumber=0;
+
   @override
   void initState() {
     super.initState();
@@ -267,6 +272,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       _timer.cancel();
       _timer = null;
     }
+    _deletePostCompleteMessage();
     //销毁
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
@@ -344,6 +350,13 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   //获取列表内容
   Widget getChatDetailsBody() {
     bool isShowName = conversation.getType() == RCConversationType.Group;
+    if(chatDataList.length>1){
+      if(!(chatDataList[0].isTemporary||chatDataList[1].isTemporary)){
+        if(chatDataList[0].msg.messageUId==chatDataList[1].msg.messageUId){
+          chatDataList.removeAt(0);
+        }
+      }
+    }
     return ChatDetailsBody(
       scrollController: _scrollController,
       chatDataList: chatDataList,
@@ -370,13 +383,26 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
   //获取appbar
   Widget getAppBar() {
-    return CustomAppBar(
-      titleString: chatName ?? "",
-      actions: [
-        CustomAppBarIconButton(
-            icon: Icons.more_horiz, iconColor: AppColor.black, onTap: _topMoreBtnClick),
-      ],
-    );
+
+    if(conversation.getType()==RCConversationType.Group){
+      userNumber=context.read<GroupUserProfileNotifier>().chatGroupUserModelList.length;
+      return CustomAppBar(
+        titleString: chatName ?? "",
+        subtitleString: userNumber>0? "($userNumber)":null,
+        actions: [
+          CustomAppBarIconButton(
+              icon: Icons.more_horiz, iconColor: AppColor.black, onTap: _topMoreBtnClick),
+        ],
+      );
+    }else{
+      return CustomAppBar(
+        titleString: chatName ?? "",
+        actions: [
+          CustomAppBarIconButton(
+              icon: Icons.more_horiz, iconColor: AppColor.black, onTap: _topMoreBtnClick),
+        ],
+      );
+    }
   }
 
   //头部显示关注遮挡
@@ -794,10 +820,12 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
           chatDataList.add(getMessage((msgList[i] as Message), isHaveAnimation: false));
         }
       }
+
+      _addPostNoCompleteMessage();
+
       if (shareMessage != null && chatDataList.length > 0) {
         chatDataList[0].isHaveAnimation = true;
       }
-
       //加入时间提示
       getTimeAlert(chatDataList);
 
@@ -1043,6 +1071,47 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
   ///------------------------------------发送消息  start-----------------------------------------------------------------------///
 
+  //将发送的临时消息加入全局
+  _addTemporaryMessage(ChatDataModel chatDataModel){
+    if(Application.postChatDataModelList[conversation.id]==null){
+      List<ChatDataModel> modelList=<ChatDataModel>[];
+      modelList.add(chatDataModel);
+      Application.postChatDataModelList[conversation.id]=modelList;
+    }else{
+      Application.postChatDataModelList[conversation.id].add(chatDataModel);
+    }
+  }
+
+  //从全局的临时消息中删除发送完成的消息
+  _deletePostCompleteMessage(){
+    if(Application.postChatDataModelList[conversation.id]==null
+    ||Application.postChatDataModelList[conversation.id].length<1){
+      return;
+    }else{
+      for(int i=0;i<Application.postChatDataModelList[conversation.id].length;i++){
+        if(!Application.postChatDataModelList[conversation.id][i].isTemporary){
+          Application.postChatDataModelList[conversation.id].removeAt(i);
+        }
+      }
+    }
+  }
+
+  //加入发送未完成的消息
+  _addPostNoCompleteMessage(){
+    if(Application.postChatDataModelList[conversation.id]==null
+        ||Application.postChatDataModelList[conversation.id].length<1){
+      return;
+    }else{
+      for(int i=0;i<Application.postChatDataModelList[conversation.id].length;i++){
+        if(!Application.postChatDataModelList[conversation.id][i].isTemporary){
+          Application.postChatDataModelList[conversation.id].removeAt(i);
+        }else{
+          chatDataList.insert(0, Application.postChatDataModelList[conversation.id][i]);
+        }
+      }
+    }
+  }
+
   //发送文字消息
   _postText(String text) {
     if (text == null || text.isEmpty || text.length < 1) {
@@ -1069,9 +1138,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     mentionedInfo.mentionedContent =
         gteAtUserName(atUserIdList, context.read<GroupUserProfileNotifier>().chatGroupUserModelList);
     chatDataModel.mentionedInfo = mentionedInfo;
-
     judgeAddAlertTime();
     chatDataList.insert(0, chatDataModel);
+    _addTemporaryMessage(chatDataModel);
     animateToBottom();
 
     if (recallNotificationMessagePosition >= 0) {
@@ -1093,9 +1162,17 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   }
 
   //发送视频以及图片
-  _handPicOrVideo(SelectedMediaFiles selectedMediaFiles) {
+  _handPicOrVideo(SelectedMediaFiles selectedMediaFiles)async {
     List<ChatDataModel> modelList = <ChatDataModel>[];
     for (int i = 0; i < selectedMediaFiles.list.length; i++) {
+      if (selectedMediaFiles.list[i].croppedImage != null) {
+        print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+        ByteData byteData = await selectedMediaFiles.list[i].croppedImage.toByteData(format: ui.ImageByteFormat.png);
+        print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+        Uint8List picBytes = byteData.buffer.asUint8List();
+        print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
+        selectedMediaFiles.list[i].croppedImageData = picBytes;
+      }
       ChatDataModel chatDataModel = new ChatDataModel();
       chatDataModel.type = (selectedMediaFiles.type == mediaTypeKeyVideo
           ? ChatTypeModel.MESSAGE_TYPE_VIDEO
@@ -1104,6 +1181,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       chatDataModel.isTemporary = true;
       chatDataModel.isHaveAnimation = true;
       modelList.add(chatDataModel);
+      _addTemporaryMessage(chatDataModel);
     }
     if (modelList != null) {
       judgeAddAlertTime();
@@ -1133,6 +1211,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     chatDataModel.isHaveAnimation = true;
     judgeAddAlertTime();
     chatDataList.insert(0, chatDataModel);
+    _addTemporaryMessage(chatDataModel);
     animateToBottom();
     if (mounted) {
       reload(() {
@@ -1155,6 +1234,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     chatDataModel.isHaveAnimation = true;
     judgeAddAlertTime();
     chatDataList.insert(0, chatDataModel);
+    _addTemporaryMessage(chatDataModel);
     animateToBottom();
     if (mounted) {
       reload(() {
@@ -1271,6 +1351,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     judgeAddAlertTime();
     chatDataList.removeAt(position);
     chatDataList.insert(0, chatDataModel);
+    _addTemporaryMessage(chatDataModel);
     animateToBottom();
 
     if (mounted) {
@@ -1292,6 +1373,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   initTime() {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       _timerCount++;
+
+      if(conversation.getType()==RCConversationType.Group
+          &&userNumber!=context.read<GroupUserProfileNotifier>().chatGroupUserModelList.length){
+        delayedSetState();
+      }
       // print(_timerCount.toString());
       if (_timerCount >= 150) {
         _timerCount = 0;
@@ -1404,6 +1490,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
                 isHaveReceiveChatDataList=true;
                 if(scrollPositionPixels<500){
                   isHaveReceiveChatDataList=false;
+
                   delayedSetState();
                 }
               }
@@ -1664,6 +1751,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       chatName = name;
       //修改了群名
       // _postUpdateGroupName(name);
+      context.read<ConversationNotifier>().updateConversationName(name, conversation);
     } else if (type == 2) {
       //拉黑
       _insertMessageMenu("你拉黑了这个用户!");
@@ -1677,7 +1765,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   _moreOnClickExitChatPage() {
     //退出群聊
     MessageManager.removeConversation(context, chatId, Application.profile.uid, conversation.type);
-    // Application.rongCloud.clearMessages(getRCConversationType(chatUserId??10),Application.profile.uid.toString(),null);
+    Application.rongCloud.clearMessages(chatTypeId,chatId.toString(),null);
     Future.delayed(Duration.zero, () {
       Navigator.of(context).pop();
     });

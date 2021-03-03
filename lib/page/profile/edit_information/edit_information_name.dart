@@ -90,7 +90,7 @@ class _EditInformationNameState extends State<EditInformationName> {
           _commentFocus.unfocus();
           Navigator.pop(context);
         },
-        titleString: "编辑昵称",
+        titleString: widget.title??"编辑昵称",
         actions: [
           Container(
             alignment: Alignment.center,
@@ -171,7 +171,7 @@ class _EditInformationNameState extends State<EditInformationName> {
       style: AppStyle.textRegular16,
       decoration: InputDecoration(
         counterText: '',
-        hintText: "戳这里输入昵称",
+        hintText: "戳这里输入${widget.title==null?"昵称":widget.title.contains("群聊")?"名称":"昵称"}",
         hintStyle: TextStyle(fontSize: 16, color: AppColor.textHint),
         border: InputBorder.none,
       ),

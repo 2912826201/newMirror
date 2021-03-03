@@ -77,4 +77,12 @@ class ConversationNotifier with ChangeNotifier {
     _conversationMap[dto.id] = dto;
     notifyListeners();
   }
+
+  updateConversationName(String name,ConversationDto dto){
+    if(_conversationMap[dto.id]!=null){
+      _conversationMap[dto.id].name=name;
+      notifyListeners();
+    }
+  }
+
 }

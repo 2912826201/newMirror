@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'triangle_painter.dart';
 
 const double _kMenuScreenPadding = 8.0;
@@ -18,6 +21,7 @@ class LongClickPopupMenu extends StatefulWidget {
     this.pageMaxChildCount = 5,
     this.backgroundColor = AppColor.textPrimary1,
     this.contentWidth = 180,
+    this.contentHeight = 0,
     this.leftAndRightWidth = 112,
   });
 
@@ -29,6 +33,7 @@ class LongClickPopupMenu extends StatefulWidget {
   final int pageMaxChildCount;
   final Color backgroundColor;
   final double contentWidth;
+  final double contentHeight;
   final double leftAndRightWidth;
   final String contentType;
   final bool isMySelf;
@@ -103,6 +108,7 @@ class _LongClickPopupMenuState extends State<LongClickPopupMenu> {
       widget.contentType,
       widget.isMySelf,
       widget.leftAndRightWidth,
+      widget.contentHeight
     );
 
     entry = OverlayEntry(builder: (context) {
@@ -138,6 +144,7 @@ class _MenuPopWidget extends StatefulWidget {
   final String contentType;
   final bool isMySelf;
   final double leftAndRightWidth;
+  final double contentHeight;
 
   _MenuPopWidget(
     this.btnContext,
@@ -153,6 +160,7 @@ class _MenuPopWidget extends StatefulWidget {
     this.contentType,
     this.isMySelf,
     this.leftAndRightWidth,
+    this.contentHeight,
   );
 
   @override
@@ -235,6 +243,12 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                 removeRight: true,
                 child: Builder(
                   builder: (BuildContext context) {
+                    // var isInverted=false;
+                    //
+                    // if(position.top<(menuHeight + _triangleHeight)*2){
+                    //   isInverted=true;
+                    // }
+
                     var isInverted = (position.top +
                             (MediaQuery.of(context).size.height -
                                     position.top -
@@ -242,6 +256,20 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                                 2.0 -
                             (menuHeight + _triangleHeight)) <
                         (menuHeight + _triangleHeight) * 2;
+                    // print("1:${position.top}");
+                    // print("1:${MediaQuery.of(context).size.height}");
+                    // print("1:${position.bottom}");
+                    // print("1:${(MediaQuery.of(context).size.height -
+                    //     position.top -
+                    //     position.bottom)/2.0}");
+                    // print("height1:${(position.top +
+                    //     (MediaQuery.of(context).size.height -
+                    //         position.top -
+                    //         position.bottom) /
+                    //         2.0 -
+                    //     (menuHeight + _triangleHeight))}");
+                    //
+                    // print("heiught2:${(menuHeight + _triangleHeight)}");
 
                     var alignment = Alignment.center;
                     var customPaintWidth = menuWidth;
@@ -290,7 +318,8 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                           Directionality.of(widget.btnContext),
                           widget._width,
                           menuWidth,
-                          widget._height),
+                          widget._height,
+                          widget.contentHeight),
                       child: Container(
                         alignment: alignment,
                         height: menuHeight + _triangleHeight,
@@ -517,7 +546,8 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
 // Positioning of the menu on the screen.
 class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
   _PopupMenuRouteLayout(this.position, this.selectedItemOffset,
-      this.textDirection, this.width, this.menuWidth, this.height);
+      this.textDirection, this.width, this.menuWidth, this.height
+      ,this.contentHeight);
 
   // Rectangle of underlying button, relative to the overlay's dimensions.
   final RelativeRect position;
@@ -533,6 +563,7 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
   final double width;
   final double height;
   final double menuWidth;
+  final double contentHeight;
 
   // We put the child wherever position specifies, so long as it will fit within
   // the specified parent size padded (inset) by 8. If necessary, we adjust the
@@ -587,13 +618,25 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
       }
     }
 
-    if (y < _kMenuScreenPadding)
-      y = _kMenuScreenPadding;
+    print("y:$y");
+    if (y < childSize.height)
+      if(position.top-ScreenUtil.instance.statusBarHeight-44-20<0){
+        y = position.top+contentHeight-20;
+      }else{
+        y = position.top+contentHeight;
+      }
     else if (y + childSize.height > size.height - _kMenuScreenPadding)
       y = size.height - childSize.height;
     else if (y < childSize.height * 2) {
       y = position.top + height;
     }
+    // print("contentHeight:${contentHeight}");
+    // print("childSize.height:${childSize.height}");
+    // print("position.top:${position.top}");
+    // print("position.bottom:${position.bottom}");
+    // print("size.height:${size.height}");
+    // print("selectedItemOffset:$selectedItemOffset");
+    // print("y:$y,position:${position.toString()}");
     return Offset(x, y);
   }
 
