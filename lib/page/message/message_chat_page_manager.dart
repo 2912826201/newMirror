@@ -584,6 +584,7 @@ Future<List<UploadResultModel>> onPostImgOrVideo(
       } else {
         i++;
         File imageFile = await FileUtil().writeImageDataToFile(element.mediaFileModel.croppedImageData, timeStr + i.toString());
+        element.mediaFileModel.file=imageFile;
         fileList.add(imageFile);
       }
     });

@@ -811,7 +811,7 @@ class _GalleryPageState extends State<GalleryPage> {
 
     ui.Image image = await (_cropperKey.currentContext as CropperImageElement).outImage();
 
-    print("已获取到ui.Image" + DateTime.now().millisecondsSinceEpoch.toString());
+    print("1已获取到ui.Image" + DateTime.now().millisecondsSinceEpoch.toString());
     print(image);
     // ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
     // print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());

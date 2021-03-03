@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -1094,9 +1096,17 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   }
 
   //发送视频以及图片
-  _handPicOrVideo(SelectedMediaFiles selectedMediaFiles) {
+  _handPicOrVideo(SelectedMediaFiles selectedMediaFiles)async {
     List<ChatDataModel> modelList = <ChatDataModel>[];
     for (int i = 0; i < selectedMediaFiles.list.length; i++) {
+      if (selectedMediaFiles.list[i].croppedImage != null) {
+        print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+        ByteData byteData = await selectedMediaFiles.list[i].croppedImage.toByteData(format: ui.ImageByteFormat.png);
+        print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+        Uint8List picBytes = byteData.buffer.asUint8List();
+        print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
+        selectedMediaFiles.list[i].croppedImageData = picBytes;
+      }
       ChatDataModel chatDataModel = new ChatDataModel();
       chatDataModel.type = (selectedMediaFiles.type == mediaTypeKeyVideo
           ? ChatTypeModel.MESSAGE_TYPE_VIDEO

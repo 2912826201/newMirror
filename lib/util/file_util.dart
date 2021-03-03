@@ -79,6 +79,7 @@ class FileUtil {
   }
 
   Future<UploadResults> uploadFiles(List<File> fileList, Function(double percent) progressCallback) {
+    print("111111111111111111:uploadFiles");
     return _upload(fileList, 0, progressCallback);
   }
 
