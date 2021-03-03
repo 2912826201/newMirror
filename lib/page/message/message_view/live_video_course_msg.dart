@@ -143,10 +143,11 @@ class LiveVideoCourseMsg extends StatelessWidget {
         contentType: isLiveOrVideo ? ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE : ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
     return LongClickPopupMenu(
       onValueChanged: (int value) {
-        Scaffold.of(context).showSnackBar(SnackBar(
-          content: Text(longClickStringList[value]),
-          duration: Duration(milliseconds: 500),
-        ));
+        voidItemLongClickCallBack(
+          position: position,
+          settingType: longClickStringList[value],
+          contentType: isLiveOrVideo ? ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE : ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE,
+        );
       },
       isCanLongClick: isCanLongClick,
       contentType: isLiveOrVideo ? ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE : ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE,
