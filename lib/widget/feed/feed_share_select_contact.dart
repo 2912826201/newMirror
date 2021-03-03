@@ -45,14 +45,15 @@ class Friends {
   }
 }
 
+// ignore: must_be_immutable
 class FriendsPage extends StatefulWidget {
   final FriendsCallback friendsCallback;
   final int groupChatId; //群聊id
-  final int type; //0 表示原来的样式 1群成员-查看所有群成员  2移除某一个人出群 3拉人进入群 4分享群聊 其余全表示为0
+  int type; //0 表示原来的样式 1群成员-查看所有群成员  2移除某一个人出群 3拉人进入群 4分享群聊 其余全表示为0
   final Map<String, dynamic> shareMap;
   final String chatTypeModel;
 
-  const FriendsPage({
+  FriendsPage({
     Key key,
     this.friendsCallback,
     this.type = 0,
@@ -66,6 +67,9 @@ class FriendsPage extends StatefulWidget {
 }
 
 class _FriendsPageState extends State<FriendsPage> {
+
+
+
 //  字典里面放item和高度的对应数据
   final Map _groupOffsetMap = {
 //    这里因为根据实际数据变化和固定全部字母前两个值都是一样的，所以没有做动态修改，如果不一样记得要修改
@@ -216,6 +220,28 @@ class _FriendsPageState extends State<FriendsPage> {
       leadingWidth: 44.0,
       elevation: 0.5,
       actions: [
+
+        Visibility(
+          visible: widget.type == 1&&
+              context.watch<GroupUserProfileNotifier>().loadingStatus==LoadingStatus.STATUS_COMPLETED&&
+              context.watch<GroupUserProfileNotifier>().chatGroupUserModelList.length>0&&
+              context.watch<GroupUserProfileNotifier>().chatGroupUserModelList[0].uid==Application.profile.uid,
+          child: GestureDetector(
+            child: Container(
+              padding: const EdgeInsets.only(right: 16, left: 8),
+              alignment: Alignment.center,
+              color: AppColor.transparent,
+              child: Text("移除群成员", style: TextStyle(fontSize: 14, color: AppColor.mainRed),),
+            ),
+            onTap: () {
+             widget.type=2;
+             setState(() {
+
+             });
+            },
+          ),
+        ),
+
         Visibility(
           visible: widget.type == 2 || widget.type == 3,
           child: GestureDetector(
