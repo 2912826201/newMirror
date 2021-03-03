@@ -322,6 +322,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     }
     if (title == "拉黑") {
       showAppDialog(context,
+          barrierDismissible : false,
           title: "拉黑",
           info: "确定需要将此人拉黑吗？",
           cancel: AppDialogButton("取消", () {
