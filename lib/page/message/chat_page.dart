@@ -281,6 +281,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     super.dispose();
   }
 
+  double oldKeyboardHeight=0;
   // @override
   void didChangeMetrics() {
     super.didChangeMetrics();
@@ -299,6 +300,20 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
             // }
           }
         }
+        if(_focusNode.hasFocus){
+          if(MediaQuery.of(this.context).viewInsets.bottom>=oldKeyboardHeight){
+            print("打开键盘");
+          }else{
+            print("自带的收起键盘$_emojiState");
+            _focusNode.unfocus();
+            if(_emojiState){
+              onEmojioClick();
+            }
+          }
+        }else{
+          print("没有焦点：-收起键盘");
+        }
+        oldKeyboardHeight=MediaQuery.of(this.context).viewInsets.bottom;
       }
     });
   }
@@ -527,6 +542,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
           if (text.isNotEmpty) {
             _postText(text);
           }
+          print("重新获取焦点");
           // 重新获取焦点 避免键盘收回
           FocusScope.of(context).requestFocus(_focusNode);
         },
@@ -617,17 +633,20 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         );
       } else {
         return GestureDetector(
-          child: Container(
-            width: double.infinity,
-            color: AppColor.transparent,
-            child: Column(
-              children: [
-                Expanded(
-                    child: SizedBox(
-                  child: _emojiGridTop(),
-                )),
-                _emojiBottomBox(),
-              ],
+          child: Visibility(
+            visible: !_focusNode.hasFocus,
+            child: Container(
+              width: double.infinity,
+              color: AppColor.transparent,
+              child: Column(
+                children: [
+                  Expanded(
+                      child: SizedBox(
+                        child: _emojiGridTop(),
+                      )),
+                  _emojiBottomBox(),
+                ],
+              ),
             ),
           ),
           onTap: () {},
