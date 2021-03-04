@@ -442,10 +442,10 @@ class AppRouter {
     _navigateToPage(context, pathLike, map);
   }
 
-  static void navigateToMineDetail(BuildContext context, int uId) {
+  static void navigateToMineDetail(BuildContext context, int uId, {Function(dynamic result) callback}) {
     Map<String, dynamic> map = Map();
     map["userId"] = uId;
-    _navigateToPage(context, pathProfileDetails, map);
+    _navigateToPage(context, pathProfileDetails, map,callback: callback);
   }
 
   static void navigateToVipOpenPage(BuildContext context) {
@@ -612,10 +612,12 @@ class AppRouter {
   }
 
   // 话题详情页
-  static void navigateToTopicDetailPage(BuildContext context, int topicId) {
+  static void navigateToTopicDetailPage(BuildContext context, int topicId, {bool isTopicList = false,Function(dynamic
+      result) callback}) {
     Map<String, dynamic> map = Map();
     map["topicId"] = topicId;
-    _navigateToPage(context, pathTopicDetailPage, map);
+    map["isTopicList"] = isTopicList;
+    _navigateToPage(context, pathTopicDetailPage, map,callback: callback);
   }
 
   // 搜索页面

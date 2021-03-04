@@ -136,6 +136,11 @@ dependencies:
   #可拖拽item list
   reorderables: ^0.3.2
 
+
+  #安装包升级测试
+  r_upgrade: ^0.3.2+3
+
+  another_flushbar: ^1.10.11
   #扫码测试
   scan: ^0.0.3
   #二维码生成测试

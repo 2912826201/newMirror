@@ -342,6 +342,7 @@ class _QueryFollowState extends State<QueryFollowList> {
   @override
   void initState() {
     super.initState();
+    context.read<ProfilePageNotifier>().removeId = null;
     if (widget.userId == context
         .read<ProfileNotifier>()
         .profile
@@ -395,12 +396,12 @@ class _QueryFollowState extends State<QueryFollowList> {
             ? "我的粉丝"
             : "我关注的话题"
             : widget.type == 1
-            ? "他的关注"
+            ? "TA的关注"
             : widget.type == 2
-            ? "他的粉丝"
-            : "他关注的话题",
+            ? "TA的粉丝"
+            : "TA关注的话题",
       ),
-      body: buddyList.isNotEmpty || topicList.isNotEmpty ? Container(
+      body:Container(
         height: height,
         width: width,
         padding: EdgeInsets.only(left: 16, right: 16),
@@ -460,7 +461,7 @@ class _QueryFollowState extends State<QueryFollowList> {
               height: 0,
             ),
 
-            Expanded(
+            buddyList.isNotEmpty || topicList.isNotEmpty ? Expanded(
               child: SmartRefresher(
                   controller: _refreshController,
                   enablePullUp: true,
@@ -507,13 +508,25 @@ class _QueryFollowState extends State<QueryFollowList> {
                               child: _followTopic(width),
                             );
                           } else {
-                            return QueryFollowItem(
+                            if(!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey
+                              (buddyList[index].uid)){
+                              context.watch<ProfilePageNotifier>().setFirstModel(buddyList[index].uid,
+                                  isFollow:buddyList[index].relation==0||buddyList[index].relation==2?true:false);
+                            }else{
+                              Future.delayed(Duration.zero,(){
+                                context.watch<ProfilePageNotifier>().changeIsFollow(true,
+                                    buddyList[index].relation==0||buddyList[index].relation==2
+                                        ?true:false, buddyList[index].uid);
+                              });
+                            }
+                            return !context.watch<ProfilePageNotifier>().profileUiChangeModel[buddyList[index].uid]
+                                .isFollow?QueryFollowItem(
                               type: widget.type,
                               buddyModel: buddyList[index],
                               width: width,
                               userId: widget.userId,
                               isMySelf: isMySelf,
-                            );
+                            ):Container();
                           }
                           //type为2的时候展示粉丝
                         } else if (widget.type == 2) {
@@ -529,30 +542,43 @@ class _QueryFollowState extends State<QueryFollowList> {
                               tpcModel: topicList[index],
                               width: width,
                               userId: widget.userId,
-                              isMySelf: isMySelf);
+                              isMySelf: isMySelf,
+                              topicDeleteCallBack: (){
+                                print('=========================话题详情返回');
+                                if(context.read<ProfilePageNotifier>().removeId!=null){
+                                  List<TopicDtoModel> list = [];
+                                  topicList.forEach((element) {
+                                    if(element.id!=context.read<ProfilePageNotifier>().removeId){
+                                      list.add(element);
+                                    }
+                                  });
+                                  topicList.clear();
+                                  topicList.addAll(list);
+                                  setState(() {
+                                  });
+                                }
+                              },);
                         }
                       })),
+            ): Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Spacer(),
+                  Container(
+                    width: 285,
+                    height: 285,
+                    color: AppColor.bgWhite,
+                  ),
+                  SizedBox(height: 12,),
+                  Text("没有你要的东西,一会儿再来看看吧", style: AppStyle.textHintRegular14,),
+                  Spacer(),
+                ],
+              ),
             ),
           ],
         ),
-      ) : Container(
-        height: ScreenUtil.instance.height,
-        width: ScreenUtil.instance.screenWidthDp,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Spacer(),
-            Container(
-              width: 285,
-              height: 285,
-              color: AppColor.bgWhite,
-            ),
-            SizedBox(height: 12,),
-            Text("没有你要的东西,一会儿再来看看吧", style: AppStyle.textHintRegular14,),
-            Spacer(),
-          ],
-        ),
-      ),
+      )
     );
   }
 
@@ -580,7 +606,7 @@ class _QueryFollowState extends State<QueryFollowList> {
     );
   }
 }
-
+typedef DeleteChangedCallback = void Function();
 class QueryFollowItem extends StatefulWidget {
   int type;
 
@@ -593,8 +619,8 @@ class QueryFollowItem extends StatefulWidget {
 
   int userId;
   bool isMySelf;
-
-  QueryFollowItem({this.width, this.buddyModel, this.tpcModel, this.type, this.userId, this.isMySelf});
+  DeleteChangedCallback topicDeleteCallBack;
+  QueryFollowItem({this.width, this.buddyModel, this.tpcModel, this.type, this.userId, this.isMySelf,this.topicDeleteCallBack});
 
   @override
   State<StatefulWidget> createState() {
@@ -651,7 +677,6 @@ class _FollowItemState extends State<QueryFollowItem> {
         haveIntroduction = false;
       }
     }
-
     return Container(
       height: 58,
       padding: EdgeInsets.only(top: 5, bottom: 5),
@@ -663,7 +688,9 @@ class _FollowItemState extends State<QueryFollowItem> {
                 if (widget.type == 1 || widget.type == 2) {
                   AppRouter.navigateToMineDetail(context, uid);
                 } else {
-                  AppRouter.navigateToTopicDetailPage(context, widget.tpcModel.id);
+                  AppRouter.navigateToTopicDetailPage(context, widget.tpcModel.id,isTopicList:true,callback: (result){
+                    widget.topicDeleteCallBack();
+                  });
                   ///这里处理话题跳转
                 }
               },

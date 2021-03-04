@@ -34,7 +34,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   int followerCount;
   int feedCount;
   UserModel userModel;
-
+  ScrollController controller = ScrollController();
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
@@ -54,6 +54,11 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       context.read<ProfilePageNotifier>().setFirstModel(uid);
     }
       getProfileModel();
+    controller.addListener(() {
+      if(controller.position.maxScrollExtent<controller.offset){
+        controller.animateTo(0, duration: Duration(milliseconds: 500), curve: Curves.ease);
+      }
+    });
   }
 
   getProfileModel() async {
@@ -75,7 +80,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     return Scaffold(
       appBar: null,
       body: SingleChildScrollView(
-
+          controller: controller,
         physics: BouncingScrollPhysics(),
         child: _buildSuggestions(width, height),
       ),
@@ -84,11 +89,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
   ///界面
   Widget _buildSuggestions(double width, double height) {
-    return Container(
-      color: AppColor.white,
-      height: height,
-      width: width,
-      child: Column(
+    return Column(
         children: [
           _blurrectAvatar(width, height),
           SizedBox(
@@ -151,9 +152,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 _bottomSetting(Icon(Icons.emoji_events_outlined), "我的成就"),
               ],
             ),
-          )
+          ),
         ],
-      ),
     );
   }
 
