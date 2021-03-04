@@ -11,4 +11,20 @@ class PostFeedModel {
   String longitude;
   String latitude;
   List<TopicDtoModel> topics;
+  Map<String, dynamic> toJson() {
+    var map = <String, dynamic>{};
+    map["selectedMediaFiles"] = selectedMediaFiles;
+    map["content"] = content;
+    map["atUsersModel"] = atUsersModel;
+    map["address"] = address;
+    map["cityCode"] = cityCode;
+    map["longitude"] = longitude;
+    map["latitude"] = latitude;
+    map["topics"] = topics;
+    return map;
+  }
+  @override
+  String toString() {
+    return toJson().toString();
+  }
 }
