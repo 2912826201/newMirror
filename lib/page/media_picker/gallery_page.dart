@@ -120,14 +120,20 @@ class _GalleryPageState extends State<GalleryPage> {
       // success
       // load the album list
       if (_albums.isEmpty) {
-        List<AssetPathEntity> pathList = await PhotoManager.getAssetPathList(hasAll: true, onlyAll: false,
-            type: widget.requestType);
+        //相册目录列表为空时获取一下 加上筛选条件
+        FilterOptionGroup filter = FilterOptionGroup();
+        filter.setOption(
+            AssetType.video,
+            FilterOption(
+                durationConstraint: DurationConstraint(min: Duration(seconds: 1), max: Duration(seconds: 60))));
+        List<AssetPathEntity> pathList = await PhotoManager.getAssetPathList(
+            hasAll: true, onlyAll: false, type: widget.requestType, filterOption: filter);
         //有可能全部照片、最近项目不在第一个 要重新排列一下
         List<AssetPathEntity> notAllList = [];
-        for(AssetPathEntity assetPathEntity in pathList){
-          if(assetPathEntity.isAll){
+        for (AssetPathEntity assetPathEntity in pathList) {
+          if (assetPathEntity.isAll) {
             _albums.add(assetPathEntity);
-          }else{
+          } else {
             notAllList.add(assetPathEntity);
           }
         }
@@ -149,20 +155,22 @@ class _GalleryPageState extends State<GalleryPage> {
         print(media);
         _galleryListLength += media.length;
 
-        // 对列表进行过滤
-        for (AssetEntity assetEntity in media) {
-          if (assetEntity.type == AssetType.image) {
-            //FIXME 图片暂时无法过滤gif
-            _galleryList.add(assetEntity);
-          } else if (assetEntity.type == AssetType.video) {
-            // 只保留小于60秒的视频
-            if (assetEntity.duration < 60) {
-              _galleryList.add(assetEntity);
-            } else {
-              print("过滤了视频：$assetEntity");
-            }
-          }
-        }
+        //TODO 对列表进行过滤 在查目录时做了视频时长过滤 这里没有其他过滤的话 暂时注释掉 直接addAll
+        // for (AssetEntity assetEntity in media) {
+        //   if (assetEntity.type == AssetType.image) {
+        //     //FIXME 图片暂时无法过滤gif
+        //     _galleryList.add(assetEntity);
+        //   } else if (assetEntity.type == AssetType.video) {
+        //     // 只保留小于60秒的视频
+        //     if (assetEntity.duration < 60) {
+        //       _galleryList.add(assetEntity);
+        //     } else {
+        //       print("过滤了视频：$assetEntity");
+        //     }
+        //   }
+        // }
+        _galleryList.addAll(media);
+
         if (mounted) {
           setState(() {});
         }
@@ -699,6 +707,7 @@ class _GalleryPageState extends State<GalleryPage> {
                 AppRouter.navigateToReleasePage(context);
               } else if (widget.publishMode == 2) {
                 AppRouter.navigateToReleasePage(context);
+                Application.ifPageController.index = Application.ifPageController.length - 1;
               } else {
                 Navigator.pop(context, true);
               }
