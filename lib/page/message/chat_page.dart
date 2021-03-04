@@ -352,7 +352,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     bool isShowName = conversation.getType() == RCConversationType.Group;
     if(chatDataList.length>1){
       if(!(chatDataList[0].isTemporary||chatDataList[1].isTemporary)){
-        if(chatDataList[0].msg.messageUId==chatDataList[1].msg.messageUId){
+        if(chatDataList[0].msg.messageId==chatDataList[1].msg.messageId){
           chatDataList.removeAt(0);
         }
       }
@@ -1143,6 +1143,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     _addTemporaryMessage(chatDataModel);
     animateToBottom();
 
+
+    print("recallNotificationMessagePosition:$recallNotificationMessagePosition");
     if (recallNotificationMessagePosition >= 0) {
       _updateRecallNotificationMessage();
     } else {
@@ -1155,6 +1157,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       }
     }
 
+    print("chatDataList[0]:${chatDataList[0]}");
     postText(chatDataList[0], conversation.conversationId, chatTypeId, mentionedInfo, () {
       context.read<ChatEnterNotifier>().clearRules();
       delayedSetState();
@@ -2058,7 +2061,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         }
       });
     } else if (contentType == RecallNotificationMessage.objectName) {
-      recallNotificationMessagePosition = position;
+      recallNotificationMessagePosition = -1;
       print("position:$position");
       // ToastShow.show(msg: "重新编辑消息", context: context);
       // FocusScope.of(context).requestFocus(_focusNode);
