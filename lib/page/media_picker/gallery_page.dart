@@ -96,6 +96,9 @@ class _GalleryPageState extends State<GalleryPage> {
   @override
   void initState() {
     super.initState();
+    //从notifier中取值
+    _previewMaxHeight = context.read<PreviewHeightNotifier>().maxHeight;
+    _previewMinHeight = context.read<PreviewHeightNotifier>().minHeight;
 
     //如果固定尺寸不为空 则赋值到notifier
     if (widget.fixedWidth != null && widget.fixedHeight != null) {
@@ -183,7 +186,7 @@ class _GalleryPageState extends State<GalleryPage> {
       _isFetchingData = false;
     }
 
-    // 在裁剪模式中 刷新列表后重置选中项
+    // 在裁剪模式中 刷新列表后重置选中项 还需要重置gridview的滚动offset和预览框位置
     if (widget.needCrop && isNew) {
       if (_galleryList.isEmpty) {
         // 列表为空 则清空
@@ -192,6 +195,8 @@ class _GalleryPageState extends State<GalleryPage> {
         // 列表不为空 且当前没有选中任何一条 则选中第一条
         _onGridItemTap(context, _galleryList.first);
       }
+
+      context.read<PreviewHeightNotifier>().reset();
     }
   }
 
@@ -204,100 +209,92 @@ class _GalleryPageState extends State<GalleryPage> {
     print("屏幕宽为：$_screenWidth");
     _itemSize = (_screenWidth - _itemMargin * (_horizontalCount - 1)) / _horizontalCount;
     print("item宽为：$_itemSize");
-    _previewMaxHeight = _screenWidth;
-    _previewMinHeight = _screenWidth / 2;
     return Scaffold(
       appBar: _buildAppBar(),
-      body: ChangeNotifierProvider(
-          create: (_) =>
-              _PreviewHeightNotifier(_previewMaxHeight, maxHeight: _previewMaxHeight, minHeight: _previewMinHeight),
-          builder: (context, _) {
-            return Stack(
-              overflow: Overflow.clip,
-              children: [
-                // 背景
-                Container(
-                  color: AppColor.bgBlack,
-                ),
-                // 列表
-                ScrollConfiguration(
-                  behavior: NoBlueEffectBehavior(),
-                  child: _buildScrollBody(),
-                ),
-                widget.needCrop
-                    ?
-                    // 裁剪区域
-                    Positioned(
-                        top: context.watch<_PreviewHeightNotifier>().previewHeight - _previewMaxHeight,
-                        child: Container(
-                          color: AppColor.bgBlack,
-                          width: _previewMaxHeight,
-                          height: _previewMaxHeight,
-                          child: Builder(
-                            builder: (context) {
-                              AssetEntity entity =
-                                  context.select((SelectedMapNotifier notifier) => notifier.currentEntity);
-                              Size selectedSize =
-                                  context.select((SelectedMapNotifier notifier) => notifier.selectedImageSize);
-                              return entity == null
-                                  ? Container()
-                                  : entity.type == AssetType.video
-                                      ? VideoPreviewArea(_fileMap[entity.id], _screenWidth,
-                                          context.select((SelectedMapNotifier notifier) => notifier.useOriginalRatio))
-                                      : entity.type == AssetType.image
-                                          ? CropperImage(
-                                              FileImage(_fileMap[entity.id]),
-                                              round: 0,
-                                              maskPadding: 0,
-                                              outHeight: (selectedSize == null
-                                                      ? _getImageOutSize(
-                                                          entity,
-                                                          context.select((SelectedMapNotifier notifier) =>
-                                                              notifier.useOriginalRatio))
-                                                      : selectedSize)
-                                                  .height,
-                                              outWidth: (selectedSize == null
-                                                      ? _getImageOutSize(
-                                                          entity,
-                                                          context.select((SelectedMapNotifier notifier) =>
-                                                              notifier.useOriginalRatio))
-                                                      : selectedSize)
-                                                  .width,
-                                              key: _cropperKey,
-                                            )
-                                          : Container();
-                            },
-                          ),
-                        ))
-                    : Container(),
-                widget.needCrop &&
-                        !widget.cropOnlySquare &&
-                        context.select((SelectedMapNotifier notifier) => notifier.selectedImageSize == null)
-                    ? Positioned(
-                        top: context.watch<_PreviewHeightNotifier>().previewHeight - 36,
-                        left: 12,
-                        child: GestureDetector(
-                          onTap: _changeCurrentRatio,
-                          child: Container(
-                            height: 24,
-                            width: 24,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColor.textPrimary2.withOpacity(0.65),
-                            ),
-                            child: Icon(
-                              Icons.fullscreen,
-                              color: AppColor.white,
-                              size: 24,
-                            ),
-                          ),
-                        ),
-                      )
-                    : Container(),
-                context.select((SelectedMapNotifier value) => value.isAlbumListShow) ? _buildAlbumList() : Container(),
-              ],
-            );
-          }),
+      body: Stack(
+        overflow: Overflow.clip,
+        children: [
+          // 背景
+          Container(
+            color: AppColor.bgBlack,
+          ),
+          // 列表
+          ScrollConfiguration(
+            behavior: NoBlueEffectBehavior(),
+            child: _buildScrollBody(),
+          ),
+          widget.needCrop
+              ?
+              // 裁剪区域
+              Positioned(
+                  top: context.watch<PreviewHeightNotifier>().previewHeight - _previewMaxHeight,
+                  child: Container(
+                    color: AppColor.black,
+                    width: _previewMaxHeight,
+                    height: _previewMaxHeight,
+                    child: Builder(
+                      builder: (context) {
+                        AssetEntity entity = context.select((SelectedMapNotifier notifier) => notifier.currentEntity);
+                        Size selectedSize =
+                            context.select((SelectedMapNotifier notifier) => notifier.selectedImageSize);
+                        return entity == null
+                            ? Container()
+                            : entity.type == AssetType.video
+                                ? VideoPreviewArea(_fileMap[entity.id], _screenWidth,
+                                    context.select((SelectedMapNotifier notifier) => notifier.useOriginalRatio))
+                                : entity.type == AssetType.image
+                                    ? CropperImage(
+                                        FileImage(_fileMap[entity.id]),
+                                        round: 0,
+                                        maskPadding: 0,
+                                        outHeight: (selectedSize == null
+                                                ? _getImageOutSize(
+                                                    entity,
+                                                    context.select(
+                                                        (SelectedMapNotifier notifier) => notifier.useOriginalRatio))
+                                                : selectedSize)
+                                            .height,
+                                        outWidth: (selectedSize == null
+                                                ? _getImageOutSize(
+                                                    entity,
+                                                    context.select(
+                                                        (SelectedMapNotifier notifier) => notifier.useOriginalRatio))
+                                                : selectedSize)
+                                            .width,
+                                        key: _cropperKey,
+                                      )
+                                    : Container();
+                      },
+                    ),
+                  ))
+              : Container(),
+          widget.needCrop &&
+                  !widget.cropOnlySquare &&
+                  context.select((SelectedMapNotifier notifier) => notifier.selectedImageSize == null)
+              ? Positioned(
+                  top: context.watch<PreviewHeightNotifier>().previewHeight - 36,
+                  left: 12,
+                  child: GestureDetector(
+                    onTap: _changeCurrentRatio,
+                    child: Container(
+                      height: 24,
+                      width: 24,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColor.textPrimary2.withOpacity(0.65),
+                      ),
+                      child: Icon(
+                        Icons.fullscreen,
+                        color: AppColor.white,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                )
+              : Container(),
+          context.select((SelectedMapNotifier value) => value.isAlbumListShow) ? _buildAlbumList() : Container(),
+        ],
+      ),
     );
   }
 
@@ -509,7 +506,7 @@ class _GalleryPageState extends State<GalleryPage> {
                 // 滚动位置更新
                 // 当前位置
                 // print("metrics.pixels当前值是：${metrics.pixels}");
-                context.read<_PreviewHeightNotifier>().setOffset(metrics.pixels);
+                context.read<PreviewHeightNotifier>().setOffset(metrics.pixels);
               } else if (notification is ScrollEndNotification) {
                 // 滚动结束
               }
@@ -1009,17 +1006,27 @@ class SelectedMapNotifier with ChangeNotifier {
 }
 
 // 用于监听及更新裁剪预览布局的高度
-class _PreviewHeightNotifier with ChangeNotifier {
-  _PreviewHeightNotifier(this._previewHeight, {@required this.maxHeight, @required this.minHeight});
+class PreviewHeightNotifier with ChangeNotifier {
+  PreviewHeightNotifier(this._previewBaseHeight);
 
-  double maxHeight;
-  double minHeight;
+  double _previewBaseHeight;
 
   double _previewHeight;
 
-  double get previewHeight => _previewHeight;
+  double get maxHeight => _previewBaseHeight;
+
+  double get minHeight => _previewBaseHeight / 2;
+
+  double get previewHeight => _previewHeight ?? _previewBaseHeight;
 
   double _offset = 0;
+
+  reset(){
+    _previewHeight = _previewBaseHeight;
+    _offset = 0;
+
+    notifyListeners();
+  }
 
   setOffset(double offset) {
     // 根据滚动距离计算预览框高度
@@ -1028,15 +1035,15 @@ class _PreviewHeightNotifier with ChangeNotifier {
     // 算完后赋值
     _offset = offset;
     // 理论上新的高度为旧的高度减去向上滑动的距离
-    double previewHeight = _previewHeight - distance;
+    double newPreviewHeight = previewHeight - distance;
     // 结果如果超出范围 纠正为范围阈值
-    if (previewHeight > maxHeight) {
-      previewHeight = maxHeight;
-    } else if (previewHeight < minHeight) {
-      previewHeight = minHeight;
+    if (newPreviewHeight > maxHeight) {
+      newPreviewHeight = maxHeight;
+    } else if (newPreviewHeight < minHeight) {
+      newPreviewHeight = minHeight;
     }
     // 算完后赋值
-    _previewHeight = previewHeight;
+    _previewHeight = newPreviewHeight;
 
     notifyListeners();
   }
