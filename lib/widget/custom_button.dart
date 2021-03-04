@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
-import 'package:mirror/config/application.dart';
-import 'package:mirror/config/config.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/black_model.dart';

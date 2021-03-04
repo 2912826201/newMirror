@@ -77,7 +77,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 children: [
                   Container(
                     constraints: BoxConstraints(
-                      maxWidth: ScreenUtil.instance.width-(44+8+20)*2.0,
+                      //82是红色按钮最大宽度
+                      maxWidth: ScreenUtil.instance.width-(appBarIconPadding + 82)*2.0,
                     ),
                     child: titleWidget == null
                         ? Text(
