@@ -2062,7 +2062,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       print("position:$position");
       // ToastShow.show(msg: "重新编辑消息", context: context);
       // FocusScope.of(context).requestFocus(_focusNode);
-      _textController.text = json.decode(map["content"])["data"];
+      _textController.text += json.decode(map["content"])["data"];
       var setCursor = TextSelection(
         baseOffset: _textController.text.length,
         extentOffset: _textController.text.length,
