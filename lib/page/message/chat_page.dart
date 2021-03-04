@@ -290,11 +290,13 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
           //关闭键盘
         } else {
           //显示键盘
+          print("显示键盘：${Application.keyboardHeight},${MediaQuery.of(this.context).viewInsets.bottom}");
           if (Application.keyboardHeight <= MediaQuery.of(this.context).viewInsets.bottom) {
             Application.keyboardHeight = MediaQuery.of(this.context).viewInsets.bottom;
-            if(Application.keyboardHeight>300) {
-              reload(() {});
-            }
+            reload(() {});
+            // if(Application.keyboardHeight>600) {
+            //   reload(() {});
+            // }
           }
         }
       }
@@ -320,6 +322,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
               isShow: context.read<ChatEnterNotifier>().keyWord == "@",
               onItemClickListener: atListItemClick,
               groupChatId: chatId,
+              delayedSetState: delayedSetState,
             ),
           ],
         ),
@@ -1567,6 +1570,14 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         );
         _textController.selection = setCursor;
       }
+      if (Platform.isAndroid && isClickAtUser) {
+        print("at位置&${atIndex}");
+        var setCursor = TextSelection(
+          baseOffset: atIndex,
+          extentOffset: atIndex,
+        );
+        _textController.selection = setCursor;
+      }
       isClickAtUser = false;
       // // 安卓每次点击切换光标会进入此监听。需求邀请@和话题光标不可移入其中。
       if (isSwitchCursor && !Platform.isIOS) {
@@ -1597,6 +1608,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         // 唤起@#后切换光标关闭视图
         if (cursorIndex != atIndex) {
           context.read<ChatEnterNotifier>().openAtCallback("");
+          delayedSetState();
         }
       }
       isSwitchCursor = true;
@@ -1608,7 +1620,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       controller: _textController,
       rules: context.read<ChatEnterNotifier>().rules,
       // @回调
-      // ignore: missing_return
       triggerAtCallback: (String str) async {
         print("打开@功能--str：$str------------------------");
         if (chatTypeId == RCConversationType.Group) {
@@ -1616,6 +1627,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
           isClickAtUser = false;
           delayedSetState();
         }
+        return "";
       },
       // 关闭@#视图回调
       shutDownCallback: () async {
@@ -1951,6 +1963,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       context.read<ChatEnterNotifier>().setAtSearchStr("");
       // 关闭视图
       context.read<ChatEnterNotifier>().openAtCallback("");
+      delayedSetState();
     });
   }
 

@@ -218,31 +218,31 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     print(newValue);
     print(oldValue);
 
-    int deleteValueLength=oldValue.text.length-newValue.text.length;
+
 
     /// 因为选中删除 和 直接delete删除的开始光标位置不一，故作统一处理
-    int startIndex = isOldSelectedPart ? oldValue.selection.start : oldValue.selection.start - deleteValueLength;
+    int startIndex = isOldSelectedPart ? oldValue.selection.start : oldValue.selection.start - 1;
     // int startIndex = newValue.selection.end;
     print("新光标$startIndex");
     int endIndex = oldValue.selection.end;
     // 删除@或者#时要关闭视图
-    if (startIndex + deleteValueLength <= atIndex || startIndex + 1 <= topicIndex) {
+    if (startIndex + 1 <= atIndex || startIndex + 1 <= topicIndex) {
       _shutDownCallback();
-      if (startIndex + deleteValueLength <= atIndex) {
+      if (startIndex + 1 <= atIndex) {
         atIndex = 0;
       }
-      if (startIndex + deleteValueLength <= topicIndex) {
+      if (startIndex + 1 <= topicIndex) {
         topicIndex = 0;
       }
     }
-    if (atIndex > 0 && startIndex + deleteValueLength > atIndex) {
+    if (atIndex > 0 && startIndex + 1 > atIndex) {
       print("111");
       print(oldValue.text);
       print(oldValue.text.substring(atIndex, startIndex));
       atSearchStr = oldValue.text.substring(atIndex, startIndex);
     }
     print("2");
-    if (topicIndex > 0 && startIndex + deleteValueLength > topicIndex) {
+    if (topicIndex > 0 && startIndex + 1 > topicIndex) {
       topicSearchStr = oldValue.text.substring(topicIndex, startIndex);
     }
     print("3");
@@ -256,7 +256,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     for (int i = 0; i < rules.length; i++) {
       Rule rule = rules[i];
       print(rule);
-      if ((startIndex >= rule.startIndex && startIndex <= rule.endIndex - deleteValueLength) ||
+      if ((startIndex >= rule.startIndex && startIndex <= rule.endIndex - 1) ||
           (endIndex >= rule.startIndex && endIndex <= rule.endIndex)) {
         isRule=true;
         print("光标开始位置$startIndex");
@@ -276,6 +276,10 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
         endIndex = math.max(endIndex, rule.endIndex);
         print("用来自动覆盖$startIndex,,,,,,,,,,,$endIndex");
       }
+    }
+
+    if(!isRule) {
+      return newValue;
     }
     // 一次性全部删除时
    if(newValue.text.isEmpty) {
