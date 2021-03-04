@@ -79,13 +79,14 @@ void main() {
             ChangeNotifierProvider(create: (_) => ChatMessageProfileNotifier()),
             //群聊界面的@用户功能
             ChangeNotifierProvider(create: (_) => ChatEnterNotifier()),
-            //FIXME 个人空间页的状态 应该不需要在全局更新状态
+            //用户相关界面信息
             ChangeNotifierProvider(create: (_) => ProfilePageNotifier()),
             //群成员信息
             ChangeNotifierProvider(create: (_) => GroupUserProfileNotifier()),
             //记录未读消息数 目前只记录3种互动通知的数量 从接口获取更新数据
             ChangeNotifierProvider(create: (_) => UnreadMessageNotifier()),
             ChangeNotifierProvider(create: (_) => FeedFlowDataNotifier()),
+            ChangeNotifierProvider(create: (_)=>AddressPickerNotifier())
           ],
           child: MyApp(),
         ),

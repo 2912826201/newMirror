@@ -212,7 +212,9 @@ class _NoticeSettingState extends State<NoticeSettingPage> with WidgetsBindingOb
         confirm: AppDialogButton("去打开", () {
           AppSettings.openNotificationSettings();
           return true;
-        }));
+        },
+        ),
+        barrierDismissible: false);
   }
 
   Widget _switchRow(double width, int type, bool isOpen, String title) {

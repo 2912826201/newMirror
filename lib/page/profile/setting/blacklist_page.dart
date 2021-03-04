@@ -13,6 +13,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:provider/provider.dart';
 //黑名单
 class BlackListPage extends StatefulWidget{
   PanelController pc;
@@ -44,6 +45,7 @@ class _BlackListState extends State<BlackListPage>{
   @override
   void initState() {
     super.initState();
+    context.read<ProfilePageNotifier>().removeId = null;
     _getBlackList();
   }
   @override
@@ -97,7 +99,18 @@ class _BlackListState extends State<BlackListPage>{
         children: [
           InkWell(
             onTap: (){
-              AppRouter.navigateToMineDetail(context, blackList[index].uid);
+              AppRouter.navigateToMineDetail(context, blackList[index].uid,callback: (result){
+                if(context.read<ProfilePageNotifier>().removeId!=null){
+                  List<blackUserModel> list = [];
+                  blackList.forEach((element) {
+                    if(element.uid!=context.read<ProfilePageNotifier>().removeId){
+                        list.add(element);
+                    }
+                  });
+                  blackList.clear();
+                  blackList.addAll(list);
+                }
+              });
 
             },
             child: ClipOval(

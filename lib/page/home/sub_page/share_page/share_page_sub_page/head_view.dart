@@ -35,17 +35,16 @@ class HeadView extends StatefulWidget {
   ValueChanged<HomeFeedModel> removeFollowChanged;
   ValueChanged<bool> followChanged;
   int mineDetailId;
-  bool isMySelf;
 
-  HeadView(
-      {this.model,
-      this.isShowConcern,
-      this.deleteFeedChanged,
-      this.removeFollowChanged,
-      this.isBlack,
-      this.mineDetailId,
-      this.pageName,
-      this.isMySelf});
+  HeadView({
+    this.model,
+    this.isShowConcern,
+    this.deleteFeedChanged,
+    this.removeFollowChanged,
+    this.isBlack,
+    this.mineDetailId,
+    this.pageName,
+  });
 
   @override
   State<StatefulWidget> createState() {
@@ -55,14 +54,15 @@ class HeadView extends StatefulWidget {
 
 class HeadViewState extends State<HeadView> {
   double opacity = 0;
-
+  bool isMySelf = false;
   // 删除动态
   deleteFeed() async {
     Map<String, dynamic> map = await deletefeed(id: widget.model.id);
     if (map["state"]) {
       widget.deleteFeedChanged(widget.model.id);
       if (widget.isShowConcern) {
-        Navigator.pop(context, widget.model.id);
+        context.read<FeedMapNotifier>().deleteContent(widget.model.id);
+        Navigator.pop(context);
       }
     } else {
       print("删除失败");
@@ -201,6 +201,7 @@ class HeadViewState extends State<HeadView> {
   @override
   Widget build(BuildContext context) {
     if (widget.model.pushId == context.watch<ProfileNotifier>().profile.uid) {
+      isMySelf = true;
       if (!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey(widget.model.pushId)) {
         context.watch<ProfilePageNotifier>().setFirstModel(widget.model.pushId);
       }
@@ -237,7 +238,8 @@ class HeadViewState extends State<HeadView> {
                   child: CircleAvatar(
                     // backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
                     backgroundImage: widget.model.avatarUrl != null
-                        ? NetworkImage(widget.model.avatarUrl)
+                        ? NetworkImage(
+                            isMySelf ? context.watch<ProfileNotifier>().profile.avatarUri : widget.model.avatarUrl)
                         : NetworkImage("images/test.png"),
                     maxRadius: 19,
                   ),
@@ -250,7 +252,7 @@ class HeadViewState extends State<HeadView> {
                     // GestureDetector(
                     //   child:
                     Text(
-                      widget.model.name ?? "空名字",
+                      isMySelf ? context.watch<ProfileNotifier>().profile.nickName : widget.model.name ?? "空名字",
                       style: TextStyle(fontSize: 15),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
@@ -304,18 +306,17 @@ class HeadViewState extends State<HeadView> {
   }
 
   void _showDialog() {
-    showAppDialog(
-      context,
-      confirm: AppDialogButton("必须举报!", () {
-        _denounceUser();
-        return true;
-      }),
-      cancel: AppDialogButton("再想想", () {
-        return true;
-      }),
-      title: "提交举报",
-      info: "确认举报用户",
-    );
+    showAppDialog(context,
+        confirm: AppDialogButton("必须举报!", () {
+          _denounceUser();
+          return true;
+        }),
+        cancel: AppDialogButton("再想想", () {
+          return true;
+        }),
+        title: "提交举报",
+        info: "确认举报用户",
+        barrierDismissible: false);
   }
 
   _denounceUser() async {
