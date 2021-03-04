@@ -184,6 +184,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
   int addEmojiModelIosCurrent=-1;
   int cursorIndexPr=-1;
+  bool isShowEmjiPageWhite=false;
 
   @override
   void initState() {
@@ -303,6 +304,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         if(_focusNode.hasFocus){
           if(MediaQuery.of(this.context).viewInsets.bottom>=oldKeyboardHeight){
             print("打开键盘");
+            isShowEmjiPageWhite=true;
           }else{
             print("自带的收起键盘$_emojiState");
             _focusNode.unfocus();
@@ -496,7 +498,13 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   Widget getMessageInputBar() {
     return MessageInputBar(
       voiceOnTap: _voiceOnTapClick,
-      onEmojio: onEmojioClick,
+      onEmojio: (){
+        isShowEmjiPageWhite=false;
+        reload(() {});
+        Future.delayed(Duration(milliseconds: 10),(){
+          onEmojioClick();
+        });
+      },
       isVoice: _isVoiceState,
       voiceFile: _voiceFile,
       edit: edit,
@@ -607,20 +615,16 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     //   ),
     // ) : Container();
 
-    return AnimatedContainer(
+    return  Container(
       height: emojiHeight,
-      duration: Duration(milliseconds: 200),
-      child: Container(
-        height: emojiHeight,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: AppColor.white,
-          border: Border(
-            top: BorderSide(color: Colors.grey, width: 0.2),
-          ),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: AppColor.white,
+        border: Border(
+          top: BorderSide(color: Colors.grey, width: 0.2),
         ),
-        child: emojiList(),
       ),
+      child: emojiList(),
     );
   }
 
@@ -634,7 +638,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       } else {
         return GestureDetector(
           child: Visibility(
-            visible: !_focusNode.hasFocus,
+            visible: !isShowEmjiPageWhite,
             child: Container(
               width: double.infinity,
               color: AppColor.transparent,
@@ -1751,7 +1755,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     isResizeToAvoidBottomInset = !_emojiState;
     if (_emojiState) {
       if(_focusNode.hasFocus){
-          cursorIndexPr=_textController.selection.baseOffset;
+        cursorIndexPr=_textController.selection.baseOffset;
       }
       FocusScope.of(context).requestFocus(new FocusNode());
     }
