@@ -575,7 +575,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
             .read<FeedMapNotifier>()
             .commensAssignment(widget.targetId, courseCommentHot.list, courseCommentHot.totalCount);
       }
-        if(context.read<FeedMapNotifier>().feedMap[widget.targetId].hotComment.isNotEmpty){
+        if(!widget.isShowHotOrTime&&context.read<FeedMapNotifier>().feedMap[widget.targetId].hotComment.isNotEmpty){
           for(int i=0;i< context.read<FeedMapNotifier>().feedMap[widget.targetId].hotComment.length;i++){
             if(context.read<FeedMapNotifier>().feedMap[widget.targetId].hotComment[i].id == commentId){
               context.read<FeedMapNotifier>().updateHotComment(widget.targetId,commentDtoModel:commentDtoModel,

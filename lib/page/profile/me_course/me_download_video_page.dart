@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/database/download_video_course_db_helper.dart';
 import 'package:mirror/data/dto/download_video_dto.dart';
@@ -218,22 +219,49 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
 
   //获取每一个带左滑删除btn的item
   Widget getLeftDeleteUi(DownloadCourseVideoDto courseVideoDto, int index) {
-    return LeftScrollListView(
-      itemKey: courseVideoDto.courseId.toString(),
-      itemTag: "tag",
-      itemIndex: index,
-      itemChild: getItem(courseVideoDto, index),
-      isDoubleDelete: true,
-      onTap: () {
-        onItemCLick(index);
-      },
-      onClickRightBtn: () {
-        //点击了删除按钮
-        selectDeleteIndexList.clear();
-        selectDeleteIndexList.add(index);
-        deleteVideo();
-      },
-    );
+    if(Application.platform==0){
+      return GestureDetector(
+        child: getItem(courseVideoDto, index),
+        onTap: (){
+          onItemCLick(index);
+        },
+        onLongPress: (){
+          showAppDialog(context,
+              title: "删除kec",
+              info: "确认删除这个已下载的课程吗？",
+              barrierDismissible:false,
+              cancel: AppDialogButton("取消", () {
+                print("点了取消");
+                return true;
+              }),
+              confirm: AppDialogButton("确定", () {
+                print("点击了确定");
+                //点击了删除按钮
+                selectDeleteIndexList.clear();
+                selectDeleteIndexList.add(index);
+                deleteVideo();
+                return true;
+              }));
+        },
+      );
+    }else {
+      return LeftScrollListView(
+        itemKey: courseVideoDto.courseId.toString(),
+        itemTag: "tag",
+        itemIndex: index,
+        itemChild: getItem(courseVideoDto, index),
+        isDoubleDelete: true,
+        onTap: () {
+          onItemCLick(index);
+        },
+        onClickRightBtn: () {
+          //点击了删除按钮
+          selectDeleteIndexList.clear();
+          selectDeleteIndexList.add(index);
+          deleteVideo();
+        },
+      );
+    }
   }
 
   //每一个item的点击事件

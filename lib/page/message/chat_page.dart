@@ -1436,6 +1436,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         } else {
           Application.appContext.read<ChatMessageProfileNotifier>().clearMessage();
         }
+
+        //清聊天未读数
+        MessageManager.clearUnreadCount(
+            Application.appContext, conversation.conversationId, Application.profile.uid, conversation.type);
+
         if(message.objectName==ChatTypeModel.MESSAGE_TYPE_RECALL_MSG1||
             message.objectName==ChatTypeModel.MESSAGE_TYPE_RECALL_MSG2){
           //撤回消息
@@ -1485,6 +1490,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
           context.watch<ChatMessageProfileNotifier>().isResetPage = false;
           context.watch<ChatMessageProfileNotifier>().resetMessage = null;
           if (message != null) {
+            //清聊天未读数
+            MessageManager.clearUnreadCount(
+                Application.appContext, conversation.conversationId, Application.profile.uid, conversation.type);
             getChatGroupUserModelList1(chatId, context);
             insertExitGroupMsg(message, chatId, (Message msg, int code) {
               if (code == 0) {
