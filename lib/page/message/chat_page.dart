@@ -384,8 +384,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       scrollController: _scrollController,
       chatDataList: chatDataList,
       chatId:chatId,
-      onTap: () => _messageInputBodyClick(),
       vsync: this,
+      onTap: _messageInputBodyClick,
       voidItemLongClickCallBack: onItemLongClickCallBack,
       voidMessageClickCallBack: onMessageClickCallBack,
       chatName: chatName,
@@ -1727,7 +1727,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
   //聊天内容的点击事件
   _messageInputBodyClick() {
+    print("_messageInputBodyClick");
     if (_emojiState || MediaQuery.of(context).viewInsets.bottom > 0) {
+      FocusScope.of(context).requestFocus(new FocusNode());
+
       if (mounted) {
         reload(() {
           _timerCount = 0;

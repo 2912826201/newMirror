@@ -26,7 +26,6 @@ class MessageInputBody extends StatelessWidget {
               child: child,
               behavior: HitTestBehavior.translucent,
               onTap: () {
-                FocusScope.of(context).requestFocus(new FocusNode());
                 if (onTap != null) {
                   onTap();
                 }
@@ -41,7 +40,6 @@ class MessageInputBody extends StatelessWidget {
         child: child,
         behavior: HitTestBehavior.translucent,
         onTap: () {
-          FocusScope.of(context).requestFocus(new FocusNode());
           if (onTap != null) {
             onTap();
           }
