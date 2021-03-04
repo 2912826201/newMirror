@@ -1509,60 +1509,62 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
 
   initTextController() {
-    // print("值改变了");
-    print("监听文字光标${_textController.selection}");
+    _textController.addListener(() {
+      // print("值改变了");
+      print("监听文字光标${_textController.selection}");
 
-    List<Rule> rules = context.read<ChatEnterNotifier>().rules;
-    int atIndex = context.read<ChatEnterNotifier>().atCursorIndex;
-    print("当前值￥${_textController.text}");
-    print(context.read<ChatEnterNotifier>().textFieldStr);
-    // 获取光标位置
-    int cursorIndex = _textController.selection.baseOffset;
-    print("实时光标位置$cursorIndex");
-    // 在每次选择@用户后ios设置光标位置。
-    if (Platform.isIOS && isClickAtUser) {
-      // 设置光标
-      var setCursor = TextSelection(
-        baseOffset: _textController.text.length,
-        extentOffset: _textController.text.length,
-      );
-      _textController.selection = setCursor;
-    }
-    isClickAtUser = false;
-    // // 安卓每次点击切换光标会进入此监听。需求邀请@和话题光标不可移入其中。
-    if (isSwitchCursor && !Platform.isIOS) {
-      // _textEditingController.o
-      for (Rule rule in rules) {
-        // 是否光标点击到了@区域
-        if (cursorIndex >= rule.startIndex && cursorIndex <= rule.endIndex) {
-          // 获取中间值用此方法是因为当atRule.startIndex和atRule.endIndex为负数时不会溢出。
-          int median = rule.startIndex + (rule.endIndex - rule.startIndex) ~/ 2;
-          TextSelection setCursor;
-          if (cursorIndex <= median) {
-            setCursor = TextSelection(
-              baseOffset: rule.startIndex,
-              extentOffset: rule.startIndex,
-            );
+      List<Rule> rules = context.read<ChatEnterNotifier>().rules;
+      int atIndex = context.read<ChatEnterNotifier>().atCursorIndex;
+      print("当前值￥${_textController.text}");
+      print(context.read<ChatEnterNotifier>().textFieldStr);
+      // 获取光标位置
+      int cursorIndex = _textController.selection.baseOffset;
+      print("实时光标位置$cursorIndex");
+      // 在每次选择@用户后ios设置光标位置。 在每次选择@用户后ios设置光标位置。
+      if (Platform.isIOS && (isClickAtUser||recallNotificationMessagePosition==-2)) {
+        // 设置光标
+        var setCursor = TextSelection(
+          baseOffset: _textController.text.length,
+          extentOffset: _textController.text.length,
+        );
+        _textController.selection = setCursor;
+      }
+      isClickAtUser = false;
+      // // 安卓每次点击切换光标会进入此监听。需求邀请@和话题光标不可移入其中。
+      if (isSwitchCursor && !Platform.isIOS) {
+        // _textEditingController.o
+        for (Rule rule in rules) {
+          // 是否光标点击到了@区域
+          if (cursorIndex >= rule.startIndex && cursorIndex <= rule.endIndex) {
+            // 获取中间值用此方法是因为当atRule.startIndex和atRule.endIndex为负数时不会溢出。
+            int median = rule.startIndex + (rule.endIndex - rule.startIndex) ~/ 2;
+            TextSelection setCursor;
+            if (cursorIndex <= median) {
+              setCursor = TextSelection(
+                baseOffset: rule.startIndex,
+                extentOffset: rule.startIndex,
+              );
+            }
+            if (cursorIndex > median) {
+              setCursor = TextSelection(
+                baseOffset: rule.endIndex,
+                extentOffset: rule.endIndex,
+              );
+            }
+            // 设置光标
+            _textController.selection = setCursor;
           }
-          if (cursorIndex > median) {
-            setCursor = TextSelection(
-              baseOffset: rule.endIndex,
-              extentOffset: rule.endIndex,
-            );
-          }
-          // 设置光标
-          _textController.selection = setCursor;
+        }
+
+        // 唤起@#后切换光标关闭视图
+        if (cursorIndex != atIndex) {
+          Future.delayed(Duration(milliseconds: 100), () {
+            context.read<ChatEnterNotifier>().openAtCallback("");
+          });
         }
       }
-
-      // 唤起@#后切换光标关闭视图
-      if (cursorIndex != atIndex) {
-        Future.delayed(Duration(milliseconds: 100), () {
-          context.read<ChatEnterNotifier>().openAtCallback("");
-        });
-      }
-    }
-    isSwitchCursor = true;
+      isSwitchCursor = true;
+    });
   }
 
   initReleaseFeedInputFormatter() {
@@ -2061,16 +2063,18 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         }
       });
     } else if (contentType == RecallNotificationMessage.objectName) {
-      recallNotificationMessagePosition = -1;
+      recallNotificationMessagePosition = -2;
       print("position:$position");
       // ToastShow.show(msg: "重新编辑消息", context: context);
       // FocusScope.of(context).requestFocus(_focusNode);
       _textController.text += json.decode(map["content"])["data"];
-      var setCursor = TextSelection(
-        baseOffset: _textController.text.length,
-        extentOffset: _textController.text.length,
-      );
-      _textController.selection = setCursor;
+      if(Application.platform==0) {
+        var setCursor = TextSelection(
+          baseOffset: _textController.text.length,
+          extentOffset: _textController.text.length,
+        );
+        _textController.selection = setCursor;
+      }
       if (mounted) {
         reload(() {
           _timerCount = 0;
