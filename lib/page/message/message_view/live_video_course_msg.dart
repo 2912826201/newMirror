@@ -6,6 +6,7 @@ import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
+import 'package:mirror/page/message/message_view/message_item_height_util.dart';
 import 'package:mirror/util/date_util.dart';
 
 import 'currency_msg.dart';
@@ -143,16 +144,19 @@ class LiveVideoCourseMsg extends StatelessWidget {
         contentType: isLiveOrVideo ? ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE : ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE);
     return LongClickPopupMenu(
       onValueChanged: (int value) {
-        Scaffold.of(context).showSnackBar(SnackBar(
-          content: Text(longClickStringList[value]),
-          duration: Duration(milliseconds: 500),
-        ));
+        voidItemLongClickCallBack(
+          position: position,
+          settingType: longClickStringList[value],
+          contentType: isLiveOrVideo ? ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE : ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE,
+        );
       },
       isCanLongClick: isCanLongClick,
       contentType: isLiveOrVideo ? ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE : ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE,
       isMySelf: isMyself,
       actions: longClickStringList,
       contentWidth: 180.0,
+      contentHeight: MessageItemHeightUtil.init().
+        getLiveVideoCourseMsgHeight(isShowChatUserName,isOnlyContentHeight: true),
       child: GestureDetector(
         child: _getLiveVideoCourseUi(),
         onTap: () {
@@ -305,9 +309,7 @@ class LiveVideoCourseMsg extends StatelessWidget {
             width: double.infinity,
             // ignore: null_aware_before_operator
             child: Text(liveVideoModel.coursewareDto?.levelDto?.name +
-                "·" +
-                DateUtil.formatSecondToStringCn(
-                    liveVideoModel.totalTrainingTime)),
+                "·${((liveVideoModel.times??0) ~/ 60000)}分钟"),
           ),
         ],
       ),

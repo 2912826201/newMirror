@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:provider/provider.dart';
@@ -54,6 +55,9 @@ class Application {
 
   //TODO 评论输入框等提示语 需要考量是否有更合适的方式管理
   static String hintText = "";
+
+  //IfPage的TabController
+  static TabController ifPageController;
 
   //相机列表
   static List<CameraDescription> cameras;
@@ -118,6 +122,10 @@ class Application {
 
   //聊天群的群成员信息
   static Map<String, Map<String, dynamic>> chatGroupUserInformationMap = Map();
+
+  //发送消息的临时列表
+  //key是:用户id_会话id_会话类型
+  static Map<String,List<ChatDataModel>> postChatDataModelList=Map();
 
   //群组at的列表
   static AtMesGroupModel atMesGroupModel = AtMesGroupModel();
@@ -185,5 +193,6 @@ class Application {
     queryNoPromptUidList.clear();
     chatGroupUserNameMap.clear();
     chatGroupUserInformationMap.clear();
+    postChatDataModelList.clear();
   }
 }

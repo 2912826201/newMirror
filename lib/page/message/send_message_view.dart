@@ -333,10 +333,12 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
   String getChatUserName(String uId, String name) {
     if (widget.isShowChatUserName) {
       String userName = ((Application.chatGroupUserInformationMap["${widget.chatId}_$uId"]??Map())
-      [GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME])??
-          (Application.chatGroupUserInformationMap["${widget.chatId}_$uId"]??Map())
-          [GROUP_CHAT_USER_INFORMATION_USER_NAME];
-      if (userName == null) {
+      [GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
+      if(userName==null||userName.length<1){
+        userName =(Application.chatGroupUserInformationMap["${widget.chatId}_$uId"]??Map())
+        [GROUP_CHAT_USER_INFORMATION_USER_NAME];
+      }
+      if(userName==null||userName.length<1){
         return name;
       } else {
         return userName;
@@ -513,7 +515,7 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
       dynamic> map, RecallNotificationMessage recallNotificationMessage}) {
     return AlertMsg(
       position: widget.position,
-      chatUserName: widget.chatUserName,
+      chatUserName: name,
       isShowChatUserName: widget.isShowChatUserName,
       voidMessageClickCallBack: widget.voidMessageClickCallBack,
       voidItemLongClickCallBack: widget.voidItemLongClickCallBack,

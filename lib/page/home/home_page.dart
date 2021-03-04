@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/feed/post_feed.dart';
@@ -22,18 +23,13 @@ import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
+import 'package:union_tabs/union_tabs.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key, this.controller, this.ifPageController}) : super(key: key);
-  TabController controller;
-  TabController ifPageController;
-
-  HomePageState createState() => HomePageState(controller: controller);
+  HomePageState createState() => HomePageState();
 }
 
 class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin {
-  HomePageState({TabController controller});
-
   // taBar和TabBarView必要的
   TabController controller;
 
@@ -69,30 +65,100 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                   margin: EdgeInsets.only(left: 16, right: 16),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        width: 48,
-                        height: 48,
-                        color: AppColor.mainRed,
-                        margin: EdgeInsets.only(right: 16),
-                      ),
+                      context.watch<FeedMapNotifier>().postFeedModel.selectedMediaFiles != null
+                          ? Container(
+                              width: 36,
+                              height: 36,
+                              margin: EdgeInsets.only(right: 6),
+                              child: Stack(
+                                alignment: const FractionalOffset(0.5, 0.5),
+                                children: [
+                                  context.watch<FeedMapNotifier>().postFeedModel.selectedMediaFiles.type ==
+                                          mediaTypeKeyVideo
+                                      ? Image.memory(
+                                          context
+                                              .watch<FeedMapNotifier>()
+                                              .postFeedModel
+                                              .selectedMediaFiles
+                                              .list
+                                              .first
+                                              .thumb,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : context
+                                                  .watch<FeedMapNotifier>()
+                                                  .postFeedModel
+                                                  .selectedMediaFiles
+                                                  .list
+                                                  .first
+                                                  .croppedImageData !=
+                                              null
+                                          ? Image.memory(
+                                              context
+                                                  .watch<FeedMapNotifier>()
+                                                  .postFeedModel
+                                                  .selectedMediaFiles
+                                                  .list
+                                                  .first
+                                                  .croppedImageData,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : context
+                                                      .watch<FeedMapNotifier>()
+                                                      .postFeedModel
+                                                      .selectedMediaFiles
+                                                      .list
+                                                      .first
+                                                      .file !=
+                                                  null
+                                              ? Image.file(
+                                                  context
+                                                      .watch<FeedMapNotifier>()
+                                                      .postFeedModel
+                                                      .selectedMediaFiles
+                                                      .list
+                                                      .first
+                                                      .file,
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : Container(),
+                                  context.watch<FeedMapNotifier>().postFeedModel.selectedMediaFiles.type ==
+                                          mediaTypeKeyVideo
+                                      ?
+                                      // Positioned(
+                                      //     top: 15,
+                                      //     bottom: 15,
+                                      //     child:
+                                      Container(
+                                          width: 13,
+                                          height: 13,
+                                          color: AppColor.mainRed,
+                                          // )
+                                        )
+                                      : Container()
+                                ],
+                              ),
+                            )
+                          : Container(),
                       publishTextStatus(context.watch<FeedMapNotifier>().plannedSpeed),
                       Spacer(),
                       Offstage(
                           offstage: context.watch<FeedMapNotifier>().plannedSpeed != -1,
                           child: Container(
-                            width: 76,
+                            width: 48,
                             child: Row(
                               children: [
                                 Container(
-                                  width: 24,
-                                  height: 24,
+                                  width: 18,
+                                  height: 18,
                                   color: Colors.lime,
                                 ),
                                 Spacer(),
                                 Container(
-                                  width: 24,
-                                  height: 24,
+                                  width: 18,
+                                  height: 18,
                                   color: Colors.lime,
                                 ),
                               ],
@@ -101,8 +167,10 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                     ],
                   ))),
           LinearProgressIndicator(
-            value: context.watch<FeedMapNotifier>().plannedSpeed,
-            valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
+            value:
+                context.watch<FeedMapNotifier>().plannedSpeed != -1 ? context.watch<FeedMapNotifier>().plannedSpeed : 1,
+            valueColor: new AlwaysStoppedAnimation<Color>(
+                context.watch<FeedMapNotifier>().plannedSpeed != -1 ? AppColor.mainRed : Colors.amberAccent),
             backgroundColor: AppColor.white,
           ),
         ],
@@ -116,18 +184,34 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     if (plannedSpeed >= 0 && plannedSpeed < 1) {
       return Text(
         "正在发布",
-        style: AppStyle.textRegular16,
+        style: AppStyle.textSecondaryRegular14,
       );
     } else if (plannedSpeed == 1) {
       return Text(
         "完成",
-        style: AppStyle.textRegular16,
+        style: AppStyle.textSecondaryRegular14,
       );
     } else if (plannedSpeed == -1) {
-      return Text(
-        "我们会在网络信号改善时重试",
-        style: AppStyle.textHintRegular16,
+      return Container(
+        height: 36,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "发布失败",
+              style: AppStyle.textMedium14,
+            ),
+            Text(
+              "我们会在网络信号改善时重试",
+              style: AppStyle.textSecondaryRegular11,
+            )
+          ],
+        ),
       );
+      // return Text(
+      //   "我们会在网络信号改善时重试",
+      //   style: AppStyle.textSecondaryRegular11,
+      // );
     }
   }
 
@@ -160,6 +244,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
           }
           picUrls.add(PicUrlsModel(width: element.sizeInfo.width, height: element.sizeInfo.height));
         });
+        print("uploadPics111111");
         results = await FileUtil().uploadPics(fileList, (percent) {
           context.read<FeedMapNotifier>().getPostPlannedSpeed(percent);
         });
@@ -222,16 +307,16 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
           });
           // new Future.delayed(Duration(seconds: 1), () {
           // 插入数据
-          attentionKey.currentState.insertData(HomeFeedModel.fromJson(feedModel).id,HomeFeedModel.fromJson(feedModel));
-          context
-              .read<FeedMapNotifier>()
-              .PublishInsertData(HomeFeedModel.fromJson(feedModel).id, HomeFeedModel.fromJson(feedModel));
+          attentionKey.currentState.insertData(HomeFeedModel.fromJson(feedModel));
+          // context
+          //     .read<FeedMapNotifier>()
+          //     .PublishInsertData(HomeFeedModel.fromJson(feedModel).id, HomeFeedModel.fromJson(feedModel));
           // });
         } else {
           // 发布失败
           print('================================发布失败');
           // 清空发布model
-          context.read<FeedMapNotifier>().setPublishFeedModel(null);
+          // context.read<FeedMapNotifier>().setPublishFeedModel(null);
           // 设置不可发布
           context.read<FeedMapNotifier>().setPublish(false);
           _process = -1.0;
@@ -243,11 +328,12 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     print("HomePage_____________________________________________build");
     // 发布动态
     if (context.watch<FeedMapNotifier>().postFeedModel != null && context.watch<FeedMapNotifier>().isPublish) {
       // 定位到main_page页
-      widget.ifPageController.index = 1;
+      Application.ifPageController.index = Application.ifPageController.length - 1;
       // 定位到关注页
       controller.index = 0;
       // 关注页回到顶部
@@ -277,8 +363,8 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                   // AppRouter.navigateToMediaPickerPage(
                   //     context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
                   //     publishMode: 1);
-                  if(context.read<TokenNotifier>().isLoggedIn){
-                    widget.ifPageController.animateTo(0);
+                  if (context.read<TokenNotifier>().isLoggedIn) {
+                    Application.ifPageController.animateTo(0);
                   } else {
                     AppRouter.navigateToLoginPage(context);
                   }
@@ -324,13 +410,15 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
         ),
         body: Column(
           children: [
-            Offstage(
-              offstage: context.watch<FeedMapNotifier>().postFeedModel == null,
-              child: createdPostPromptView(),
-            ),
+            context.watch<FeedMapNotifier>().postFeedModel != null
+                ? Offstage(
+                    offstage: context.watch<FeedMapNotifier>().postFeedModel == null,
+                    child: createdPostPromptView(),
+                  )
+                : Container(),
             Expanded(
-              child: TabBarView(
-                controller: this.controller,
+              child: UnionInnerTabBarView(
+                controller: controller,
                 children: [
                   AttentionPage(
                     key: attentionKey,

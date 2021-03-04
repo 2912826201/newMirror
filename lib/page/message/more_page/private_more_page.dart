@@ -268,9 +268,9 @@ class PrivateMorePageState extends State<PrivateMorePage> {
   void addToBlackList() async {
     showProgressDialog();
     bool blackStatus = await ProfileAddBlack(int.parse(widget.chatUserId));
-    if (blackStatus) {
+    if (blackStatus!=null&&blackStatus) {
       isBlackList = true;
-      ToastShow.show(msg: "拉黑了这个人", context: context);
+      ToastShow.show(msg: "已拉黑", context: context);
       if(widget.listener!=null){
         widget.listener(2,"拉黑");
       }
@@ -317,6 +317,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     }
     if (title == "拉黑") {
       showAppDialog(context,
+          barrierDismissible : false,
           title: "拉黑",
           info: "确定需要将此人拉黑吗？",
           cancel: AppDialogButton("取消", () {

@@ -33,6 +33,8 @@ class AppStyle {
       TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
   static const textSecondaryRegular12 =
       TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
+  static const textSecondaryRegular11 =
+  TextStyle(fontSize: 11, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
 
   // Medium textSecondary 辅助字体灰色
   static const textSecondaryMedium14 =

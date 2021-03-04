@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
+import 'package:mirror/page/message/message_view/message_item_height_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/dotted_line.dart';
 
@@ -206,6 +207,8 @@ class SelectMsg extends StatelessWidget {
       isMySelf: isMyself,
       actions: longClickStringList,
       contentWidth: getTextSize(text, textStyle, 10).width + 22.0,
+      contentHeight: MessageItemHeightUtil.init().
+        getSelectMsgDataHeight(selectListString, isShowChatUserName,isOnlyContentHeight: true),
       child: textContentBox(context),
     );
   }

@@ -6,6 +6,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
+import 'package:mirror/page/message/message_view/message_item_height_util.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
 
@@ -157,6 +158,8 @@ class FeedMsg extends StatelessWidget {
       isMySelf: isMyself,
       actions: longClickStringList,
       contentWidth: 180.0,
+      contentHeight: MessageItemHeightUtil.init().
+        getFeedMsgDataHeight(homeFeedMode.toJson(), isShowChatUserName,isOnlyContentHeight: true),
       child: GestureDetector(
         child: _getFeedUi(),
         onTap: () {

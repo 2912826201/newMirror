@@ -265,8 +265,10 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                       print("定时3秒到了");
                       for (int i = 0; i < recommendModelList.length; i++) {
                         HomeFeedModel value = recommendModelList[i];
+                        // 屏幕可滑动区域
+                        double slidingArea = ScreenUtil.instance.height - ScreenUtil.instance.statusBarHeight - ScreenUtil.instance.bottomBarHeight - 44 - 51;
                         // 屏幕的一半偏移值
-                        double screenOffser = metrics.pixels + (ScreenUtil.instance.height / 2);
+                        double screenOffser = metrics.pixels + (slidingArea / 2) ;
                         if (screenOffser >= value.headOffset && screenOffser < value.bottomOffset) {
                           print("进了");
                           context.read<FeedMapNotifier>().showInputBox(value.id);

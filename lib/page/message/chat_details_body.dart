@@ -61,6 +61,8 @@ class ChatDetailsBody extends StatelessWidget {
   List<ChatDataModel> chatData = <ChatDataModel>[];
 
 
+  bool isScroll=false;
+
   @override
   Widget build(BuildContext context) {
     chatData.clear();
@@ -88,14 +90,17 @@ class ChatDetailsBody extends StatelessWidget {
                 // }
                 // 滚动开始
                 // print('滚动开始');
+                isScroll=true;
               } else if (notification is ScrollUpdateNotification) {
                 // 滚动位置更新
                 // print('滚动位置更新');
                 // 当前位置
                 // print("当前位置${metrics.pixels}");
+                isScroll=true;
               } else if (notification is ScrollEndNotification) {
                 // 滚动结束
                 // print('滚动结束');
+                isScroll=false;
               }
               return false;
             },
@@ -127,7 +132,11 @@ class ChatDetailsBody extends StatelessWidget {
                   );
                 }
               },
-                firstEndCallback: firstEndCallback,
+                firstEndCallback: (int firstIndex, int lastIndex){
+                  if(isScroll){
+                    firstEndCallback(firstIndex,lastIndex);
+                  }
+                },
                 childCount: chatData.length,
               ),
               dragStartBehavior: DragStartBehavior.down,

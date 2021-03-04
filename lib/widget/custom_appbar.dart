@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/util/screen_util.dart';
 
 import 'icon.dart';
 
@@ -18,6 +19,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       {Key key,
       this.titleWidget,
       this.titleString = "",
+      this.subtitleString,
       this.actions = const [],
       this.backgroundColor = AppColor.white,
       this.brightness = Brightness.light,
@@ -29,6 +31,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   final Widget titleWidget;
   final String titleString;
+  final String subtitleString;
   final List<Widget> actions;
   final Color backgroundColor;
   final Brightness brightness;
@@ -69,12 +72,31 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ],
               ),
             ),
-            titleWidget == null
-                ? Text(
-                    titleString,
-                    style: brightness == Brightness.light ? AppStyle.textMedium18 : AppStyle.whiteMedium18,
-                  )
-                : titleWidget,
+            Container(
+              child: Row(
+                children: [
+                  Container(
+                    constraints: BoxConstraints(
+                      //82是红色按钮最大宽度
+                      maxWidth: ScreenUtil.instance.width-(appBarIconPadding + 82)*2.0,
+                    ),
+                    child: titleWidget == null
+                        ? Text(
+                      titleString,
+                      style: brightness == Brightness.light ? AppStyle.textMedium18 : AppStyle.whiteMedium18,
+                    )
+                        : titleWidget,
+                  ),
+                  Visibility(
+                    visible: subtitleString!=null,
+                    child: Text(
+                      subtitleString??"",
+                      style: brightness == Brightness.light ? AppStyle.textMedium18 : AppStyle.whiteMedium18,
+                    ),
+                  ),
+                ],
+              )
+            ),
             Expanded(
               flex: 1,
               child: Row(

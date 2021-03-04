@@ -194,7 +194,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
               color: _selectedUidList.length > 0 ? AppColor.textPrimary1 : AppColor.bgWhite,
             ),
             child: Text(
-              _selectedUidList.length > 1 ? "发起聊天(${_selectedUidList.length})" : "发起聊天",
+              _selectedUidList.length > 1 ? "发起群聊(${_selectedUidList.length})" : "发起聊天",
               style: TextStyle(color: AppColor.white, fontSize: 16),
             ),
           ),

@@ -3,25 +3,25 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
-import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment_bottom_sheet.dart';
 import 'package:mirror/page/main_page.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
+import 'package:toast/toast.dart';
 import 'package:union_tabs/union_tabs.dart';
 import 'package:provider/provider.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'media_picker/media_picker_page.dart';
 
-class IfPage extends  StatefulWidget {
+class IfPage extends StatefulWidget {
   IfPage({Key key}) : super(key: key);
 
   IfPageState createState() => IfPageState();
 }
 
 // 嵌套二层TabBar
-class IfPageState extends XCState with TickerProviderStateMixin,WidgetsBindingObserver  {
+class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingObserver {
   TabController _controller;
   bool isInit = false;
 
@@ -29,15 +29,42 @@ class IfPageState extends XCState with TickerProviderStateMixin,WidgetsBindingOb
   void initState() {
     // 最外层TabBar 默认定位到第二页
     _controller = TabController(length: 2, vsync: this, initialIndex: 1);
+    Application.ifPageController = _controller;
     super.initState();
-    // _controller.addListener(() {
-    //   if(context.watch<FeedMapNotifier>().postFeedModel != null) {
-    //     _controller.
-    //   }
-    // });
     //初始化
     WidgetsBinding.instance.addObserver(this);
   }
+
+  // //最初的滑动偏移
+  // Offset _initialSwipeOffset;
+  //
+  // //最终的滑动偏移
+  // Offset _finalSwipeOffset;
+  //
+  // //横向拖动的开始回调
+  // void _onHorizontalDragStart(DragStartDetails details) {
+  //   _initialSwipeOffset = details.globalPosition;
+  //   print("拖动的开始回调：：：${_initialSwipeOffset}");
+  // }
+  //
+  // //横向拖动中的回调
+  // void _onHorizontalDragUpdate(DragUpdateDetails details) {
+  //   _finalSwipeOffset = details.globalPosition;
+  //   print("拖动中：：：${_finalSwipeOffset}");
+  //   if (_initialSwipeOffset != null) {
+  //     final offsetDifference = _initialSwipeOffset.dx - _finalSwipeOffset.dx;
+  //     final direction = offsetDifference > 0;
+  //     context.read<FeedMapNotifier>().storageIsSwipeLeft(direction);
+  //   }
+  // }
+  //
+  // void _onHorizontalDragEnd(DragEndDetails details) {
+  //   if (_initialSwipeOffset != null) {
+  //     final offsetDifference = _initialSwipeOffset.dx - _finalSwipeOffset.dx;
+  //     final direction = offsetDifference > 0;
+  //     context.read<FeedMapNotifier>().storageIsSwipeLeft(direction);
+  //   }
+  // }
 
   @override
   Widget shouldBuild(BuildContext context) {
@@ -62,8 +89,45 @@ class IfPageState extends XCState with TickerProviderStateMixin,WidgetsBindingOb
         value: SystemUiOverlayStyle.dark,
         // child: Scaffold(
         //     resizeToAvoidBottomInset: false,
-
-        child: Container(
+        child:
+            // NotificationListener<ScrollNotification>(
+            //     onNotification: (ScrollNotification notification) {
+            //       ScrollMetrics metrics = notification.metrics;
+            // 注册通知回调
+            // if (notification is ScrollStartNotification) {
+            //   // 滚动开始
+            //   // print('滚动开始');
+            // print(notification.dragDetails.globalPosition);
+            // print("viewportDimension::${metrics.viewportDimension}");
+            // print("axisDirection::${metrics.axisDirection}");
+            // if (metrics.axis == Axis.horizontal && notification.dragDetails != null) {
+            //   _initialSwipeOffset = notification.dragDetails.globalPosition;
+            // }
+            // print("_initialSwipeOffset::${_initialSwipeOffset}");
+            // } else if (notification is ScrollUpdateNotification) {
+            //   print('滚动位置更新');
+            //   // 滚动位置更新
+            //   if (metrics.axis == Axis.horizontal && notification.dragDetails != null) {
+            //     // 左滑
+            //     print(notification.dragDetails.globalPosition.dx);
+            //     if (_initialSwipeOffset.dx > notification.dragDetails.globalPosition.dx) {
+            //       context.read<FeedMapNotifier>().storageIsSwipeLeft(false);
+            //     } else {
+            //       // 右滑
+            //       context.read<FeedMapNotifier>().storageIsSwipeLeft(true);
+            //     }
+            //   }
+            //   } else if (notification is ScrollEndNotification) {
+            //     // 滚动结束
+            //     print('滚动结束');
+            //     print(ScreenUtil.instance.width);
+            //   }
+            // },
+            // GestureDetector(
+            //     onHorizontalDragStart:  _onHorizontalDragStart ,/*横向拖动的开始状态*/
+            //     onHorizontalDragUpdate: _onHorizontalDragUpdate,/*横向拖动的状态*/
+            // onHorizontalDragEnd:  _onHorizontalDragEnd,/*横向拖动的结束状态*/
+            Container(
           child: Stack(children: [
             ChangeNotifierProvider(
                 create: (_) => SelectedbottomNavigationBarNotifier(0),
@@ -72,7 +136,7 @@ class IfPageState extends XCState with TickerProviderStateMixin,WidgetsBindingOb
                     behavior: NoBlueEffectBehavior(),
                     child: UnionOuterTabBarView(
                       physics: context.watch<SelectedbottomNavigationBarNotifier>().selectedIndex == 0
-                      //ClampingScrollPhysics 禁止回弹效果 NeverScrollableScrollPhysics 禁止滚动效果
+                          //ClampingScrollPhysics 禁止回弹效果 NeverScrollableScrollPhysics 禁止滚动效果
                           ? ClampingScrollPhysics()
                           : NeverScrollableScrollPhysics(),
                       controller: _controller,
@@ -82,8 +146,8 @@ class IfPageState extends XCState with TickerProviderStateMixin,WidgetsBindingOb
                 })
           ]),
         )
-      // )
-    );
+        // )
+        );
   }
 
   List<Widget> _createTabContent() {
@@ -97,7 +161,7 @@ class IfPageState extends XCState with TickerProviderStateMixin,WidgetsBindingOb
       false,
       publishMode: 2,
     ));
-    tabContent.add(MainPage(ifPageController: _controller,));
+    tabContent.add(MainPage());
     return tabContent;
   }
 
@@ -129,4 +193,3 @@ class IfPageState extends XCState with TickerProviderStateMixin,WidgetsBindingOb
     });
   }
 }
-

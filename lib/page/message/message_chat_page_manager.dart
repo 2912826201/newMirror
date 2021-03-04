@@ -8,6 +8,7 @@ import 'package:mirror/api/message_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/database/group_chat_user_information_helper.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
+import 'package:mirror/data/dto/group_chat_user_information_dto.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
@@ -144,7 +145,7 @@ void _jumpChatPage(
 Future<Message> postMessageManagerText(String targetId, String text,
     MentionedInfo mentionedInfo, bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getChatUserInfo();
+  msg.sendUserInfo = getChatUserInfo(groupId:isPrivate?null:targetId);
   if (mentionedInfo != null && mentionedInfo.userIdList != null && mentionedInfo.userIdList.length > 0) {
     msg.mentionedInfo = mentionedInfo;
   }
@@ -165,7 +166,7 @@ Future<Message> postMessageManagerText(String targetId, String text,
 Future<Message> postMessageManagerSelect(String targetId, String text,
     bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getChatUserInfo();
+  msg.sendUserInfo = getChatUserInfo(groupId:isPrivate?null:targetId);
   // msg.content = text;
   Map<String, dynamic> selectMap = Map();
   selectMap["fromUserId"] = msg.sendUserInfo.userId.toString();
@@ -181,7 +182,7 @@ Future<Message> postMessageManagerSelect(String targetId, String text,
 Future<Message> postMessageManagerFeed(String targetId,
     Map<String, dynamic> map, bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getChatUserInfo();
+  msg.sendUserInfo = getChatUserInfo(groupId:isPrivate?null:targetId);
   Map<String, dynamic> feedMap = Map();
   feedMap["fromUserId"] = msg.sendUserInfo.userId.toString();
   feedMap["toUserId"] = targetId;
@@ -200,7 +201,7 @@ Future<Message> postMessageManagerImgOrVideo(String targetId, bool isImgOrVideo,
     MediaFileModel mediaFileModel, UploadResultModel uploadResultModel,
     bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getChatUserInfo();
+  msg.sendUserInfo = getChatUserInfo(groupId:isPrivate?null:targetId);
   Map<String, dynamic> imgOrVideoMap = Map();
   imgOrVideoMap["fromUserId"] = msg.sendUserInfo.userId.toString();
   imgOrVideoMap["toUserId"] = targetId;
@@ -222,7 +223,7 @@ Future<Message> postMessageManagerVoice(String targetId,
   msg.localPath = chatVoiceModel.filePath;
   msg.extra = jsonEncode(chatVoiceModel.toJson());
   msg.duration = chatVoiceModel.longTime;
-  msg.sendUserInfo = getChatUserInfo();
+  msg.sendUserInfo = getChatUserInfo(groupId:conversationType==RCConversationType.Group?targetId:null);
   Message message = new Message();
   message.conversationType = conversationType;
   message.senderUserId = Application.profile.uid.toString();
@@ -241,7 +242,7 @@ Future<Message> postMessageManagerVoice(String targetId,
 Future<Message> postMessageManagerUser(String targetId,
     Map<String, dynamic> map, bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getChatUserInfo();
+  msg.sendUserInfo = getChatUserInfo(groupId:isPrivate?null:targetId);
   Map<String, dynamic> userMap = Map();
   userMap["fromUserId"] = msg.sendUserInfo.userId.toString();
   userMap["toUserId"] = targetId;
@@ -258,7 +259,7 @@ Future<Message> postMessageManagerUser(String targetId,
 Future<Message> postMessageManagerLiveCourse(String targetId,
     Map<String, dynamic> map, bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getChatUserInfo();
+  msg.sendUserInfo = getChatUserInfo(groupId:isPrivate?null:targetId);
   Map<String, dynamic> liveCourseMap = Map();
   liveCourseMap["fromUserId"] = msg.sendUserInfo.userId.toString();
   liveCourseMap["toUserId"] = targetId;
@@ -275,7 +276,7 @@ Future<Message> postMessageManagerLiveCourse(String targetId,
 Future<Message> postMessageManagerVideoCourse(String targetId,
     Map<String, dynamic> map, bool isPrivate) async {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getChatUserInfo();
+  msg.sendUserInfo = getChatUserInfo(groupId:isPrivate?null:targetId);
   Map<String, dynamic> videoCourseMap = Map();
   videoCourseMap["fromUserId"] = msg.sendUserInfo.userId.toString();
   videoCourseMap["toUserId"] = targetId;
@@ -323,7 +324,7 @@ void postMessageManagerReset(String chatTypeModel,
 //插入被退出群提示
 void insertExitGroupMsg(Message message, String targetId, Function(Message msg, int code) finished) {
   TextMessage msg = TextMessage();
-  msg.sendUserInfo = getChatUserInfo();
+  msg.sendUserInfo = getChatUserInfo(groupId: targetId);
   Map<String, dynamic> alertMap = Map();
   alertMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_GRPNTF;
   alertMap["name"] = ChatTypeModel.MESSAGE_TYPE_GRPNTF_NAME;
@@ -334,11 +335,17 @@ void insertExitGroupMsg(Message message, String targetId, Function(Message msg, 
 }
 
 //获取用户数据
-UserInfo getChatUserInfo() {
+UserInfo getChatUserInfo({String groupId}) {
   UserInfo userInfo = UserInfo();
   userInfo.userId = Application.profile.uid.toString();
   userInfo.name = Application.profile.nickName;
   userInfo.portraitUri = Application.profile.avatarUri;
+  if(groupId!=null) {
+    Map<String, dynamic> extraMap = Map();
+    extraMap[GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME] =
+        getChatUserName(groupId, Application.profile.uid.toString(), Application.profile.nickName);
+    userInfo.extra = jsonEncode(extraMap);
+  }
   return userInfo;
 }
 
@@ -484,7 +491,7 @@ void postImgOrVideo(List<ChatDataModel> modelList, String targetId, String type,
 
   int count=0;
   Timer timer = new Timer.periodic(Duration(seconds: 1), (Timer timer)async {
-    int end=count+2;
+    int end=count+1;
     if(end>modelList.length){
       end=modelList.length;
     }
@@ -577,6 +584,7 @@ Future<List<UploadResultModel>> onPostImgOrVideo(
       } else {
         i++;
         File imageFile = await FileUtil().writeImageDataToFile(element.mediaFileModel.croppedImageData, timeStr + i.toString());
+        element.mediaFileModel.file=imageFile;
         fileList.add(imageFile);
       }
     });
@@ -687,6 +695,20 @@ void initChatGroupUserModelMap(List<ChatGroupUserModel> chatGroupUserModelList) 
   Application.chatGroupUserNameMap.clear();
   for (ChatGroupUserModel userModel in chatGroupUserModelList) {
     Application.chatGroupUserNameMap[userModel.uid.toString()] = userModel.groupNickName;
+  }
+}
+
+String getChatUserName(String groupId,String userId, String name) {
+  String userName = ((Application.chatGroupUserInformationMap["${groupId}_$userId"]??Map())
+  [GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
+  if(userName==null||userName.length<1){
+    userName =(Application.chatGroupUserInformationMap["${groupId}_$userId"]??Map())
+    [GROUP_CHAT_USER_INFORMATION_USER_NAME];
+  }
+  if(userName==null||userName.length<1){
+    return name;
+  } else {
+    return userName;
   }
 }
 

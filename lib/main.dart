@@ -6,6 +6,7 @@ import 'package:camera/camera.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/data/database/db_helper.dart';
@@ -23,6 +24,7 @@ import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/widget/address_Picker.dart';
+import 'package:mirror/widget/globalization/localization_delegate.dart';
 import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -57,7 +59,7 @@ void main() {
   SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
   SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   _initApp().then((value) => runApp(
-    MultiProvider(
+        MultiProvider(
           providers: [
             //当前用户的token信息 无论匿名用户还是登录用户都会有值
             ChangeNotifierProvider(create: (_) => TokenNotifier(Application.token)),
@@ -131,7 +133,7 @@ Future _initApp() async {
   // 检查是否已有读写内存的权限
   bool status = await Permission.notification.isGranted;
   //判断如果还没拥有读写权限就申请获取权限
-  if(!status) {
+  if (!status) {
     await Permission.notification.request().isGranted;
   }
   //初始化SharedPreferences
@@ -213,8 +215,7 @@ Future _initApp() async {
     androidKey: AppConfig.amapAndroidKey,
   );
 
-   Application.chatGroupUserInformationMap=await GroupChatUserInformationDBHelper().queryAllMap();
-
+  Application.chatGroupUserInformationMap = await GroupChatUserInformationDBHelper().queryAllMap();
 
   //todo 获取视频课标签列表 其实在没有登录时无法获取
   try {
@@ -314,14 +315,28 @@ class MyAppState extends State<MyApp> {
       navigatorKey: Application.navigatorKey,
       //通过统一方法处理页面跳转路由
       onGenerateRoute: Application.router.generator,
-      // localizationsDelegates: [
-      //   GlobalMaterialLocalizations.delegate,
-      //   GlobalWidgetsLocalizations.delegate,
-      // ],
-      // supportedLocales: [
-      //   const Locale('zh','CH'),
-      //   const Locale('en', 'US'),
-      // ],
+      /*
+       本地化的代理类
+      */
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate, // 指定本地化的字符串和一些其他的值
+        GlobalCupertinoLocalizations.delegate, // 对应的Cupertino风格
+        GlobalWidgetsLocalizations.delegate, // 指定默认的文本排列方向, 由左到右或由右到左
+        /// 注册我们的Delegate
+        FZLocalizationDelegate.delegate
+      ],
+      supportedLocales: [
+        const Locale('zh', 'CN'),
+        const Locale('en', 'US'),
+      ],
+
+      /// 监听系统语言切换
+      localeListResolutionCallback: (deviceLocale, supportedLocales) {
+        print('deviceLocale: $deviceLocale');
+        // 系统语言是英语： deviceLocale: [en_CN, en_CN, zh_Hans_CN]
+        // 系统语言是中文： deviceLocale: [zh_CN, zh_Hans_CN, en_CN]
+        print('supportedLocales: $supportedLocales');
+      },
     );
   }
 

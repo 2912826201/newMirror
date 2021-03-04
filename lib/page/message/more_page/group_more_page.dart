@@ -78,7 +78,7 @@ class GroupMorePageState extends State<GroupMorePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        titleString: "群聊消息",
+        titleString: "群聊消息 (${context.watch<GroupUserProfileNotifier>().chatGroupUserModelList.length})",
       ),
       body: getBodyUi(),
     );
@@ -315,23 +315,28 @@ class GroupMorePageState extends State<GroupMorePage> {
       userName = userModel.groupNickName ?? "";
     }
 
-    return Container(
-      child: Column(
-        children: [
-          getUserImage(userModel.avatarUri, 47, 47),
-          SizedBox(
-            height: 6,
-          ),
-          SizedBox(
-            width: 47,
-            child: Text(
-              userName,
-              style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+    return GestureDetector(
+      onTap: (){
+        AppRouter.navigateToMineDetail(context, userModel.uid);
+      },
+      child: Container(
+        child: Column(
+          children: [
+            getUserImage(userModel.avatarUri, 47, 47),
+            SizedBox(
+              height: 6,
             ),
-          )
-        ],
+            SizedBox(
+              width: 47,
+              child: Text(
+                userName,
+                style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -651,7 +656,7 @@ class GroupMorePageState extends State<GroupMorePage> {
             }
           });
         }
-      }, title: "修改群聊名称");
+      }, title: "编辑群聊名称");
       // ToastShow.show(msg: subtitle, context: context);
     } else if (title == "群昵称") {
       AppRouter.navigateToEditInfomationName(context, subtitle, (result) {
@@ -662,7 +667,7 @@ class GroupMorePageState extends State<GroupMorePage> {
             }
           });
         }
-      }, title: "修改群昵称");
+      }, title: "编辑群昵称");
       // ToastShow.show(msg: subtitle, context: context);
     } else if (title == "删除并退出") {
       showAppDialog(context,

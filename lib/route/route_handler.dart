@@ -238,7 +238,7 @@ var handlerFitnessTargetPage = Handler(handlerFunc: (BuildContext context, Map<S
 });
 var handlerFitnesspartPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return FitnesspartPage(
+  return FitnessPartPage(
   );
 });
 var handlerBodyTypePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {

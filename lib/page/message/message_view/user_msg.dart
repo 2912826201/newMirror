@@ -5,6 +5,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
+import 'package:mirror/page/message/message_view/message_item_height_util.dart';
 
 import 'currency_msg.dart';
 
@@ -149,6 +150,8 @@ class UserMsg extends StatelessWidget {
       isMySelf: isMyself,
       actions: longClickStringList,
       contentWidth: 180.0,
+      contentHeight: MessageItemHeightUtil.init().
+        getUserMsgDataHeight(isShowChatUserName,isOnlyContentHeight: true),
       child: GestureDetector(
         child: _getUserUi(),
         onTap: () {
@@ -253,7 +256,7 @@ class UserMsg extends StatelessWidget {
               Text(
                 userModel.description != null
                     ? userModel.description
-                    : "暂无简介" * 10,
+                    : "",
                 style: subtitleStyle,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

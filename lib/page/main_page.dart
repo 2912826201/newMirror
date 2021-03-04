@@ -19,18 +19,13 @@ import 'profile/profile_page.dart';
 import 'training/training_page.dart';
 
 class MainPage extends StatefulWidget {
-  MainPage({Key key,this.ifPageController}) : super(key: key);
-  TabController ifPageController;
-  MainPageState createState() => MainPageState(ifPageController: ifPageController);
+  MainPageState createState() => MainPageState();
 }
 
 class MainPageState extends XCState{
-  MainPageState({this.ifPageController});
-  TabController ifPageController;
   int currentIndex;
   bool isInit = false;
 
-  final pages = [HomePage(), TrainingPage(), MessagePage(), ProfilePage()];
   List titles = ["首页", "训练", "消息", "我的"];
   List normalImgUrls = [
     "images/test/home-filling1.png",
@@ -198,23 +193,6 @@ class MainPageState extends XCState{
                         _start = 3 * itemWidth + itemWidth * 0.9;
                       }
                     });
-                    // setState(() {
-                    //   currentIndex = index;
-                    //   if (index == 0) {
-                    //     _start = itemWidth / 7;
-                    //   }
-                    //   if (index == 1) {
-                    //     _start = itemWidth + itemWidth * 0.4;
-                    //   }
-                    //   if (index == 2) {
-                    //     //在切换到消息页时 请求未读互动通知数
-                    //     getUnReads();
-                    //     _start = 2 * itemWidth + itemWidth * 0.64;
-                    //   }
-                    //   if (index == 3) {
-                    //     _start = 3 * itemWidth + itemWidth * 0.9;
-                    //   }
-                    // });
                   }
                 }
               },
@@ -276,7 +254,7 @@ class MainPageState extends XCState{
         children: <Widget>[
           new Offstage(
             offstage: currentIndex != 0, //这里控制
-            child: HomePage(ifPageController: ifPageController,),
+            child: HomePage(),
           ),
           new Offstage(
             offstage: currentIndex != 1, //这里控制

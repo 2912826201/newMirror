@@ -20,6 +20,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/count_badge.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/left_scroll/left_scroll_list_view.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/widget/create_group_popup.dart';
@@ -367,20 +368,49 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
 
   Widget _buildConversationItem(int index, ConversationDto conversation) {
     if (conversation.type == PRIVATE_TYPE || conversation.type == GROUP_TYPE) {
-      return LeftScrollListView(
-        itemKey: conversation.id,
-        itemTag: "conversation",
-        itemIndex: index,
-        isDoubleDelete: true,
-        itemChild: _conversationItem(index, conversation),
-        onTap: () {
-          getMessageType(conversation, context);
-          jumpChatPageConversationDto(context, conversation);
-        },
-        onClickRightBtn: () {
-          MessageManager.removeConversation(context, conversation.conversationId, conversation.uid, conversation.type);
-        },
-      );
+      if(Application.platform==0){
+        return GestureDetector(
+          child: _conversationItem(index, conversation),
+          onTap: (){
+            getMessageType(conversation, context);
+            jumpChatPageConversationDto(context, conversation);
+          },
+          onLongPress: (){
+            showAppDialog(context,
+                title: "删除消息",
+                info: "确认删除这条对话消息吗？",
+                barrierDismissible:false,
+                cancel: AppDialogButton("取消", () {
+                  print("点了取消");
+                  return true;
+                }),
+                confirm: AppDialogButton("确定", () {
+                  print("点击了确定");
+                  MessageManager.removeConversation(
+                      context, conversation.conversationId, conversation.uid, conversation.type);
+                  Application.rongCloud.clearMessages(conversation.getType(), conversation.conversationId, null);
+                  return true;
+                }));
+          },
+        );
+      }else {
+        return LeftScrollListView(
+          itemKey: conversation.id,
+          itemTag: "conversation",
+          itemIndex: index,
+          isDoubleDelete: true,
+          itemChild: _conversationItem(index, conversation),
+          onTap: () {
+            getMessageType(conversation, context);
+            jumpChatPageConversationDto(context, conversation);
+          },
+          onClickRightBtn: () {
+            MessageManager.removeConversation(
+                context, conversation.conversationId, conversation.uid, conversation.type);
+            Application.rongCloud.clearMessages(conversation.getType(), conversation.conversationId, null);
+          },
+        );
+      }
     } else {
       return GestureDetector(
         child: _conversationItem(index, conversation),
@@ -576,10 +606,12 @@ class MessageState extends State<MessagePage> with AutomaticKeepAliveClientMixin
     // print(Application.chatGroupUserInformationMap["${groupId}_$uId"].toString());
     // print(GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME);
     // print((Application.chatGroupUserInformationMap["${groupId}_$uId"]??Map())[GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
-    String userName = (Application.chatGroupUserInformationMap["${groupId}_$uId"]??Map())
-    [GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]??
-        (Application.chatGroupUserInformationMap["${groupId}_$uId"]??Map())
-        [GROUP_CHAT_USER_INFORMATION_USER_NAME];
+    String userName = ((Application.chatGroupUserInformationMap["${groupId}_$uId"]??Map())
+    [GROUP_CHAT_USER_INFORMATION_GROUP_USER_NAME]);
+    if(userName==null||userName.length<1){
+      userName =(Application.chatGroupUserInformationMap["${groupId}_$uId"]??Map())
+      [GROUP_CHAT_USER_INFORMATION_USER_NAME];
+    }
     if (userName == null) {
       return name;
     } else {

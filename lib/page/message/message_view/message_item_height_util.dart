@@ -28,15 +28,15 @@ class MessageItemHeightUtil{
   //判断获取消息的高度是否大于等于展示区域的高度
   bool judgeMessageItemHeightIsThenScreenHeight(List<ChatDataModel> chatDataList,bool isShowChatUserName){
     double chatListPageHeight=ScreenUtil.instance.height-ScreenUtil.instance.statusBarHeight-44.0;
-    return judgeMessageItemHeight(chatDataList,isShowChatUserName,chatListPageHeight)>=chatListPageHeight;
+    return _judgeMessageItemHeight(chatDataList,isShowChatUserName,chatListPageHeight)>=chatListPageHeight;
   }
 
   //获取消息的高度
-  double judgeMessageItemHeight(List<ChatDataModel> chatDataList,bool isShowChatUserName,double chatListPageHeight){
+  double _judgeMessageItemHeight(List<ChatDataModel> chatDataList,bool isShowChatUserName,double chatListPageHeight){
     double itemHeight=0.0;
     if(chatDataList!=null&&chatDataList.length>0){
       chatDataList.forEach((element) {
-        itemHeight+=judgeTemporaryData(element,isShowChatUserName);
+        itemHeight+=_judgeTemporaryData(element,isShowChatUserName);
         if(itemHeight>=chatListPageHeight){
           return itemHeight;
         }
@@ -47,17 +47,17 @@ class MessageItemHeightUtil{
 
 
 
-  double judgeTemporaryData(ChatDataModel model,bool isShowName){
+  double _judgeTemporaryData(ChatDataModel model,bool isShowName){
     if (model.isTemporary) {
-      return temporaryData(model,isShowName);
+      return _temporaryData(model,isShowName);
     } else {
-      return notTemporaryData(model,isShowName);
+      return _notTemporaryData(model,isShowName);
     }
   }
 
 
   //临时消息
-  double temporaryData(ChatDataModel model,bool isShowName) {
+  double _temporaryData(ChatDataModel model,bool isShowName) {
     //普通消息
     if (model.type == ChatTypeModel.MESSAGE_TYPE_TEXT) {
 
@@ -91,7 +91,7 @@ class MessageItemHeightUtil{
 
 
   //显示正式消息
-  double notTemporaryData(ChatDataModel model,bool isShowName) {
+  double _notTemporaryData(ChatDataModel model,bool isShowName) {
     Message msg = model.msg;
     if (msg == null) {
       return 0.0;
@@ -101,7 +101,7 @@ class MessageItemHeightUtil{
     if (msgType == ChatTypeModel.MESSAGE_TYPE_TEXT) {
       // -----------------------------------------------自定义的-消息类型----------------------------------------------
 
-      return getTextMessageHeight(msg,isShowName,model);
+      return _getTextMessageHeight(msg,isShowName,model);
     } else if (msgType == VoiceMessage.objectName) {
       // -----------------------------------------------语音-消息----------------------------------------------
 
@@ -126,7 +126,7 @@ class MessageItemHeightUtil{
 
 
   //自定义的消息类型高度
-  double getTextMessageHeight(Message msg,bool isShowName,ChatDataModel model){
+  double _getTextMessageHeight(Message msg,bool isShowName,ChatDataModel model){
     TextMessage textMessage = ((msg.content) as TextMessage);
     try {
       Map<String, dynamic> mapModel = json.decode(textMessage.content);
@@ -195,17 +195,19 @@ class MessageItemHeightUtil{
 
 
   //获取文字消息的高度
-  double getTextMsgHeight(String content,bool isShowChatUserName){
+  double getTextMsgHeight(String content,bool isShowChatUserName,{bool isOnlyContentHeight=false}){
     if(content==null){
       content="消息为空";
     }
     double itemHeight=0.0;
 
-    //padding-container-vertical-12.0
-    itemHeight+=24.0;
+    if(!isOnlyContentHeight) {
+      //padding-container-vertical-12.0
+      itemHeight += 24.0;
+    }
 
     //判断有没有显示名字
-    if(isShowChatUserName){
+    if(isShowChatUserName&&!isOnlyContentHeight){
       itemHeight+=4.0;
       itemHeight+=getTextSize("名字", TextStyle(fontSize: 12), 1).height;
     }
@@ -216,20 +218,26 @@ class MessageItemHeightUtil{
     double textMaxWidth=ScreenUtil.instance.width- (16 + 7 + 38 + 2) * 2;
     itemHeight+=getTextSize(content, TextStyle(fontSize: 15), 100,textMaxWidth).height;
 
-    return math.max(itemHeight, 48.0+24.0);
+    if(isOnlyContentHeight) {
+      return itemHeight;
+    }else{
+      return math.max(itemHeight, 48.0 + 24.0);
+    }
   }
 
 
   //获取语音消息的高度
-  double getVoiceMsgDataHeight(bool isShowChatUserName){
+  double getVoiceMsgDataHeight(bool isShowChatUserName,{bool isOnlyContentHeight=false}){
 
     double itemHeight=0.0;
 
-    //padding-container-vertical-12.0
-    itemHeight+=24.0;
+    if(!isOnlyContentHeight) {
+      //padding-container-vertical-12.0
+      itemHeight += 24.0;
+    }
 
     //判断有没有显示名字
-    if(isShowChatUserName){
+    if(isShowChatUserName&&!isOnlyContentHeight){
       itemHeight+=4.0;
       itemHeight+=getTextSize("名字", TextStyle(fontSize: 12), 1).height;
     }
@@ -240,11 +248,15 @@ class MessageItemHeightUtil{
     //动画条的最高值
     itemHeight+=20.0;
 
-    return math.max(itemHeight, 48.0+24.0);
+    if(isOnlyContentHeight) {
+      return itemHeight;
+    }else{
+      return math.max(itemHeight, 48.0+24.0);
+    }
   }
 
   //获取选择列表消息的高度
-  double getSelectMsgDataHeight(String content,bool isShowChatUserName){
+  double getSelectMsgDataHeight(String content,bool isShowChatUserName,{bool isOnlyContentHeight=false}){
 
     double itemHeight=0.0;
 
@@ -262,7 +274,11 @@ class MessageItemHeightUtil{
       itemHeight+=getTextSize(selectList[i], TextStyle(fontSize: 13), 100,298.0).height;
     }
 
-    return math.max(itemHeight, 48.0+24.0);
+    if(isOnlyContentHeight) {
+      return itemHeight;
+    }else{
+      return math.max(itemHeight, 48.0+24.0);
+    }
   }
 
   //获取图片消息视频消息的高度
@@ -271,6 +287,7 @@ class MessageItemHeightUtil{
     MediaFileModel mediaFileModel,
     ImageMessage imageMessage,
     bool isShowName,
+    bool isOnlyContentHeight=false,
     Map<String, dynamic> sizeInfoMap}){
 
 
@@ -302,8 +319,13 @@ class MessageItemHeightUtil{
     height = widthOrHeight[1];
 
 
+    if(!isOnlyContentHeight) {
+      //padding-container-vertical-12.0
+      height += 24.0;
+    }
+
     //判断有没有显示名字
-    if(isShowName){
+    if(isShowName&&!isOnlyContentHeight){
       height+=4.0;
       height+=getTextSize("名字", TextStyle(fontSize: 12), 1).height;
     }
@@ -326,7 +348,8 @@ class MessageItemHeightUtil{
 
 
   //动态的高度
-  double getFeedMsgDataHeight(Map<String, dynamic> homeFeedModeMap,bool isShowName){
+  double getFeedMsgDataHeight(Map<String, dynamic> homeFeedModeMap,bool isShowName
+      ,{bool isOnlyContentHeight=false}){
     HomeFeedModel homeFeedMode = HomeFeedModel.fromJson(homeFeedModeMap);
 
 
@@ -343,12 +366,14 @@ class MessageItemHeightUtil{
 
     double itemHeight=0.0;
 
-    //padding-container-vertical-12.0
-    itemHeight+=24.0;
+    if(!isOnlyContentHeight) {
+      //padding-container-vertical-12.0
+      itemHeight += 24.0;
+    }
 
 
     //判断有没有显示名字
-    if(isShowName){
+    if(isShowName&&!isOnlyContentHeight){
       itemHeight+=4.0;
       itemHeight+=getTextSize("名字", TextStyle(fontSize: 12), 1).height;
     }
@@ -387,15 +412,17 @@ class MessageItemHeightUtil{
   }
 
   //用户名片的高度
-  double getUserMsgDataHeight(bool isShowName){
+  double getUserMsgDataHeight(bool isShowName,{bool isOnlyContentHeight=false}){
 
     double itemHeight=0.0;
 
-    //padding-container-vertical-12.0
-    itemHeight+=24.0;
+    if(!isOnlyContentHeight) {
+      //padding-container-vertical-12.0
+      itemHeight += 24.0;
+    }
 
     //判断有没有显示名字
-    if(isShowName){
+    if(isShowName&&!isOnlyContentHeight){
       itemHeight+=4.0;
       itemHeight+=getTextSize("名字", TextStyle(fontSize: 12), 1).height;
     }
@@ -405,15 +432,17 @@ class MessageItemHeightUtil{
     return itemHeight;
   }
   //直播视频课程item的高度
-  double getLiveVideoCourseMsgHeight(bool isShowName){
+  double getLiveVideoCourseMsgHeight(bool isShowName,{bool isOnlyContentHeight=false}){
 
     double itemHeight=0.0;
 
-    //padding-container-vertical-12.0
-    itemHeight+=24.0;
+    if(!isOnlyContentHeight) {
+      //padding-container-vertical-12.0
+      itemHeight += 24.0;
+    }
 
     //判断有没有显示名字
-    if(isShowName){
+    if(isShowName&&!isOnlyContentHeight){
       itemHeight+=4.0;
       itemHeight+=getTextSize("名字", TextStyle(fontSize: 12), 1).height;
     }
