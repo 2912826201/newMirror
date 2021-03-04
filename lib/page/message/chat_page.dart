@@ -609,7 +609,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
     return AnimatedContainer(
       height: emojiHeight,
-      duration: Duration(milliseconds: 300),
+      duration: Duration(milliseconds: 200),
       child: Container(
         height: emojiHeight,
         width: double.infinity,
