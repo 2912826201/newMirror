@@ -45,6 +45,7 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
             ),
           ),
           onTap: () {
+            print("取消艾特功能1");
             context.read<ChatEnterNotifier>().openAtCallback("");
           },
         ),
@@ -91,7 +92,7 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
             },
           );
         } else if (context.watch<GroupUserProfileNotifier>().len >= 0) {
-          getChatGroupUserModelList(widget.groupChatId, context);
+          getChatGroupUserModelList1(widget.groupChatId, context);
         }
         return Container(
           width: MediaQuery.of(context).size.width,

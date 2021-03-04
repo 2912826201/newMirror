@@ -91,7 +91,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
         // 因为在多@时只响应最后一个@的光标位置。
         atIndex = newValue.selection.end;
         topicIndex = 0;
-        print("at光标$atIndex");
+        print("+++++++++++++++++++++++++++at光标$atIndex，triggerAtSymbol$triggerAtSymbol");
         _triggerAtCallback(triggerAtSymbol);
       }
       if (newValue.text.length - oldValue.text.length == 1 &&
@@ -218,31 +218,36 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     print(newValue);
     print(oldValue);
 
+    int deleteValueLength=oldValue.text.length-newValue.text.length;
+
     /// 因为选中删除 和 直接delete删除的开始光标位置不一，故作统一处理
-    int startIndex = isOldSelectedPart ? oldValue.selection.start : oldValue.selection.start - 1;
+    int startIndex = isOldSelectedPart ? oldValue.selection.start : oldValue.selection.start - deleteValueLength;
+    // int startIndex = newValue.selection.end;
     print("新光标$startIndex");
     int endIndex = oldValue.selection.end;
     // 删除@或者#时要关闭视图
-    if (startIndex + 1 <= atIndex || startIndex + 1 <= topicIndex) {
+    if (startIndex + deleteValueLength <= atIndex || startIndex + 1 <= topicIndex) {
       _shutDownCallback();
-      if (startIndex + 1 <= atIndex) {
+      if (startIndex + deleteValueLength <= atIndex) {
         atIndex = 0;
       }
-      if (startIndex + 1 <= topicIndex) {
+      if (startIndex + deleteValueLength <= topicIndex) {
         topicIndex = 0;
       }
     }
-    if (atIndex > 0 && startIndex + 1 > atIndex) {
+    if (atIndex > 0 && startIndex + deleteValueLength > atIndex) {
       print("111");
       print(oldValue.text);
       print(oldValue.text.substring(atIndex, startIndex));
       atSearchStr = oldValue.text.substring(atIndex, startIndex);
     }
     print("2");
-    if (topicIndex > 0 && startIndex + 1 > topicIndex) {
+    if (topicIndex > 0 && startIndex + deleteValueLength > topicIndex) {
       topicSearchStr = oldValue.text.substring(topicIndex, startIndex);
     }
     print("3");
+
+    bool isRule=false;
 
     /// 用于迭代的时候不能删除@的处理
     print(rules);
@@ -251,8 +256,9 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     for (int i = 0; i < rules.length; i++) {
       Rule rule = rules[i];
       print(rule);
-      if ((startIndex >= rule.startIndex && startIndex <= rule.endIndex - 1) ||
+      if ((startIndex >= rule.startIndex && startIndex <= rule.endIndex - deleteValueLength) ||
           (endIndex >= rule.startIndex && endIndex <= rule.endIndex)) {
+        isRule=true;
         print("光标开始位置$startIndex");
         print("光标结束位置$endIndex");
         print(startIndex >= rule.startIndex && startIndex <= rule.endIndex);
@@ -306,6 +312,8 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
         "${endIndex == oldValue.text.length ? "" : oldValue.text.substring(endIndex, oldValue.text.length)}";
     String value = "$leftValue$middleValue$rightValue";
     print("value::$value");
+    print("middleValue::$middleValue");
+    print("rightValue::$rightValue");
 
     /// 计算最终光标位置
     final TextSelection newSelection = newValue.selection.copyWith(
@@ -332,11 +340,16 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     // Future.delayed(Duration(milliseconds: 10), () => _flag = false);
 
     _valueChangedCallback?.call(rules, value, 0, 0, atSearchStr, topicSearchStr, false);
-    return TextEditingValue(
-      text: value,
-      selection: newSelection,
-      composing: TextRange.empty,
-    );
+    if(isRule) {
+      return TextEditingValue(
+        text: value,
+        selection: newSelection,
+        composing: TextRange.empty,
+      );
+    }else{
+      return newValue;
+    }
+    // return newValue;
   }
 
   void clear() {
