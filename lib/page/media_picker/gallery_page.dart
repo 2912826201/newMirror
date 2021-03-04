@@ -610,7 +610,7 @@ class _GalleryPageState extends State<GalleryPage> {
           padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding),
           child: CustomRedButton(
             "下一步",
-            context.select((SelectedMapNotifier value) => value.selectedMap.isEmpty)
+            context.select((SelectedMapNotifier value) => value.selectedMap.isEmpty && value.currentEntity == null)
                 ? CustomRedButton.buttonStateDisable
                 : CustomRedButton.buttonStateNormal,
             () async {
@@ -618,7 +618,9 @@ class _GalleryPageState extends State<GalleryPage> {
               final notifier = context.read<SelectedMapNotifier>();
 
               String type;
-              switch (notifier.selectedType) {
+              //没有选中时将当前预览的选项视为选中 因按钮可用条件中不会出现两者都无的可能所以没进一步做非空判断
+              AssetType selectedResultType = notifier.selectedType ?? notifier.currentEntity.type;
+              switch (selectedResultType) {
                 case AssetType.image:
                   type = mediaTypeKeyImage;
                   break;
@@ -630,9 +632,10 @@ class _GalleryPageState extends State<GalleryPage> {
                   return;
               }
 
-              // 在裁剪模式下 当前预览的图像如果是选中的图 则需要获取下裁剪后的图像
-              if (widget.needCrop && notifier.selectedType == AssetType.image) {
-                if (notifier.currentEntity != null && notifier.selectedMap.containsKey(notifier.currentEntity.id)) {
+              // 在裁剪模式下 当前预览的图像如果是选中的图（如果没有选中的 当前预览的就算选中） 则需要获取下裁剪后的图像
+              if (widget.needCrop && selectedResultType == AssetType.image) {
+                if (notifier.currentEntity != null &&
+                    (notifier.selectedMap.isEmpty || notifier.selectedMap.containsKey(notifier.currentEntity.id))) {
                   await _getImage(context, notifier.currentEntity.id);
                 }
               }
@@ -642,8 +645,14 @@ class _GalleryPageState extends State<GalleryPage> {
 
               Map<String, _OrderedAssetEntity> selectedMap = notifier.selectedMap;
               if (selectedMap.isEmpty) {
-                // 如果已选中的列表是空的 则程序有错误
-                return;
+                if(notifier.currentEntity != null){
+                  // 将当前正在预览的放入已选map中
+                  _OrderedAssetEntity orderedEntity = _OrderedAssetEntity(1, notifier.currentEntity);
+                  selectedMap[notifier.currentEntity.id] = orderedEntity;
+                } else {
+                  // 如果已选中的列表是空的 而且没有正在预览的 则程序有错误
+                  return;
+                }
               }
               // 先根据长度将model放入list
               for (int i = 0; i < selectedMap.length; i++) {
@@ -656,7 +665,7 @@ class _GalleryPageState extends State<GalleryPage> {
                 mediaFileModel.type = type;
                 // 根据类型处理文件信息及尺寸信息
                 if (widget.needCrop) {
-                  switch (notifier.selectedType) {
+                  switch (selectedResultType) {
                     case AssetType.image:
                       mediaFileModel.croppedImage = notifier.imageMap[orderedEntity.entity.id];
                       mediaFileModel.sizeInfo.height = mediaFileModel.croppedImage.height;
@@ -1021,7 +1030,7 @@ class PreviewHeightNotifier with ChangeNotifier {
 
   double _offset = 0;
 
-  reset(){
+  reset() {
     _previewHeight = _previewBaseHeight;
     _offset = 0;
 
