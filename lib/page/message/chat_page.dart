@@ -182,6 +182,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
   int userNumber=0;
 
+  int addEmojiModelIosCurrent=-1;
+  int cursorIndexPr=-1;
+
   @override
   void initState() {
     super.initState();
@@ -287,11 +290,13 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
           //关闭键盘
         } else {
           //显示键盘
+          print("显示键盘：${Application.keyboardHeight},${MediaQuery.of(this.context).viewInsets.bottom}");
           if (Application.keyboardHeight <= MediaQuery.of(this.context).viewInsets.bottom) {
             Application.keyboardHeight = MediaQuery.of(this.context).viewInsets.bottom;
-            if(Application.keyboardHeight>300) {
-              reload(() {});
-            }
+            reload(() {});
+            // if(Application.keyboardHeight>600) {
+            //   reload(() {});
+            // }
           }
         }
       }
@@ -317,6 +322,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
               isShow: context.read<ChatEnterNotifier>().keyWord == "@",
               onItemClickListener: atListItemClick,
               groupChatId: chatId,
+              delayedSetState: delayedSetState,
             ),
           ],
         ),
@@ -712,11 +718,25 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
             ),
           ),
           onTap: () {
-            int startIndex = _textController.text.length ?? 0;
-            context
-                .read<ChatEnterNotifier>()
-                .addRules(Rule(startIndex, startIndex + emojiModel.code.length, emojiModel.code, -1, true));
-            _textController.text += emojiModel.code;
+            // _textController.text = emojiModel.code;
+            if(cursorIndexPr>=0) {
+              _textController.text = _textController.text.substring(0, cursorIndexPr) + emojiModel.code +
+                  _textController.text.substring(cursorIndexPr, _textController.text.length);
+            }else{
+              _textController.text += emojiModel.code;
+            }
+            if(Application.platform==0) {
+              var setCursor = TextSelection(
+                baseOffset: cursorIndexPr+emojiModel.code.length,
+                extentOffset:cursorIndexPr+emojiModel.code.length,
+              );
+              _textController.selection = setCursor;
+              cursorIndexPr=cursorIndexPr+emojiModel.code.length;
+            }else{
+              addEmojiModelIosCurrent=cursorIndexPr+emojiModel.code.length;
+              _textController.text=_textController.text;
+              cursorIndexPr=cursorIndexPr+emojiModel.code.length;
+            }
             _changTextLen(_textController.text);
           },
         ));
@@ -1436,6 +1456,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         } else {
           Application.appContext.read<ChatMessageProfileNotifier>().clearMessage();
         }
+
+        //清聊天未读数
+        MessageManager.clearUnreadCount(
+            Application.appContext, conversation.conversationId, Application.profile.uid, conversation.type);
+
         if(message.objectName==ChatTypeModel.MESSAGE_TYPE_RECALL_MSG1||
             message.objectName==ChatTypeModel.MESSAGE_TYPE_RECALL_MSG2){
           //撤回消息
@@ -1485,6 +1510,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
           context.watch<ChatMessageProfileNotifier>().isResetPage = false;
           context.watch<ChatMessageProfileNotifier>().resetMessage = null;
           if (message != null) {
+            //清聊天未读数
+            MessageManager.clearUnreadCount(
+                Application.appContext, conversation.conversationId, Application.profile.uid, conversation.type);
             getChatGroupUserModelList1(chatId, context);
             insertExitGroupMsg(message, chatId, (Message msg, int code) {
               if (code == 0) {
@@ -1509,6 +1537,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
 
   initTextController() {
+    _focusNode.addListener(() {
+      cursorIndexPr=_textController.selection.baseOffset;
+    });
     _textController.addListener(() {
       // print("值改变了");
       print("监听文字光标${_textController.selection}");
@@ -1522,10 +1553,28 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       print("实时光标位置$cursorIndex");
       // 在每次选择@用户后ios设置光标位置。 在每次选择@用户后ios设置光标位置。
       if (Platform.isIOS && (isClickAtUser||recallNotificationMessagePosition==-2)) {
+        recallNotificationMessagePosition=-1;
         // 设置光标
         var setCursor = TextSelection(
           baseOffset: _textController.text.length,
           extentOffset: _textController.text.length,
+        );
+        _textController.selection = setCursor;
+      }
+      if (Platform.isIOS &&addEmojiModelIosCurrent>=0) {
+        addEmojiModelIosCurrent=-1;
+        // 设置光标
+        var setCursor = TextSelection(
+          baseOffset: addEmojiModelIosCurrent,
+          extentOffset: addEmojiModelIosCurrent,
+        );
+        _textController.selection = setCursor;
+      }
+      if (Platform.isAndroid && isClickAtUser) {
+        print("at位置&${atIndex}");
+        var setCursor = TextSelection(
+          baseOffset: atIndex,
+          extentOffset: atIndex,
         );
         _textController.selection = setCursor;
       }
@@ -1558,9 +1607,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
         // 唤起@#后切换光标关闭视图
         if (cursorIndex != atIndex) {
-          Future.delayed(Duration(milliseconds: 100), () {
-            context.read<ChatEnterNotifier>().openAtCallback("");
-          });
+          context.read<ChatEnterNotifier>().openAtCallback("");
+          delayedSetState();
         }
       }
       isSwitchCursor = true;
@@ -1572,16 +1620,20 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       controller: _textController,
       rules: context.read<ChatEnterNotifier>().rules,
       // @回调
-      // ignore: missing_return
       triggerAtCallback: (String str) async {
+        print("打开@功能--str：$str------------------------");
         if (chatTypeId == RCConversationType.Group) {
           context.read<ChatEnterNotifier>().openAtCallback(str);
           isClickAtUser = false;
+          delayedSetState();
         }
+        return "";
       },
       // 关闭@#视图回调
       shutDownCallback: () async {
+        print("取消艾特功能3");
         context.read<ChatEnterNotifier>().openAtCallback("");
+        delayedSetState();
       },
       valueChangedCallback: (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr,
           String topicSearchStr, bool isAdd) {
@@ -1679,6 +1731,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     _emojiState = !_emojiState;
     isResizeToAvoidBottomInset = !_emojiState;
     if (_emojiState) {
+      if(_focusNode.hasFocus){
+          cursorIndexPr=_textController.selection.baseOffset;
+      }
       FocusScope.of(context).requestFocus(new FocusNode());
     }
     isContentClickOrEmojiClick = false;
@@ -1904,9 +1959,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     //print("设置光标$setCursor");
     // _textController.selection = setCursor;
     Future.delayed(Duration(milliseconds: 100), () {
+      print("取消艾特功能4");
       context.read<ChatEnterNotifier>().setAtSearchStr("");
       // 关闭视图
       context.read<ChatEnterNotifier>().openAtCallback("");
+      delayedSetState();
     });
   }
 

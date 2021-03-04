@@ -20,8 +20,9 @@ class ChatAtUserList extends StatefulWidget {
   final bool isShow;
   final StringCallback onItemClickListener;
   final String groupChatId;
+  final Function delayedSetState;
 
-  ChatAtUserList({this.isShow = false, this.onItemClickListener, this.groupChatId});
+  ChatAtUserList({this.isShow = false, this.onItemClickListener, this.groupChatId, this.delayedSetState});
 
   @override
   createState() => _ChatAtUserListState();
@@ -45,7 +46,11 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
             ),
           ),
           onTap: () {
+            print("取消艾特功能1");
             context.read<ChatEnterNotifier>().openAtCallback("");
+            if(widget.delayedSetState!=null){
+              widget.delayedSetState();
+            }
           },
         ),
       );
@@ -91,7 +96,7 @@ class _ChatAtUserListState extends State<ChatAtUserList> {
             },
           );
         } else if (context.watch<GroupUserProfileNotifier>().len >= 0) {
-          getChatGroupUserModelList(widget.groupChatId, context);
+          getChatGroupUserModelList1(widget.groupChatId, context);
         }
         return Container(
           width: MediaQuery.of(context).size.width,

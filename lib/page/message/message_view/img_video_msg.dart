@@ -176,6 +176,7 @@ class ImgVideoMsg extends StatelessWidget {
           imageMessage:imageMessage,
           isShowName:isShowChatUserName,
           sizeInfoMap:sizeInfoMap,
+          isOnlyContentHeight: true
       ),
       child: GestureDetector(
         child: imgVideoContentBox(context),

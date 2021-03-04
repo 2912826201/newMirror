@@ -91,7 +91,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
         // 因为在多@时只响应最后一个@的光标位置。
         atIndex = newValue.selection.end;
         topicIndex = 0;
-        print("at光标$atIndex");
+        print("+++++++++++++++++++++++++++at光标$atIndex，triggerAtSymbol$triggerAtSymbol");
         _triggerAtCallback(triggerAtSymbol);
       }
       if (newValue.text.length - oldValue.text.length == 1 &&
@@ -218,8 +218,11 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     print(newValue);
     print(oldValue);
 
+
+
     /// 因为选中删除 和 直接delete删除的开始光标位置不一，故作统一处理
     int startIndex = isOldSelectedPart ? oldValue.selection.start : oldValue.selection.start - 1;
+    // int startIndex = newValue.selection.end;
     print("新光标$startIndex");
     int endIndex = oldValue.selection.end;
     // 删除@或者#时要关闭视图
@@ -244,6 +247,8 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     }
     print("3");
 
+    bool isRule=false;
+
     /// 用于迭代的时候不能删除@的处理
     print(rules);
     List<Rule> delRules = [];
@@ -253,6 +258,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
       print(rule);
       if ((startIndex >= rule.startIndex && startIndex <= rule.endIndex - 1) ||
           (endIndex >= rule.startIndex && endIndex <= rule.endIndex)) {
+        isRule=true;
         print("光标开始位置$startIndex");
         print("光标结束位置$endIndex");
         print(startIndex >= rule.startIndex && startIndex <= rule.endIndex);
@@ -270,6 +276,10 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
         endIndex = math.max(endIndex, rule.endIndex);
         print("用来自动覆盖$startIndex,,,,,,,,,,,$endIndex");
       }
+    }
+
+    if(!isRule) {
+      return newValue;
     }
     // 一次性全部删除时
    if(newValue.text.isEmpty) {
@@ -306,6 +316,8 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
         "${endIndex == oldValue.text.length ? "" : oldValue.text.substring(endIndex, oldValue.text.length)}";
     String value = "$leftValue$middleValue$rightValue";
     print("value::$value");
+    print("middleValue::$middleValue");
+    print("rightValue::$rightValue");
 
     /// 计算最终光标位置
     final TextSelection newSelection = newValue.selection.copyWith(
@@ -332,11 +344,16 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     // Future.delayed(Duration(milliseconds: 10), () => _flag = false);
 
     _valueChangedCallback?.call(rules, value, 0, 0, atSearchStr, topicSearchStr, false);
-    return TextEditingValue(
-      text: value,
-      selection: newSelection,
-      composing: TextRange.empty,
-    );
+    if(isRule) {
+      return TextEditingValue(
+        text: value,
+        selection: newSelection,
+        composing: TextRange.empty,
+      );
+    }else{
+      return newValue;
+    }
+    // return newValue;
   }
 
   void clear() {

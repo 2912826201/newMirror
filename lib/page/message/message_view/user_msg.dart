@@ -150,7 +150,8 @@ class UserMsg extends StatelessWidget {
       isMySelf: isMyself,
       actions: longClickStringList,
       contentWidth: 180.0,
-      contentHeight: MessageItemHeightUtil.init().getUserMsgDataHeight(isShowChatUserName),
+      contentHeight: MessageItemHeightUtil.init().
+        getUserMsgDataHeight(isShowChatUserName,isOnlyContentHeight: true),
       child: GestureDetector(
         child: _getUserUi(),
         onTap: () {

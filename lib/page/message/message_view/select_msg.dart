@@ -207,7 +207,8 @@ class SelectMsg extends StatelessWidget {
       isMySelf: isMyself,
       actions: longClickStringList,
       contentWidth: getTextSize(text, textStyle, 10).width + 22.0,
-      contentHeight: MessageItemHeightUtil.init().getSelectMsgDataHeight(selectListString, isShowChatUserName),
+      contentHeight: MessageItemHeightUtil.init().
+        getSelectMsgDataHeight(selectListString, isShowChatUserName,isOnlyContentHeight: true),
       child: textContentBox(context),
     );
   }
