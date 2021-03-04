@@ -119,9 +119,19 @@ class _GalleryPageState extends State<GalleryPage> {
     if (result) {
       // success
       // load the album list
-      //TODO 这里需要设置路径
       if (_albums.isEmpty) {
-        _albums = await PhotoManager.getAssetPathList(hasAll: true, onlyAll: false, type: widget.requestType);
+        List<AssetPathEntity> pathList = await PhotoManager.getAssetPathList(hasAll: true, onlyAll: false,
+            type: widget.requestType);
+        //有可能全部照片、最近项目不在第一个 要重新排列一下
+        List<AssetPathEntity> notAllList = [];
+        for(AssetPathEntity assetPathEntity in pathList){
+          if(assetPathEntity.isAll){
+            _albums.add(assetPathEntity);
+          }else{
+            notAllList.add(assetPathEntity);
+          }
+        }
+        _albums.addAll(notAllList);
         print(_albums);
       }
 
