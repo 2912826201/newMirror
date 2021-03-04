@@ -163,7 +163,8 @@ class TextMsg extends StatelessWidget {
       isMySelf: isMyself,
       actions: longClickStringList,
       contentWidth: getTextSize(text, textStyle, 10).width + 22.0,
-      contentHeight: MessageItemHeightUtil.init().getTextMsgHeight(text, isShowChatUserName),
+      contentHeight: MessageItemHeightUtil.init().
+        getTextMsgHeight(text, isShowChatUserName,isOnlyContentHeight: true),
       child: textContentBox(context),
     );
   }

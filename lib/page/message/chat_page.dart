@@ -1522,6 +1522,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       print("实时光标位置$cursorIndex");
       // 在每次选择@用户后ios设置光标位置。 在每次选择@用户后ios设置光标位置。
       if (Platform.isIOS && (isClickAtUser||recallNotificationMessagePosition==-2)) {
+        recallNotificationMessagePosition=-1;
         // 设置光标
         var setCursor = TextSelection(
           baseOffset: _textController.text.length,

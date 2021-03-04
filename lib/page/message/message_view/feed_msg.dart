@@ -158,7 +158,8 @@ class FeedMsg extends StatelessWidget {
       isMySelf: isMyself,
       actions: longClickStringList,
       contentWidth: 180.0,
-      contentHeight: MessageItemHeightUtil.init().getFeedMsgDataHeight(homeFeedMode.toJson(), isShowChatUserName),
+      contentHeight: MessageItemHeightUtil.init().
+        getFeedMsgDataHeight(homeFeedMode.toJson(), isShowChatUserName,isOnlyContentHeight: true),
       child: GestureDetector(
         child: _getFeedUi(),
         onTap: () {

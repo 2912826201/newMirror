@@ -49,11 +49,15 @@ class AlertMsg extends StatelessWidget {
   }
 
   Widget getContentBoxItem(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(top: 8.0),
-      alignment: Alignment.bottomCenter,
-      width: MediaQuery.of(context).size.width,
-      child: getAlertText(context),
+    return GestureDetector(
+      onTap: (){},
+      child: Container(
+        color: AppColor.transparent,
+        padding: EdgeInsets.only(top: 8.0),
+        alignment: Alignment.bottomCenter,
+        width: MediaQuery.of(context).size.width,
+        child: getAlertText(context),
+      ),
     );
   }
 

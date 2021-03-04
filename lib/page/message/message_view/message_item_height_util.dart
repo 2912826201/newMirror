@@ -195,17 +195,19 @@ class MessageItemHeightUtil{
 
 
   //获取文字消息的高度
-  double getTextMsgHeight(String content,bool isShowChatUserName){
+  double getTextMsgHeight(String content,bool isShowChatUserName,{bool isOnlyContentHeight=false}){
     if(content==null){
       content="消息为空";
     }
     double itemHeight=0.0;
 
-    //padding-container-vertical-12.0
-    itemHeight+=24.0;
+    if(!isOnlyContentHeight) {
+      //padding-container-vertical-12.0
+      itemHeight += 24.0;
+    }
 
     //判断有没有显示名字
-    if(isShowChatUserName){
+    if(isShowChatUserName&&!isOnlyContentHeight){
       itemHeight+=4.0;
       itemHeight+=getTextSize("名字", TextStyle(fontSize: 12), 1).height;
     }
@@ -216,20 +218,26 @@ class MessageItemHeightUtil{
     double textMaxWidth=ScreenUtil.instance.width- (16 + 7 + 38 + 2) * 2;
     itemHeight+=getTextSize(content, TextStyle(fontSize: 15), 100,textMaxWidth).height;
 
-    return math.max(itemHeight, 48.0+24.0);
+    if(isOnlyContentHeight) {
+      return itemHeight;
+    }else{
+      return math.max(itemHeight, 48.0 + 24.0);
+    }
   }
 
 
   //获取语音消息的高度
-  double getVoiceMsgDataHeight(bool isShowChatUserName){
+  double getVoiceMsgDataHeight(bool isShowChatUserName,{bool isOnlyContentHeight=false}){
 
     double itemHeight=0.0;
 
-    //padding-container-vertical-12.0
-    itemHeight+=24.0;
+    if(!isOnlyContentHeight) {
+      //padding-container-vertical-12.0
+      itemHeight += 24.0;
+    }
 
     //判断有没有显示名字
-    if(isShowChatUserName){
+    if(isShowChatUserName&&!isOnlyContentHeight){
       itemHeight+=4.0;
       itemHeight+=getTextSize("名字", TextStyle(fontSize: 12), 1).height;
     }
@@ -240,11 +248,15 @@ class MessageItemHeightUtil{
     //动画条的最高值
     itemHeight+=20.0;
 
-    return math.max(itemHeight, 48.0+24.0);
+    if(isOnlyContentHeight) {
+      return itemHeight;
+    }else{
+      return math.max(itemHeight, 48.0+24.0);
+    }
   }
 
   //获取选择列表消息的高度
-  double getSelectMsgDataHeight(String content,bool isShowChatUserName){
+  double getSelectMsgDataHeight(String content,bool isShowChatUserName,{bool isOnlyContentHeight=false}){
 
     double itemHeight=0.0;
 
@@ -262,7 +274,11 @@ class MessageItemHeightUtil{
       itemHeight+=getTextSize(selectList[i], TextStyle(fontSize: 13), 100,298.0).height;
     }
 
-    return math.max(itemHeight, 48.0+24.0);
+    if(isOnlyContentHeight) {
+      return itemHeight;
+    }else{
+      return math.max(itemHeight, 48.0+24.0);
+    }
   }
 
   //获取图片消息视频消息的高度
@@ -271,6 +287,7 @@ class MessageItemHeightUtil{
     MediaFileModel mediaFileModel,
     ImageMessage imageMessage,
     bool isShowName,
+    bool isOnlyContentHeight=false,
     Map<String, dynamic> sizeInfoMap}){
 
 
@@ -302,8 +319,13 @@ class MessageItemHeightUtil{
     height = widthOrHeight[1];
 
 
+    if(!isOnlyContentHeight) {
+      //padding-container-vertical-12.0
+      height += 24.0;
+    }
+
     //判断有没有显示名字
-    if(isShowName){
+    if(isShowName&&!isOnlyContentHeight){
       height+=4.0;
       height+=getTextSize("名字", TextStyle(fontSize: 12), 1).height;
     }
@@ -326,7 +348,8 @@ class MessageItemHeightUtil{
 
 
   //动态的高度
-  double getFeedMsgDataHeight(Map<String, dynamic> homeFeedModeMap,bool isShowName){
+  double getFeedMsgDataHeight(Map<String, dynamic> homeFeedModeMap,bool isShowName
+      ,{bool isOnlyContentHeight=false}){
     HomeFeedModel homeFeedMode = HomeFeedModel.fromJson(homeFeedModeMap);
 
 
@@ -343,12 +366,14 @@ class MessageItemHeightUtil{
 
     double itemHeight=0.0;
 
-    //padding-container-vertical-12.0
-    itemHeight+=24.0;
+    if(!isOnlyContentHeight) {
+      //padding-container-vertical-12.0
+      itemHeight += 24.0;
+    }
 
 
     //判断有没有显示名字
-    if(isShowName){
+    if(isShowName&&!isOnlyContentHeight){
       itemHeight+=4.0;
       itemHeight+=getTextSize("名字", TextStyle(fontSize: 12), 1).height;
     }
@@ -387,15 +412,17 @@ class MessageItemHeightUtil{
   }
 
   //用户名片的高度
-  double getUserMsgDataHeight(bool isShowName){
+  double getUserMsgDataHeight(bool isShowName,{bool isOnlyContentHeight=false}){
 
     double itemHeight=0.0;
 
-    //padding-container-vertical-12.0
-    itemHeight+=24.0;
+    if(!isOnlyContentHeight) {
+      //padding-container-vertical-12.0
+      itemHeight += 24.0;
+    }
 
     //判断有没有显示名字
-    if(isShowName){
+    if(isShowName&&!isOnlyContentHeight){
       itemHeight+=4.0;
       itemHeight+=getTextSize("名字", TextStyle(fontSize: 12), 1).height;
     }
@@ -405,15 +432,17 @@ class MessageItemHeightUtil{
     return itemHeight;
   }
   //直播视频课程item的高度
-  double getLiveVideoCourseMsgHeight(bool isShowName){
+  double getLiveVideoCourseMsgHeight(bool isShowName,{bool isOnlyContentHeight=false}){
 
     double itemHeight=0.0;
 
-    //padding-container-vertical-12.0
-    itemHeight+=24.0;
+    if(!isOnlyContentHeight) {
+      //padding-container-vertical-12.0
+      itemHeight += 24.0;
+    }
 
     //判断有没有显示名字
-    if(isShowName){
+    if(isShowName&&!isOnlyContentHeight){
       itemHeight+=4.0;
       itemHeight+=getTextSize("名字", TextStyle(fontSize: 12), 1).height;
     }
