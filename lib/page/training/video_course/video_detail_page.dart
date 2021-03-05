@@ -42,7 +42,8 @@ class VideoDetailPage extends StatefulWidget {
         this.heroTag,
         this.commentDtoModel,
         this.fatherComment,
-        this.videoModel})
+        this.videoModel,
+      this.isInteractive})
       : super(key: key);
 
   final LiveVideoModel videoModel;
@@ -50,7 +51,7 @@ class VideoDetailPage extends StatefulWidget {
   final int videoCourseId;
   final CommentDtoModel commentDtoModel;
   final CommentDtoModel fatherComment;
-
+  final bool isInteractive;
   @override
   createState() {
     return VideoDetailPageState(
@@ -58,19 +59,20 @@ class VideoDetailPage extends StatefulWidget {
         heroTag: heroTag,
         videoCourseId: videoCourseId,
         commentDtoModel: commentDtoModel,
-        fatherComment: fatherComment);
+        fatherComment: fatherComment,
+        isInteractive: isInteractive);
   }
 }
 
 class VideoDetailPageState extends XCState {
   VideoDetailPageState(
-      {Key key, this.videoModel, this.heroTag, this.videoCourseId, this.commentDtoModel, this.fatherComment});
+      {Key key, this.videoModel, this.heroTag, this.videoCourseId, this.commentDtoModel, this.fatherComment,this.isInteractive});
 
   String heroTag;
   int videoCourseId;
   CommentDtoModel commentDtoModel;
   CommentDtoModel fatherComment;
-
+  bool isInteractive;
   //当前视频课程的model
   LiveVideoModel videoModel;
 
@@ -367,6 +369,7 @@ class VideoDetailPageState extends XCState {
           pageCommentSize: 20,
           pageSubCommentSize: 3,
           isShowHotOrTime: true,
+          isInteractiveIn: isInteractive,
           commentDtoModel: commentDtoModel,
           isShowAt: false,
           globalKeyList: globalKeyList,
