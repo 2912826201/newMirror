@@ -1,10 +1,9 @@
-
-
 import 'package:flutter/material.dart';
+import 'package:mirror/data/model/feed/post_feed.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 
 class FeedMapNotifier extends ChangeNotifier {
-  FeedMapNotifier({this.feedMap, this.feedId});
+  FeedMapNotifier({this.feedMap, this.feedId, this.isPublish = true});
 
   // 动态的id加model组成的Map
   Map<int, HomeFeedModel> feedMap = {};
@@ -17,6 +16,12 @@ class FeedMapNotifier extends ChangeNotifier {
   List<CommentDtoModel> commentList = [];
 
   CommentDtoModel childModel;
+
+  // 发布动态需要的model
+  PostFeedModel postFeedModel;
+
+  // 是否可以发布动态
+  bool isPublish = true;
 
   // 是否是左滑
   bool isSwipeLeft;
@@ -34,10 +39,11 @@ class FeedMapNotifier extends ChangeNotifier {
 
   int deleteId;
 
-  void deleteContent(int dtId){
+  void deleteContent(int dtId) {
     deleteId = dtId;
     notifyListeners();
   }
+
   void changeFatherItemChose(int id, int index) {
     feedMap[id].comments[index].itemChose = false;
     notifyListeners();
@@ -220,6 +226,21 @@ class FeedMapNotifier extends ChangeNotifier {
 
   void removeComment(int id, CommentDtoModel model) {
     feedMap[id].comments.remove(model);
+    notifyListeners();
+  }
+
+  // 发布数据需要的model
+  void setPublishFeedModel(PostFeedModel model) {
+    this.postFeedModel = model;
+    notifyListeners();
+  }
+
+  // 是否调用发布接口
+  setPublish(bool b) {
+    print(b);
+    print(this.isPublish);
+    this.isPublish = b;
+    print("this.isPublish:${this.isPublish}");
     notifyListeners();
   }
 }

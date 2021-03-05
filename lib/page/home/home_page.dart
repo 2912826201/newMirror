@@ -54,14 +54,15 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
   }
 
   // 发布动态
-  pulishFeed() async {
+  pulishFeed(PostFeedModel postFeedModel) async {
     List<File> fileList = [];
     UploadResults results;
     List<PicUrlsModel> picUrls = [];
     List<VideosModel> videos = [];
-    // 设置不可发布
-    context.watch<ReleaseProgressNotifier>().isPublish = false;
-    PostFeedModel postFeedModel = context.watch<ReleaseProgressNotifier>().postFeedModel;
+    print("发布1111111111111111111");
+    // // 设置不可发布
+    // context.watch<FeedMapNotifier>().setPublish(false);
+    print("发布2222222222222222222");
     if (postFeedModel != null) {
       PostFeedModel postModel = postFeedModel;
       print("掉发布数据");
@@ -105,7 +106,9 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
               offsetRatioY: element.sizeInfo.offsetRatioY));
         });
         results = await FileUtil().uploadMedias(fileList, (percent) {
+          print("percent：${percent}");
           context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(percent);
+          print("percent结束了:");
         });
         for (int i = 0; i < results.resultMap.length; i++) {
           print("打印一下视频索引值￥$i");
@@ -134,12 +137,12 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
           // 延迟器:
           new Future.delayed(Duration(seconds: 3), () {
             // 清空发布model
-            context.read<ReleaseProgressNotifier>().setPublishFeedModel(null);
+            context.read<FeedMapNotifier>().setPublishFeedModel(null);
             //还原进度条
             _process = 0.0;
             context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(_process);
             // 设置可发布
-            context.read<ReleaseProgressNotifier>().isPublish = true;
+            context.read<FeedMapNotifier>().isPublish = true;
           });
           // 数据更新
           attentionKey.currentState.replaceData(HomeFeedModel.fromJson(feedModel));
@@ -149,7 +152,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
           // 清空发布model
           // context.read<FeedMapNotifier>().setPublishFeedModel(null);
           // 设置不可发布
-          context.read<ReleaseProgressNotifier>().setPublish(false);
+          context.read<FeedMapNotifier>().setPublish(false);
           _process = -1.0;
           context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(_process);
         }
@@ -162,9 +165,9 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     super.build(context);
     print("HomePage_____________________________________________build");
     // 发布动态
-    if (context.watch<ReleaseProgressNotifier>().postFeedModel != null && context.watch<ReleaseProgressNotifier>().isPublish) {
+    if (context.watch<FeedMapNotifier>().postFeedModel != null && context.watch<FeedMapNotifier>().isPublish) {
       print("疯狂)))))))))))))))))))))");
-      PostFeedModel postFeedModel = context.watch<ReleaseProgressNotifier>().postFeedModel;
+      PostFeedModel postFeedModel = context.watch<FeedMapNotifier>().postFeedModel;
       HomeFeedModel homeFeedModel = HomeFeedModel();
       // 定位到main_page页
       Application.ifPageController.index = Application.ifPageController.length - 1;
@@ -175,7 +178,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
         attentionKey.currentState.backToTheTop();
       }
       // 发布model转换动态model展示
-      //  context.select((ProfileNotifier value) => value.profile.avatarUri
       homeFeedModel.name = context.watch<ProfileNotifier>().profile.nickName;
       homeFeedModel.avatarUrl = context.watch<ProfileNotifier>().profile.avatarUri;
       homeFeedModel.pushId = context.watch<ProfileNotifier>().profile.uid;
@@ -218,8 +220,10 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
           attentionKey.currentState.insertData(homeFeedModel);
         });
       }
+      // 设置不可发布
+      context.watch<FeedMapNotifier>().setPublish(false);
       // 发布动态
-      pulishFeed();
+      pulishFeed(postFeedModel);
     }
     return Scaffold(
         backgroundColor: AppColor.white,
@@ -230,7 +234,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
               // isLeading: true,
               onTap: () {
                 print("${FluroRouter.appRouter.hashCode}");
-                if (context.read<ReleaseProgressNotifier>().postFeedModel != null) {
+                if (context.read<FeedMapNotifier>().postFeedModel != null) {
                   if (context.read<ReleaseProgressNotifier>().plannedSpeed != -1) {
                     ToastShow.show(msg: "你有动态正在发送中，请稍等", context: context, gravity: Toast.CENTER);
                   } else {
@@ -263,8 +267,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                 fontWeight: FontWeight.w600,
               ),
               labelColor: Colors.black,
-              // indicatorPadding: EdgeInsets.symmetric(horizontal: 24),
-              // unselectedLabelColor: Color.fromRGBO(153, 153, 153, 1),
               unselectedLabelStyle: TextStyle(fontSize: 16),
               indicator: RoundUnderlineTabIndicator(
                 borderSide: BorderSide(
@@ -288,9 +290,9 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
         ),
         body: Column(
           children: [
-            context.watch<ReleaseProgressNotifier>().postFeedModel != null
+            context.watch<FeedMapNotifier>().postFeedModel != null
                 ? Offstage(
-                    offstage: context.watch<ReleaseProgressNotifier>().postFeedModel == null,
+                    offstage: context.watch<FeedMapNotifier>().postFeedModel == null,
                     child: ReleaseProgressView(),
                   )
                 : Container(),
