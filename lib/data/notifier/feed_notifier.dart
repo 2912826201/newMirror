@@ -24,6 +24,7 @@ class FeedMapNotifier extends ChangeNotifier {
   // 是否可以发布动态
   bool isPublish = true;
 
+  Map<int,dynamic> courseCommentHot = {};
   // 是否是左滑
   bool isSwipeLeft;
   double metricsPixels;
@@ -39,10 +40,6 @@ class FeedMapNotifier extends ChangeNotifier {
   }
 
   int deleteId;
-
-  void deleteContent(int dtId) {
-  Map<int,CommentModel> courseCommentHot = {};
-
 
   void interacticeNoticeChange({CommentModel courseCommentHots,int commentId}){
     courseCommentHot[commentId] = courseCommentHots;
