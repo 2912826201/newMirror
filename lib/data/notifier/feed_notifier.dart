@@ -37,11 +37,6 @@ class FeedMapNotifier extends ChangeNotifier {
 
   Map<int,CommentModel> courseCommentHot = {};
 
-  int choseIndex = 0;
-
-  bool choseItemInFirst = false;
-
-  List<int> screenOutHotIds = <int>[];
 
   void interacticeNoticeChange({CommentModel courseCommentHots,int commentId}){
     courseCommentHot[commentId] = courseCommentHots;

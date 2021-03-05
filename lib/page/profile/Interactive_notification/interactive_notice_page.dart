@@ -351,6 +351,9 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     senderAvatarUrl = widget.msgModel.senderAvatarUrl;
     senderName = widget. msgModel.senderName;
     coverImage = widget.msgModel.coverUrl;
+    if(widget.msgModel.commentData!=null){
+      widget.msgModel.commentData.itemChose = true;
+    }
     _getRefData(context);
     if (widget.type == 0&&widget.msgModel.commentData!=null) {
       if (widget.msgModel.refType == 2) {
