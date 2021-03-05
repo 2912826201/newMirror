@@ -58,7 +58,8 @@ class CommentLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return   context.watch<FeedMapNotifier>().feedMap[model.id] != null ?
+    Container(
       width: ScreenUtil.instance.width,
       margin: EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
@@ -104,6 +105,6 @@ class CommentLayout extends StatelessWidget {
             ),
         ],
       ),
-    );
+    ) : Container();
   }
 }

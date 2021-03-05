@@ -139,6 +139,8 @@ class Application {
   // 定位所在城市Id
   static String cityId = "targetCityId";
 
+  // 发布中临时插入的动态Id
+  static int insertFeedId = -2;
   static FitnessEntryModel fitnessEntryModel = FitnessEntryModel();
   //公共登出方法
   static appLogout({bool isKicked = false}) async {

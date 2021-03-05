@@ -11,6 +11,8 @@ class PostFeedModel {
   String longitude;
   String latitude;
   List<TopicDtoModel> topics;
+  // 当前时间戳
+  int currentTimestamp;
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
     map["selectedMediaFiles"] = selectedMediaFiles;
@@ -21,6 +23,7 @@ class PostFeedModel {
     map["longitude"] = longitude;
     map["latitude"] = latitude;
     map["topics"] = topics;
+    map["currentTimestamp"] = currentTimestamp;
     return map;
   }
   @override

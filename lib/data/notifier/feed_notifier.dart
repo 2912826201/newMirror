@@ -1,12 +1,10 @@
-import 'dart:convert';
+
 
 import 'package:flutter/material.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/feed/post_feed.dart';
-import 'package:provider/provider.dart';
 
 class FeedMapNotifier extends ChangeNotifier {
-  FeedMapNotifier({this.feedMap, this.feedId, this.postFeedModel, this.isPublish = true});
+  FeedMapNotifier({this.feedMap, this.feedId});
 
   // 动态的id加model组成的Map
   Map<int, HomeFeedModel> feedMap = {};
@@ -16,22 +14,19 @@ class FeedMapNotifier extends ChangeNotifier {
   // 点击评论图标记录此动态的Id用于请求评论列表
   int feedId;
 
-  // 发布动态需要的model
-  PostFeedModel postFeedModel;
-
   List<CommentDtoModel> commentList = [];
 
-  // 发布动态进度
-  double plannedSpeed = 0.0;
-
   CommentDtoModel childModel;
+
   // 是否是左滑
   bool isSwipeLeft;
   double metricsPixels;
+
   storageIsSwipeLeft(bool offset) {
     this.isSwipeLeft = offset;
     notifyListeners();
   }
+
   storage(double offset) {
     this.metricsPixels = offset;
     notifyListeners();
@@ -68,8 +63,10 @@ class FeedMapNotifier extends ChangeNotifier {
     _feedList.forEach((element) {
       feedMap[element.id] = element;
       feedMap[element.id].hotComment = [];
-      feedMap[element.id].hotComment.addAll(element.comments);
-     print("headOffset:::${element.headOffset}");
+      if (element.comments.isNotEmpty) {
+        feedMap[element.id].hotComment.addAll(element.comments);
+      }
+      print("headOffset:::${element.headOffset}");
       print("bottomOffset:::${element.bottomOffset}");
     });
     notifyListeners();
@@ -92,9 +89,6 @@ class FeedMapNotifier extends ChangeNotifier {
     }
     notifyListeners();
   }
-
-  // 是否可以发布动态
-  bool isPublish;
 
   // 删除动态
   void deleteFeed(int id) {
@@ -226,24 +220,6 @@ class FeedMapNotifier extends ChangeNotifier {
 
   void removeComment(int id, CommentDtoModel model) {
     feedMap[id].comments.remove(model);
-    notifyListeners();
-  }
-
-// 发布数据需要的model
-  void setPublishFeedModel(PostFeedModel model) {
-    this.postFeedModel = model;
-    notifyListeners();
-  }
-
-  // 更新发布动态进度
-  getPostPlannedSpeed(double plannedSpeed) {
-    this.plannedSpeed = plannedSpeed;
-    notifyListeners();
-  }
-
-  // 是否调用发布接口
-  setPublish(bool b) {
-    this.isPublish = b;
     notifyListeners();
   }
 }
