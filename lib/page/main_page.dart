@@ -280,7 +280,6 @@ class SelectedbottomNavigationBarNotifier extends ChangeNotifier {
   SelectedbottomNavigationBarNotifier(this.selectedIndex);
 
   int selectedIndex;
-
   changeIndex(int index) {
     print("changeIndex $index");
     this.selectedIndex = index;

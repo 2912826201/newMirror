@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:mirror/constant/constants.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 
@@ -287,17 +288,32 @@ class StringUtil {
       v.headOffset = itemHeight;
       // 头部
       itemHeight += 62;
-      // 图片
-      if (v.picUrls.isNotEmpty) {
-        if (v.picUrls.first.height == 0) {
-          itemHeight += ScreenUtil.instance.width;
-        } else {
-          itemHeight += (ScreenUtil.instance.width / v.picUrls[0].width) * v.picUrls[0].height;
+      if (v.selectedMediaFiles == null) {
+        // 图片
+        if (v.picUrls.isNotEmpty) {
+          if (v.picUrls.first.height == 0) {
+            itemHeight += ScreenUtil.instance.width;
+          } else {
+            itemHeight += (ScreenUtil.instance.width / v.picUrls[0].width) * v.picUrls[0].height;
+          }
         }
-      }
-      // 视频
-      if (v.videos.isNotEmpty) {
-        itemHeight += calculateHeight(v);
+        // 视频
+        if (v.videos.isNotEmpty) {
+          itemHeight += calculateHeight(feedModel: v);
+        }
+      } else {
+        // 图片
+        if(v.selectedMediaFiles.type == mediaTypeKeyImage ) {
+          if (v.selectedMediaFiles.list.first.sizeInfo.height == 0) {
+            itemHeight += ScreenUtil.instance.width;
+          } else {
+            itemHeight += (ScreenUtil.instance.width / v.selectedMediaFiles.list.first.sizeInfo.width) * v.selectedMediaFiles.list.first.sizeInfo.height;
+          }
+        }
+        // 视频
+        if (v.selectedMediaFiles.type == mediaTypeKeyVideo) {
+          itemHeight += calculateHeight(selectedMediaFiles: v.selectedMediaFiles);
+        }
       }
       // 转发评论点赞
       itemHeight += 48;
@@ -338,15 +354,24 @@ class StringUtil {
     return models;
   }
   // 计算视屏的高度
-  static calculateHeight(HomeFeedModel feedModel) {
+  static calculateHeight({HomeFeedModel feedModel, SelectedMediaFiles selectedMediaFiles}) {
     double containerWidth = ScreenUtil.instance.width;
     double containerHeight;
-    double videoRatio = feedModel.videos.first.width / feedModel.videos.first.height;
+    double videoRatio = 0.0;
+    if(selectedMediaFiles != null) {
+      videoRatio = selectedMediaFiles.list.first.sizeInfo.width / selectedMediaFiles.list.first.sizeInfo.height;
+    }
+    if(feedModel != null) {
+      videoRatio = feedModel.videos.first.width / feedModel.videos.first.height;
+    }
     double containerRatio;
 
     //如果有裁剪的比例 则直接用该比例
-    if (feedModel.videos.first.videoCroppedRatio != null) {
+
+    if (feedModel != null && feedModel.videos.first.videoCroppedRatio != null) {
       containerRatio = feedModel.videos.first.videoCroppedRatio;
+    } else if (selectedMediaFiles != null && selectedMediaFiles.list.first.sizeInfo.videoCroppedRatio != null) {
+      containerRatio = selectedMediaFiles.list.first.sizeInfo.videoCroppedRatio;
     } else {
       if (videoRatio < minMediaRatio) {
         containerRatio = minMediaRatio;

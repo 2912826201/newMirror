@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
 import 'package:mirror/constant/style.dart';
@@ -44,10 +45,7 @@ enum PostStatus {
 
 // 关注
 class AttentionPage extends StatefulWidget {
-  AttentionPage({Key key, this.postFeedModel}) : super(key: key);
-
-  // 发布动态需要的数据
-  PostFeedModel postFeedModel;
+  AttentionPage({Key key}) : super(key: key);
 
   AttentionPageState createState() => AttentionPageState();
 }
@@ -118,7 +116,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         loadStatus = LoadingStatus.STATUS_LOADING;
       });
     }
-    print("postFeedModel%%%%%%%$widget.postFeedModel");
     print("开始请求动态数据");
     if (dataPage > 1 && lastTime == null) {
       setState(() {
@@ -191,21 +188,33 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     print("本地存储的数据长度1:${context.read<FeedMapNotifier>().feedMap.length}");
   }
 
-  // 插入数据
+  // 本地插入发布数据
   insertData(HomeFeedModel model) {
     print("发布插入model:${model.toString()}");
-      print("插入数据");
-      print(  attentionIdList.toString());
-      if(attentionIdList.isEmpty) {
-        attentionIdList.insert(0, -1);
-      }
-      attentionIdList.insert(1, model.id);
-      attentionModelList.insert(0, model);
-      // // 重新计算
-      attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList);
-      // // 更新全局监听
-      context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
-      status = Status.concern;
+    print("插入数据");
+    if (attentionIdList.isEmpty) {
+      attentionIdList.insert(0, -1);
+    }
+    attentionIdList.insert(1, model.id);
+    attentionModelList.insert(0, model);
+    print(attentionIdList.toString());
+    // // 重新计算
+    attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList);
+    // // 更新全局监听
+    context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
+    status = Status.concern;
+  }
+
+  // 接口请求返回替换数据
+  replaceData(HomeFeedModel model) {
+    attentionIdList.removeWhere((element) => element == Application.insertFeedId);
+    attentionModelList.removeWhere((element) => element.id == Application.insertFeedId);
+    attentionIdList.insert(1, model.id);
+    attentionModelList.insert(0, model);
+    // // 重新计算
+    attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList);
+    // // 更新全局监听
+    context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
   }
 
   // 回到顶部
@@ -218,6 +227,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
 
   // 返回关注视图
   backToView(int index, HomeFeedModel feedmodel) {
+    print("疯狂build");
     if (index == 0) {
       return Container(
         height: 14,
@@ -293,8 +303,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
    * array2 数组二
    * **/
   List<int> arrayDate(List<int> array1, List<int> array2) {
-    var arr1 = array1;
-    var arr2 = array2;
     List<int> result = [];
     for (var i = 0; i < array1.length; i++) {
       var obj = array1[i];
@@ -310,7 +318,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         result.add(obj);
       }
     }
-    print("result${result.toString()}");
+    // print("result${result.toString()}");
     return result;
   }
 
@@ -461,9 +469,13 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
               for (int i = 0; i < attentionModelList.length; i++) {
                 HomeFeedModel value = attentionModelList[i];
                 // 屏幕可滑动区域
-               double slidingArea = ScreenUtil.instance.height - ScreenUtil.instance.statusBarHeight - ScreenUtil.instance.bottomBarHeight - 44 - 51;
+                double slidingArea = ScreenUtil.instance.height -
+                    ScreenUtil.instance.statusBarHeight -
+                    ScreenUtil.instance.bottomBarHeight -
+                    44 -
+                    51;
                 // 屏幕的一半偏移值
-                double screenOffser = metrics.pixels + (slidingArea / 2) ;
+                double screenOffser = metrics.pixels + (slidingArea / 2);
                 if (screenOffser >= value.headOffset && screenOffser < value.bottomOffset) {
                   print("进了");
                   context.read<FeedMapNotifier>().showInputBox(value.id);

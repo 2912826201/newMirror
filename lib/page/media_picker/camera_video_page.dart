@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:intl/intl.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
@@ -75,138 +76,141 @@ class CameraVideoState extends State<CameraVideoPage> with WidgetsBindingObserve
           : Column(
               children: [
                 Container(
-                    color: AppColor.mainBlue,
-                    width: _previewSize,
-                    height: _previewSize,
-                    child: Stack(
-                      overflow: Overflow.clip,
-                      children: [
-                        Positioned(
-                            top: _controller.value.aspectRatio <= 1
-                                ? (_previewSize - _previewSize / _controller.value.aspectRatio) / 2
-                                : 0,
-                            left: _controller.value.aspectRatio <= 1
-                                ? 0
-                                : (_previewSize - _previewSize * _controller.value.aspectRatio) / 2,
-                            child: Container(
-                              height: _controller.value.aspectRatio <= 1
-                                  ? _previewSize / _controller.value.aspectRatio
-                                  : _previewSize,
-                              width: _controller.value.aspectRatio <= 1
-                                  ? _previewSize
-                                  : _previewSize * _controller.value.aspectRatio,
-                              child: CameraPreview(_controller),
-                            )),
-                        Positioned(
-                            right: 16,
-                            bottom: 16,
-                            child: GestureDetector(
-                              onTap: () {
-                                int currentTime = DateTime.now().millisecondsSinceEpoch;
-                                if (currentTime - _latestSwitchCameraTime < _switchCameraInterval) {
-                                  //避免切换摄像头过于频繁
-                                  return;
-                                }
-                                if (_controller.value.isTakingPicture || _controller.value.isRecordingVideo) {
-                                  //拍照或录像过程中不能切换
-                                  return;
-                                }
-                                //FIXME 模拟器会有切到后置摄像头后第一次点击无反应的问题 要持续关注
-                                print("切换摄像头！");
-                                _latestSwitchCameraTime = currentTime;
-                                _cameraIndex = (_cameraIndex + 1) % Application.cameras.length;
-                                onCameraSelected(Application.cameras[_cameraIndex]);
-                              },
-                              child: Icon(
-                                Icons.camera,
-                                size: 32,
-                                color: Colors.white,
-                              ),
-                            )),
-                      ],
-                    )),
-                Expanded(
-                    child: Container(
-                  alignment: Alignment.center,
-                  color: AppColor.bgBlack,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                  color: AppColor.mainBlue,
+                  width: _previewSize,
+                  height: _previewSize,
+                  child: Stack(
+                    overflow: Overflow.clip,
                     children: [
-                      Text(
-                        "${_milliDuration ~/ 1000}",
-                        style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 10),
-                      ),
-                      SizedBox(
-                        height: 12,
-                      ),
-                      GestureDetector(
-                        onLongPressStart: (longPressStartDetails) async {
-                          print("开始录制！");
-                          await startRecordVideo();
-                        },
-                        onLongPressEnd: (longPressEndDetails) async {
-                          print("结束录制！");
-                          await stopRecordVideo();
-                          //检查时长 满足条件则跳转预览页
-                          if (_milliDuration > minRecordVideoDuration * 1000) {
-                            //设置尺寸信息
-                            SizeInfo sizeInfo = SizeInfo();
-                            sizeInfo.width = _cameraSize.width.toInt();
-                            sizeInfo.height = _cameraSize.height.toInt();
-                            sizeInfo.duration = _milliDuration ~/ 1000;
-                            sizeInfo.videoCroppedRatio = 1.0;
-                            sizeInfo.createTime = File(_filePath).lastModifiedSync().millisecondsSinceEpoch;
-                            if (sizeInfo.width > sizeInfo.height) {
-                              sizeInfo.offsetRatioX = (sizeInfo.height - sizeInfo.width) / 2 / sizeInfo.width;
-                            } else if (sizeInfo.width < sizeInfo.height) {
-                              sizeInfo.offsetRatioY = (sizeInfo.width - sizeInfo.height) / 2 / sizeInfo.height;
-                            }
-                            AppRouter.navigateToPreviewVideoPage(
-                              context,
-                              _filePath,
-                              sizeInfo,
-                              (result) {
-                                if (result != null) {
-                                  if (widget.publishMode == 1) {
-                                    Navigator.pop(context, result);
-                                    AppRouter.navigateToReleasePage(context);
-                                  } else if (widget.publishMode == 2) {
-                                    AppRouter.navigateToReleasePage(context);
-                                  } else {
-                                    Navigator.pop(context, result);
-                                  }
-                                }
-                              },
-                            );
-                          } else {
-                            print("时长不够！");
-                          }
-                          _milliDuration = 0;
-                          _filePath = null;
-                        },
-                        behavior: HitTestBehavior.opaque,
+                      Positioned(
+                        top: _controller.value.aspectRatio <= 1
+                            ? (_previewSize - _previewSize / _controller.value.aspectRatio) / 2
+                            : 0,
+                        left: _controller.value.aspectRatio <= 1
+                            ? 0
+                            : (_previewSize - _previewSize * _controller.value.aspectRatio) / 2,
                         child: Container(
-                          width: 66,
-                          height: 66,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: AppColor.white, width: 4),
+                          height: _controller.value.aspectRatio <= 1
+                              ? _previewSize / _controller.value.aspectRatio
+                              : _previewSize,
+                          width: _controller.value.aspectRatio <= 1
+                              ? _previewSize
+                              : _previewSize * _controller.value.aspectRatio,
+                          child: CameraPreview(_controller),
+                        ),
+                      ),
+                      Positioned(
+                        right: 16,
+                        bottom: 16,
+                        child: GestureDetector(
+                          onTap: () {
+                            int currentTime = DateTime.now().millisecondsSinceEpoch;
+                            if (currentTime - _latestSwitchCameraTime < _switchCameraInterval) {
+                              //避免切换摄像头过于频繁
+                              return;
+                            }
+                            if (_controller.value.isTakingPicture || _controller.value.isRecordingVideo) {
+                              //拍照或录像过程中不能切换
+                              return;
+                            }
+                            //FIXME 模拟器会有切到后置摄像头后第一次点击无反应的问题 要持续关注
+                            print("切换摄像头！");
+                            _latestSwitchCameraTime = currentTime;
+                            _cameraIndex = (_cameraIndex + 1) % Application.cameras.length;
+                            onCameraSelected(Application.cameras[_cameraIndex]);
+                          },
+                          child: Icon(
+                            Icons.camera,
+                            size: 32,
+                            color: Colors.white,
                           ),
-                          child: Container(
-                            width: 49,
-                            height: 49,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: _isRecording ? AppColor.white.withOpacity(0.24) : AppColor.white,
-                            ),
-                          ),
+                        ),
+                      ),
+                      // 进度条
+                      Positioned(
+                        bottom: 0,
+                        child: Container(
+                          color: AppColor.white.withOpacity(0.45),
+                          height: 3,
+                          width: _previewSize,
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        child: Container(
+                          color: AppColor.mainRed,
+                          height: 3,
+                          width: _previewSize *
+                              (_milliDuration > maxRecordVideoDuration * 1000
+                                  ? maxRecordVideoDuration * 1000
+                                  : _milliDuration) /
+                              (maxRecordVideoDuration * 1000),
                         ),
                       ),
                     ],
                   ),
-                ))
+                ),
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.center,
+                    color: AppColor.bgBlack,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            _isRecording
+                                ? Container(
+                                    margin: const EdgeInsets.only(right: 3),
+                                    height: 5,
+                                    width: 5,
+                                    decoration: BoxDecoration(shape: BoxShape.circle, color: AppColor.mainRed),
+                                  )
+                                : Container(),
+                            Text(
+                              "${DateFormat("mm:ss").format(DateTime.fromMillisecondsSinceEpoch(_milliDuration))}",
+                              style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 10),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 12,
+                        ),
+                        GestureDetector(
+                          onLongPressStart: (longPressStartDetails) async {
+                            print("开始录制！");
+                            await startRecordVideo();
+                          },
+                          onLongPressEnd: (longPressEndDetails) {
+                            finishRecording();
+                          },
+                          behavior: HitTestBehavior.opaque,
+                          child: Container(
+                            width: 66,
+                            height: 66,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: AppColor.white, width: 4),
+                            ),
+                            child: Container(
+                              width: 49,
+                              height: 49,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: _isRecording ? AppColor.white.withOpacity(0.24) : AppColor.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
     );
@@ -318,6 +322,11 @@ class CameraVideoState extends State<CameraVideoPage> with WidgetsBindingObserve
       _timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
         setState(() {
           _milliDuration = timer.tick * 100;
+          if (_milliDuration >= maxRecordVideoDuration * 1000) {
+            timer.cancel();
+            //结束录制
+            finishRecording();
+          }
         });
       });
     });
@@ -340,5 +349,46 @@ class CameraVideoState extends State<CameraVideoPage> with WidgetsBindingObserve
       _isRecording = false;
       _timer.cancel();
     });
+  }
+
+  Future<void> finishRecording() async {
+    print("结束录制！");
+    await stopRecordVideo();
+    //检查时长 满足条件则跳转预览页
+    if (_milliDuration > minRecordVideoDuration * 1000) {
+      //设置尺寸信息
+      SizeInfo sizeInfo = SizeInfo();
+      sizeInfo.width = _cameraSize.width.toInt();
+      sizeInfo.height = _cameraSize.height.toInt();
+      sizeInfo.duration = _milliDuration ~/ 1000;
+      sizeInfo.videoCroppedRatio = 1.0;
+      sizeInfo.createTime = File(_filePath).lastModifiedSync().millisecondsSinceEpoch;
+      if (sizeInfo.width > sizeInfo.height) {
+        sizeInfo.offsetRatioX = (sizeInfo.height - sizeInfo.width) / 2 / sizeInfo.width;
+      } else if (sizeInfo.width < sizeInfo.height) {
+        sizeInfo.offsetRatioY = (sizeInfo.width - sizeInfo.height) / 2 / sizeInfo.height;
+      }
+      AppRouter.navigateToPreviewVideoPage(
+        context,
+        _filePath,
+        sizeInfo,
+        (result) {
+          if (result != null) {
+            if (widget.publishMode == 1) {
+              Navigator.pop(context, result);
+              AppRouter.navigateToReleasePage(context);
+            } else if (widget.publishMode == 2) {
+              AppRouter.navigateToReleasePage(context);
+            } else {
+              Navigator.pop(context, result);
+            }
+          }
+        },
+      );
+    } else {
+      print("时长不够！");
+    }
+    _milliDuration = 0;
+    _filePath = null;
   }
 }

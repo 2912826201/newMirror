@@ -48,6 +48,7 @@ import 'data/model/message/top_chat_model.dart';
 import 'data/model/message/voice_alert_date_model.dart';
 import 'data/model/token_model.dart';
 import 'data/notifier/machine_notifier.dart';
+import 'data/notifier/release_progress_notifier.dart';
 import 'data/notifier/token_notifier.dart';
 import 'data/notifier/profile_notifier.dart';
 import 'data/notifier/unread_message_notifier.dart';
@@ -88,6 +89,8 @@ void main() {
             //记录未读消息数 目前只记录3种互动通知的数量 从接口获取更新数据
             ChangeNotifierProvider(create: (_) => UnreadMessageNotifier()),
             ChangeNotifierProvider(create: (_) => FeedFlowDataNotifier()),
+            // 发布动态进度条
+            ChangeNotifierProvider(create: (_) => ReleaseProgressNotifier()),
             ChangeNotifierProvider(create: (_)=>AddressPickerNotifier())
           ],
           child: MyApp(),
