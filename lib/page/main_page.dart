@@ -4,6 +4,7 @@ import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/profile/profile_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/data/notifier/release_progress_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/home/home_page.dart';
 import 'package:mirror/page/if_page.dart';
@@ -22,7 +23,7 @@ class MainPage extends StatefulWidget {
   MainPageState createState() => MainPageState();
 }
 
-class MainPageState extends XCState{
+class MainPageState extends XCState {
   int currentIndex;
   bool isInit = false;
 
@@ -47,6 +48,7 @@ class MainPageState extends XCState{
     currentIndex = 0;
     _start = (ScreenUtil.instance.width / 5) / 7;
   }
+
   @override
   void dispose() {
     // controller.dispose();
@@ -126,12 +128,14 @@ class MainPageState extends XCState{
     ProfileModel attentionModel = await ProfileFollowCount();
     if (attentionModel != null) {
       print('  666666666666666666666666666666666666${attentionModel.toJson().toString()}');
-      context.read<ProfilePageNotifier>().changeAttentionModel(attentionModel, context.read<ProfileNotifier>()
-          .profile.uid);
+      context
+          .read<ProfilePageNotifier>()
+          .changeAttentionModel(attentionModel, context.read<ProfileNotifier>().profile.uid);
     }
   }
+
   // 自定义BottomAppBar
-  Widget tabbar(int index, BuildContext context,double itemWidth) {
+  Widget tabbar(int index, BuildContext context, double itemWidth) {
     //设置默认未选中的状态
     TextStyle style = TextStyle(fontSize: 15, color: Colors.black);
     String imgUrl = normalImgUrls[index];
@@ -148,7 +152,7 @@ class MainPageState extends XCState{
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             GestureDetector(
-             behavior: HitTestBehavior.opaque,
+              behavior: HitTestBehavior.opaque,
               child: Container(
                 padding: EdgeInsets.only(top: 2, bottom: 2, left: 7.5, right: 7.5),
                 child: Row(
@@ -201,6 +205,7 @@ class MainPageState extends XCState{
         ),
       );
     }
+
     return item(context);
   }
 
@@ -210,12 +215,18 @@ class MainPageState extends XCState{
     double itemWidth = MediaQuery.of(context).size.width / 5;
     // print("初始创建底部页");
     // print(ScreenUtil.instance.bottomBarHeight);
-    return Scaffold(
-      // 此属性是重新计算布局空间大小
-      // 内部元素要监听键盘高度必需要设置为false,
-      // resizeToAvoidBottomInset: true,
-      bottomNavigationBar: BottomAppBar(
-          child: Stack(
+    // return ChangeNotifierProvider(
+    //     create: (_) => ReleaseProgressNotifier(plannedSpeed: 0.0),
+    // builder: (context, _) {
+    return ChangeNotifierProvider(
+      create: (_) => ReleaseProgressNotifier(plannedSpeed: 0.0),
+      builder: (context, _) {
+        return Scaffold(
+          // 此属性是重新计算布局空间大小
+          // 内部元素要监听键盘高度必需要设置为false,
+          // resizeToAvoidBottomInset: true,
+          bottomNavigationBar: BottomAppBar(
+              child: Stack(
             children: <Widget>[
               AnimatedPositionedDirectional(
                 top: 9,
@@ -229,48 +240,50 @@ class MainPageState extends XCState{
               ),
               Row(children: [
                 Expanded(
-                  child: SizedBox(height: 51, width: itemWidth, child: tabbar(0, context,itemWidth)),
+                  child: SizedBox(height: 51, width: itemWidth, child: tabbar(0, context, itemWidth)),
                   flex: 1,
                 ),
                 Expanded(
-                  child: SizedBox(height: 51, width: itemWidth, child: tabbar(1, context,itemWidth)),
+                  child: SizedBox(height: 51, width: itemWidth, child: tabbar(1, context, itemWidth)),
                   flex: 1,
                 ),
                 Expanded(
-                  child: SizedBox(height: 51, width: itemWidth, child: tabbar(2, context,itemWidth)),
+                  child: SizedBox(height: 51, width: itemWidth, child: tabbar(2, context, itemWidth)),
                   flex: 1,
                 ),
                 Expanded(
-                  child: SizedBox(height: 51, width: itemWidth, child: tabbar(3, context,itemWidth)),
+                  child: SizedBox(height: 51, width: itemWidth, child: tabbar(3, context, itemWidth)),
                   flex: 1,
                 )
               ])
             ],
           )),
-      // SlidingUpPanel
-      body:
-      // pages[currentIndex]
-      Stack(
-        children: <Widget>[
-          new Offstage(
-            offstage: currentIndex != 0, //这里控制
-            child: HomePage(),
+          // SlidingUpPanel
+          body:
+              // pages[currentIndex]
+              Stack(
+            children: <Widget>[
+              new Offstage(
+                offstage: currentIndex != 0, //这里控制
+                child: HomePage(),
+              ),
+              new Offstage(
+                offstage: currentIndex != 1, //这里控制
+                child: TrainingPage(),
+              ),
+              new Offstage(
+                offstage: currentIndex != 2, //这里控制
+                child: context.watch<TokenNotifier>().isLoggedIn ? MessagePage() : Container(),
+              ),
+              new Offstage(
+                offstage: currentIndex != 3, //这里控制
+                child: context.watch<TokenNotifier>().isLoggedIn ? ProfilePage() : Container(),
+              ),
+            ],
           ),
-          new Offstage(
-            offstage: currentIndex != 1, //这里控制
-            child: TrainingPage(),
-          ),
-          new Offstage(
-            offstage: currentIndex != 2, //这里控制
-            child: context.watch<TokenNotifier>().isLoggedIn ? MessagePage() : Container(),
-          ),
-          new Offstage(
-            offstage: currentIndex != 3, //这里控制
-            child: context.watch<TokenNotifier>().isLoggedIn ? ProfilePage() : Container(),
-          ),
-        ],
-      ),
-      // returnView(currentIndex),
+          // returnView(currentIndex),
+        );
+      },
     );
   }
 }
@@ -280,6 +293,7 @@ class SelectedbottomNavigationBarNotifier extends ChangeNotifier {
   SelectedbottomNavigationBarNotifier(this.selectedIndex);
 
   int selectedIndex;
+
   changeIndex(int index) {
     print("changeIndex $index");
     this.selectedIndex = index;
