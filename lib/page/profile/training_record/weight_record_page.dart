@@ -5,6 +5,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
@@ -68,14 +69,25 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
             child: GestureDetector(
               child: Container(
                 color: AppColor.textPrimary2,
-                height: 83,
+                height: 48,
                 width: MediaQuery.of(context).size.width,
-                alignment: Alignment.topCenter,
-                padding: const EdgeInsets.only(top: 13.5),
+                alignment: Alignment.center,
                 child: Text(
                   "记录体重",
                   style: TextStyle(fontSize: 16, color: AppColor.white),
                 ),
+              ),
+              onTap: showAppDialogSaveWeight,
+            ),
+            bottom: ScreenUtil.instance.bottomBarHeight,
+          ),
+          Positioned(
+            child: GestureDetector(
+              child: Container(
+                color: AppColor.textPrimary2,
+                height: ScreenUtil.instance.bottomBarHeight,
+                width: MediaQuery.of(context).size.width,
+                alignment: Alignment.center,
               ),
               onTap: showAppDialogSaveWeight,
             ),
@@ -311,7 +323,8 @@ class _WeightRecordPageState extends State<WeightRecordPage> {
                     controller: _numberController,
                     inputFormatters: [PrecisionLimitFormatter(2)],
                     decoration: InputDecoration(
-                      hintText: userWeight > 0.0 ? userWeight.toString() : "",
+                      // hintText: userWeight > 0.0 ? userWeight.toString() : "",
+                      hintText:"",
                       labelStyle: TextStyle(color: Color(0x99000000)),
                       hintMaxLines: 1,
                       // 主要添加以下代码
