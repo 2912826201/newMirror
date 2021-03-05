@@ -43,6 +43,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.1.2"
+  another_flushbar:
+    dependency: "direct main"
+    description:
+      name: another_flushbar
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.10.11"
   app_settings:
     dependency: "direct main"
     description:
@@ -753,6 +760,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.5"
+  r_upgrade:
+    dependency: "direct main"
+    description:
+      name: r_upgrade
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.3.2+3"
   recase:
     dependency: transitive
     description:

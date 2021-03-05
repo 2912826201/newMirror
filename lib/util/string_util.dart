@@ -209,7 +209,7 @@ class StringUtil {
   大于10000，则显示为w，采取末位舍去法保留小数点后一位，如：60400显示为6w，63500显示为6.3w
    */
   static String getNumber(int number) {
-    if (number == 0 || number == null||number<0) {
+    if (number == null||number == 0 || number<0) {
       return 0.toString();
     }
     if (number < 10000) {

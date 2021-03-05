@@ -29,7 +29,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 // 动态详情页
 class FeedDetailPage extends StatefulWidget {
-  FeedDetailPage({Key key, this.model, this.type, this.index, this.comment, this.fatherModel,this.errorCode});
+  FeedDetailPage({Key key, this.model, this.type, this.index, this.comment, this.fatherModel,this.errorCode,this.isInterative});
 
   CommentDtoModel fatherModel;
   CommentDtoModel comment;
@@ -37,6 +37,7 @@ class FeedDetailPage extends StatefulWidget {
   int index;
   int type;
   int errorCode;
+  bool isInterative;
   @override
   FeedDetailPageState createState() => FeedDetailPageState();
 }
@@ -261,6 +262,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
         targetId: feedModel.id,
         pushId: feedModel.pushId,
         targetType: 0,
+        isInteractiveIn: widget.isInterative,
         pageCommentSize: 20,
         pageSubCommentSize: 3,
         externalScrollHeight: itemHeight.toInt(),

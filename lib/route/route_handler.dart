@@ -301,7 +301,8 @@ var handlerLiveDetail = Handler(handlerFunc: (BuildContext context, Map<String, 
     isHaveStartTime: data["isHaveStartTime"],
     liveModel: liveModel,
     commentDtoModel: data["commentDtoModel"] == null ? null : CommentDtoModel.fromJson(data["commentDtoModel"]),
-    fatherComment: data["fatherComment"] == null ? null : CommentDtoModel.fromJson(data["fatherComment"]),
+    fatherComment: data["fatherComment"] == null ? null : CommentDtoModel.fromJson(data["fatherComment"],),
+    isInteractive: data["isInteractive"],
   );
 });
 
@@ -317,7 +318,9 @@ var handlerVideoDetail = Handler(handlerFunc: (BuildContext context, Map<String,
     videoCourseId: data["videoCourseId"],
     videoModel: videoModel,
     commentDtoModel: data["commentDtoModel"] == null ? null : CommentDtoModel.fromJson(data["commentDtoModel"]),
-    fatherComment: data["fatherComment"] == null ? null : CommentDtoModel.fromJson(data["fatherComment"]),
+    fatherComment: data["fatherComment"] == null ? null : CommentDtoModel.fromJson(data["fatherComment"],
+    ),
+    isInteractive: data["isInteractive"],
   );
 });
 
@@ -501,6 +504,7 @@ var handlerFeedDetailPage = Handler(handlerFunc: (BuildContext context, Map<Stri
     index: data['index'],
     type: data['type'],
     errorCode: data["errorCode"],
+    isInterative: data["isInteractive"],
   );
 });
 // 所在位置页面
