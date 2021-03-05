@@ -12,9 +12,12 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/data/notifier/release_progress_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/home/sub_page/attention_page.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
+import 'package:mirror/page/home/sub_page/share_page/release_progress_view.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -50,171 +53,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     super.dispose();
   }
 
-// 创建发布进度视图
-  createdPostPromptView() {
-    // 展示文字
-    return Container(
-      height: 60,
-      width: ScreenUtil.instance.screenWidthDp,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-              child: Container(
-                  margin: EdgeInsets.only(left: 16, right: 16),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      context.watch<FeedMapNotifier>().postFeedModel.selectedMediaFiles != null
-                          ? Container(
-                              width: 36,
-                              height: 36,
-                              margin: EdgeInsets.only(right: 6),
-                              child: Stack(
-                                alignment: const FractionalOffset(0.5, 0.5),
-                                children: [
-                                  context.watch<FeedMapNotifier>().postFeedModel.selectedMediaFiles.type ==
-                                          mediaTypeKeyVideo
-                                      ? Image.memory(
-                                          context
-                                              .watch<FeedMapNotifier>()
-                                              .postFeedModel
-                                              .selectedMediaFiles
-                                              .list
-                                              .first
-                                              .thumb,
-                                          fit: BoxFit.cover,
-                                        )
-                                      : context
-                                                  .watch<FeedMapNotifier>()
-                                                  .postFeedModel
-                                                  .selectedMediaFiles
-                                                  .list
-                                                  .first
-                                                  .croppedImageData !=
-                                              null
-                                          ? Image.memory(
-                                              context
-                                                  .watch<FeedMapNotifier>()
-                                                  .postFeedModel
-                                                  .selectedMediaFiles
-                                                  .list
-                                                  .first
-                                                  .croppedImageData,
-                                              fit: BoxFit.cover,
-                                            )
-                                          : context
-                                                      .watch<FeedMapNotifier>()
-                                                      .postFeedModel
-                                                      .selectedMediaFiles
-                                                      .list
-                                                      .first
-                                                      .file !=
-                                                  null
-                                              ? Image.file(
-                                                  context
-                                                      .watch<FeedMapNotifier>()
-                                                      .postFeedModel
-                                                      .selectedMediaFiles
-                                                      .list
-                                                      .first
-                                                      .file,
-                                                  fit: BoxFit.cover,
-                                                )
-                                              : Container(),
-                                  context.watch<FeedMapNotifier>().postFeedModel.selectedMediaFiles.type ==
-                                          mediaTypeKeyVideo
-                                      ?
-                                      // Positioned(
-                                      //     top: 15,
-                                      //     bottom: 15,
-                                      //     child:
-                                      Container(
-                                          width: 13,
-                                          height: 13,
-                                          color: AppColor.mainRed,
-                                          // )
-                                        )
-                                      : Container()
-                                ],
-                              ),
-                            )
-                          : Container(),
-                      publishTextStatus(context.watch<FeedMapNotifier>().plannedSpeed),
-                      Spacer(),
-                      Offstage(
-                          offstage: context.watch<FeedMapNotifier>().plannedSpeed != -1,
-                          child: Container(
-                            width: 48,
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 18,
-                                  height: 18,
-                                  color: Colors.lime,
-                                ),
-                                Spacer(),
-                                Container(
-                                  width: 18,
-                                  height: 18,
-                                  color: Colors.lime,
-                                ),
-                              ],
-                            ),
-                          ))
-                    ],
-                  ))),
-          LinearProgressIndicator(
-            value:
-                context.watch<FeedMapNotifier>().plannedSpeed != -1 ? context.watch<FeedMapNotifier>().plannedSpeed : 1,
-            valueColor: new AlwaysStoppedAnimation<Color>(
-                context.watch<FeedMapNotifier>().plannedSpeed != -1 ? AppColor.mainRed : Colors.amberAccent),
-            backgroundColor: AppColor.white,
-          ),
-        ],
-      ),
-    );
-  }
-
-// 发布动态进度条视图
-  publishTextStatus(double plannedSpeed) {
-    print("空值的来历￥￥$plannedSpeed");
-    if (plannedSpeed >= 0 && plannedSpeed < 1) {
-      return Text(
-        "正在发布",
-        style: AppStyle.textSecondaryRegular14,
-      );
-    } else if (plannedSpeed == 1) {
-      return Text(
-        "完成",
-        style: AppStyle.textSecondaryRegular14,
-      );
-    } else if (plannedSpeed == -1) {
-      return Container(
-        height: 36,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "发布失败",
-              style: AppStyle.textMedium14,
-            ),
-            Text(
-              "我们会在网络信号改善时重试",
-              style: AppStyle.textSecondaryRegular11,
-            )
-          ],
-        ),
-      );
-      // return Text(
-      //   "我们会在网络信号改善时重试",
-      //   style: AppStyle.textSecondaryRegular11,
-      // );
-    }
-  }
-
   // 发布动态
   pulishFeed() async {
     List<File> fileList = [];
@@ -222,8 +60,8 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     List<PicUrlsModel> picUrls = [];
     List<VideosModel> videos = [];
     // 设置不可发布
-    context.watch<FeedMapNotifier>().isPublish = false;
-    PostFeedModel postFeedModel = context.watch<FeedMapNotifier>().postFeedModel;
+    context.watch<ReleaseProgressNotifier>().isPublish = false;
+    PostFeedModel postFeedModel = context.watch<ReleaseProgressNotifier>().postFeedModel;
     if (postFeedModel != null) {
       PostFeedModel postModel = postFeedModel;
       print("掉发布数据");
@@ -246,7 +84,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
         });
         print("uploadPics111111");
         results = await FileUtil().uploadPics(fileList, (percent) {
-          context.read<FeedMapNotifier>().getPostPlannedSpeed(percent);
+          context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(percent);
         });
 
         print(results.isSuccess);
@@ -267,7 +105,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
               offsetRatioY: element.sizeInfo.offsetRatioY));
         });
         results = await FileUtil().uploadMedias(fileList, (percent) {
-          context.read<FeedMapNotifier>().getPostPlannedSpeed(percent);
+          context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(percent);
         });
         for (int i = 0; i < results.resultMap.length; i++) {
           print("打印一下视频索引值￥$i");
@@ -292,35 +130,28 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
         print("发不接受发布结束：feedModel$feedModel");
 
         if (feedModel != null) {
-          // _process = 1.0;
-          // context.read<FeedMapNotifier>().getPostPlannedSpeed(_process);
           // 发布完成
           // 延迟器:
           new Future.delayed(Duration(seconds: 3), () {
             // 清空发布model
-            context.read<FeedMapNotifier>().setPublishFeedModel(null);
+            context.read<ReleaseProgressNotifier>().setPublishFeedModel(null);
             //还原进度条
             _process = 0.0;
-            context.read<FeedMapNotifier>().getPostPlannedSpeed(_process);
+            context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(_process);
             // 设置可发布
-            context.read<FeedMapNotifier>().isPublish = true;
+            context.read<ReleaseProgressNotifier>().isPublish = true;
           });
-          // new Future.delayed(Duration(seconds: 1), () {
-          // 插入数据
-          attentionKey.currentState.insertData(HomeFeedModel.fromJson(feedModel));
-          // context
-          //     .read<FeedMapNotifier>()
-          //     .PublishInsertData(HomeFeedModel.fromJson(feedModel).id, HomeFeedModel.fromJson(feedModel));
-          // });
+          // 数据更新
+          attentionKey.currentState.replaceData(HomeFeedModel.fromJson(feedModel));
         } else {
           // 发布失败
           print('================================发布失败');
           // 清空发布model
           // context.read<FeedMapNotifier>().setPublishFeedModel(null);
           // 设置不可发布
-          context.read<FeedMapNotifier>().setPublish(false);
+          context.read<ReleaseProgressNotifier>().setPublish(false);
           _process = -1.0;
-          context.read<FeedMapNotifier>().getPostPlannedSpeed(_process);
+          context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(_process);
         }
       }
     }
@@ -331,7 +162,10 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     super.build(context);
     print("HomePage_____________________________________________build");
     // 发布动态
-    if (context.watch<FeedMapNotifier>().postFeedModel != null && context.watch<FeedMapNotifier>().isPublish) {
+    if (context.watch<ReleaseProgressNotifier>().postFeedModel != null && context.watch<ReleaseProgressNotifier>().isPublish) {
+      print("疯狂)))))))))))))))))))))");
+      PostFeedModel postFeedModel = context.watch<ReleaseProgressNotifier>().postFeedModel;
+      HomeFeedModel homeFeedModel = HomeFeedModel();
       // 定位到main_page页
       Application.ifPageController.index = Application.ifPageController.length - 1;
       // 定位到关注页
@@ -339,6 +173,50 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
       // 关注页回到顶部
       if (attentionKey.currentState != null) {
         attentionKey.currentState.backToTheTop();
+      }
+      // 发布model转换动态model展示
+      //  context.select((ProfileNotifier value) => value.profile.avatarUri
+      homeFeedModel.name = context.watch<ProfileNotifier>().profile.nickName;
+      homeFeedModel.avatarUrl = context.watch<ProfileNotifier>().profile.avatarUri;
+      homeFeedModel.pushId = context.watch<ProfileNotifier>().profile.uid;
+      homeFeedModel.createTime = postFeedModel.currentTimestamp;
+      homeFeedModel.content = postFeedModel.content;
+      homeFeedModel.address = postFeedModel.address;
+      homeFeedModel.cityCode = postFeedModel.cityCode;
+      homeFeedModel.id = Application.insertFeedId;
+      homeFeedModel.type = 0;
+      homeFeedModel.courseDto = null;
+      homeFeedModel.commentCount = 0;
+      homeFeedModel.laudCount = 0;
+      homeFeedModel.shareCount = 0;
+      homeFeedModel.readCount = 0;
+      homeFeedModel.isFollow = 0;
+      homeFeedModel.isLaud = 0;
+      homeFeedModel.picUrls = [];
+      homeFeedModel.videos = [];
+      homeFeedModel.atUsers = [];
+      homeFeedModel.topics = [];
+      homeFeedModel.laudUserInfo = [];
+      homeFeedModel.comments = [];
+      homeFeedModel.isShowInputBox = true;
+      if (postFeedModel.longitude != null) {
+        homeFeedModel.longitude = double.parse(postFeedModel.longitude);
+      }
+      if (postFeedModel.latitude != null) {
+        homeFeedModel.latitude = double.parse(postFeedModel.latitude);
+      }
+      if (postFeedModel.selectedMediaFiles != null) {
+        print("有图片视频文件");
+        homeFeedModel.selectedMediaFiles = postFeedModel.selectedMediaFiles;
+        print(homeFeedModel.toString());
+      }
+      // 插入数据
+      if (attentionKey.currentState != null) {
+        attentionKey.currentState.insertData(homeFeedModel);
+      } else {
+        new Future.delayed(Duration(milliseconds: 500), () {
+          attentionKey.currentState.insertData(homeFeedModel);
+        });
       }
       // 发布动态
       pulishFeed();
@@ -352,8 +230,8 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
               // isLeading: true,
               onTap: () {
                 print("${FluroRouter.appRouter.hashCode}");
-                if (context.read<FeedMapNotifier>().postFeedModel != null) {
-                  if (context.read<FeedMapNotifier>().plannedSpeed != -1) {
+                if (context.read<ReleaseProgressNotifier>().postFeedModel != null) {
+                  if (context.read<ReleaseProgressNotifier>().plannedSpeed != -1) {
                     ToastShow.show(msg: "你有动态正在发送中，请稍等", context: context, gravity: Toast.CENTER);
                   } else {
                     ToastShow.show(msg: "动态发送失败", context: context, gravity: Toast.CENTER);
@@ -410,10 +288,10 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
         ),
         body: Column(
           children: [
-            context.watch<FeedMapNotifier>().postFeedModel != null
+            context.watch<ReleaseProgressNotifier>().postFeedModel != null
                 ? Offstage(
-                    offstage: context.watch<FeedMapNotifier>().postFeedModel == null,
-                    child: createdPostPromptView(),
+                    offstage: context.watch<ReleaseProgressNotifier>().postFeedModel == null,
+                    child: ReleaseProgressView(),
                   )
                 : Container(),
             Expanded(
@@ -422,7 +300,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                 children: [
                   AttentionPage(
                     key: attentionKey,
-                    postFeedModel: context.watch<FeedMapNotifier>().postFeedModel,
                   ),
                   RecommendPage()
                   // RecommendPage()

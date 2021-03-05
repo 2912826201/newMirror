@@ -9,6 +9,7 @@ import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
@@ -42,6 +43,12 @@ class _SlideBannerState extends State<SlideBanner> {
   int zindex = 0; //要移入的下标
   Timer timer;
 
+  // 图片张数
+  int imageCount = 0;
+
+  // 图片宽度
+  int imageWidth = 0;
+
   // scroll_to_index定位
   AutoScrollController controller;
   SwiperController swiperController = SwiperController();
@@ -52,6 +59,15 @@ class _SlideBannerState extends State<SlideBanner> {
   @override
   void initState() {
     super.initState();
+    if (widget.model.selectedMediaFiles != null) {
+      print("图片显示问题:::${widget.model.selectedMediaFiles.list.first.file}");
+      imageCount = widget.model.selectedMediaFiles.list.length;
+      imageWidth = widget.model.selectedMediaFiles.list.first.sizeInfo.width;
+    }
+    if (widget.model.picUrls.isNotEmpty) {
+      imageCount = widget.model.picUrls.length;
+      imageWidth = widget.model.picUrls.first.width;
+    }
     swiperController.addListener(() {
       print(swiperController.index);
     });
@@ -71,7 +87,7 @@ class _SlideBannerState extends State<SlideBanner> {
 
   // 返回指示器的总宽度
   double getWidth() {
-    var num = widget.model.picUrls.length;
+    var num = imageCount;
     if (num <= 5) {
       return 3 * 8.0 + 6 + 10;
     } else {
@@ -88,8 +104,8 @@ class _SlideBannerState extends State<SlideBanner> {
   // 通过代码滑动指示器位置。
   slidingPosition(int index) async {
     print("索引$index");
-    if (widget.model.picUrls.length > 5) {
-      if (index >= 3 && index + 2 < widget.model.picUrls.length) {
+    if (imageCount > 5) {
+      if (index >= 3 && index + 2 < imageCount) {
         await controller.scrollToIndex(index - 2, preferPosition: AutoScrollPosition.begin);
         controller.highlight(index - 2);
       }
@@ -102,7 +118,7 @@ class _SlideBannerState extends State<SlideBanner> {
 
   // 返回指示器内部元素size。
   double elementSize(int index) {
-    if (widget.model.picUrls.length <= 5) {
+    if (imageCount <= 5) {
       if (index == zindex) {
         return 7;
       } else {
@@ -118,7 +134,7 @@ class _SlideBannerState extends State<SlideBanner> {
           return 5;
         }
       }
-      if (zindex >= 3 && zindex + 3 < widget.model.picUrls.length) {
+      if (zindex >= 3 && zindex + 3 < imageCount) {
         if (index == zindex) {
           return 7;
         } else if (zindex - index == 2 || index - zindex == 2) {
@@ -127,16 +143,14 @@ class _SlideBannerState extends State<SlideBanner> {
           return 5;
         }
       }
-      if (zindex == widget.model.picUrls.length - 1 ||
-          zindex == widget.model.picUrls.length - 2 ||
-          zindex == widget.model.picUrls.length - 3) {
+      if (zindex == imageCount - 1 || zindex == imageCount - 2 || zindex == imageCount - 3) {
         if (index == zindex) {
           return 7;
-        } else if (index + 2 == zindex && zindex == widget.model.picUrls.length - 3) {
+        } else if (index + 2 == zindex && zindex == imageCount - 3) {
           return 3;
-        } else if (index + 3 == zindex && zindex == widget.model.picUrls.length - 2) {
+        } else if (index + 3 == zindex && zindex == imageCount - 2) {
           return 3;
-        } else if (index + 4 == zindex && zindex == widget.model.picUrls.length - 1) {
+        } else if (index + 4 == zindex && zindex == imageCount - 1) {
           return 3;
         } else {
           return 5;
@@ -172,14 +186,14 @@ class _SlideBannerState extends State<SlideBanner> {
   // }
   // 轮播图图片设置
   Widget buildShowItemContainer(int indexs, double height) {
-    ExtendedImageGesturePageView.builder(itemBuilder: (BuildContext context, int index) {
-      var item = widget.model.picUrls[index].url;
-      Widget image = ExtendedImage.network(
-        item,
-        fit: BoxFit.contain,
-        mode: ExtendedImageMode.gesture,
-      );
-    });
+    // ExtendedImageGesturePageView.builder(itemBuilder: (BuildContext context, int index) {
+    //   var item = widget.model.picUrls[index].url;
+    //   Widget image = ExtendedImage.network(
+    //     item,
+    //     fit: BoxFit.contain,
+    //     mode: ExtendedImageMode.gesture,
+    //   );
+    // });
     return widget.isDynamicDetails
         ? CupertinoButton(
             borderRadius: BorderRadius.zero,
@@ -211,23 +225,35 @@ class _SlideBannerState extends State<SlideBanner> {
               ),
             ),
           )
-        : Container(
-            width: ScreenUtil.instance.width,
-            height: height,
-            child: CachedNetworkImage(
-              fit: BoxFit.cover,
-              placeholder: (context, url) => new Container(
-                //     child: new Center(
-                //   child: new CircularProgressIndicator(),
-                // )
-                child: Image.network(
-                  widget.model.picUrls[indexs].url != null ? widget.model.picUrls[indexs].url : "",
+        : widget.model.picUrls.isNotEmpty
+            ? Container(
+                width: ScreenUtil.instance.width,
+                height: height,
+                child: CachedNetworkImage(
                   fit: BoxFit.cover,
-                ),
-              ),
-              imageUrl: widget.model.picUrls[indexs].url != null ? widget.model.picUrls[indexs].url : "",
-              errorWidget: (context, url, error) => new Image.asset("images/test.png"),
-            ));
+                  placeholder: (context, url) => new Container(
+                      child: new Center(
+                    child: new CircularProgressIndicator(),
+                  )),
+                  imageUrl: widget.model.picUrls[indexs].url != null ? widget.model.picUrls[indexs].url : "",
+                  errorWidget: (context, url, error) => new Image.asset("images/test.png"),
+                ))
+            : widget.model.selectedMediaFiles != null
+                ? Container(
+                    width: ScreenUtil.instance.width,
+                    height: height,
+                    child: widget.model.selectedMediaFiles.list.first.croppedImageData != null
+                        ? Image.memory(
+                            widget.model.selectedMediaFiles.list.first.croppedImageData,
+                            fit: BoxFit.cover,
+                          )
+                        : widget.model.selectedMediaFiles.list.first.file != null
+                            ? Image.file(
+                                widget.model.selectedMediaFiles.list.first.file,
+                                fit: BoxFit.cover,
+                              )
+                            : Container())
+                : Container();
   }
 
   // 宽高比
@@ -235,7 +261,7 @@ class _SlideBannerState extends State<SlideBanner> {
     if (height == 0) {
       return ScreenUtil.instance.width;
     } else {
-      return (ScreenUtil.instance.width / widget.model.picUrls[0].width) * height;
+      return (ScreenUtil.instance.width / imageWidth) * height;
     }
   }
 
@@ -312,41 +338,66 @@ class _SlideBannerState extends State<SlideBanner> {
                     //
                     //   },
                     // ),
-                    child: Swiper.children(
-                      children: [
-                        for (PicUrlsModel item in widget.model.picUrls)
-                          widget.isDynamicDetails || (!widget.isHero)
-                              ? buildShowItemContainer(
-                                  widget.model.picUrls.indexOf(item),
-                                  setAspectRatio(widget.height),
-                                )
-                              : Hero(
-                                  tag: widget.pageName + "${widget.model.id}${widget.index}",
-                                  child: buildShowItemContainer(
-                                    widget.model.picUrls.indexOf(item),
-                                    setAspectRatio(widget.height),
-                                  ))
-                      ],
-                      controller: swiperController,
-                      loop: false,
-                      onIndexChanged: (index) {
-                        autoPlay(index);
-                      },
-                      onTap: (index) {},
-                    )),
+                    child: widget.model.picUrls.isNotEmpty
+                        ? Swiper.children(
+                            children: [
+                              for (PicUrlsModel item in widget.model.picUrls)
+                                widget.isDynamicDetails || (!widget.isHero)
+                                    ? buildShowItemContainer(
+                                        widget.model.picUrls.indexOf(item),
+                                        setAspectRatio(widget.height),
+                                      )
+                                    : Hero(
+                                        tag: widget.pageName + "${widget.model.id}${widget.index}",
+                                        child: buildShowItemContainer(
+                                          widget.model.picUrls.indexOf(item),
+                                          setAspectRatio(widget.height),
+                                        ))
+                            ],
+                            controller: swiperController,
+                            loop: false,
+                            onIndexChanged: (index) {
+                              autoPlay(index);
+                            },
+                            onTap: (index) {},
+                          )
+                        : widget.model.selectedMediaFiles != null
+                            ? Swiper.children(
+                                children: [
+                                  for (MediaFileModel item in widget.model.selectedMediaFiles.list)
+                                    widget.isDynamicDetails || (!widget.isHero)
+                                        ? buildShowItemContainer(
+                                            widget.model.selectedMediaFiles.list.indexOf(item),
+                                            setAspectRatio(widget.height),
+                                          )
+                                        : Hero(
+                                            tag: widget.pageName + "${widget.model.id}${widget.index}",
+                                            child: buildShowItemContainer(
+                                              widget.model.selectedMediaFiles.list.indexOf(item),
+                                              setAspectRatio(widget.height),
+                                            ))
+                                ],
+                                controller: swiperController,
+                                loop: false,
+                                onIndexChanged: (index) {
+                                  autoPlay(index);
+                                },
+                                onTap: (index) {},
+                              )
+                            : Container()),
               ),
               Positioned(
                 top: 13,
                 right: 16,
                 child: Offstage(
-                  offstage: widget.model.picUrls.length == 1,
+                  offstage: imageCount == 1,
                   child: Container(
                     padding: EdgeInsets.only(left: 6, top: 3, right: 6, bottom: 3),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(12)),
                         color: AppColor.textPrimary1.withOpacity(0.5)),
                     child: Text(
-                      "${zindex + 1}/${widget.model.picUrls.length}",
+                      "${zindex + 1}/${imageCount}",
                       style: TextStyle(color: AppColor.white, fontSize: 12),
                     ),
                   ),
@@ -356,7 +407,7 @@ class _SlideBannerState extends State<SlideBanner> {
             ],
           ),
           Offstage(
-            offstage: widget.model.picUrls.length == 1,
+            offstage: imageCount == 1,
             child: Container(
               width: getWidth(),
               height: 10,
@@ -365,7 +416,7 @@ class _SlideBannerState extends State<SlideBanner> {
               child: ListView.builder(
                   scrollDirection: scrollDirection,
                   controller: controller,
-                  itemCount: widget.model.picUrls.length,
+                  itemCount: imageCount,
                   // 禁止手动滑动
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {

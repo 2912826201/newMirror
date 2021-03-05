@@ -75,17 +75,29 @@ class DynamicListLayout extends StatelessWidget {
               removeFollowChanged(m);
             }),
         // 图片区域
-        model.picUrls.isNotEmpty
+        model.selectedMediaFiles != null && model.selectedMediaFiles.type == mediaTypeKeyImage
             ? SlideBanner(
-                height: model.picUrls[0].height.toDouble(),
+                height: model.selectedMediaFiles.list.first.sizeInfo.height.toDouble(),
                 model: model,
                 index: index,
                 pageName: pageName,
                 isHero: isHero,
               )
-            : Container(),
+            : model.picUrls.length > 0
+                ? SlideBanner(
+                    height: model.picUrls[0].height.toDouble(),
+                    model: model,
+                    index: index,
+                    pageName: pageName,
+                    isHero: isHero,
+                  )
+                : Container(),
         // 视频区域
-        model.videos.isNotEmpty ? getVideo(model.videos) : Container(),
+        model.selectedMediaFiles != null && model.selectedMediaFiles.type == mediaTypeKeyVideo
+            ? getVideo(selectedMediaFiles: model.selectedMediaFiles)
+            : model.videos.isNotEmpty
+                ? getVideo(videos: model.videos)
+                : Container(),
         // 点赞，转发，评论三连区域 getTripleArea
         GetTripleArea(model: model, index: index),
         // 课程信息和地址
@@ -161,20 +173,39 @@ class DynamicListLayout extends StatelessWidget {
   // }
 
 // 视频
-  Widget getVideo(List<VideosModel> videos) {
+  Widget getVideo({List<VideosModel> videos, SelectedMediaFiles selectedMediaFiles}) {
     SizeInfo sizeInfo = SizeInfo();
-    sizeInfo.width = videos.first.width;
-    sizeInfo.height = videos.first.height;
-    sizeInfo.duration = videos.first.duration;
-    sizeInfo.offsetRatioX = videos.first.offsetRatioX ?? 0.0;
-    sizeInfo.offsetRatioY = videos.first.offsetRatioY ?? 0.0;
-    sizeInfo.videoCroppedRatio = videos.first.videoCroppedRatio;
-    return FeedVideoPlayer(
-      videos.last.url,
-      sizeInfo,
-      ScreenUtil.instance.width,
-      isInListView: true,
-    );
+    if (videos != null) {
+      sizeInfo.width = videos.first.width;
+      sizeInfo.height = videos.first.height;
+      sizeInfo.duration = videos.first.duration;
+      sizeInfo.offsetRatioX = videos.first.offsetRatioX ?? 0.0;
+      sizeInfo.offsetRatioY = videos.first.offsetRatioY ?? 0.0;
+      sizeInfo.videoCroppedRatio = videos.first.videoCroppedRatio;
+      return FeedVideoPlayer(
+        videos.first.url,
+        sizeInfo,
+        ScreenUtil.instance.width,
+        isInListView: true,
+      );
+    }
+    if (selectedMediaFiles != null) {
+      print(selectedMediaFiles.list.first.toString());
+      print( selectedMediaFiles.list.first.file.path,);
+      sizeInfo.width = selectedMediaFiles.list.first.sizeInfo.width;
+      sizeInfo.height = selectedMediaFiles.list.first.sizeInfo.height;
+      sizeInfo.duration = selectedMediaFiles.list.first.sizeInfo.duration;
+      sizeInfo.offsetRatioX = selectedMediaFiles.list.first.sizeInfo.offsetRatioX ?? 0.0;
+      sizeInfo.offsetRatioY = selectedMediaFiles.list.first.sizeInfo.offsetRatioY ?? 0.0;
+      sizeInfo.videoCroppedRatio = selectedMediaFiles.list.first.sizeInfo.videoCroppedRatio;
+      return FeedVideoPlayer(
+        selectedMediaFiles.list.first.file.path,
+        sizeInfo,
+        ScreenUtil.instance.width,
+        isInListView: true,
+        isFile: true,
+      );
+    }
   }
 
   // 课程信息和地址

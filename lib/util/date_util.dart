@@ -281,7 +281,6 @@ class DateUtil {
         result = "刚刚";
       }
     }
-    print("result￥${result}");
     return result;
   }
 

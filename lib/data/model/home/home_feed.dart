@@ -3,6 +3,8 @@ import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/util/screen_util.dart';
 
+import '../media_file_model.dart';
+
 enum CommentTypes {
   commentFeed, // 评论动态
   commentMainCom, // 评论主评论
@@ -45,6 +47,7 @@ class HomeFeedModel {
   double headOffset;
   // 尾部偏移值
   double bottomOffset;
+  SelectedMediaFiles selectedMediaFiles;
   HomeFeedModel({
     this.id,
     this.type,
@@ -73,6 +76,7 @@ class HomeFeedModel {
     this.isShowInputBox,
     this.bottomOffset,
     this.headOffset,
+    this.selectedMediaFiles,
   });
 
   HomeFeedModel.fromJson(Map<String, dynamic> json) {
@@ -166,6 +170,7 @@ class HomeFeedModel {
     map['isShowInputBox'] = isShowInputBox;
     map['headOffset'] = headOffset;
     map['bottomOffset'] = bottomOffset;
+    map['selectedMediaFiles'] = selectedMediaFiles;
     return map;
   }
 
