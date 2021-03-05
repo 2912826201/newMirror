@@ -40,30 +40,43 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        titleString: "下载课程",
-        actions: [
-          CustomAppBarTextButton(topText, AppColor.textPrimary3, () {
-            if (courseVideoModelList != null && courseVideoModelList.length > 0) {
-              if (topText == "选择") {
-                topText = "取消";
-              } else {
-                topText = "选择";
-              }
-              selectDeleteIndexList.clear();
-              isAllSelect = false;
-              if (mounted) {
-                setState(() {});
-              }
-            } else {
-              ToastShow.show(msg: "暂无课程", context: context);
-            }
-          }),
-        ],
-      ),
-      body: getBodyUi(),
-    );
+    return WillPopScope(
+        child: Scaffold(
+          appBar: CustomAppBar(
+            titleString: "下载课程",
+            actions: [
+              CustomAppBarTextButton(topText, AppColor.textPrimary3, () {
+                if (courseVideoModelList != null && courseVideoModelList.length > 0) {
+                  if (topText == "选择") {
+                    topText = "取消";
+                  } else {
+                    topText = "选择";
+                  }
+                  selectDeleteIndexList.clear();
+                  isAllSelect = false;
+                  if (mounted) {
+                    setState(() {});
+                  }
+                } else {
+                  ToastShow.show(msg: "暂无课程", context: context);
+                }
+              }),
+            ],
+          ),
+          body: getBodyUi(),
+        ),
+        onWillPop: _requestPop);
+  }
+
+  // 监听返回
+  Future<bool> _requestPop() {
+    if (topText == "选择") {
+      return new Future.value(true);
+    } else {
+      topText = "选择";
+      setState(() {});
+      return new Future.value(false);
+    }
   }
 
   Widget getBodyUi() {
@@ -111,91 +124,103 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
 
   //底部操作面板
   Widget bottomPlan() {
-    return Container(
-      height: 48,
-      child: Stack(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            width: MediaQuery.of(context).size.width,
-            height: 48,
-            child: Row(
-              children: [
-                Container(
-                  width: 18,
-                  height: 18,
-                  margin: const EdgeInsets.only(top: 1),
-                  decoration: BoxDecoration(
-                    color: isAllSelect ? AppColor.mainRed : AppColor.white,
-                    border: Border.all(width: isAllSelect ? 0 : 1, color: AppColor.textHint),
-                    borderRadius: BorderRadius.circular(9),
-                  ),
+    return Column(
+      children: [
+        Container(
+          height: 48,
+          child: Stack(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                width: MediaQuery.of(context).size.width,
+                height: 48,
+                color: AppColor.white,
+                child: Row(
+                  children: [
+                    Container(
+                      width: 18,
+                      height: 18,
+                      margin: const EdgeInsets.only(top: 1),
+                      decoration: BoxDecoration(
+                        color: isAllSelect ? AppColor.mainRed : AppColor.white,
+                        border: Border.all(width: isAllSelect ? 0 : 1, color: AppColor.textHint),
+                        borderRadius: BorderRadius.circular(9),
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    Text("全选",
+                        style: TextStyle(fontSize: 16, color: AppColor.textPrimary1, fontWeight: FontWeight.bold)),
+                    Expanded(child: SizedBox()),
+                    Text("删除${selectDeleteIndexList.length < 1 ? "" : "(${selectDeleteIndexList.length})"}",
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: selectDeleteIndexList.length < 1
+                                ? AppColor.mainRed.withOpacity(0.35)
+                                : AppColor.mainRed)),
+                  ],
                 ),
-                SizedBox(width: 12),
-                Text("全选", style: TextStyle(fontSize: 16, color: AppColor.textPrimary1, fontWeight: FontWeight.bold)),
-                Expanded(child: SizedBox()),
-                Text("删除${selectDeleteIndexList.length < 1 ? "" : "(${selectDeleteIndexList.length})"}",
-                    style: TextStyle(
-                        fontSize: 16,
-                        color:
-                            selectDeleteIndexList.length < 1 ? AppColor.mainRed.withOpacity(0.35) : AppColor.mainRed)),
-              ],
-            ),
-          ),
-          Positioned(
-            child: GestureDetector(
-              child: Container(
-                color: Colors.transparent,
-                height: 48,
-                width: 100,
               ),
-              onTap: () {
-                if (isAllSelect) {
-                  selectDeleteIndexList.clear();
-                  isAllSelect = false;
-                } else {
-                  isAllSelect = true;
-                  selectDeleteIndexList.clear();
-                  for (int i = 0; i < courseVideoModelList.length; i++) {
-                    selectDeleteIndexList.add(i);
-                  }
-                }
-                if (mounted) {
-                  setState(() {});
-                }
-              },
-            ),
-            left: 0,
-          ),
-          Positioned(
-            child: GestureDetector(
-              child: Container(
-                color: Colors.transparent,
-                height: 48,
-                width: 100,
+              Positioned(
+                child: GestureDetector(
+                  child: Container(
+                    color: Colors.transparent,
+                    height: 48,
+                    width: 100,
+                  ),
+                  onTap: () {
+                    if (isAllSelect) {
+                      selectDeleteIndexList.clear();
+                      isAllSelect = false;
+                    } else {
+                      isAllSelect = true;
+                      selectDeleteIndexList.clear();
+                      for (int i = 0; i < courseVideoModelList.length; i++) {
+                        selectDeleteIndexList.add(i);
+                      }
+                    }
+                    if (mounted) {
+                      setState(() {});
+                    }
+                  },
+                ),
+                left: 0,
               ),
-              onTap: () {
-                if (selectDeleteIndexList.length < 1) {
-                  return;
-                }
-                showAppDialog(context,
-                    title: isAllSelect ? "清除下载" : "删除确认",
-                    info: isAllSelect ? "清除全部下载视频后，训练课程时需要重新下载" : "清除下载视频后，训练课程时需要重新下载",
-                    cancel: AppDialogButton("取消", () {
-                      print("点了取消");
-                      return true;
-                    }),
-                    confirm: AppDialogButton("确定", () {
-                      print("点击了删除");
-                      deleteVideo();
-                      return true;
-                    }));
-              },
-            ),
-            right: 0,
+              Positioned(
+                child: GestureDetector(
+                  child: Container(
+                    color: Colors.transparent,
+                    height: 48,
+                    width: 100,
+                  ),
+                  onTap: () {
+                    if (selectDeleteIndexList.length < 1) {
+                      return;
+                    }
+                    showAppDialog(context,
+                        title: isAllSelect ? "清除下载" : "删除确认",
+                        info: isAllSelect ? "清除全部下载视频后，训练课程时需要重新下载" : "清除下载视频后，训练课程时需要重新下载",
+                        cancel: AppDialogButton("取消", () {
+                          print("点了取消");
+                          return true;
+                        }),
+                        confirm: AppDialogButton("确定", () {
+                          print("点击了删除");
+                          deleteVideo();
+                          return true;
+                        }));
+                  },
+                ),
+                right: 0,
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        Container(
+          height: ScreenUtil.instance.bottomBarHeight,
+          width: MediaQuery.of(context).size.width,
+          color: AppColor.white,
+        ),
+      ],
     );
   }
 
@@ -219,17 +244,24 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
 
   //获取每一个带左滑删除btn的item
   Widget getLeftDeleteUi(DownloadCourseVideoDto courseVideoDto, int index) {
-    if(Application.platform==0){
+    if (topText == "取消") {
       return GestureDetector(
         child: getItem(courseVideoDto, index),
-        onTap: (){
+        onTap: () {
           onItemCLick(index);
         },
-        onLongPress: (){
+      );
+    } else if (Application.platform == 0) {
+      return GestureDetector(
+        child: getItem(courseVideoDto, index),
+        onTap: () {
+          onItemCLick(index);
+        },
+        onLongPress: () {
           showAppDialog(context,
               title: "删除确认",
               info: "清除下载视频后，训练课程时需要重新下载",
-              barrierDismissible:false,
+              barrierDismissible: false,
               cancel: AppDialogButton("取消", () {
                 print("点了取消");
                 return true;
@@ -244,7 +276,7 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
               }));
         },
       );
-    }else {
+    } else {
       return LeftScrollListView(
         itemKey: courseVideoDto.courseId.toString(),
         itemTag: "tag",
