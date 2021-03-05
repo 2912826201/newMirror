@@ -227,8 +227,8 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
         },
         onLongPress: (){
           showAppDialog(context,
-              title: "删除kec",
-              info: "确认删除这个已下载的课程吗？",
+              title: "删除确认",
+              info: "清除下载视频后，训练课程时需要重新下载",
               barrierDismissible:false,
               cancel: AppDialogButton("取消", () {
                 print("点了取消");
