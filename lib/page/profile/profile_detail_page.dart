@@ -8,6 +8,7 @@ import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/model/profile/profile_model.dart';
@@ -50,8 +51,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///昵称
   String _textName;
 
-  ///id
-  int _id;
 
   ///签名
   String _signature;
@@ -134,7 +133,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       if (model.inYouBlack == 1) {
         ToastShow.show(msg: "该用户已被你拉黑", context: context);
       } else if (model.inThisBlack == 1) {
-        ToastShow.show(msg: "你已被该用户拉黑拉黑", context: context);
+        ToastShow.show(msg: "你已被该用户拉黑", context: context);
       } else {
         _getAttention();
       }
@@ -146,7 +145,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     userModel = await getUserInfo(uid: id);
     if (userModel != null) {
       _avatar = userModel.avatarUri;
-      _id = userModel.uid;
       _signature = userModel.description;
       if (_signature != null) {
         ///判断文字的高度，动态改变
@@ -169,6 +167,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   @override
   void dispose() {
     super.dispose();
+    Future.delayed(Duration.zero,(){
+      context.read<ProfilePageNotifier>().idListClear(widget.userId);
+    });
     print('=======================================个人主页dispose');
   }
 
@@ -404,7 +405,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             ///id
             Container(
               padding: EdgeInsets.only(left: 16, right: 16),
-              child: Text("ID: $_id"),
+              child: Text("ID: ${widget.userId}"),
             ),
             Spacer(),
 
@@ -435,7 +436,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                         return QueryFollowList(
                           type: 1,
-                          userId: _id,
+                          userId: widget.userId,
                         );
                       }));
                     },
@@ -448,7 +449,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                         return QueryFollowList(
                           type: 2,
-                          userId: _id,
+                          userId: widget.userId,
                         );
                       }));
                     },
@@ -626,7 +627,14 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 class ProfilePageNotifier extends ChangeNotifier {
   bool watchScroll = true;
   Map<int, ProfileUiChangeModel> profileUiChangeModel = {};
+  int removeId;
 
+  ///FIXME 当用户登出登录时需要重置provider为默认值
+
+  void removeListId(int id){
+    removeId = id;
+    notifyListeners();
+  }
   void setFirstModel(int id, {bool isFollow}) {
     ProfileUiChangeModel model = ProfileUiChangeModel();
     if(isFollow!=null){
@@ -640,6 +648,43 @@ class ProfilePageNotifier extends ChangeNotifier {
     profileUiChangeModel[id] = model;
   }
 
+  void setFeedIdList(int id,List<int> feedIdList,int type){
+    if(type==2){
+      if(profileUiChangeModel[id].profileFeedListId.isEmpty){
+        profileUiChangeModel[id].profileFeedListId.insert(0, -1);
+      }
+      profileUiChangeModel[id].profileFeedListId.addAll(feedIdList);
+    }else{
+      if(profileUiChangeModel[id].profileLikeListId.isEmpty){
+        profileUiChangeModel[id].profileLikeListId.insert(0, -1);
+      }
+      profileUiChangeModel[id].profileLikeListId.addAll(feedIdList);
+    }
+    notifyListeners();
+  }
+
+    void idListClear(int id, {int type}){
+    if(type!=null){
+      if(type==2){
+        profileUiChangeModel[id].profileFeedListId.clear();
+      }else{
+        profileUiChangeModel[id].profileLikeListId.clear();
+      }
+    }else{
+      profileUiChangeModel[id].profileFeedListId.clear();
+      profileUiChangeModel[id].profileLikeListId.clear();
+    }
+    }
+  void synchronizeIdList(int id,int deleteId){
+    profileUiChangeModel[id].profileFeedListId.removeWhere((element){
+      return element==deleteId;
+    });
+    profileUiChangeModel[id].profileLikeListId.removeWhere((element){
+      return element==deleteId;
+    });
+    notifyListeners();
+  }
+
   void clearProfileUiChangeModel(int id) {
     profileUiChangeModel[id] =  ProfileUiChangeModel();
     notifyListeners();
@@ -648,13 +693,6 @@ class ProfilePageNotifier extends ChangeNotifier {
   void changeTitleColor(int id, Color titleColor) {
     profileUiChangeModel[id].titleColor = titleColor;
     notifyListeners();
-  }
-
-  void changeBlack(bool needNotify, int id, int black) {
-    profileUiChangeModel[id].isBlack = black;
-    if (needNotify) {
-      notifyListeners();
-    }
   }
 
   void changeIsFollow(bool needNotify,bool bl, int id) {
@@ -684,10 +722,7 @@ class ProfilePageNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  void changeBackImage(int id, String image) {
-    profileUiChangeModel[id].backImage = image;
-    notifyListeners();
-  }
+
 }
 
 class ProfileUiChangeModel {
@@ -695,7 +730,7 @@ class ProfileUiChangeModel {
   bool canOnClick = true;
   Color titleColor = AppColor.transparent;
   ProfileModel attentionModel = ProfileModel();
-  String backImage = "images/resource/2.0x/white_return@2x.png";
   List<String> dynmicStringList = [];
-  int isBlack = 0;
+  List<int> profileFeedListId = [];
+  List<int> profileLikeListId = [];
 }

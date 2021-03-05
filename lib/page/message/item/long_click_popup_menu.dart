@@ -181,13 +181,15 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
   @override
   void initState() {
     super.initState();
-    position = RelativeRect.fromRect(
-      Rect.fromPoints(
-        widget.button.localToGlobal(Offset.zero, ancestor: widget.overlay),
-        widget.button.localToGlobal(Offset.zero, ancestor: widget.overlay),
-      ),
-      Offset.zero & widget.overlay.size,
-    );
+    try{
+      position = RelativeRect.fromRect(
+        Rect.fromPoints(
+          widget.button.localToGlobal(Offset.zero, ancestor: widget.overlay),
+          widget.button.localToGlobal(Offset.zero, ancestor: widget.overlay),
+        ),
+        Offset.zero & widget.overlay.size,
+      );
+    }catch(e){}
   }
 
   @override
@@ -319,7 +321,9 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                           widget._width,
                           menuWidth,
                           widget._height,
-                          widget.contentHeight),
+                          widget.contentHeight,
+                          widget.contentWidth,
+                          isInverted,),
                       child: Container(
                         alignment: alignment,
                         height: menuHeight + _triangleHeight,
@@ -329,7 +333,7 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                           child: GestureDetector(
                             child: SizedBox(
                               height: menuHeight + _triangleHeight,
-                              width: _curPageWidth,
+                              width: _curPageWidth+11,
                               child: Material(
                                 color: Colors.transparent,
                                 child: Column(
@@ -337,7 +341,7 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                                   children: <Widget>[
                                     isInverted
                                         ? Container(
-                                            width: menuWidth,
+                                            width: menuWidth+11,
                                             alignment: alignment,
                                             child: UnconstrainedBox(
                                               child: Container(
@@ -547,7 +551,7 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
 class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
   _PopupMenuRouteLayout(this.position, this.selectedItemOffset,
       this.textDirection, this.width, this.menuWidth, this.height
-      ,this.contentHeight);
+      ,this.contentHeight,this.contentWidth,this.isInverted);
 
   // Rectangle of underlying button, relative to the overlay's dimensions.
   final RelativeRect position;
@@ -564,6 +568,8 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
   final double height;
   final double menuWidth;
   final double contentHeight;
+  final double contentWidth;
+  final bool isInverted;
 
   // We put the child wherever position specifies, so long as it will fit within
   // the specified parent size padded (inset) by 8. If necessary, we adjust the
@@ -584,59 +590,39 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
     // getConstraintsForChild.
 
     // Find the ideal vertical position.
-    double y;
-    if (selectedItemOffset == null) {
-      y = position.top;
-    } else {
-      y = position.top +
-          (size.height - position.top - position.bottom) / 2.0 -
-          selectedItemOffset;
-    }
 
-    // Find the ideal horizontal position.
-    double x;
 
-    // 如果menu 的宽度 小于 child 的宽度，则直接把menu 放在 child 中间
-    if (childSize.width < width) {
-      x = position.left + (width - childSize.width) / 2;
-    } else {
-      // 如果靠右
-      if (position.left > size.width - (position.left + width)) {
-        if (size.width - (position.left + width) >
-            childSize.width / 2 + _kMenuScreenPadding) {
-          x = position.left - (childSize.width - width) / 2;
-        } else {
-          x = position.left + width - childSize.width;
-        }
-      } else if (position.left < size.width - (position.left + width)) {
-        if (position.left > childSize.width / 2 + _kMenuScreenPadding) {
-          x = position.left - (childSize.width - width) / 2;
-        } else
-          x = position.left;
-      } else {
-        x = position.right - width / 2 - childSize.width / 2;
-      }
-    }
 
-    print("y:$y");
-    if (y < childSize.height)
-      if(position.top-ScreenUtil.instance.statusBarHeight-44-20<0){
-        y = position.top+contentHeight-20;
-      }else{
-        y = position.top+contentHeight;
-      }
-    else if (y + childSize.height > size.height - _kMenuScreenPadding)
-      y = size.height - childSize.height;
-    else if (y < childSize.height * 2) {
-      y = position.top + height;
-    }
     // print("contentHeight:${contentHeight}");
+    // print("contentWidth:${contentWidth}");
     // print("childSize.height:${childSize.height}");
+    // print("childSize.width:${childSize.width}");
     // print("position.top:${position.top}");
     // print("position.bottom:${position.bottom}");
+    // print("position.left:${position.left}");
+    // print("position.right:${position.right}");
     // print("size.height:${size.height}");
+    // print("size.width:${size.width}");
     // print("selectedItemOffset:$selectedItemOffset");
-    // print("y:$y,position:${position.toString()}");
+    // print("isInverted:$isInverted");
+
+
+
+    double y=0;
+    double x=0;
+
+
+    y=position.top;
+
+    x=-48.0;
+
+    if(isInverted){
+      y+=contentHeight+11;
+    }else{
+      y-=selectedItemOffset;
+    }
+
+
     return Offset(x, y);
   }
 

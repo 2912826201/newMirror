@@ -193,7 +193,8 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
       isMySelf: widget.isMyself,
       actions: longClickStringList,
       contentWidth: getNowWidth(context, widget.chatVoiceModel.longTime),
-      contentHeight: MessageItemHeightUtil.init().getVoiceMsgDataHeight(widget.isShowChatUserName),
+      contentHeight: MessageItemHeightUtil.init().
+        getVoiceMsgDataHeight(widget.isShowChatUserName,isOnlyContentHeight: true),
       child: _getVoiceUi(context),
     );
   }

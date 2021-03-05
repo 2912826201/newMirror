@@ -42,11 +42,9 @@ class _EditInformationState extends State<EditInformation> {
   String userName;
   int userSex;
   String userSexText;
-  DateTime _selectedDateTime = DateTime.now();
   String userBirthday;
   String _introduction = "去编辑";
   String avataruri;
-
   //取图裁剪得到的图片数据
   Uint8List imageData;
   List<File> fileList = [];

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -119,7 +121,30 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
         Navigator.pop(context, timeStamp);
         return false;
       },
-      child: Scaffold(
+      child: Consumer<FeedMapNotifier>(
+      builder: (context, notifier, child) {
+        if(notifier.deleteId!=null){
+          List<QueryModel> list = [];
+          for (int i = 0; i < msgList.length; i++) {
+            if (msgList[i].refType == 0 && msgList[i].refId != notifier.deleteId.toString()) {
+              list.add(msgList[i]);
+            } else if (msgList[i].refType == 2) {
+              if(msgList[i].refData!=null){
+                CommentDtoModel fatherComment = CommentDtoModel.fromJson(msgList[i].refData);
+                if (fatherComment.targetId != notifier.deleteId&&fatherComment.id!=notifier.deleteId) {
+                  list.add(msgList[i]);
+                }
+              }
+            }
+          }
+          msgList.clear();
+          msgList.addAll(list);
+          notifier.deleteId = null;
+          /*if(mounted){
+            setState(() {});
+          }*/
+        }
+        return Scaffold(
         backgroundColor: AppColor.white,
         appBar: CustomAppBar(
           leadingOnTap: () {
@@ -213,7 +238,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                   ),
                 ),
         ),
-      ),
+      );}),
     );
   }
 }
@@ -285,6 +310,10 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       }
     } else {
       feedIsDelete = true;
+      if(mounted){
+        setState(() {
+        });
+      }
     }
   }
 
@@ -307,11 +336,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
   Widget build(BuildContext context) {
     print('-====================消息互动列表页Item  biuld');
     senderAvatarUrl = widget.msgModel.senderAvatarUrl;
-    senderName =widget. msgModel.senderName;
-    if (widget.type == 0) {
-      widget.msgModel.commentData.name = senderName;
-      widget.msgModel.commentData.replyName = context.watch<ProfileNotifier>().profile.nickName;
-    }
+    senderName = widget. msgModel.senderName;
     coverImage = widget.msgModel.coverUrl;
     _getRefData(context);
     if (widget.type == 0&&widget.msgModel.commentData!=null) {
@@ -320,7 +345,6 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       } else {
         commentState = "";
       }
-
       ///判断文字的高度，动态改变
       TextPainter testSize = calculateTextWidth(
           "$commentState$comment", AppStyle.textRegular13, ScreenUtil.instance.screenWidthDp * 0.64, 3);
@@ -394,7 +418,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
                   SizedBox(
                     height: 8,
                   ),
-                  !commentIsDelete || !feedIsDelete
+                  !commentIsDelete
                       ? MyRichTextWidget(
                           Text(
                             "$comment",
@@ -507,7 +531,6 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
   }
 
   getFeedDetail(BuildContext context, int feedId, {CommentDtoModel comment, CommentDtoModel fatherModel}) async {
-    print('==============================feedId==$feedId');
     BaseResponseModel feedModel = await feedDetail(id: feedId);
     if(feedModel.data!=null){
       List<HomeFeedModel> list = [];

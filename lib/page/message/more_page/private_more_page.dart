@@ -279,11 +279,9 @@ class PrivateMorePageState extends State<PrivateMorePage> {
           dismissProgressDialog();
         });
       }
-      print('====================================接下来走个人主页的方法');
       if(context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(int.parse(widget.chatUserId))){
         print('====================================个人主页的方法进了');
         context.read<ProfilePageNotifier>().changeIsFollow(true, true, int.parse(widget.chatUserId));
-        context.read<ProfilePageNotifier>().changeBlack(true,int.parse( widget.chatUserId),1);
       }
       print('====================================个人主页的方法完了');
     } else {
@@ -303,9 +301,6 @@ class PrivateMorePageState extends State<PrivateMorePage> {
         setState(() {
           dismissProgressDialog();
         });
-      }
-      if(context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(int.parse(widget.chatUserId))){
-        context.read<ProfilePageNotifier>().changeBlack(true,int.parse( widget.chatUserId),0);
       }
     } else {
       ToastShow.show(msg: "解除拉黑失败", context: context);

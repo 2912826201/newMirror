@@ -15,6 +15,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/profile/topic_list_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/topic/topic_newest.dart';
 import 'package:mirror/page/topic/topic_recommend.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -26,9 +27,9 @@ import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
 
 class TopicDetail extends StatefulWidget {
-  TopicDetail({Key key, this.topicId}) : super(key: key);
+  TopicDetail({Key key, this.topicId,this.isTopicList}) : super(key: key);
   int topicId;
-
+  bool isTopicList;
   @override
   TopicDetailState createState() => TopicDetailState();
 }
@@ -212,6 +213,9 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
       setState(() {
         model.isFollow = 1;
       });
+      if(widget.isTopicList){
+        context.read<ProfilePageNotifier>().removeListId(null);
+      }
     } else {
       ToastShow.show(msg: "关注失败", context: context);
     }
@@ -224,6 +228,9 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
       setState(() {
         model.isFollow = 0;
       });
+      if(widget.isTopicList){
+        context.read<ProfilePageNotifier>().removeListId(widget.topicId);
+      }
     } else {
       ToastShow.show(msg: "取消关注失败", context: context);
     }

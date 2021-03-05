@@ -383,6 +383,17 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
   //获取评论的item--每一个item
   Widget _getCommentUi(CommentDtoModel value, bool isSubComment, int _targetId) {
+    if (courseCommentHot != null && isFirstScroll && widget.commentDtoModel != null&&!widget.isBottomSheetAndHomePage) {
+      Future.delayed(Duration.zero, () async {
+        print("开始滚动------------------------------------------------------------------------");
+        if (widget.commentDtoModel.type == 2) {
+          startAnimationScroll(widget.commentDtoModel.targetId);
+        } else {
+          startAnimationScroll(widget.commentDtoModel.id);
+        }
+        isFirstScroll = false;
+      });
+    }
     if (widget.commentDtoModel != null||value.itemChose) {
       int milliseconds=5000;
       if(widget.isBottomSheetAndHomePage){
@@ -575,7 +586,8 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
             .read<FeedMapNotifier>()
             .commensAssignment(widget.targetId, courseCommentHot.list, courseCommentHot.totalCount);
       }
-        if(context.read<FeedMapNotifier>().feedMap[widget.targetId].hotComment.isNotEmpty){
+      context.read<FeedMapNotifier>().deleteContent(commentId);
+        if(context.read<FeedMapNotifier>().feedMap[widget.targetId]!=null&&!widget.isShowHotOrTime&&context.read<FeedMapNotifier>().feedMap[widget.targetId].hotComment.isNotEmpty){
           for(int i=0;i< context.read<FeedMapNotifier>().feedMap[widget.targetId].hotComment.length;i++){
             if(context.read<FeedMapNotifier>().feedMap[widget.targetId].hotComment[i].id == commentId){
               context.read<FeedMapNotifier>().updateHotComment(widget.targetId,commentDtoModel:commentDtoModel,
@@ -1014,7 +1026,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
           widget.scrollController.animateTo(
             scrollHeight,
             duration: Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
+            curve: Curves.ease,
           );
         }
       }

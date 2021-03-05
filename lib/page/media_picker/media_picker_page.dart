@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/page/media_picker/camera_photo_page.dart';
 import 'package:mirror/page/media_picker/camera_video_page.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
 
@@ -25,8 +26,7 @@ int startPageGallery = _galleryIndex;
 int startPagePhoto = _photoIndex;
 
 class MediaPickerPage extends StatefulWidget {
-  MediaPickerPage(
-      this.maxImageAmount, this.mediaType, this.needCrop, this.startPage, this.cropOnlySquare,
+  MediaPickerPage(this.maxImageAmount, this.mediaType, this.needCrop, this.startPage, this.cropOnlySquare,
       {Key key, this.publishMode, this.fixedWidth, this.fixedHeight})
       : super(key: key);
 
@@ -55,18 +55,23 @@ class _MediaPickerState extends State<MediaPickerPage> {
     _selectedIndex = widget.startPage;
     _pageController = PageController(initialPage: _selectedIndex);
     _pageList.add(
-        //需要在这里就把provider创建出来，以便页面内的所有context都能在provider下
-        ChangeNotifierProvider(
-            create: (_) => SelectedMapNotifier(widget.maxImageAmount, 1),
-            child: GalleryPage(
-              maxImageAmount: widget.maxImageAmount,
-              requestType: widget.mediaType == typeImageAndVideo ? RequestType.common : RequestType.image,
-              needCrop: widget.needCrop,
-              cropOnlySquare: widget.cropOnlySquare,
-              publishMode: widget.publishMode,
-              fixedHeight: widget.fixedHeight,
-              fixedWidth: widget.fixedWidth,
-            )));
+      //需要在这里就把provider创建出来，以便页面内的所有context都能在provider下
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => SelectedMapNotifier(widget.maxImageAmount, 1)),
+          ChangeNotifierProvider(create: (_) => PreviewHeightNotifier(ScreenUtil.instance.screenWidthDp)),
+        ],
+        child: GalleryPage(
+          maxImageAmount: widget.maxImageAmount,
+          requestType: widget.mediaType == typeImageAndVideo ? RequestType.common : RequestType.image,
+          needCrop: widget.needCrop,
+          cropOnlySquare: widget.cropOnlySquare,
+          publishMode: widget.publishMode,
+          fixedHeight: widget.fixedHeight,
+          fixedWidth: widget.fixedWidth,
+        ),
+      ),
+    );
     _pageList.add(CameraPhotoPage(
       publishMode: widget.publishMode,
       fixedHeight: widget.fixedHeight,

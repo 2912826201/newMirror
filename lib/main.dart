@@ -82,7 +82,7 @@ void main() {
             ChangeNotifierProvider(create: (_) => ChatMessageProfileNotifier()),
             //群聊界面的@用户功能
             ChangeNotifierProvider(create: (_) => ChatEnterNotifier()),
-            //FIXME 个人空间页的状态 应该不需要在全局更新状态
+            //用户相关界面信息
             ChangeNotifierProvider(create: (_) => ProfilePageNotifier()),
             //群成员信息
             ChangeNotifierProvider(create: (_) => GroupUserProfileNotifier()),
@@ -91,6 +91,7 @@ void main() {
             ChangeNotifierProvider(create: (_) => FeedFlowDataNotifier()),
             // 发布动态进度条
             ChangeNotifierProvider(create: (_) => ReleaseProgressNotifier()),
+            ChangeNotifierProvider(create: (_)=>AddressPickerNotifier())
           ],
           child: MyApp(),
         ),

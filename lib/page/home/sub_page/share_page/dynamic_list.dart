@@ -59,14 +59,13 @@ class DynamicListLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // print('==============================动态itembuild');
-    return Column(
+    return model!=null?Column(
       children: [
         // 头部头像时间
         HeadView(
             model: model,
             isShowConcern: isShowConcern,
             pageName: pageName,
-            isMySelf: isMySelf,
             mineDetailId: mineDetailId != null ? mineDetailId : 0,
             deleteFeedChanged: (id) {
               deleteFeedChanged(id);
@@ -143,7 +142,7 @@ class DynamicListLayout extends StatelessWidget {
           color: AppColor.white,
         )
       ],
-    );
+    ):Container();
   }
 
   // // 删除动态

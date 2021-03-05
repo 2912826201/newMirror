@@ -28,6 +28,7 @@ class ChatEnterNotifier extends ChangeNotifier {
   // 是否开启@视图
   openAtCallback(String str) {
     this.keyWord = str;
+    print("keyWord：${str}");
     notifyListeners();
   }
 

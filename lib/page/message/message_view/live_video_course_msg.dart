@@ -155,7 +155,8 @@ class LiveVideoCourseMsg extends StatelessWidget {
       isMySelf: isMyself,
       actions: longClickStringList,
       contentWidth: 180.0,
-      contentHeight: MessageItemHeightUtil.init().getLiveVideoCourseMsgHeight(isShowChatUserName),
+      contentHeight: MessageItemHeightUtil.init().
+        getLiveVideoCourseMsgHeight(isShowChatUserName,isOnlyContentHeight: true),
       child: GestureDetector(
         child: _getLiveVideoCourseUi(),
         onTap: () {

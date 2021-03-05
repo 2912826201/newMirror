@@ -32,6 +32,12 @@ class FeedMapNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  int deleteId;
+
+  void deleteContent(int dtId){
+    deleteId = dtId;
+    notifyListeners();
+  }
   void changeFatherItemChose(int id, int index) {
     feedMap[id].comments[index].itemChose = false;
     notifyListeners();

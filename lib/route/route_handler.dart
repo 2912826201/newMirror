@@ -159,7 +159,7 @@ var handlerProfileDetailMore = Handler(handlerFunc: (BuildContext context, Map<S
 });
 
 var handlerEditInformation = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return ChangeNotifierProvider(create: (_)=>AddressPickerNotifier(),child: EditInformation(),);
+  return  EditInformation();
 });
 
 var handlerEditInformationName = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
@@ -452,7 +452,8 @@ var handlerMeDownloadVideoCoursePage = Handler(handlerFunc: (BuildContext contex
 // 话题详情页
 var handlerTopicDetailPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return ChangeNotifierProvider(create: (_) => TopicDetailNotifier(),child: TopicDetail(topicId: data["topicId"]),);
+  return ChangeNotifierProvider(create: (_) => TopicDetailNotifier(),child: TopicDetail(topicId: data["topicId"],
+  isTopicList: data["isTopicList"],),);
 });
 // 搜索页面
 var handlerSearchPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
