@@ -59,7 +59,7 @@ class _SlideBannerState extends State<SlideBanner> {
   @override
   void initState() {
     super.initState();
-    if (widget.model.selectedMediaFiles != null) {
+    if ( widget.model!= null && widget.model.selectedMediaFiles != null) {
       print("图片显示问题:::${widget.model.selectedMediaFiles.list.first.file}");
       imageCount = widget.model.selectedMediaFiles.list.length;
       imageWidth = widget.model.selectedMediaFiles.list.first.sizeInfo.width;
@@ -238,7 +238,7 @@ class _SlideBannerState extends State<SlideBanner> {
                   imageUrl: widget.model.picUrls[indexs].url != null ? widget.model.picUrls[indexs].url : "",
                   errorWidget: (context, url, error) => new Image.asset("images/test.png"),
                 ))
-            : widget.model.selectedMediaFiles != null
+            : widget.model != null && widget.model.selectedMediaFiles != null
                 ? Container(
                     width: ScreenUtil.instance.width,
                     height: height,
@@ -293,6 +293,8 @@ class _SlideBannerState extends State<SlideBanner> {
   @override
   Widget build(BuildContext context) {
     final width = ScreenUtil.instance.screenWidthDp;
+    print("轮播图builder：${widget.model.id}");
+
     return Container(
       child: Column(
         children: [
@@ -361,7 +363,7 @@ class _SlideBannerState extends State<SlideBanner> {
                             },
                             onTap: (index) {},
                           )
-                        : widget.model.selectedMediaFiles != null
+                        : widget.model != null && widget.model.selectedMediaFiles != null
                             ? Swiper.children(
                                 children: [
                                   for (MediaFileModel item in widget.model.selectedMediaFiles.list)

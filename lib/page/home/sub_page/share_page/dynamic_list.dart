@@ -59,90 +59,93 @@ class DynamicListLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // print('==============================动态itembuild');
-    return model!=null?Column(
-      children: [
-        // 头部头像时间
-        HeadView(
-            model: model,
-            isShowConcern: isShowConcern,
-            pageName: pageName,
-            mineDetailId: mineDetailId != null ? mineDetailId : 0,
-            deleteFeedChanged: (id) {
-              deleteFeedChanged(id);
-            },
-            removeFollowChanged: (m) {
-              removeFollowChanged(m);
-            }),
-        // 图片区域
-        model.selectedMediaFiles != null && model.selectedMediaFiles.type == mediaTypeKeyImage
-            ? SlideBanner(
-                height: model.selectedMediaFiles.list.first.sizeInfo.height.toDouble(),
-                model: model,
-                index: index,
-                pageName: pageName,
-                isHero: isHero,
-              )
-            : model.picUrls.length > 0
-                ? SlideBanner(
-                    height: model.picUrls[0].height.toDouble(),
+    print("model报空了：${model.id};");
+    return model != null
+        ? Column(
+            children: [
+              // 头部头像时间
+              HeadView(
+                  model: model,
+                  isShowConcern: isShowConcern,
+                  pageName: pageName,
+                  mineDetailId: mineDetailId != null ? mineDetailId : 0,
+                  deleteFeedChanged: (id) {
+                    deleteFeedChanged(id);
+                  },
+                  removeFollowChanged: (m) {
+                    removeFollowChanged(m);
+                  }),
+              // 图片区域
+              model != null && model.selectedMediaFiles != null && model.selectedMediaFiles.type == mediaTypeKeyImage
+                  ? SlideBanner(
+                      height: model.selectedMediaFiles.list.first.sizeInfo.height.toDouble(),
+                      model: model,
+                      index: index,
+                      pageName: pageName,
+                      isHero: isHero,
+                    )
+                  : model.picUrls.length > 0
+                      ? SlideBanner(
+                          height: model.picUrls[0].height.toDouble(),
+                          model: model,
+                          index: index,
+                          pageName: pageName,
+                          isHero: isHero,
+                        )
+                      : Container(),
+              // 视频区域
+              model != null && model.selectedMediaFiles != null && model.selectedMediaFiles.type == mediaTypeKeyVideo
+                  ? getVideo(selectedMediaFiles: model.selectedMediaFiles)
+                  : model.videos.isNotEmpty
+                      ? getVideo(videos: model.videos)
+                      : Container(),
+              // 点赞，转发，评论三连区域 getTripleArea
+              GetTripleArea(model: model, index: index),
+              // 课程信息和地址
+              Offstage(
+                offstage: (model.address == null && model.courseDto == null),
+                child: Container(
+                  margin: EdgeInsets.only(left: 16, right: 16),
+                  width: ScreenUtil.instance.width,
+                  child: getCourseInfo(model, context),
+                ),
+              ),
+
+              // 文本文案
+              Offstage(
+                offstage: model.content.length == 0,
+                child: Container(
+                  margin: EdgeInsets.only(left: 16, right: 16, top: 12),
+                  width: ScreenUtil.instance.screenWidthDp,
+                  child: ExpandableText(
+                    text: model.content,
+                    topicId: topicId,
                     model: model,
-                    index: index,
-                    pageName: pageName,
-                    isHero: isHero,
-                  )
-                : Container(),
-        // 视频区域
-        model.selectedMediaFiles != null && model.selectedMediaFiles.type == mediaTypeKeyVideo
-            ? getVideo(selectedMediaFiles: model.selectedMediaFiles)
-            : model.videos.isNotEmpty
-                ? getVideo(videos: model.videos)
-                : Container(),
-        // 点赞，转发，评论三连区域 getTripleArea
-        GetTripleArea(model: model, index: index),
-        // 课程信息和地址
-        Offstage(
-          offstage: (model.address == null && model.courseDto == null),
-          child: Container(
-            margin: EdgeInsets.only(left: 16, right: 16),
-            width: ScreenUtil.instance.width,
-            child: getCourseInfo(model, context),
-          ),
-        ),
+                    maxLines: 2,
+                    style: TextStyle(fontSize: 14, color: AppColor.textPrimary1),
+                  ),
+                ),
+              ),
 
-        // 文本文案
-        Offstage(
-          offstage: model.content.length == 0,
-          child: Container(
-            margin: EdgeInsets.only(left: 16, right: 16, top: 12),
-            width: ScreenUtil.instance.screenWidthDp,
-            child: ExpandableText(
-              text: model.content,
-              topicId: topicId,
-              model: model,
-              maxLines: 2,
-              style: TextStyle(fontSize: 14, color: AppColor.textPrimary1),
-            ),
-          ),
-        ),
-
-        // 评论文本
-        (context.watch<FeedMapNotifier>().feedMap != null &&
-                context.watch<FeedMapNotifier>().feedMap[model.id] != null &&
-                context.watch<FeedMapNotifier>().feedMap[model.id].comments != null &&
-                context.watch<FeedMapNotifier>().feedMap[model.id].comments.length != 0)
-            ? CommentLayout(model: model)
-            : Container(),
-        // 输入框
-        CommentInputBox(feedModel: model),
-        // 推荐用户
-        getAttention(this.index, this.isShowRecommendUser),
-        // 分割块
-        Container(
-          height: 18,
-          color: AppColor.white,
-        )
-      ],
-    ):Container();
+              // 评论文本
+              (context.watch<FeedMapNotifier>().feedMap != null &&
+                      context.watch<FeedMapNotifier>().feedMap[model.id] != null &&
+                      context.watch<FeedMapNotifier>().feedMap[model.id].comments != null &&
+                      context.watch<FeedMapNotifier>().feedMap[model.id].comments.length != 0)
+                  ? CommentLayout(model: model)
+                  : Container(),
+              // 输入框
+              CommentInputBox(feedModel: model),
+              // 推荐用户
+              getAttention(this.index, this.isShowRecommendUser),
+              // 分割块
+              Container(
+                height: 18,
+                color: AppColor.white,
+              )
+            ],
+          )
+        : Container();
   }
 
   // // 删除动态
@@ -190,7 +193,9 @@ class DynamicListLayout extends StatelessWidget {
     }
     if (selectedMediaFiles != null) {
       print(selectedMediaFiles.list.first.toString());
-      print( selectedMediaFiles.list.first.file.path,);
+      print(
+        selectedMediaFiles.list.first.file.path,
+      );
       sizeInfo.width = selectedMediaFiles.list.first.sizeInfo.width;
       sizeInfo.height = selectedMediaFiles.list.first.sizeInfo.height;
       sizeInfo.duration = selectedMediaFiles.list.first.sizeInfo.duration;

@@ -203,18 +203,23 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     // // 更新全局监听
     context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
     status = Status.concern;
+    print("插入结束");
   }
 
   // 接口请求返回替换数据
   replaceData(HomeFeedModel model) {
+    print("更新model");
     attentionIdList.removeWhere((element) => element == Application.insertFeedId);
     attentionModelList.removeWhere((element) => element.id == Application.insertFeedId);
+    context.read<FeedMapNotifier>().deleteFeed(Application.insertFeedId);
     attentionIdList.insert(1, model.id);
     attentionModelList.insert(0, model);
     // // 重新计算
     attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList);
     // // 更新全局监听
     context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
+    print(attentionIdList.toString());
+    print("更新结束");
   }
 
   // 回到顶部

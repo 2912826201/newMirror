@@ -310,7 +310,7 @@ class FeedHeader extends StatelessWidget {
         feedModel.topics = topics;
         print("打印一下￥￥${(feedModel.selectedMediaFiles.list.length)}");
         // 传入发布动态model
-        context.read<ReleaseProgressNotifier>().setPublishFeedModel(feedModel);
+        context.read<FeedMapNotifier>().setPublishFeedModel(feedModel);
         context.read<ReleaseFeedInputNotifier>().rules.clear();
         context.read<ReleaseFeedInputNotifier>().selectAddress = null;
         Navigator.pop(context, true);
@@ -358,7 +358,8 @@ class FeedHeader extends StatelessWidget {
       feedModel.topics = topics;
       print("打印一下￥￥${(feedModel.selectedMediaFiles.list.length)}");
       // 传入发布动态model
-      context.read<ReleaseProgressNotifier>().setPublishFeedModel(feedModel);
+      context.read<FeedMapNotifier>().setPublishFeedModel(feedModel);
+      print("aaaaa");
       context.read<ReleaseFeedInputNotifier>().rules.clear();
       context.read<ReleaseFeedInputNotifier>().selectAddress = null;
       Navigator.pop(context, true);

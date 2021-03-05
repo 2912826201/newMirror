@@ -167,12 +167,15 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   @override
   void dispose() {
     super.dispose();
-    Future.delayed(Duration.zero,(){
-      context.read<ProfilePageNotifier>().idListClear(widget.userId);
-    });
     print('=======================================个人主页dispose');
   }
-
+  @override
+  void deactivate() {
+    // TODO: implement deactivate
+    super.deactivate();
+    print('=======================================个人主页deactivate');
+    context.read<ProfilePageNotifier>().idListClear(widget.userId);
+  }
   @override
   Widget build(BuildContext context) {
     print('=======================================个人主页build');

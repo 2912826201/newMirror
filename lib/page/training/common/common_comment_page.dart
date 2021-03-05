@@ -398,10 +398,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       });
     }
     if (widget.commentDtoModel != null||value.itemChose) {
-      int milliseconds=5000;
-      if(widget.isBottomSheetAndHomePage){
-        milliseconds=2000;
-      }
+      int milliseconds=3000;
       if (value.itemChose) {
         Future.delayed(Duration(milliseconds: milliseconds), () {
           print('-=-=-=-=-=-=-=-=-=-=-=-=-=-=倒计时结束，背景改变');
