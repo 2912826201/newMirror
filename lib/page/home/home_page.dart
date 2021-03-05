@@ -196,8 +196,16 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
       homeFeedModel.isLaud = 0;
       homeFeedModel.picUrls = [];
       homeFeedModel.videos = [];
-      homeFeedModel.atUsers = [];
-      homeFeedModel.topics = [];
+      if(postFeedModel.atUsersModel.isNotEmpty) {
+        homeFeedModel.atUsers =  postFeedModel.atUsersModel;
+      } else {
+        homeFeedModel.atUsers = [];
+      }
+      if (postFeedModel.topics.isNotEmpty) {
+        homeFeedModel.topics = postFeedModel.topics;
+      } else {
+        homeFeedModel.topics = [];
+      }
       homeFeedModel.laudUserInfo = [];
       homeFeedModel.comments = [];
       homeFeedModel.isShowInputBox = true;
