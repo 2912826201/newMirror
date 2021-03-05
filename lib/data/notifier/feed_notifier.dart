@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/feed/post_feed.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 
@@ -40,6 +41,14 @@ class FeedMapNotifier extends ChangeNotifier {
   int deleteId;
 
   void deleteContent(int dtId) {
+  Map<int,CommentModel> courseCommentHot = {};
+
+
+  void interacticeNoticeChange({CommentModel courseCommentHots,int commentId}){
+    courseCommentHot[commentId] = courseCommentHots;
+  }
+
+  void deleteContent(int dtId){
     deleteId = dtId;
     notifyListeners();
   }

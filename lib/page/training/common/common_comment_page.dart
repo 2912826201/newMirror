@@ -50,6 +50,7 @@ class CommonCommentPage extends StatefulWidget {
   final List<GlobalKey> globalKeyList;
   final double externalBoxHeight;
   bool isBottomSheetAndHomePage;
+  bool isInteractiveIn;
   CommonCommentPage({
     @required Key key,
     @required this.targetId,
@@ -68,6 +69,7 @@ class CommonCommentPage extends StatefulWidget {
     this.isBottomSheetAndHomePage = false,
     this.isVideoCoursePage = false,
     this.commentDtoModel,
+    this.isInteractiveIn = false
   }) : super(key: key);
 
   @override
@@ -142,6 +144,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
   bool childFirstLoading = true;
 
+
   @override
   void initState() {
     super.initState();
@@ -158,7 +161,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (!widget.isShowHotOrTime) {
         Future.delayed(Duration.zero, () async {
-          getDataAction();
+         getDataAction();
         });
       } else {
         getDataAction();
@@ -172,7 +175,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
           CommentDtoModel model = await getComment(widget.commentDtoModel.targetId);
           if(model!=null){
             print('============================@@@@@父评论请求成功');
-        widget.fatherComment = model;
+          widget.fatherComment = model;
           }
           if(mounted){
             setState(() {
@@ -395,10 +398,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       });
     }
     if (widget.commentDtoModel != null||value.itemChose) {
-      int milliseconds=5000;
-      if(widget.isBottomSheetAndHomePage){
-        milliseconds=2000;
-      }
+      int milliseconds=3000;
       if (value.itemChose) {
         Future.delayed(Duration(milliseconds: milliseconds), () {
           print('-=-=-=-=-=-=-=-=-=-=-=-=-=-=倒计时结束，背景改变');
@@ -1037,14 +1037,20 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   void getDataAction({bool isFold = false}) async {
     // //获取评论
     if (isHotOrTime) {
-      Map<String, dynamic> commentModel = await queryListByHot2(
-          targetId: widget.targetId,
-          targetType: widget.targetType,
-          lastId: courseCommentHot?.lastId ?? null,
-          size: widget.pageCommentSize);
-      if (commentModel != null) {
-        courseCommentHot = CommentModel.fromJson(commentModel);
-
+      Map<String, dynamic> commentModel;
+      if(widget.isInteractiveIn&&context.read<FeedMapNotifier>().courseCommentHot[widget.commentDtoModel.id]!=null){
+        courseCommentHot = context.read<FeedMapNotifier>().courseCommentHot[widget.commentDtoModel.id];
+      }else{
+        commentModel = await queryListByHot2(
+            targetId: widget.targetId,
+            targetType: widget.targetType,
+            lastId: courseCommentHot?.lastId ?? null,
+            size: widget.pageCommentSize);
+        if(commentModel!=null){
+          courseCommentHot = CommentModel.fromJson(commentModel);
+        }
+      }
+      if (courseCommentHot != null) {
         if (widget.commentDtoModel != null && isFirstScroll) {
           for (int i = 0; i < courseCommentHot.list.length; i++) {
             if (courseCommentHot.list[i].id == widget.commentDtoModel.id) {

@@ -81,7 +81,7 @@ class _CustomizeLineChartState extends State<CustomizeLineChart> {
     }
 
     if (widget.weightDataMap["targetWeight"] == null || widget.weightDataMap["targetWeight"] < 1) {
-      benchmarkValue = 0;
+      benchmarkValue = -1;
       benchmarkValueText = "目标0";
     } else {
       benchmarkValue = widget.weightDataMap["targetWeight"];
@@ -798,6 +798,9 @@ class MyPainterBenchMarkLine extends CustomPainter {
   }
 
   void canvasText(Canvas canvas, Size size) {
+    if (benchmarkValue > yMaxValue || benchmarkValue < 0) {
+      return;
+    }
     ParagraphBuilder pb = ParagraphBuilder(ParagraphStyle(
       textAlign: TextAlign.left,
       fontSize: 12.0,

@@ -318,7 +318,8 @@ class AppRouter {
       bool isHaveStartTime = true,
       LiveVideoModel liveModel,
       CommentDtoModel commentDtoModel,
-      CommentDtoModel fatherComment}) {
+      CommentDtoModel fatherComment,
+      bool isInteractiveIn = false}) {
     Map<String, dynamic> map = Map();
     map["liveCourseId"] = liveCourseId;
     map["isHaveStartTime"] = isHaveStartTime;
@@ -334,11 +335,13 @@ class AppRouter {
     if (fatherComment != null) {
       map["fatherComment"] = fatherComment.toJson();
     }
+    map["isInteractiveIn"] = isInteractiveIn;
     _navigateToPage(context, pathLiveDetail, map);
   }
 
   static void navigateToVideoDetail(BuildContext context, int liveCourseId,
       {String heroTag, LiveVideoModel videoModel, CommentDtoModel commentDtoModel, CommentDtoModel fatherComment,
+        bool isInteractive = false,
       Function(dynamic result) callback}) {
     Map<String, dynamic> map = Map();
     map["videoCourseId"] = liveCourseId;
@@ -354,6 +357,7 @@ class AppRouter {
     if (fatherComment != null) {
       map["fatherComment"] = fatherComment.toJson();
     }
+    map["isInteractive"] = isInteractive;
     _navigateToPage(context, pathVideoDetail, map,callback:callback);
   }
 
@@ -672,6 +676,7 @@ class AppRouter {
     int index,
     int type,
     int errorCode,
+    bool isInteractive = false,
     Function(dynamic result) callBack
   }) {
     Map<String, dynamic> map = Map();
@@ -688,7 +693,7 @@ class AppRouter {
       map['index'] = index;
     }
     map['type'] = type;
-
+    map["isInteractive"] = isInteractive;
     map["errorCode"] = errorCode;
     _navigateToPage(context, pathFeedDetailPage, map,callback: callBack);
   }
