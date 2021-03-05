@@ -244,7 +244,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
           ),
         ),
         onTap: () {
-          gotoNavigateToLiveDetail(liveList[i], i);
+          onClickItem(liveList[i], i,isOld);
         },
       ));
     }
@@ -479,7 +479,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
         padding: const EdgeInsets.only(top: 5, bottom: 5),
       ),
       onTap: () {
-        onClickItem(value, index);
+        onClickItem(value, index,isOld);
       },
     );
   }
@@ -668,8 +668,9 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
 
 
   //点击item按钮判断怎么响应
-  void onClickItem(LiveVideoModel value, int index) {
-    gotoNavigateToLiveDetail(value, index);
+  void onClickItem(LiveVideoModel value, int index,bool isOld) {
+    print("index$index,liveModelArray.length：${liveModelArray.length},isOld:$isOld");
+    gotoNavigateToLiveDetail(value, index+(isOld?liveModelArray!=null?liveModelArray.length:0:0));
   }
 
   void gotoNavigateToLiveDetail(LiveVideoModel value, int index) {
