@@ -50,40 +50,41 @@ class CommonCommentPage extends StatefulWidget {
   final List<GlobalKey> globalKeyList;
   final double externalBoxHeight;
   bool isBottomSheetAndHomePage;
-  bool isInteractiveIn;
-  CommonCommentPage({
-    @required Key key,
-    @required this.targetId,
-    @required this.scrollController,
-    @required this.refreshController,
-    @required this.targetType,
-    this.pushId = -1,
-    this.globalKeyList,
-    this.externalScrollHeight = 0,
-    this.pageCommentSize = 5,
-    this.pageSubCommentSize = 3,
-    this.externalBoxHeight = 0,
-    this.isShowHotOrTime = false,
-    this.isShowAt = true,
-    this.fatherComment,
-    this.isBottomSheetAndHomePage = false,
-    this.isVideoCoursePage = false,
-    this.commentDtoModel,
-    this.isInteractiveIn = false
-  }) : super(key: key);
+  bool isInteractiveIn = false;
+  CommonCommentPage(
+      {@required Key key,
+      @required this.targetId,
+      @required this.scrollController,
+      @required this.refreshController,
+      @required this.targetType,
+      this.pushId = -1,
+      this.globalKeyList,
+      this.externalScrollHeight = 0,
+      this.pageCommentSize = 5,
+      this.pageSubCommentSize = 3,
+      this.externalBoxHeight = 0,
+      this.isShowHotOrTime = false,
+      this.isShowAt = true,
+      this.fatherComment,
+      this.isBottomSheetAndHomePage = false,
+      this.isVideoCoursePage = false,
+      this.commentDtoModel,
+      this.isInteractiveIn})
+      : super(key: key);
 
   @override
-  CommonCommentPageState createState() => CommonCommentPageState();
+  State<StatefulWidget> createState() {
+   return CommonCommentPageState();
+  }
+
+
 }
 
 class CommonCommentPageState extends State<CommonCommentPage> with TickerProviderStateMixin {
 
-  CommonCommentPageState();
-
   //用户的评论热度-热度排序
   CommentModel courseCommentHot;
   List<int> screenOutHotIds = <int>[];
-
 
   //用户的评论时间-时间排序
   CommentModel courseCommentTime;
@@ -144,52 +145,54 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
   bool childFirstLoading = true;
 
-
   @override
   void initState() {
     super.initState();
+    print('======================评论init');
     courseCommentHot = null;
     courseCommentTime = null;
     isHotOrTime = true;
-    if(widget.isBottomSheetAndHomePage&&widget.commentDtoModel!=null){
+    if (widget.isBottomSheetAndHomePage && widget.commentDtoModel != null) {
       bottomCommentInit();
-    }else{
-      print('============77777777777======isBottomSheet${widget.isBottomSheetAndHomePage}   commentDtoModel${widget
-          .commentDtoModel!=null}');
+    } else {
+      print(
+          '============77777777777======isBottomSheet${widget.isBottomSheetAndHomePage}   commentDtoModel${widget.commentDtoModel != null}');
     }
     loadingStatusComment = LoadingStatus.STATUS_LOADING;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (!widget.isShowHotOrTime) {
         Future.delayed(Duration.zero, () async {
-         getDataAction();
+          getDataAction();
         });
       } else {
         getDataAction();
       }
     });
   }
-    void bottomCommentInit()async{
-      print('=========………………………………………==============底部弹窗进');
-    widget.commentDtoModel.itemChose = true;
-        if(widget.commentDtoModel.type==2){
-          CommentDtoModel model = await getComment(widget.commentDtoModel.targetId);
-          if(model!=null){
-            print('============================@@@@@父评论请求成功');
-          widget.fatherComment = model;
-          }
-          if(mounted){
-            setState(() {
-            });
-          }
-        }
-    }
 
+  void bottomCommentInit() async {
+    print('=========………………………………………==============底部弹窗进');
+    widget.commentDtoModel.itemChose = true;
+    if (widget.commentDtoModel.type == 2) {
+      CommentDtoModel model = await getComment(widget.commentDtoModel.targetId);
+      if (model != null) {
+        print('============================@@@@@父评论请求成功');
+        widget.fatherComment = model;
+      }
+      if (mounted) {
+        setState(() {});
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     print("11111111111111111111111111111111111111");
 
-    if (courseCommentHot != null && isFirstScroll && widget.commentDtoModel != null&&!widget.isBottomSheetAndHomePage) {
+    if (courseCommentHot != null &&
+        isFirstScroll &&
+        widget.commentDtoModel != null &&
+        !widget.isBottomSheetAndHomePage) {
       Future.delayed(Duration.zero, () async {
         print("开始滚动------------------------------------------------------------------------");
         if (widget.commentDtoModel.type == 2) {
@@ -204,11 +207,9 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         courseCommentHot != null &&
         context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments != null &&
         context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length > 0) {
-
-
       if (context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length != courseCommentHot.list.length ||
           courseCommentHot.list.length != commentListSubSettingList.length) {
-        List<CommentDtoModel> list=<CommentDtoModel>[];
+        List<CommentDtoModel> list = <CommentDtoModel>[];
         list.addAll(context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments);
         courseCommentHot.list = list;
         resetSubSetting(courseCommentHot);
@@ -244,9 +245,9 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     if (loadingStatusComment == LoadingStatus.STATUS_LOADING) {
       widgetArray.add(Container());
     } else {
-      if ((isHotOrTime ? (courseCommentHot) : (courseCommentTime)) == null||
-          (isHotOrTime ? (courseCommentHot) : (courseCommentTime)).list==null||
-          (isHotOrTime ? (courseCommentHot) : (courseCommentTime)).list.length<1) {
+      if ((isHotOrTime ? (courseCommentHot) : (courseCommentTime)) == null ||
+          (isHotOrTime ? (courseCommentHot) : (courseCommentTime)).list == null ||
+          (isHotOrTime ? (courseCommentHot) : (courseCommentTime)).list.length < 1) {
         widgetArray.add(getCommentNoData());
       } else {
         widgetArray.addAll(getBigCommentList());
@@ -327,7 +328,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
               Container(child: Text(alertText, style: TextStyle(color: Colors.grey))),
             ],
           ),
-          onTap: () => onClickAddSubComment(value, index,true),
+          onTap: () => onClickAddSubComment(value, index, true),
         ),
       ),
     );
@@ -386,7 +387,10 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
   //获取评论的item--每一个item
   Widget _getCommentUi(CommentDtoModel value, bool isSubComment, int _targetId) {
-    if (courseCommentHot != null && isFirstScroll && widget.commentDtoModel != null&&!widget.isBottomSheetAndHomePage) {
+    if (courseCommentHot != null &&
+        isFirstScroll &&
+        widget.commentDtoModel != null &&
+        !widget.isBottomSheetAndHomePage) {
       Future.delayed(Duration.zero, () async {
         print("开始滚动------------------------------------------------------------------------");
         if (widget.commentDtoModel.type == 2) {
@@ -397,8 +401,8 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         isFirstScroll = false;
       });
     }
-    if (widget.commentDtoModel != null||value.itemChose) {
-      int milliseconds=3000;
+    if (widget.commentDtoModel != null || value.itemChose) {
+      int milliseconds = 3000;
       if (value.itemChose) {
         Future.delayed(Duration(milliseconds: milliseconds), () {
           print('-=-=-=-=-=-=-=-=-=-=-=-=-=-=倒计时结束，背景改变');
@@ -499,7 +503,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                           ],
                         ),
                         onTap: () {
-                          if(ClickUtil.isFastClick()){
+                          if (ClickUtil.isFastClick()) {
                             return;
                           }
                           _laudComment(value.id, value.isLaud == 0, value.uid);
@@ -550,7 +554,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                       return true;
                     }),
                     confirm: AppDialogButton("确定", () {
-                      _deleteComment(value.id,value);
+                      _deleteComment(value.id, value);
                       return true;
                     }));
               } else if (list[index] == "举报") {
@@ -569,13 +573,13 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   _profileMoreDenounce(int targetId) async {
     bool isSucess = await ProfileMoreDenounce(targetId, 2);
     print("举报：isSucess:$isSucess");
-    if (isSucess!=null&&isSucess) {
+    if (isSucess != null && isSucess) {
       ToastShow.show(msg: "感谢你的反馈,我们会尽快处理!", context: context);
     }
   }
 
   //删除评论
-  _deleteComment(int commentId,CommentDtoModel commentDtoModel) async {
+  _deleteComment(int commentId, CommentDtoModel commentDtoModel) async {
     Map<String, dynamic> model = await deleteComment(commentId: commentId);
     print(model);
     if (model != null && model["state"] == true) {
@@ -587,14 +591,17 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
             .commensAssignment(widget.targetId, courseCommentHot.list, courseCommentHot.totalCount);
       }
       context.read<FeedMapNotifier>().deleteContent(commentId);
-        if(context.read<FeedMapNotifier>().feedMap[widget.targetId]!=null&&!widget.isShowHotOrTime&&context.read<FeedMapNotifier>().feedMap[widget.targetId].hotComment.isNotEmpty){
-          for(int i=0;i< context.read<FeedMapNotifier>().feedMap[widget.targetId].hotComment.length;i++){
-            if(context.read<FeedMapNotifier>().feedMap[widget.targetId].hotComment[i].id == commentId){
-              context.read<FeedMapNotifier>().updateHotComment(widget.targetId,commentDtoModel:commentDtoModel,
-                  isDelete: true);
-            }
+      if (context.read<FeedMapNotifier>().feedMap[widget.targetId] != null &&
+          !widget.isShowHotOrTime &&
+          context.read<FeedMapNotifier>().feedMap[widget.targetId].hotComment.isNotEmpty) {
+        for (int i = 0; i < context.read<FeedMapNotifier>().feedMap[widget.targetId].hotComment.length; i++) {
+          if (context.read<FeedMapNotifier>().feedMap[widget.targetId].hotComment[i].id == commentId) {
+            context
+                .read<FeedMapNotifier>()
+                .updateHotComment(widget.targetId, commentDtoModel: commentDtoModel, isDelete: true);
           }
         }
+      }
       ToastShow.show(msg: "已删除", context: context);
       setState(() {});
     } else {
@@ -845,16 +852,16 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       commentModelCallback: (BaseResponseModel baseResponseModel) {
         if (baseResponseModel.code == CODE_BLACKED) {
           ToastShow.show(msg: "发布失败，你已被对方加入黑名单", context: context, gravity: Toast.CENTER);
-        }else if (baseResponseModel.code == CODE_NO_DATA) {
-          String alertString="";
-          if (targetId == widget.targetId){
-            if(widget.isShowHotOrTime){
-              alertString="原课程已删除或失效";
-            }else{
-              alertString="原动态已删除或失效";
+        } else if (baseResponseModel.code == CODE_NO_DATA) {
+          String alertString = "";
+          if (targetId == widget.targetId) {
+            if (widget.isShowHotOrTime) {
+              alertString = "原课程已删除或失效";
+            } else {
+              alertString = "原动态已删除或失效";
             }
-          }else{
-            alertString="原评论已删除或失效";
+          } else {
+            alertString = "原评论已删除或失效";
           }
           ToastShow.show(msg: alertString, context: context, gravity: Toast.CENTER);
         } else {
@@ -870,7 +877,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                   courseCommentHot = new CommentModel();
                   courseCommentHot.list = [];
                   courseCommentHot.list.add(model);
-                  courseCommentHot.totalCount=1;
+                  courseCommentHot.totalCount = 1;
                 }
                 screenOutHotIds.add(model.id);
                 setCommentListSubSettingSingle(model.id);
@@ -882,7 +889,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                   courseCommentTime = new CommentModel();
                   courseCommentTime.list = [];
                   courseCommentTime.list.add(model);
-                  courseCommentTime.totalCount=1;
+                  courseCommentTime.totalCount = 1;
                 }
                 screenOutTimeIds.add(model.id);
                 setCommentListSubSettingSingle(model.id);
@@ -935,9 +942,11 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                 }
               }
             }
-            if(widget.isBottomSheetAndHomePage&&context.read<FeedMapNotifier>().feedMap[widget.targetId].hotComment.length<2){
-              context.read<FeedMapNotifier>().updateHotComment(widget.targetId,commentDtoModel: model,isDelete:
-              false);
+            if (widget.isBottomSheetAndHomePage &&
+                context.read<FeedMapNotifier>().feedMap[widget.targetId].hotComment.length < 2) {
+              context
+                  .read<FeedMapNotifier>()
+                  .updateHotComment(widget.targetId, commentDtoModel: model, isDelete: false);
             }
             ToastShow.show(msg: "发布成功", context: context);
             if (mounted) {
@@ -977,7 +986,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
               scrollHeight += element.currentContext.size.height;
             }
           });
-          if(widget.isVideoCoursePage){
+          if (widget.isVideoCoursePage) {
             scrollHeight += 160;
           }
           scrollHeight += 24;
@@ -1026,7 +1035,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
           widget.scrollController.animateTo(
             scrollHeight,
             duration: Duration(milliseconds: 300),
-            curve: Curves.ease,
+            curve: Curves.easeIn,
           );
         }
       }
@@ -1035,18 +1044,31 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
   //加载网络数据
   void getDataAction({bool isFold = false}) async {
+    try{
+      print("courseCommentHot：${courseCommentHot.list.length}");
+    }catch(e){
+      print("courseCommentHot：null");
+      print(e);
+    }
     // //获取评论
     if (isHotOrTime) {
       Map<String, dynamic> commentModel;
-      if(widget.isInteractiveIn&&context.read<FeedMapNotifier>().courseCommentHot[widget.commentDtoModel.id]!=null){
-        courseCommentHot = context.read<FeedMapNotifier>().courseCommentHot[widget.commentDtoModel.id];
-      }else{
+      if (widget.isInteractiveIn!=null &&
+          widget.isInteractiveIn&&context.read<FeedMapNotifier>().courseCommentHot[widget.commentDtoModel.id] != null) {
+        courseCommentHot = CommentModel();
+        courseCommentHot.list = [];
+        context.read<FeedMapNotifier>().courseCommentHot[widget.commentDtoModel.id].list.forEach((element) {
+          courseCommentHot.list.add(element);
+        });
+        courseCommentHot.lastId = context.read<FeedMapNotifier>().courseCommentHot[widget.commentDtoModel.id].lastId;
+        courseCommentHot.totalCount = context.read<FeedMapNotifier>().courseCommentHot[widget.commentDtoModel.id].totalCount;
+      } else {
         commentModel = await queryListByHot2(
             targetId: widget.targetId,
             targetType: widget.targetType,
             lastId: courseCommentHot?.lastId ?? null,
             size: widget.pageCommentSize);
-        if(commentModel!=null){
+        if (commentModel != null) {
           courseCommentHot = CommentModel.fromJson(commentModel);
         }
       }
@@ -1055,22 +1077,22 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
           for (int i = 0; i < courseCommentHot.list.length; i++) {
             if (courseCommentHot.list[i].id == widget.commentDtoModel.id) {
               print('=====================在第一页的父评论');
-                  choseItemInFirst = true;
-                  if(widget.isBottomSheetAndHomePage){
-                    widget.commentDtoModel = courseCommentHot.list[i];
-                    widget.commentDtoModel.itemChose = true;
-                    courseCommentHot.list.removeAt(i);
-                    courseCommentHot.list.insert(0, widget.commentDtoModel);
-                    screenOutHotIds.add(widget.commentDtoModel.id);
-                  }else{
-                    choseIndex = i;
-                    courseCommentHot.list[i].itemChose = true;
-                  }
+              choseItemInFirst = true;
+              if (widget.isBottomSheetAndHomePage) {
+                widget.commentDtoModel = courseCommentHot.list[i];
+                widget.commentDtoModel.itemChose = true;
+                courseCommentHot.list.removeAt(i);
+                courseCommentHot.list.insert(0, widget.commentDtoModel);
+                screenOutHotIds.add(widget.commentDtoModel.id);
+              } else {
+                choseIndex = i;
+                courseCommentHot.list[i].itemChose = true;
+              }
             } else if (courseCommentHot.list[i].id == widget.commentDtoModel.targetId) {
               print('=====================在第一页的子评论的父评论');
               choseItemInFirst = true;
-              if(widget.isBottomSheetAndHomePage){
-                if(i!=0){
+              if (widget.isBottomSheetAndHomePage) {
+                if (i != 0) {
                   courseCommentHot.list.remove(courseCommentHot.list[i]);
                   courseCommentHot.list.insert(0, widget.fatherComment);
                   screenOutHotIds.add(widget.fatherComment.id);
@@ -1079,7 +1101,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                 courseCommentHot.list[0].screenOutIds.add(widget.commentDtoModel.id);
                 courseCommentHot.list[0].pullNumber = 1;
                 courseCommentHot.list[0].replyCount -= 1;
-              }else{
+              } else {
                 choseIndex = i;
               }
             }
@@ -1089,7 +1111,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
               print('=================不在第一页的子评论的父评论');
               courseCommentHot.list.insert(0, widget.fatherComment);
               screenOutHotIds.add(widget.fatherComment.id);
-              if(widget.isBottomSheetAndHomePage){
+              if (widget.isBottomSheetAndHomePage) {
                 courseCommentHot.list[0].replys.insert(0, widget.commentDtoModel);
                 courseCommentHot.list[0].screenOutIds.add(widget.commentDtoModel.id);
                 courseCommentHot.list[0].replyCount -= 1;
@@ -1118,7 +1140,8 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
         setCommentListSubSetting(courseCommentHot, isFold: isFold);
         if (widget.commentDtoModel != null && widget.fatherComment != null && isFirstScroll && mounted) {
-          onClickAddSubComment(courseCommentHot.list[choseIndex], choseIndex,false);
+
+          onClickAddSubComment(courseCommentHot.list[choseIndex], choseIndex, false);
         }
         widget.refreshController.loadComplete();
       } else {
@@ -1158,7 +1181,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     if (replyLength > 0 &&
         lastId == null &&
         (isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber <= 0) {
-      print("有数量，但是null为空，表示没有数据了");
+      print("有数量，但是null为空，表示没有数据了---lastId${lastId==null}----replyLength${replyLength>0}---isHotOrTime${(isHotOrTime ? courseCommentHot : courseCommentTime).list[positionComment].pullNumber <= 0}");
       commentLoadingStatusList[positionComment] = LoadingStatus.STATUS_COMPLETED;
       if (mounted) {
         setState(() {});
@@ -1187,8 +1210,10 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         if (!(commentModel == null || commentModel.list == null || commentModel.list.length < 1)) {
           print("获取到了commentModel不为空");
           List<CommentDtoModel> commentDtoModelList = <CommentDtoModel>[];
-          if (widget.commentDtoModel != null && targetId == widget.commentDtoModel.targetId &&
-              childFirstLoading&&!widget.isBottomSheetAndHomePage) {
+          if (widget.commentDtoModel != null &&
+              targetId == widget.commentDtoModel.targetId &&
+              childFirstLoading &&
+              !widget.isBottomSheetAndHomePage) {
             print('===================第一次进初始化选中的评论');
             bool isFrist = false;
             for (int i = 0; i < commentModel.list.length; i++) {
@@ -1276,7 +1301,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
           (isHotOrTime ? courseCommentHot : courseCommentTime).lastId = commentModel.lastId;
           isHotOrTime ? courseCommentPageHot++ : courseCommentPageTime++;
           widget.refreshController.loadComplete();
-          if(!widget.isShowHotOrTime){
+          if (!widget.isShowHotOrTime) {
             context
                 .read<FeedMapNotifier>()
                 .commensAssignment(widget.targetId, courseCommentHot.list, courseCommentHot.totalCount);
@@ -1321,15 +1346,15 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   }
 
   //判断加载子评论
-  onClickAddSubComment(CommentDtoModel value, int index,bool isOnClickListener) {
+  onClickAddSubComment(CommentDtoModel value, int index, bool isOnClickListener) {
     if (commentLoadingStatusList[index] == LoadingStatus.STATUS_COMPLETED) {
       // ignore: null_aware_before_operator
-      if (value.replys?.length >= value.replyCount + value.pullNumber&&!widget.isBottomSheetAndHomePage) {
+      if (value.replys?.length >= value.replyCount + value.pullNumber && !widget.isBottomSheetAndHomePage) {
         commentListSubSettingList[index].isFold = !commentListSubSettingList[index].isFold;
         if (mounted) {
           setState(() {});
         }
-      }else if (value.replys.length >= value.replyCount + value.pullNumber && isOnClickListener) {
+      } else if (value.replys.length >= value.replyCount + value.pullNumber && isOnClickListener) {
         commentListSubSettingList[index].isFold = !commentListSubSettingList[index].isFold;
         if (mounted) {
           setState(() {});
@@ -1384,7 +1409,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     }
 
     int code = await laudComment(commentId: commentId, laud: laud ? 1 : 0);
-    if (code != null && code==200) {
+    if (code != null && code == 200) {
       _laudCommentData(courseCommentHot, commentId, true, laud);
       _laudCommentData(courseCommentTime, commentId, false, laud);
       // if (laud) {
@@ -1406,7 +1431,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
   //输入框评论点击事件
   onEditBoxClickBtn() {
-    if(ClickUtil.isFastClick()){
+    if (ClickUtil.isFastClick()) {
       return;
     }
     if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
@@ -1429,7 +1454,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
   //输入框评论点击事件
   onPostComment(int targetId, int targetType, int replyId, int replyCommentId, {String hintText}) {
-    if(ClickUtil.isFastClick()){
+    if (ClickUtil.isFastClick()) {
       return;
     }
     if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {

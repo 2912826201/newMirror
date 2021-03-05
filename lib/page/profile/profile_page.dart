@@ -50,9 +50,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     super.initState();
     uid = context.read<ProfileNotifier>()
         .profile.uid;
-    if(!context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(uid)){
-      context.read<ProfilePageNotifier>().setFirstModel(uid);
-    }
+
       getProfileModel();
     controller.addListener(() {
       if(controller.position.maxScrollExtent<controller.offset){
@@ -72,7 +70,11 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   Widget build(BuildContext context) {
     // TODO: implement build
     super.build(context);
-  /*  _getFollowCount();*/
+    if(!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey(context.watch<ProfileNotifier>()
+        .profile.uid)){
+      context.watch<ProfilePageNotifier>().setFirstModel(context.watch<ProfileNotifier>()
+          .profile.uid);
+    }
     print("ProfileState_____________________________________________build");
     print('===============================我的页build');
     double width = ScreenUtil.instance.screenWidthDp;

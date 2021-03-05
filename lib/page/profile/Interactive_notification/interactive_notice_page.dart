@@ -336,6 +336,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    print('===============================itemInit   index${widget.index}');
     Future.delayed(Duration.zero,(){
       if (widget.msgModel.refType == 0||widget.msgModel.refType == 1 || widget.msgModel.refType == 3) {
         getCommentFristPage(int.parse(widget.msgModel.refId),widget.msgModel.refType);
@@ -351,9 +352,6 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     senderAvatarUrl = widget.msgModel.senderAvatarUrl;
     senderName = widget. msgModel.senderName;
     coverImage = widget.msgModel.coverUrl;
-    if(widget.msgModel.commentData!=null){
-      widget.msgModel.commentData.itemChose = true;
-    }
     _getRefData(context);
     if (widget.type == 0&&widget.msgModel.commentData!=null) {
       if (widget.msgModel.refType == 2) {
@@ -513,7 +511,13 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       return;
     }
     try{
-      widget.msgModel.commentData.index = widget.index;
+        if(context.read<FeedMapNotifier>().courseCommentHot[widget.msgModel.commentData.id].list!=null){
+          context.read<FeedMapNotifier>().courseCommentHot[widget.msgModel.commentData.id].list.forEach((element) {
+            if(element.replys.isNotEmpty){
+              element.replys.clear();
+            }
+          });
+        }
       if (widget.msgModel.refType == 0) {
         print('=====================动态');
         getFeedDetail(context, feedModel.id, comment: widget.msgModel.commentData);
@@ -564,7 +568,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
         targetType:targetType,
         lastId: null,
         size: 15);
-    if(commentModel!=null){
+    if(commentModel!=null&&widget.msgModel.commentData!=null){
       context.read<FeedMapNotifier>().interacticeNoticeChange(courseCommentHots: CommentModel.fromJson(commentModel),
           commentId:widget.msgModel.commentData.id);
     }
