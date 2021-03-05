@@ -9,6 +9,7 @@ import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/base_response_model.dart';
+import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/query_msglist_model.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
@@ -197,6 +198,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                         return InteractiveNoticeItem(
                             type: widget.type,
                             msgModel: msgList[index],
+                            index: index,
                             deleteCallBack: (value) {
                              /* List<QueryModel> list = [];
                               for (int i = 0; i < msgList.length; i++) {
@@ -248,8 +250,9 @@ class InteractiveNoticeItem extends StatefulWidget{
   int type;
   QueryModel msgModel;
   DeleteChangedCallback deleteCallBack;
-
-  InteractiveNoticeItem({this.type, this.msgModel, this.deleteCallBack});
+  bool isFrist = true;
+  int index;
+  InteractiveNoticeItem({this.type, this.msgModel, this.deleteCallBack,this.index});
 
   @override
   State<StatefulWidget> createState() {
@@ -272,7 +275,6 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
 
   String senderName;
   String senderAvatarUrl;
-  int index;
   CommentDtoModel fatherCommentModel;
   HomeFeedModel feedModel;
   LiveVideoModel liveVideoModel;
@@ -308,12 +310,11 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       } else if (widget.msgModel.refType == 1 || widget.msgModel.refType == 3) {
         liveVideoModel = LiveVideoModel.fromJson(widget.msgModel.refData);
       }
+      if(widget.isFrist){
+        widget.isFrist = false;
+      }
     } else {
       feedIsDelete = true;
-      if(mounted){
-        setState(() {
-        });
-      }
     }
   }
 
@@ -331,7 +332,19 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     });
     return richList;
   }
-
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.delayed(Duration.zero,(){
+      if (widget.msgModel.refType == 0||widget.msgModel.refType == 1 || widget.msgModel.refType == 3) {
+        getCommentFristPage(int.parse(widget.msgModel.refId),widget.msgModel.refType);
+      } else if (widget.msgModel.refType == 2&& CommentDtoModel.fromJson(widget.msgModel.refData)!=null) {
+        getCommentFristPage(CommentDtoModel.fromJson(widget.msgModel.refData).targetId, CommentDtoModel.fromJson(widget
+            .msgModel.refData).type);
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
     print('-====================消息互动列表页Item  biuld');
@@ -351,7 +364,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       textHeight = testSize.height;
     } else {
       TextPainter testSize =
-          calculateTextWidth("$comment", AppStyle.textRegular13, ScreenUtil.instance.screenWidthDp * 0.64, 3);
+      calculateTextWidth("$comment", AppStyle.textRegular13, ScreenUtil.instance.screenWidthDp * 0.64, 3);
       textHeight = testSize.height;
     }
     return Container(
@@ -497,6 +510,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       return;
     }
     try{
+      widget.msgModel.commentData.index = widget.index;
       if (widget.msgModel.refType == 0) {
         print('=====================动态');
         getFeedDetail(context, feedModel.id, comment: widget.msgModel.commentData);
@@ -508,18 +522,28 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
           AppRouter.navigateToLiveDetail(context, fatherCommentModel.targetId,
               isHaveStartTime: false,
               commentDtoModel: widget.msgModel.commentData,
-              fatherComment: fatherCommentModel);
+              fatherComment: fatherCommentModel,
+              isInteractiveIn: true);
         } else if (fatherCommentModel.type == 3) {
-          AppRouter.navigateToVideoDetail(context, fatherCommentModel.targetId,
-              commentDtoModel:widget.msgModel.commentData , fatherComment: fatherCommentModel);
+          AppRouter.navigateToVideoDetail(context,
+              fatherCommentModel.targetId,
+              commentDtoModel:widget.msgModel.commentData ,
+              fatherComment: fatherCommentModel,
+              isInteractive: true);
         }
       } else if (widget.msgModel.refType == 1 && liveVideoModel != null && liveVideoModel.id != null) {
-        AppRouter.navigateToLiveDetail(context, liveVideoModel.id,
-            isHaveStartTime: false, commentDtoModel:  widget.msgModel.commentData);
+        AppRouter.navigateToLiveDetail(context,
+            liveVideoModel.id,
+            isHaveStartTime: false,
+            commentDtoModel:  widget.msgModel.commentData,
+            isInteractiveIn: true);
       } else {
         if (liveVideoModel != null && liveVideoModel.id != null) {
-          AppRouter.navigateToVideoDetail(context, liveVideoModel.id,
-              commentDtoModel:widget.msgModel.commentData);
+          AppRouter.navigateToVideoDetail(
+              context,
+              liveVideoModel.id,
+              commentDtoModel:widget.msgModel.commentData,
+              isInteractive: true);
         }
       }
       widget.msgModel.isRead = 1;
@@ -530,6 +554,18 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
 
   }
 
+  ///获取对应内容第一页评论
+  getCommentFristPage(int targetId,int targetType)async{
+    Map<String,dynamic> commentModel = await queryListByHot2(
+        targetId: targetId,
+        targetType:targetType,
+        lastId: null,
+        size: 15);
+    if(commentModel!=null){
+      context.read<FeedMapNotifier>().interacticeNoticeChange(courseCommentHots: CommentModel.fromJson(commentModel),
+          commentId:widget.msgModel.commentData.id);
+    }
+  }
   getFeedDetail(BuildContext context, int feedId, {CommentDtoModel comment, CommentDtoModel fatherModel}) async {
     BaseResponseModel feedModel = await feedDetail(id: feedId);
     if(feedModel.data!=null){
@@ -547,6 +583,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
         type: 2,
         fatherModel: fatherModel,
         errorCode: feedModel.code,
+        isInteractive: true,
         callBack: (result) {
           if(result!=null){
             widget.deleteCallBack(result);

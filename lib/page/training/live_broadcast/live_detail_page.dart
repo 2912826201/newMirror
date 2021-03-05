@@ -42,7 +42,8 @@ class LiveDetailPage extends StatefulWidget {
     this.commentDtoModel,
     this.fatherComment,
     this.liveModel,
-    this.isHaveStartTime}) : super(key: key);
+    this.isHaveStartTime,
+    this.isInteractive}) : super(key: key);
 
   final String heroTag;
   final int liveCourseId;
@@ -50,18 +51,18 @@ class LiveDetailPage extends StatefulWidget {
   final bool isHaveStartTime;
   final CommentDtoModel commentDtoModel;
   final CommentDtoModel fatherComment;
-
+  final bool isInteractive;
   @override
   createState() {
     return LiveDetailPageState(liveModel: liveModel,heroTag:heroTag,
         liveCourseId:liveCourseId,commentDtoModel:commentDtoModel,
-        fatherComment:fatherComment,isHaveStartTime: isHaveStartTime);
+        fatherComment:fatherComment,isHaveStartTime: isHaveStartTime,isInteractive:isInteractive);
   }
 }
 
 class LiveDetailPageState extends XCState {
   LiveDetailPageState({Key key, this.liveModel,this.heroTag,
-    this.liveCourseId,this.isHaveStartTime,this.commentDtoModel,this.fatherComment});
+    this.liveCourseId,this.isHaveStartTime,this.commentDtoModel,this.fatherComment,this.isInteractive});
 
 
   String heroTag;
@@ -69,7 +70,7 @@ class LiveDetailPageState extends XCState {
   bool isHaveStartTime;
   CommentDtoModel commentDtoModel;
   CommentDtoModel fatherComment;
-
+  bool isInteractive;
 
   //当前直播的model
   LiveVideoModel liveModel;
@@ -287,6 +288,7 @@ class LiveDetailPageState extends XCState {
           fatherComment:fatherComment,
           targetId:liveModel.id,
           targetType:1,
+          isInteractiveIn:isInteractive,
           pageCommentSize:20,
           pageSubCommentSize:3,
           isShowHotOrTime:true,

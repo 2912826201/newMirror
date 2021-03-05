@@ -530,6 +530,8 @@ class CommentDtoModel {
   // 添加字段
   int totalCount = -1;
 
+  //
+  int index = 0;
   CommentDtoModel({this.id,
     this.targetId,
     this.type,
