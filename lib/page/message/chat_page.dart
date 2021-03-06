@@ -1145,8 +1145,15 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         ||Application.postChatDataModelList[conversation.id].length<1){
       return;
     }else{
-      for(int i=0;i<Application.postChatDataModelList[conversation.id].length;i++){
-        if(!Application.postChatDataModelList[conversation.id][i].isTemporary){
+      for(int i=Application.postChatDataModelList[conversation.id].length-1;i>=0;i--){
+        bool isHave=false;
+        for(int j=0;j<chatDataList.length;j++){
+          if(chatDataList[j].msg!=null&& Application.postChatDataModelList[conversation.id][i].msg!=null&&
+              chatDataList[j].msg.messageId==Application.postChatDataModelList[conversation.id][i].msg.messageId){
+            isHave=true;
+          }
+        }
+        if(isHave){
           Application.postChatDataModelList[conversation.id].removeAt(i);
         }else{
           chatDataList.insert(0, Application.postChatDataModelList[conversation.id][i]);
