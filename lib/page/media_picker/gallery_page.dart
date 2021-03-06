@@ -588,6 +588,9 @@ class _GalleryPageState extends State<GalleryPage> {
                     Text(
                       _albums[_currentAlbumIndex].name,
                       style: AppStyle.whiteRegular16,
+                      maxLines: 1,
+                      softWrap: false,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     SizedBox(
                       width: 6,
@@ -811,6 +814,9 @@ class _GalleryPageState extends State<GalleryPage> {
                             color: AppColor.white,
                             fontSize: 13,
                           ),
+                          maxLines: 1,
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         SizedBox(
                           height: 2,
