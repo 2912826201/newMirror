@@ -936,7 +936,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       for (int i = chatDataList.length - 1; i >= 0; i--) {
         if (i == chatDataList.length - 1) {
           chatDataList.add(getTimeAlertModel(chatDataList[i].msg.sentTime));
-        } else if (chatDataList[i].msg.sentTime - chatDataList[i + 1].msg.sentTime > 5 * 60 * 1000) {
+        } else if (chatDataList[i].msg!=null&&(chatDataList[i].msg.sentTime - chatDataList[i + 1].msg.sentTime > 5 * 60 * 1000)) {
           chatDataList.insert(i + 1, getTimeAlertModel(chatDataList[i].msg.sentTime));
         }
       }
