@@ -254,7 +254,7 @@ class ImgVideoMsg extends StatelessWidget {
 
   //获取图片的展示
   Widget getImageUi() {
-    print("showImageUrl:${sizeInfoMap["showImageUrl"]}");
+    // print("showImageUrl:${sizeInfoMap["showImageUrl"]}");
     if (imageMessage != null) {
       Uint8List bytes = Base64Decoder().convert(imageMessage.content);
       return bytes != null

@@ -217,6 +217,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
               loadText = "加载中...";
               loadStatus = LoadingStatus.STATUS_LOADING;
             });
+            Future.delayed(Duration(milliseconds: 10),(){
+              _scrollController.animateTo(_scrollController.position.pixels+50,
+                  duration: Duration(milliseconds: 10), curve: Curves.easeInOut);
+            });
           }
           if (conversation.getType() != RCConversationType.System) {
             _onRefresh();
