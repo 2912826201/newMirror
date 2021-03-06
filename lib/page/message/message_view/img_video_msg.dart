@@ -254,6 +254,7 @@ class ImgVideoMsg extends StatelessWidget {
 
   //获取图片的展示
   Widget getImageUi() {
+    print("showImageUrl:${sizeInfoMap["showImageUrl"]}");
     if (imageMessage != null) {
       Uint8List bytes = Base64Decoder().convert(imageMessage.content);
       return bytes != null
@@ -267,7 +268,7 @@ class ImgVideoMsg extends StatelessWidget {
         width: width,
         imageUrl: sizeInfoMap["showImageUrl"] == null
             ? ""
-            : sizeInfoMap["showImageUrl"],
+            : sizeInfoMap["showImageUrl"]+"?imageslim",
         fit: BoxFit.cover,
         placeholder: (context, url) => getImageShowImage(),
         errorWidget: (context, url, error) => getImageShowImage(),
