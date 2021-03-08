@@ -173,11 +173,12 @@ class _SmsCodePageState extends State<SmsCodePage> {
       "输入验证码",
       style: TextStyle(fontFamily: 'PingFangSC', fontSize: 23, color: Colors.black, decoration: TextDecoration.none),
     );
-    var prefixString = widget.phoneNumber.substring(0, 3);
+    /*var prefixString = widget.phoneNumber.substring(0, 3);
     var suffixString = widget.phoneNumber.substring(widget.phoneNumber.length - 4);
-    var stars = "****";
+    var stars = "****";*/
+    String phoneNumber = widget.phoneNumber.replaceFirst(RegExp(r'\d{7}'),"*******");
     var subTitle = Text(
-      "短信验证码已发送至 +86 " + prefixString + stars + suffixString,
+      "短信验证码已发送至 +86 " + phoneNumber,
       style: TextStyle(
           fontFamily: "PingFangSC",
           color: Color.fromRGBO(153, 153, 153, 1),
@@ -219,8 +220,9 @@ class _SmsCodePageState extends State<SmsCodePage> {
           suffixIconConstraints: BoxConstraints(minWidth: 70, maxHeight: 24.5),
           isDense: true,
           focusedBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: Color.fromRGBO(196, 196, 196, 1), width: 0.5),
-          )),
+            borderSide: BorderSide(color: AppColor.bgWhite, width: 0.5),
+          ),
+          enabledBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite))),
     );
     return Container(
         child: putfield,
