@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/page/agora_test_page.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 
@@ -38,7 +39,7 @@ class _AgoraInputState extends State<AgoraInputPage> {
                 onPressed: () {
                   String token = _tokenController.text;
                   String channel = _channelController.text;
-                  int uid = Random().nextInt(10000);
+                  int uid = Application.profile.uid;
                   if (token.trim().isNotEmpty && channel.trim().isNotEmpty) {
                     Navigator.push(context, MaterialPageRoute(builder: (context) {
                       return AgoraTestPage(token, channel, uid);
