@@ -239,6 +239,9 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
             setState(() {
               _selectedImageList.add(imageModel);
             });
+          } else {
+            //未选中 达到最大数量 提示用户只能选择2张
+            ToastShow.show(msg: "最多选择2张照片", context: context);
           }
         } else {
           AppRouter.navigateToTrainingGalleryDetailPage(context, _dataList, (result) {
