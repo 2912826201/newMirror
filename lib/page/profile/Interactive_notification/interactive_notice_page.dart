@@ -56,7 +56,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     QueryListModel model = await queryMsgList(type, 20, lastTime);
 
     if (listPage == 1) {
-      if (model.list != null) {
+      if (model!=null&&model.list != null) {
         haveData = true;
         msgList.clear();
         controller.loadComplete();
@@ -73,7 +73,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
         controller.resetNoData();
       }
     } else if (listPage > 1 && lastTime != null) {
-      if (model.list != null) {
+      if (model!=null&&model.list != null) {
         lastTime = model.lastTime;
         model.list.forEach((element) {
           msgList.add(element);
