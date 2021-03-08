@@ -134,7 +134,7 @@ class ChatDetailsBody extends StatelessWidget {
       enablePullUp: true,
       footer: footerWidget(),
       controller: refreshController,
-      // onLoading: onLoading,
+      onLoading: onLoading,
       child: getListViewUi(),
     );
   }
