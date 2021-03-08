@@ -79,7 +79,7 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
     });*/
   }
 
-  checkDownLoadStatus() async {
+  /*checkDownLoadStatus() async {
     lastId = await RUpgrade.getLastUpgradedId();
       if (lastId != null) {
         lastStatus = await RUpgrade.getDownloadStatus(lastId);
@@ -120,7 +120,7 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
           });
         }
       }
-  }
+  }*/
 
   void _updateProgress() {
     FileUtil().download(url, (taskId, received, total) async {
