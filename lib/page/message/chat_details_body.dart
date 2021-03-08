@@ -23,37 +23,39 @@ class ChatDetailsBody extends StatelessWidget {
   final bool isShowChatUserName;
   final bool isPersonalButler;
   final GestureTapCallback onTap;
-  final VoidCallback onLoading;
+  final VoidCallback onRefresh;
   final VoidCallback onAtUiClickListener;
   final RefreshController refreshController;
   final FirstEndCallback firstEndCallback;
   final int isHaveAtMeMsgIndex;
   final int conversationDtoType;
   final bool isHaveAtMeMsg;
+  final String loadText;
   final String chatId;
+  final LoadingStatus loadStatus;
   final bool isShowTop;
-  final double bottomWhitePlanHeight;
 
   ChatDetailsBody(
       {this.scrollController,
-      this.chatDataList,
-      this.chatId,
-      this.conversationDtoType,
-      this.isShowChatUserName,
-      this.isHaveAtMeMsgIndex,
-      this.isHaveAtMeMsg,
-      this.firstEndCallback,
-      this.vsync,
-      this.chatName,
-      this.onTap,
-      this.isShowTop=false,
-      this.isPersonalButler = false,
-      this.voidMessageClickCallBack,
-      this.onLoading,
-      this.refreshController,
-      this.bottomWhitePlanHeight=0.0,
-      this.onAtUiClickListener,
-      this.voidItemLongClickCallBack});
+        this.chatDataList,
+        this.chatId,
+        this.conversationDtoType,
+        this.loadText,
+        this.loadStatus,
+        this.isShowChatUserName,
+        this.isHaveAtMeMsgIndex,
+        this.isHaveAtMeMsg,
+        this.firstEndCallback,
+        this.vsync,
+        this.chatName,
+        this.onTap,
+        this.isShowTop=false,
+        this.isPersonalButler = false,
+        this.voidMessageClickCallBack,
+        this.onRefresh,
+        this.refreshController,
+        this.onAtUiClickListener,
+        this.voidItemLongClickCallBack});
 
   List<ChatDataModel> chatData = <ChatDataModel>[];
 
@@ -65,22 +67,21 @@ class ChatDetailsBody extends StatelessWidget {
     chatData.clear();
     chatData.addAll(chatDataList);
 
-    if(isShowTop) {
-      ChatDataModel chatDataModel = new ChatDataModel();
-      chatDataModel.content = "底部空白";
-      chatData.insert(0, chatDataModel);
-    }
-
     if (isPersonalButler) {
       ChatDataModel model = new ChatDataModel();
       model.content = "私人管家";
       chatData.insert(0, model);
     }
 
+    if(loadStatus != LoadingStatus.STATUS_COMPLETED) {
+      ChatDataModel chatDataModel = new ChatDataModel();
+      chatDataModel.content = "加载动画";
+      chatData.add(chatDataModel);
+    }
     return Stack(
       children: [
         Positioned(
-          child: getChatBodyUi(),
+          child: getNotificationListener(),
         ),
 
         Positioned(
@@ -103,7 +104,8 @@ class ChatDetailsBody extends StatelessWidget {
     );
   }
 
-  Widget getChatBodyUi(){
+
+  Widget getNotificationListener(){
     return NotificationListener<ScrollNotification>(
       onNotification: (ScrollNotification notification) {
         // 注册通知回调
@@ -128,25 +130,11 @@ class ChatDetailsBody extends StatelessWidget {
         }
         return false;
       },
-      child: getSmartRefresherUi(),
+      child: getListView(),
     );
   }
 
-
-  Widget getSmartRefresherUi(){
-    return SmartRefresher(
-      enablePullDown: false,
-      enablePullUp: true,
-      footer: footerWidget(),
-      controller: refreshController,
-      onLoading: onLoading,
-      child: getListViewUi(),
-    );
-  }
-
-
-
-  Widget getListViewUi(){
+  Widget getListView(){
     return ListView.custom(
       cacheExtent: 0.0,
       physics: BouncingScrollPhysics(),
@@ -155,11 +143,15 @@ class ChatDetailsBody extends StatelessWidget {
       reverse: true,
       shrinkWrap: isShowTop,
       childrenDelegate: FirstEndItemChildrenDelegate((BuildContext context, int index) {
-        return Container(
-          margin: index == 0 ? const EdgeInsets.only(bottom: 16) :
-          (index == chatData.length - 2) ? const EdgeInsets.only(top: 8) : null,
-          child: judgeStartAnimation(chatData[index], index),
-        );
+        if (index == chatData.length - 1&&loadStatus != LoadingStatus.STATUS_COMPLETED) {
+          return getLoadingUi();
+        } else {
+          return Container(
+            margin: index == 0 ? const EdgeInsets.only(bottom: 16) :
+            (index == chatData.length - 2) ? const EdgeInsets.only(top: 8) : null,
+            child: judgeStartAnimation(chatData[index], index),
+          );
+        }
       },
         firstEndCallback: (int firstIndex, int lastIndex){
           if(isScroll){
@@ -172,7 +164,31 @@ class ChatDetailsBody extends StatelessWidget {
     );
   }
 
-  
+
+  Widget getLoadingUi(){
+    return  Container(
+      height: 40,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Visibility(
+              visible: loadStatus == LoadingStatus.STATUS_LOADING ? true : false,
+              child: SizedBox(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation(AppColor.mainRed),
+                  // loading 大小
+                  strokeWidth: 2,
+                ),
+                width: 12.0,
+                height: 12.0,
+              ))
+        ],
+      ),
+    );
+  }
+
+
   //获取at的视图
   Widget getAtUi() {
     return GestureDetector(
@@ -202,40 +218,6 @@ class ChatDetailsBody extends StatelessWidget {
     );
   }
 
-  //底部或滑动
-  Widget footerWidget() {
-    double height=55.0;
-    if(refreshController.footerStatus==LoadStatus.noMore){
-      height=0.0;
-    }
-    return CustomFooter(
-      height:height,
-      builder: (BuildContext context, LoadStatus mode) {
-        Widget body;
-        if (mode == LoadStatus.idle) {
-          body = Text("");
-        } else if (mode == LoadStatus.loading) {
-          body = Container(
-            width: 18,
-            height: 18,
-            child: CircularProgressIndicator(
-                strokeWidth:3,
-            ),
-          );
-        } else if (mode == LoadStatus.failed) {
-          body = Text("");
-        } else if (mode == LoadStatus.canLoading) {
-          body = Text("");
-        } else {
-          body = Text("");
-        }
-        return Container(
-          height: height,
-          child: Center(child: body),
-        );
-      },
-    );
-  }
   //判断有没有动画
   Widget judgeStartAnimation(ChatDataModel model, int position) {
     if (model.isHaveAnimation && !isShowTop) {
@@ -263,9 +245,6 @@ class ChatDetailsBody extends StatelessWidget {
     if (judgePersonalButler(model)) {
       return Container(
         width: double.infinity, height: 48, color: AppColor.transparent,);
-    }else if(judgeBottomNullWhite(model)){
-      return Container(
-        width: double.infinity, height: bottomWhitePlanHeight, color: AppColor.transparent,);
     }
 
 
@@ -283,10 +262,6 @@ class ChatDetailsBody extends StatelessWidget {
   bool judgePersonalButler(ChatDataModel model) {
     return model.content != null && model.content.isNotEmpty &&
         model.content == "私人管家";
-  }
-  bool judgeBottomNullWhite(ChatDataModel model) {
-    return model.content != null && model.content.isNotEmpty &&
-        model.content == "底部空白";
   }
 }
 

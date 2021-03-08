@@ -18,6 +18,7 @@ import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
+import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
@@ -87,7 +88,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
   ///是否显示表情
   bool _emojiState = false;
-  bool _emojiStateClick = false;
 
   ///是不是显示语音按钮
   bool _isVoiceState = false;
@@ -161,7 +161,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   //上一次的最大高度
   double oldMaxScrollExtent = 0;
 
+  // 加载中默认文字
+  String loadText = "加载中...";
 
+  // 加载状态
+  LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
 
   //重新编辑消息的位置
   int recallNotificationMessagePosition = -1;
@@ -206,7 +210,24 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     _scrollController.addListener(() {
       scrollPositionPixels=_scrollController.position.pixels;
       // print("scrollPositionPixels3：$scrollPositionPixels");
-      if(_scrollController.position.pixels<=0){
+      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+        if (loadStatus == LoadingStatus.STATUS_IDEL) {
+          // 先设置状态，防止下拉就直接加载reload
+          if (mounted) {
+            reload(() {
+              _timerCount = 0;
+              loadText = "加载中...";
+              loadStatus = LoadingStatus.STATUS_LOADING;
+            });
+          }
+          if (conversation.getType() != RCConversationType.System) {
+            _onRefresh();
+          } else {
+            _onRefreshSystemInformation();
+          }
+        }
+      }else if(_scrollController.position.pixels<=0){
+        print("isHaveReceiveChatDataList:$isHaveReceiveChatDataList");
         if (mounted&&isHaveReceiveChatDataList) {
           reload(() {
             isHaveReceiveChatDataList=false;
@@ -273,6 +294,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
           //关闭键盘
         } else {
           //显示键盘
+          print("显示键盘：${Application.keyboardHeight},${MediaQuery.of(this.context).viewInsets.bottom}");
           if (Application.keyboardHeight <= MediaQuery.of(this.context).viewInsets.bottom) {
             Application.keyboardHeight = MediaQuery.of(this.context).viewInsets.bottom;
             reload(() {});
@@ -282,7 +304,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
           }
         }
         if(_focusNode.hasFocus){
-          print("有焦点：-打开键盘");
           if(MediaQuery.of(this.context).viewInsets.bottom>=oldKeyboardHeight){
             print("打开键盘");
             isShowEmjiPageWhite=true;
@@ -294,11 +315,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
             }
           }
         }else{
-          if(!_emojiStateClick){
-            if(_emojiState){
-              onEmojioClick();
-            }
-          }
           print("没有焦点：-收起键盘");
         }
         oldKeyboardHeight=MediaQuery.of(this.context).viewInsets.bottom;
@@ -366,10 +382,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         }
       }
     }
-
-    //获取消息高度的一些参数
-    List<dynamic> informationList=MessageItemHeightUtil.init().getMessageHeightInformation(chatDataList, isShowName);
-
     return ChatDetailsBody(
       scrollController: _scrollController,
       chatDataList: chatDataList,
@@ -384,9 +396,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       refreshController: _refreshController,
       isHaveAtMeMsg: isHaveAtMeMsg,
       isHaveAtMeMsgIndex: isHaveAtMeMsgIndex,
-      isShowTop: !informationList[0],
-      bottomWhitePlanHeight:informationList[1],
-      onLoading: (conversation.getType() != RCConversationType.System) ? _onRefresh : _onRefreshSystemInformation,
+      isShowTop: !MessageItemHeightUtil.init().judgeMessageItemHeightIsThenScreenHeight(chatDataList, isShowName),
+      onRefresh: (conversation.getType() != RCConversationType.System) ? _onRefresh : _onRefreshSystemInformation,
+      loadText: loadText,
+      loadStatus: loadStatus,
       isShowChatUserName: isShowName,
       onAtUiClickListener: onAtUiClickListener,
       firstEndCallback:firstEndCallbackListView,
@@ -450,11 +463,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
               Expanded(
                   child: SizedBox(
                       child: Text(
-                "点击关注,及时看到对方动态",
-                style: TextStyle(color: AppColor.textPrimary1, fontSize: 16),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ))),
+                        "点击关注,及时看到对方动态",
+                        style: TextStyle(color: AppColor.textPrimary1, fontSize: 16),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ))),
               GestureDetector(
                 child: Container(
                   width: 60,
@@ -488,11 +501,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     return MessageInputBar(
       voiceOnTap: _voiceOnTapClick,
       onEmojio: (){
-        _emojiStateClick=true;
         isShowEmjiPageWhite=false;
         reload(() {});
         Future.delayed(Duration(milliseconds: 10),(){
-          onEmojioClick(emojiStateClick:true);
+          onEmojioClick();
         });
       },
       isVoice: _isVoiceState,
@@ -660,7 +672,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         physics: BouncingScrollPhysics(),
         itemCount: emojiModelList.length,
         gridDelegate:
-            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8, crossAxisSpacing: 1, mainAxisSpacing: 1),
+        SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8, crossAxisSpacing: 1, mainAxisSpacing: 1),
         itemBuilder: (context, index) {
           return _emojiGridItem(emojiModelList[index], index);
         },
@@ -911,7 +923,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   Future<List<ChatDataModel>> getSystemInformationNet() async {
     List<ChatDataModel> dataList = <ChatDataModel>[];
     Map<String, dynamic> dataListMap =
-        await querySysMsgList(type: conversation.type, size: 20, lastTime: systemLastTime);
+    await querySysMsgList(type: conversation.type, size: 20, lastTime: systemLastTime);
     try {
       systemLastTime = dataListMap["lastTime"].toString();
     } catch (e) {}
@@ -1122,7 +1134,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   //从全局的临时消息中删除发送完成的消息
   _deletePostCompleteMessage(){
     if(Application.postChatDataModelList[conversation.id]==null
-    ||Application.postChatDataModelList[conversation.id].length<1){
+        ||Application.postChatDataModelList[conversation.id].length<1){
       return;
     }else{
       for(int i=0;i<Application.postChatDataModelList[conversation.id].length;i++){
@@ -1751,9 +1763,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   }
 
   //表情的点击事件
-  void onEmojioClick({bool emojiStateClick=false}) {
-    _emojiStateClick=emojiStateClick;
-
+  void onEmojioClick() {
     if (MediaQuery.of(context).viewInsets.bottom > 0) {
       _emojiState = false;
     }
@@ -2019,14 +2029,20 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       if (isHaveAtMeMsg || isHaveAtMeMsgPr) {
         judgeNewChatIsHaveAt();
       }
+      loadStatus = LoadingStatus.STATUS_IDEL;
+      loadText = "加载中...";
+    } else {
+      // 加载完毕
+      loadText = "已加载全部动态";
+      loadStatus = LoadingStatus.STATUS_COMPLETED;
     }
-    Future.delayed(Duration(milliseconds: 300), () {
-      if (msgList != null && msgList.length > 1) {
-        _refreshController.loadComplete();
-      } else {
-        _refreshController.loadNoData();
+    Future.delayed(Duration(milliseconds: 500), () {
+      _refreshController.loadComplete();
+      if (mounted) {
+        reload(() {
+          _timerCount = 0;
+        });
       }
-      delayedSetState();
     });
   }
 
@@ -2040,11 +2056,14 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       }
       chatDataList.addAll(dataList);
 
-      _refreshController.loadComplete();
+      loadStatus = LoadingStatus.STATUS_IDEL;
+      loadText = "加载中...";
     } else {
-      _refreshController.loadNoData();
+      loadText = "已加载全部动态";
+      loadStatus = LoadingStatus.STATUS_COMPLETED;
     }
     _timerCount = 0;
+    _refreshController.loadComplete();
     delayedSetState();
   }
 
@@ -2177,5 +2196,5 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     }
   }
 
-  ///------------------------------------各种点击事件  end-----------------------------------------------------------------------///
+///------------------------------------各种点击事件  end-----------------------------------------------------------------------///
 }
