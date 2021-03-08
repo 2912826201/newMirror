@@ -7,6 +7,7 @@ import 'package:mirror/constant/color.dart';
 
 class AppIcon {
   static const String nav_return = "assets/svg/nav_return.svg";
+  static const String qrcode_scan = "assets/svg/qrcode_scan.svg";
 
   static Widget getAppIcon(String svgName, double iconSize,
       {double containerHeight, double containerWidth, Color color}) {
