@@ -186,6 +186,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   int cursorIndexPr=-1;
   bool isShowEmjiPageWhite=false;
 
+  ScrollController textScrollController=ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -536,6 +538,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
               ? ScreenUtil.instance.screenWidthDp - 32 - 32 - 64
               : ScreenUtil.instance.screenWidthDp - 32 - 32 - 64 - 52 - 12),
       child: TextSpanField(
+        scrollController: textScrollController,
         controller: _textController,
         focusNode: _focusNode,
         // 多行展示
@@ -765,6 +768,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
               cursorIndexPr=cursorIndexPr+emojiModel.code.length;
             }
             _changTextLen(_textController.text);
+            Future.delayed(Duration(milliseconds: 100),(){
+              textScrollController.jumpTo(textScrollController.position.maxScrollExtent);
+            });
           },
         ));
   }
@@ -2162,6 +2168,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       // ToastShow.show(msg: "重新编辑消息", context: context);
       // FocusScope.of(context).requestFocus(_focusNode);
       _textController.text += json.decode(map["content"])["data"];
+      Future.delayed(Duration(milliseconds: 100),(){
+        textScrollController.jumpTo(textScrollController.position.maxScrollExtent);
+      });
       if(Application.platform==0) {
         var setCursor = TextSelection(
           baseOffset: _textController.text.length,
