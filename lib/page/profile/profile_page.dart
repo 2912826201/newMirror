@@ -29,7 +29,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin {
-  int uid;
   int followingCount;
   int followerCount;
   int feedCount;
@@ -48,9 +47,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   @override
   void initState() {
     super.initState();
-    uid = context.read<ProfileNotifier>()
-        .profile.uid;
-
       getProfileModel();
     controller.addListener(() {
       if(controller.position.maxScrollExtent<controller.offset){
@@ -61,7 +57,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
   getProfileModel() async {
     UserExtraInfoModel extraInfoModel = await ProfileGetExtraInfo();
-    userModel = await getUserInfo();
     if(extraInfoModel != null){
       this.context.read<ProfileNotifier>().setExtraInfo(extraInfoModel);
     }
@@ -72,10 +67,10 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     super.build(context);
     if(!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey(context.watch<ProfileNotifier>()
         .profile.uid)){
+      print('=======================================不存在该id的key');
       context.watch<ProfilePageNotifier>().setFirstModel(context.watch<ProfileNotifier>()
           .profile.uid);
     }
-    print("ProfileState_____________________________________________build");
     print('===============================我的页build');
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
@@ -275,9 +270,11 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 child: Row(children: [
                   InkWell(
                     child: _textAndNumber("关注", StringUtil.getNumber(context.watch<ProfilePageNotifier>()
-                        .profileUiChangeModel[uid].attentionModel.followingCount)),
+                        .profileUiChangeModel[context.watch<ProfileNotifier>()
+                        .profile.uid].attentionModel.followingCount)),
                     onTap: () {
-                      AppRouter.navigateToQueryFollowList(context, 1, uid);
+                      AppRouter.navigateToQueryFollowList(context, 1, context.watch<ProfileNotifier>()
+                          .profile.uid);
                     },
                   ),
                   SizedBox(
@@ -285,20 +282,24 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   ),
                   InkWell(
                     onTap: () {
-                      AppRouter.navigateToQueryFollowList(context, 2, uid);
+                      AppRouter.navigateToQueryFollowList(context, 2, context.watch<ProfileNotifier>()
+                          .profile.uid);
                     },
                     child: _textAndNumber("粉丝", StringUtil.getNumber(context.watch<ProfilePageNotifier>()
-                        .profileUiChangeModel[uid].attentionModel.followerCount)),
+                        .profileUiChangeModel[context.watch<ProfileNotifier>()
+                        .profile.uid].attentionModel.followerCount)),
                   ),
                   SizedBox(
                     width: width * 0.12,
                   ),
                   InkWell(
                     onTap: () {
-                      AppRouter.navigateToMineDetail(context, uid);
+                      AppRouter.navigateToMineDetail(context, context.watch<ProfileNotifier>()
+                          .profile.uid);
                     },
                     child: _textAndNumber("动态", StringUtil.getNumber(context.watch<ProfilePageNotifier>()
-                        .profileUiChangeModel[uid].attentionModel.feedCount)),
+                        .profileUiChangeModel[context.watch<ProfileNotifier>()
+                        .profile.uid].attentionModel.feedCount)),
                   )
                 ]))
           ],
@@ -312,7 +313,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       height: height * 0.11,
       child: InkWell(
           onTap: () {
-            AppRouter.navigateToMineDetail(context, uid);
+            AppRouter.navigateToMineDetail(context, context.read<ProfileNotifier>()
+                .profile.uid);
           },
           child: Stack(
             children: [

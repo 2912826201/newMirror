@@ -125,13 +125,15 @@ class MainPageState extends XCState {
   //   );
   // }
   _getFollowCount() async {
-    ProfileModel attentionModel = await ProfileFollowCount();
-    if (attentionModel != null) {
-      print('  666666666666666666666666666666666666${attentionModel.toJson().toString()}');
-      context
-          .read<ProfilePageNotifier>()
-          .changeAttentionModel(attentionModel, context.read<ProfileNotifier>().profile.uid);
-    }
+   ProfileFollowCount().then((attentionModel){
+     if (attentionModel != null) {
+       print('  666666666666666666666666666666666666${attentionModel.toJson().toString()}');
+       context
+           .read<ProfilePageNotifier>()
+           .changeAttentionModel(attentionModel, context.read<ProfileNotifier>().profile.uid);
+     }
+   });
+
   }
 
   // 自定义BottomAppBar
@@ -193,7 +195,7 @@ class MainPageState extends XCState {
                       }
                       if (index == 3) {
                         //切换到我的页时刷新关注数
-                        _getFollowCount();
+                          _getFollowCount();
                         _start = 3 * itemWidth + itemWidth * 0.9;
                       }
                     });

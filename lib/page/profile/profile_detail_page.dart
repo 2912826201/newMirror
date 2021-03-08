@@ -721,6 +721,7 @@ class ProfilePageNotifier extends ChangeNotifier {
   }
 
   void changeAttentionModel(ProfileModel model, int id) {
+    print('=id==========id======id=======id======$id');
     profileUiChangeModel[id].attentionModel = model;
     notifyListeners();
   }

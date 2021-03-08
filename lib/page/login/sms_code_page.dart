@@ -299,6 +299,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
     context.read<TokenNotifier>().setToken(tokenDto);
     //然后要去取一次个人用户信息
     UserModel user = await getUserInfo();
+    print('((((((((((((((((((((((((((${user.uid}))))))))))))))))))))))))))))))');
     ProfileDto profile = ProfileDto.fromUserModel(user);
     await ProfileDBHelper().insertProfile(profile);
     context.read<ProfileNotifier>().setProfile(profile);

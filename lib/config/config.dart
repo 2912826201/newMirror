@@ -87,6 +87,8 @@ class AppConfig {
     await Directory(getAppVideoDir()).create(recursive: true);
     await Directory(getAppVoiceDir()).create(recursive: true);
     await Directory(getAppDownloadDir()).create(recursive: true);
+    await Directory(getAppCourseDir()).create(recursive: true);
+    await Directory(getAppPublishDir()).create(recursive: true);
   }
 
   //获取图片文件的路径
@@ -103,10 +105,6 @@ class AppConfig {
   static String getAppVoiceDir() {
     return "$_appDir/voice";
   }
-  //获取语音文件的路径
-  static String getAppApkDir() {
-    return "$_appDir/apk";
-  }
 
   static String getAppVoiceFilePath() {
     return "${getAppVoiceDir()}/record_${new DateTime.now().millisecondsSinceEpoch}.aac";
@@ -115,6 +113,16 @@ class AppConfig {
   //获取内部下载文件的路径
   static String getAppDownloadDir() {
     return "$_appDir/download";
+  }
+
+  //获取课程文件的路径
+  static String getAppCourseDir() {
+    return "$_appDir/course";
+  }
+
+  //获取发布文件的路径
+  static String getAppPublishDir() {
+    return "$_appDir/publish";
   }
 
   // 高德ioskey
