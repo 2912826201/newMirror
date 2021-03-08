@@ -2012,7 +2012,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     msgList = await RongCloud.init().getHistoryMessages(
         conversation.getType(), conversation.conversationId, chatDataList[chatDataList.length - 1].msg.sentTime, 20, 0);
     List<ChatDataModel> dataList = <ChatDataModel>[];
-    if (msgList != null && msgList.length > 0) {
+    if (msgList != null && msgList.length > 1) {
       dataList.clear();
       for (int i = 1; i < msgList.length; i++) {
         dataList.add(getMessage((msgList[i] as Message), isHaveAnimation: false));
