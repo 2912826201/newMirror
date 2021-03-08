@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
-import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/message/send_message_view.dart';
 import 'package:mirror/widget/first_end_item_children_delegate.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -24,16 +23,14 @@ class ChatDetailsBody extends StatelessWidget {
   final bool isShowChatUserName;
   final bool isPersonalButler;
   final GestureTapCallback onTap;
-  final VoidCallback onRefresh;
+  final VoidCallback onLoading;
   final VoidCallback onAtUiClickListener;
   final RefreshController refreshController;
   final FirstEndCallback firstEndCallback;
   final int isHaveAtMeMsgIndex;
   final int conversationDtoType;
   final bool isHaveAtMeMsg;
-  final String loadText;
   final String chatId;
-  final LoadingStatus loadStatus;
   final bool isShowTop;
 
   ChatDetailsBody(
@@ -41,8 +38,6 @@ class ChatDetailsBody extends StatelessWidget {
       this.chatDataList,
       this.chatId,
       this.conversationDtoType,
-      this.loadText,
-      this.loadStatus,
       this.isShowChatUserName,
       this.isHaveAtMeMsgIndex,
       this.isHaveAtMeMsg,
@@ -53,7 +48,7 @@ class ChatDetailsBody extends StatelessWidget {
       this.isShowTop=false,
       this.isPersonalButler = false,
       this.voidMessageClickCallBack,
-      this.onRefresh,
+      this.onLoading,
       this.refreshController,
       this.onAtUiClickListener,
       this.voidItemLongClickCallBack});
@@ -74,74 +69,13 @@ class ChatDetailsBody extends StatelessWidget {
       chatData.insert(0, model);
     }
 
-    ChatDataModel chatDataModel = new ChatDataModel();
-    chatDataModel.content = "加载动画";
-    chatData.add(chatDataModel);
+    // ChatDataModel chatDataModel = new ChatDataModel();
+    // chatDataModel.content = "加载动画";
+    // chatData.add(chatDataModel);
     return Stack(
       children: [
         Positioned(
-          child: NotificationListener<ScrollNotification>(
-            onNotification: (ScrollNotification notification) {
-              // 注册通知回调
-              if (notification is ScrollStartNotification) {
-                // FocusScope.of(context).requestFocus(new FocusNode());
-                // if (onTap != null) {
-                //   onTap();
-                // }
-                // 滚动开始
-                // print('滚动开始');
-                isScroll=true;
-              } else if (notification is ScrollUpdateNotification) {
-                // 滚动位置更新
-                // print('滚动位置更新');
-                // 当前位置
-                // print("当前位置${metrics.pixels}");
-                isScroll=true;
-              } else if (notification is ScrollEndNotification) {
-                // 滚动结束
-                // print('滚动结束');
-                isScroll=false;
-              }
-              return false;
-            },
-            child: ListView.custom(
-              cacheExtent: 0.0,
-              physics: BouncingScrollPhysics(),
-              controller: scrollController,
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              reverse: true,
-              shrinkWrap: isShowTop,
-              childrenDelegate: FirstEndItemChildrenDelegate((BuildContext context, int index) {
-                if (index == chatData.length - 1) {
-                  // print("------------");
-                    return Visibility(
-                      visible: loadStatus == LoadingStatus.STATUS_LOADING ? true : false,
-                      child: Container(
-                        margin: const EdgeInsets.only(top: 10),
-                        child: LoadingView(
-                          loadText: "",
-                          loadStatus: loadStatus,
-                        ),
-                      ),
-                    );
-                  } else {
-                  return Container(
-                    margin: index == 0 ? const EdgeInsets.only(bottom: 16) :
-                    (index == chatData.length - 2) ? const EdgeInsets.only(top: 8) : null,
-                    child: judgeStartAnimation(chatData[index], index),
-                  );
-                }
-              },
-                firstEndCallback: (int firstIndex, int lastIndex){
-                  if(isScroll){
-                    firstEndCallback(firstIndex,lastIndex);
-                  }
-                },
-                childCount: chatData.length,
-              ),
-              dragStartBehavior: DragStartBehavior.down,
-            ),
-          ),
+          child: getChatBodyUi(),
         ),
 
         Positioned(
@@ -164,6 +98,76 @@ class ChatDetailsBody extends StatelessWidget {
     );
   }
 
+  Widget getChatBodyUi(){
+    return NotificationListener<ScrollNotification>(
+      onNotification: (ScrollNotification notification) {
+        // 注册通知回调
+        if (notification is ScrollStartNotification) {
+          // FocusScope.of(context).requestFocus(new FocusNode());
+          // if (onTap != null) {
+          //   onTap();
+          // }
+          // 滚动开始
+          // print('滚动开始');
+          isScroll=true;
+        } else if (notification is ScrollUpdateNotification) {
+          // 滚动位置更新
+          // print('滚动位置更新');
+          // 当前位置
+          // print("当前位置${metrics.pixels}");
+          isScroll=true;
+        } else if (notification is ScrollEndNotification) {
+          // 滚动结束
+          // print('滚动结束');
+          isScroll=false;
+        }
+        return false;
+      },
+      child: getSmartRefresherUi(),
+    );
+  }
+
+
+  Widget getSmartRefresherUi(){
+    return SmartRefresher(
+      enablePullDown: false,
+      enablePullUp: true,
+      footer: footerWidget(),
+      controller: refreshController,
+      onLoading: onLoading,
+      child: getListViewUi(),
+    );
+  }
+
+
+
+  Widget getListViewUi(){
+    return ListView.custom(
+      cacheExtent: 0.0,
+      physics: BouncingScrollPhysics(),
+      controller: scrollController,
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      reverse: true,
+      shrinkWrap: isShowTop,
+      childrenDelegate: FirstEndItemChildrenDelegate((BuildContext context, int index) {
+        return Container(
+          margin: index == 0 ? const EdgeInsets.only(bottom: 16) :
+          (index == chatData.length - 2) ? const EdgeInsets.only(top: 8) : null,
+          child: judgeStartAnimation(chatData[index], index),
+        );
+      },
+        firstEndCallback: (int firstIndex, int lastIndex){
+          if(isScroll){
+            firstEndCallback(firstIndex,lastIndex);
+          }
+        },
+        childCount: chatData.length,
+      ),
+      dragStartBehavior: DragStartBehavior.down,
+    );
+  }
+
+  
   //获取at的视图
   Widget getAtUi() {
     return GestureDetector(
@@ -193,6 +197,38 @@ class ChatDetailsBody extends StatelessWidget {
     );
   }
 
+  //底部或滑动
+  Widget footerWidget() {
+    double height=55.0;
+    if(refreshController.footerStatus==LoadStatus.noMore){
+      height=0.0;
+    }
+    return CustomFooter(
+      height:height,
+      builder: (BuildContext context, LoadStatus mode) {
+        Widget body;
+        if (mode == LoadStatus.idle) {
+          body = Text("");
+        } else if (mode == LoadStatus.loading) {
+          body = Container(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(),
+          );
+        } else if (mode == LoadStatus.failed) {
+          body = Text("");
+        } else if (mode == LoadStatus.canLoading) {
+          body = Text("");
+        } else {
+          body = Text("");
+        }
+        return Container(
+          height: height,
+          child: Center(child: body),
+        );
+      },
+    );
+  }
   //判断有没有动画
   Widget judgeStartAnimation(ChatDataModel model, int position) {
     if (model.isHaveAnimation && !isShowTop) {

@@ -18,7 +18,6 @@ import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
-import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
@@ -161,11 +160,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   //上一次的最大高度
   double oldMaxScrollExtent = 0;
 
-  // 加载中默认文字
-  String loadText = "加载中...";
 
-  // 加载状态
-  LoadingStatus loadStatus = LoadingStatus.STATUS_IDEL;
 
   //重新编辑消息的位置
   int recallNotificationMessagePosition = -1;
@@ -210,27 +205,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     _scrollController.addListener(() {
       scrollPositionPixels=_scrollController.position.pixels;
       // print("scrollPositionPixels3：$scrollPositionPixels");
-      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        if (loadStatus == LoadingStatus.STATUS_IDEL) {
-          // 先设置状态，防止下拉就直接加载reload
-          if (mounted) {
-            reload(() {
-              _timerCount = 0;
-              loadText = "加载中...";
-              loadStatus = LoadingStatus.STATUS_LOADING;
-            });
-            Future.delayed(Duration(milliseconds: 10),(){
-              _scrollController.animateTo(_scrollController.position.pixels+50,
-                  duration: Duration(milliseconds: 10), curve: Curves.easeInOut);
-            });
-          }
-          if (conversation.getType() != RCConversationType.System) {
-            _onRefresh();
-          } else {
-            _onRefreshSystemInformation();
-          }
-        }
-      }else if(_scrollController.position.pixels<=0){
+      if(_scrollController.position.pixels<=0){
         print("isHaveReceiveChatDataList:$isHaveReceiveChatDataList");
         if (mounted&&isHaveReceiveChatDataList) {
           reload(() {
@@ -401,9 +376,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       isHaveAtMeMsg: isHaveAtMeMsg,
       isHaveAtMeMsgIndex: isHaveAtMeMsgIndex,
       isShowTop: !MessageItemHeightUtil.init().judgeMessageItemHeightIsThenScreenHeight(chatDataList, isShowName),
-      onRefresh: (conversation.getType() != RCConversationType.System) ? _onRefresh : _onRefreshSystemInformation,
-      loadText: loadText,
-      loadStatus: loadStatus,
+      onLoading: (conversation.getType() != RCConversationType.System) ? _onRefresh : _onRefreshSystemInformation,
       isShowChatUserName: isShowName,
       onAtUiClickListener: onAtUiClickListener,
       firstEndCallback:firstEndCallbackListView,
@@ -2033,20 +2006,14 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       if (isHaveAtMeMsg || isHaveAtMeMsgPr) {
         judgeNewChatIsHaveAt();
       }
-      loadStatus = LoadingStatus.STATUS_IDEL;
-      loadText = "加载中...";
-    } else {
-      // 加载完毕
-      loadText = "已加载全部动态";
-      loadStatus = LoadingStatus.STATUS_COMPLETED;
     }
-    Future.delayed(Duration(milliseconds: 500), () {
-      _refreshController.loadComplete();
-      if (mounted) {
-        reload(() {
-          _timerCount = 0;
-        });
+    Future.delayed(Duration(milliseconds: 300), () {
+      if (msgList != null && msgList.length > 1) {
+        _refreshController.loadComplete();
+      } else {
+        _refreshController.loadNoData();
       }
+      delayedSetState();
     });
   }
 
@@ -2060,14 +2027,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       }
       chatDataList.addAll(dataList);
 
-      loadStatus = LoadingStatus.STATUS_IDEL;
-      loadText = "加载中...";
+      _refreshController.loadComplete();
     } else {
-      loadText = "已加载全部动态";
-      loadStatus = LoadingStatus.STATUS_COMPLETED;
+      _refreshController.loadNoData();
     }
     _timerCount = 0;
-    _refreshController.loadComplete();
     delayedSetState();
   }
 
