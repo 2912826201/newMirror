@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +13,6 @@ import 'package:mirror/data/model/query_msglist_model.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/page/feed/feed_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -48,7 +45,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   int timeStamp;
 
   ///获取互动通知列表
-  _getMsgList(int type,{bool isRefreash = false}) async {
+  _getMsgList(int type, {bool isRefreash = false}) async {
     if (listPage > 1 && lastTime == null) {
       controller.loadNoData();
       return;
@@ -56,13 +53,13 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     QueryListModel model = await queryMsgList(type, 20, lastTime);
 
     if (listPage == 1) {
-      if (model!=null&&model.list != null) {
+      if (model != null && model.list != null) {
         haveData = true;
         msgList.clear();
         controller.loadComplete();
         lastTime = model.lastTime;
         model.list.forEach((element) {
-          if(isRefreash){
+          if (isRefreash) {
             element.isRead = 1;
           }
           msgList.add(element);
@@ -73,7 +70,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
         controller.resetNoData();
       }
     } else if (listPage > 1 && lastTime != null) {
-      if (model!=null&&model.list != null) {
+      if (model != null && model.list != null) {
         lastTime = model.lastTime;
         model.list.forEach((element) {
           msgList.add(element);
@@ -95,7 +92,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
       listPage = 1;
       lastTime = null;
     });
-    _getMsgList(widget.type,isRefreash: true);
+    _getMsgList(widget.type, isRefreash: true);
   }
 
   //加载
@@ -122,17 +119,16 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
         Navigator.pop(context, timeStamp);
         return false;
       },
-      child: Consumer<FeedMapNotifier>(
-      builder: (context, notifier, child) {
-        if(notifier.deleteId!=null){
+      child: Consumer<FeedMapNotifier>(builder: (context, notifier, child) {
+        if (notifier.deleteId != null) {
           List<QueryModel> list = [];
           for (int i = 0; i < msgList.length; i++) {
             if (msgList[i].refType == 0 && msgList[i].refId != notifier.deleteId.toString()) {
               list.add(msgList[i]);
             } else if (msgList[i].refType == 2) {
-              if(msgList[i].refData!=null){
+              if (msgList[i].refData != null) {
                 CommentDtoModel fatherComment = CommentDtoModel.fromJson(msgList[i].refData);
-                if (fatherComment.targetId != notifier.deleteId&&fatherComment.id!=notifier.deleteId) {
+                if (fatherComment.targetId != notifier.deleteId && fatherComment.id != notifier.deleteId) {
                   list.add(msgList[i]);
                 }
               }
@@ -146,61 +142,61 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
           }*/
         }
         return Scaffold(
-        backgroundColor: AppColor.white,
-        appBar: CustomAppBar(
-          leadingOnTap: () {
-            Navigator.pop(context, timeStamp);
-          },
-          titleString: widget.type == 0
-              ? "评论"
-              : widget.type == 1
-                  ? "@我"
-                  : "点赞",
-        ),
-        body: Container(
-          width: width,
-          height: height,
-          child: haveData
-              ? SmartRefresher(
-                  controller: controller,
-                  enablePullUp: true,
-                  enablePullDown: true,
-                  footer: CustomFooter(
-                    builder: (BuildContext context, LoadStatus mode) {
-                      Widget body;
-                      if (mode == LoadStatus.loading) {
-                        body = CircularProgressIndicator();
-                      } else if (mode == LoadStatus.noMore) {
-                        body = Text("没有更多了");
-                      } else if (mode == LoadStatus.failed) {
-                        body = Text("加载错误,请重试");
-                      } else {
-                        body = Text(" ");
-                      }
-                      return Container(
-                        child: Center(
-                          child: body,
-                        ),
-                      );
-                    },
-                  ),
-                  header: WaterDropHeader(
-                    complete: Text("刷新完成"),
-                    failed: Text(" "),
-                  ),
-                  onRefresh: _onRefresh,
-                  onLoading: _onLoading,
-                  child: ListView.builder(
-                      shrinkWrap: true, //解决无限高度问题
-                      physics: AlwaysScrollableScrollPhysics(),
-                      itemCount: msgList.length,
-                      itemBuilder: (context, index) {
-                        return InteractiveNoticeItem(
-                            type: widget.type,
-                            msgModel: msgList[index],
-                            index: index,
-                            deleteCallBack: (value) {
-                             /* List<QueryModel> list = [];
+          backgroundColor: AppColor.white,
+          appBar: CustomAppBar(
+            leadingOnTap: () {
+              Navigator.pop(context, timeStamp);
+            },
+            titleString: widget.type == 0
+                ? "评论"
+                : widget.type == 1
+                    ? "@我"
+                    : "点赞",
+          ),
+          body: Container(
+            width: width,
+            height: height,
+            child: haveData
+                ? SmartRefresher(
+                    controller: controller,
+                    enablePullUp: true,
+                    enablePullDown: true,
+                    footer: CustomFooter(
+                      builder: (BuildContext context, LoadStatus mode) {
+                        Widget body;
+                        if (mode == LoadStatus.loading) {
+                          body = CircularProgressIndicator();
+                        } else if (mode == LoadStatus.noMore) {
+                          body = Text("没有更多了");
+                        } else if (mode == LoadStatus.failed) {
+                          body = Text("加载错误,请重试");
+                        } else {
+                          body = Text(" ");
+                        }
+                        return Container(
+                          child: Center(
+                            child: body,
+                          ),
+                        );
+                      },
+                    ),
+                    header: WaterDropHeader(
+                      complete: Text("刷新完成"),
+                      failed: Text(" "),
+                    ),
+                    onRefresh: _onRefresh,
+                    onLoading: _onLoading,
+                    child: ListView.builder(
+                        shrinkWrap: true, //解决无限高度问题
+                        physics: AlwaysScrollableScrollPhysics(),
+                        itemCount: msgList.length,
+                        itemBuilder: (context, index) {
+                          return InteractiveNoticeItem(
+                              type: widget.type,
+                              msgModel: msgList[index],
+                              index: index,
+                              deleteCallBack: (value) {
+                                /* List<QueryModel> list = [];
                               for (int i = 0; i < msgList.length; i++) {
                                 if (msgList[i].refType == 0 && msgList[i].refId != value.toString()) {
                                   list.add(msgList[i]);
@@ -214,54 +210,55 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                               msgList.clear();
                               msgList.addAll(list);
                               setState(() {});*/
-                            });
-                      }),
-                )
-              : Center(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: height * 0.22,
-                      ),
-                      Container(
-                        height: width * 0.59,
-                        width: width * 0.59,
-                        color: AppColor.bgWhite,
-                      ),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      Text(
-                        "没有找到你要的东西",
-                        style: AppStyle.textPrimary3Regular14,
-                      )
-                    ],
+                              });
+                        }),
+                  )
+                : Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: height * 0.22,
+                        ),
+                        Container(
+                          height: width * 0.59,
+                          width: width * 0.59,
+                          color: AppColor.bgWhite,
+                        ),
+                        SizedBox(
+                          height: 16,
+                        ),
+                        Text(
+                          "没有找到你要的东西",
+                          style: AppStyle.textPrimary3Regular14,
+                        )
+                      ],
+                    ),
                   ),
-                ),
-        ),
-      );}),
+          ),
+        );
+      }),
     );
   }
 }
 
 typedef DeleteChangedCallback = void Function(int id);
-class InteractiveNoticeItem extends StatefulWidget{
+
+class InteractiveNoticeItem extends StatefulWidget {
   int type;
   QueryModel msgModel;
   DeleteChangedCallback deleteCallBack;
   bool isFrist = true;
   int index;
-  InteractiveNoticeItem({this.type, this.msgModel, this.deleteCallBack,this.index});
+  InteractiveNoticeItem({this.type, this.msgModel, this.deleteCallBack, this.index});
 
   @override
   State<StatefulWidget> createState() {
-   return InteractiveNoticeItemState();
+    return InteractiveNoticeItemState();
   }
 }
+
 class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
-
-
   //评论内容：@和评论拿接口内容，点赞给固定内容
   String comment = "";
 
@@ -302,7 +299,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
         comment = "赞了你的评论";
       }
     }
-    if (widget.msgModel.refData!=null) {
+    if (widget.msgModel.refData != null) {
       if (widget.msgModel.refType == 0) {
         feedModel = HomeFeedModel.fromJson(widget.msgModel.refData);
       } else if (widget.msgModel.refType == 2) {
@@ -310,7 +307,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       } else if (widget.msgModel.refType == 1 || widget.msgModel.refType == 3) {
         liveVideoModel = LiveVideoModel.fromJson(widget.msgModel.refData);
       }
-      if(widget.isFrist){
+      if (widget.isFrist) {
         widget.isFrist = false;
       }
     } else {
@@ -332,40 +329,43 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     });
     return richList;
   }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     print('===============================itemInit   index${widget.index}');
-    Future.delayed(Duration.zero,(){
-      if (widget.msgModel.refType == 0||widget.msgModel.refType == 1 || widget.msgModel.refType == 3) {
-        getCommentFristPage(int.parse(widget.msgModel.refId),widget.msgModel.refType);
-      } else if (widget.msgModel.refType == 2&& CommentDtoModel.fromJson(widget.msgModel.refData)!=null) {
-        getCommentFristPage(CommentDtoModel.fromJson(widget.msgModel.refData).targetId, CommentDtoModel.fromJson(widget
-            .msgModel.refData).type);
+    Future.delayed(Duration.zero, () {
+      if (widget.msgModel.refType == 0 || widget.msgModel.refType == 1 || widget.msgModel.refType == 3) {
+        getCommentFristPage(int.parse(widget.msgModel.refId), widget.msgModel.refType);
+      } else if (widget.msgModel.refType == 2 && CommentDtoModel.fromJson(widget.msgModel.refData) != null) {
+        getCommentFristPage(CommentDtoModel.fromJson(widget.msgModel.refData).targetId,
+            CommentDtoModel.fromJson(widget.msgModel.refData).type);
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
     print('-====================消息互动列表页Item  biuld');
     senderAvatarUrl = widget.msgModel.senderAvatarUrl;
-    senderName = widget. msgModel.senderName;
+    senderName = widget.msgModel.senderName;
     coverImage = widget.msgModel.coverUrl;
     _getRefData(context);
-    if (widget.type == 0&&widget.msgModel.commentData!=null) {
+    if (widget.type == 0 && widget.msgModel.commentData != null) {
       if (widget.msgModel.refType == 2) {
         commentState = "回复了 ${context.watch<ProfileNotifier>().profile.nickName}: ";
       } else {
         commentState = "";
       }
+
       ///判断文字的高度，动态改变
       TextPainter testSize = calculateTextWidth(
           "$commentState$comment", AppStyle.textRegular13, ScreenUtil.instance.screenWidthDp * 0.64, 3);
       textHeight = testSize.height;
     } else {
       TextPainter testSize =
-      calculateTextWidth("$comment", AppStyle.textRegular13, ScreenUtil.instance.screenWidthDp * 0.64, 3);
+          calculateTextWidth("$comment", AppStyle.textRegular13, ScreenUtil.instance.screenWidthDp * 0.64, 3);
       textHeight = testSize.height;
     }
     return Container(
@@ -510,21 +510,21 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       Toast.show("该内容已删除", context);
       return;
     }
-    try{
-        if(context.read<FeedMapNotifier>().courseCommentHot[widget.msgModel.commentData.id].list!=null){
-          context.read<FeedMapNotifier>().courseCommentHot[widget.msgModel.commentData.id].list.forEach((element) {
-            if(element.replys.isNotEmpty){
-              element.replys.clear();
-            }
-          });
-        }
+    try {
+      if (context.read<FeedMapNotifier>().courseCommentHot[widget.msgModel.commentData.id].list != null) {
+        context.read<FeedMapNotifier>().courseCommentHot[widget.msgModel.commentData.id].list.forEach((element) {
+          if (element.replys.isNotEmpty) {
+            element.replys.clear();
+          }
+        });
+      }
       if (widget.msgModel.refType == 0) {
         print('=====================动态');
         getFeedDetail(context, feedModel.id, comment: widget.msgModel.commentData);
       } else if (widget.msgModel.refType == 2) {
         if (fatherCommentModel.type == 0) {
           getFeedDetail(context, fatherCommentModel.targetId,
-              comment:widget.msgModel.commentData, fatherModel: fatherCommentModel);
+              comment: widget.msgModel.commentData, fatherModel: fatherCommentModel);
         } else if (fatherCommentModel.type == 1) {
           AppRouter.navigateToLiveDetail(context, fatherCommentModel.targetId,
               isHaveStartTime: false,
@@ -532,69 +532,56 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
               fatherComment: fatherCommentModel,
               isInteractiveIn: true);
         } else if (fatherCommentModel.type == 3) {
-          AppRouter.navigateToVideoDetail(context,
-              fatherCommentModel.targetId,
-              commentDtoModel:widget.msgModel.commentData ,
-              fatherComment: fatherCommentModel,
-              isInteractive: true);
+          AppRouter.navigateToVideoDetail(context, fatherCommentModel.targetId,
+              commentDtoModel: widget.msgModel.commentData, fatherComment: fatherCommentModel, isInteractive: true);
         }
       } else if (widget.msgModel.refType == 1 && liveVideoModel != null && liveVideoModel.id != null) {
-        AppRouter.navigateToLiveDetail(context,
-            liveVideoModel.id,
-            isHaveStartTime: false,
-            commentDtoModel:  widget.msgModel.commentData,
-            isInteractiveIn: true);
+        AppRouter.navigateToLiveDetail(context, liveVideoModel.id,
+            isHaveStartTime: false, commentDtoModel: widget.msgModel.commentData, isInteractiveIn: true);
       } else {
         if (liveVideoModel != null && liveVideoModel.id != null) {
-          AppRouter.navigateToVideoDetail(
-              context,
-              liveVideoModel.id,
-              commentDtoModel:widget.msgModel.commentData,
-              isInteractive: true);
+          AppRouter.navigateToVideoDetail(context, liveVideoModel.id,
+              commentDtoModel: widget.msgModel.commentData, isInteractive: true);
         }
       }
       widget.msgModel.isRead = 1;
-      setState(() {
-      });
-    }catch (e){
-    }
-
+      setState(() {});
+    } catch (e) {}
   }
 
   ///获取对应内容第一页评论
-  getCommentFristPage(int targetId,int targetType)async{
-    Map<String,dynamic> commentModel = await queryListByHot2(
-        targetId: targetId,
-        targetType:targetType,
-        lastId: null,
-        size: 15);
-    if(commentModel!=null&&widget.msgModel.commentData!=null){
-      context.read<FeedMapNotifier>().interacticeNoticeChange(courseCommentHots: CommentModel.fromJson(commentModel),
-          commentId:widget.msgModel.commentData.id);
+  getCommentFristPage(int targetId, int targetType) async {
+    Map<String, dynamic> commentModel =
+        await queryListByHot2(targetId: targetId, targetType: targetType, lastId: null, size: 15);
+    if (commentModel != null && widget.msgModel.commentData != null) {
+      context.read<FeedMapNotifier>().interacticeNoticeChange(
+          courseCommentHots: CommentModel.fromJson(commentModel), commentId: widget.msgModel.commentData.id);
     }
   }
+
   getFeedDetail(BuildContext context, int feedId, {CommentDtoModel comment, CommentDtoModel fatherModel}) async {
     BaseResponseModel feedModel = await feedDetail(id: feedId);
-    if(feedModel.data!=null){
+    if (feedModel.data != null) {
       List<HomeFeedModel> list = [];
       list.add(HomeFeedModel.fromJson(feedModel.data));
       context.read<FeedMapNotifier>().updateFeedMap(list);
     }
     // print("----------feedModel:${feedModel.toJson().toString()}");
     // 跳转动态详情页
-    if( feedModel.code==CODE_SUCCESS||feedModel.code==CODE_NO_DATA){
-    AppRouter.navigateFeedDetailPage(
-        context: context,
-        model: feedModel.data!=null?HomeFeedModel.fromJson(feedModel.data):null,
-        comment: comment,
-        type: 2,
-        fatherModel: fatherModel,
-        errorCode: feedModel.code,
-        isInteractive: true,
-        callBack: (result) {
-          if(result!=null){
-            widget.deleteCallBack(result);
-          }
-        });
+    if (feedModel.code == CODE_SUCCESS || feedModel.code == CODE_NO_DATA) {
+      AppRouter.navigateFeedDetailPage(
+          context: context,
+          model: feedModel.data != null ? HomeFeedModel.fromJson(feedModel.data) : null,
+          comment: comment,
+          type: 2,
+          fatherModel: fatherModel,
+          errorCode: feedModel.code,
+          isInteractive: true,
+          callBack: (result) {
+            if (result != null) {
+              widget.deleteCallBack(result);
+            }
+          });
+    }
   }
-}}
+}
