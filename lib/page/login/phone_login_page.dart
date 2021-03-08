@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/page/login/sms_code_page.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -80,8 +81,10 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
   //可发送短信的条件判断
   bool _validationJudge() {
     if (StringUtil.matchPhoneNumber(inputController.text) == true) {
+      print('================可以发送');
       return true;
     }
+    print('================不可以发送');
     return false;
   }
 
@@ -184,6 +187,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
     // }
     if (result) {
       print("发送验证码成功");
+      _titleOfSendTextBtn = "发送";
       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
         return SmsCodePage(
           phoneNumber: inputController.text,
@@ -207,13 +211,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
     }
   }
 
-  // Widget _navigationBar(){
-  // var leftbackBtn;
-  // leftbackBtn = SizedBox(child: backButton,height: 28,width: 28,);
-  // var bag = Row(children: [leftbackBtn],);
-  // return Container(child: bag,height: 48,
-  //   padding: EdgeInsets.only(left: 16,top: 10,bottom: 10),);
-  // }
+
   Widget _sloganArea() {
     var hellotext = Text(
       _conspicousGreeting,
@@ -284,8 +282,9 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
         suffixIconConstraints: BoxConstraints(minWidth: 1, maxHeight: 1),
         isDense: true,
         focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Color.fromRGBO(196, 196, 196, 1), width: 0.5),
-        ));
+          borderSide: BorderSide(color: AppColor.bgWhite, width: 0.5),
+        ),
+        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite)),);
     if (_textField == null) {
       _textField = TextField(
         maxLength: 11,
@@ -310,7 +309,15 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
       minWidth: 293,
       height: 44,
       shape: btnStyle,
-      onPressed: _sendMessage,
+      onPressed:(){
+        if(_validationJudge()||_reEnterSendSmsPage()){
+          _sendMessage();
+        }else{
+       ToastShow.show(msg:"请输入正确的手机号", context: context);
+          return false;
+        }
+
+      },
       child: Text(
         _titleOfSendTextBtn,
         style: TextStyle(fontFamily: "PingFangSC", fontSize: 16, color: _smsBtnTitleColor),
