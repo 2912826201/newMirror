@@ -32,6 +32,7 @@ class ChatDetailsBody extends StatelessWidget {
   final bool isHaveAtMeMsg;
   final String chatId;
   final bool isShowTop;
+  final double bottomWhitePlanHeight;
 
   ChatDetailsBody(
       {this.scrollController,
@@ -50,6 +51,7 @@ class ChatDetailsBody extends StatelessWidget {
       this.voidMessageClickCallBack,
       this.onLoading,
       this.refreshController,
+      this.bottomWhitePlanHeight=0.0,
       this.onAtUiClickListener,
       this.voidItemLongClickCallBack});
 
@@ -63,15 +65,18 @@ class ChatDetailsBody extends StatelessWidget {
     chatData.clear();
     chatData.addAll(chatDataList);
 
+    if(isShowTop) {
+      ChatDataModel chatDataModel = new ChatDataModel();
+      chatDataModel.content = "底部空白";
+      chatData.insert(0, chatDataModel);
+    }
+
     if (isPersonalButler) {
       ChatDataModel model = new ChatDataModel();
       model.content = "私人管家";
       chatData.insert(0, model);
     }
 
-    // ChatDataModel chatDataModel = new ChatDataModel();
-    // chatDataModel.content = "加载动画";
-    // chatData.add(chatDataModel);
     return Stack(
       children: [
         Positioned(
@@ -258,6 +263,9 @@ class ChatDetailsBody extends StatelessWidget {
     if (judgePersonalButler(model)) {
       return Container(
         width: double.infinity, height: 48, color: AppColor.transparent,);
+    }else if(judgeBottomNullWhite(model)){
+      return Container(
+        width: double.infinity, height: bottomWhitePlanHeight, color: AppColor.transparent,);
     }
 
 
@@ -275,6 +283,10 @@ class ChatDetailsBody extends StatelessWidget {
   bool judgePersonalButler(ChatDataModel model) {
     return model.content != null && model.content.isNotEmpty &&
         model.content == "私人管家";
+  }
+  bool judgeBottomNullWhite(ChatDataModel model) {
+    return model.content != null && model.content.isNotEmpty &&
+        model.content == "底部空白";
   }
 }
 

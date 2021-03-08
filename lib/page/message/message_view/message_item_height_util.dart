@@ -25,6 +25,15 @@ class MessageItemHeightUtil{
     return _itemHeightUtil;
   }
 
+  List<dynamic> getMessageHeightInformation(List<ChatDataModel> chatDataList,bool isShowChatUserName){
+    List<dynamic> informationList=[];
+    double chatListPageHeight=ScreenUtil.instance.height-ScreenUtil.instance.statusBarHeight-44.0-50.0;
+    double messageHeight=_judgeMessageItemHeight(chatDataList,isShowChatUserName,chatListPageHeight);
+    informationList.add(messageHeight>=chatListPageHeight);
+    informationList.add(chatListPageHeight-messageHeight);
+    return informationList;
+  }
+
   //判断获取消息的高度是否大于等于展示区域的高度
   bool judgeMessageItemHeightIsThenScreenHeight(List<ChatDataModel> chatDataList,bool isShowChatUserName){
     double chatListPageHeight=ScreenUtil.instance.height-ScreenUtil.instance.statusBarHeight-44.0;

@@ -87,6 +87,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
   ///是否显示表情
   bool _emojiState = false;
+  bool _emojiStateClick = false;
 
   ///是不是显示语音按钮
   bool _isVoiceState = false;
@@ -206,7 +207,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       scrollPositionPixels=_scrollController.position.pixels;
       // print("scrollPositionPixels3：$scrollPositionPixels");
       if(_scrollController.position.pixels<=0){
-        print("isHaveReceiveChatDataList:$isHaveReceiveChatDataList");
         if (mounted&&isHaveReceiveChatDataList) {
           reload(() {
             isHaveReceiveChatDataList=false;
@@ -273,7 +273,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
           //关闭键盘
         } else {
           //显示键盘
-          print("显示键盘：${Application.keyboardHeight},${MediaQuery.of(this.context).viewInsets.bottom}");
           if (Application.keyboardHeight <= MediaQuery.of(this.context).viewInsets.bottom) {
             Application.keyboardHeight = MediaQuery.of(this.context).viewInsets.bottom;
             reload(() {});
@@ -283,6 +282,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
           }
         }
         if(_focusNode.hasFocus){
+          print("有焦点：-打开键盘");
           if(MediaQuery.of(this.context).viewInsets.bottom>=oldKeyboardHeight){
             print("打开键盘");
             isShowEmjiPageWhite=true;
@@ -294,6 +294,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
             }
           }
         }else{
+          if(!_emojiStateClick){
+            if(_emojiState){
+              onEmojioClick();
+            }
+          }
           print("没有焦点：-收起键盘");
         }
         oldKeyboardHeight=MediaQuery.of(this.context).viewInsets.bottom;
@@ -361,6 +366,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         }
       }
     }
+
+    //获取消息高度的一些参数
+    List<dynamic> informationList=MessageItemHeightUtil.init().getMessageHeightInformation(chatDataList, isShowName);
+
     return ChatDetailsBody(
       scrollController: _scrollController,
       chatDataList: chatDataList,
@@ -375,7 +384,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       refreshController: _refreshController,
       isHaveAtMeMsg: isHaveAtMeMsg,
       isHaveAtMeMsgIndex: isHaveAtMeMsgIndex,
-      isShowTop: !MessageItemHeightUtil.init().judgeMessageItemHeightIsThenScreenHeight(chatDataList, isShowName),
+      isShowTop: !informationList[0],
+      bottomWhitePlanHeight:informationList[1],
       onLoading: (conversation.getType() != RCConversationType.System) ? _onRefresh : _onRefreshSystemInformation,
       isShowChatUserName: isShowName,
       onAtUiClickListener: onAtUiClickListener,
@@ -478,10 +488,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     return MessageInputBar(
       voiceOnTap: _voiceOnTapClick,
       onEmojio: (){
+        _emojiStateClick=true;
         isShowEmjiPageWhite=false;
         reload(() {});
         Future.delayed(Duration(milliseconds: 10),(){
-          onEmojioClick();
+          onEmojioClick(emojiStateClick:true);
         });
       },
       isVoice: _isVoiceState,
@@ -1740,7 +1751,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   }
 
   //表情的点击事件
-  void onEmojioClick() {
+  void onEmojioClick({bool emojiStateClick=false}) {
+    _emojiStateClick=emojiStateClick;
+
     if (MediaQuery.of(context).viewInsets.bottom > 0) {
       _emojiState = false;
     }
