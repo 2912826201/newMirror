@@ -134,7 +134,7 @@ class ChatDetailsBody extends StatelessWidget {
       enablePullUp: true,
       footer: footerWidget(),
       controller: refreshController,
-      onLoading: onLoading,
+      // onLoading: onLoading,
       child: getListViewUi(),
     );
   }
@@ -211,9 +211,11 @@ class ChatDetailsBody extends StatelessWidget {
           body = Text("");
         } else if (mode == LoadStatus.loading) {
           body = Container(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(),
+            width: 18,
+            height: 18,
+            child: CircularProgressIndicator(
+                strokeWidth:3,
+            ),
           );
         } else if (mode == LoadStatus.failed) {
           body = Text("");
