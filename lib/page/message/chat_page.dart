@@ -964,7 +964,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   //判断加不加时间提示
   judgeAddAlertTime() {
     if (chatDataList.length > 0) {
-      if (new DateTime.now().millisecondsSinceEpoch - chatDataList[0].msg.sentTime >= 5 * 60 * 1000) {
+      if (chatDataList[0].msg!=null&&new DateTime.now().millisecondsSinceEpoch - chatDataList[0].msg.sentTime >= 5 * 60 * 1000) {
         chatDataList.insert(0, getTimeAlertModel(new DateTime.now().millisecondsSinceEpoch));
         if (recallNotificationMessagePosition > 0) {
           recallNotificationMessagePosition++;
