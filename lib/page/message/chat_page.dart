@@ -217,6 +217,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
               loadText = "加载中...";
               loadStatus = LoadingStatus.STATUS_LOADING;
             });
+            Future.delayed(Duration(milliseconds: 10),(){
+              _scrollController.animateTo(_scrollController.position.pixels+50,
+                  duration: Duration(milliseconds: 10), curve: Curves.easeInOut);
+            });
           }
           if (conversation.getType() != RCConversationType.System) {
             _onRefresh();
@@ -936,7 +940,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       for (int i = chatDataList.length - 1; i >= 0; i--) {
         if (i == chatDataList.length - 1) {
           chatDataList.add(getTimeAlertModel(chatDataList[i].msg.sentTime));
-        } else if (chatDataList[i].msg.sentTime - chatDataList[i + 1].msg.sentTime > 5 * 60 * 1000) {
+        } else if (chatDataList[i].msg!=null&&(chatDataList[i].msg.sentTime - chatDataList[i + 1].msg.sentTime > 5 * 60 * 1000)) {
           chatDataList.insert(i + 1, getTimeAlertModel(chatDataList[i].msg.sentTime));
         }
       }
@@ -1145,8 +1149,15 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         ||Application.postChatDataModelList[conversation.id].length<1){
       return;
     }else{
-      for(int i=0;i<Application.postChatDataModelList[conversation.id].length;i++){
-        if(!Application.postChatDataModelList[conversation.id][i].isTemporary){
+      for(int i=Application.postChatDataModelList[conversation.id].length-1;i>=0;i--){
+        bool isHave=false;
+        for(int j=0;j<chatDataList.length;j++){
+          if(chatDataList[j].msg!=null&& Application.postChatDataModelList[conversation.id][i].msg!=null&&
+              chatDataList[j].msg.messageId==Application.postChatDataModelList[conversation.id][i].msg.messageId){
+            isHave=true;
+          }
+        }
+        if(isHave){
           Application.postChatDataModelList[conversation.id].removeAt(i);
         }else{
           chatDataList.insert(0, Application.postChatDataModelList[conversation.id][i]);
