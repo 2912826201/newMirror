@@ -19,6 +19,7 @@ import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:provider/provider.dart';
@@ -173,7 +174,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
       "输入验证码",
       style: TextStyle(fontFamily: 'PingFangSC', fontSize: 23, color: Colors.black, decoration: TextDecoration.none),
     );
-    String phoneNumber = widget.phoneNumber.replaceFirst(RegExp(r'\d{7}'),"*******");
+    String phoneNumber = widget.phoneNumber.replaceFirst(RegExp(r'\d{4}'),"****",3);
     var subTitle = Text(
       "短信验证码已发送至 +86 " + phoneNumber,
       style: TextStyle(
@@ -302,7 +303,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
     ProfileDto profile = ProfileDto.fromUserModel(user);
     await ProfileDBHelper().insertProfile(profile);
     context.read<ProfileNotifier>().setProfile(profile);
-
+    context.read<ProfilePageNotifier>().clearProfileUiChangeModel();
     //连接融云
     Application.rongCloud.connect();
     //TODO 处理登录完成后的数据加载

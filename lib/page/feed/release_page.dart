@@ -282,6 +282,7 @@ class FeedHeader extends StatelessWidget {
           i++;
           File thumbFile = await FileUtil().writeImageDataToFile(v.thumb, timeStr + i.toString());
           v.thumbPath = thumbFile.path;
+          v.file =  thumbFile;
         }
       }
     }

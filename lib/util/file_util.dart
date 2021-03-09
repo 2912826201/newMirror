@@ -62,16 +62,26 @@ class FileUtil {
       // 生成文件名
       String key = _genKey(fileList[i]);
       // 上传文件
-      UploadResult result = await syStorage.upload(fileList[i].path, token.upToken, key);
+      UploadResultModel resultModel = UploadResultModel();
+      resultModel.isSuccess = false;
+      resultModel.error = "";
+      try{
+        UploadResult result = await syStorage.upload(fileList[i].path, token.upToken, key);
+        resultModel.isSuccess = result.success;
+        resultModel.error = result.error;
+      }catch(error){
+        print("上传错误了");
+        print(error);
+        resultModel.isSuccess = false;
+        resultModel.error = error.toString();
+      }
+
       // print("&@@@@@@@@@@@@@@${file.path}");
       // print(result);
-      UploadResultModel resultModel = UploadResultModel();
-      resultModel.isSuccess = result.success;
-      resultModel.error = result.error;
       resultModel.filePath = fileList[i].path;
       resultModel.url = token.domain + "/" + key;
       uploadResults.resultMap[fileList[i].path] = resultModel;
-      if (result.success == false) {
+      if (resultModel.isSuccess == false) {
         // 只要有一个文件上传失败就将总结果设为失败 成功不需要更改状态
         uploadResults.isSuccess = false;
       }

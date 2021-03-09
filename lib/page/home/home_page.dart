@@ -48,29 +48,25 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
   initState() {
     super.initState();
     controller = TabController(length: 2, vsync: this, initialIndex: 1);
-    new Future.delayed(Duration.zero, () {
-      print("发布失败数据");
-      // 取出发布动态数据
-      PostFeedModel feedModel = PostFeedModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
-          "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")));
-      if (feedModel != null) {
-        feedModel.selectedMediaFiles.list.forEach((v) {
-          v.file = File(v.filePath);
-        });
-        context.read<FeedMapNotifier>().setPublishFeedModel(feedModel);
-        // // 插入数据
-        // if (attentionKey.currentState != null) {
-        //   attentionKey.currentState.insertData(HomeFeedModel().conversionModel(feedModel, context, isRefresh: true));
-        // } else {
-        //   new Future.delayed(Duration(milliseconds: 500), () {
-        //     attentionKey.currentState.insertData(HomeFeedModel().conversionModel(feedModel, context, isRefresh: true));
-        //   });
-        // }
-        context.read<FeedMapNotifier>().setPublish(false);
-        _process = -1.0;
-        context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(_process);
-      }
-    });
+    if(AppPrefs.getPublishFeedLocalInsertData(
+        "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")!=null){
+      new Future.delayed(Duration.zero, () {
+        print("发布失败数据");
+        // 取出发布动态数据
+        PostFeedModel feedModel = PostFeedModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
+            "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")));
+        if (feedModel != null) {
+          feedModel.selectedMediaFiles.list.forEach((v) {
+            v.file = File(v.filePath);
+          });
+          context.read<FeedMapNotifier>().setPublishFeedModel(feedModel);
+          context.read<FeedMapNotifier>().setPublish(false);
+          _process = -1.0;
+          context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(_process);
+        }
+      });
+    }
+
     _initConnectivity();
   }
 
@@ -79,9 +75,15 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     PostFeedModel feedModel = PostFeedModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
         "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")));
     if (feedModel != null) {
-      feedModel.selectedMediaFiles.list.forEach((v) {
-        v.file = File(v.filePath);
-      });
+      if(feedModel.selectedMediaFiles.type==mediaTypeKeyImage){
+        feedModel.selectedMediaFiles.list.forEach((v) {
+          v.file = File(v.filePath);
+        });
+      }else if(feedModel.selectedMediaFiles.type==mediaTypeKeyVideo){
+        feedModel.selectedMediaFiles.list.forEach((v) {
+          v.file = File(v.thumbPath);
+        });
+      }
     }
     return feedModel;
   }
@@ -97,11 +99,14 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     //
     // }
     connectivityListener = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
-      if (result == ConnectivityResult.mobile) {
+      if (result == ConnectivityResult.mobile&&AppPrefs.getPublishFeedLocalInsertData(
+          "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")!=null) {
         pulishFeed(getPublishFeedData());
-      } else if (result == ConnectivityResult.wifi) {
+      } else if (result == ConnectivityResult.wifi&&AppPrefs.getPublishFeedLocalInsertData(
+          "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")!=null) {
         pulishFeed(getPublishFeedData());
-      } else {}
+      } else {
+      }
     });
   }
 
@@ -133,13 +138,21 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
           fileList.add(element.file);
           picUrls.add(PicUrlsModel(width: element.sizeInfo.width, height: element.sizeInfo.height));
         });
-        results = await FileUtil().uploadPics(fileList, (percent) {
-          Future.delayed(Duration.zero, () {
+        try {
+          results = await FileUtil().uploadPics(fileList, (percent) {
             context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(percent);
           });
-        });
-
-        print(results.isSuccess);
+        } catch (error) {
+          print("上传进度报错了：$error");
+        }
+        if(results.isSuccess == false) {
+          print('================================上传七牛云失败');
+          // 设置不可发布
+          context.read<FeedMapNotifier>().setPublish(false);
+          _process = -1.0;
+          context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(_process);
+          return;
+        }
         for (int i = 0; i < results.resultMap.length; i++) {
           print("打印一下索引值￥$i");
           UploadResultModel model = results.resultMap.values.elementAt(i);
@@ -147,6 +160,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
         }
       } else if (postModel.selectedMediaFiles.type == mediaTypeKeyVideo) {
         postModel.selectedMediaFiles.list.forEach((element) {
+
           fileList.add(element.file);
           videos.add(VideosModel(
               width: element.sizeInfo.width,
@@ -161,6 +175,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
           context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(percent);
           print("percent结束了:");
         });
+        print("resultsErroe:${results.isSuccess}");
         for (int i = 0; i < results.resultMap.length; i++) {
           print("打印一下视频索引值￥$i");
           UploadResultModel model = results.resultMap.values.elementAt(i);
