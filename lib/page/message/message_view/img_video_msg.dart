@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -56,6 +57,9 @@ class ImgVideoMsg extends StatelessWidget {
 
   double width = 200.0;
   double height = 200.0;
+  //占位图
+  String placeholderMapImage="images/test/bg.png";
+
 
   @override
   Widget build(BuildContext context) {
@@ -223,58 +227,97 @@ class ImgVideoMsg extends StatelessWidget {
 
   //获取视频的图片
   Widget getVideoUi() {
-    return CachedNetworkImage(
-      height: height,
-      width: width,
-      imageUrl: FileUtil.getVideoFirstPhoto(sizeInfoMap["showImageUrl"]) == null
-          ? ""
-          : FileUtil.getVideoFirstPhoto(sizeInfoMap["showImageUrl"]),
-      fit: BoxFit.cover,
-      placeholder: (context, url) => getVideoShowImage(),
-      errorWidget: (context, url, error) => getVideoShowImage(),
-    );
+    if(sizeInfoMap["isTemporary"]!=null&&sizeInfoMap["isTemporary"]) {
+      File videoImageFile=File(sizeInfoMap["videoFilePath"]);
+      File videoFile=File(sizeInfoMap["showImageUrl"]);
+      if(videoFile.existsSync()){
+        if(videoImageFile.existsSync()){
+          return getImageFile(videoImageFile);
+        }else{
+          print("文件缩略图失效");
+          return getImageAsset(placeholderMapImage);
+        }
+      }else{
+        print("文件失效");
+        return getImageAsset(placeholderMapImage);
+      }
+    }else{
+      return getCachedNetworkImage(FileUtil.getVideoFirstPhoto(sizeInfoMap["showImageUrl"]));
+    }
   }
 
   //获取视频的缺省图
   Widget getVideoShowImage() {
     if (mediaFileModel != null&&mediaFileModel.thumb!=null) {
-      return Image.memory(
-        mediaFileModel.thumb,
-        width: width,
-        height: height,
-        fit: BoxFit.cover,
-      );
+      return getImageMemory(mediaFileModel.thumb);
     } else {
-      return Image.asset(
-        "images/test/bg.png",
-        fit: BoxFit.cover,
-      );
+      return getImageAsset(placeholderMapImage);
     }
   }
 
   //获取图片的展示
   Widget getImageUi() {
-    // print("showImageUrl:${sizeInfoMap["showImageUrl"]}");
     if (imageMessage != null) {
       Uint8List bytes = Base64Decoder().convert(imageMessage.content);
       return bytes != null
-          ? Image.memory(bytes, fit: BoxFit.cover, width: width, height: height)
-          : Container(
-              child: Text("离线-图片资源有问题"),
-            );
+          ? getImageMemory(bytes)
+          : Container(child: Text("离线-图片资源有问题"));
     } else {
-      return CachedNetworkImage(
-        height: height,
-        width: width,
-        imageUrl: sizeInfoMap["showImageUrl"] == null
-            ? ""
-            : sizeInfoMap["showImageUrl"]+"?imageslim",
-        fit: BoxFit.cover,
-        placeholder: (context, url) => getImageShowImage(),
-        errorWidget: (context, url, error) => getImageShowImage(),
-      );
+      print("showImageUrl:${sizeInfoMap["showImageUrl"]}");
+      if(sizeInfoMap["isTemporary"]!=null&&sizeInfoMap["isTemporary"]) {
+        File imageFile=File(sizeInfoMap["showImageUrl"]);
+        if(imageFile.existsSync()){
+          return getImageFile(imageFile);
+        }else{
+          print("文件失效");
+          return getImageAsset(placeholderMapImage);
+        }
+      }else{
+        return getCachedNetworkImage(sizeInfoMap["showImageUrl"] + "?imageslim");
+      }
     }
   }
+
+
+
+  Widget getImageMemory(Uint8List thumb){
+    return Image.memory(
+      thumb??"",
+      width: width,
+      height: height,
+      fit: BoxFit.cover,
+    );
+  }
+
+  Widget getImageAsset(String assetPath){
+    return Image.asset(
+      assetPath??"",
+      width: width,
+      height: height,
+      fit: BoxFit.cover,
+    );
+  }
+
+  Widget getImageFile(File file){
+    return Image.file(
+      file??"",
+      width: width,
+      height: height,
+      fit: BoxFit.cover,
+    );
+  }
+
+  Widget getCachedNetworkImage(String imageUrl){
+    return CachedNetworkImage(
+      height: height,
+      width: width,
+      imageUrl: imageUrl??"",
+      fit: BoxFit.cover,
+      placeholder: (context, url) => getImageShowImage(),
+      errorWidget: (context, url, error) => getImageShowImage(),
+    );
+  }
+
 
   //获取过渡与错误图
   Widget getImageShowImage() {
@@ -293,10 +336,7 @@ class ImgVideoMsg extends StatelessWidget {
               fit: BoxFit.cover,
             );
     } else {
-      return Image.asset(
-        "images/test/bg.png",
-        fit: BoxFit.cover,
-      );
+      return  getImageAsset(placeholderMapImage);
     }
   }
 
@@ -344,14 +384,12 @@ class ImgVideoMsg extends StatelessWidget {
   }
 
   void onImgVideoContentBoxClick(BuildContext context) {
-    String imageUrl;
+    String imageUrl=sizeInfoMap["showImageUrl"];
     if (isImgOrVideo) {
-      imageUrl = sizeInfoMap["showImageUrl"];
       voidMessageClickCallBack(
           contentType: ChatTypeModel.MESSAGE_TYPE_IMAGE, content: imageUrl);
       // ToastShow.show(msg: "点击了图片", context: context);
     } else {
-      imageUrl = FileUtil.getVideoFirstPhoto(sizeInfoMap["showImageUrl"]);
       voidMessageClickCallBack(
           contentType: ChatTypeModel.MESSAGE_TYPE_VIDEO, content: imageUrl);
       // ToastShow.show(msg: "点击了视频", context: context);

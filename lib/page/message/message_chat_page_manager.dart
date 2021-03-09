@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,7 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:provider/provider.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 import 'more_page/group_more_page.dart';
 import 'more_page/private_more_page.dart';
@@ -334,6 +336,36 @@ void insertExitGroupMsg(Message message, String targetId, Function(Message msg, 
       sendTime: new DateTime.now().millisecondsSinceEpoch);
 }
 
+//插入临时的发送失败的图片以及视频
+Future<void> insertTemporaryImage(String targetId,bool isPrivate,bool isImgOrVideo,
+    ChatDataModel chatDataModel,int position,
+    Function(Message msg, int code) finished)async {
+  TextMessage msg = TextMessage();
+  msg.sendUserInfo = getChatUserInfo(groupId:isPrivate?null:targetId);
+  Map<String, dynamic> imgOrVideoMap = Map();
+  imgOrVideoMap["fromUserId"] = msg.sendUserInfo.userId.toString();
+  imgOrVideoMap["isTemporary"] = true;
+  imgOrVideoMap["toUserId"] = targetId;
+  imgOrVideoMap["subObjectName"] = isImgOrVideo ? ChatTypeModel.MESSAGE_TYPE_IMAGE : ChatTypeModel.MESSAGE_TYPE_VIDEO;
+  imgOrVideoMap["name"] = isImgOrVideo ? ChatTypeModel.MESSAGE_TYPE_IMAGE_NAME : ChatTypeModel.MESSAGE_TYPE_VIDEO_NAME;
+  Map sizeMap = chatDataModel.mediaFileModel.sizeInfo.toJson();
+  sizeMap["showImageUrl"] = chatDataModel.mediaFileModel.file.path;
+  if(!isImgOrVideo){
+    Uint8List thumb = await VideoThumbnail.thumbnailData(
+        video: chatDataModel.mediaFileModel.file.path, imageFormat: ImageFormat.JPEG, quality: 100);
+    File videoFile = await FileUtil().writeImageDataToFile(thumb,
+          DateTime.now().millisecondsSinceEpoch.toString() + position.toString());
+    sizeMap["videoFilePath"]=videoFile.path;
+  }
+  imgOrVideoMap["data"] = jsonEncode(sizeMap);
+  msg.content = jsonEncode(imgOrVideoMap);
+  Application.rongCloud.insertOutgoingMessage(
+      isPrivate?RCConversationType.Private:RCConversationType.Group,
+      targetId, msg, finished,
+      sendTime: new DateTime.now().millisecondsSinceEpoch,
+      sendStatus: RCSentStatus.Failed);
+}
+
 //获取用户数据
 UserInfo getChatUserInfo({String groupId}) {
   UserInfo userInfo = UserInfo();
@@ -527,8 +559,19 @@ Future<void> postImage(int start,int end,List<UploadResultModel> uploadResultMod
       modelList[i].status=RCSentStatus.Sent;
       print("----------成功：modelList[i].msg：${modelList[i].msg.toString()}");
     } else {
+      //插入临时消息
+      await insertTemporaryImage(targetId,chatTypeId == RCConversationType.Private,
+          type == mediaTypeKeyImage,modelList[i],i,(Message msg, int code){
+            if(msg!=null){
+              print("--------------插入成功");
+              modelList[i].msg=msg;
+              modelList[i].isTemporary = false;
+            }else{
+              print("--------------插入失败");
+            }
+            modelList[i].status=RCSentStatus.Failed;
+          });
       print("--------------上传图片失败");
-      modelList[i].status=RCSentStatus.Failed;
     }
   }
   voidCallback();

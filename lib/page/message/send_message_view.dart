@@ -232,12 +232,14 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
 
         //-------------------------------------------------图片消息--------------------------------------------
         Map<String, dynamic> map = json.decode(mapModel["data"]);
+        map["isTemporary"]=mapModel["isTemporary"]??false;
         return getImgVideoMsg(isTemporary: false, isImg:true, mediaFileModel: widget.model.mediaFileModel, sizeInfoMap: map);
 
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
 
         //-------------------------------------------------视频消息--------------------------------------------
         Map<String, dynamic> map = json.decode(mapModel["data"]);
+        map["isTemporary"]=mapModel["isTemporary"]??false;
         return getImgVideoMsg(isTemporary: false, isImg:false, mediaFileModel: widget.model.mediaFileModel, sizeInfoMap: map);
 
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {

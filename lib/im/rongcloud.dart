@@ -151,21 +151,25 @@ class RongCloud {
   //插入发送的消息
   void insertOutgoingMessage(
       int conversationType, String targetId, MessageContent content, Function(Message msg, int code) finished,
-      {int sendTime = -1}) {
+      {int sendTime = -1,int sendStatus=RCSentStatus.Sent}) {
     // 需要同时更新会话
     if (sendTime < 0) {
       RongIMClient.insertOutgoingMessage(
-          conversationType, targetId, 30, content, new DateTime.now().millisecondsSinceEpoch, (msg, code) {
-        try {
-          MessageManager.updateConversationByMessageList(Application.appContext, [msg]);
-        } catch (e) {}
+          conversationType, targetId, sendStatus, content, new DateTime.now().millisecondsSinceEpoch, (msg, code) {
+        if(msg!=null) {
+          try {
+            MessageManager.updateConversationByMessageList(Application.appContext, [msg]);
+          } catch (e) {}
+        }
         finished(msg, code);
       });
     } else {
-      RongIMClient.insertOutgoingMessage(conversationType, targetId, 30, content, sendTime, (msg, code) {
-        try {
-          MessageManager.updateConversationByMessageList(Application.appContext, [msg]);
-        } catch (e) {}
+      RongIMClient.insertOutgoingMessage(conversationType, targetId, sendStatus, content, sendTime, (msg, code) {
+        if(msg!=null) {
+          try {
+            MessageManager.updateConversationByMessageList(Application.appContext, [msg]);
+          } catch (e) {}
+        }
         finished(msg, code);
       });
     }
