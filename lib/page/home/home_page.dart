@@ -102,6 +102,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
               null) {
         pulishFeed(getPublishFeedData());
       } else if (result == ConnectivityResult.wifi &&
+          //todo 报错
           AppPrefs.getPublishFeedLocalInsertData(
                   "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}") !=
               null) {
@@ -230,34 +231,30 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     super.build(context);
     print("HomePage_____________________________________________build");
     // 发布动态
-    return Consumer<FeedMapNotifier>(builder: (context, notifier, child) {
-      if (context.watch<FeedMapNotifier>().postFeedModel != null && context.watch<FeedMapNotifier>().isPublish) {
-        print("疯狂)))))))))))))))))))))");
-        PostFeedModel postFeedModel = context.watch<FeedMapNotifier>().postFeedModel;
-        HomeFeedModel homeFeedModel = HomeFeedModel().conversionModel(postFeedModel, context);
-        // 定位到main_page页
-        Application.ifPageController.index = Application.ifPageController.length - 1;
-        // 定位到关注页
-        controller.index = 0;
-        // 关注页回到顶部
-        if (attentionKey.currentState != null) {
-          attentionKey.currentState.backToTheTop();
+    return  Consumer<FeedMapNotifier>(
+        builder: (context, notifier, child) {
+      if (notifier.postFeedModel != null && notifier.isPublish) {
+            print("疯狂)))))))))))))))))))))");
+            PostFeedModel postFeedModel = notifier.postFeedModel;
+            HomeFeedModel homeFeedModel = HomeFeedModel().conversionModel(postFeedModel, context);
+            // 定位到main_page页
+            Application.ifPageController.index = Application.ifPageController.length - 1;
+            // 定位到关注页
+            controller.index = 0;
+            // 关注页回到顶部
+            if (attentionKey.currentState != null) {
+              attentionKey.currentState.backToTheTop();
+            }
+            // 插入数据
+              if(notifier.buildIsOver){
+              print('========================insertData====2');
+              attentionKey.currentState.insertData(homeFeedModel);
+            }
+            // 设置不可发布
+              notifier.isPublish = false;
+            // 发布动态
+            pulishFeed(postFeedModel);
         }
-        // 插入数据
-        if (attentionKey.currentState != null) {
-          print('========================insertData====1');
-          attentionKey.currentState.insertData(homeFeedModel);
-        } else {
-          if (notifier.buildIsOver) {
-            print('========================insertData====2');
-            attentionKey.currentState.insertData(homeFeedModel);
-          }
-          // 设置不可发布
-          context.watch<FeedMapNotifier>().isPublish = false;
-          // 发布动态
-          pulishFeed(postFeedModel);
-        }
-      }
       return Scaffold(
           backgroundColor: AppColor.white,
           appBar: CustomAppBar(

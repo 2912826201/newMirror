@@ -111,7 +111,7 @@ class _MyQrCodePageState extends State<MyQrCodePage> {
                   Container(
                     height: ScreenUtil.instance.height,
                     width: ScreenUtil.instance.screenWidthDp,
-                    color: AppColor.bgWhite,
+                    child: Image.network("http://devpic.aimymusic.com/ifapp/1008977/1615279317627.jpg",fit: BoxFit.cover,)
                   ),
                   Positioned(
                       left: (ScreenUtil.instance.screenWidthDp - ScreenUtil.instance.screenWidthDp * 0.8) / 2,

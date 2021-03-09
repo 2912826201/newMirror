@@ -208,9 +208,9 @@ class HeadViewState extends State<HeadView> {
       if (!context
           .watch<ProfilePageNotifier>()
           .profileUiChangeModel[widget.model.pushId]
-          .dynmicStringList
+          .feedStringList
           .contains("删除")) {
-        context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.model.pushId].dynmicStringList.add("删除");
+        context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.model.pushId].feedStringList.add("删除");
       }
     } else if (!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey(widget.model.pushId)) {
       context.watch<ProfilePageNotifier>().setFirstModel(widget.model.pushId,
@@ -281,12 +281,12 @@ class HeadViewState extends State<HeadView> {
                           lists: context
                               .read<ProfilePageNotifier>()
                               .profileUiChangeModel[widget.model.pushId]
-                              .dynmicStringList,
+                              .feedStringList,
                           onItemClickListener: (index) {
                             switch (context
                                 .read<ProfilePageNotifier>()
                                 .profileUiChangeModel[widget.model.pushId]
-                                .dynmicStringList[index]) {
+                                .feedStringList[index]) {
                               case "删除":
                                 deleteFeed();
                                 break;

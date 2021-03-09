@@ -643,11 +643,11 @@ class ProfilePageNotifier extends ChangeNotifier {
     ProfileUiChangeModel model = ProfileUiChangeModel();
     if(isFollow!=null){
       model.isFollow = isFollow;
-      model.dynmicStringList.clear();
+      model.feedStringList.clear();
       if (!isFollow) {
-        model.dynmicStringList.add("取消关注");
+        model.feedStringList.add("取消关注");
       }
-      model.dynmicStringList.add("举报");
+      model.feedStringList.add("举报");
     }
     profileUiChangeModel[id] = model;
   }
@@ -701,11 +701,14 @@ class ProfilePageNotifier extends ChangeNotifier {
 
   void changeIsFollow(bool needNotify,bool bl, int id) {
     profileUiChangeModel[id].isFollow = bl;
-    profileUiChangeModel[id].dynmicStringList.clear();
+    profileUiChangeModel[id].feedStringList.clear();
     if (!bl) {
-      profileUiChangeModel[id].dynmicStringList.add("取消关注");
+      profileUiChangeModel[id].feedStringList.add("取消关注");
+      profileUiChangeModel[id].attentionModel.followingCount += 1;
+    }else{
+      profileUiChangeModel[id].attentionModel.followingCount -= 1;
     }
-    profileUiChangeModel[id].dynmicStringList.add("举报");
+    profileUiChangeModel[id].feedStringList.add("举报");
     if(needNotify){
       notifyListeners();
     }
@@ -735,7 +738,7 @@ class ProfileUiChangeModel {
   bool canOnClick = true;
   Color titleColor = AppColor.transparent;
   ProfileModel attentionModel = ProfileModel();
-  List<String> dynmicStringList = [];
+  List<String> feedStringList = [];
   List<int> profileFeedListId = [];
   List<int> profileLikeListId = [];
 }

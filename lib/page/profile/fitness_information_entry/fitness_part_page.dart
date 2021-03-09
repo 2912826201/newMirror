@@ -126,12 +126,12 @@ class _FitnessPartState extends State<FitnessPartPage> {
                 height: 44.0,
                 width: 88,
                 circular: 3.0,
-                textColor: choselist.indexOf(partList[index].id - 1) != -1 ? AppColor.white : AppColor.textHint,
+                textColor: choselist.indexOf(index) != -1 ? AppColor.white : AppColor.textHint,
                 fontSize: 16,
-                backColor: choselist.indexOf(partList[index].id - 1) != -1 ? AppColor.bgBlack : AppColor.transparent,
-                color: choselist.indexOf(partList[index].id - 1) != -1 ? AppColor.transparent : AppColor.textHint,
+                backColor: choselist.indexOf(index) != -1 ? AppColor.bgBlack : AppColor.transparent,
+                color: choselist.indexOf(index) != -1 ? AppColor.transparent : AppColor.textHint,
                 onTap: () {
-                  if (partList[index].id == 1) {
+                  if (partList[index].name=="全身") {
                     setState(() {
                       if (choselist.indexOf(0) != -1) {
                         choselist.remove(choselist.indexOf(0));
@@ -144,7 +144,7 @@ class _FitnessPartState extends State<FitnessPartPage> {
                       print('${choselist.length}');
                     });
                   } else {
-                    _changeListData(partList[index].id - 1);
+                    _changeListData(index);
                   }
                 }),
           ),

@@ -158,7 +158,8 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
       return getSelectMsgData(widget.model.content);
 
     } else {
-      return getTextMsg(text: "版本过低请升级版本!");
+      print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+      return getTextMsg(text: "6版本过低请升级版本!");
     }
   }
 
@@ -201,9 +202,9 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
 
     //-------------------------------------------------消息类型未知--------------------------------------------
     if (msg.content == null || msg.content.mentionedInfo == null) {
-      return getTextMsg(text: "版本过低请升级版本!");
+      return getTextMsg(text: "4版本过低请升级版本!");
     } else {
-      return getTextMsg(text: "版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo ?? null);
+      return getTextMsg(text: "4版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo ?? null);
     }
   }
 
@@ -274,14 +275,14 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
       }
     } catch (e) {
       //-------------------------------------------------消息解析失败-------------------------------------------
-      return getTextMsg(text: "版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo);
+      return getTextMsg(text: "2版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo);
     }
 
     //-------------------------------------------------消息类型未知--------------------------------------------
     if (msg.content == null || msg.content.mentionedInfo == null) {
-      return getTextMsg(text: "版本过低请升级版本!");
+      return getTextMsg(text: "2版本过低请升级版本!");
     } else {
-      return getTextMsg(text: "版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo ?? null);
+      return getTextMsg(text: "1版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo ?? null);
     }
   }
 
