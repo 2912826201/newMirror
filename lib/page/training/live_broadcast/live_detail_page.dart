@@ -340,7 +340,7 @@ class LiveDetailPageState extends XCState {
 
     var childrenArray = <Widget>[];
 
-    if(liveModel.endState!=null&&liveModel.endState==0){
+    if(liveModel.endState!=null&&liveModel.endState==0||(liveModel.getGetPlayType()=="已结束")){
       //已结束
       childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget7, onTap: _login))));
     }else {
@@ -583,6 +583,8 @@ class LiveDetailPageState extends XCState {
             return true;
           }));
       }
+    }else if(mapBook!=null&&mapBook["code"]==321){
+      ToastShow.show(msg: "预约失败:-时间不对", context: context);
     }else{
       getDataAction();
     }
@@ -686,6 +688,7 @@ class LiveDetailPageState extends XCState {
 
   //判断是预约还是取消预约
   void _judgeBookOrCancelBook({bool bindingTerminal, bool isVip}) {
+    print("---------------------------");
     if (liveModel.playType == 2) {
       _bookLiveCourse(liveModel, 0, true,bindingTerminal: bindingTerminal);
     } else {

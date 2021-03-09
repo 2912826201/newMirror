@@ -1404,45 +1404,111 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
   //重新发送消息
   void _resetPostMessage(int position) async {
-    ChatDataModel chatDataModel = new ChatDataModel();
-    if(!chatDataList[position].isTemporary) {
-      Message message = chatDataList[position].msg;
-      chatDataModel.isTemporary = false;
-      chatDataModel.isHaveAnimation = true;
-      chatDataModel.msg = message;
-      chatDataModel.msg.sentStatus = 10;
-      chatDataModel.msg.sentTime = new DateTime.now().millisecondsSinceEpoch;
-      judgeAddAlertTime();
-      chatDataList.removeAt(position);
-      chatDataList.insert(0, chatDataModel);
-      _addTemporaryMessage(chatDataModel);
-      animateToBottom();
-
-      if (mounted) {
-        reload(() {
-          _timerCount = 0;
-          isHaveTextLen = false;
-        });
-      }
-      resetPostMessage(chatDataList[0], () {
-        // RongCloud.init().deleteMessageById(message, (code)async {});
-        delayedSetState();
-      });
-    }else{
+    if(chatDataList[position].isTemporary) {
       if(chatDataList[0].type==ChatTypeModel.MESSAGE_TYPE_IMAGE||
           chatDataList[0].type==ChatTypeModel.MESSAGE_TYPE_VIDEO){
-        List<ChatDataModel> modelList=<ChatDataModel>[];
-        modelList.add(chatDataList[0]);
-        String type=mediaTypeKeyVideo;
-        if(chatDataList[0].type==ChatTypeModel.MESSAGE_TYPE_IMAGE){
-          type=mediaTypeKeyImage;
-        }
-        postImgOrVideo(modelList, conversation.conversationId, type, chatTypeId, () {
-          delayedSetState();
-        });
+        _resetPostTemporaryImageVideo(position);
+      }else{
+        ToastShow.show(msg: "未处理：${chatDataList[position].type}", context: context);
       }
+    }else if(chatDataList[position].msg.objectName==ChatTypeModel.MESSAGE_TYPE_TEXT){
+      TextMessage textMessage = ((chatDataList[position].content) as TextMessage);
+      Map<String, dynamic> mapModel = json.decode(textMessage.content);
+      Map<String, dynamic> map = json.decode(mapModel["data"]);
+      if(map["isTemporary"]!=null&&map["isTemporary"]){
+        _resetPostMessageTemporaryImageVideo(position,map);
+      }else{
+        _resetPostMsg(position);
+      }
+    }else{
+      _resetPostMsg(position);
     }
   }
+
+  //重新发送临时的图片视频
+  void _resetPostTemporaryImageVideo(int position){
+    chatDataList.insert(0, chatDataList[position]);
+    chatDataList.removeAt(position+1);
+    List<ChatDataModel> modelList=<ChatDataModel>[];
+    modelList.add(chatDataList[0]);
+    String type=mediaTypeKeyVideo;
+    if(chatDataList[0].type==ChatTypeModel.MESSAGE_TYPE_IMAGE){
+      type=mediaTypeKeyImage;
+    }
+    chatDataList[0].isTemporary=false;
+    _deletePostCompleteMessage();
+    chatDataList[0].isTemporary=true;
+    _addTemporaryMessage(chatDataList[0]);
+    postImgOrVideo(modelList, conversation.conversationId, type, chatTypeId, () {
+      delayedSetState();
+    });
+  }
+
+  //重新发送融云数据库内的临时图片视频
+  void _resetPostMessageTemporaryImageVideo(int position,Map<String, dynamic> sizeInfoMap){
+    ChatDataModel chatDataModel = new ChatDataModel();
+    chatDataModel.type =chatDataList[position].type;
+    MediaFileModel mediaFileModel=new MediaFileModel();
+    if(chatDataList[position].type==ChatTypeModel.MESSAGE_TYPE_IMAGE){
+      mediaFileModel.type=mediaTypeKeyImage;
+    }else{
+      mediaFileModel.type=mediaTypeKeyVideo;
+    }
+    mediaFileModel.file=File(sizeInfoMap["showImageUrl"]);
+    mediaFileModel.sizeInfo=SizeInfo.fromJson(sizeInfoMap);
+    chatDataModel.mediaFileModel = mediaFileModel;
+    chatDataModel.isTemporary = true;
+    chatDataModel.isHaveAnimation = true;
+
+    chatDataList[position].isTemporary=false;
+    _deletePostCompleteMessage();
+    chatDataList.removeAt(position);
+
+    List<ChatDataModel> modelList = <ChatDataModel>[];
+    modelList.add(chatDataModel);
+    _addTemporaryMessage(chatDataModel);
+    if (modelList != null) {
+      judgeAddAlertTime();
+      chatDataList.insertAll(0, modelList);
+    }
+    animateToBottom();
+    if (mounted) {
+      reload(() {
+        _timerCount = 0;
+      });
+    }
+    postImgOrVideo(modelList, conversation.conversationId, mediaFileModel.type, chatTypeId, () {
+      delayedSetState();
+    });
+  }
+
+  //重新发送融云数据的正常消息
+  void _resetPostMsg(int position){
+    ChatDataModel chatDataModel = new ChatDataModel();
+    Message message = chatDataList[position].msg;
+    chatDataModel.isTemporary = false;
+    chatDataModel.isHaveAnimation = true;
+    chatDataModel.msg = message;
+    chatDataModel.msg.sentStatus = 10;
+    chatDataModel.msg.sentTime = new DateTime.now().millisecondsSinceEpoch;
+    judgeAddAlertTime();
+    chatDataList.removeAt(position);
+    chatDataList.insert(0, chatDataModel);
+    _addTemporaryMessage(chatDataModel);
+    animateToBottom();
+
+    if (mounted) {
+      reload(() {
+        _timerCount = 0;
+        isHaveTextLen = false;
+      });
+    }
+    resetPostMessage(chatDataList[0], () {
+      // RongCloud.init().deleteMessageById(message, (code)async {});
+      delayedSetState();
+    });
+  }
+
 
   ///------------------------------------发送消息  end-----------------------------------------------------------------------///
   ///------------------------------------一些功能 方法  start-----------------------------------------------------------------------///

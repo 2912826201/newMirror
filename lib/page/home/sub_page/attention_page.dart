@@ -102,7 +102,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     } else {
       getRecommendFeed();
       new Future.delayed(Duration.zero, () {
-        print("发布失败数据");
+        print("AttentionPage发布失败数据");
         // 取出发布动态数据
         PostFeedModel feedModel = PostFeedModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
             "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")));
@@ -195,7 +195,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       }
       lastTime = model.lastTime;
       isRequestInterface = false;
-    } else {
+    } else  if(PostFeedModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
+        "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}"))) == null){
       status = Status.noConcern;
     }
     // 更新动态数量

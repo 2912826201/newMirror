@@ -48,28 +48,37 @@ import 'package:mirror/util/string_util.dart';
 /// vipprice : 0
 
 class LiveVideoModel {
-  int playType; //播放类型-0没有设置 1去上课  2预约  3回放 4已预约
+  int playType; //播放类型-0没有设置 1去上课  2预约  3回放 4已预约 5已结束
 
   String getGetPlayType() {
-    if (this.isBooked == 1) {
-      this.playType = 4;
-    }
     if (this.playType == 2) {
+      if (this.isBooked == 1) {
+        this.playType = 4;
+        return "已预约";
+      }
       return "预约";
     } else if (this.playType == 3) {
       return "回放";
     } else if (this.playType == 4) {
       return "已预约";
+    } else if (this.playType == 5) {
+      return "已结束";
     } else if (this.playType == 1) {
       return "去上课";
     } else {
-      DateTime startTime = DateUtil.stringToDateTime(this.startTime);
-      DateTime endTime = DateUtil.stringToDateTime(this.endTime);
-
-      if (coachDto!=null&&coachDto.isLiving!=null&&coachDto.isLiving == 1) {
+      //0-未开播 1-正在直播 2-直播结束 3-可回放
+      if (_liveCourseState!=null&&_liveCourseState == 1) {
         this.playType = 1;
         return "去上课";
+      }else if (_liveCourseState!=null&&_liveCourseState == 2) {
+        this.playType = 5;
+        return "已结束";
+      }else if (_liveCourseState!=null&&_liveCourseState == 3) {
+        this.playType = 3;
+        return "回放";
       } else {
+        DateTime startTime = DateUtil.stringToDateTime(this.startTime);
+        DateTime endTime = DateUtil.stringToDateTime(this.endTime);
         if (startTime != null) {
           if (DateUtil.compareNowDate(startTime)) {
             if (this.isBooked == 0) {
@@ -80,6 +89,7 @@ class LiveVideoModel {
               return "已预约";
             }
           } else if (DateUtil.compareNowDate(endTime)) {
+            print("-----------------------------------");
             this.playType = 1;
             return "去上课";
           } else {
@@ -141,6 +151,10 @@ class LiveVideoModel {
   int _updateTime;
   int _endState;
   int _isInMyCourseList;
+  int _liveCourseState;
+  int _bookCount;
+  int _liveRoomCount;
+  int _watchCount;
   int _lastPracticeTime;
   double _vipprice;
 
@@ -223,6 +237,10 @@ class LiveVideoModel {
   int get updateTime => _updateTime;
   int get endState => _endState;
   int get isInMyCourseList => _isInMyCourseList;
+  int get liveCourseState => _liveCourseState;
+  int get bookCount => _bookCount;
+  int get liveRoomCount => _liveRoomCount;
+  int get watchCount => _watchCount;
   int get lastPracticeTime => _lastPracticeTime;
 
   double get vipprice => _vipprice;
@@ -270,6 +288,10 @@ class LiveVideoModel {
       int updateTime,
       int endState,
       int isInMyCourseList,
+      int liveCourseState,
+      int bookCount,
+      int liveRoomCount,
+      int watchCount,
       int lastPracticeTime,
       double vipprice}) {
     _id = id;
@@ -315,6 +337,10 @@ class LiveVideoModel {
     _vipprice = vipprice;
     _endState = endState;
     _isInMyCourseList = isInMyCourseList;
+    _liveCourseState = liveCourseState;
+    _bookCount = bookCount;
+    _liveRoomCount = liveRoomCount;
+    _watchCount = watchCount;
     _lastPracticeTime = lastPracticeTime;
     playType = 0;
   }
@@ -373,6 +399,10 @@ class LiveVideoModel {
     _endState = json["endState"];
     _isInMyCourseList = json["isInMyCourseList"];
     _lastPracticeTime = json["lastPracticeTime"];
+    _liveCourseState = json["liveCourseState"];
+    _bookCount = json["bookCount"];
+    _liveRoomCount = json["liveRoomCount"];
+    _watchCount = json["watchCount"];
     _vipprice = json["vipprice"];
   }
 
@@ -424,6 +454,10 @@ class LiveVideoModel {
     map["updateTime"] = _updateTime;
     map["endState"] = _endState;
     map["isInMyCourseList"] = _isInMyCourseList;
+    map["liveCourseState"] = _liveCourseState;
+    map["bookCount"] = _bookCount;
+    map["liveRoomCount"] = _liveRoomCount;
+    map["watchCount"] = _watchCount;
     map["vipprice"] = _vipprice;
     map["lastPracticeTime"] = _lastPracticeTime;
     return map;

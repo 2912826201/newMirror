@@ -130,6 +130,9 @@ class FileUtil {
 
   //获取视频第一帧的图片
   static String getVideoFirstPhoto(String videoUrl) {
+    if(videoUrl==null||videoUrl.length<1){
+      return "";
+    }
     return videoUrl + "?vframe/jpg/offset/1";
   }
 
