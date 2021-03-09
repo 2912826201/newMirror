@@ -24,6 +24,9 @@ import 'string_util.dart';
 
 const String downloadPortName = "downloader_send_port";
 
+const int downloadTypeCommon = 0;
+const int downloadTypeCourse = 1;
+
 class FileUtil {
   //===========================上传部分start===========================
   Future<QiniuTokenModel> _getQiniuToken(int type) async {
@@ -153,8 +156,9 @@ class FileUtil {
     await DownloadDBHelper().clearDownloadByUrl(url);
   }
 
-  //todo 之后需要对下载文件类型做路径区分处理
-  Future<DownloadDto> download(String url, Function(String taskId, int received, int total) onProgressListener) async {
+  //需要对下载文件类型做路径区分处理
+  Future<DownloadDto> download(String url, Function(String taskId, int received, int total) onProgressListener,
+      {int type = downloadTypeCommon}) async {
     String taskId = Uuid().v4();
     String fileName = url.split("/").last;
     List<String> strs = fileName.split(".");
@@ -163,7 +167,18 @@ class FileUtil {
     } else {
       fileName = StringUtil.generateMd5(fileName);
     }
-    String filePath = "${AppConfig.getAppDownloadDir()}/$fileName";
+    String filePath;
+    switch(type) {
+      case downloadTypeCommon:
+        filePath = "${AppConfig.getAppDownloadDir()}/$fileName";
+        break;
+      case downloadTypeCourse:
+        filePath = "${AppConfig.getAppCourseDir()}/$fileName";
+        break;
+      default:
+        filePath = "${AppConfig.getAppDownloadDir()}/$fileName";
+        break;
+    }
 
     DownloadDto dto = DownloadDto();
     dto.taskId = taskId;
@@ -185,9 +200,7 @@ class FileUtil {
     });
   }
 
-   chunkDownLoad(String url, Dio dio,Function(String taskId,int received, int total)
-  onProgressListener)
-  async {
+  chunkDownLoad(String url, Dio dio, Function(String taskId, int received, int total) onProgressListener) async {
     String taskId = Uuid().v4();
     String fileName = url.split("/").last;
     List<String> strs = fileName.split(".");
@@ -202,13 +215,12 @@ class FileUtil {
     dto.url = url;
     dto.filePath = filePath;
     print("start");
-      Response res = await RangeDownload.downloadWithChunks(url, filePath,
-          onReceiveProgress: (received, total) {
-        onProgressListener(taskId,received,total);
-        if(received==total){
-          DownloadDBHelper().insertDownload(taskId, url, filePath);
-        }
-      },dio:dio);
+    Response res = await RangeDownload.downloadWithChunks(url, filePath, onReceiveProgress: (received, total) {
+      onProgressListener(taskId, received, total);
+      if (received == total) {
+        DownloadDBHelper().insertDownload(taskId, url, filePath);
+      }
+    }, dio: dio);
     print(res.statusCode);
     print(res.statusMessage);
     print(res.data);
@@ -222,21 +234,22 @@ class FileUtil {
     await file.writeAsBytes(bytes);
     return file;
   }
- // 获取文件后缀名
-static String getFileSuffix (String imageFilePath) {
-  List<String> pathList= [];
-  String path = "";
-  for(int i= imageFilePath.length-1;i>=0;i--){
-    pathList.add(imageFilePath[i]);
-    if(imageFilePath[i] == '.') {
-      break;
+
+  // 获取文件后缀名
+  static String getFileSuffix(String imageFilePath) {
+    List<String> pathList = [];
+    String path = "";
+    for (int i = imageFilePath.length - 1; i >= 0; i--) {
+      pathList.add(imageFilePath[i]);
+      if (imageFilePath[i] == '.') {
+        break;
+      }
     }
+    pathList = pathList.reversed.toList();
+    pathList.forEach((v) {
+      path += v;
+    });
+    return path;
   }
-  pathList = pathList.reversed.toList();
-  pathList.forEach((v) {
-    path += v;
-  });
-  return path;
-}
 //===========================下载部分end===========================
 }
