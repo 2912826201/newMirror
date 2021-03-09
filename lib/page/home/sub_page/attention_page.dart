@@ -190,7 +190,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
               loadStatus = LoadingStatus.STATUS_COMPLETED;
             }
           }
-          attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList);
+          attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList,isShowRecommendUser: true);
         });
       }
       lastTime = model.lastTime;
@@ -198,6 +198,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     } else  if(PostFeedModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
         "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}"))) == null){
       status = Status.noConcern;
+    } else {
+      loadText = "已加载全部动态";
+      loadStatus = LoadingStatus.STATUS_COMPLETED;
     }
     // 更新动态数量
     int addFeedNum = 0;
@@ -248,7 +251,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     attentionModelList.insert(0, model);
     print(attentionIdList.toString());
     // // 重新计算
-    attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList);
+    attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList,isShowRecommendUser: true);
     // // 更新全局监听
     new Future.delayed(Duration.zero, () {
       context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
@@ -266,7 +269,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     attentionIdList.insert(1, model.id);
     attentionModelList.insert(0, model);
     // // 重新计算
-    attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList);
+    attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList,isShowRecommendUser: true);
     // // 更新全局监听
     context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
     print(attentionIdList.toString());
@@ -303,7 +306,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             context.read<FeedMapNotifier>().deleteFeed(id);
             attentionModelList.removeWhere((v) => v.id == id);
             // 重新计算
-            attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList);
+            attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList,isShowRecommendUser: true);
             // 更新全局监听
             context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
             print(attentionIdList.toString());
@@ -344,7 +347,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
               loadText = "";
               attentionModelList = StringUtil.followModelFilterDeta(attentionModelList, feedList);
               // 重新计算
-              attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList);
+              attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList,isShowRecommendUser: true);
               // 更新全局监听
               context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
             });

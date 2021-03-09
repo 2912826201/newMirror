@@ -281,11 +281,14 @@ class StringUtil {
   }
 
   //计算每一个动态流的item的高度区间
-  static List<HomeFeedModel> getFeedItemHeight(double initHeight, List<HomeFeedModel>  models) {
+  static List<HomeFeedModel> getFeedItemHeight(double initHeight, List<HomeFeedModel>  models,{bool isShowRecommendUser = false}) {
     double itemHeight = initHeight;
     for(int i = 0; i < models.length; i ++) {
       HomeFeedModel v =  models[i];
       v.headOffset = itemHeight;
+      if(i== 2 && isShowRecommendUser) {
+        itemHeight += 233;
+      }
       // 头部
       itemHeight += 62;
       if (v.selectedMediaFiles == null) {
