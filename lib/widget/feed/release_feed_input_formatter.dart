@@ -226,15 +226,17 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     print("新光标$startIndex");
     int endIndex = oldValue.selection.end;
     // 删除@或者#时要关闭视图
-    if (startIndex + 1 <= atIndex || startIndex + 1 <= topicIndex) {
-      _shutDownCallback();
+    print('==========topicIndex$topicIndex');
       if (startIndex + 1 <= atIndex) {
-        atIndex = 0;
+        print('==================startIndex + 1 <= atIndex');
+      atIndex = 0;
+        _shutDownCallback();
       }
       if (startIndex + 1 <= topicIndex) {
+        print('==================startIndex + 1 <= topicIndex');
         topicIndex = 0;
+        _shutDownCallback();
       }
-    }
     if (atIndex > 0 && startIndex + 1 > atIndex) {
       print("111");
       print(oldValue.text);

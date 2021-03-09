@@ -1044,7 +1044,8 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     if (isHotOrTime) {
       Map<String, dynamic> commentModel;
       if (widget.isInteractiveIn!=null &&
-          widget.isInteractiveIn&&context.read<FeedMapNotifier>().courseCommentHot[widget.commentDtoModel.id] != null) {
+          widget.isInteractiveIn&&widget.commentDtoModel!=null&&context.read<FeedMapNotifier>().courseCommentHot[widget
+        .commentDtoModel.id] != null) {
         courseCommentHot = CommentModel();
         courseCommentHot.list = [];
         context.read<FeedMapNotifier>().courseCommentHot[widget.commentDtoModel.id].list.forEach((element) {

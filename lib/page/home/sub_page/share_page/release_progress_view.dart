@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
@@ -9,121 +10,119 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
 
 class ReleaseProgressView extends StatefulWidget {
+  ReleaseProgressView({Key key, this.deleteReleaseFeedChanged,this.resendFeedChanged}) : super(key: key);
   @override
   ReleaseProgressViewState createState() => ReleaseProgressViewState();
+  // 删除本地插入的动态
+
+  VoidCallback deleteReleaseFeedChanged;
+  // 重新发布动态
+  VoidCallback resendFeedChanged;
 }
 
 class ReleaseProgressViewState extends State<ReleaseProgressView> {
   @override
   Widget build(BuildContext context) {
-    return   context.watch<FeedMapNotifier>().postFeedModel != null ?
-      Container(
-      height: 60,
-      width: ScreenUtil.instance.screenWidthDp,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-              child: Container(
-                  margin: EdgeInsets.only(left: 16, right: 16),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      context.select((FeedMapNotifier value) => value.postFeedModel.selectedMediaFiles) != null
-                          ? Container(
-                              width: 36,
-                              height: 36,
-                              margin: EdgeInsets.only(right: 6),
-                              child: Stack(
-                                alignment: const FractionalOffset(0.5, 0.5),
-                                children: [
-                                  context.select((FeedMapNotifier value) =>
-                                              value.postFeedModel.selectedMediaFiles.type) ==
-                                          mediaTypeKeyVideo
-                                      ? Image.memory(
-                                          context.select((FeedMapNotifier value) =>
-                                              value.postFeedModel.selectedMediaFiles.list.first.thumb),
-                                          fit: BoxFit.cover,
-                                        )
-                                      : context.select((FeedMapNotifier value) =>
-                                                  value.postFeedModel.selectedMediaFiles.list.first.croppedImageData) !=
-                                              null
-                                          ? Image.memory(
-                                              context.select((FeedMapNotifier value) =>
-                                                  value.postFeedModel.selectedMediaFiles.list.first.croppedImageData),
-                                              fit: BoxFit.cover,
-                                            )
-                                          : context.select((FeedMapNotifier value) =>
-                                                      value.postFeedModel.selectedMediaFiles.list.first.file) !=
-                                                  null
-                                              ? Image.file(
-                                                  context.select((FeedMapNotifier value) =>
-                                                      value.postFeedModel.selectedMediaFiles.list.first.file),
-                                                  // context
-                                                  //     .watch<ReleaseProgressNotifier>()
-                                                  //     .postFeedModel
-                                                  //     .selectedMediaFiles
-                                                  //     .list
-                                                  //     .first
-                                                  //     .file,
-                                                  fit: BoxFit.cover,
-                                                )
-                                              : Container(),
-                                  context.select((FeedMapNotifier value) =>
-                                              value.postFeedModel.selectedMediaFiles.type) ==
-                                          // context.watch<ReleaseProgressNotifier>().postFeedModel.selectedMediaFiles.type ==
-                                          mediaTypeKeyVideo
-                                      ? Container(
-                                          width: 13,
-                                          height: 13,
-                                          color: AppColor.mainRed,
-                                        )
-                                      : Container()
-                                ],
-                              ),
-                            )
-                          : Container(),
-                      publishTextStatus(context.select((ReleaseProgressNotifier value) => value.plannedSpeed)),
-                      Spacer(),
-                      Offstage(
-                          offstage: context.select((ReleaseProgressNotifier value) => value.plannedSpeed) != -1,
-                          child: Container(
-                            width: 48,
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 18,
-                                  height: 18,
-                                  color: Colors.lime,
-                                ),
-                                Spacer(),
-                                Container(
-                                  width: 18,
-                                  height: 18,
-                                  color: Colors.lime,
-                                ),
-                              ],
-                            ),
-                          ))
-                    ],
-                  ))),
-          LinearProgressIndicator(
-            value:
-    // context.select((ReleaseProgressNotifier value) => value.plannedSpeed) != -1
-                context.watch<ReleaseProgressNotifier>().plannedSpeed != -1
-                ?  context.watch<ReleaseProgressNotifier>().plannedSpeed
-                    : 1,
-            valueColor: new AlwaysStoppedAnimation<Color>(
-                context.watch<ReleaseProgressNotifier>().plannedSpeed  != -1
-                    ? AppColor.mainRed
-                    : Colors.amberAccent),
-            backgroundColor: AppColor.white,
-          ),
-        ],
-      ),
-    ) : Container();
+    return context.watch<FeedMapNotifier>().postFeedModel != null
+        ? Container(
+            height: 60,
+            width: ScreenUtil.instance.screenWidthDp,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                    child: Container(
+                        margin: EdgeInsets.only(left: 16, right: 16),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            context.select((FeedMapNotifier value) => value.postFeedModel.selectedMediaFiles) != null
+                                ? Container(
+                                    width: 36,
+                                    height: 36,
+                                    margin: EdgeInsets.only(right: 6),
+                                    child: Stack(
+                                      alignment: const FractionalOffset(0.5, 0.5),
+                                      children: [
+                                        context.select((FeedMapNotifier value) =>
+                                                    value.postFeedModel.selectedMediaFiles.type) ==
+                                                mediaTypeKeyVideo
+                                            ? Image.file(
+                                                context.select((FeedMapNotifier value) =>
+                                                    value.postFeedModel.selectedMediaFiles.list.first.file),
+                                                fit: BoxFit.cover,
+                                              )
+                                            : context.select((FeedMapNotifier value) =>
+                                                            value.postFeedModel.selectedMediaFiles.list.first.file) !=
+                                                        null
+                                                    ? Image.file(
+                                                        context.select((FeedMapNotifier value) =>
+                                                            value.postFeedModel.selectedMediaFiles.list.first.file),
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : Container(),
+                                        context.select((FeedMapNotifier value) =>
+                                                    value.postFeedModel.selectedMediaFiles.type) ==
+                                                // context.watch<ReleaseProgressNotifier>().postFeedModel.selectedMediaFiles.type ==
+                                                mediaTypeKeyVideo
+                                            ? Container(
+                                                width: 13,
+                                                height: 13,
+                                                color: AppColor.mainRed,
+                                              )
+                                            : Container()
+                                      ],
+                                    ),
+                                  )
+                                : Container(),
+                            publishTextStatus(context.select((ReleaseProgressNotifier value) => value.plannedSpeed)),
+                            Spacer(),
+                            Offstage(
+                                offstage: context.select((ReleaseProgressNotifier value) => value.plannedSpeed) != -1,
+                                child: Container(
+                                  width: 48,
+                                  child: Row(
+                                    children: [
+                                      GestureDetector(
+                                        onTap: widget.resendFeedChanged,
+                                        child: Container(
+                                          width: 18,
+                                          height: 18,
+                                          color: Colors.lime,
+                                        ),
+                                      ),
+                                      Spacer(),
+                                      GestureDetector(
+                                        onTap: widget.deleteReleaseFeedChanged,
+                                        child: Container(
+                                          width: 18,
+                                          height: 18,
+                                          color: Colors.lime,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ))
+                          ],
+                        ))),
+                LinearProgressIndicator(
+                  value:
+                      // context.select((ReleaseProgressNotifier value) => value.plannedSpeed) != -1
+                      context.watch<ReleaseProgressNotifier>().plannedSpeed != -1
+                          ? context.watch<ReleaseProgressNotifier>().plannedSpeed
+                          : 1,
+                  valueColor: new AlwaysStoppedAnimation<Color>(
+                      context.watch<ReleaseProgressNotifier>().plannedSpeed != -1
+                          ? AppColor.mainRed
+                          : Colors.amberAccent),
+                  backgroundColor: AppColor.white,
+                ),
+              ],
+            ),
+          )
+        : Container();
   }
 
   // 发布动态进度条视图

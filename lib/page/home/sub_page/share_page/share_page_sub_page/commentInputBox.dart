@@ -39,7 +39,9 @@ class CommentInputBoxState extends State<CommentInputBox> {
   @override
   Widget build(BuildContext context) {
     return Offstage(
-      offstage: widget.isUnderline ? false : context.watch<FeedMapNotifier>().feedMap[widget.feedModel.id].isShowInputBox,
+      offstage: false
+      // widget.isUnderline ? false : context.watch<FeedMapNotifier>().feedMap[widget.feedModel.id].isShowInputBox
+      ,
       child: Container(
         height: widget.isFeedDetail ? 48 + ScreenUtil.instance.bottomBarHeight : 48,
         width: ScreenUtil.instance.width,

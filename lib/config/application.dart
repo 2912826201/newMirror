@@ -141,6 +141,9 @@ class Application {
 
   // 发布中临时插入的动态Id
   static int insertFeedId = -2;
+
+  //发布失败动态key
+  static String postFailurekey  = "postFailureFeed";
   static FitnessEntryModel fitnessEntryModel = FitnessEntryModel();
   //公共登出方法
   static appLogout({bool isKicked = false}) async {

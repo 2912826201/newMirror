@@ -238,10 +238,6 @@ class FeedMapNotifier extends ChangeNotifier {
 
   // 是否调用发布接口
   setPublish(bool b) {
-    print(b);
-    print(this.isPublish);
     this.isPublish = b;
-    print("this.isPublish:${this.isPublish}");
-    notifyListeners();
   }
 }

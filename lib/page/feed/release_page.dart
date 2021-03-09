@@ -12,6 +12,8 @@ import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/config.dart';
+import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -22,17 +24,20 @@ import 'package:mirror/data/model/peripheral_information_entity/peripheral_infor
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/release_progress_notifier.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:reorderables/reorderables.dart';
@@ -241,19 +246,47 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
 }
 
 // 头部布局
-class FeedHeader extends StatelessWidget {
-  FeedHeader({this.selectedMediaFiles});
+// class FeedHeader extends StatefulWidget {
+//   SelectedMediaFiles selectedMediaFiles;
+//   FeedHeader({this.selectedMediaFiles});
+//   @override
+//   FeedHeaderState createState() => FeedHeaderState();
+// }
 
+class FeedHeader extends StatelessWidget {
   SelectedMediaFiles selectedMediaFiles;
 
+  FeedHeader({this.selectedMediaFiles});
+
   // 发布动态
-  pulishFeed(String inputText, List<Rule> rules, BuildContext context, PeripheralInformationPoi poi) async {
-    var a = utf8.encode(inputText);
-    print("encode:${a}");
-    var b = utf8.decode(a);
-    print("decode::$b");
-    // return;
+  pulishFeed(BuildContext context, String inputText, int uid, List<Rule> rules, PeripheralInformationPoi poi) async {
+    // var a = utf8.encode(inputText);
+    // print("encode:${a}");
+    // var b = utf8.decode(a);
+    // print("decode::$b");
+    // 转换base64
+    String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
+    int i = 0;
+    // 图片
+    if (selectedMediaFiles.type == mediaTypeKeyImage) {
+      for (MediaFileModel v in selectedMediaFiles.list) {
+        if (v.croppedImageData != null) {
+          i++;
+          File imageFile = await FileUtil().writeImageDataToFile(v.croppedImageData, timeStr + i.toString());
+          v.file = imageFile;
+        }
+      }
+    } else if (selectedMediaFiles.type == mediaTypeKeyVideo) {
+      for (MediaFileModel v in selectedMediaFiles.list) {
+        if (v.thumb != null) {
+          i++;
+          File thumbFile = await FileUtil().writeImageDataToFile(v.thumb, timeStr + i.toString());
+          v.thumbPath = thumbFile.path;
+        }
+      }
+    }
     print("打印一下规则$rules");
+
     // 获取当前时间戳
     int currentTimestamp = DateTime.now().millisecondsSinceEpoch;
     PostFeedModel feedModel = PostFeedModel();
@@ -263,8 +296,8 @@ class FeedHeader extends StatelessWidget {
     String latitude;
     String longitude;
     List<TopicDtoModel> topics = [];
-    print("输入框文字￥$inputText");
     feedModel.content = inputText;
+    feedModel.uid = uid;
     feedModel.currentTimestamp = currentTimestamp;
     if (inputText.length > 0) {
       // 检测文本
@@ -301,15 +334,19 @@ class FeedHeader extends StatelessWidget {
           latitude = poi.location.split(",")[1];
           cityCode = poi.citycode;
         }
-        feedModel.selectedMediaFiles = selectedMediaFiles;
         feedModel.atUsersModel = atUsersModel;
         feedModel.address = address;
         feedModel.cityCode = cityCode;
         feedModel.latitude = latitude;
         feedModel.longitude = longitude;
         feedModel.topics = topics;
+
+        feedModel.selectedMediaFiles = selectedMediaFiles;
         print("打印一下￥￥${(feedModel.selectedMediaFiles.list.length)}");
-        // 传入发布动态model
+        // 存入数据
+        AppPrefs.setPublishFeedLocalInsertData(
+            "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}",
+            jsonEncode(feedModel.toJson()));
         context.read<FeedMapNotifier>().setPublishFeedModel(feedModel);
         context.read<ReleaseFeedInputNotifier>().rules.clear();
         context.read<ReleaseFeedInputNotifier>().selectAddress = null;
@@ -356,16 +393,18 @@ class FeedHeader extends StatelessWidget {
       feedModel.latitude = latitude;
       feedModel.longitude = longitude;
       feedModel.topics = topics;
-      print("打印一下￥￥${(feedModel.selectedMediaFiles.list.length)}");
+      feedModel.selectedMediaFiles = selectedMediaFiles;
+      // 存入数据
+      AppPrefs.setPublishFeedLocalInsertData(
+          "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}",
+          jsonEncode(feedModel.toJson()));
       // 传入发布动态model
       context.read<FeedMapNotifier>().setPublishFeedModel(feedModel);
-      print("aaaaa");
       context.read<ReleaseFeedInputNotifier>().rules.clear();
       context.read<ReleaseFeedInputNotifier>().selectAddress = null;
       Navigator.pop(context, true);
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -412,7 +451,9 @@ class FeedHeader extends StatelessWidget {
               var poi = context.read<ReleaseFeedInputNotifier>().selectAddress;
               print("点击生效");
               print(poi.toString());
-              pulishFeed(inputText, rules, context, poi);
+              // 获取用户Id
+              var uid = context.read<ProfileNotifier>().profile.uid;
+              pulishFeed(context, inputText, uid, rules, poi);
             },
             // child: IgnorePointer(
             // 监听输入框的值==""使外层点击不生效。非""手势生效。
@@ -528,9 +569,11 @@ class KeyboardInputState extends State<KeyboardInput> {
         }
         // 唤起@#后切换光标关闭视图
         if (atIndex != null && cursorIndex != atIndex) {
+
           context.read<ReleaseFeedInputNotifier>().changeCallback("");
         }
         if (topicIndex != null && cursorIndex != topicIndex) {
+          print('=======================话题   切换光标');
           context.read<ReleaseFeedInputNotifier>().changeCallback("");
         }
       }
@@ -550,6 +593,7 @@ class KeyboardInputState extends State<KeyboardInput> {
         },
         // 关闭@#视图回调
         shutDownCallback: () async {
+          print('=======================shutDownCallback');
           context.read<ReleaseFeedInputNotifier>().changeCallback("");
         },
         valueChangedCallback: (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr,
@@ -790,7 +834,9 @@ class TopicListState extends State<TopicList> {
   @override
   void initState() {
     requestRecommendTopic();
-    context.read<ReleaseFeedInputNotifier>().setTopScrollController(_scrollController);
+    Future.delayed(Duration.zero,(){
+      context.read<ReleaseFeedInputNotifier>().setTopScrollController(_scrollController);
+    });
     _scrollController.addListener(() {
       // 搜索全局用户关键字
       String searchTopStr = context.read<ReleaseFeedInputNotifier>().topicSearchStr;

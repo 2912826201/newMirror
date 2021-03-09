@@ -1,12 +1,14 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/feed/post_feed.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
@@ -20,7 +22,6 @@ import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/release_progress_view.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
-import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
@@ -41,10 +42,67 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
   // 发布进度
   double _process = 0.0;
 
+  StreamSubscription<ConnectivityResult> connectivityListener;
+
   @override
   initState() {
     super.initState();
     controller = TabController(length: 2, vsync: this, initialIndex: 1);
+    new Future.delayed(Duration.zero, () {
+      print("发布失败数据");
+      // 取出发布动态数据
+      PostFeedModel feedModel = PostFeedModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
+          "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")));
+      if (feedModel != null) {
+        feedModel.selectedMediaFiles.list.forEach((v) {
+          v.file = File(v.filePath);
+        });
+        context.read<FeedMapNotifier>().setPublishFeedModel(feedModel);
+        // // 插入数据
+        // if (attentionKey.currentState != null) {
+        //   attentionKey.currentState.insertData(HomeFeedModel().conversionModel(feedModel, context, isRefresh: true));
+        // } else {
+        //   new Future.delayed(Duration(milliseconds: 500), () {
+        //     attentionKey.currentState.insertData(HomeFeedModel().conversionModel(feedModel, context, isRefresh: true));
+        //   });
+        // }
+        context.read<FeedMapNotifier>().setPublish(false);
+        _process = -1.0;
+        context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(_process);
+      }
+    });
+    _initConnectivity();
+  }
+
+  // 取出发布动态数据
+  PostFeedModel getPublishFeedData() {
+    PostFeedModel feedModel = PostFeedModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
+        "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")));
+    if (feedModel != null) {
+      feedModel.selectedMediaFiles.list.forEach((v) {
+        v.file = File(v.filePath);
+      });
+    }
+    return feedModel;
+  }
+
+  //获取网络连接状态
+  _initConnectivity() async {
+    // ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
+    // if (connectivityResult == ConnectivityResult.mobile) {
+    //   pulishFeed(getPublishFeedData());
+    // } else if (connectivityResult == ConnectivityResult.wifi) {
+    //   pulishFeed(getPublishFeedData());
+    // } else {
+    //
+    // }
+    connectivityListener = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.mobile) {
+        pulishFeed(getPublishFeedData());
+      } else if (result == ConnectivityResult.wifi) {
+        pulishFeed(getPublishFeedData());
+      } else {}
+    });
   }
 
   @override
@@ -65,27 +123,20 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     print("发布2222222222222222222");
     if (postFeedModel != null) {
       PostFeedModel postModel = postFeedModel;
+      print(postModel.atUsersModel);
       print("掉发布数据");
+      print(postModel.selectedMediaFiles.type == mediaTypeKeyImage);
       // 上传图片
       if (postModel.selectedMediaFiles.type == mediaTypeKeyImage) {
-        // 获取当前时间
-        String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
-        int i = 0;
-        //
-        postModel.selectedMediaFiles.list.forEach((element) async {
-          if (element.croppedImageData == null) {
-            fileList.add(element.file);
-          } else {
-            i++;
-            print("%%%%%%%%%%i=$i%%%%%%%%%%%");
-            File imageFile = await FileUtil().writeImageDataToFile(element.croppedImageData, timeStr + i.toString());
-            fileList.add(imageFile);
-          }
+        postModel.selectedMediaFiles.list.forEach((element) {
+          print(element.file);
+          fileList.add(element.file);
           picUrls.add(PicUrlsModel(width: element.sizeInfo.width, height: element.sizeInfo.height));
         });
-        print("uploadPics111111");
         results = await FileUtil().uploadPics(fileList, (percent) {
-          context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(percent);
+          Future.delayed(Duration.zero, () {
+            context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(percent);
+          });
         });
 
         print(results.isSuccess);
@@ -136,6 +187,11 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
           // 发布完成
           // 延迟器:
           new Future.delayed(Duration(seconds: 3), () {
+            // 重新赋值存入
+            AppPrefs.setPublishFeedLocalInsertData(
+                "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}", null);
+            // todo 清除图片路径
+
             // 清空发布model
             context.read<FeedMapNotifier>().setPublishFeedModel(null);
             //还原进度条
@@ -149,8 +205,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
         } else {
           // 发布失败
           print('================================发布失败');
-          // 清空发布model
-          // context.read<FeedMapNotifier>().setPublishFeedModel(null);
           // 设置不可发布
           context.read<FeedMapNotifier>().setPublish(false);
           _process = -1.0;
@@ -167,8 +221,9 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     // 发布动态
     if (context.watch<FeedMapNotifier>().postFeedModel != null && context.watch<FeedMapNotifier>().isPublish) {
       print("疯狂)))))))))))))))))))))");
+
       PostFeedModel postFeedModel = context.watch<FeedMapNotifier>().postFeedModel;
-      HomeFeedModel homeFeedModel = HomeFeedModel();
+      HomeFeedModel homeFeedModel = HomeFeedModel().conversionModel(postFeedModel, context);
       // 定位到main_page页
       Application.ifPageController.index = Application.ifPageController.length - 1;
       // 定位到关注页
@@ -176,49 +231,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
       // 关注页回到顶部
       if (attentionKey.currentState != null) {
         attentionKey.currentState.backToTheTop();
-      }
-      // 发布model转换动态model展示
-      homeFeedModel.name = context.watch<ProfileNotifier>().profile.nickName;
-      homeFeedModel.avatarUrl = context.watch<ProfileNotifier>().profile.avatarUri;
-      homeFeedModel.pushId = context.watch<ProfileNotifier>().profile.uid;
-      homeFeedModel.createTime = postFeedModel.currentTimestamp;
-      homeFeedModel.content = postFeedModel.content;
-      homeFeedModel.address = postFeedModel.address;
-      homeFeedModel.cityCode = postFeedModel.cityCode;
-      homeFeedModel.id = Application.insertFeedId;
-      homeFeedModel.type = 0;
-      homeFeedModel.courseDto = null;
-      homeFeedModel.commentCount = 0;
-      homeFeedModel.laudCount = 0;
-      homeFeedModel.shareCount = 0;
-      homeFeedModel.readCount = 0;
-      homeFeedModel.isFollow = 0;
-      homeFeedModel.isLaud = 0;
-      homeFeedModel.picUrls = [];
-      homeFeedModel.videos = [];
-      if(postFeedModel.atUsersModel.isNotEmpty) {
-        homeFeedModel.atUsers =  postFeedModel.atUsersModel;
-      } else {
-        homeFeedModel.atUsers = [];
-      }
-      if (postFeedModel.topics.isNotEmpty) {
-        homeFeedModel.topics = postFeedModel.topics;
-      } else {
-        homeFeedModel.topics = [];
-      }
-      homeFeedModel.laudUserInfo = [];
-      homeFeedModel.comments = [];
-      homeFeedModel.isShowInputBox = true;
-      if (postFeedModel.longitude != null) {
-        homeFeedModel.longitude = double.parse(postFeedModel.longitude);
-      }
-      if (postFeedModel.latitude != null) {
-        homeFeedModel.latitude = double.parse(postFeedModel.latitude);
-      }
-      if (postFeedModel.selectedMediaFiles != null) {
-        print("有图片视频文件");
-        homeFeedModel.selectedMediaFiles = postFeedModel.selectedMediaFiles;
-        print(homeFeedModel.toString());
       }
       // 插入数据
       if (attentionKey.currentState != null) {
@@ -250,9 +262,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                   }
                 } else {
                   // 从打开新页面改成滑到负一屏
-                  // AppRouter.navigateToMediaPickerPage(
-                  //     context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
-                  //     publishMode: 1);
                   if (context.read<TokenNotifier>().isLoggedIn) {
                     Application.ifPageController.animateTo(0);
                   } else {
@@ -298,12 +307,39 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
         ),
         body: Column(
           children: [
-            context.watch<FeedMapNotifier>().postFeedModel != null
-                ? Offstage(
-                    offstage: context.watch<FeedMapNotifier>().postFeedModel == null,
-                    child: ReleaseProgressView(),
-                  )
-                : Container(),
+            // context.watch<FeedMapNotifier>().postFeedModel != null
+            //     ? Offstage(
+            //         offstage: context.watch<FeedMapNotifier>().postFeedModel == null, child:
+            // createdPostPromptView()
+            ReleaseProgressView(
+              deleteReleaseFeedChanged: () {
+                // 重新赋值存入
+                AppPrefs.setPublishFeedLocalInsertData(
+                    "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}", null);
+                // todo 清除图片路径
+
+                // 清空发布model
+                context.read<FeedMapNotifier>().setPublishFeedModel(null);
+                // 删除本地插入数据
+                if (attentionKey.currentState != null) {
+                  attentionKey.currentState.deleteData();
+                } else {
+                  new Future.delayed(Duration(milliseconds: 500), () {
+                    attentionKey.currentState.deleteData();
+                  });
+                }
+                //还原进度条
+                _process = 0.0;
+                context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(_process);
+                // 设置可发布
+                context.read<FeedMapNotifier>().isPublish = true;
+              },
+              resendFeedChanged: () {
+                pulishFeed(context.read<FeedMapNotifier>().postFeedModel);
+              },
+            ),
+            //     )
+            // : Container(),
             Expanded(
               child: UnionInnerTabBarView(
                 controller: controller,
