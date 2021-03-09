@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:intl/intl.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -239,11 +240,17 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
                           SizedBox(
                             width: 4.5,
                           ),
-                          Icon(
-                            Icons.book,
-                            color: AppColor.textPrimary2,
-                            size: 18,
-                          ),
+                          notifier.machine.status == 0
+                              ? AppIcon.getAppIcon(
+                                  AppIcon.machine_disconnected,
+                                  18,
+                                  color: AppColor.textPrimary2,
+                                )
+                              : AppIcon.getAppIcon(
+                                  AppIcon.machine_connected,
+                                  18,
+                                  color: AppColor.textPrimary2,
+                                ),
                           SizedBox(
                             width: 2.5,
                           ),

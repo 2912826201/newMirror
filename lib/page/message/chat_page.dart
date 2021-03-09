@@ -219,10 +219,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
               loadText = "加载中...";
               loadStatus = LoadingStatus.STATUS_LOADING;
             });
-            Future.delayed(Duration(milliseconds: 10),(){
-              _scrollController.animateTo(_scrollController.position.pixels+50,
-                  duration: Duration(milliseconds: 10), curve: Curves.easeInOut);
-            });
           }
           if (conversation.getType() != RCConversationType.System) {
             _onRefresh();
@@ -467,11 +463,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
               Expanded(
                   child: SizedBox(
                       child: Text(
-                "点击关注,及时看到对方动态",
-                style: TextStyle(color: AppColor.textPrimary1, fontSize: 16),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ))),
+                        "点击关注,及时看到对方动态",
+                        style: TextStyle(color: AppColor.textPrimary1, fontSize: 16),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ))),
               GestureDetector(
                 child: Container(
                   width: 60,
@@ -676,7 +672,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         physics: BouncingScrollPhysics(),
         itemCount: emojiModelList.length,
         gridDelegate:
-            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8, crossAxisSpacing: 1, mainAxisSpacing: 1),
+        SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8, crossAxisSpacing: 1, mainAxisSpacing: 1),
         itemBuilder: (context, index) {
           return _emojiGridItem(emojiModelList[index], index);
         },
@@ -927,7 +923,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   Future<List<ChatDataModel>> getSystemInformationNet() async {
     List<ChatDataModel> dataList = <ChatDataModel>[];
     Map<String, dynamic> dataListMap =
-        await querySysMsgList(type: conversation.type, size: 20, lastTime: systemLastTime);
+    await querySysMsgList(type: conversation.type, size: 20, lastTime: systemLastTime);
     try {
       systemLastTime = dataListMap["lastTime"].toString();
     } catch (e) {}
@@ -964,7 +960,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   //判断加不加时间提示
   judgeAddAlertTime() {
     if (chatDataList.length > 0) {
-      if (new DateTime.now().millisecondsSinceEpoch - chatDataList[0].msg.sentTime >= 5 * 60 * 1000) {
+      if (chatDataList[0].msg!=null&&new DateTime.now().millisecondsSinceEpoch - chatDataList[0].msg.sentTime >= 5 * 60 * 1000) {
         chatDataList.insert(0, getTimeAlertModel(new DateTime.now().millisecondsSinceEpoch));
         if (recallNotificationMessagePosition > 0) {
           recallNotificationMessagePosition++;
@@ -1138,7 +1134,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   //从全局的临时消息中删除发送完成的消息
   _deletePostCompleteMessage(){
     if(Application.postChatDataModelList[conversation.id]==null
-    ||Application.postChatDataModelList[conversation.id].length<1){
+        ||Application.postChatDataModelList[conversation.id].length<1){
       return;
     }else{
       for(int i=0;i<Application.postChatDataModelList[conversation.id].length;i++){
@@ -2016,7 +2012,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     msgList = await RongCloud.init().getHistoryMessages(
         conversation.getType(), conversation.conversationId, chatDataList[chatDataList.length - 1].msg.sentTime, 20, 0);
     List<ChatDataModel> dataList = <ChatDataModel>[];
-    if (msgList != null && msgList.length > 0) {
+    if (msgList != null && msgList.length > 1) {
       dataList.clear();
       for (int i = 1; i < msgList.length; i++) {
         dataList.add(getMessage((msgList[i] as Message), isHaveAnimation: false));
@@ -2200,5 +2196,5 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     }
   }
 
-  ///------------------------------------各种点击事件  end-----------------------------------------------------------------------///
+///------------------------------------各种点击事件  end-----------------------------------------------------------------------///
 }

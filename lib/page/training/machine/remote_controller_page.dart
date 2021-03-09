@@ -4,6 +4,7 @@ import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
@@ -288,16 +289,17 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    alignment: Alignment.center,
-                    height: 28,
-                    width: 28,
-                    child: Icon(
-                      Icons.book,
-                      color: AppColor.textPrimary2,
-                      size: 24,
-                    ),
-                  ),
+                  notifier.machine.status == 0
+                      ? AppIcon.getAppIcon(
+                          AppIcon.machine_disconnected,
+                          28,
+                          color: AppColor.textPrimary2,
+                        )
+                      : AppIcon.getAppIcon(
+                          AppIcon.machine_connected,
+                          28,
+                          color: AppColor.textPrimary2,
+                        ),
                   SizedBox(
                     width: 12,
                   ),

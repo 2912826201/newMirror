@@ -16,10 +16,9 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
 import 'profile_detail_page.dart';
-
-enum ActionItems { DENGCHU, DENGLU }
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key key}) : super(key: key);
@@ -214,7 +213,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
           child: Row(
         children: [
           CustomAppBarIconButton(
-              icon: Icons.qr_code,
+              svgName: AppIcon.qrcode_scan,
               iconColor: AppColor.black,
               onTap: () {
                 AppRouter.navigateToScanCodePage(context);
