@@ -757,6 +757,22 @@ String getChatUserName(String groupId,String userId, String name) {
   }
 }
 
+
+String getChatTypeModel(ChatDataModel chatDataModel){
+  if(chatDataModel==null){
+    return "";
+  }else if(chatDataModel.type!=null){
+    return chatDataModel.type;
+  }else if(chatDataModel.msg.objectName==ChatTypeModel.MESSAGE_TYPE_TEXT){
+    TextMessage textMessage = ((chatDataModel.msg.content) as TextMessage);
+    Map<String, dynamic> mapModel = json.decode(textMessage.content);
+    return mapModel["subObjectName"];
+  }else{
+    return chatDataModel.msg.objectName;
+  }
+}
+
+
 //todo 之后改为路由跳转
 //判断去拿一个更多界面
 void judgeJumpPage(

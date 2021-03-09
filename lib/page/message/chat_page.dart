@@ -50,6 +50,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:text_span_field/range_style.dart';
 import 'package:text_span_field/text_span_field.dart';
 import 'package:toast/toast.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 import 'chat_details_body.dart';
 import 'item/chat_at_user_name_list.dart';
 import 'item/chat_more_icon.dart';
@@ -1405,24 +1406,26 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   //重新发送消息
   void _resetPostMessage(int position) async {
     if(chatDataList[position].isTemporary) {
-      if(chatDataList[0].type==ChatTypeModel.MESSAGE_TYPE_IMAGE||
-          chatDataList[0].type==ChatTypeModel.MESSAGE_TYPE_VIDEO){
+      if(chatDataList[position].type==ChatTypeModel.MESSAGE_TYPE_IMAGE||
+          chatDataList[position].type==ChatTypeModel.MESSAGE_TYPE_VIDEO){
         _resetPostTemporaryImageVideo(position);
       }else{
         ToastShow.show(msg: "未处理：${chatDataList[position].type}", context: context);
       }
     }else if(chatDataList[position].msg.objectName==ChatTypeModel.MESSAGE_TYPE_TEXT){
-      TextMessage textMessage = ((chatDataList[position].content) as TextMessage);
+      TextMessage textMessage = ((chatDataList[position].msg.content) as TextMessage);
+      print("textMessage.content:${textMessage.content}");
       Map<String, dynamic> mapModel = json.decode(textMessage.content);
-      Map<String, dynamic> map = json.decode(mapModel["data"]);
-      if(map["isTemporary"]!=null&&map["isTemporary"]){
-        _resetPostMessageTemporaryImageVideo(position,map);
-      }else{
-        _resetPostMsg(position);
+      if(mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_IMAGE||
+          mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
+        Map<String, dynamic> map = json.decode(mapModel["data"]);
+        if (mapModel["isTemporary"] != null && mapModel["isTemporary"]) {
+          _resetPostMessageTemporaryImageVideo(position, map);
+          return;
+        }
       }
-    }else{
-      _resetPostMsg(position);
     }
+    _resetPostMsg(position);
   }
 
   //重新发送临时的图片视频
@@ -1445,16 +1448,19 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   }
 
   //重新发送融云数据库内的临时图片视频
-  void _resetPostMessageTemporaryImageVideo(int position,Map<String, dynamic> sizeInfoMap){
+  void _resetPostMessageTemporaryImageVideo(int position,Map<String, dynamic> sizeInfoMap)async{
+    RongCloud.init().deleteMessageById(chatDataList[position].msg,null);
     ChatDataModel chatDataModel = new ChatDataModel();
-    chatDataModel.type =chatDataList[position].type;
+    chatDataModel.type =getChatTypeModel(chatDataList[position]);
     MediaFileModel mediaFileModel=new MediaFileModel();
-    if(chatDataList[position].type==ChatTypeModel.MESSAGE_TYPE_IMAGE){
+    mediaFileModel.file=File(sizeInfoMap["showImageUrl"]);
+    if(chatDataModel.type==ChatTypeModel.MESSAGE_TYPE_IMAGE){
       mediaFileModel.type=mediaTypeKeyImage;
     }else{
       mediaFileModel.type=mediaTypeKeyVideo;
+      mediaFileModel.thumb = await VideoThumbnail.thumbnailData(
+          video: sizeInfoMap["showImageUrl"], imageFormat: ImageFormat.JPEG, quality: 100);
     }
-    mediaFileModel.file=File(sizeInfoMap["showImageUrl"]);
     mediaFileModel.sizeInfo=SizeInfo.fromJson(sizeInfoMap);
     chatDataModel.mediaFileModel = mediaFileModel;
     chatDataModel.isTemporary = true;
@@ -1463,6 +1469,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     chatDataList[position].isTemporary=false;
     _deletePostCompleteMessage();
     chatDataList.removeAt(position);
+
 
     List<ChatDataModel> modelList = <ChatDataModel>[];
     modelList.add(chatDataModel);
@@ -1480,6 +1487,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     postImgOrVideo(modelList, conversation.conversationId, mediaFileModel.type, chatTypeId, () {
       delayedSetState();
     });
+
   }
 
   //重新发送融云数据的正常消息
@@ -1504,7 +1512,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       });
     }
     resetPostMessage(chatDataList[0], () {
-      // RongCloud.init().deleteMessageById(message, (code)async {});
       delayedSetState();
     });
   }
