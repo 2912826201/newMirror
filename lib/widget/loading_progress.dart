@@ -28,7 +28,7 @@ class LoadingProgressState extends State<LoadingProgress> {
   void initState() {
     super.initState();
     //对controller进行监听
-    widget.controller.addListener(() {
+    widget.controller?.addListener(() {
       if (widget.controller.isShow) {
         //todo
       } else {
@@ -41,7 +41,7 @@ class LoadingProgressState extends State<LoadingProgress> {
 
   @override
   void dispose() {
-    widget.controller.isShow = false;
+    widget.controller?.isShow = false;
     widget.controller?.dispose();
     super.dispose();
   }

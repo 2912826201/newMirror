@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -10,6 +11,7 @@ import 'package:mirror/data/dto/download_dto.dart';
 import 'package:mirror/data/model/upload/qiniu_token_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/util/range_download.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sy_flutter_qiniu_storage/sy_flutter_qiniu_storage.dart';
 import 'package:uuid/uuid.dart';
 
@@ -209,5 +211,30 @@ class FileUtil {
     print(res.statusMessage);
     print(res.data);
   }
+
+  // base64转file
+  static Future<File> createFileFromString(String base64Str, String path) async {
+    Uint8List bytes = base64Decode(base64Str);
+    String dir = (await getApplicationDocumentsDirectory()).path;
+    File file = File("$dir/" + DateTime.now().millisecondsSinceEpoch.toString() + path);
+    await file.writeAsBytes(bytes);
+    return file;
+  }
+ // 获取文件后缀名
+static String getFileSuffix (String imageFilePath) {
+  List<String> pathList= [];
+  String path = "";
+  for(int i= imageFilePath.length-1;i>=0;i--){
+    pathList.add(imageFilePath[i]);
+    if(imageFilePath[i] == '.') {
+      break;
+    }
+  }
+  pathList = pathList.reversed.toList();
+  pathList.forEach((v) {
+    path += v;
+  });
+  return path;
+}
 //===========================下载部分end===========================
 }

@@ -12,7 +12,6 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/query_msglist_model.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
-import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -194,23 +193,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                           return InteractiveNoticeItem(
                               type: widget.type,
                               msgModel: msgList[index],
-                              index: index,
-                              deleteCallBack: (value) {
-                                /* List<QueryModel> list = [];
-                              for (int i = 0; i < msgList.length; i++) {
-                                if (msgList[i].refType == 0 && msgList[i].refId != value.toString()) {
-                                  list.add(msgList[i]);
-                                } else if (msgList[i].refType == 2) {
-                                  CommentDtoModel fatherComment = CommentDtoModel.fromJson(msgList[i].refData);
-                                  if (fatherComment.targetId != value) {
-                                    list.add(msgList[i]);
-                                  }
-                                }
-                              }
-                              msgList.clear();
-                              msgList.addAll(list);
-                              setState(() {});*/
-                              });
+                              index: index,);
                         }),
                   )
                 : Center(
@@ -242,15 +225,13 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   }
 }
 
-typedef DeleteChangedCallback = void Function(int id);
 
 class InteractiveNoticeItem extends StatefulWidget {
   int type;
   QueryModel msgModel;
-  DeleteChangedCallback deleteCallBack;
   bool isFrist = true;
   int index;
-  InteractiveNoticeItem({this.type, this.msgModel, this.deleteCallBack, this.index});
+  InteractiveNoticeItem({this.type, this.msgModel, this.index});
 
   @override
   State<StatefulWidget> createState() {
@@ -291,12 +272,10 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
         comment = widget.msgModel.commentData.content;
       }
     } else {
-      if (widget.msgModel.refType == 0) {
-        comment = "赞了你的动态";
-      } else if (widget.msgModel.refType == 1 || widget.msgModel.refType == 3) {
-        comment = "赞了你的课程";
-      } else if (widget.msgModel.refType == 2) {
+      if(widget.msgModel.commentData!=null){
         comment = "赞了你的评论";
+      }else{
+        comment = "赞了你的动态";
       }
     }
     if (widget.msgModel.refData != null) {
@@ -336,11 +315,13 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     super.initState();
     print('===============================itemInit   index${widget.index}');
     Future.delayed(Duration.zero, () {
-      if (widget.msgModel.refType == 0 || widget.msgModel.refType == 1 || widget.msgModel.refType == 3) {
-        getCommentFristPage(int.parse(widget.msgModel.refId), widget.msgModel.refType);
-      } else if (widget.msgModel.refType == 2 && CommentDtoModel.fromJson(widget.msgModel.refData) != null) {
-        getCommentFristPage(CommentDtoModel.fromJson(widget.msgModel.refData).targetId,
-            CommentDtoModel.fromJson(widget.msgModel.refData).type);
+      if(widget.msgModel.refData!=null){
+        if (widget.msgModel.refType == 0 || widget.msgModel.refType == 1 || widget.msgModel.refType == 3) {
+          getCommentFristPage(int.parse(widget.msgModel.refId), widget.msgModel.refType);
+        } else if (widget.msgModel.refType == 2 && CommentDtoModel.fromJson(widget.msgModel.refData) != null) {
+          getCommentFristPage(CommentDtoModel.fromJson(widget.msgModel.refData).targetId,
+              CommentDtoModel.fromJson(widget.msgModel.refData).type);
+        }
       }
     });
   }
@@ -354,7 +335,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     _getRefData(context);
     if (widget.type == 0 && widget.msgModel.commentData != null) {
       if (widget.msgModel.refType == 2) {
-        commentState = "回复了 ${context.watch<ProfileNotifier>().profile.nickName}: ";
+        commentState = "回复了 ${widget.msgModel.commentData.replyName}: ";
       } else {
         commentState = "";
       }
@@ -511,15 +492,16 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       return;
     }
     try {
-      if (context.read<FeedMapNotifier>().courseCommentHot[widget.msgModel.commentData.id].list != null) {
+      if (widget.msgModel.commentData!=null&&context.read<FeedMapNotifier>().courseCommentHot[widget.msgModel
+          .commentData
+        .id].list != null) {
         context.read<FeedMapNotifier>().courseCommentHot[widget.msgModel.commentData.id].list.forEach((element) {
           if (element.replys.isNotEmpty) {
             element.replys.clear();
           }
         });
       }
-      if (widget.msgModel.refType == 0) {
-        print('=====================动态');
+      if (widget.msgModel.refType == 0||(widget.type==3&&widget.msgModel.commentData==null)) {
         getFeedDetail(context, feedModel.id, comment: widget.msgModel.commentData);
       } else if (widget.msgModel.refType == 2) {
         if (fatherCommentModel.type == 0) {
@@ -546,7 +528,9 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       }
       widget.msgModel.isRead = 1;
       setState(() {});
-    } catch (e) {}
+    } catch (e) {
+      print('==================$e');
+    }
   }
 
   ///获取对应内容第一页评论
@@ -577,11 +561,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
           fatherModel: fatherModel,
           errorCode: feedModel.code,
           isInteractive: true,
-          callBack: (result) {
-            if (result != null) {
-              widget.deleteCallBack(result);
-            }
-          });
+          );
     }
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:better_player/better_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +16,10 @@ class FeedVideoPlayer extends StatefulWidget {
   final double width;
   final bool isInListView;
   final bool isFile;
+  final String thumbPath;
 
-  FeedVideoPlayer(this.url, this.sizeInfo, this.width, {Key key, this.isInListView = false, this.isFile = false})
+  FeedVideoPlayer(this.url, this.sizeInfo, this.width,
+      {Key key, this.isInListView = false, this.isFile = false, this.thumbPath})
       : super(key: key);
 
   @override
@@ -64,11 +68,19 @@ class _FeedVideoPlayerState extends State<FeedVideoPlayer> {
         autoPlay: !widget.isInListView,
         looping: true,
         fullScreenByDefault: false,
-        placeholder: CachedNetworkImage(
-          imageUrl: FileUtil.getVideoFirstPhoto(widget.url),
-          width: videoSize.width,
-          height: videoSize.height,
-        ),
+        placeholder: widget.isFile
+            ? widget.thumbPath == null
+                ? Container()
+                : Image.file(
+                    File(widget.thumbPath),
+                    width: videoSize.width,
+                    height: videoSize.height,
+                  )
+            : CachedNetworkImage(
+                imageUrl: FileUtil.getVideoFirstPhoto(widget.url),
+                width: videoSize.width,
+                height: videoSize.height,
+              ),
         controlsConfiguration: BetterPlayerControlsConfiguration(showControls: false));
 
     if (widget.isInListView) {

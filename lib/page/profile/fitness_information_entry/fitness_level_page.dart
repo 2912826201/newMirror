@@ -90,7 +90,15 @@ class _FitnessLevelState extends State<FitnessLevelPage> {
         Application.fitnessEntryModel.hard = index;
         /*context.read<FitnessInformationNotifier>().setHard(index);*/
         print('index===============================$index');
-        AppRouter.navigateToFitnessPartPage(context);
+        if(Application.videoTagModel!=null){
+          if(Application.videoTagModel.part!=null){
+            AppRouter.navigateToFitnessPartPage(context);
+          }else{
+            AppRouter.navigateToTrainSeveralPage(context);
+          }
+        }else{
+          AppRouter.navigateToTrainSeveralPage(context);
+        }
       },
       child: Container(
         height: 95,

@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/message_api.dart';
@@ -89,10 +90,8 @@ class PrivateMorePageState extends State<PrivateMorePage> {
             if(mounted) {
               setState(() {
                 if (type == 1) {
-                  disturbTheNews = !disturbTheNews;
                   onClickItem(disturbTheNews, title);
                 } else if (type == 2) {
-                  topChat = !topChat;
                   onClickItem(topChat, title);
                 } else {
                   onClickItem(isOpen, title);
@@ -127,10 +126,8 @@ class PrivateMorePageState extends State<PrivateMorePage> {
                   value: isOpen,
                   onChanged: (bool value) {
                     if (type == 1) {
-                      disturbTheNews = !disturbTheNews;
                       onClickItem(disturbTheNews, title);
                     } else if (type == 2) {
-                      topChat = !topChat;
                       onClickItem(topChat, title);
                     } else {
                       onClickItem(isOpen, title);
@@ -161,6 +158,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
 
   //设置消息是否置顶
   void setTopChatApi() async {
+    topChat = !topChat;
     showProgressDialog();
     Map<String, dynamic> map = await (topChat ? stickChat : cancelTopChat)(
         targetId: int.parse(widget.chatUserId), type: 0);
@@ -186,6 +184,7 @@ class PrivateMorePageState extends State<PrivateMorePage> {
 
   //设置消息免打扰
   void setConversationNotificationStatus() async {
+    disturbTheNews = !disturbTheNews;
     showProgressDialog();
     //判断有没有免打扰
     Map<String, dynamic> map = await (disturbTheNews ? addNoPrompt : removeNoPrompt)(
@@ -310,9 +309,13 @@ class PrivateMorePageState extends State<PrivateMorePage> {
 
 
   //点击事件
-  void onClickItem(bool isTrue, String title) {
+  void onClickItem(bool isTrue, String title) async{
     if (ClickUtil.isFastClick()) {
       print("快速点击");
+      return;
+    }
+    if(await isOffline()){
+      ToastShow.show(msg: "请检查网络!", context: context);
       return;
     }
     if (title == "拉黑") {
@@ -355,5 +358,15 @@ class PrivateMorePageState extends State<PrivateMorePage> {
   dismissProgressDialog() {
     _dialogLoadingController?.dismissDialog();
     _dialogLoadingController = null;
+  }
+  Future<bool> isOffline()async{
+    ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile) {
+      return false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      return false;
+    } else {
+      return true;
+    }
   }
 }

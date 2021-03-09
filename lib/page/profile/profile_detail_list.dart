@@ -58,8 +58,9 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
           fllowState = StateResult.HAVERESULT;
           _refreshController.refreshCompleted();
         } else {
+          print('======================没有数据');
           fllowState = StateResult.RESULTNULL;
-          _refreshController.resetNoData();
+          _refreshController.refreshCompleted();
           setState(() {
           });
         }
@@ -105,7 +106,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
 
   @override
   Widget build(BuildContext context) {
-    var _listData = Container(
+   return Container(
       width: ScreenUtil.instance.screenWidthDp,
       color: AppColor.white,
 
@@ -139,77 +140,83 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
         controller: _refreshController,
         onLoading: _onLoadding,
         onRefresh: _onRefresh,
-        child: ListView.builder(
-            shrinkWrap: true, //解决无限高度问题
-            physics: AlwaysScrollableScrollPhysics(),
-            itemCount: widget.type==2
-                ?context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].profileFeedListId.length
-            :context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].profileLikeListId.length,
-            itemBuilder: (context, index) {
-              int id = widget.type==2
-                  ?context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id]
-                  .profileFeedListId[index]
-                  :context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id]
-                  .profileLikeListId[index];
-              HomeFeedModel model = context.read<FeedMapNotifier>().feedMap[id];
-              if (index == 0) {
-                return Container(
-                  height: 10,
-                );
-              } else {
-                return DynamicListLayout(
-                  index: index,
-                  pageName: "profileDetails",
-                  isShowRecommendUser: false,
-                  isShowConcern: false,
-                  model: model,
-                  isMySelf: widget.isMySelf,
-                  mineDetailId: widget.id,
-                  key: GlobalObjectKey("attention$index"),
-                  removeFollowChanged: (model) {},
-                  deleteFeedChanged: (feedId) {
-                    context.read<ProfilePageNotifier>().synchronizeIdList(widget.id,feedId);
-                    if(context.read<FeedMapNotifier>().feedMap.containsKey(feedId)){
-                      context.read<FeedMapNotifier>().deleteFeed(feedId);
-                    }
-                  },
-                );
-              }
-            }),
+        child: _showDataUi(),
       ),
     );
+
+
+
+  }
+  Widget _showDataUi(){
+    var list = ListView.builder(
+        shrinkWrap: true, //解决无限高度问题
+        physics: AlwaysScrollableScrollPhysics(),
+        itemCount: widget.type==2
+            ?context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].profileFeedListId.length
+            :context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].profileLikeListId.length,
+        itemBuilder: (context, index) {
+          int id = widget.type==2
+              ?context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id]
+              .profileFeedListId[index]
+              :context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id]
+              .profileLikeListId[index];
+          HomeFeedModel model = context.read<FeedMapNotifier>().feedMap[id];
+          if (index == 0) {
+            return Container(
+              height: 10,
+            );
+          } else {
+            return DynamicListLayout(
+              index: index,
+              pageName: "profileDetails",
+              isShowRecommendUser: false,
+              isShowConcern: false,
+              model: model,
+              isMySelf: widget.isMySelf,
+              mineDetailId: widget.id,
+              key: GlobalObjectKey("attention$index"),
+              removeFollowChanged: (model) {},
+              deleteFeedChanged: (feedId) {
+                context.read<ProfilePageNotifier>().synchronizeIdList(widget.id,feedId);
+                if(context.read<FeedMapNotifier>().feedMap.containsKey(feedId)){
+                  context.read<FeedMapNotifier>().deleteFeed(feedId);
+                }
+              },
+            );
+          }
+        });
+    var noDataUi = Container(
+        padding: EdgeInsets.only(top: 12),
+        color: AppColor.white,
+        child: Column(
+          children: [
+            Center(
+              child: Container(
+                width: 224,
+                height: 224,
+                color: AppColor.bgWhite.withOpacity(0.65),
+              ),
+            ),
+            SizedBox(
+              height: 16,
+            ),
+            Center(
+              child: Text(
+                widget.type == 3 ? "ta还没有发布动态" :widget.type==2?"发布你的第一条动态吧~": "你还没有喜欢的内容~去逛逛吧",
+                style: AppStyle.textPrimary3Regular14,
+              ),
+            )
+          ],
+        ));
     switch (fllowState) {
       case StateResult.RESULTNULL:
-        return Container(
-            padding: EdgeInsets.only(top: 12),
-            color: AppColor.white,
-            child: ListView(
-              children: [
-                Center(
-                  child: Container(
-                    width: 224,
-                    height: 224,
-                    color: AppColor.bgWhite.withOpacity(0.65),
-                  ),
-                ),
-                SizedBox(
-                  height: 16,
-                ),
-                Center(
-                  child: Text(
-                    widget.type == 3 ? "ta还没有发布动态" :widget.type==2?"发布你的第一条动态吧~": "你还没有喜欢的内容~去逛逛吧",
-                    style: AppStyle.textPrimary3Regular14,
-                  ),
-                )
-              ],
-            ));
+        return noDataUi;
         break;
       case StateResult.HAVERESULT:
-        return _listData;
+        return list;
         break;
     }
   }
-
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;

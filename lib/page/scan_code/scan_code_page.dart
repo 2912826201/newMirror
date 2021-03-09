@@ -42,9 +42,14 @@ class _ScanCodeState extends State<ScanCodePage> {
   }
 
   @override
-  void dispose() {
+  void deactivate() {
+    // TODO: implement deactivate
+    super.deactivate();
     controller?.pause();
     controller = null;
+  }
+  @override
+  void dispose() {
     super.dispose();
   }
 

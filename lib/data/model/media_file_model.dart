@@ -27,17 +27,24 @@ class MediaFileModel {
   }
 
   String filePath;
+  String thumbPath;
 
   MediaFileModel.fromJson(Map<String, dynamic> json) {
     type = json["type"];
     filePath = json["filePath"];
+    thumbPath = json["thumbPath"];
     sizeInfo = json["sizeInfo"] != null ? SizeInfo.fromJson(json["sizeInfo"]) : null;
   }
 
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
     map["type"] = type;
-    map["filePath"] = file.path;
+    if (filePath != null) {
+      map["filePath"] = filePath;
+    } else if (file != null) {
+      map["filePath"] = file.path;
+    }
+    map["thumbPath"] = thumbPath;
     if (sizeInfo != null) {
       map["sizeInfo"] = sizeInfo.toJson();
     }
@@ -57,6 +64,61 @@ class SelectedMediaFiles {
       list = [];
       json["list"].forEach((v) {
         list.add(MediaFileModel.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    var map = <String, dynamic>{};
+    map["type"] = type;
+    if (list != null) {
+      map["list"] = list.map((v) => v.toJson()).toList();
+    }
+    return map;
+  }
+}
+
+class MediaBase64Model {
+  String mediaBytes;
+  String type;
+
+  MediaBase64Model();
+
+  SizeInfo sizeInfo = SizeInfo();
+
+  String toString() {
+    return "mediaBytes:${mediaBytes},sizeInfo:{${sizeInfo.toString()}}";
+  }
+
+  MediaBase64Model.fromJson(Map<String, dynamic> json) {
+    type = json["type"];
+    mediaBytes = json["mediaBytes"];
+    sizeInfo = json["sizeInfo"] != null ? SizeInfo.fromJson(json["sizeInfo"]) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    var map = <String, dynamic>{};
+    map["type"] = type;
+    map["mediaBytes"] = mediaBytes;
+    if (sizeInfo != null) {
+      map["sizeInfo"] = sizeInfo.toJson();
+    }
+    return map;
+  }
+}
+
+class SelectedMediaBase64 {
+  String type;
+  List<MediaBase64Model> list = [];
+
+  SelectedMediaBase64();
+
+  SelectedMediaBase64.fromJson(Map<String, dynamic> json) {
+    type = json["type"];
+    if (json["list"] != null) {
+      list = [];
+      json["list"].forEach((v) {
+        list.add(MediaBase64Model.fromJson(v));
       });
     }
   }
