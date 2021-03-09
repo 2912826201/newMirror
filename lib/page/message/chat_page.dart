@@ -745,6 +745,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
           ),
           onTap: () {
             // _textController.text = emojiModel.code;
+            if( _textController.text==null|| _textController.text.length<1){
+              _textController.text="";
+              cursorIndexPr=0;
+            }
             if(cursorIndexPr>=0) {
               _textController.text = _textController.text.substring(0, cursorIndexPr) + emojiModel.code +
                   _textController.text.substring(cursorIndexPr, _textController.text.length);
@@ -1401,28 +1405,43 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   //重新发送消息
   void _resetPostMessage(int position) async {
     ChatDataModel chatDataModel = new ChatDataModel();
-    Message message = chatDataList[position].msg;
-    chatDataModel.isTemporary = false;
-    chatDataModel.isHaveAnimation = true;
-    chatDataModel.msg = message;
-    chatDataModel.msg.sentStatus = 10;
-    chatDataModel.msg.sentTime = new DateTime.now().millisecondsSinceEpoch;
-    judgeAddAlertTime();
-    chatDataList.removeAt(position);
-    chatDataList.insert(0, chatDataModel);
-    _addTemporaryMessage(chatDataModel);
-    animateToBottom();
+    if(!chatDataList[position].isTemporary) {
+      Message message = chatDataList[position].msg;
+      chatDataModel.isTemporary = false;
+      chatDataModel.isHaveAnimation = true;
+      chatDataModel.msg = message;
+      chatDataModel.msg.sentStatus = 10;
+      chatDataModel.msg.sentTime = new DateTime.now().millisecondsSinceEpoch;
+      judgeAddAlertTime();
+      chatDataList.removeAt(position);
+      chatDataList.insert(0, chatDataModel);
+      _addTemporaryMessage(chatDataModel);
+      animateToBottom();
 
-    if (mounted) {
-      reload(() {
-        _timerCount = 0;
-        isHaveTextLen = false;
+      if (mounted) {
+        reload(() {
+          _timerCount = 0;
+          isHaveTextLen = false;
+        });
+      }
+      resetPostMessage(chatDataList[0], () {
+        // RongCloud.init().deleteMessageById(message, (code)async {});
+        delayedSetState();
       });
+    }else{
+      if(chatDataList[0].type==ChatTypeModel.MESSAGE_TYPE_IMAGE||
+          chatDataList[0].type==ChatTypeModel.MESSAGE_TYPE_VIDEO){
+        List<ChatDataModel> modelList=<ChatDataModel>[];
+        modelList.add(chatDataList[0]);
+        String type=mediaTypeKeyVideo;
+        if(chatDataList[0].type==ChatTypeModel.MESSAGE_TYPE_IMAGE){
+          type=mediaTypeKeyImage;
+        }
+        postImgOrVideo(modelList, conversation.conversationId, type, chatTypeId, () {
+          delayedSetState();
+        });
+      }
     }
-    resetPostMessage(chatDataList[0], () {
-      // RongCloud.init().deleteMessageById(message, (code)async {});
-      delayedSetState();
-    });
   }
 
   ///------------------------------------发送消息  end-----------------------------------------------------------------------///
@@ -1724,14 +1743,16 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   void profileCheckBlack() async {
     if (conversation.type == PRIVATE_TYPE) {
       BlackModel blackModel = await ProfileCheckBlack(int.parse(chatId));
-      String text = "";
-      if (blackModel.inYouBlack == 1) {
-        text = "你已经将他拉黑了！";
-      } else if (blackModel.inThisBlack == 1) {
-        text = "他已经将你拉黑了！";
+      if(blackModel!=null) {
+        String text = "";
+        if (blackModel.inYouBlack == 1) {
+          text = "你已经将他拉黑了！";
+        } else if (blackModel.inThisBlack == 1) {
+          text = "他已经将你拉黑了！";
+        }
+        // print("--------------text:$text");
+        ToastShow.show(msg: text, context: context);
       }
-      // print("--------------text:$text");
-      ToastShow.show(msg: text, context: context);
     }
   }
 
@@ -1875,13 +1896,13 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     if (conversation.type == PRIVATE_TYPE) {
       BlackModel blackModel = await ProfileCheckBlack(int.parse(chatId));
       String text = "";
-      if (blackModel.inYouBlack == 1) {
+      if (blackModel!=null&&blackModel.inYouBlack == 1) {
         text = "关注失败，你已将对方加入黑名单";
-      } else if (blackModel.inThisBlack == 1) {
+      } else if (blackModel!=null&&blackModel.inThisBlack == 1) {
         text = "关注失败，你已被对方加入黑名单";
       } else {
         int attntionResult = await ProfileAddFollow(int.parse(chatId));
-        if (attntionResult == 1 || attntionResult == 3) {
+        if (attntionResult!=null&&(attntionResult == 1 || attntionResult == 3)) {
           text = "关注成功!";
           isShowTopAttentionUi = false;
           if (mounted) {
@@ -1893,7 +1914,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
           }
         }
       }
-      ToastShow.show(msg: text, context: context);
+      if(text!=null&&text.length>0) {
+        ToastShow.show(msg: text, context: context);
+      }
     } else {
       isShowTopAttentionUi = false;
       if (mounted) {

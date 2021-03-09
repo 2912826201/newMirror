@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
@@ -14,6 +15,7 @@ import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/page/message/message_view/currency_msg.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -86,7 +88,6 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //获取主体
   Widget getBodyUi() {
-    print("groupMeName:${groupMeName}");
     return Container(
       color: AppColor.white,
       child: CustomScrollView(
@@ -206,9 +207,7 @@ class GroupMorePageState extends State<GroupMorePage> {
                 ),
               ],
             ),
-            onTap: () {
-              seeMoreGroupUser();
-            },
+            onTap: seeMoreGroupUser,
           ),
         ),
       );
@@ -316,7 +315,10 @@ class GroupMorePageState extends State<GroupMorePage> {
     }
 
     return GestureDetector(
-      onTap: (){
+      onTap: ()async{
+        if(!(await isContinue())){
+          return;
+        }
         AppRouter.navigateToMineDetail(context, userModel.uid);
       },
       child: Container(
@@ -404,7 +406,6 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //获取群信息
   void getGroupInformation() async {
-    print("getGroupInformation");
     try {
       List<GroupChatModel> list = await getGroupChatByIds(id: int.parse(widget.chatGroupId));
       if (list != null ) {
@@ -508,27 +509,24 @@ class GroupMorePageState extends State<GroupMorePage> {
 
 
   //查看更多群成员
-  void seeMoreGroupUser() {
-    if (Application.chatGroupUserNameMap[Application.profile.uid.toString()] == null) {
-      ToastShow.show(msg: "你不是群成员", context: context);
+  void seeMoreGroupUser()async{
+    if(!(await isContinue())){
       return;
     }
     AppRouter.navigateFriendsPage(context: context,type: 1,groupChatId: int.parse(widget.chatGroupId));
   }
 
   //添加用户按钮
-  void addGroupUser() {
-    if (Application.chatGroupUserNameMap[Application.profile.uid.toString()] == null) {
-      ToastShow.show(msg: "你不是群成员", context: context);
+  void addGroupUser()async {
+    if(!(await isContinue())){
       return;
     }
     AppRouter.navigateFriendsPage(context: context,type: 3,groupChatId: int.parse(widget.chatGroupId));
   }
 
   //删除用户按钮
-  void deleteGroupUser() {
-    if (Application.chatGroupUserNameMap[Application.profile.uid.toString()] == null) {
-      ToastShow.show(msg: "你不是群成员", context: context);
+  void deleteGroupUser() async{
+    if(!(await isContinue())){
       return;
     }
     AppRouter.navigateFriendsPage(context: context,type: 2,groupChatId: int.parse(widget.chatGroupId));
@@ -536,10 +534,6 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //退出按钮
   void exitGroupChatPr() async {
-    if (Application.chatGroupUserNameMap[Application.profile.uid.toString()] == null) {
-      ToastShow.show(msg: "你不是群成员", context: context);
-      return;
-    }
     Map<String, dynamic> model = await exitGroupChat(groupChatId: int.parse(widget.chatGroupId));
     if (model != null && model["state"] != null && model["state"]) {
       if (widget.exitGroupListener != null) {
@@ -559,6 +553,7 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //设置消息是否置顶
   void setTopChatApi() async {
+    topChat = !topChat;
     showProgressDialog();
     Map<String, dynamic> map =
         await (topChat ? stickChat : cancelTopChat)(targetId: int.parse(widget.chatGroupId), type: 1);
@@ -581,6 +576,7 @@ class GroupMorePageState extends State<GroupMorePage> {
 
   //设置消息免打扰
   void setConversationNotificationStatus() async {
+    disturbTheNews = !disturbTheNews;
     showProgressDialog();
     //判断有没有免打扰
     Map<String, dynamic> map = await (disturbTheNews ? addNoPrompt : removeNoPrompt)(
@@ -633,17 +629,14 @@ class GroupMorePageState extends State<GroupMorePage> {
   }
 
   //点击事件
-  void onClickItemList({String title, String subtitle, bool isOpen, int index,}) {
-    if (Application.chatGroupUserNameMap[Application.profile.uid.toString()] == null) {
-      ToastShow.show(msg: "你不是群成员", context: context);
+  void onClickItemList({String title, String subtitle, bool isOpen, int index,})async {
+    if(!(await isContinue())){
       return;
     }
     if (isOpen != null) {
       if (index == 1) {
-        disturbTheNews = !disturbTheNews;
         setConversationNotificationStatus();
       } else {
-        topChat = !topChat;
         setTopChatApi();
       }
       // ToastShow.show(msg: "${!isOpen ? "打开" : "关闭"}$title", context: context);
@@ -716,6 +709,35 @@ class GroupMorePageState extends State<GroupMorePage> {
   dismissProgressDialog() {
     _dialogLoadingController?.dismissDialog();
     _dialogLoadingController = null;
+  }
+
+  //是否继续
+  Future<bool> isContinue()async{
+    if (ClickUtil.isFastClick()) {
+      print("快速点击");
+      return false;
+    }
+    if (Application.chatGroupUserNameMap[Application.profile.uid.toString()] == null) {
+      ToastShow.show(msg: "你不是群成员", context: context);
+      return false;
+    }
+    if(await isOffline()){
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return false;
+    }
+    return true;
+  }
+
+
+  Future<bool> isOffline()async{
+    ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile) {
+      return false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      return false;
+    } else {
+      return true;
+    }
   }
 }
 
