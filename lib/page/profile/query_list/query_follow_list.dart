@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -681,11 +682,12 @@ class _FollowItemState extends State<QueryFollowItem> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           InkWell(
-              onTap: () {
+              onTap: () async{
                 if (widget.type == 1 || widget.type == 2) {
                   AppRouter.navigateToMineDetail(context, uid);
                 } else {
-                  AppRouter.navigateToTopicDetailPage(context, widget.tpcModel.id,isTopicList:true,callback: (result){
+                  TopicDtoModel topicModel = await getTopicInfo(topicId: widget.tpcModel.id);
+                  AppRouter.navigateToTopicDetailPage(context, topicModel,isTopicList:true,callback: (result){
                     widget.topicDeleteCallBack();
                   });
                   ///这里处理话题跳转

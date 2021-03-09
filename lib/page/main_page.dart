@@ -13,6 +13,7 @@ import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/page/message/message_page.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
 
@@ -125,15 +126,14 @@ class MainPageState extends XCState {
   //   );
   // }
   _getFollowCount() async {
-   ProfileFollowCount().then((attentionModel){
-     if (attentionModel != null) {
-       print('  666666666666666666666666666666666666${attentionModel.toJson().toString()}');
-       context
-           .read<ProfilePageNotifier>()
-           .changeAttentionModel(attentionModel, context.read<ProfileNotifier>().profile.uid);
-     }
-   });
-
+    ProfileFollowCount().then((attentionModel) {
+      if (attentionModel != null) {
+        print('  666666666666666666666666666666666666${attentionModel.toJson().toString()}');
+        context
+            .read<ProfilePageNotifier>()
+            .changeAttentionModel(attentionModel, context.read<ProfileNotifier>().profile.uid);
+      }
+    });
   }
 
   // 自定义BottomAppBar
@@ -175,30 +175,32 @@ class MainPageState extends XCState {
                 // ),
               ),
               onTap: () {
-                if ((index == 2 || index == 3) && !context.read<TokenNotifier>().isLoggedIn) {
-                  AppRouter.navigateToLoginPage(context);
-                } else {
-                  context.read<SelectedbottomNavigationBarNotifier>().changeIndex(index);
-                  if (currentIndex != index) {
-                    reload(() {
-                      currentIndex = index;
-                      if (index == 0) {
-                        _start = itemWidth / 7;
-                      }
-                      if (index == 1) {
-                        _start = itemWidth + itemWidth * 0.4;
-                      }
-                      if (index == 2) {
-                        //在切换到消息页时 请求未读互动通知数
-                        getUnReads();
-                        _start = 2 * itemWidth + itemWidth * 0.64;
-                      }
-                      if (index == 3) {
-                        //切换到我的页时刷新关注数
+                if (!ClickUtil.isFastClick()) {
+                  if ((index == 2 || index == 3) && !context.read<TokenNotifier>().isLoggedIn) {
+                    AppRouter.navigateToLoginPage(context);
+                  } else {
+                    context.read<SelectedbottomNavigationBarNotifier>().changeIndex(index);
+                    if (currentIndex != index) {
+                      reload(() {
+                        currentIndex = index;
+                        if (index == 0) {
+                          _start = itemWidth / 7;
+                        }
+                        if (index == 1) {
+                          _start = itemWidth + itemWidth * 0.4;
+                        }
+                        if (index == 2) {
+                          //在切换到消息页时 请求未读互动通知数
+                          getUnReads();
+                          _start = 2 * itemWidth + itemWidth * 0.64;
+                        }
+                        if (index == 3) {
+                          //切换到我的页时刷新关注数
                           _getFollowCount();
-                        _start = 3 * itemWidth + itemWidth * 0.9;
-                      }
-                    });
+                          _start = 3 * itemWidth + itemWidth * 0.9;
+                        }
+                      });
+                    }
                   }
                 }
               },

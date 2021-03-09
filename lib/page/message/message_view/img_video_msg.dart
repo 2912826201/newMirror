@@ -232,13 +232,14 @@ class ImgVideoMsg extends StatelessWidget {
       File videoFile=File(sizeInfoMap["showImageUrl"]);
       if(videoFile.existsSync()){
         if(videoImageFile.existsSync()){
+          //print("11111-videoImageFile");
           return getImageFile(videoImageFile);
         }else{
-          print("文件缩略图失效");
+          //print("文件缩略图失效");
           return getImageAsset(placeholderMapImage);
         }
       }else{
-        print("文件失效");
+        //print("文件失效");
         return getImageAsset(placeholderMapImage);
       }
     }else{
@@ -263,13 +264,12 @@ class ImgVideoMsg extends StatelessWidget {
           ? getImageMemory(bytes)
           : Container(child: Text("离线-图片资源有问题"));
     } else {
-      print("showImageUrl:${sizeInfoMap["showImageUrl"]}");
       if(sizeInfoMap["isTemporary"]!=null&&sizeInfoMap["isTemporary"]) {
         File imageFile=File(sizeInfoMap["showImageUrl"]);
         if(imageFile.existsSync()){
           return getImageFile(imageFile);
         }else{
-          print("文件失效");
+          //print("文件失效");
           return getImageAsset(placeholderMapImage);
         }
       }else{
@@ -281,6 +281,7 @@ class ImgVideoMsg extends StatelessWidget {
 
 
   Widget getImageMemory(Uint8List thumb){
+    //print("thumb:${thumb.length}");
     return Image.memory(
       thumb??"",
       width: width,
@@ -290,6 +291,7 @@ class ImgVideoMsg extends StatelessWidget {
   }
 
   Widget getImageAsset(String assetPath){
+    //print("assetPath:${assetPath}");
     return Image.asset(
       assetPath??"",
       width: width,
@@ -299,8 +301,9 @@ class ImgVideoMsg extends StatelessWidget {
   }
 
   Widget getImageFile(File file){
+    //print("file:${file.path}");
     return Image.file(
-      file??"",
+      file,
       width: width,
       height: height,
       fit: BoxFit.cover,
@@ -308,6 +311,7 @@ class ImgVideoMsg extends StatelessWidget {
   }
 
   Widget getCachedNetworkImage(String imageUrl){
+    //print("imageUrl:${imageUrl}");
     return CachedNetworkImage(
       height: height,
       width: width,
@@ -321,20 +325,17 @@ class ImgVideoMsg extends StatelessWidget {
 
   //获取过渡与错误图
   Widget getImageShowImage() {
-    if (mediaFileModel != null&&(mediaFileModel.file!=null||mediaFileModel.croppedImageData!=null)) {
-      return mediaFileModel.croppedImageData == null
-          ? Image.file(
-              mediaFileModel.file,
-              width: width,
-              height: height,
-              fit: BoxFit.cover,
-            )
-          : Image.memory(
-              mediaFileModel.croppedImageData,
-              width: width,
-              height: height,
-              fit: BoxFit.cover,
-            );
+    if(isImgOrVideo){
+      if (mediaFileModel != null&&(mediaFileModel.file!=null||mediaFileModel.croppedImageData!=null)) {
+        return mediaFileModel.croppedImageData == null
+            ? getImageFile(mediaFileModel.file):
+        getImageMemory(mediaFileModel.croppedImageData);
+      } else {
+        return  getImageAsset(placeholderMapImage);
+      }
+    }else if(sizeInfoMap["videoFilePath"]!=null){
+      File videoImageFile=File(sizeInfoMap["videoFilePath"]);
+      return getImageFile(videoImageFile);
     } else {
       return  getImageAsset(placeholderMapImage);
     }

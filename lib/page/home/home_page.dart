@@ -102,6 +102,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
               null) {
         pulishFeed(getPublishFeedData());
       } else if (result == ConnectivityResult.wifi &&
+          //todo 报错
           AppPrefs.getPublishFeedLocalInsertData(
                   "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}") !=
               null) {
