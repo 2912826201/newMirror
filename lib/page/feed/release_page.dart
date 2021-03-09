@@ -528,9 +528,11 @@ class KeyboardInputState extends State<KeyboardInput> {
         }
         // 唤起@#后切换光标关闭视图
         if (atIndex != null && cursorIndex != atIndex) {
+
           context.read<ReleaseFeedInputNotifier>().changeCallback("");
         }
         if (topicIndex != null && cursorIndex != topicIndex) {
+          print('=======================话题   切换光标');
           context.read<ReleaseFeedInputNotifier>().changeCallback("");
         }
       }
@@ -550,6 +552,7 @@ class KeyboardInputState extends State<KeyboardInput> {
         },
         // 关闭@#视图回调
         shutDownCallback: () async {
+          print('=======================shutDownCallback');
           context.read<ReleaseFeedInputNotifier>().changeCallback("");
         },
         valueChangedCallback: (List<Rule> rules, String value, int atIndex, int topicIndex, String atSearchStr,
@@ -790,7 +793,9 @@ class TopicListState extends State<TopicList> {
   @override
   void initState() {
     requestRecommendTopic();
-    context.read<ReleaseFeedInputNotifier>().setTopScrollController(_scrollController);
+    Future.delayed(Duration.zero,(){
+      context.read<ReleaseFeedInputNotifier>().setTopScrollController(_scrollController);
+    });
     _scrollController.addListener(() {
       // 搜索全局用户关键字
       String searchTopStr = context.read<ReleaseFeedInputNotifier>().topicSearchStr;

@@ -59,7 +59,6 @@ class DynamicListLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // print('==============================动态itembuild');
-    print("model报空了：${model.id};");
     return model != null
         ? Column(
             children: [

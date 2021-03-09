@@ -262,7 +262,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                     SliverAppBar(
                       expandedHeight: sliverAppBarHeight(),
                       pinned: true,
-                      title: Text(model.name, style: TextStyle(color: context.watch<TopicDetailNotifier>().titleColor)),
+                      title: Text("#${model.name}", style: TextStyle(color: context.watch<TopicDetailNotifier>()
+                          .titleColor)),
                       leading: new IconButton(
                         icon: Icon(
                           Icons.arrow_back_ios,
@@ -273,6 +274,11 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                         },
                       ),
                       actions: <Widget>[
+                         context.watch<TopicDetailNotifier>().canOnclick?Container(
+                          width: 60,
+                          padding: EdgeInsets.only(top: 14,bottom: 14),
+                          child:_followButton(),
+                        ):Container(),
                         new IconButton(
                           icon: Icon(
                             Icons.wysiwyg,
@@ -355,35 +361,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                       ),
                                       // SizedBox(width: 12,),
                                       Spacer(),
-                                      GestureDetector(
-                                          onTap: () {
-                                            if (model.isFollow == 0) {
-                                              requestFollowTopic();
-                                            } else {
-                                              requestCancelFollowTopic();
-                                            }
-                                          },
-                                          child: Container(
-                                              height: 28,
-                                              width: 72,
-                                              decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.all(Radius.circular(15)),
-                                                  border: Border.all(width: 1, color: AppColor.black)),
-                                              child: model.isFollow == 0
-                                                  ? Row(
-                                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: [
-                                                        Icon(
-                                                          Icons.add,
-                                                          size: 16,
-                                                        ),
-                                                        Text("关注", style: AppStyle.textMedium12)
-                                                      ],
-                                                    )
-                                                  : Center(
-                                                      child: Text("已关注", style: AppStyle.textMedium12),
-                                                    ))),
+                                      _followButton(),
                                       SizedBox(
                                         width: 16,
                                       )
@@ -481,6 +459,38 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
               )
             : Container());
   }
+  Widget _followButton(){
+    return GestureDetector(
+        onTap: () {
+            if (model.isFollow == 0) {
+              requestFollowTopic();
+            } else {
+              requestCancelFollowTopic();
+            }
+        },
+        child: Container(
+            height: 28,
+            width: 72,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(15)),
+                border: Border.all(width: 1, color: AppColor.black)),
+            child: model.isFollow == 0
+                ? Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.add,
+                  size: 16,
+                  color: AppColor.black,
+                ),
+                Text("关注", style: AppStyle.textMedium12)
+              ],
+            )
+                : Center(
+              child: Text("已关注", style: AppStyle.textMedium12),
+            )));
+  }
 }
 
 class TopicDetailTabBarDelegate extends SliverPersistentHeaderDelegate {
@@ -514,16 +524,18 @@ class TopicDetailNotifier extends ChangeNotifier{
   Color titleColor=AppColor.transparent;
   Color iconColor = AppColor.bgWhite;
   bool scrollWatch = false;
-
+  bool canOnclick = false;
 
   void ChangeColor(bool scrollBig){
     if(scrollBig){
       titleColor = AppColor.bgBlack;
       iconColor = AppColor.bgBlack;
+      canOnclick = true;
       scrollWatch = true;
     }else{
       titleColor=AppColor.transparent;
       iconColor = AppColor.bgWhite;
+      canOnclick = false;
       scrollWatch = false;
     }
     notifyListeners();

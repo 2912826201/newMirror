@@ -89,7 +89,9 @@ class _SearchHeaderState extends State<SearchHeader> {
 
   @override
   void initState() {
-    context.read<SearchEnterNotifier>().EditTextController(controller);
+    Future.delayed(Duration.zero,(){
+      context.read<SearchEnterNotifier>().EditTextController(controller);
+    });
     _formatter = InputFormatter(
       controller: controller,
       inputChangedCallback: (String value) {
@@ -462,12 +464,14 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                     // Expanded(
                     //     child:
                     Container(
+                      width: ScreenUtil.instance.screenWidthDp*0.68,
                       margin: EdgeInsets.only(left: 12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             "#${topicList[index].name}",
+                            maxLines: 3,
                             style: AppStyle.textRegular15,
                           ),
                           SizedBox(
@@ -481,9 +485,6 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                       ),
                       // )
                     ),
-                    SizedBox(
-                      width: 28,
-                    )
                   ],
                 ),
               ),

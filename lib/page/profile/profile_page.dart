@@ -58,7 +58,8 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   getProfileModel() async {
     UserExtraInfoModel extraInfoModel = await ProfileGetExtraInfo();
     if (extraInfoModel != null) {
-      this.context.read<ProfileNotifier>().setExtraInfo(extraInfoModel);
+
+      context.read<ProfileNotifier>().setExtraInfo(extraInfoModel);
     }
   }
 
