@@ -169,6 +169,13 @@ class _QueryFollowState extends State<QueryFollowList> {
       refreshOver = true;
     setState(() {
     });
+    if(buddyList.length>1){
+      for(int i = 0;i<buddyList.length;i++){
+        context.watch<ProfilePageNotifier>().changeIsFollow(true,
+            buddyList[i].relation==0||buddyList[i].relation==2
+                ?true:false, buddyList[i].uid);
+      }
+    }
   }
 
   ///获取粉丝列表
@@ -508,12 +515,6 @@ class _QueryFollowState extends State<QueryFollowList> {
                               (buddyList[index].uid)){
                               context.watch<ProfilePageNotifier>().setFirstModel(buddyList[index].uid,
                                   isFollow:buddyList[index].relation==0||buddyList[index].relation==2?true:false);
-                            }else{
-                              Future.delayed(Duration.zero,(){
-                                context.watch<ProfilePageNotifier>().changeIsFollow(true,
-                                    buddyList[index].relation==0||buddyList[index].relation==2
-                                        ?true:false, buddyList[index].uid);
-                              });
                             }
                             return !context.watch<ProfilePageNotifier>().profileUiChangeModel[buddyList[index].uid]
                                 .isFollow?QueryFollowItem(

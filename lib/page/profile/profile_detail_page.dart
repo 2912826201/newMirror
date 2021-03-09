@@ -680,12 +680,22 @@ class ProfilePageNotifier extends ChangeNotifier {
     }
     }
   void synchronizeIdList(int id,int deleteId){
-    profileUiChangeModel[id].profileFeedListId.removeWhere((element){
+    for(int i = 0; i < profileUiChangeModel[id].profileFeedListId.length; i ++){
+      if(profileUiChangeModel[id].profileFeedListId[i]==deleteId){
+        profileUiChangeModel[id].profileFeedListId.removeAt(i);
+      }
+    }
+   /* profileUiChangeModel[id].profileFeedListId.removeWhere((element){
       return element==deleteId;
-    });
-    profileUiChangeModel[id].profileLikeListId.removeWhere((element){
+    });*/
+    for(int i = 0; i < profileUiChangeModel[id].profileLikeListId.length; i ++){
+      if(profileUiChangeModel[id].profileLikeListId[i]==deleteId){
+        profileUiChangeModel[id].profileLikeListId.removeAt(i);
+      }
+    }
+ /*   profileUiChangeModel[id].profileLikeListId.removeWhere((element){
       return element==deleteId;
-    });
+    });*/
     notifyListeners();
   }
 

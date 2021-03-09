@@ -134,24 +134,22 @@ class HeadViewState extends State<HeadView> {
         child: Container(
           margin: EdgeInsets.only(right: 6),
           height: 28,
-          padding: EdgeInsets.only(left: 12, top: 6, right: 12, bottom: 6),
+          width: 64,
           decoration: BoxDecoration(
             border: new Border.all(color: AppColor.textPrimary1, width: 1),
             borderRadius: BorderRadius.circular((14.0)),
           ),
           child: Center(
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                Spacer(),
                 Icon(
                   Icons.add,
                   color: AppColor.textPrimary1,
                   size: 16,
                 ),
-                // Container(
-                //   width: 16,
-                //   height: 16,
-                //   child: Image.asset(name),
-                // ),
+
                 SizedBox(
                   width: 4,
                 ),
@@ -164,6 +162,7 @@ class HeadViewState extends State<HeadView> {
                     ),
                   ),
                 ),
+                Spacer(),
               ],
             ),
           ),
@@ -176,7 +175,7 @@ class HeadViewState extends State<HeadView> {
         child: Container(
             margin: EdgeInsets.only(right: 6),
             height: 28,
-            padding: EdgeInsets.only(left: 12, top: 6, right: 12, bottom: 6),
+            width: 64,
             decoration: BoxDecoration(
               border: new Border.all(color: AppColor.textPrimary1, width: 1),
               borderRadius: BorderRadius.circular((14.0)),
@@ -187,7 +186,9 @@ class HeadViewState extends State<HeadView> {
                 style: AppStyle.textRegular12,
               ),
             )),
-        onEnd: () {},
+        onEnd: () {
+
+        },
       );
     }
   }
