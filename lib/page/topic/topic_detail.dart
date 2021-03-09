@@ -155,7 +155,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
           recommendLoadStatus = LoadingStatus.STATUS_LOADING;
         });
       }
-      DataResponseModel model = await getPullList(type: 5, size: 20, targetId: widget.topicId);
+      DataResponseModel model = await pullTopicList(type: 5, size: 20, targetId: widget.topicId);
       recommendHasNext = model.hasNext;
       if (model.list.isNotEmpty) {
         model.list.forEach((v) {
@@ -186,7 +186,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
         });
       }
       DataResponseModel model =
-          await getPullList(type: 4, size: 20, targetId: widget.topicId, lastTime: newestLastTime);
+          await pullTopicList(type: 4, size: 20, targetId: widget.topicId, lastTime: newestLastTime);
       newestLastTime = model.lastTime;
       newestHasNext = model.hasNext;
       if (model.list.isNotEmpty) {
