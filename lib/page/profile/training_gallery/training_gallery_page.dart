@@ -23,8 +23,6 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/loading.dart';
 
-import '../profile_detail_page.dart';
-
 /// training_gallery_page
 /// Created by yangjiayi on 2021/1/20.
 
@@ -352,6 +350,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
           i++;
           File imageFile = await FileUtil().writeImageDataToFile(element.croppedImageData, timeStr + i.toString());
           fileList.add(imageFile);
+          element.file = imageFile;
         }
       });
       UploadResults uploadResults = await FileUtil().uploadPics(fileList, (percent) {
