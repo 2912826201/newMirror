@@ -584,7 +584,7 @@ class VideoDetailPageState extends XCState {
 
   //开始下载
   void startDownVideo(String downloadUrl) async {
-    String taskId = (await FileUtil().download(downloadUrl, _progressListener))?.taskId;
+    String taskId = (await FileUtil().download(downloadUrl, _progressListener, type: downloadTypeCourse))?.taskId;
     print("task的id是：$taskId");
   }
 

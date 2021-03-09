@@ -57,7 +57,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   getProfileModel() async {
     UserExtraInfoModel extraInfoModel = await ProfileGetExtraInfo();
     if (extraInfoModel != null) {
-
       context.read<ProfileNotifier>().setExtraInfo(extraInfoModel);
     }
   }
@@ -162,9 +161,13 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
           return CachedNetworkImage(
             height: height * 0.16,
             width: width,
-            imageUrl: avatar,
+            imageUrl: avatar!=null?avatar:"",
             fit: BoxFit.cover,
             placeholder: (context, url) => Image.asset(
+              "images/test.png",
+              fit: BoxFit.cover,
+            ),
+            errorWidget:(context, url, error) => Image.asset(
               "images/test.png",
               fit: BoxFit.cover,
             ),

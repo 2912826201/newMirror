@@ -238,6 +238,7 @@ class _SearchState extends State<SearchUserItem> {
         children: [
           InkWell(
               onTap: () {
+                FocusScope.of(context).requestFocus(FocusNode());
                 AppRouter.navigateToMineDetail(context, widget.model.uid);
               },
               child: Row(

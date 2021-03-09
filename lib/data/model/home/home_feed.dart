@@ -84,7 +84,6 @@ class HomeFeedModel {
   });
   // 转换model
   HomeFeedModel conversionModel(PostFeedModel postFeedModel,BuildContext context,{bool isRefresh = false}) {
-    print("jinfl");
     HomeFeedModel homeFeedModel = HomeFeedModel();
     // 发布model转换动态model展示
     homeFeedModel.name = isRefresh ? context.read<ProfileNotifier>().profile.nickName : context.watch<ProfileNotifier>().profile.nickName;

@@ -197,11 +197,13 @@ class GetTripleAreaState extends State<GetTripleArea> {
             onTap: () {
               setUpLuad();
             },
-            child: Image.asset( (context.select((FeedMapNotifier value) => value.feedMap) != null &&
-                context.select((FeedMapNotifier value) => value.feedMap[widget.model.id]) != null &&
-                context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) != null &&
-                context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 0) ?
-              "images/resource/2.0x/ic_dynamic_like@2x.png" : "images/resource/2.0x/ic_comment_like_Selected@2x.png",
+            child: Image.asset(
+              (context.select((FeedMapNotifier value) => value.feedMap) != null &&
+                      context.select((FeedMapNotifier value) => value.feedMap[widget.model.id]) != null &&
+                      context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) != null &&
+                      context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 0)
+                  ? "images/resource/2.0x/ic_dynamic_like@2x.png"
+                  : "images/resource/2.0x/ic_comment_like_Selected@2x.png",
               width: 24,
               height: 24,
             ),
@@ -228,38 +230,49 @@ class GetTripleAreaState extends State<GetTripleArea> {
                   height: 24,
                 ),
                 onTap: () {
-                  openFeedCommentBottomSheet(
-                      context: context,
-                      feedId: widget.model.id,
-                      callback: () {
-                        if (widget.back != null) {
-                          widget.back();
-                        }
-                      });
+                  bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
+                  if (isLoggedIn) {
+                    openFeedCommentBottomSheet(
+                        context: context,
+                        feedId: widget.model.id,
+                        callback: () {
+                          if (widget.back != null) {
+                            widget.back();
+                          }
+                        });
+                  } else {
+                    // 去登录
+                    AppRouter.navigateToLoginPage(context);
+                  }
                 })),
         Container(
           margin: EdgeInsets.only(left: 16),
           child: GestureDetector(
               onTap: () {
-                InquireCheckBlack(
-                    checkId: widget.model.pushId,
-                    inquireCheckBlackCallback: (BlackModel blackModel) {
-                      String promptText = "";
-                      if (blackModel.inYouBlack == 1) {
-                        promptText = "发布失败，你已将对方加入黑名单";
-                      } else if (blackModel.inThisBlack == 1) {
-                        promptText = "发布失败，你已被对方加入黑名单";
-                      }
-                      if (promptText != "") {
-                        ToastShow.show(msg: promptText, context: context, gravity: Toast.CENTER);
-                        return;
-                      }
-                      openShareBottomSheet(
-                          context: context,
-                          map: widget.model.toJson(),
-                          chatTypeModel: ChatTypeModel.MESSAGE_TYPE_FEED,
-                          sharedType: 1);
-                    });
+                if (context.read<TokenNotifier>().isLoggedIn) {
+                  InquireCheckBlack(
+                      checkId: widget.model.pushId,
+                      inquireCheckBlackCallback: (BlackModel blackModel) {
+                        String promptText = "";
+                        if (blackModel.inYouBlack == 1) {
+                          promptText = "发布失败，你已将对方加入黑名单";
+                        } else if (blackModel.inThisBlack == 1) {
+                          promptText = "发布失败，你已被对方加入黑名单";
+                        }
+                        if (promptText != "") {
+                          ToastShow.show(msg: promptText, context: context, gravity: Toast.CENTER);
+                          return;
+                        }
+                        openShareBottomSheet(
+                            context: context,
+                            map: widget.model.toJson(),
+                            chatTypeModel: ChatTypeModel.MESSAGE_TYPE_FEED,
+                            sharedType: 1);
+                      });
+                } else {
+                  // 去登录
+                  AppRouter.navigateToLoginPage(context);
+                }
               },
               child: Image.asset(
                 "images/resource/2.0x/ic_dynamic_Forward@2x.png",
