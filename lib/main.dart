@@ -156,7 +156,6 @@ Future _initApp() async {
     Application.token = token;
     isTokenValid = await checkToken();
   }
-
   if (!isTokenValid) {
     Application.token = null;
     TokenModel tokenModel = await login("anonymous", null, null, null);

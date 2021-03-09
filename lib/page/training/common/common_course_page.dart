@@ -276,11 +276,12 @@ Widget getTrainingEquipmentUi(LiveVideoModel videoModel,BuildContext context,
       ),
     ));
   } else {
-    for (int i = 0; i < videoModel.equipmentDtos.length; i++) {
+    List<String> terminalPicUrlList=getTerminalPicUrlList(videoModel.equipmentDtos);
+    for (int i = 0; i < terminalPicUrlList.length; i++) {
       widgetList.add(Container(
         margin: const EdgeInsets.all(8),
         child: Image.network(
-          videoModel.equipmentDtos[i]?.terminalPicUrl ?? "",
+          terminalPicUrlList[i]?? "",
           width: 24,
           height: 24,
           fit: BoxFit.cover,
@@ -313,6 +314,17 @@ Widget getTrainingEquipmentUi(LiveVideoModel videoModel,BuildContext context,
         )),
   );
 }
+
+List<String> getTerminalPicUrlList(List<EquipmentDtos> equipmentDtos){
+  List<String> stringArray=<String>[];
+  for (int i = 0; i < equipmentDtos.length; i++) {
+    if(!stringArray.contains(equipmentDtos[i].terminalPicUrl)){
+      stringArray.add(equipmentDtos[i].terminalPicUrl);
+    }
+  }
+  return stringArray;
+}
+
 
 //获取动作的ui
 Widget getActionUiVideo(LiveVideoModel videoModel,BuildContext context,

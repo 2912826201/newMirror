@@ -109,6 +109,8 @@ class _BlackListState extends State<BlackListPage>{
                   });
                   blackList.clear();
                   blackList.addAll(list);
+                  setState(() {
+                  });
                 }
               });
 

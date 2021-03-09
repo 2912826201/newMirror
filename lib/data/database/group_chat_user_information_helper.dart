@@ -92,7 +92,7 @@ class GroupChatUserInformationDBHelper {
   }
 
   void _remove(String groupId,String userId) async {
-    print("清楚群友信息：${Application.chatGroupUserInformationMap["${groupId}_$userId"]}");
+    print("清除群友信息：${Application.chatGroupUserInformationMap["${groupId}_$userId"]}");
     if(groupId==null||userId==null){
       return;
     }

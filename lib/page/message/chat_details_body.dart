@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
-import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/message/send_message_view.dart';
 import 'package:mirror/widget/first_end_item_children_delegate.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -38,25 +37,25 @@ class ChatDetailsBody extends StatelessWidget {
 
   ChatDetailsBody(
       {this.scrollController,
-      this.chatDataList,
-      this.chatId,
-      this.conversationDtoType,
-      this.loadText,
-      this.loadStatus,
-      this.isShowChatUserName,
-      this.isHaveAtMeMsgIndex,
-      this.isHaveAtMeMsg,
-      this.firstEndCallback,
-      this.vsync,
-      this.chatName,
-      this.onTap,
-      this.isShowTop=false,
-      this.isPersonalButler = false,
-      this.voidMessageClickCallBack,
-      this.onRefresh,
-      this.refreshController,
-      this.onAtUiClickListener,
-      this.voidItemLongClickCallBack});
+        this.chatDataList,
+        this.chatId,
+        this.conversationDtoType,
+        this.loadText,
+        this.loadStatus,
+        this.isShowChatUserName,
+        this.isHaveAtMeMsgIndex,
+        this.isHaveAtMeMsg,
+        this.firstEndCallback,
+        this.vsync,
+        this.chatName,
+        this.onTap,
+        this.isShowTop=false,
+        this.isPersonalButler = false,
+        this.voidMessageClickCallBack,
+        this.onRefresh,
+        this.refreshController,
+        this.onAtUiClickListener,
+        this.voidItemLongClickCallBack});
 
   List<ChatDataModel> chatData = <ChatDataModel>[];
 
@@ -74,74 +73,15 @@ class ChatDetailsBody extends StatelessWidget {
       chatData.insert(0, model);
     }
 
-    ChatDataModel chatDataModel = new ChatDataModel();
-    chatDataModel.content = "加载动画";
-    chatData.add(chatDataModel);
+    if(loadStatus != LoadingStatus.STATUS_COMPLETED) {
+      ChatDataModel chatDataModel = new ChatDataModel();
+      chatDataModel.content = "加载动画";
+      chatData.add(chatDataModel);
+    }
     return Stack(
       children: [
         Positioned(
-          child: NotificationListener<ScrollNotification>(
-            onNotification: (ScrollNotification notification) {
-              // 注册通知回调
-              if (notification is ScrollStartNotification) {
-                // FocusScope.of(context).requestFocus(new FocusNode());
-                // if (onTap != null) {
-                //   onTap();
-                // }
-                // 滚动开始
-                // print('滚动开始');
-                isScroll=true;
-              } else if (notification is ScrollUpdateNotification) {
-                // 滚动位置更新
-                // print('滚动位置更新');
-                // 当前位置
-                // print("当前位置${metrics.pixels}");
-                isScroll=true;
-              } else if (notification is ScrollEndNotification) {
-                // 滚动结束
-                // print('滚动结束');
-                isScroll=false;
-              }
-              return false;
-            },
-            child: ListView.custom(
-              cacheExtent: 0.0,
-              physics: BouncingScrollPhysics(),
-              controller: scrollController,
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              reverse: true,
-              shrinkWrap: isShowTop,
-              childrenDelegate: FirstEndItemChildrenDelegate((BuildContext context, int index) {
-                if (index == chatData.length - 1) {
-                  // print("------------");
-                    return Visibility(
-                      visible: loadStatus == LoadingStatus.STATUS_LOADING ? true : false,
-                      child: Container(
-                        margin: const EdgeInsets.only(top: 10),
-                        child: LoadingView(
-                          loadText: "",
-                          loadStatus: loadStatus,
-                        ),
-                      ),
-                    );
-                  } else {
-                  return Container(
-                    margin: index == 0 ? const EdgeInsets.only(bottom: 16) :
-                    (index == chatData.length - 2) ? const EdgeInsets.only(top: 8) : null,
-                    child: judgeStartAnimation(chatData[index], index),
-                  );
-                }
-              },
-                firstEndCallback: (int firstIndex, int lastIndex){
-                  if(isScroll){
-                    firstEndCallback(firstIndex,lastIndex);
-                  }
-                },
-                childCount: chatData.length,
-              ),
-              dragStartBehavior: DragStartBehavior.down,
-            ),
-          ),
+          child: getNotificationListener(),
         ),
 
         Positioned(
@@ -163,6 +103,91 @@ class ChatDetailsBody extends StatelessWidget {
       ],
     );
   }
+
+
+  Widget getNotificationListener(){
+    return NotificationListener<ScrollNotification>(
+      onNotification: (ScrollNotification notification) {
+        // 注册通知回调
+        if (notification is ScrollStartNotification) {
+          // FocusScope.of(context).requestFocus(new FocusNode());
+          // if (onTap != null) {
+          //   onTap();
+          // }
+          // 滚动开始
+          // print('滚动开始');
+          isScroll=true;
+        } else if (notification is ScrollUpdateNotification) {
+          // 滚动位置更新
+          // print('滚动位置更新');
+          // 当前位置
+          // print("当前位置${metrics.pixels}");
+          isScroll=true;
+        } else if (notification is ScrollEndNotification) {
+          // 滚动结束
+          // print('滚动结束');
+          isScroll=false;
+        }
+        return false;
+      },
+      child: getListView(),
+    );
+  }
+
+  Widget getListView(){
+    return ListView.custom(
+      cacheExtent: 0.0,
+      physics: BouncingScrollPhysics(),
+      controller: scrollController,
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      reverse: true,
+      shrinkWrap: isShowTop,
+      childrenDelegate: FirstEndItemChildrenDelegate((BuildContext context, int index) {
+        if (index == chatData.length - 1&&loadStatus != LoadingStatus.STATUS_COMPLETED) {
+          return getLoadingUi();
+        } else {
+          return Container(
+            margin: index == 0 ? const EdgeInsets.only(bottom: 16) :
+            (index == chatData.length - 2) ? const EdgeInsets.only(top: 8) : null,
+            child: judgeStartAnimation(chatData[index], index),
+          );
+        }
+      },
+        firstEndCallback: (int firstIndex, int lastIndex){
+          if(isScroll){
+            firstEndCallback(firstIndex,lastIndex);
+          }
+        },
+        childCount: chatData.length,
+      ),
+      dragStartBehavior: DragStartBehavior.down,
+    );
+  }
+
+
+  Widget getLoadingUi(){
+    return  Container(
+      height: 40,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Visibility(
+              visible: loadStatus == LoadingStatus.STATUS_LOADING ? true : false,
+              child: SizedBox(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation(AppColor.mainRed),
+                  // loading 大小
+                  strokeWidth: 2,
+                ),
+                width: 12.0,
+                height: 12.0,
+              ))
+        ],
+      ),
+    );
+  }
+
 
   //获取at的视图
   Widget getAtUi() {

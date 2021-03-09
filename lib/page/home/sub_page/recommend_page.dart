@@ -195,8 +195,8 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
         loadText = "";
         loadStatus = LoadingStatus.STATUS_COMPLETED;
       }
-      hasNext = dataModel.hasNext;
-      if (dataModel.list.isNotEmpty) {
+      if (dataModel!=null&&dataModel.list.isNotEmpty) {
+        hasNext = dataModel.hasNext;
         dataModel.list.forEach((v) {
           recommendIdList.add(HomeFeedModel.fromJson(v).id);
           // modelList.add(HomeFeedModel.fromJson(v));

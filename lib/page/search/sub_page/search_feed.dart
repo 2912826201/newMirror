@@ -125,9 +125,9 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
         });
       }
       DataResponseModel model = await searchFeed(key: widget.keyWord, size: 20, lastTime: lastTime);
-      lastTime = model.lastTime;
-      hasNext = model.hasNext;
-      if (model.list.isNotEmpty) {
+      if (model!=null&&model.list.isNotEmpty) {
+        lastTime = model.lastTime;
+        hasNext = model.hasNext;
         model.list.forEach((v) {
           feedList.add(HomeFeedModel.fromJson(v));
         });

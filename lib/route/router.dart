@@ -335,7 +335,11 @@ class AppRouter {
     if (fatherComment != null) {
       map["fatherComment"] = fatherComment.toJson();
     }
-    map["isInteractiveIn"] = isInteractiveIn;
+    if(isInteractiveIn==null){
+      map["isInteractiveIn"] = false;
+    }else{
+      map["isInteractiveIn"] = isInteractiveIn;
+    }
     _navigateToPage(context, pathLiveDetail, map);
   }
 

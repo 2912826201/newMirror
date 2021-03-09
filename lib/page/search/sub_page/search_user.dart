@@ -92,7 +92,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
     if (dataPage == 1) {
       _refreshController.loadComplete();
       _refreshController.isRefresh;
-      if (model.list.isNotEmpty) {
+      if (model!=null&&model.list.isNotEmpty) {
         noData = false;
         if (modelList == model.list) {
           _refreshController.refreshToIdle();
@@ -114,7 +114,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
       }
     } else if (dataPage > 1 && hashNext == 1) {
       _refreshController.isLoading;
-      if (model.list != null) {
+      if (model!=null&&model.list != null) {
         model.list.forEach((element) {
           modelList.add(element);
         });
@@ -126,7 +126,9 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
       }
     }
     refreshOver = true;
-    setState(() {});
+    if(mounted){
+      setState(() {});
+    }
   }
 
   @override

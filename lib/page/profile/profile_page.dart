@@ -16,10 +16,9 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
 import 'profile_detail_page.dart';
-
-enum ActionItems { DENGCHU, DENGLU }
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key key}) : super(key: key);
@@ -29,7 +28,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin {
-  int uid;
   int followingCount;
   int followerCount;
   int feedCount;
@@ -48,14 +46,9 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   @override
   void initState() {
     super.initState();
-    uid = context.read<ProfileNotifier>()
-        .profile.uid;
-    if(!context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(uid)){
-      context.read<ProfilePageNotifier>().setFirstModel(uid);
-    }
-      getProfileModel();
+    getProfileModel();
     controller.addListener(() {
-      if(controller.position.maxScrollExtent<controller.offset){
+      if (controller.position.maxScrollExtent < controller.offset) {
         controller.animateTo(0, duration: Duration(milliseconds: 500), curve: Curves.ease);
       }
     });
@@ -63,24 +56,30 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
 
   getProfileModel() async {
     UserExtraInfoModel extraInfoModel = await ProfileGetExtraInfo();
-    userModel = await getUserInfo();
-    if(extraInfoModel != null){
-      this.context.read<ProfileNotifier>().setExtraInfo(extraInfoModel);
+    if (extraInfoModel != null) {
+
+      context.read<ProfileNotifier>().setExtraInfo(extraInfoModel);
     }
   }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     super.build(context);
-  /*  _getFollowCount();*/
-    print("ProfileState_____________________________________________build");
+    if (!context
+        .watch<ProfilePageNotifier>()
+        .profileUiChangeModel
+        .containsKey(context.watch<ProfileNotifier>().profile.uid)) {
+      print('=======================================不存在该id的key');
+      context.watch<ProfilePageNotifier>().setFirstModel(context.watch<ProfileNotifier>().profile.uid);
+    }
     print('===============================我的页build');
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
     return Scaffold(
       appBar: null,
       body: SingleChildScrollView(
-          controller: controller,
+        controller: controller,
         physics: BouncingScrollPhysics(),
         child: _buildSuggestions(width, height),
       ),
@@ -90,70 +89,67 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   ///界面
   Widget _buildSuggestions(double width, double height) {
     return Column(
-        children: [
-          _blurrectAvatar(width, height),
-          SizedBox(
-            height: height * 0.05,
+      children: [
+        _blurrectAvatar(width, height),
+        SizedBox(
+          height: height * 0.05,
+        ),
+        Container(
+          padding: EdgeInsets.only(left: 16, right: 16),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: width * 0.27,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "训练计划",
+                      style: AppStyle.textRegular12,
+                    ),
+                  ),
+                  Spacer(),
+                  Container(
+                    width: width * 0.27,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "体重记录",
+                      style: AppStyle.textRegular12,
+                    ),
+                  ),
+                  Spacer(),
+                  Container(
+                    width: width * 0.27,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "健身相册",
+                      style: AppStyle.textRegular12,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              Row(
+                children: [
+                  _secondData(Icons.timer, context.watch<ProfileNotifier>().trainingSeconds, "训练记录"),
+                  Spacer(),
+                  _secondData(Icons.poll, context.watch<ProfileNotifier>().weight, "体重记录"),
+                  Spacer(),
+                  _secondData(Icons.photo, context.watch<ProfileNotifier>().albumNum, "健身相册"),
+                ],
+              ),
+              SizedBox(
+                height: 28,
+              ),
+              _bottomSetting(Icon(Icons.menu_book), "我的课程"),
+              _bottomSetting(Icon(Icons.article_outlined), "我的订单"),
+              _bottomSetting(Icon(Icons.emoji_events_outlined), "我的成就"),
+            ],
           ),
-          Container(
-            padding: EdgeInsets.only(left: 16, right: 16),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: width * 0.27,
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "训练计划",
-                        style: AppStyle.textRegular12,
-                      ),
-                    ),
-                    Spacer(),
-                    Container(
-                      width: width * 0.27,
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "体重记录",
-                        style: AppStyle.textRegular12,
-                      ),
-                    ),
-                    Spacer(),
-                    Container(
-                      width: width * 0.27,
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "健身相册",
-                        style: AppStyle.textRegular12,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                Row(
-                  children: [
-                    _secondData(Icons.timer,
-                        context.watch<ProfileNotifier>().trainingSeconds, "训练记录"),
-                    Spacer(),
-                    _secondData(
-                        Icons.poll, context.watch<ProfileNotifier>().weight, "体重记录"),
-                    Spacer(),
-                    _secondData(Icons.photo, context.watch<ProfileNotifier>().albumNum,
-                        "健身相册"),
-                  ],
-                ),
-                SizedBox(
-                  height: 28,
-                ),
-                _bottomSetting(Icon(Icons.menu_book), "我的课程"),
-                _bottomSetting(Icon(Icons.article_outlined), "我的订单"),
-                _bottomSetting(Icon(Icons.emoji_events_outlined), "我的成就"),
-              ],
-            ),
-          ),
-        ],
+        ),
+      ],
     );
   }
 
@@ -216,13 +212,19 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       child: Center(
           child: Row(
         children: [
-          CustomAppBarIconButton(icon: Icons.qr_code, iconColor: AppColor.black, onTap: () {
-            AppRouter.navigateToScanCodePage(context);
-          }),
+          CustomAppBarIconButton(
+              svgName: AppIcon.qrcode_scan,
+              iconColor: AppColor.black,
+              onTap: () {
+                AppRouter.navigateToScanCodePage(context);
+              }),
           Spacer(),
-          CustomAppBarIconButton(icon: Icons.menu, iconColor: AppColor.black, onTap: () {
-            AppRouter.navigateToSettingHomePage(context);
-          }),
+          CustomAppBarIconButton(
+              icon: Icons.menu,
+              iconColor: AppColor.black,
+              onTap: () {
+                AppRouter.navigateToSettingHomePage(context);
+              }),
         ],
       )),
     );
@@ -272,10 +274,15 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                 bottom: 0,
                 child: Row(children: [
                   InkWell(
-                    child: _textAndNumber("关注", StringUtil.getNumber(context.watch<ProfilePageNotifier>()
-                        .profileUiChangeModel[uid].attentionModel.followingCount)),
+                    child: _textAndNumber(
+                        "关注",
+                        StringUtil.getNumber(context
+                            .watch<ProfilePageNotifier>()
+                            .profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
+                            .attentionModel
+                            .followingCount)),
                     onTap: () {
-                      AppRouter.navigateToQueryFollowList(context, 1, uid);
+                      AppRouter.navigateToQueryFollowList(context, 1, context.read<ProfileNotifier>().profile.uid);
                     },
                   ),
                   SizedBox(
@@ -283,20 +290,30 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   ),
                   InkWell(
                     onTap: () {
-                      AppRouter.navigateToQueryFollowList(context, 2, uid);
+                      AppRouter.navigateToQueryFollowList(context, 2, context.read<ProfileNotifier>().profile.uid);
                     },
-                    child: _textAndNumber("粉丝", StringUtil.getNumber(context.watch<ProfilePageNotifier>()
-                        .profileUiChangeModel[uid].attentionModel.followerCount)),
+                    child: _textAndNumber(
+                        "粉丝",
+                        StringUtil.getNumber(context
+                            .watch<ProfilePageNotifier>()
+                            .profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
+                            .attentionModel
+                            .followerCount)),
                   ),
                   SizedBox(
                     width: width * 0.12,
                   ),
                   InkWell(
                     onTap: () {
-                      AppRouter.navigateToMineDetail(context, uid);
+                      AppRouter.navigateToMineDetail(context, context.read<ProfileNotifier>().profile.uid);
                     },
-                    child: _textAndNumber("动态", StringUtil.getNumber(context.watch<ProfilePageNotifier>()
-                        .profileUiChangeModel[uid].attentionModel.feedCount)),
+                    child: _textAndNumber(
+                        "动态",
+                        StringUtil.getNumber(context
+                            .watch<ProfilePageNotifier>()
+                            .profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
+                            .attentionModel
+                            .feedCount)),
                   )
                 ]))
           ],
@@ -310,7 +327,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
       height: height * 0.11,
       child: InkWell(
           onTap: () {
-            AppRouter.navigateToMineDetail(context, uid);
+            AppRouter.navigateToMineDetail(context, context.read<ProfileNotifier>().profile.uid);
           },
           child: Stack(
             children: [
@@ -379,8 +396,14 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
           child: Center(
             child: Column(
               children: [
-                Expanded(child: SizedBox(), flex: 2,),
-                Icon(icon, size: 24,),
+                Expanded(
+                  child: SizedBox(),
+                  flex: 2,
+                ),
+                Icon(
+                  icon,
+                  size: 24,
+                ),
                 SizedBox(
                   height: 8,
                 ),
@@ -388,7 +411,10 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                   number != 0 && number != null ? "$number" : "--",
                   style: AppStyle.textRegular14,
                 ),
-                Expanded(child: SizedBox(), flex: 3,),
+                Expanded(
+                  child: SizedBox(),
+                  flex: 3,
+                ),
               ],
             ),
           ),
@@ -427,5 +453,3 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     }
   }
 }
-
-

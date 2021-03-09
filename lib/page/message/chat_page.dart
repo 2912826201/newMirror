@@ -186,6 +186,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   int cursorIndexPr=-1;
   bool isShowEmjiPageWhite=false;
 
+  ScrollController textScrollController=ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -461,11 +463,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
               Expanded(
                   child: SizedBox(
                       child: Text(
-                "点击关注,及时看到对方动态",
-                style: TextStyle(color: AppColor.textPrimary1, fontSize: 16),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ))),
+                        "点击关注,及时看到对方动态",
+                        style: TextStyle(color: AppColor.textPrimary1, fontSize: 16),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ))),
               GestureDetector(
                 child: Container(
                   width: 60,
@@ -532,6 +534,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
               ? ScreenUtil.instance.screenWidthDp - 32 - 32 - 64
               : ScreenUtil.instance.screenWidthDp - 32 - 32 - 64 - 52 - 12),
       child: TextSpanField(
+        scrollController: textScrollController,
         controller: _textController,
         focusNode: _focusNode,
         // 多行展示
@@ -669,7 +672,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         physics: BouncingScrollPhysics(),
         itemCount: emojiModelList.length,
         gridDelegate:
-            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8, crossAxisSpacing: 1, mainAxisSpacing: 1),
+        SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8, crossAxisSpacing: 1, mainAxisSpacing: 1),
         itemBuilder: (context, index) {
           return _emojiGridItem(emojiModelList[index], index);
         },
@@ -761,6 +764,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
               cursorIndexPr=cursorIndexPr+emojiModel.code.length;
             }
             _changTextLen(_textController.text);
+            Future.delayed(Duration(milliseconds: 100),(){
+              textScrollController.jumpTo(textScrollController.position.maxScrollExtent);
+            });
           },
         ));
   }
@@ -917,7 +923,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   Future<List<ChatDataModel>> getSystemInformationNet() async {
     List<ChatDataModel> dataList = <ChatDataModel>[];
     Map<String, dynamic> dataListMap =
-        await querySysMsgList(type: conversation.type, size: 20, lastTime: systemLastTime);
+    await querySysMsgList(type: conversation.type, size: 20, lastTime: systemLastTime);
     try {
       systemLastTime = dataListMap["lastTime"].toString();
     } catch (e) {}
@@ -936,7 +942,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       for (int i = chatDataList.length - 1; i >= 0; i--) {
         if (i == chatDataList.length - 1) {
           chatDataList.add(getTimeAlertModel(chatDataList[i].msg.sentTime));
-        } else if (chatDataList[i].msg.sentTime - chatDataList[i + 1].msg.sentTime > 5 * 60 * 1000) {
+        } else if (chatDataList[i].msg!=null&&(chatDataList[i].msg.sentTime - chatDataList[i + 1].msg.sentTime > 5 * 60 * 1000)) {
           chatDataList.insert(i + 1, getTimeAlertModel(chatDataList[i].msg.sentTime));
         }
       }
@@ -954,7 +960,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   //判断加不加时间提示
   judgeAddAlertTime() {
     if (chatDataList.length > 0) {
-      if (new DateTime.now().millisecondsSinceEpoch - chatDataList[0].msg.sentTime >= 5 * 60 * 1000) {
+      if (chatDataList[0].msg!=null&&new DateTime.now().millisecondsSinceEpoch - chatDataList[0].msg.sentTime >= 5 * 60 * 1000) {
         chatDataList.insert(0, getTimeAlertModel(new DateTime.now().millisecondsSinceEpoch));
         if (recallNotificationMessagePosition > 0) {
           recallNotificationMessagePosition++;
@@ -1128,7 +1134,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   //从全局的临时消息中删除发送完成的消息
   _deletePostCompleteMessage(){
     if(Application.postChatDataModelList[conversation.id]==null
-    ||Application.postChatDataModelList[conversation.id].length<1){
+        ||Application.postChatDataModelList[conversation.id].length<1){
       return;
     }else{
       for(int i=0;i<Application.postChatDataModelList[conversation.id].length;i++){
@@ -1145,8 +1151,15 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         ||Application.postChatDataModelList[conversation.id].length<1){
       return;
     }else{
-      for(int i=0;i<Application.postChatDataModelList[conversation.id].length;i++){
-        if(!Application.postChatDataModelList[conversation.id][i].isTemporary){
+      for(int i=Application.postChatDataModelList[conversation.id].length-1;i>=0;i--){
+        bool isHave=false;
+        for(int j=0;j<chatDataList.length;j++){
+          if(chatDataList[j].msg!=null&& Application.postChatDataModelList[conversation.id][i].msg!=null&&
+              chatDataList[j].msg.messageId==Application.postChatDataModelList[conversation.id][i].msg.messageId){
+            isHave=true;
+          }
+        }
+        if(isHave){
           Application.postChatDataModelList[conversation.id].removeAt(i);
         }else{
           chatDataList.insert(0, Application.postChatDataModelList[conversation.id][i]);
@@ -1999,7 +2012,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     msgList = await RongCloud.init().getHistoryMessages(
         conversation.getType(), conversation.conversationId, chatDataList[chatDataList.length - 1].msg.sentTime, 20, 0);
     List<ChatDataModel> dataList = <ChatDataModel>[];
-    if (msgList != null && msgList.length > 0) {
+    if (msgList != null && msgList.length > 1) {
       dataList.clear();
       for (int i = 1; i < msgList.length; i++) {
         dataList.add(getMessage((msgList[i] as Message), isHaveAnimation: false));
@@ -2151,6 +2164,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       // ToastShow.show(msg: "重新编辑消息", context: context);
       // FocusScope.of(context).requestFocus(_focusNode);
       _textController.text += json.decode(map["content"])["data"];
+      Future.delayed(Duration(milliseconds: 100),(){
+        textScrollController.jumpTo(textScrollController.position.maxScrollExtent);
+      });
       if(Application.platform==0) {
         var setCursor = TextSelection(
           baseOffset: _textController.text.length,
@@ -2180,5 +2196,5 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     }
   }
 
-  ///------------------------------------各种点击事件  end-----------------------------------------------------------------------///
+///------------------------------------各种点击事件  end-----------------------------------------------------------------------///
 }
