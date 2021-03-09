@@ -65,11 +65,11 @@ class FileUtil {
       UploadResultModel resultModel = UploadResultModel();
       resultModel.isSuccess = false;
       resultModel.error = "";
-      try{
+      try {
         UploadResult result = await syStorage.upload(fileList[i].path, token.upToken, key);
         resultModel.isSuccess = result.success;
         resultModel.error = result.error;
-      }catch(error){
+      } catch (error) {
         print("上传错误了");
         print(error);
         resultModel.isSuccess = false;
@@ -178,7 +178,7 @@ class FileUtil {
       fileName = StringUtil.generateMd5(fileName);
     }
     String filePath;
-    switch(type) {
+    switch (type) {
       case downloadTypeCommon:
         filePath = "${AppConfig.getAppDownloadDir()}/$fileName";
         break;
