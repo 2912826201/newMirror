@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,12 +12,15 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
 
 class ReleaseProgressView extends StatefulWidget {
-  ReleaseProgressView({Key key, this.deleteReleaseFeedChanged,this.resendFeedChanged}) : super(key: key);
+  ReleaseProgressView({Key key, this.deleteReleaseFeedChanged, this.resendFeedChanged}) : super(key: key);
+
   @override
   ReleaseProgressViewState createState() => ReleaseProgressViewState();
+
   // 删除本地插入的动态
 
   VoidCallback deleteReleaseFeedChanged;
+
   // 重新发布动态
   VoidCallback resendFeedChanged;
 }
@@ -51,18 +56,18 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
                                                 mediaTypeKeyVideo
                                             ? Image.file(
                                                 context.select((FeedMapNotifier value) =>
-                                                    value.postFeedModel.selectedMediaFiles.list.first.file),
+                                                    File(value.postFeedModel.selectedMediaFiles.list.first.thumbPath)),
                                                 fit: BoxFit.cover,
                                               )
                                             : context.select((FeedMapNotifier value) =>
-                                                            value.postFeedModel.selectedMediaFiles.list.first.file) !=
-                                                        null
-                                                    ? Image.file(
-                                                        context.select((FeedMapNotifier value) =>
-                                                            value.postFeedModel.selectedMediaFiles.list.first.file),
-                                                        fit: BoxFit.cover,
-                                                      )
-                                                    : Container(),
+                                                        value.postFeedModel.selectedMediaFiles.list.first.file) !=
+                                                    null
+                                                ? Image.file(
+                                                    context.select((FeedMapNotifier value) =>
+                                                        value.postFeedModel.selectedMediaFiles.list.first.file),
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : Container(),
                                         context.select((FeedMapNotifier value) =>
                                                     value.postFeedModel.selectedMediaFiles.type) ==
                                                 // context.watch<ReleaseProgressNotifier>().postFeedModel.selectedMediaFiles.type ==

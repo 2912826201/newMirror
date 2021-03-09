@@ -109,7 +109,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             v.file = File(v.filePath);
           });
           // 插入数据
-         insertData(HomeFeedModel().conversionModel(feedModel, context, isRefresh: true));
+          insertData(HomeFeedModel().conversionModel(feedModel, context, isRefresh: true));
         }
       });
     }
@@ -237,7 +237,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     // // 重新计算
     attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList);
     // // 更新全局监听
+
     context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
+
     status = Status.concern;
     print("插入结束");
   }
@@ -479,6 +481,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     }
 
     if (isLogged && attentionIdList.isEmpty && !isRequestInterface && status != Status.noConcern) {
+      print("builder 调用接口");
       getRecommendFeed();
     }
     return Container(
