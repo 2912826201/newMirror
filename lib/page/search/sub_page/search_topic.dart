@@ -200,6 +200,7 @@ class SearchTopiciItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () async {
         TopicDtoModel topicModel = await getTopicInfo(topicId: model.id);
         AppRouter.navigateToTopicDetailPage(context, topicModel);
