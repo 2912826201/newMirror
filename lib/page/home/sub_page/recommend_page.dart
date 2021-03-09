@@ -266,9 +266,13 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                       for (int i = 0; i < recommendModelList.length; i++) {
                         HomeFeedModel value = recommendModelList[i];
                         // 屏幕可滑动区域
-                        double slidingArea = ScreenUtil.instance.height - ScreenUtil.instance.statusBarHeight - ScreenUtil.instance.bottomBarHeight - 44 - 51;
+                        double slidingArea = ScreenUtil.instance.height -
+                            ScreenUtil.instance.statusBarHeight -
+                            ScreenUtil.instance.bottomBarHeight -
+                            44 -
+                            51;
                         // 屏幕的一半偏移值
-                        double screenOffser = metrics.pixels + (slidingArea / 2) ;
+                        double screenOffser = metrics.pixels + (slidingArea / 2);
                         if (screenOffser >= value.headOffset && screenOffser < value.bottomOffset) {
                           print("进了");
                           context.read<FeedMapNotifier>().showInputBox(value.id);
@@ -305,34 +309,53 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                         child: liveVideoModel.isNotEmpty ? getCourse() : Container(),
                       ),
                       // 垂直列表
-                      SliverList(
-                        // controller: _controller,
-                        delegate: SliverChildBuilderDelegate((content, index) {
-                          // 获取动态id
-                          int id;
-                          // 获取动态id指定model
-                          HomeFeedModel model;
-                          if (index < recommendIdList.length) {
-                            id = recommendIdList[index];
-                            model = context.read<FeedMapNotifier>().feedMap[id];
-                          }
-                          if (index == recommendIdList.length) {
-                            return LoadingView(
-                              loadText: loadText,
-                              loadStatus: loadStatus,
-                            );
-                          } else {
-                            return DynamicListLayout(
-                                index: index,
-                                model: model,
-                                pageName: "recommendPage",
-                                isShowConcern: true,
-                                // 可选参数 子Item的个数
-                                key: GlobalObjectKey("recommend$index"),
-                                isShowRecommendUser: false);
-                          }
-                        }, childCount: recommendIdList.length + 1),
-                      )
+                      recommendIdList.isNotEmpty
+                          ? SliverList(
+                              // controller: _controller,
+                              delegate: SliverChildBuilderDelegate((content, index) {
+                                // 获取动态id
+                                int id;
+                                // 获取动态id指定model
+                                HomeFeedModel model;
+                                if (index < recommendIdList.length) {
+                                  id = recommendIdList[index];
+                                  model = context.read<FeedMapNotifier>().feedMap[id];
+                                }
+                                if (index == recommendIdList.length) {
+                                  return LoadingView(
+                                    loadText: loadText,
+                                    loadStatus: loadStatus,
+                                  );
+                                } else {
+                                  return DynamicListLayout(
+                                      index: index,
+                                      model: model,
+                                      pageName: "recommendPage",
+                                      isShowConcern: true,
+                                      // 可选参数 子Item的个数
+                                      key: GlobalObjectKey("recommend$index"),
+                                      isShowRecommendUser: false);
+                                }
+                              }, childCount: recommendIdList.length + 1),
+                            )
+                          : SliverToBoxAdapter(
+                              child: Container(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: 224,
+                                    height: 224,
+                                    color: AppColor.color246,
+                                    margin: EdgeInsets.only(bottom: 16, top: 188),
+                                  ),
+                                  Text(
+                                    "这里空空如也，去关注看看吧",
+                                    style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+                                  ),
+                                ],
+                              ),
+                            )),
                     ],
                   )),
             )),

@@ -1,8 +1,12 @@
+import 'package:flutter/cupertino.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/constants.dart';
+import 'package:mirror/data/model/feed/post_feed.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/util/screen_util.dart';
-
+import 'package:provider/provider.dart';
 import '../media_file_model.dart';
 
 enum CommentTypes {
@@ -78,7 +82,54 @@ class HomeFeedModel {
     this.headOffset,
     this.selectedMediaFiles,
   });
-
+  // 转换model
+  HomeFeedModel conversionModel(PostFeedModel postFeedModel,BuildContext context,{bool isRefresh = false}) {
+    print("jinfl");
+    HomeFeedModel homeFeedModel = HomeFeedModel();
+    // 发布model转换动态model展示
+    homeFeedModel.name = isRefresh ? context.read<ProfileNotifier>().profile.nickName : context.watch<ProfileNotifier>().profile.nickName;
+    homeFeedModel.avatarUrl = isRefresh ? context.read<ProfileNotifier>().profile.avatarUri : context.watch<ProfileNotifier>().profile.avatarUri;
+    homeFeedModel.pushId = isRefresh ? context.read<ProfileNotifier>().profile.uid : context.watch<ProfileNotifier>().profile.uid;
+    homeFeedModel.createTime = postFeedModel.currentTimestamp;
+    homeFeedModel.content = postFeedModel.content;
+    homeFeedModel.address = postFeedModel.address;
+    homeFeedModel.cityCode = postFeedModel.cityCode;
+    homeFeedModel.id = Application.insertFeedId;
+    homeFeedModel.type = 0;
+    homeFeedModel.courseDto = null;
+    homeFeedModel.commentCount = 0;
+    homeFeedModel.laudCount = 0;
+    homeFeedModel.shareCount = 0;
+    homeFeedModel.readCount = 0;
+    homeFeedModel.isFollow = 0;
+    homeFeedModel.isLaud = 0;
+    homeFeedModel.picUrls = [];
+    homeFeedModel.videos = [];
+    if (postFeedModel.atUsersModel.isNotEmpty) {
+      homeFeedModel.atUsers = postFeedModel.atUsersModel;
+    } else {
+      homeFeedModel.atUsers = [];
+    }
+    if (postFeedModel.topics.isNotEmpty) {
+      homeFeedModel.topics = postFeedModel.topics;
+    } else {
+      homeFeedModel.topics = [];
+    }
+    homeFeedModel.laudUserInfo = [];
+    homeFeedModel.comments = [];
+    homeFeedModel.isShowInputBox = true;
+    if (postFeedModel.longitude != null) {
+      homeFeedModel.longitude = double.parse(postFeedModel.longitude);
+    }
+    if (postFeedModel.latitude != null) {
+      homeFeedModel.latitude = double.parse(postFeedModel.latitude);
+    }
+    if (postFeedModel.selectedMediaFiles != null) {
+      print("有图片视频文件");
+      homeFeedModel.selectedMediaFiles = postFeedModel.selectedMediaFiles;
+    }
+    return homeFeedModel;
+  }
   HomeFeedModel.fromJson(Map<String, dynamic> json) {
     id = json["id"];
     type = json["type"];

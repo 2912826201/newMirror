@@ -186,14 +186,6 @@ class _SlideBannerState extends State<SlideBanner> {
   // }
   // 轮播图图片设置
   Widget buildShowItemContainer(int indexs, double height) {
-    // ExtendedImageGesturePageView.builder(itemBuilder: (BuildContext context, int index) {
-    //   var item = widget.model.picUrls[index].url;
-    //   Widget image = ExtendedImage.network(
-    //     item,
-    //     fit: BoxFit.contain,
-    //     mode: ExtendedImageMode.gesture,
-    //   );
-    // });
     return widget.isDynamicDetails
         ? CupertinoButton(
             borderRadius: BorderRadius.zero,
@@ -242,14 +234,9 @@ class _SlideBannerState extends State<SlideBanner> {
                 ? Container(
                     width: ScreenUtil.instance.width,
                     height: height,
-                    child: widget.model.selectedMediaFiles.list.first.croppedImageData != null
-                        ? Image.memory(
-                            widget.model.selectedMediaFiles.list.first.croppedImageData,
-                            fit: BoxFit.cover,
-                          )
-                        : widget.model.selectedMediaFiles.list.first.file != null
+                    child:  widget.model.selectedMediaFiles.list[indexs].file != null
                             ? Image.file(
-                                widget.model.selectedMediaFiles.list.first.file,
+                                widget.model.selectedMediaFiles.list[indexs].file,
                                 fit: BoxFit.cover,
                               )
                             : Container())
