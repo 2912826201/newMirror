@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/route/router.dart';
@@ -51,11 +52,12 @@ class _ExpandableTextState extends State<ExpandableText> {
       richTexts.add(BaseRichText(
         text.substring(toModel.index, toModel.len),
         style: TextStyle(color:  AppColor.mainBlue, fontSize: 14),
-        onTap: () {
+        onTap: () async{
           if(widget.topicId == toModel.id) {
             return;
           }
-          AppRouter.navigateToTopicDetailPage(context, toModel.id);
+          TopicDtoModel topicModel = await getTopicInfo(topicId: model.id);
+          AppRouter.navigateToTopicDetailPage(context, topicModel);
           print("点击用户${toModel.id}");
         },
       ));
