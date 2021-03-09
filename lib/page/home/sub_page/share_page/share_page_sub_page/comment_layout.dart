@@ -4,6 +4,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
@@ -58,53 +59,65 @@ class CommentLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return   context.watch<FeedMapNotifier>().feedMap[model.id] != null ?
-    Container(
-      width: ScreenUtil.instance.width,
-      margin: EdgeInsets.only(left: 16, right: 16, top: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
+    return context.watch<FeedMapNotifier>().feedMap[model.id] != null
+        ? Container(
             width: ScreenUtil.instance.width,
-            margin: EdgeInsets.only(bottom: 6),
-            child: Selector<FeedMapNotifier, int>(builder: (context, commentCount, child) {
-              return GestureDetector(
-                onTap: () {
-                  openFeedCommentBottomSheet(context: context, feedId: model.id);
-                },
-                child: Text("共${StringUtil.getNumber(commentCount)}条评论", style: AppStyle.textSecondaryRegular12),
-              );
-            }, selector: (context, notifier) {
-              return notifier.feedMap[model.id].commentCount;
-            }),
-            // Text("共${model.commentCount}条评论", style: AppStyle.textHintRegular12)
-          ),
-          for (CommentDtoModel item in context.select((FeedMapNotifier value) => value.feedMap[model.id].hotComment))
-            Container(
-              width: ScreenUtil.instance.width,
-              child: GestureDetector(
-                  onTap: () {
-                    openFeedCommentBottomSheet(context: context, feedId: model.id, commentDtoModel: item);
-                  },
-                  child: Container(
-                    child: model.hotComment.length > 0
-                        ? MyRichTextWidget(
-                            Text(
-                              item.replyName != null
-                                  ? "${item.name + ": 回复 " + item.replyName + " " + item.content}"
-                                  : "${item.name}: ${item.content}",
-                              style: AppStyle.textPrimary3Regular13,
-                            ),
-                            maxLines: 1,
-                            textOverflow: TextOverflow.ellipsis,
-                            richTexts: setBaseRichText(item, context),
-                          )
-                        : Container(),
-                  )),
+            margin: EdgeInsets.only(left: 16, right: 16, top: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: ScreenUtil.instance.width,
+                  margin: EdgeInsets.only(bottom: 6),
+                  child: Selector<FeedMapNotifier, int>(builder: (context, commentCount, child) {
+                    return GestureDetector(
+                      onTap: () {
+                        if (context.read<TokenNotifier>().isLoggedIn) {
+                          openFeedCommentBottomSheet(context: context, feedId: model.id);
+                        } else {
+                          // 去登录
+                          AppRouter.navigateToLoginPage(context);
+                        }
+                      },
+                      child: Text("共${StringUtil.getNumber(commentCount)}条评论", style: AppStyle.textSecondaryRegular12),
+                    );
+                  }, selector: (context, notifier) {
+                    return notifier.feedMap[model.id].commentCount;
+                  }),
+                  // Text("共${model.commentCount}条评论", style: AppStyle.textHintRegular12)
+                ),
+                for (CommentDtoModel item
+                    in context.select((FeedMapNotifier value) => value.feedMap[model.id].hotComment))
+                  Container(
+                    width: ScreenUtil.instance.width,
+                    child: GestureDetector(
+                        onTap: () {
+                          if (context.read<TokenNotifier>().isLoggedIn) {
+                            openFeedCommentBottomSheet(context: context, feedId: model.id, commentDtoModel: item);
+                          } else {
+                            // 去登录
+                            AppRouter.navigateToLoginPage(context);
+                          }
+                        },
+                        child: Container(
+                          child: model.hotComment.length > 0
+                              ? MyRichTextWidget(
+                                  Text(
+                                    item.replyName != null
+                                        ? "${item.name + ": 回复 " + item.replyName + " " + item.content}"
+                                        : "${item.name}: ${item.content}",
+                                    style: AppStyle.textPrimary3Regular13,
+                                  ),
+                                  maxLines: 1,
+                                  textOverflow: TextOverflow.ellipsis,
+                                  richTexts: setBaseRichText(item, context),
+                                )
+                              : Container(),
+                        )),
+                  ),
+              ],
             ),
-        ],
-      ),
-    ) : Container();
+          )
+        : Container();
   }
 }
