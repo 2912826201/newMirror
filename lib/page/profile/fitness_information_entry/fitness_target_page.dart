@@ -120,7 +120,7 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
             Container(
               margin: EdgeInsets.only(top: 12),
               child: Text(
-                "$order",
+                "${index+1}",
                 style: beforIndex == index ? AppStyle.textMedium29 : AppStyle.textPrimary3Medium29,
               ),
             ),
