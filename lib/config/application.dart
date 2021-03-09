@@ -5,6 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/profile/fitness_entry_model.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:fluro/fluro.dart';
@@ -192,6 +193,7 @@ class Application {
 
   static _clearUserRuntimeCache() {
     appContext.read<MachineNotifier>().setMachine(null);
+    appContext.read<ProfilePageNotifier>().clearProfileUiChangeModel();
     //TODO 其他的provider还需整理出来清掉
     atMesGroupModel?.atMsgMap?.clear();
     topChatModelList.clear();
@@ -199,5 +201,6 @@ class Application {
     chatGroupUserNameMap.clear();
     chatGroupUserInformationMap.clear();
     postChatDataModelList.clear();
+
   }
 }

@@ -154,6 +154,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
           if (results[0] != null) {
             DataResponseModel dataModel = results[0];
             if (dataModel.list.isNotEmpty) {
+              print('==========================dataModel.list.isNotEmpty');
               dataModel.list.forEach((v) {
                 context.read<ProfilePageNotifier>().profileUiChangeModel.remove(HomeFeedModel.fromJson(v).pushId);
                 recommendIdList.add(HomeFeedModel.fromJson(v).id);
@@ -180,6 +181,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
 
   // 推荐页model
   getRecommendFeed() async {
+    print('==================推荐页数据加载');
     if (loadStatus == LoadingStatus.STATUS_IDEL) {
       // 先设置状态，防止下拉就直接加载
       setState(() {
@@ -196,6 +198,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
         loadStatus = LoadingStatus.STATUS_COMPLETED;
       }
       if (dataModel!=null&&dataModel.list.isNotEmpty) {
+        print('===============================dataModel!=null&&dataModel.list.isNotEmpty');
         hasNext = dataModel.hasNext;
         dataModel.list.forEach((v) {
           recommendIdList.add(HomeFeedModel.fromJson(v).id);
@@ -231,9 +234,11 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
       builder: (context, notifier, child) {
         if (notifier.isLoggedIn && !isLogin) {
           Future.delayed(Duration.zero, () {
-            recommendIdList.clear();
+            print('=========isLogin=========isLogin========isLogin===$isLogin');
+          /*  recommendIdList.clear();
             recommendModelList.clear();
-            getRecommendFeed();
+            liveVideoModel.clear();*/
+            mergeRequest();
           });
           isLogin = notifier.isLoggedIn;
         }

@@ -48,29 +48,33 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
   initState() {
     super.initState();
     controller = TabController(length: 2, vsync: this, initialIndex: 1);
-    new Future.delayed(Duration.zero, () {
-      print("发布失败数据");
-      // 取出发布动态数据
-      PostFeedModel feedModel = PostFeedModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
-          "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")));
-      if (feedModel != null) {
-        feedModel.selectedMediaFiles.list.forEach((v) {
-          v.file = File(v.filePath);
-        });
-        context.read<FeedMapNotifier>().setPublishFeedModel(feedModel);
-        // // 插入数据
-        // if (attentionKey.currentState != null) {
-        //   attentionKey.currentState.insertData(HomeFeedModel().conversionModel(feedModel, context, isRefresh: true));
-        // } else {
-        //   new Future.delayed(Duration(milliseconds: 500), () {
-        //     attentionKey.currentState.insertData(HomeFeedModel().conversionModel(feedModel, context, isRefresh: true));
-        //   });
-        // }
-        context.read<FeedMapNotifier>().setPublish(false);
-        _process = -1.0;
-        context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(_process);
-      }
-    });
+    if(AppPrefs.getPublishFeedLocalInsertData(
+        "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")!=null){
+      new Future.delayed(Duration.zero, () {
+        print("发布失败数据");
+        // 取出发布动态数据
+        PostFeedModel feedModel = PostFeedModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
+            "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")));
+        if (feedModel != null) {
+          feedModel.selectedMediaFiles.list.forEach((v) {
+            v.file = File(v.filePath);
+          });
+          context.read<FeedMapNotifier>().setPublishFeedModel(feedModel);
+          // // 插入数据
+          // if (attentionKey.currentState != null) {
+          //   attentionKey.currentState.insertData(HomeFeedModel().conversionModel(feedModel, context, isRefresh: true));
+          // } else {
+          //   new Future.delayed(Duration(milliseconds: 500), () {
+          //     attentionKey.currentState.insertData(HomeFeedModel().conversionModel(feedModel, context, isRefresh: true));
+          //   });
+          // }
+          context.read<FeedMapNotifier>().setPublish(false);
+          _process = -1.0;
+          context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(_process);
+        }
+      });
+    }
+
     _initConnectivity();
   }
 
@@ -79,9 +83,15 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     PostFeedModel feedModel = PostFeedModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
         "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")));
     if (feedModel != null) {
-      feedModel.selectedMediaFiles.list.forEach((v) {
-        v.file = File(v.filePath);
-      });
+      if(feedModel.selectedMediaFiles.type==mediaTypeKeyImage){
+        feedModel.selectedMediaFiles.list.forEach((v) {
+          v.file = File(v.filePath);
+        });
+      }else if(feedModel.selectedMediaFiles.type==mediaTypeKeyVideo){
+        feedModel.selectedMediaFiles.list.forEach((v) {
+          v.file = File(v.thumbPath);
+        });
+      }
     }
     return feedModel;
   }
@@ -97,9 +107,11 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     //
     // }
     connectivityListener = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
-      if (result == ConnectivityResult.mobile) {
+      if (result == ConnectivityResult.mobile&&AppPrefs.getPublishFeedLocalInsertData(
+          "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")!=null) {
         pulishFeed(getPublishFeedData());
-      } else if (result == ConnectivityResult.wifi) {
+      } else if (result == ConnectivityResult.wifi&&AppPrefs.getPublishFeedLocalInsertData(
+          "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")!=null) {
         pulishFeed(getPublishFeedData());
       } else {}
     });
