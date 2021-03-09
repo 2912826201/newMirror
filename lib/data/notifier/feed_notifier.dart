@@ -24,6 +24,7 @@ class FeedMapNotifier extends ChangeNotifier {
   // 是否可以发布动态
   bool isPublish = true;
 
+  bool buildIsOver = false;
   Map<int,dynamic> courseCommentHot = {};
   // 是否是左滑
   bool isSwipeLeft;
@@ -239,5 +240,11 @@ class FeedMapNotifier extends ChangeNotifier {
   // 是否调用发布接口
   setPublish(bool b) {
     this.isPublish = b;
+    notifyListeners();
+  }
+
+  setBuildCallBack(bool b){
+    buildIsOver = b;
+    notifyListeners();
   }
 }

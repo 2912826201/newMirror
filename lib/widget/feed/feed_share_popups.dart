@@ -66,6 +66,11 @@ class FeedSharePopups extends StatelessWidget {
           name: "保存本地", image: "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2620161520.webp");
       feedViewModel.insert(0, a);
     }
+    if(sharedType==3){
+      feedViewModel.removeWhere((element){
+        return element.name=="站内好友";
+      });
+    }
     print('map===================${map.toString()}');
     return Container(
       color: AppColor.white,

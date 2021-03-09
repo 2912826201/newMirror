@@ -13,6 +13,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/profile/topic_list_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
@@ -22,6 +23,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/primary_scrollcontainer.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
@@ -285,7 +287,10 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                             color: context.watch<TopicDetailNotifier>().iconColor,
                           ),
                           onPressed: () {
-                            print("更多");
+                            openShareBottomSheet(
+                                context: context,
+                                map: model.toJson(),
+                                sharedType: 3);
                           },
                         ),
                       ],
