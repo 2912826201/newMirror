@@ -96,7 +96,7 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
     if (widget.model.isTemporary) {
       print("临时的");
       isMyself = true;
-      status = RCSentStatus.Sending;
+      status = widget.model.status;
       sendTime = new DateTime.now().add(new Duration(days: -1)).millisecondsSinceEpoch;
     } else if (Application.profile.uid.toString() == widget.model.msg.senderUserId) {
       isMyself = true;

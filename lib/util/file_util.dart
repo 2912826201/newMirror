@@ -108,7 +108,9 @@ class FileUtil {
   Future<File> writeImageDataToFile(Uint8List imageData, String fileName) async {
     // 由入参来控制文件名 避免同一时间生成的文件名相同
     String filePath = AppConfig.getAppPicDir() + "/" + fileName + ".jpg";
-    return File(filePath).writeAsBytes(imageData);
+    File file = File(filePath);
+    file.writeAsBytesSync(imageData);
+    return file;
   }
 
   //===========================上传部分end===========================

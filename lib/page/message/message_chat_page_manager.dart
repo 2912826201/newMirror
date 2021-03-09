@@ -524,9 +524,11 @@ Future<void> postImage(int start,int end,List<UploadResultModel> uploadResultMod
           uploadResultModelList[uploadResultModelIndex],
           chatTypeId == RCConversationType.Private);
       modelList[i].isTemporary = false;
+      modelList[i].status=RCSentStatus.Sent;
       print("----------成功：modelList[i].msg：${modelList[i].msg.toString()}");
     } else {
       print("--------------上传图片失败");
+      modelList[i].status=RCSentStatus.Failed;
     }
   }
   voidCallback();
