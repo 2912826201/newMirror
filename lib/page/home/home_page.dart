@@ -241,10 +241,9 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     // 发布动态
     return  Consumer<FeedMapNotifier>(
         builder: (context, notifier, child) {
-
-      if (context.watch<FeedMapNotifier>().postFeedModel != null && context.watch<FeedMapNotifier>().isPublish) {
+      if (notifier.postFeedModel != null && notifier.isPublish) {
             print("疯狂)))))))))))))))))))))");
-            PostFeedModel postFeedModel = context.watch<FeedMapNotifier>().postFeedModel;
+            PostFeedModel postFeedModel = notifier.postFeedModel;
             HomeFeedModel homeFeedModel = HomeFeedModel().conversionModel(postFeedModel, context);
             // 定位到main_page页
             Application.ifPageController.index = Application.ifPageController.length - 1;
@@ -255,19 +254,14 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
               attentionKey.currentState.backToTheTop();
             }
             // 插入数据
-            if (attentionKey.currentState != null) {
-              print('========================insertData====1');
-              attentionKey.currentState.insertData(homeFeedModel);
-            } else {
               if(notifier.buildIsOver){
               print('========================insertData====2');
               attentionKey.currentState.insertData(homeFeedModel);
             }
             // 设置不可发布
-            context.watch<FeedMapNotifier>().isPublish = false;
+              notifier.isPublish = false;
             // 发布动态
             pulishFeed(postFeedModel);
-          }
         }
       return Scaffold(
         backgroundColor: AppColor.white,
