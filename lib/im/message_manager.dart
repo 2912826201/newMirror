@@ -135,6 +135,21 @@ class MessageManager {
       }
     }
   }
+  
+  
+  static updateConversationByMessageContent(BuildContext context,String id,{Message msg}){
+    ConversationDto exist = context.read<ConversationNotifier>().getConversationById(id);
+    if(msg==null){
+      exist.content="";
+    }else{
+      exist.content= _convertMsgContent(msg);
+    }
+    if (exist.isTop == 0) {
+      context.read<ConversationNotifier>().insertCommonList([exist]);
+    } else {
+      context.read<ConversationNotifier>().insertTopList([exist]);
+    }
+  }
 
   static ConversationDto _convertMsgToConversation(Message msg) {
     //只处理以下几个ObjectName的消息

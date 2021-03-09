@@ -5,11 +5,15 @@ import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/api.dart';
+import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/database/group_chat_user_information_helper.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/group_chat_user_information_dto.dart';
+import 'package:mirror/data/model/base_response_model.dart';
+import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/message/chat_group_user_model.dart';
@@ -18,6 +22,8 @@ import 'package:mirror/data/model/message/chat_voice_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/data/model/user_model.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -592,7 +598,12 @@ void postVoice(ChatDataModel chatDataModel, String targetId,
 }
 //重新发送消息
 void resetPostMessage(ChatDataModel chatDataModel, VoidCallback voidCallback) async {
-  chatDataModel.msg =await Application.rongCloud.sendVoiceMessage(chatDataModel.msg);
+  Message msg =await Application.rongCloud.sendVoiceMessage(chatDataModel.msg);
+  if(chatDataModel.msg.messageId!=msg.messageId){
+    RongCloud.init().deleteMessageById(chatDataModel.msg,null);
+  }
+  // print("重新发送消息:${chatDataModel.msg.messageId},${msg.messageId}");
+  chatDataModel.msg=msg;
   chatDataModel.isTemporary = false;
   voidCallback();
 }
@@ -772,6 +783,24 @@ String getChatTypeModel(ChatDataModel chatDataModel){
   }
 }
 
+
+
+// 请求动态详情页数据
+getFeedDetail(int feedId,BuildContext context) async {
+  BaseResponseModel feedModel = await feedDetail(id: feedId);
+  if(feedModel.data!=null){
+    List<HomeFeedModel> list = [];
+    list.add(HomeFeedModel.fromJson(feedModel.data));
+    context.read<FeedMapNotifier>().updateFeedMap(list);
+  }
+  // print("----------feedModel:${feedModel.toJson().toString()}");
+  // 跳转动态详情页
+  if( feedModel.code==CODE_SUCCESS||feedModel.code==CODE_NO_DATA){
+    AppRouter.navigateFeedDetailPage(context: context, model:feedModel.data!=null?HomeFeedModel.fromJson(feedModel
+        .data):null, type: 1,
+        errorCode: feedModel.code);
+  }
+}
 
 //todo 之后改为路由跳转
 //判断去拿一个更多界面

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -876,6 +877,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       }
 
       _addPostNoCompleteMessage();
+      print("历史记录${chatDataList.length}");
 
       if (shareMessage != null && chatDataList.length > 0) {
         chatDataList[0].isHaveAnimation = true;
@@ -1405,6 +1407,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
   //重新发送消息
   void _resetPostMessage(int position) async {
+    if(await isContinue()){
+      return;
+    }
     if(chatDataList[position].isTemporary) {
       if(chatDataList[position].type==ChatTypeModel.MESSAGE_TYPE_IMAGE||
           chatDataList[position].type==ChatTypeModel.MESSAGE_TYPE_VIDEO){
@@ -1493,16 +1498,14 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   //重新发送融云数据的正常消息
   void _resetPostMsg(int position){
     ChatDataModel chatDataModel = new ChatDataModel();
-    Message message = chatDataList[position].msg;
     chatDataModel.isTemporary = false;
     chatDataModel.isHaveAnimation = true;
-    chatDataModel.msg = message;
+    chatDataModel.msg = chatDataList[position].msg;
     chatDataModel.msg.sentStatus = 10;
     chatDataModel.msg.sentTime = new DateTime.now().millisecondsSinceEpoch;
     judgeAddAlertTime();
     chatDataList.removeAt(position);
     chatDataList.insert(0, chatDataModel);
-    _addTemporaryMessage(chatDataModel);
     animateToBottom();
 
     if (mounted) {
@@ -1661,8 +1664,17 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     );
   }
 
-
-
+  //当删除消息时，修改外部提示
+  void _updateMessagePageAlert()async{
+    List msgList = new List();
+    msgList = await RongCloud.init().getHistoryMessages(
+        conversation.getType(), conversation.conversationId, new DateTime.now().millisecondsSinceEpoch, 1, 0);
+    if(msgList!=null&&msgList.length>0){
+      MessageManager.updateConversationByMessageContent(context,conversation.id,msg:msgList[0]);
+    }else{
+      MessageManager.updateConversationByMessageContent(context,conversation.id);
+    }
+  }
 
   initTextController() {
     _focusNode.addListener(() {
@@ -1826,6 +1838,30 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         // print("--------------text:$text");
         ToastShow.show(msg: text, context: context);
       }
+    }
+  }
+
+
+  //是否继续
+  Future<bool> isContinue()async{
+    if (ClickUtil.isFastClick()) {
+      print("快速点击");
+      return false;
+    }
+    if(await isOffline()){
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return false;
+    }
+    return true;
+  }
+  Future<bool> isOffline()async{
+    ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile) {
+      return false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      return false;
+    } else {
+      return true;
     }
   }
 
@@ -2175,6 +2211,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     } else if (settingType == "删除") {
       RongCloud.init().deleteMessageById(chatDataList[position].msg, (code) {
         //print("====" + code.toString());
+        _updateMessagePageAlert();
         if (mounted) {
           reload(() {
             _timerCount = 0;
@@ -2197,22 +2234,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     // //print("position：$position--$contentType---${content==null?map.toString():content}----${chatDataList[position].msg.toString()}");
   }
 
-  // 请求动态详情页数据
-  getFeedDetail(int feedId) async {
-    BaseResponseModel feedModel = await feedDetail(id: feedId);
-    if(feedModel.data!=null){
-      List<HomeFeedModel> list = [];
-      list.add(HomeFeedModel.fromJson(feedModel.data));
-      context.read<FeedMapNotifier>().updateFeedMap(list);
-    }
-    // print("----------feedModel:${feedModel.toJson().toString()}");
-    // 跳转动态详情页
-    if( feedModel.code==CODE_SUCCESS||feedModel.code==CODE_NO_DATA){
-      AppRouter.navigateFeedDetailPage(context: context, model:feedModel.data!=null?HomeFeedModel.fromJson(feedModel
-          .data):null, type: 1,
-          errorCode: feedModel.code);
-    }
-  }
+
 
   //所有的item点击事件
   void onMessageClickCallBack(
@@ -2228,7 +2250,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       ToastShow.show(msg: "跳转网页地址: $content", context: context);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_FEED) {
       // ToastShow.show(msg: "跳转动态详情页", context: context);
-      getFeedDetail(map["id"]);
+      getFeedDetail(map["id"],context);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
       ToastShow.show(msg: "跳转播放视频页-$content", context: context);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
@@ -2291,6 +2313,5 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       //print("暂无此类型");
     }
   }
-
 ///------------------------------------各种点击事件  end-----------------------------------------------------------------------///
 }
