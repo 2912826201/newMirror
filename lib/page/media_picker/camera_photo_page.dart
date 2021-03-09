@@ -131,6 +131,8 @@ class CameraPhotoState extends State<CameraPhotoPage> with WidgetsBindingObserve
                               AppRouter.navigateToReleasePage(context);
                             } else if (widget.publishMode == 2) {
                               AppRouter.navigateToReleasePage(context);
+                              Application.ifPageController.index = Application.ifPageController.length - 1;
+                              //FIXME 需要关了摄像头
                             } else {
                               Navigator.pop(context, result);
                             }
