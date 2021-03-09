@@ -1,6 +1,7 @@
 // 隐藏评论的输入框
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
@@ -57,16 +58,23 @@ class CommentInputBoxState extends State<CommentInputBox> {
               onTap: () {},
               child: Container(
                 margin: EdgeInsets.only(left: 16, top: widget.isFeedDetail ? 10 : 0),
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                        // ProfileNotifier value.profile.avatarUri
-                        image: context.watch<TokenNotifier>().isLoggedIn
-                            ? NetworkImage(context.select((ProfileNotifier value) => value.profile.avatarUri))
-                            : AssetImage("images/test/yxlm1.jpeg"),
-                        fit: BoxFit.cover)),
+                child: ClipOval(
+                  child: CachedNetworkImage(
+                    height: 28,
+                    width: 28,
+                    imageUrl: context.watch<ProfileNotifier>().profile.avatarUri!=null?context.watch<ProfileNotifier>
+                      ().profile.avatarUri:"",
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Image.asset(
+                      "images/test.png",
+                      fit: BoxFit.cover,
+                    ),
+                    errorWidget: (context, url, error) => Image.asset(
+                      "images/test.png",
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
               ),
             ),
             GestureDetector(
