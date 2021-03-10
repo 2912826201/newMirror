@@ -195,12 +195,11 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
   Widget _sloganArea() {
     var hellotext = Text(
       _conspicousGreeting,
-      style: TextStyle(fontFamily: 'PingFangSC', fontSize: 23, color: Colors.black, decoration: TextDecoration.none),
+      style: TextStyle(fontSize: 23, color: Colors.black, decoration: TextDecoration.none),
     );
     var subtext = Text(
       _stringOfSubtitle,
       style: TextStyle(
-          fontFamily: "PingFangSC",
           color: Color.fromRGBO(153, 153, 153, 1),
           fontSize: 14,
           decoration: TextDecoration.none),
@@ -245,7 +244,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
       height: 16,
     );
     var palceholderTextStyle =
-        TextStyle(color: Color.fromRGBO(204, 204, 204, 1), fontFamily: 'PingFangSC', fontSize: 16);
+        TextStyle(color: Color.fromRGBO(204, 204, 204, 1), fontSize: 16);
     //输入框的样式
     var inputFieldDecoration = InputDecoration(
         counterText: "",
@@ -301,7 +300,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
       },
       child: Text(
         _titleOfSendTextBtn,
-        style: TextStyle(fontFamily: "PingFangSC", fontSize: 16, color: _smsBtnTitleColor),
+        style: TextStyle(fontSize: 16, color: _smsBtnTitleColor),
       ),
       color: _smsBtnColor,
     );

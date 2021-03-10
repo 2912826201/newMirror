@@ -10,6 +10,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/feed_video_player.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 /// preview_video_page
@@ -49,7 +50,7 @@ class _PreviewVideoState extends State<PreviewVideoPage> {
           backgroundColor: AppColor.black,
           brightness: Brightness.dark,
           leading: CustomAppBarIconButton(
-            icon: Icons.close,
+            svgName: AppIcon.nav_close,
             iconColor: AppColor.white,
             onTap: () {
               Navigator.pop(context);

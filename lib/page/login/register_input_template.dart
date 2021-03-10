@@ -234,10 +234,10 @@ abstract class RegisterInputTemplateState extends State<StatefulWidget> {
   /// 私有属性
   final _backImageUrl = "assets/images/back.png";
   final _themeExplainStyle = TextStyle(
-      fontFamily: "PingFangSC", color: Color.fromRGBO(153, 153, 153, 1), fontSize: 14, decoration: TextDecoration.none);
+      color: Color.fromRGBO(153, 153, 153, 1), fontSize: 14, decoration: TextDecoration.none);
   final _themeStyle =
-      TextStyle(fontFamily: 'PingFangSC', fontSize: 23, color: Colors.black, decoration: TextDecoration.none);
-  final _submitTitleStyle = TextStyle(fontFamily: "PingFangSC", fontSize: 16, color: Color.fromRGBO(153, 153, 153, 1));
+      TextStyle(fontSize: 23, color: Colors.black, decoration: TextDecoration.none);
+  final _submitTitleStyle = TextStyle(fontSize: 16, color: Color.fromRGBO(153, 153, 153, 1));
 
   /// **********************************************
   /// ********************内部逻辑***************************

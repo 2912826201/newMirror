@@ -96,18 +96,21 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     //
     // }
     connectivityListener = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
-      if (result == ConnectivityResult.mobile &&
-          AppPrefs.getPublishFeedLocalInsertData(
-                  "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}") !=
-              null) {
-        pulishFeed(getPublishFeedData());
-      } else if (result == ConnectivityResult.wifi &&
-          //todo 报错
-          AppPrefs.getPublishFeedLocalInsertData(
-                  "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}") !=
-              null) {
-        pulishFeed(getPublishFeedData());
-      } else {}
+      if (context.read<TokenNotifier>().isLoggedIn) {
+        if (AppPrefs.getPublishFeedLocalInsertData(
+                "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}") !=
+            null) {
+          if (result == ConnectivityResult.mobile) {
+            print("移动网");
+            pulishFeed(getPublishFeedData());
+          } else if (result == ConnectivityResult.wifi) {
+            print("wifi");
+            pulishFeed(getPublishFeedData());
+          } else {
+            print("无网了");
+          }
+        }
+      }
     });
   }
 
@@ -231,30 +234,29 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
     super.build(context);
     print("HomePage_____________________________________________build");
     // 发布动态
-    return  Consumer<FeedMapNotifier>(
-        builder: (context, notifier, child) {
+    return Consumer<FeedMapNotifier>(builder: (context, notifier, child) {
       if (notifier.postFeedModel != null && notifier.isPublish) {
-            print("疯狂)))))))))))))))))))))");
-            PostFeedModel postFeedModel = notifier.postFeedModel;
-            HomeFeedModel homeFeedModel = HomeFeedModel().conversionModel(postFeedModel, context);
-            // 定位到main_page页
-            Application.ifPageController.index = Application.ifPageController.length - 1;
-            // 定位到关注页
-            controller.index = 0;
-            // 关注页回到顶部
-            if (attentionKey.currentState != null) {
-              attentionKey.currentState.backToTheTop();
-            }
-            // 插入数据
-              if(notifier.buildIsOver){
-              print('========================insertData====2');
-              attentionKey.currentState.insertData(homeFeedModel);
-            }
-            // 设置不可发布
-              notifier.isPublish = false;
-            // 发布动态
-            pulishFeed(postFeedModel);
+        print("疯狂)))))))))))))))))))))");
+        PostFeedModel postFeedModel = notifier.postFeedModel;
+        HomeFeedModel homeFeedModel = HomeFeedModel().conversionModel(postFeedModel, context);
+        // 定位到main_page页
+        Application.ifPageController.index = Application.ifPageController.length - 1;
+        // 定位到关注页
+        controller.index = 0;
+        // 关注页回到顶部
+        if (attentionKey.currentState != null) {
+          attentionKey.currentState.backToTheTop();
         }
+        // 插入数据
+        if (notifier.buildIsOver) {
+          print('========================insertData====2');
+          attentionKey.currentState.insertData(homeFeedModel);
+        }
+        // 设置不可发布
+        notifier.isPublish = false;
+        // 发布动态
+        pulishFeed(postFeedModel);
+      }
       return Scaffold(
           backgroundColor: AppColor.white,
           appBar: CustomAppBar(
