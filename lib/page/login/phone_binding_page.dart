@@ -23,19 +23,19 @@ class _PhoneBindingPageState extends State<PhoneBindingPage> {
 
   ///主描述样式
   final _mainTitleStyle = TextStyle(
-      fontFamily: "PingFangSC", fontSize: 23, color: Color.fromRGBO(17, 17, 17, 1), decoration: TextDecoration.none);
+      fontSize: 23, color: Color.fromRGBO(17, 17, 17, 1), decoration: TextDecoration.none);
 
   ///副描述的样式
   final _subTitleStyle = TextStyle(
-      fontFamily: "PingFangSC", fontSize: 14, color: Color.fromRGBO(153, 153, 153, 1), decoration: TextDecoration.none);
+      fontSize: 14, color: Color.fromRGBO(153, 153, 153, 1), decoration: TextDecoration.none);
 
   ///按钮上的标题样式 默认时
   final _submitTitleStyle_default = TextStyle(
-      color: Color.fromRGBO(153, 153, 153, 1), decoration: TextDecoration.none, fontFamily: "PingFangSC", fontSize: 16);
+      color: Color.fromRGBO(153, 153, 153, 1), decoration: TextDecoration.none, fontSize: 16);
 
   ///按钮上的标题样式 选中时
   final _submitTitleStyle_Hignlited =
-      TextStyle(color: Colors.white, decoration: TextDecoration.none, fontFamily: "PingFangSC", fontSize: 16);
+      TextStyle(color: Colors.white, decoration: TextDecoration.none, fontSize: 16);
 
   ///未选中的 发送验证码按钮颜色
   final _submitColor_default = Color.fromRGBO(235, 235, 235, 1);
@@ -180,7 +180,7 @@ class _PhoneBindingPageState extends State<PhoneBindingPage> {
         showCursor: true,
         decoration: InputDecoration(
           hintText: _textfieldPlaceholder,
-          hintStyle: TextStyle(color: Color.fromRGBO(204, 204, 204, 1), fontFamily: 'PingFangSC', fontSize: 16),
+          hintStyle: TextStyle(color: Color.fromRGBO(204, 204, 204, 1), fontSize: 16),
           suffix: Container(
             child: null,
             padding: EdgeInsets.all(0),

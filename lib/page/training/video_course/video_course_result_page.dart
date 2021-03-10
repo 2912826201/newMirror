@@ -9,6 +9,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 
 /// video_course_result_page
@@ -43,7 +44,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
         backgroundColor: AppColor.bgBlack,
         brightness: Brightness.dark,
         leading: CustomAppBarIconButton(
-            icon: Icons.close,
+            svgName: AppIcon.nav_close,
             iconColor: AppColor.white,
             onTap: () {
               Navigator.pop(context);
