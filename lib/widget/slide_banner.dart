@@ -59,7 +59,7 @@ class _SlideBannerState extends State<SlideBanner> {
   @override
   void initState() {
     super.initState();
-    if ( widget.model!= null && widget.model.selectedMediaFiles != null) {
+    if (widget.model != null && widget.model.selectedMediaFiles != null) {
       print("图片显示问题:::${widget.model.selectedMediaFiles.list.first.file}");
       imageCount = widget.model.selectedMediaFiles.list.length;
       imageWidth = widget.model.selectedMediaFiles.list.first.sizeInfo.width;
@@ -234,12 +234,12 @@ class _SlideBannerState extends State<SlideBanner> {
                 ? Container(
                     width: ScreenUtil.instance.width,
                     height: height,
-                    child:  widget.model.selectedMediaFiles.list[indexs].file != null
-                            ? Image.file(
-                                widget.model.selectedMediaFiles.list[indexs].file,
-                                fit: BoxFit.cover,
-                              )
-                            : Container())
+                    child: widget.model.selectedMediaFiles.list[indexs].file != null
+                        ? Image.file(
+                            widget.model.selectedMediaFiles.list[indexs].file,
+                            fit: BoxFit.cover,
+                          )
+                        : Container())
                 : Container();
   }
 
@@ -256,20 +256,24 @@ class _SlideBannerState extends State<SlideBanner> {
   setUpLuad() async {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     if (isLoggedIn) {
-      BaseResponseModel model = await laud(id: widget.model.id, laud: widget.model.isLaud == 0 ? 1 : 0);
-      // 点赞/取消赞成功
-      if (model.code == CODE_BLACKED) {
-        ToastShow.show(msg: "你已被拉黑", context: context, gravity: Toast.CENTER);
+      if (context.read<FeedMapNotifier>().postFeedModel != null) {
+        ToastShow.show(msg: "不响应", context: context);
       } else {
-        // print("state:${model.data["state"]}");
-        // if (model.data["state"]) {
-        context
-            .read<FeedMapNotifier>()
-            .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
-        // } else {
-        //   // 失败
-        //   print("shib ");
-        // }
+        BaseResponseModel model = await laud(id: widget.model.id, laud: widget.model.isLaud == 0 ? 1 : 0);
+        // 点赞/取消赞成功
+        if (model.code == CODE_BLACKED) {
+          ToastShow.show(msg: "你已被拉黑", context: context, gravity: Toast.CENTER);
+        } else {
+          // print("state:${model.data["state"]}");
+          // if (model.data["state"]) {
+          context
+              .read<FeedMapNotifier>()
+              .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
+          // } else {
+          //   // 失败
+          //   print("shib ");
+          // }
+        }
       }
     } else {
       // 去登录

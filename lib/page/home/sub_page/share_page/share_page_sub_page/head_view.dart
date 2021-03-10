@@ -55,6 +55,7 @@ class HeadView extends StatefulWidget {
 class HeadViewState extends State<HeadView> {
   double opacity = 0;
   bool isMySelf = false;
+
   // 删除动态
   deleteFeed() async {
     Map<String, dynamic> map = await deletefeed(id: widget.model.id);
@@ -276,28 +277,32 @@ class HeadViewState extends State<HeadView> {
                     child: Image.asset("images/resource/2.0x/ic_dynamic_Set up@2x.png",
                         fit: BoxFit.cover, width: 24, height: 24),
                     onTap: () {
-                      openMoreBottomSheet(
-                          context: context,
-                          lists: context
-                              .read<ProfilePageNotifier>()
-                              .profileUiChangeModel[widget.model.pushId]
-                              .feedStringList,
-                          onItemClickListener: (index) {
-                            switch (context
+                      if (context.read<FeedMapNotifier>().postFeedModel != null) {
+                        ToastShow.show(msg: "不响应", context: context);
+                      } else {
+                        openMoreBottomSheet(
+                            context: context,
+                            lists: context
                                 .read<ProfilePageNotifier>()
                                 .profileUiChangeModel[widget.model.pushId]
-                                .feedStringList[index]) {
-                              case "删除":
-                                deleteFeed();
-                                break;
-                              case "取消关注":
-                                _checkBlackStatus(widget.model.pushId, context, true);
-                                break;
-                              case "举报":
-                                _showDialog();
-                                break;
-                            }
-                          });
+                                .feedStringList,
+                            onItemClickListener: (index) {
+                              switch (context
+                                  .read<ProfilePageNotifier>()
+                                  .profileUiChangeModel[widget.model.pushId]
+                                  .feedStringList[index]) {
+                                case "删除":
+                                  deleteFeed();
+                                  break;
+                                case "取消关注":
+                                  _checkBlackStatus(widget.model.pushId, context, true);
+                                  break;
+                                case "举报":
+                                  _showDialog();
+                                  break;
+                              }
+                            });
+                      }
                     },
                   ),
                 )
