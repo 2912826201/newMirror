@@ -15,6 +15,7 @@ import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/database/region_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/dto/region_dto.dart';
+import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
@@ -158,8 +159,9 @@ Future _initApp() async {
   }
   if (!isTokenValid) {
     Application.token = null;
-    TokenModel tokenModel = await login("anonymous", null, null, null);
-    if (tokenModel != null) {
+    BaseResponseModel responseModel = await login("anonymous", null, null, null);
+    if (responseModel != null&&responseModel.code==200) {
+      TokenModel tokenModel = TokenModel.fromJson(responseModel.data);
       token = TokenDto.fromTokenModel(tokenModel);
       bool result = await TokenDBHelper().insertToken(token);
     } else {

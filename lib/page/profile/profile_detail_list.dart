@@ -101,7 +101,9 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
   @override
   void initState() {
     super.initState();
-    _getDynamicData();
+    Future.delayed(Duration.zero,(){
+      _getDynamicData();
+    });
   }
 
   @override
@@ -155,12 +157,19 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
             ?context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].profileFeedListId.length
             :context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].profileLikeListId.length,
         itemBuilder: (context, index) {
-          int id = widget.type==2
-              ?context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id]
-              .profileFeedListId[index]
-              :context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id]
-              .profileLikeListId[index];
-          HomeFeedModel model = context.read<FeedMapNotifier>().feedMap[id];
+          HomeFeedModel model;
+          if(index>0){
+            try{
+              int id = widget.type==2
+                  ?context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id]
+                  .profileFeedListId[index]
+                  :context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id]
+                  .profileLikeListId[index];
+              model = context.read<FeedMapNotifier>().feedMap[id];
+            }catch(e){
+              print(e);
+            }
+          }
           if (index == 0) {
             return Container(
               height: 10,
@@ -178,6 +187,17 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
               removeFollowChanged: (model) {},
               deleteFeedChanged: (feedId) {
                 context.read<ProfilePageNotifier>().synchronizeIdList(widget.id,feedId);
+                if(widget.type==2&&context.read<ProfilePageNotifier>().profileUiChangeModel[widget.id]
+                    .profileFeedListId.length<2){
+                  print('=====================动态列表删完了');
+                  fllowState = StateResult.RESULTNULL;
+                }else if(widget.type==6&&context.read<ProfilePageNotifier>().profileUiChangeModel[widget.id]
+                    .profileLikeListId.length<2){
+                  print('=====================喜欢列表删完了');
+                  fllowState = StateResult.RESULTNULL;
+                }
+                setState(() {
+                });
                 if(context.read<FeedMapNotifier>().feedMap.containsKey(feedId)){
                   context.read<FeedMapNotifier>().deleteFeed(feedId);
                 }

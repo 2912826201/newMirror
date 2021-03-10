@@ -33,7 +33,10 @@ const int CODE_PARAMETER_ERROR = 300;
 const int CODE_BLACKED = 353;
 // 没有找到回复的主体
 const int CODE_NO_DATA = 404;
-
+//验证码错误或。。
+const int CODE_ERROR = 304;
+//验证码过期或。。、
+const int CODE_EXPIRED = 309;
 //身份认证的类型
 const int AUTH_TYPE_COMMON = 0;
 const int AUTH_TYPE_NONE = 1;
