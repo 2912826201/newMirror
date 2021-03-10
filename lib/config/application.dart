@@ -3,9 +3,11 @@ import 'dart:collection';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:fluro/fluro.dart';
@@ -149,8 +151,9 @@ class Application {
   //公共登出方法
   static appLogout({bool isKicked = false}) async {
     //先取个匿名token
-    TokenModel tokenModel = await login("anonymous", null, null, null);
-    if (tokenModel != null) {
+    BaseResponseModel responseModel = await login("anonymous", null, null, null);
+    if (responseModel != null&&responseModel.code==200) {
+      TokenModel tokenModel = TokenModel.fromJson(responseModel.data);
       TokenDto tokenDto = TokenDto.fromTokenModel(tokenModel);
       if (token.anonymous == 0) {
         print("🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫进入了登录用户登出流程🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫");
@@ -186,6 +189,7 @@ class Application {
         appContext.read<TokenNotifier>().setToken(tokenDto);
       }
     } else {
+      ToastShow.show(msg: responseModel.message, context: appContext);
       //失败的情况下 登出将无token可用 所以不能继续登出
       print("🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫登出流程获取token失败🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫");
     }

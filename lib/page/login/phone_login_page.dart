@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/page/login/sms_code_page.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -154,15 +155,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
   //发送验证码的函数
   _sendMessage() async {
     //如果是发送验证码可以重入的情况，则重新进入，此时不会触发相应的接口
-    if (_reEnterSendSmsPage() == true) {
-      String applicationPhone = Application.sendSmsPhoneNum;
-      applicationPhone ??= this.inputController.text;
-      //手机号前后对不上
-      if (applicationPhone != this.inputController.text) {
-        print("手机号前后对不上，无法发送验证码！");
-        ToastShow.show(msg: "发送频繁，请稍候重试。", context: context);
-        return;
-      }
+    if (_reEnterSendSmsPage()&&Application.sendSmsPhoneNum == this.inputController.text) {
       print("发送验证码页面重入");
       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
         return SmsCodePage(
@@ -178,16 +171,11 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
         _titleOfSendTextBtn = _sendingTitle;
       });
     }
-    bool result = false;
-    result = await sendSms(inputController.text, 0);
-    // if (this.mounted) {
-    //   setState(() {
-    //     _titleOfSendTextBtn = _loggingTitle;
-    //   });
-    // }
-    if (result) {
+    BaseResponseModel responseModel = await sendSms(inputController.text, 0);
+    if (responseModel!=null&&responseModel.code==200) {
       print("发送验证码成功");
       _titleOfSendTextBtn = "发送";
+      Application.smsCodeSendTime = DateTime.now().millisecondsSinceEpoch;
       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
         return SmsCodePage(
           phoneNumber: inputController.text,
@@ -195,20 +183,12 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
         );
       }));
     } else {
-      if (this.mounted) {
-        setState(() {
-          _titleOfSendTextBtn = _sendFaildTitle;
-        });
-      }
-      Timer.periodic(Duration(seconds: 1), (timer) {
-        if (this.mounted) {
-          setState(() {
-            _titleOfSendTextBtn = _resendTitle;
-          });
-        }
-      });
+    ToastShow.show(msg: "${responseModel.message}", context: context);
+    _titleOfSendTextBtn = _resendTitle;
       print("发送验证码失败");
     }
+  setState(() {
+  });
   }
 
 
@@ -310,7 +290,8 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
       height: 44,
       shape: btnStyle,
       onPressed:(){
-        if(_validationJudge()||_reEnterSendSmsPage()){
+        FocusScope.of(context).requestFocus(FocusNode());
+        if(_validationJudge()){
           _sendMessage();
         }else{
        ToastShow.show(msg:"请输入正确的手机号", context: context);

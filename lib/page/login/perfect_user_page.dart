@@ -9,6 +9,7 @@ import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/user_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
@@ -21,6 +22,7 @@ import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/loading.dart';
@@ -238,11 +240,13 @@ class _PerfectUserState extends State<PerfectUserPage> {
       print("完善用户资料成功");
       //成功后重新刷新token
       Loading.hideLoading(context);
-      TokenModel token = await login("refresh_token", null, null, Application.tempToken.refreshToken);
-      if (token != null) {
+      BaseResponseModel responseModel = await login("refresh_token", null, null, Application.tempToken.refreshToken);
+      if (responseModel != null&&responseModel.code==200) {
+        TokenModel token = TokenModel.fromJson(responseModel.data);
         print("刷新用户token成功");
         await _afterLogin(token, context);
       } else {
+        ToastShow.show(msg: responseModel.message, context: context);
         print("刷新用户token失败");
       }
     } else {

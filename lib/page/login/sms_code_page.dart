@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/user_api.dart';
@@ -11,6 +12,7 @@ import 'package:mirror/data/database/profile_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/dto/token_dto.dart';
+import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/machine_model.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
@@ -21,7 +23,9 @@ import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/loading.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/data/model/token_model.dart';
@@ -231,8 +235,8 @@ class _SmsCodePageState extends State<SmsCodePage> {
   }
 
   _smsSendApi() async {
-    bool result = await sendSms(widget.phoneNumber, 0);
-    if (result == true) {
+    BaseResponseModel responseModel = await sendSms(widget.phoneNumber, 0);
+    if (responseModel != null&&responseModel.code==200) {
       print("验证码已发送~");
       //跟新发送sms发送的时间
       Application.smsCodeSendTime = DateTime.now().millisecondsSinceEpoch;
@@ -253,7 +257,16 @@ class _SmsCodePageState extends State<SmsCodePage> {
       height: certificateBtnHeight,
       shape: btnStyle,
       //FIXME 没有做输入长度校验
-      onPressed: _loginWithPhoneCode,
+      onPressed:(){
+        FocusScope.of(context).requestFocus(FocusNode());
+        if(inputController.text.length!=4){
+          ToastShow.show(msg: "请输入正确格式的验证码!", context: context);
+        }else{
+          Loading.showLoading(context);
+          _loginWithPhoneCode();
+        }
+
+      },
       child: Text(
         _titleOfSendTextBtn,
         style: TextStyle(fontFamily: "PingFangSC", fontSize: 16, color: _smsBtnTitleColor),
@@ -269,9 +282,11 @@ class _SmsCodePageState extends State<SmsCodePage> {
   // 验证验证码登录
   _loginWithPhoneCode() async {
     SmsCodePage phoneNumPage = widget;
-    TokenModel token = await login("sms", phoneNumPage.phoneNumber, inputController.text, null);
-    if (token != null) {
+    BaseResponseModel responseModel = await login("sms", phoneNumPage.phoneNumber, inputController.text, null);
+    if (responseModel != null&&responseModel.code==200) {
       print("登录成功");
+      Loading.hideLoading(context);
+      TokenModel token = TokenModel.fromJson(responseModel.data);
       if (token.anonymous == 1 || token.uid == null) {
         //如果token是匿名的或者没有uid则token出了问题
         print("token错误");
@@ -288,7 +303,8 @@ class _SmsCodePageState extends State<SmsCodePage> {
         await _afterLogin(token);
       }
     } else {
-      print("登录失败");
+      Loading.hideLoading(context);
+     ToastShow.show(msg:responseModel.message, context: context);
     }
   }
 
