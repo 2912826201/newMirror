@@ -287,19 +287,30 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       _timer.cancel();
       _timer = null;
     }
+    if(context==null){
+      return;
+    }
     costTime = 0;
     context.read<VoiceAlertData>().changeCallback(showDataTime: DateUtil.formatSecondToStringNum(costTime));
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        if(costTime+1>maxTimeSecond){
+      if(mounted){
+        setState(() {
+          if(costTime+1>maxTimeSecond){
+            _timer.cancel();
+            context.read<VoiceAlertData>().changeCallback(showDataTime: DateUtil.formatSecondToStringNum(costTime+1));
+            hideVoiceView(true);
+          }else{
+            costTime++;
+            context.read<VoiceAlertData>().changeCallback(showDataTime: DateUtil.formatSecondToStringNum(costTime));
+          }
+        });
+      }else{
+        if (_timer != null) {
           _timer.cancel();
-          context.read<VoiceAlertData>().changeCallback(showDataTime: DateUtil.formatSecondToStringNum(costTime+1));
-          hideVoiceView(true);
-        }else{
-          costTime++;
-          context.read<VoiceAlertData>().changeCallback(showDataTime: DateUtil.formatSecondToStringNum(costTime));
+          _timer = null;
         }
-      });
+        return;
+      }
     });
   }
 

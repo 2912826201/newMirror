@@ -179,7 +179,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
   int addEmojiModelIosCurrent=-1;
   int cursorIndexPr=-1;
-  bool isShowEmjiPageWhite=false;
+  // bool isShowEmjiPageWhite=false;
 
   ScrollController textScrollController=ScrollController();
 
@@ -277,41 +277,21 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
-
-  double oldKeyboardHeight=0;
+  double oldBottom=-1;
   // @override
   void didChangeMetrics() {
     super.didChangeMetrics();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (this.context != null) {
         if (MediaQuery.of(this.context).viewInsets.bottom == 0) {
-          //关闭键盘
+          print("关闭键盘");
         } else {
-          //显示键盘
-          print("显示键盘：${Application.keyboardHeight},${MediaQuery.of(this.context).viewInsets.bottom}");
+          print("显示键盘");
           if (Application.keyboardHeight <= MediaQuery.of(this.context).viewInsets.bottom) {
             Application.keyboardHeight = MediaQuery.of(this.context).viewInsets.bottom;
             reload(() {});
-            // if(Application.keyboardHeight>600) {
-            //   reload(() {});
-            // }
           }
         }
-        if(_focusNode.hasFocus){
-          if(MediaQuery.of(this.context).viewInsets.bottom>=oldKeyboardHeight){
-            print("打开键盘");
-            isShowEmjiPageWhite=true;
-          }else{
-            print("自带的收起键盘$_emojiState");
-            _focusNode.unfocus();
-            if(_emojiState){
-              onEmojioClick();
-            }
-          }
-        }else{
-          print("没有焦点：-收起键盘");
-        }
-        oldKeyboardHeight=MediaQuery.of(this.context).viewInsets.bottom;
       }
     });
   }
@@ -495,11 +475,12 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     return MessageInputBar(
       voiceOnTap: _voiceOnTapClick,
       onEmojio: (){
-        isShowEmjiPageWhite=false;
-        reload(() {});
-        Future.delayed(Duration(milliseconds: 10),(){
-          onEmojioClick();
-        });
+        // isShowEmjiPageWhite=false;
+        // reload(() {});
+        // Future.delayed(Duration(milliseconds: 10),(){
+        //   onEmojioClick();
+        // });
+        onEmojioClick();
       },
       isVoice: _isVoiceState,
       voiceFile: _voiceFile,
@@ -528,6 +509,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
               ? ScreenUtil.instance.screenWidthDp - 32 - 32 - 64
               : ScreenUtil.instance.screenWidthDp - 32 - 32 - 64 - 52 - 12),
       child: TextSpanField(
+        onTap: (){
+          // Future.delayed(Duration(milliseconds: 100),(){
+          //   isShowEmjiPageWhite=true;
+          // });
+        },
         scrollController: textScrollController,
         controller: _textController,
         focusNode: _focusNode,
@@ -624,7 +610,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       } else {
         return GestureDetector(
           child: Visibility(
-            visible: !isShowEmjiPageWhite,
+            // visible: !isShowEmjiPageWhite,
+            visible: true,
             child: Container(
               width: double.infinity,
               color: AppColor.transparent,
