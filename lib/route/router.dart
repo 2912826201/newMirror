@@ -620,10 +620,10 @@ class AppRouter {
   }
 
   // 话题详情页
-  static void navigateToTopicDetailPage(BuildContext context, int topicId, {bool isTopicList = false,Function(dynamic
+  static void navigateToTopicDetailPage(BuildContext context, TopicDtoModel topicModel, {bool isTopicList = false,Function(dynamic
       result) callback}) {
     Map<String, dynamic> map = Map();
-    map["topicId"] = topicId;
+    map["topicModel"] = topicModel;
     map["isTopicList"] = isTopicList;
     _navigateToPage(context, pathTopicDetailPage, map,callback: callback);
   }

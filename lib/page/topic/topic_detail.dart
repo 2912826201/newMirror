@@ -29,15 +29,15 @@ import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
 
 class TopicDetail extends StatefulWidget {
-  TopicDetail({Key key, this.topicId,this.isTopicList}) : super(key: key);
-  int topicId;
+  TopicDetail({Key key, this.isTopicList, this.model}) : super(key: key);
   bool isTopicList;
+  TopicDtoModel model;
+
   @override
   TopicDetailState createState() => TopicDetailState();
 }
 
 class TopicDetailState extends State<TopicDetail> with SingleTickerProviderStateMixin {
-  TopicDtoModel model;
 
   // taBar和TabBarView必要的
   TabController _tabController;
@@ -89,6 +89,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   GlobalKey<PrimaryScrollContainerState> leftKey = GlobalKey();
   GlobalKey<PrimaryScrollContainerState> rightKey = GlobalKey();
   bool bigOrSmallScroll = false;
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -99,10 +100,10 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   @override
   void initState() {
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
-    requestTopicDetail();
-    requestRecommendTopic();
-    requestNewestTopic();
-
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      requestRecommendTopic();
+      requestNewestTopic();
+    });
     scrollChildKeys = [leftKey, rightKey];
     _tabController.addListener(() {
       for (int i = 0; i < scrollChildKeys.length; i++) {
@@ -117,14 +118,14 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
         print("足控");
         print("_scrollController:::::::::${_scrollController.offset}");
         if (_scrollController.hasClients) {
-            if (_scrollController.offset >= headSlideHeight - 3) {
-              print("进了");
-              if(!context.read<TopicDetailNotifier>().scrollWatch){
-                context.read<TopicDetailNotifier>().ChangeColor(true);
-              }
-            } else if(context.read<TopicDetailNotifier>().scrollWatch){
-              context.read<TopicDetailNotifier>().ChangeColor(false);
+          if (_scrollController.offset >= headSlideHeight - 3) {
+            print("进了");
+            if (!context.read<TopicDetailNotifier>().scrollWatch) {
+              context.read<TopicDetailNotifier>().ChangeColor(true);
             }
+          } else if (context.read<TopicDetailNotifier>().scrollWatch) {
+            context.read<TopicDetailNotifier>().ChangeColor(false);
+          }
         }
         if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
           if (_tabController.index == 0) {
@@ -138,13 +139,13 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
     super.initState();
   }
 
-  // 请求动态详情接口
-  requestTopicDetail() async {
-    model = await getTopicInfo(topicId: widget.topicId);
-    if (mounted) {
-      setState(() {});
-    }
-  }
+  // // 请求动态详情接口
+  // requestTopicDetail() async {
+  //   model = await getTopicInfo(topicId: widget.topicId);
+  //   if (mounted) {
+  //     setState(() {});
+  //   }
+  // }
 
   // 请求推荐话题动态接口
   requestRecommendTopic() async {
@@ -155,7 +156,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
           recommendLoadStatus = LoadingStatus.STATUS_LOADING;
         });
       }
-      DataResponseModel model = await pullTopicList(type: 5, size: 20, targetId: widget.topicId);
+      DataResponseModel model = await pullTopicList(type: 5, size: 20, targetId: widget.model.id);
       recommendHasNext = model.hasNext;
       if (model.list.isNotEmpty) {
         model.list.forEach((v) {
@@ -186,7 +187,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
         });
       }
       DataResponseModel model =
-          await pullTopicList(type: 4, size: 20, targetId: widget.topicId, lastTime: newestLastTime);
+          await pullTopicList(type: 4, size: 20, targetId: widget.model.id, lastTime: newestLastTime);
       newestLastTime = model.lastTime;
       newestHasNext = model.hasNext;
       if (model.list.isNotEmpty) {
@@ -210,12 +211,12 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
 
   // 请求关注话题
   requestFollowTopic() async {
-    Map<String, dynamic> map = await followTopic(topicId: widget.topicId);
+    Map<String, dynamic> map = await followTopic(topicId: widget.model.id);
     if (map["state"] == true) {
       setState(() {
-        model.isFollow = 1;
+        widget.model.isFollow = 1;
       });
-      if(widget.isTopicList){
+      if (widget.isTopicList) {
         context.read<ProfilePageNotifier>().removeListId(null);
       }
     } else {
@@ -225,13 +226,13 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
 
   // 请求取消关注话题
   requestCancelFollowTopic() async {
-    Map<String, dynamic> map = await cancelFollowTopic(topicId: widget.topicId);
+    Map<String, dynamic> map = await cancelFollowTopic(topicId: widget.model.id);
     if (map["state"] == true) {
       setState(() {
-        model.isFollow = 0;
+        widget.model.isFollow = 0;
       });
-      if(widget.isTopicList){
-        context.read<ProfilePageNotifier>().removeListId(widget.topicId);
+      if (widget.isTopicList) {
+        context.read<ProfilePageNotifier>().removeListId(widget.model.id);
       }
     } else {
       ToastShow.show(msg: "取消关注失败", context: context);
@@ -242,9 +243,9 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   sliverAppBarHeight() {
     // UI图原始高度
     double height = 197.0 - ScreenUtil.instance.statusBarHeight;
-    if (model.description != null) {
+    if (widget.model.description != null) {
       //加上文字高度
-      height += getTextSize(model.description, AppStyle.textRegular14, 10, ScreenUtil.instance.width - 32).height;
+      height += getTextSize(widget.model.description, AppStyle.textRegular14, 10, ScreenUtil.instance.width - 32).height;
       // 文字上下方间距
       height += 25;
     }
@@ -256,7 +257,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: model != null
+        body: widget.model != null
             ? NestedScrollView(
                 controller: _scrollController,
                 headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -264,8 +265,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                     SliverAppBar(
                       expandedHeight: sliverAppBarHeight(),
                       pinned: true,
-                      title: Text("#${model.name}", style: TextStyle(color: context.watch<TopicDetailNotifier>()
-                          .titleColor)),
+                      title: Text("#${widget.model.name}",
+                          style: TextStyle(color: context.watch<TopicDetailNotifier>().titleColor)),
                       leading: new IconButton(
                         icon: Icon(
                           Icons.arrow_back_ios,
@@ -276,21 +277,20 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                         },
                       ),
                       actions: <Widget>[
-                         context.watch<TopicDetailNotifier>().canOnclick?Container(
-                          width: 60,
-                          padding: EdgeInsets.only(top: 14,bottom: 14),
-                          child:_followButton(),
-                        ):Container(),
+                        context.watch<TopicDetailNotifier>().canOnclick
+                            ? Container(
+                                width: 60,
+                                padding: EdgeInsets.only(top: 14, bottom: 14),
+                                child: _followButton(),
+                              )
+                            : Container(),
                         new IconButton(
                           icon: Icon(
                             Icons.wysiwyg,
                             color: context.watch<TopicDetailNotifier>().iconColor,
                           ),
                           onPressed: () {
-                            openShareBottomSheet(
-                                context: context,
-                                map: model.toJson(),
-                                sharedType: 3);
+                            openShareBottomSheet(context: context, map: widget.model.toJson(), sharedType: 3);
                           },
                         ),
                       ],
@@ -307,8 +307,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                             // 头像
                             Positioned(
                                 left: 14,
-                                bottom: model.description != null
-                                    ? (getTextSize(model.description, AppStyle.textRegular14, 10,
+                                bottom: widget.model.description != null
+                                    ? (getTextSize(widget.model.description, AppStyle.textRegular14, 10,
                                                 ScreenUtil.instance.width - 32)
                                             .height +
                                         25 +
@@ -327,15 +327,15 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                           // 圆角
                                           borderRadius: BorderRadius.all(Radius.circular(10.0)),
                                           image: DecorationImage(
-                                              image: NetworkImage(model.avatarUrl ??
+                                              image: NetworkImage(widget.model.avatarUrl ??
                                                   "https://tva1.sinaimg.cn/large/006y8mN6gy1g7aa03bmfpj3069069mx8.jpg"),
                                               fit: BoxFit.cover),
                                           color: AppColor.white)),
                                 )),
                             // 话题内容
                             Positioned(
-                                bottom: model.description != null
-                                    ? (getTextSize(model.description, AppStyle.textRegular14, 10,
+                                bottom: widget.model.description != null
+                                    ? (getTextSize(widget.model.description, AppStyle.textRegular14, 10,
                                                 ScreenUtil.instance.width - 32)
                                             .height +
                                         25)
@@ -352,14 +352,14 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            "#${model.name}",
+                                            "#${widget.model.name}",
                                             style: AppStyle.textMedium16,
                                           ),
                                           SizedBox(
                                             height: 3,
                                           ),
                                           Text(
-                                            "${StringUtil.getNumber(model.feedCount)}条动态",
+                                            "${StringUtil.getNumber(widget.model.feedCount)}条动态",
                                             style: AppStyle.textPrimary3Regular12,
                                           )
                                         ],
@@ -374,14 +374,14 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                   ),
                                 )),
                             // 话题描述
-                            model.description != null
+                            widget.model.description != null
                                 ? Positioned(
                                     bottom: 0,
                                     child: Container(
                                       width: ScreenUtil.instance.width,
                                       padding: EdgeInsets.only(left: 16, top: 12, right: 16, bottom: 12),
                                       child: Text(
-                                        model.description,
+                                        widget.model.description,
                                         style: AppStyle.textRegular14,
                                         maxLines: 10,
                                       ),
@@ -423,7 +423,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                       scrollChildKeys[0],
                       TopicRecommend(
                         topicList: recommendTopicList,
-                        topicId: widget.topicId,
+                        topicId: widget.model.id,
                         loadStatus: recommendLoadStatus,
                         loadText: recommendLoadText,
                         refreshCallBack: (bool) {
@@ -446,7 +446,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                         TopicNewest(
                           topicList: newestTopicList,
                           loadStatus: newestLoadStatus,
-                          topicId: widget.topicId,
+                          topicId: widget.model.id,
                           loadText: newestLoadText,
                           refreshCallBack: (bool) {
                             setState(() {
@@ -464,14 +464,15 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
               )
             : Container());
   }
-  Widget _followButton(){
+
+  Widget _followButton() {
     return GestureDetector(
         onTap: () {
-            if (model.isFollow == 0) {
-              requestFollowTopic();
-            } else {
-              requestCancelFollowTopic();
-            }
+          if (widget.model.isFollow == 0) {
+            requestFollowTopic();
+          } else {
+            requestCancelFollowTopic();
+          }
         },
         child: Container(
             height: 28,
@@ -479,22 +480,22 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(15)),
                 border: Border.all(width: 1, color: AppColor.black)),
-            child: model.isFollow == 0
+            child: widget.model.isFollow == 0
                 ? Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.add,
-                  size: 16,
-                  color: AppColor.black,
-                ),
-                Text("关注", style: AppStyle.textMedium12)
-              ],
-            )
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.add,
+                        size: 16,
+                        color: AppColor.black,
+                      ),
+                      Text("关注", style: AppStyle.textMedium12)
+                    ],
+                  )
                 : Center(
-              child: Text("已关注", style: AppStyle.textMedium12),
-            )));
+                    child: Text("已关注", style: AppStyle.textMedium12),
+                  )));
   }
 }
 
@@ -524,21 +525,20 @@ class TopicDetailTabBarDelegate extends SliverPersistentHeaderDelegate {
   }
 }
 
-
-class TopicDetailNotifier extends ChangeNotifier{
-  Color titleColor=AppColor.transparent;
+class TopicDetailNotifier extends ChangeNotifier {
+  Color titleColor = AppColor.transparent;
   Color iconColor = AppColor.bgWhite;
   bool scrollWatch = false;
   bool canOnclick = false;
 
-  void ChangeColor(bool scrollBig){
-    if(scrollBig){
+  void ChangeColor(bool scrollBig) {
+    if (scrollBig) {
       titleColor = AppColor.bgBlack;
       iconColor = AppColor.bgBlack;
       canOnclick = true;
       scrollWatch = true;
-    }else{
-      titleColor=AppColor.transparent;
+    } else {
+      titleColor = AppColor.transparent;
       iconColor = AppColor.bgWhite;
       canOnclick = false;
       scrollWatch = false;

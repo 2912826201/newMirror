@@ -131,20 +131,24 @@ class GetTripleAreaState extends State<GetTripleArea> {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     print("是否点赞了￥${context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud}");
     if (isLoggedIn) {
-      BaseResponseModel model = await laud(
-          id: widget.model.id, laud: context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud == 0 ? 1 : 0);
-      if (model.code == CODE_BLACKED) {
-        ToastShow.show(msg: "你已被拉黑", context: context, gravity: Toast.CENTER);
+      if (context.read<FeedMapNotifier>().postFeedModel != null) {
+        ToastShow.show(msg: "不响应", context: context);
       } else {
-        // 点赞/取消赞成功
-        // print("state:${model.data["state"]}");
-        // if (model.data["state"]) {
-        context
-            .read<FeedMapNotifier>()
-            .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
-        // } else { // 失败
-        //   print("shib ");
-        // }
+        BaseResponseModel model = await laud(
+            id: widget.model.id, laud: context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud == 0 ? 1 : 0);
+        if (model.code == CODE_BLACKED) {
+          ToastShow.show(msg: "你已被拉黑", context: context, gravity: Toast.CENTER);
+        } else {
+          // 点赞/取消赞成功
+          // print("state:${model.data["state"]}");
+          // if (model.data["state"]) {
+          context
+              .read<FeedMapNotifier>()
+              .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
+          // } else { // 失败
+          //   print("shib ");
+          // }
+        }
       }
     } else {
       // 去登录
@@ -232,14 +236,18 @@ class GetTripleAreaState extends State<GetTripleArea> {
                 onTap: () {
                   bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
                   if (isLoggedIn) {
-                    openFeedCommentBottomSheet(
-                        context: context,
-                        feedId: widget.model.id,
-                        callback: () {
-                          if (widget.back != null) {
-                            widget.back();
-                          }
-                        });
+                    if (context.read<FeedMapNotifier>().postFeedModel != null) {
+                      ToastShow.show(msg: "不响应", context: context);
+                    } else {
+                      openFeedCommentBottomSheet(
+                          context: context,
+                          feedId: widget.model.id,
+                          callback: () {
+                            if (widget.back != null) {
+                              widget.back();
+                            }
+                          });
+                    }
                   } else {
                     // 去登录
                     AppRouter.navigateToLoginPage(context);
@@ -250,25 +258,29 @@ class GetTripleAreaState extends State<GetTripleArea> {
           child: GestureDetector(
               onTap: () {
                 if (context.read<TokenNotifier>().isLoggedIn) {
-                  InquireCheckBlack(
-                      checkId: widget.model.pushId,
-                      inquireCheckBlackCallback: (BlackModel blackModel) {
-                        String promptText = "";
-                        if (blackModel.inYouBlack == 1) {
-                          promptText = "发布失败，你已将对方加入黑名单";
-                        } else if (blackModel.inThisBlack == 1) {
-                          promptText = "发布失败，你已被对方加入黑名单";
-                        }
-                        if (promptText != "") {
-                          ToastShow.show(msg: promptText, context: context, gravity: Toast.CENTER);
-                          return;
-                        }
-                        openShareBottomSheet(
-                            context: context,
-                            map: widget.model.toJson(),
-                            chatTypeModel: ChatTypeModel.MESSAGE_TYPE_FEED,
-                            sharedType: 1);
-                      });
+                  if (context.read<FeedMapNotifier>().postFeedModel != null) {
+                    ToastShow.show(msg: "不响应", context: context);
+                  } else {
+                    InquireCheckBlack(
+                        checkId: widget.model.pushId,
+                        inquireCheckBlackCallback: (BlackModel blackModel) {
+                          String promptText = "";
+                          if (blackModel.inYouBlack == 1) {
+                            promptText = "发布失败，你已将对方加入黑名单";
+                          } else if (blackModel.inThisBlack == 1) {
+                            promptText = "发布失败，你已被对方加入黑名单";
+                          }
+                          if (promptText != "") {
+                            ToastShow.show(msg: promptText, context: context, gravity: Toast.CENTER);
+                            return;
+                          }
+                          openShareBottomSheet(
+                              context: context,
+                              map: widget.model.toJson(),
+                              chatTypeModel: ChatTypeModel.MESSAGE_TYPE_FEED,
+                              sharedType: 1);
+                        });
+                  }
                 } else {
                   // 去登录
                   AppRouter.navigateToLoginPage(context);

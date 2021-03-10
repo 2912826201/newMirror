@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -169,6 +170,13 @@ class _QueryFollowState extends State<QueryFollowList> {
       refreshOver = true;
     setState(() {
     });
+    if(buddyList.length>1){
+      for(int i = 0;i<buddyList.length;i++){
+        context.watch<ProfilePageNotifier>().changeIsFollow(true,
+            buddyList[i].relation==0||buddyList[i].relation==2
+                ?true:false, buddyList[i].uid);
+      }
+    }
   }
 
   ///获取粉丝列表
@@ -508,12 +516,6 @@ class _QueryFollowState extends State<QueryFollowList> {
                               (buddyList[index].uid)){
                               context.watch<ProfilePageNotifier>().setFirstModel(buddyList[index].uid,
                                   isFollow:buddyList[index].relation==0||buddyList[index].relation==2?true:false);
-                            }else{
-                              Future.delayed(Duration.zero,(){
-                                context.watch<ProfilePageNotifier>().changeIsFollow(true,
-                                    buddyList[index].relation==0||buddyList[index].relation==2
-                                        ?true:false, buddyList[index].uid);
-                              });
                             }
                             return !context.watch<ProfilePageNotifier>().profileUiChangeModel[buddyList[index].uid]
                                 .isFollow?QueryFollowItem(
@@ -680,11 +682,12 @@ class _FollowItemState extends State<QueryFollowItem> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           InkWell(
-              onTap: () {
+              onTap: () async{
                 if (widget.type == 1 || widget.type == 2) {
                   AppRouter.navigateToMineDetail(context, uid);
                 } else {
-                  AppRouter.navigateToTopicDetailPage(context, widget.tpcModel.id,isTopicList:true,callback: (result){
+                  TopicDtoModel topicModel = await getTopicInfo(topicId: widget.tpcModel.id);
+                  AppRouter.navigateToTopicDetailPage(context, topicModel,isTopicList:true,callback: (result){
                     widget.topicDeleteCallBack();
                   });
                   ///这里处理话题跳转

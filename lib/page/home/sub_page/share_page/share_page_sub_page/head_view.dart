@@ -55,6 +55,7 @@ class HeadView extends StatefulWidget {
 class HeadViewState extends State<HeadView> {
   double opacity = 0;
   bool isMySelf = false;
+
   // 删除动态
   deleteFeed() async {
     Map<String, dynamic> map = await deletefeed(id: widget.model.id);
@@ -134,24 +135,22 @@ class HeadViewState extends State<HeadView> {
         child: Container(
           margin: EdgeInsets.only(right: 6),
           height: 28,
-          padding: EdgeInsets.only(left: 12, top: 6, right: 12, bottom: 6),
+          width: 64,
           decoration: BoxDecoration(
             border: new Border.all(color: AppColor.textPrimary1, width: 1),
             borderRadius: BorderRadius.circular((14.0)),
           ),
           child: Center(
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                Spacer(),
                 Icon(
                   Icons.add,
                   color: AppColor.textPrimary1,
                   size: 16,
                 ),
-                // Container(
-                //   width: 16,
-                //   height: 16,
-                //   child: Image.asset(name),
-                // ),
+
                 SizedBox(
                   width: 4,
                 ),
@@ -164,6 +163,7 @@ class HeadViewState extends State<HeadView> {
                     ),
                   ),
                 ),
+                Spacer(),
               ],
             ),
           ),
@@ -176,7 +176,7 @@ class HeadViewState extends State<HeadView> {
         child: Container(
             margin: EdgeInsets.only(right: 6),
             height: 28,
-            padding: EdgeInsets.only(left: 12, top: 6, right: 12, bottom: 6),
+            width: 64,
             decoration: BoxDecoration(
               border: new Border.all(color: AppColor.textPrimary1, width: 1),
               borderRadius: BorderRadius.circular((14.0)),
@@ -187,7 +187,9 @@ class HeadViewState extends State<HeadView> {
                 style: AppStyle.textRegular12,
               ),
             )),
-        onEnd: () {},
+        onEnd: () {
+
+        },
       );
     }
   }
@@ -276,28 +278,32 @@ class HeadViewState extends State<HeadView> {
                     child: Image.asset("images/resource/2.0x/ic_dynamic_Set up@2x.png",
                         fit: BoxFit.cover, width: 24, height: 24),
                     onTap: () {
-                      openMoreBottomSheet(
-                          context: context,
-                          lists: context
-                              .read<ProfilePageNotifier>()
-                              .profileUiChangeModel[widget.model.pushId]
-                              .feedStringList,
-                          onItemClickListener: (index) {
-                            switch (context
+                      if (context.read<FeedMapNotifier>().postFeedModel != null) {
+                        ToastShow.show(msg: "不响应", context: context);
+                      } else {
+                        openMoreBottomSheet(
+                            context: context,
+                            lists: context
                                 .read<ProfilePageNotifier>()
                                 .profileUiChangeModel[widget.model.pushId]
-                                .feedStringList[index]) {
-                              case "删除":
-                                deleteFeed();
-                                break;
-                              case "取消关注":
-                                _checkBlackStatus(widget.model.pushId, context, true);
-                                break;
-                              case "举报":
-                                _showDialog();
-                                break;
-                            }
-                          });
+                                .feedStringList,
+                            onItemClickListener: (index) {
+                              switch (context
+                                  .read<ProfilePageNotifier>()
+                                  .profileUiChangeModel[widget.model.pushId]
+                                  .feedStringList[index]) {
+                                case "删除":
+                                  deleteFeed();
+                                  break;
+                                case "取消关注":
+                                  _checkBlackStatus(widget.model.pushId, context, true);
+                                  break;
+                                case "举报":
+                                  _showDialog();
+                                  break;
+                              }
+                            });
+                      }
                     },
                   ),
                 )

@@ -71,7 +71,7 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
       children: [
         InkWell(
           onTap: () {
-            _showDialog();
+            _showDialog(1);
           },
           child: _itemSelect(width, AppStyle.textRegular16, "举报"),
         ),
@@ -85,7 +85,7 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
             if (isBlack) {
               _cancelBlack();
             } else {
-              _pullBlack();
+              _showDialog(2);
             }
           },
           child: _itemSelect(width, AppStyle.textRegular16,
@@ -117,7 +117,7 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
         InkWell(
           child: _itemSelect(width, AppStyle.textRegular16, "举报"),
           onTap: () {
-            _showDialog();
+            _showDialog(1);
           },
         ),
         Container(
@@ -131,7 +131,7 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
             if (isBlack) {
               _cancelBlack();
             } else {
-              _pullBlack();
+              _showDialog(2);
             }
           },
           child: _itemSelect(width, AppStyle.textRegular16,
@@ -160,18 +160,24 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
     );
   }
 
-  void _showDialog() {
+  void _showDialog(int type) {
     showAppDialog(
       context,
-      confirm: AppDialogButton("必须举报!", () {
-        _denounceUser();
+      confirm: AppDialogButton(type==1?"必须举报!":type==2?"确认拉黑":"取消拉黑", () {
+        if(type==1){
+          _denounceUser();
+        }else if(type==2){
+          _pullBlack();
+        }else{
+          _cancelBlack();
+        }
         return true;
       }),
       cancel: AppDialogButton("再想想", () {
         return true;
       }),
-      title: "提交举报",
-      info: "确认举报用户",
+      title: type==1?"提交举报":type==2?"确认加入黑名单吗":"取消拉黑",
+      info: type==1?"确认举报用户":"",
     );
   }
 
