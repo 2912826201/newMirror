@@ -1,4 +1,7 @@
 // import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
+import 'dart:async';
+
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 
 // hide NestedScrollView, NestedScrollViewState;
@@ -38,7 +41,6 @@ class TopicDetail extends StatefulWidget {
 }
 
 class TopicDetailState extends State<TopicDetail> with SingleTickerProviderStateMixin {
-
   // taBar和TabBarView必要的
   TabController _tabController;
 
@@ -83,13 +85,13 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   // 最新话题动态请求下一页
   int newestLastTime;
 
-  // GlobalKey<NestedScrollViewState> _key = GlobalKey<NestedScrollViewState>();
-
   List<GlobalKey> scrollChildKeys;
   GlobalKey<PrimaryScrollContainerState> leftKey = GlobalKey();
   GlobalKey<PrimaryScrollContainerState> rightKey = GlobalKey();
   bool bigOrSmallScroll = false;
-
+  StreamController<TopicUiChangeModel> appBarStreamController = StreamController<TopicUiChangeModel>();
+  bool streamCanChange = false;
+  TopicUiChangeModel topicUiChangeModel = TopicUiChangeModel();
   @override
   void dispose() {
     _tabController.dispose();
@@ -120,11 +122,19 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
         if (_scrollController.hasClients) {
           if (_scrollController.offset >= headSlideHeight - 3) {
             print("进了");
-            if (!context.read<TopicDetailNotifier>().scrollWatch) {
-              context.read<TopicDetailNotifier>().ChangeColor(true);
+            if (streamCanChange) {
+              topicUiChangeModel.canOnclick = true;
+              topicUiChangeModel.titleColor = AppColor.black;
+              topicUiChangeModel.iconColor = AppColor.black;
+              appBarStreamController.sink.add(topicUiChangeModel);
+              streamCanChange = false;
             }
-          } else if (context.read<TopicDetailNotifier>().scrollWatch) {
-            context.read<TopicDetailNotifier>().ChangeColor(false);
+          } else if (!streamCanChange) {
+            topicUiChangeModel.canOnclick = false;
+            topicUiChangeModel.titleColor = AppColor.transparent;
+            topicUiChangeModel.iconColor = AppColor.white;
+            appBarStreamController.sink.add(topicUiChangeModel);
+            streamCanChange = true;
           }
         }
         if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
@@ -245,7 +255,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
     double height = 197.0 - ScreenUtil.instance.statusBarHeight;
     if (widget.model.description != null) {
       //加上文字高度
-      height += getTextSize(widget.model.description, AppStyle.textRegular14, 10, ScreenUtil.instance.width - 32).height;
+      height +=
+          getTextSize(widget.model.description, AppStyle.textRegular14, 10, ScreenUtil.instance.width - 32).height;
       // 文字上下方间距
       height += 25;
     }
@@ -262,135 +273,143 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                 controller: _scrollController,
                 headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
                   return <Widget>[
-                    SliverAppBar(
-                      expandedHeight: sliverAppBarHeight(),
-                      pinned: true,
-                      title: Text("#${widget.model.name}",
-                          style: TextStyle(color: context.watch<TopicDetailNotifier>().titleColor)),
-                      leading: new IconButton(
-                        icon: Icon(
-                          Icons.arrow_back_ios,
-                          color: context.watch<TopicDetailNotifier>().iconColor,
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                      actions: <Widget>[
-                        context.watch<TopicDetailNotifier>().canOnclick
-                            ? Container(
-                                width: 60,
-                                padding: EdgeInsets.only(top: 14, bottom: 14),
-                                child: _followButton(),
-                              )
-                            : Container(),
-                        new IconButton(
-                          icon: Icon(
-                            Icons.wysiwyg,
-                            color: context.watch<TopicDetailNotifier>().iconColor,
-                          ),
-                          onPressed: () {
-                            openShareBottomSheet(context: context, map: widget.model.toJson(), sharedType: 3);
-                          },
-                        ),
-                      ],
-                      backgroundColor: AppColor.white,
-                      flexibleSpace: FlexibleSpaceBar(
-                        background: Stack(
-                          children: [
-                            // 背景颜色
-                            Container(
-                              height: 128,
-                              width: ScreenUtil.instance.width,
-                              color: AppColor.bgBlack,
+                    StreamBuilder<TopicUiChangeModel>(
+                        initialData: topicUiChangeModel,
+                        stream: appBarStreamController.stream,
+                        builder: (BuildContext stramContext, AsyncSnapshot<TopicUiChangeModel> snapshot) {
+                          return SliverAppBar(
+                            expandedHeight: sliverAppBarHeight(),
+                            pinned: true,
+                            title: Text(
+                              "${widget.model.name}",
+                              style:
+                                  TextStyle(fontWeight: FontWeight.w500, fontSize: 18, color: snapshot.data.titleColor),
                             ),
-                            // 头像
-                            Positioned(
-                                left: 14,
-                                bottom: widget.model.description != null
-                                    ? (getTextSize(widget.model.description, AppStyle.textRegular14, 10,
-                                                ScreenUtil.instance.width - 32)
-                                            .height +
-                                        25 +
-                                        13)
-                                    : 13,
-                                child: Container(
-                                  width: 71,
-                                  height: 71,
-                                  padding: EdgeInsets.all(2),
-                                  decoration: BoxDecoration(
-                                      // 圆角
-                                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                                      color: AppColor.white),
-                                  child: Container(
-                                      decoration: BoxDecoration(
-                                          // 圆角
-                                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                                          image: DecorationImage(
-                                              image: NetworkImage(widget.model.avatarUrl ??
-                                                  "https://tva1.sinaimg.cn/large/006y8mN6gy1g7aa03bmfpj3069069mx8.jpg"),
-                                              fit: BoxFit.cover),
-                                          color: AppColor.white)),
-                                )),
-                            // 话题内容
-                            Positioned(
-                                bottom: widget.model.description != null
-                                    ? (getTextSize(widget.model.description, AppStyle.textRegular14, 10,
-                                                ScreenUtil.instance.width - 32)
-                                            .height +
-                                        25)
-                                    : 0,
-                                child: Container(
-                                  height: 69,
-                                  width: ScreenUtil.instance.width - 96,
-                                  margin: EdgeInsets.only(left: 96),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "#${widget.model.name}",
-                                            style: AppStyle.textMedium16,
-                                          ),
-                                          SizedBox(
-                                            height: 3,
-                                          ),
-                                          Text(
-                                            "${StringUtil.getNumber(widget.model.feedCount)}条动态",
-                                            style: AppStyle.textPrimary3Regular12,
-                                          )
-                                        ],
-                                      ),
-                                      // SizedBox(width: 12,),
-                                      Spacer(),
-                                      _followButton(),
-                                      SizedBox(
-                                        width: 16,
-                                      )
-                                    ],
+                            leading: IconButton(
+                              icon: Icon(
+                                Icons.arrow_back_ios,
+                                color: snapshot.data.iconColor,
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            actions: <Widget>[
+                              snapshot.data.canOnclick
+                                  ? Container(
+                                      width: 60,
+                                      padding: EdgeInsets.only(top: 14, bottom: 14),
+                                      child: _followButton(),
+                                    )
+                                  : Container(),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.wysiwyg,
+                                  color: snapshot.data.iconColor,
+                                ),
+                                onPressed: () {
+                                  openShareBottomSheet(context: context, map: widget.model.toJson(), sharedType: 3);
+                                },
+                              )
+                            ],
+                            backgroundColor: AppColor.white,
+                            flexibleSpace: FlexibleSpaceBar(
+                              background: Stack(
+                                children: [
+                                  // 背景颜色
+                                  Container(
+                                    height: 128,
+                                    width: ScreenUtil.instance.width,
+                                    color: AppColor.bgBlack,
                                   ),
-                                )),
-                            // 话题描述
-                            widget.model.description != null
-                                ? Positioned(
-                                    bottom: 0,
-                                    child: Container(
-                                      width: ScreenUtil.instance.width,
-                                      padding: EdgeInsets.only(left: 16, top: 12, right: 16, bottom: 12),
-                                      child: Text(
-                                        widget.model.description,
-                                        style: AppStyle.textRegular14,
-                                        maxLines: 10,
-                                      ),
-                                    ))
-                                : Container(),
-                          ],
-                        ),
-                      ),
-                    ),
+                                  // 头像
+                                  Positioned(
+                                      left: 14,
+                                      bottom: widget.model.description != null
+                                          ? (getTextSize(widget.model.description, AppStyle.textRegular14, 10,
+                                                      ScreenUtil.instance.width - 32)
+                                                  .height +
+                                              25 +
+                                              13)
+                                          : 13,
+                                      child: Container(
+                                        width: 71,
+                                        height: 71,
+                                        padding: EdgeInsets.all(2),
+                                        decoration: BoxDecoration(
+                                            // 圆角
+                                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                            color: AppColor.white),
+                                        child: Container(
+                                            decoration: BoxDecoration(
+                                                // 圆角
+                                                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                                image: DecorationImage(
+                                                    image: NetworkImage(widget.model.avatarUrl ??
+                                                        "https://tva1.sinaimg.cn/large/006y8mN6gy1g7aa03bmfpj3069069mx8.jpg"),
+                                                    fit: BoxFit.cover),
+                                                color: AppColor.white)),
+                                      )),
+                                  // 话题内容
+                                  Positioned(
+                                      bottom: widget.model.description != null
+                                          ? (getTextSize(widget.model.description, AppStyle.textRegular14, 10,
+                                                      ScreenUtil.instance.width - 32)
+                                                  .height +
+                                              25)
+                                          : 0,
+                                      child: Container(
+                                        height: 69,
+                                        width: ScreenUtil.instance.width - 96,
+                                        margin: EdgeInsets.only(left: 96),
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            Column(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "#${widget.model.name}",
+                                                  style: AppStyle.textMedium16,
+                                                ),
+                                                SizedBox(
+                                                  height: 3,
+                                                ),
+                                                Text(
+                                                  "${StringUtil.getNumber(widget.model.feedCount)}条动态",
+                                                  style: AppStyle.textPrimary3Regular12,
+                                                )
+                                              ],
+                                            ),
+                                            // SizedBox(width: 12,),
+                                            Spacer(),
+                                            _followButton(),
+                                            SizedBox(
+                                              width: 16,
+                                            )
+                                          ],
+                                        ),
+                                      )),
+                                  // 话题描述
+                                  widget.model.description != null
+                                      ? Positioned(
+                                          bottom: 0,
+                                          child: Container(
+                                            width: ScreenUtil.instance.width,
+                                            padding: EdgeInsets.only(left: 16, top: 12, right: 16, bottom: 12),
+                                            child: Text(
+                                              widget.model.description,
+                                              style: AppStyle.textRegular14,
+                                              maxLines: 10,
+                                            ),
+                                          ))
+                                      : Container(),
+                                ],
+                              ),
+                            ),
+                          );
+                        }),
                     SliverPersistentHeader(
                       pinned: true,
                       delegate: TopicDetailTabBarDelegate(
@@ -545,4 +564,10 @@ class TopicDetailNotifier extends ChangeNotifier {
     }
     notifyListeners();
   }
+}
+
+class TopicUiChangeModel {
+  Color titleColor = AppColor.bgBlack;
+  Color iconColor = AppColor.bgBlack;
+  bool canOnclick = true;
 }
