@@ -218,9 +218,6 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
       }
     }
 
-    double _curPageWidth = menuWidth +
-        (_curPageChildCount - 1 + _curArrowCount) * _separatorWidth +
-        _curArrowWidth;
 
     return GestureDetector(
         behavior: HitTestBehavior.opaque,
@@ -245,64 +242,7 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                 removeRight: true,
                 child: Builder(
                   builder: (BuildContext context) {
-                    // var isInverted=false;
-                    //
-                    // if(position.top<(menuHeight + _triangleHeight)*2){
-                    //   isInverted=true;
-                    // }
-
-                    var isInverted1 = position.top-ScreenUtil.instance.statusBarHeight-44< 80;
-                    print("isInverted:${isInverted1}");
-                    print("isInverted1:${position.top-ScreenUtil.instance.statusBarHeight-44}");
-                    // print("1:${MediaQuery.of(context).size.height}");
-                    // print("1:${position.bottom}");
-                    // print("1:${(MediaQuery.of(context).size.height -
-                    //     position.top -
-                    //     position.bottom)/2.0}");
-                    // print("height1:${(position.top +
-                    //     (MediaQuery.of(context).size.height -
-                    //         position.top -
-                    //         position.bottom) /
-                    //         2.0 -
-                    //     (menuHeight + _triangleHeight))}");
-                    //
-                    // print("heiught2:${(menuHeight + _triangleHeight)}");
-
-                    var alignment = Alignment.center;
-                    var customPaintWidth = menuWidth;
-                    var widgetContentWidth = widget.contentWidth;
-
-                    //当长按框的最大宽度小于内容的宽度
-                    //设置内容的宽度是最大宽度
-                    if (widget.contentWidth >
-                        MediaQuery.of(context).size.width -
-                            widget.leftAndRightWidth) {
-                      widgetContentWidth = MediaQuery.of(context).size.width -
-                          widget.leftAndRightWidth;
-                    }
-
-                    //长按框距离用户头像的另一边的宽度
-                    var marginLeftOrRightWidth =
-                        (MediaQuery.of(context).size.width -
-                            widget.leftAndRightWidth / 2 -
-                            widgetContentWidth +
-                            20);
-
-                    //如果内容的宽度小于长按框的宽度-则对齐用户头像位置
-                    if (MediaQuery.of(context).size.width -
-                            marginLeftOrRightWidth -
-                            widget.leftAndRightWidth / 2 <
-                        _curPageWidth) {
-                      print("如果内容的宽度小于长按框的宽度-则对齐用户头像位置");
-                      marginLeftOrRightWidth = 0;
-                      customPaintWidth = widgetContentWidth;
-                    }
-
-                    //长按框距离左右的值
-                    var marginNoMySelf =
-                        EdgeInsets.only(left: 0, right: marginLeftOrRightWidth);
-                    var marginMySelf =
-                        EdgeInsets.only(right: 0, left: marginLeftOrRightWidth);
+                    var isInverted1 = position==null?0:position.top-ScreenUtil.instance.statusBarHeight-44< 80;
 
                     return CustomSingleChildLayout(
                       // 这里计算偏移量
@@ -318,28 +258,24 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                           isInverted1,
                           widget.isMySelf,),
                       child: Container(
-                        color: Colors.deepPurple.withOpacity(0.245),
                         alignment: widget.isMySelf ? Alignment.topRight : Alignment.topLeft,
                         height: menuHeight + _triangleHeight,
-                        // margin: widget.isMySelf ? marginMySelf : marginNoMySelf,
                         width: double.infinity,
                         child: UnconstrainedBox(
                           child: GestureDetector(
                             child: SizedBox(
                               height: menuHeight + _triangleHeight,
                               child: Material(
-                                color: Colors.transparent,
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: <Widget>[
                                     isInverted1
                                         ? Container(
                                             width: menuWidth,
-                                            alignment: alignment,
                                             child: UnconstrainedBox(
                                               child: Container(
                                                 child: CustomPaint(
-                                                  size: Size(_curPageWidth,
+                                                  size: Size(menuWidth,
                                                       _triangleHeight),
                                                   painter: TrianglePainter(
                                                     color:
@@ -406,7 +342,7 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                                               // 中间是ListView
                                               _buildList(
                                                   _curPageChildCount,
-                                                  _curPageWidth,
+                                                  menuWidth,
                                                   _curArrowWidth,
                                                   _curArrowCount),
 
@@ -462,13 +398,11 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                                     isInverted1
                                         ? Container()
                                         : Container(
-                                        width: menuWidth,
-                                        alignment: alignment,
                                         child: UnconstrainedBox(
                                           child: Container(
                                             width: menuWidth,
                                             child: CustomPaint(
-                                              size: Size(_curPageWidth,
+                                              size: Size(menuWidth,
                                                   _triangleHeight),
                                               painter: TrianglePainter(
                                                 color:
@@ -598,6 +532,7 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
     // print("size.width:${size.width}");
     // print("selectedItemOffset:$selectedItemOffset");
     // print("isInverted:$isInverted");
+    // print("menuWidth:$menuWidth");
 
 
 
@@ -607,11 +542,17 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
 
     y=position.top;
 
-    if(isMySelf) {
-      x = -48.0;
-    }else{
-      x= 60.0;
+    double length=0.0;
+    if(contentWidth>menuWidth){
+      length=(contentWidth-menuWidth)/2;
     }
+
+    if(isMySelf) {
+      x = -48.0-length+2;
+    }else{
+      x= 48.0+16.0+length;
+    }
+
 
     if(isInverted){
       y+=contentHeight+11;
