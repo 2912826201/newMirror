@@ -30,6 +30,7 @@ import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/primary_scrollcontainer.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 enum StateResult { HAVERESULT, RESULTNULL }
 
@@ -132,9 +133,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     BlackModel model = await ProfileCheckBlack(widget.userId);
     if (model != null) {
       if (model.inYouBlack == 1) {
-        ToastShow.show(msg: "该用户已被你拉黑", context: context);
+        Toast.show("关注失败，你已将对方加入黑名单", context);
       } else if (model.inThisBlack == 1) {
-        ToastShow.show(msg: "你已被该用户拉黑", context: context);
+        Toast.show("关注失败，你已被对方加入黑名单", context);
       } else {
         _getAttention();
       }
@@ -635,6 +636,16 @@ class ProfilePageNotifier extends ChangeNotifier {
 
   ///FIXME 当用户登出登录时需要重置provider为默认值
 
+
+
+  void loadChange(int id,int load){
+    if(load==0){
+      profileUiChangeModel[id].attentionModel.laudedCount -= 1;
+    }else{
+      profileUiChangeModel[id].attentionModel.laudedCount += 1;
+    }
+   notifyListeners();
+  }
   void removeListId(int id){
     removeId = id;
     notifyListeners();
@@ -714,9 +725,6 @@ class ProfilePageNotifier extends ChangeNotifier {
     profileUiChangeModel[id].feedStringList.clear();
     if (!bl) {
       profileUiChangeModel[id].feedStringList.add("取消关注");
-      profileUiChangeModel[id].attentionModel.followingCount += 1;
-    }else{
-      profileUiChangeModel[id].attentionModel.followingCount -= 1;
     }
     profileUiChangeModel[id].feedStringList.add("举报");
     if(needNotify){

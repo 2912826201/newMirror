@@ -15,6 +15,7 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/image_preview/image_preview_page.dart';
 import 'package:mirror/page/image_preview/image_preview_view.dart';
+import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -261,11 +262,11 @@ class _SlideBannerState extends State<SlideBanner> {
       if (model.code == CODE_BLACKED) {
         ToastShow.show(msg: "你已被拉黑", context: context, gravity: Toast.CENTER);
       } else {
-        // print("state:${model.data["state"]}");
-        // if (model.data["state"]) {
+
         context
             .read<FeedMapNotifier>()
             .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
+        context.read<ProfilePageNotifier>().loadChange(widget.model.pushId, context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud);
         // } else {
         //   // 失败
         //   print("shib ");

@@ -11,9 +11,7 @@ import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/feed/feed_comment_popups.dart';
 import 'package:mirror/widget/rich_text_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 
-import '../../../../if_page.dart';
 
 // 类容评论排版
 class CommentLayout extends StatelessWidget {

@@ -115,7 +115,6 @@ class _QueryFollowState extends State<QueryFollowList> {
     refreshOver = false;
     print('====开始请求搜索用户接口============================');
     SearchUserModel model = await searchFollowUser(text, 6, uids: widget.userId.toString(), lastTime: _lastTime);
-
       if (listPage == 1) {
         _refreshController.loadComplete();
         if (model.list.isNotEmpty) {
@@ -514,17 +513,21 @@ class _QueryFollowState extends State<QueryFollowList> {
                           } else {
                             if(!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey
                               (buddyList[index].uid)){
-                              context.watch<ProfilePageNotifier>().setFirstModel(buddyList[index].uid,
-                                  isFollow:buddyList[index].relation==0||buddyList[index].relation==2?true:false);
+                              context.watch<ProfilePageNotifier>().setFirstModel(buddyList[index].uid,isFollow:
+                              buddyList[index].relation==0||buddyList[index].relation==2?true:false);
                             }
-                            return !context.watch<ProfilePageNotifier>().profileUiChangeModel[buddyList[index].uid]
-                                .isFollow?QueryFollowItem(
-                              type: widget.type,
-                              buddyModel: buddyList[index],
-                              width: width,
-                              userId: widget.userId,
-                              isMySelf: isMySelf,
-                            ):Container();
+                            if(widget.userId!=context.watch<ProfileNotifier>().profile.uid||!context.watch<ProfilePageNotifier>().profileUiChangeModel[buddyList[index].uid]
+                                .isFollow){
+                              return QueryFollowItem(
+                                type: widget.type,
+                                buddyModel: buddyList[index],
+                                width: width,
+                                userId: widget.userId,
+                                isMySelf: isMySelf,
+                              );
+                            }else{
+                              return Container();
+                            }
                           }
                           //type为2的时候展示粉丝
                         } else if (widget.type == 2) {
