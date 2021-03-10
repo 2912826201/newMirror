@@ -346,7 +346,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       bodyArray.add(getMessageInputBar());
       bodyArray.add(bottomSettingBox());
       bodyArray.add(Container(
-        height: ScreenUtil.instance.bottomBarHeight,
+        height: MediaQuery.of(this.context).viewInsets.bottom>0?0.0:ScreenUtil.instance.bottomBarHeight,
         color: AppColor.white,
       ));
     }
@@ -1348,7 +1348,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
   //重新发送消息
   void _resetPostMessage(int position) async {
-    if(await isContinue(context)){
+    if(!(await isContinue(context))){
       return;
     }
     if(chatDataList[position].isTemporary) {
