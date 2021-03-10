@@ -423,9 +423,9 @@ class _FollowButtonState extends State<FollowButton> {
     BlackModel model = await ProfileCheckBlack(widget.id);
     if (model != null) {
       if (model.inYouBlack == 1) {
-        ToastShow.show(msg: "该用户已被你拉黑", context: context);
+        ToastShow.show(msg: "关注失败，你已将对方加入黑名单", context: context);
       } else if (model.inThisBlack == 1) {
-        ToastShow.show(msg: "你已被该用户拉黑", context: context);
+        ToastShow.show(msg: "关注失败，你已被对方加入黑名单", context: context);
       } else {
         _getAttention(widget.id);
       }

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/machine_api.dart';
@@ -257,6 +258,9 @@ class VideoDetailPageState extends XCState {
       footer: footerWidget(),
       controller: _refreshController,
       onLoading: () {
+        if(childKey==null||childKey.currentState==null||childKey.currentState.onLoading==null){
+          return;
+        }
         childKey.currentState.onLoading();
       },
       child: CustomScrollView(
@@ -356,6 +360,7 @@ class VideoDetailPageState extends XCState {
   }
 
   Widget _getCourseCommentUi() {
+    print("recommendLoadingStatus:${recommendLoadingStatus}");
     return SliverToBoxAdapter(
       child: Visibility(
         visible: recommendLoadingStatus == LoadingStatus.STATUS_COMPLETED,
@@ -453,6 +458,9 @@ class VideoDetailPageState extends XCState {
   //滑动的回调
   bool _onDragNotification(ScrollNotification notification) {
     ScrollMetrics metrics = notification.metrics;
+    if(childKey==null||childKey.currentState==null||childKey.currentState.scrollHeightOld==null){
+      return false;
+    }
     childKey.currentState.scrollHeightOld = metrics.pixels;
     if (metrics.pixels < 10) {
       if (isBouncingScrollPhysics) {
@@ -473,7 +481,11 @@ class VideoDetailPageState extends XCState {
   }
 
   //分享的点击事件
-  void _shareBtnClick() {
+  void _shareBtnClick()async {
+    if(await isOffline()){
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
     if (!(context != null && isLoggedIn)) {
       ToastShow.show(msg: "请先登陆app!", context: context);
       AppRouter.navigateToLoginPage(context);
@@ -488,6 +500,10 @@ class VideoDetailPageState extends XCState {
 
   //收藏按钮
   void _favorBtnClick() async {
+    if(await isOffline()){
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
     if (!(mounted &&isLoggedIn)) {
       ToastShow.show(msg: "请先登陆app!", context: context);
       AppRouter.navigateToLoginPage(context);
@@ -540,6 +556,10 @@ class VideoDetailPageState extends XCState {
 
   //判断有没有完整的下载好视频
   void onJudgeIsDownLoadCompleteVideo() async {
+    if(await isOffline()){
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
     if (videoModel.coursewareDto.videoMapList != null || videoModel.coursewareDto.videoMapList.length > 0) {
       for (Map<String, dynamic> map in videoModel.coursewareDto.videoMapList) {
         String path = await FileUtil().getDownloadedPath(map["videoUrl"]);
@@ -747,6 +767,15 @@ class VideoDetailPageState extends XCState {
 
   //加载网络数据
   void getDataAction({bool isFold = false}) async {
+
+    if(await isOffline()){
+      recommendLoadingStatus = LoadingStatus.STATUS_COMPLETED;
+      if (mounted) {
+        reload(() {});
+      }
+      return;
+    }
+
     //其他人完成训练
     if (recommendTopicList == null || recommendTopicList.length < 1) {
       DataResponseModel dataResponseModel = await getPullList(
@@ -792,7 +821,11 @@ class VideoDetailPageState extends XCState {
   }
 
   ///这是关注的方法
-  onClickAttention() {
+  onClickAttention()async {
+    if(await isOffline()){
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
     if (!(mounted && isLoggedIn)) {
       ToastShow.show(msg: "请先登陆app!", context: context);
       AppRouter.navigateToLoginPage(context);
@@ -816,17 +849,45 @@ class VideoDetailPageState extends XCState {
   }
 
   ///点击了教练
-  onClickCoach() {
+  onClickCoach() async{
+    if(await isOffline()){
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
     AppRouter.navigateToMineDetail(context, videoModel.coachDto?.uid);
   }
 
   ///点击了他人刚刚训练完成
-  onClickOtherComplete(int onClickPosition) {
+  onClickOtherComplete(int onClickPosition) async{
+    if(await isOffline()){
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
     context.read<FeedFlowDataNotifier>().pageSelectPosition = onClickPosition;
     double scrollHeight = specifyItemHeight(onClickPosition);
     AppRouter.navigateToOtherCompleteCoursePage(context, videoModel.id, 7, scrollHeight, pageName, duration: 1000);
   }
 
+  bool isOfflineBool=false;
+  Future<bool> isOffline()async{
+    ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile) {
+      if(isOfflineBool){
+        isOfflineBool=false;
+        getDataAction();
+      }
+      return false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      if(isOfflineBool){
+        isOfflineBool=false;
+        getDataAction();
+      }
+      return false;
+    } else {
+      isOfflineBool=true;
+      return true;
+    }
+  }
   //计算高度
   double specifyItemHeight(int onClickPosition) {
     if (onClickPosition < 1) {

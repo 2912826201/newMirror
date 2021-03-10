@@ -173,6 +173,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
               }
               attentionIdList.insert(0, -1);
               status = Status.concern;
+              context.read<FeedMapNotifier>().setUnReadFeedCount(0);
             } else {
               status = Status.noConcern;
             }

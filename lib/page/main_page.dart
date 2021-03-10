@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/profile/profile_model.dart';
+import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/release_progress_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
@@ -136,6 +138,13 @@ class MainPageState extends XCState {
     });
   }
 
+   _getUnReadFeedCount()async{
+    int count =  await getUnReadFeedCount();
+    if(count!=null){
+      context.read<FeedMapNotifier>().setUnReadFeedCount(count);
+    }
+  }
+
   // 自定义BottomAppBar
   Widget tabbar(int index, BuildContext context, double itemWidth) {
     //设置默认未选中的状态
@@ -149,17 +158,18 @@ class MainPageState extends XCState {
     //构造返回的Widget
     Widget item(BuildContext context) {
       return Container(
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            GestureDetector(
+        child: Stack(
+          children: [
+          Container(
+         child: Center(
+           child:GestureDetector(
               behavior: HitTestBehavior.opaque,
               child: Container(
                 padding: EdgeInsets.only(top: 2, bottom: 2, left: 7.5, right: 7.5),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    Spacer(),
                     Image.asset(imgUrl, width: 28, height: 28),
                     Container(
                         margin: const EdgeInsets.only(left: 6),
@@ -169,7 +179,8 @@ class MainPageState extends XCState {
                             titles[index],
                             style: style,
                           ),
-                        ))
+                        )),
+                    Spacer(),
                   ],
                 ),
                 // ),
@@ -184,19 +195,35 @@ class MainPageState extends XCState {
                       reload(() {
                         currentIndex = index;
                         if (index == 0) {
+                          if(context.read<FeedMapNotifier>()
+                              .unReadFeedCount==0){
+                            _getUnReadFeedCount();
+                          }
                           _start = itemWidth / 7;
                         }
                         if (index == 1) {
+                          if(context.read<FeedMapNotifier>()
+                              .unReadFeedCount==0){
+                            _getUnReadFeedCount();
+                          }
                           _start = itemWidth + itemWidth * 0.4;
                         }
                         if (index == 2) {
                           //在切换到消息页时 请求未读互动通知数
                           getUnReads();
+                          if(context.read<FeedMapNotifier>()
+                              .unReadFeedCount==0){
+                            _getUnReadFeedCount();
+                          }
                           _start = 2 * itemWidth + itemWidth * 0.64;
                         }
                         if (index == 3) {
                           //切换到我的页时刷新关注数
                           _getFollowCount();
+                          if(context.read<FeedMapNotifier>()
+                              .unReadFeedCount==0){
+                            _getUnReadFeedCount();
+                          }
                           _start = 3 * itemWidth + itemWidth * 0.9;
                         }
                       });
@@ -204,7 +231,16 @@ class MainPageState extends XCState {
                   }
                 }
               },
-            ),
+            ) ,),
+
+        ),
+          context.watch<FeedMapNotifier>()
+              .unReadFeedCount!=0&&index==0?Positioned(
+              top: currentIndex == index?12:12,
+              right: currentIndex == index?50:35,
+              child:ClipOval(
+                child: Container(height: 10,width: 10,color: AppColor.mainRed,),
+              ) ):Container()
           ],
         ),
       );
