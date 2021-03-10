@@ -529,6 +529,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         onChanged: _changTextLen,
         textInputAction: TextInputAction.send,
         onSubmitted: (text) {
+          if(ClickUtil.isFastClick(time: 200)){
+            return;
+          }
           if (text.isNotEmpty) {
             _postText(text);
           }
@@ -959,7 +962,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
   //listview 当前显示的是第几个 回调
   void firstEndCallbackListView(int firstIndex, int lastIndex) {
-    if (ClickUtil.isFastClick(time: 200)) {
+    if (ClickUtil.isFastClickFirstEndCallbackListView(time: 200)) {
       return;
     }
     //print('0chatPage----firstIndex: $firstIndex, lastIndex: $lastIndex, isHaveAtMeMsgIndex:$isHaveAtMeMsgIndex，isHaveAtMeMsgPr:$isHaveAtMeMsgPr,isHaveAtMeMsg:$isHaveAtMeMsg');
@@ -1810,6 +1813,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
   //发送按钮点击事件
   _onSubmitClick() {
+    if(ClickUtil.isFastClick(time: 200)){
+      return;
+    }
     String text = _textController.text;
     if (text == null || text.isEmpty || text.length < 1) {
       ToastShow.show(msg: "消息为空,请输入消息！", context: context);
@@ -2177,6 +2183,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       _postSelectMessage(content);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_SELECT) {
       ToastShow.show(msg: "选择列表选择了-底部点击了：$content", context: context);
+      if(ClickUtil.isFastClick(time: 200)){
+        return;
+      }
       // _textController.text=content;
       _postText(content);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_CLICK_ERROR_BTN) {
