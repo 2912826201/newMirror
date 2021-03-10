@@ -25,6 +25,7 @@ import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/loading.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/api/basic_api.dart';
@@ -128,7 +129,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
     return Scaffold(
       appBar: CustomAppBar(
         leading: CustomAppBarIconButton(
-          icon: Icons.close,
+          svgName: AppIcon.nav_close,
           iconColor: AppColor.black,
           onTap: () {
             Navigator.pop(context);
