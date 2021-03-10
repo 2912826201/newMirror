@@ -177,7 +177,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
   int userNumber=0;
 
-  int addEmojiModelIosCurrent=-1;
   int cursorIndexPr=-1;
   // bool isShowEmjiPageWhite=false;
 
@@ -725,18 +724,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
             }else{
               _textController.text += emojiModel.code;
             }
-            if(Application.platform==0) {
-              var setCursor = TextSelection(
-                baseOffset: cursorIndexPr+emojiModel.code.length,
-                extentOffset:cursorIndexPr+emojiModel.code.length,
-              );
-              _textController.selection = setCursor;
-              cursorIndexPr=cursorIndexPr+emojiModel.code.length;
-            }else{
-              addEmojiModelIosCurrent=cursorIndexPr+emojiModel.code.length;
-              _textController.text=_textController.text;
-              cursorIndexPr=cursorIndexPr+emojiModel.code.length;
-            }
+            cursorIndexPr+=emojiModel.code.length;
             _changTextLen(_textController.text);
             Future.delayed(Duration(milliseconds: 100),(){
               textScrollController.jumpTo(textScrollController.position.maxScrollExtent);
@@ -1469,14 +1457,24 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   }
 
   //延迟更新
-  void delayedSetState() {
-    Future.delayed(Duration(milliseconds: 200), () {
-      //print("setState--delayedSetState");
-      _timerCount = 0;
-      if (mounted) {
-        reload(() {});
-      }
-    });
+  void delayedSetState({int milliseconds=200}) {
+    if(milliseconds<=0){
+      Future.delayed(Duration.zero, () {
+        //print("setState--delayedSetState");
+        _timerCount = 0;
+        if (mounted) {
+          reload(() {});
+        }
+      });
+    }else{
+      Future.delayed(Duration(milliseconds: milliseconds), () {
+        //print("setState--delayedSetState");
+        _timerCount = 0;
+        if (mounted) {
+          reload(() {});
+        }
+      });
+    }
   }
 
 //判断接收消息
@@ -1619,15 +1617,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         );
         _textController.selection = setCursor;
       }
-      if (Platform.isIOS &&addEmojiModelIosCurrent>=0) {
-        addEmojiModelIosCurrent=-1;
-        // 设置光标
-        var setCursor = TextSelection(
-          baseOffset: addEmojiModelIosCurrent,
-          extentOffset: addEmojiModelIosCurrent,
-        );
-        _textController.selection = setCursor;
-      }
       if (Platform.isAndroid && isClickAtUser) {
         print("at位置&${atIndex}");
         var setCursor = TextSelection(
@@ -1676,6 +1665,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   initReleaseFeedInputFormatter() {
     _formatter = ReleaseFeedInputFormatter(
       controller: _textController,
+      correctRulesListener:()=>delayedSetState(milliseconds: 0),
       rules: context.read<ChatEnterNotifier>().rules,
       // @回调
       triggerAtCallback: (String str) async {
