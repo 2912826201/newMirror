@@ -32,9 +32,6 @@ class AppColor {
   //N5 辅助、时间文字
   static const textSecondary = Color.fromRGBO(0x99, 0x99, 0x99, 1.0);
 
-
-  static const textSecondaryRound = Color.fromRGBO(0x99, 0x99, 0x99, 0.06);
-
   //N4 Disable、提示文字
   static const textHint = Color.fromRGBO(0xCC, 0xCC, 0xCC, 1.0);
 

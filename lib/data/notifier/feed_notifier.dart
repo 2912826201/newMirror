@@ -29,7 +29,8 @@ class FeedMapNotifier extends ChangeNotifier {
   // 是否是左滑
   bool isSwipeLeft;
   double metricsPixels;
-
+  //关注未读数
+  int unReadFeedCount = 0;
   storageIsSwipeLeft(bool offset) {
     this.isSwipeLeft = offset;
     notifyListeners();
@@ -46,6 +47,10 @@ class FeedMapNotifier extends ChangeNotifier {
     courseCommentHot[commentId] = courseCommentHots;
   }
 
+  void setUnReadFeedCount(int count){
+    unReadFeedCount = count;
+    notifyListeners();
+  }
   void deleteContent(int dtId){
     deleteId = dtId;
     notifyListeners();

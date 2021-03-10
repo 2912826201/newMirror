@@ -79,9 +79,9 @@ class HeadViewState extends State<HeadView> {
         print('inThisBlack===================${blackModel.inThisBlack}');
         print('inYouBlack===================${blackModel.inYouBlack}');
         if (blackModel.inYouBlack == 1) {
-          Toast.show("你已将该用户拉黑", context);
+          Toast.show("关注失败，你已将对方加入黑名单", context);
         } else if (blackModel.inThisBlack == 1) {
-          Toast.show("该用户已将你拉黑", context);
+          Toast.show("关注失败，你已被对方加入黑名单", context);
         } else {
           removeFollowAndFollow(id, context, isCancel);
         }

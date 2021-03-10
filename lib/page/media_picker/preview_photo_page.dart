@@ -8,6 +8,7 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/image_cropper.dart';
 
 /// preview_photo_page
@@ -46,7 +47,7 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
           backgroundColor: AppColor.black,
           brightness: Brightness.dark,
           leading: CustomAppBarIconButton(
-            icon: Icons.close,
+            svgName: AppIcon.nav_close,
             iconColor: AppColor.white,
             onTap: () {
               Navigator.pop(context);

@@ -551,17 +551,16 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                       ),
                     ),
                     Positioned(
-                        right: 16,
-                        top: 0,
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Icon(
-                            Icons.close,
-                            size: 18,
-                          ),
-                        ))
+                      right: 16,
+                      top: 0,
+                      child: AppIconButton(
+                        svgName: AppIcon.nav_close,
+                        iconSize: 18,
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                    )
                   ],
                 ),
               ),

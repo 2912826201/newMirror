@@ -38,8 +38,9 @@ Future<BaseResponseModel> login(String grant_type, String username, String code,
 //发送短信验证码
 //type说明 0-登录验证码
 Future<BaseResponseModel> sendSms(String phoneNumber, int type) async {
-  BaseResponseModel responseModel =
-      await requestApi(SENDSMS, {"phoneNumber": phoneNumber, "type": type}, authType: AUTH_TYPE_NONE);
+  BaseResponseModel responseModel = await requestApi(
+      SENDSMS, {"phoneNumber": phoneNumber, "type": type, "anonymousToken": Application.token.accessToken},
+      authType: AUTH_TYPE_NONE);
   if (responseModel.isSuccess) {
     //TODO 这里实际需要将请求结果处理为具体的业务数据
     return responseModel;
@@ -52,9 +53,8 @@ Future<BaseResponseModel> sendSms(String phoneNumber, int type) async {
 //登出
 //token直接取accessToken不用拼接
 Future<bool> logout() async {
-  BaseResponseModel responseModel =
-      await requestApi(LOGOUT, {"token": Application.token.accessToken}, authType: AUTH_TYPE_NONE,
-          autoHandleLogout: false);
+  BaseResponseModel responseModel = await requestApi(LOGOUT, {"token": Application.token.accessToken},
+      authType: AUTH_TYPE_NONE, autoHandleLogout: false);
   if (responseModel.isSuccess) {
     //TODO 这里实际需要将请求结果处理为具体的业务数据
     return responseModel.code == CODE_SUCCESS;

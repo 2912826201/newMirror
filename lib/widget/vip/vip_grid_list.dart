@@ -96,7 +96,7 @@ class _VipGridState extends State<VipGridList>{
             height: 38,
             width: 38,
             decoration: BoxDecoration(
-              color:widget.vipState==VipState.EXPIRED?AppColor.textSecondaryRound:AppColor.bgVip1,
+              color:widget.vipState==VipState.EXPIRED?AppColor.textSecondary.withOpacity(0.06):AppColor.bgVip1,
               borderRadius: BorderRadius.all(Radius.circular(20))),
           ),),
           Spacer(),

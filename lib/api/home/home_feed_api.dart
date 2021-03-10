@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/data/model/base_response_model.dart';
@@ -41,6 +43,9 @@ const String DELETEFEED = "/appuser/web/feed/delete";
 // 动态详情
 const String DETAIL = "/appuser/web/feed/detail";
 const String GET_COMMENT = "/appuser/web/comment/pullComment";
+
+//获取动态未读数·
+const String getUnReadFeed = "/appuser/web/feed/getFeedUnreadAmount";
 //获取动态列表
 Future<DataResponseModel> getPullList({@required int type, @required int size, int targetId, int lastTime}) async {
   Map<String, dynamic> params = {};
@@ -395,6 +400,15 @@ Future<BaseResponseModel> feedDetail({@required int id}) async {
   if (responseModel.isSuccess) {
     return responseModel;
   } else {
+    return null;
+  }
+}
+
+Future<int> getUnReadFeedCount()async{
+  BaseResponseModel responseModel = await requestApi(getUnReadFeed,{});
+  if(responseModel.isSuccess&&responseModel.data!=null){
+    return responseModel.data["amount"];
+  }else{
     return null;
   }
 }

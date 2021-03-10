@@ -557,7 +557,7 @@ class _GalleryPageState extends State<GalleryPage> {
       hasLeading: widget.publishMode == 2 ? false : true,
       leading: context.select((SelectedMapNotifier value) => value.isAlbumListShow)
           ? CustomAppBarIconButton(
-              icon: Icons.close,
+              svgName: AppIcon.nav_close,
               iconColor: AppColor.white,
               onTap: () {
                 context

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -13,20 +14,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _subTitleTextStyle = TextStyle(
-      fontFamily: "PingFangSC",
-      fontSize: 14,
-      color: Color.fromRGBO(255, 255, 255, 0.65),
-      decoration: TextDecoration.none);
-  final double _btnBorderRadius = 20;
-  final double imageWidthOnBtn = 28;
-  final double btnWidth = 40;
-  final _agreementStyle = TextStyle(
-    fontFamily: "PingFangSC-Regular",
-    fontSize: 12,
-    decoration: TextDecoration.none,
-    color: Color.fromRGBO(255, 255, 255, 0.65),
-  );
+  final double iconSize = 28;
+  final double btnSize = 40;
 
   @override
   void initState() {
@@ -77,22 +66,60 @@ class _LoginPageState extends State<LoginPage> {
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [_sloganArea(), _loginOptions(), _agreementArea()],
+        children: [
+          _sloganArea(),
+          _loginOptions(),
+          SizedBox(
+            height: 12,
+          ),
+          _agreementArea()
+        ],
       ),
-      margin: const EdgeInsets.only(bottom: 63, left: 41),
+      margin: EdgeInsets.only(bottom: 93 + ScreenUtil.instance.bottomBarHeight, left: 41),
     );
   }
 
   Widget _agreementArea() {
-    var agreement = Text(
-      "登录即同意健身的",
-      style: _agreementStyle,
+    return Row(
+      children: [
+        Text(
+          "登录即同意健身的",
+          style: TextStyle(
+            fontSize: 12,
+            color: AppColor.textHint,
+          ),
+        ),
+        GestureDetector(
+          onTap: () {},
+          child: Text(
+            "使用条款",
+            style: TextStyle(
+              fontSize: 12,
+              decoration: TextDecoration.underline,
+              color: AppColor.textSecondary,
+            ),
+          ),
+        ),
+        Text(
+          "和",
+          style: TextStyle(
+            fontSize: 12,
+            color: AppColor.textHint,
+          ),
+        ),
+        GestureDetector(
+          onTap: () {},
+          child: Text(
+            "隐私政策",
+            style: TextStyle(
+              fontSize: 12,
+              decoration: TextDecoration.underline,
+              color: AppColor.textSecondary,
+            ),
+          ),
+        ),
+      ],
     );
-    var t = Container(
-      child: agreement,
-      margin: const EdgeInsets.only(top: 12),
-    );
-    return t;
   }
 
   //
@@ -100,7 +127,10 @@ class _LoginPageState extends State<LoginPage> {
     var subTitle = Padding(
       child: Text(
         "此刻开始分享你的健身生活和经验吧~",
-        style: _subTitleTextStyle,
+        style: TextStyle(
+          fontSize: 14,
+          color: AppColor.white.withOpacity(0.65),
+        ),
         textAlign: TextAlign.left,
       ),
       padding: EdgeInsets.only(top: 9),
@@ -109,7 +139,6 @@ class _LoginPageState extends State<LoginPage> {
       child: Text(
         "Hello~",
         style: TextStyle(
-          fontFamily: "PingFangSC",
           fontSize: 23,
           color: Colors.white,
           decoration: TextDecoration.none,
@@ -118,10 +147,11 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
     var textArea = Container(
-        child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [mainTitle, subTitle],
-    ));
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [mainTitle, subTitle],
+      ),
+    );
 
     return Padding(
       child: Column(children: [
@@ -133,42 +163,69 @@ class _LoginPageState extends State<LoginPage> {
 
   //登录的更多选项
   Widget _loginOptions() {
-    double fixedWidth = 40;
-    double fixedHeight = fixedWidth;
     var label = Text(
       "选择用以下方式登录",
-      style: _subTitleTextStyle,
+      style: TextStyle(
+        fontSize: 14,
+        color: AppColor.textHint,
+      ),
     );
     var btns = Row(
       children: [
         Container(
-          child: _phoneLoginBtn(),
-          color: Colors.transparent,
+          child: AppIconButton(
+            iconSize: iconSize,
+            buttonWidth: btnSize,
+            buttonHeight: btnSize,
+            svgName: AppIcon.login_phone,
+            iconColor: AppColor.white,
+            bgColor: AppColor.black,
+            onTap: _phoneLogin,
+            isCircle: true,
+          ),
           margin: const EdgeInsets.only(right: 12),
-          width: btnWidth,
-          height: btnWidth,
+        ),
+        Application.platform == 0
+            ? Container()
+            : Container(
+                child: AppIconButton(
+                  iconSize: iconSize,
+                  buttonWidth: btnSize,
+                  buttonHeight: btnSize,
+                  svgName: AppIcon.login_apple,
+                  iconColor: AppColor.white,
+                  bgColor: AppColor.black,
+                  onTap: _appleLogin,
+                  isCircle: true,
+                ),
+                margin: const EdgeInsets.only(right: 12),
+              ),
+        Container(
+          child: AppIconButton(
+            iconSize: iconSize,
+            buttonWidth: btnSize,
+            buttonHeight: btnSize,
+            svgName: AppIcon.login_wechat,
+            iconColor: AppColor.white,
+            bgColor: AppColor.black,
+            onTap: _wechatLogin,
+            isCircle: true,
+          ),
+          margin: const EdgeInsets.only(right: 12),
         ),
         Container(
-          child: _appleLoginBtn(),
-          color: Colors.transparent,
+          child: AppIconButton(
+            iconSize: iconSize,
+            buttonWidth: btnSize,
+            buttonHeight: btnSize,
+            svgName: AppIcon.login_qq,
+            iconColor: AppColor.white,
+            bgColor: AppColor.black,
+            onTap: _qqLogin,
+            isCircle: true,
+          ),
           margin: const EdgeInsets.only(right: 12),
-          width: btnWidth,
-          height: btnWidth,
         ),
-        Container(
-          child: _wechatLoginBtn(),
-          color: Colors.transparent,
-          margin: const EdgeInsets.only(right: 12),
-          width: btnWidth,
-          height: btnWidth,
-        ),
-        Container(
-          child: _qqLoginBtn(),
-          color: Colors.transparent,
-          margin: const EdgeInsets.only(right: 12),
-          width: btnWidth,
-          height: btnWidth,
-        )
       ],
     );
     return Column(
@@ -181,105 +238,6 @@ class _LoginPageState extends State<LoginPage> {
         btns
       ],
     );
-  }
-
-  //是否安装了微信
-  bool _weChatReachable() {
-    throw UnimplementedError();
-  }
-
-  //是否安装了QQ
-  bool _qqReachable() {
-    throw UnimplementedError();
-  }
-
-  Widget _phoneLoginBtn() {
-    var t = Container(
-      child: Image.asset(
-        'images/test/281.png',
-        fit: BoxFit.contain,
-      ),
-      width: imageWidthOnBtn,
-      height: imageWidthOnBtn,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(_btnBorderRadius)),
-      ),
-    );
-    var btn = FlatButton(
-      onPressed: _phoneLogin,
-      child: t,
-      color: Colors.black,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(_btnBorderRadius)),
-      height: btnWidth,
-      padding: EdgeInsets.all(0),
-    );
-
-    return btn;
-  }
-
-  Widget _appleLoginBtn() {
-    var t = Container(
-      child: Image.asset(
-        'images/test/281.png',
-        fit: BoxFit.cover,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(
-          Radius.circular(_btnBorderRadius),
-        ),
-      ),
-    );
-    var btn = FlatButton(
-        onPressed: _appleLogin,
-        child: t,
-        color: Colors.black,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(_btnBorderRadius)),
-        height: btnWidth,
-        padding: EdgeInsets.all(0));
-    return btn;
-  }
-
-  Widget _wechatLoginBtn() {
-    var t = Container(
-      child: Image.asset(
-        'images/test/ic_big_share_wechat.png',
-        fit: BoxFit.cover,
-      ),
-      width: imageWidthOnBtn,
-      height: imageWidthOnBtn,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(_btnBorderRadius)),
-      ),
-    );
-    var btn = FlatButton(
-      onPressed: _wechatLogin,
-      child: t,
-      color: Colors.black,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(_btnBorderRadius)),
-      height: btnWidth,
-      padding: EdgeInsets.all(0),
-    );
-    return btn;
-  }
-
-  Widget _qqLoginBtn() {
-    var t = Container(
-      child: Image.asset(
-        'images/test/ic_big_share_qq.png',
-      ),
-      width: imageWidthOnBtn,
-      height: imageWidthOnBtn,
-      decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(_btnBorderRadius)), color: Colors.black),
-    );
-    var btn = FlatButton(
-      onPressed: _qqLogin,
-      child: t,
-      color: Colors.black,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(_btnBorderRadius)),
-      height: btnWidth,
-      padding: EdgeInsets.all(0),
-    );
-    return btn;
   }
 
   _qqLogin() {

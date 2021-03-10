@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -30,6 +31,7 @@ import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/primary_scrollcontainer.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 enum StateResult { HAVERESULT, RESULTNULL }
 
@@ -51,7 +53,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   ///昵称
   String _textName;
 
-
   ///签名
   String _signature;
 
@@ -68,6 +69,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 
   int isBlack = 0;
 
+  bool isScroll = false;
+
+  bool canOnClick = true;
   ///该用户和我的关系
   int relation;
   ScrollController scrollController = ScrollController();
@@ -75,13 +79,14 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   List<GlobalKey> scrollChildKeys;
   GlobalKey<PrimaryScrollContainerState> leftKey = GlobalKey();
   GlobalKey<PrimaryScrollContainerState> rightKey = GlobalKey();
-
+  StreamController<Color> streamController = StreamController<Color>();
   @override
   void initState() {
     super.initState();
-      if(!context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(widget.userId)){
-        context.read<ProfilePageNotifier>().setFirstModel(widget.userId);
-      }
+    if (!context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(widget.userId)) {
+      context.read<ProfilePageNotifier>().setFirstModel(widget.userId);
+    }
+
     ///判断是自己的页面还是别人的页面
     if (context.read<ProfileNotifier>().profile.uid == widget.userId) {
       isMselfId = true;
@@ -106,14 +111,16 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     });
     scrollController.addListener(() {
       if (scrollController.offset >= ScreenUtil.instance.height * 0.33 + _signatureHeight) {
-        if (!context.read<ProfilePageNotifier>().watchScroll) {
-          context.read<ProfilePageNotifier>().changeTitleColor(widget.userId, AppColor.black);
-          context.read<ProfilePageNotifier>().changeOnClick(widget.userId, false);
+        if (!isScroll) {
+          streamController.sink.add(AppColor.black);
+          canOnClick = false;
+          isScroll = true;
         }
       } else {
-        if (context.read<ProfilePageNotifier>().watchScroll) {
-          context.read<ProfilePageNotifier>().changeTitleColor(widget.userId, AppColor.transparent);
-          context.read<ProfilePageNotifier>().changeOnClick(widget.userId, true);
+        if (isScroll) {
+          streamController.sink.add(AppColor.transparent);
+          canOnClick = true;
+          isScroll = false;
         }
       }
     });
@@ -132,9 +139,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     BlackModel model = await ProfileCheckBlack(widget.userId);
     if (model != null) {
       if (model.inYouBlack == 1) {
-        ToastShow.show(msg: "该用户已被你拉黑", context: context);
+        Toast.show("关注失败，你已将对方加入黑名单", context);
       } else if (model.inThisBlack == 1) {
-        ToastShow.show(msg: "你已被该用户拉黑", context: context);
+        Toast.show("关注失败，你已被对方加入黑名单", context);
       } else {
         _getAttention();
       }
@@ -170,6 +177,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     super.dispose();
     print('=======================================个人主页dispose');
   }
+
   @override
   void deactivate() {
     // TODO: implement deactivate
@@ -177,6 +185,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     print('=======================================个人主页deactivate');
     context.read<ProfilePageNotifier>().idListClear(widget.userId);
   }
+
   @override
   Widget build(BuildContext context) {
     print('=======================================个人主页build');
@@ -193,21 +202,24 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     return NestedScrollView(
         controller: scrollController,
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          print('=====================innerBoxIsScrolled$innerBoxIsScrolled');
           return <Widget>[
             ///这里使用NestedScrollView的AppBar，设置pinned: true,表示不会跟随滚动消失
-            SliverAppBar(
+          StreamBuilder<Color>(
+          initialData: AppColor.transparent,
+          stream: streamController.stream,
+          builder: (BuildContext stramContext, AsyncSnapshot<Color> snapshot) {
+          return SliverAppBar(
               brightness: Brightness.light,
               pinned: true,
               forceElevated: false,
               elevation: 0.5,
               centerTitle: true,
-              title: Text(
-                "$_textName",
-                style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 18,
-                    color: context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.userId].titleColor),
-              ),
+              title:  Text(
+                      "$_textName",
+                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18, color: snapshot.data),
+                    ),
+
               leading: InkWell(
                 onTap: () {
                   Navigator.pop(
@@ -272,7 +284,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                   background: Container(
                 child: mineHomeData(height, width),
               )),
-            ),
+            );}),
 
             ///根据布尔值返回视图
             isMselfId
@@ -494,7 +506,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   Widget _mineButton(double height) {
     return GestureDetector(
         onTap: () {
-          if (context.read<ProfilePageNotifier>().profileUiChangeModel[widget.userId].canOnClick) {
+          if (canOnClick) {
             if (isMselfId) {
               ///这里跳转到编辑资料页
               AppRouter.navigateToEditInfomation(context, (result) {
@@ -635,13 +647,23 @@ class ProfilePageNotifier extends ChangeNotifier {
 
   ///FIXME 当用户登出登录时需要重置provider为默认值
 
-  void removeListId(int id){
+  void loadChange(int id, int load) {
+    if (load == 0) {
+      profileUiChangeModel[id].attentionModel.laudedCount -= 1;
+    } else {
+      profileUiChangeModel[id].attentionModel.laudedCount += 1;
+    }
+    notifyListeners();
+  }
+
+  void removeListId(int id) {
     removeId = id;
     notifyListeners();
   }
+
   void setFirstModel(int id, {bool isFollow}) {
     ProfileUiChangeModel model = ProfileUiChangeModel();
-    if(isFollow!=null){
+    if (isFollow != null) {
       model.isFollow = isFollow;
       model.feedStringList.clear();
       if (!isFollow) {
@@ -652,14 +674,14 @@ class ProfilePageNotifier extends ChangeNotifier {
     profileUiChangeModel[id] = model;
   }
 
-  void setFeedIdList(int id,List<int> feedIdList,int type){
-    if(type==2){
-      if(profileUiChangeModel[id].profileFeedListId.isEmpty){
+  void setFeedIdList(int id, List<int> feedIdList, int type) {
+    if (type == 2) {
+      if (profileUiChangeModel[id].profileFeedListId.isEmpty) {
         profileUiChangeModel[id].profileFeedListId.insert(0, -1);
       }
       profileUiChangeModel[id].profileFeedListId.addAll(feedIdList);
-    }else{
-      if(profileUiChangeModel[id].profileLikeListId.isEmpty){
+    } else {
+      if (profileUiChangeModel[id].profileLikeListId.isEmpty) {
         profileUiChangeModel[id].profileLikeListId.insert(0, -1);
       }
       profileUiChangeModel[id].profileLikeListId.addAll(feedIdList);
@@ -667,35 +689,30 @@ class ProfilePageNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-    void idListClear(int id, {int type}){
-    if(type!=null){
-      if(type==2){
+  void idListClear(int id, {int type}) {
+    if (type != null) {
+      if (type == 2) {
         profileUiChangeModel[id].profileFeedListId.clear();
-      }else{
+      } else {
         profileUiChangeModel[id].profileLikeListId.clear();
       }
-    }else{
+    } else {
       profileUiChangeModel[id].profileFeedListId.clear();
       profileUiChangeModel[id].profileLikeListId.clear();
     }
-    }
-  void synchronizeIdList(int id,int deleteId){
-    for(int i = 0; i < profileUiChangeModel[id].profileFeedListId.length; i ++){
-      if(profileUiChangeModel[id].profileFeedListId[i]==deleteId){
+  }
+
+  void synchronizeIdList(int id, int deleteId) {
+    for (int i = 0; i < profileUiChangeModel[id].profileFeedListId.length; i++) {
+      if (profileUiChangeModel[id].profileFeedListId[i] == deleteId) {
         profileUiChangeModel[id].profileFeedListId.removeAt(i);
       }
     }
-   /* profileUiChangeModel[id].profileFeedListId.removeWhere((element){
-      return element==deleteId;
-    });*/
-    for(int i = 0; i < profileUiChangeModel[id].profileLikeListId.length; i ++){
-      if(profileUiChangeModel[id].profileLikeListId[i]==deleteId){
+    for (int i = 0; i < profileUiChangeModel[id].profileLikeListId.length; i++) {
+      if (profileUiChangeModel[id].profileLikeListId[i] == deleteId) {
         profileUiChangeModel[id].profileLikeListId.removeAt(i);
       }
     }
- /*   profileUiChangeModel[id].profileLikeListId.removeWhere((element){
-      return element==deleteId;
-    });*/
     notifyListeners();
   }
 
@@ -704,49 +721,29 @@ class ProfilePageNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  void changeTitleColor(int id, Color titleColor) {
-    profileUiChangeModel[id].titleColor = titleColor;
-    notifyListeners();
-  }
 
-  void changeIsFollow(bool needNotify,bool bl, int id) {
+  void changeIsFollow(bool needNotify, bool bl, int id) {
     profileUiChangeModel[id].isFollow = bl;
     profileUiChangeModel[id].feedStringList.clear();
     if (!bl) {
       profileUiChangeModel[id].feedStringList.add("取消关注");
-      profileUiChangeModel[id].attentionModel.followingCount += 1;
-    }else{
-      profileUiChangeModel[id].attentionModel.followingCount -= 1;
     }
     profileUiChangeModel[id].feedStringList.add("举报");
-    if(needNotify){
+    if (needNotify) {
       notifyListeners();
     }
   }
 
-  void changeOnClick(int id, bool canClick) {
-    if (canClick) {
-      watchScroll = false;
-    } else {
-      watchScroll = true;
-    }
-    profileUiChangeModel[id].canOnClick = canClick;
-    notifyListeners();
-  }
 
   void changeAttentionModel(ProfileModel model, int id) {
     print('=id==========id======id=======id======$id');
     profileUiChangeModel[id].attentionModel = model;
     notifyListeners();
   }
-
-
 }
 
 class ProfileUiChangeModel {
   bool isFollow = false;
-  bool canOnClick = true;
-  Color titleColor = AppColor.transparent;
   ProfileModel attentionModel = ProfileModel();
   List<String> feedStringList = [];
   List<int> profileFeedListId = [];

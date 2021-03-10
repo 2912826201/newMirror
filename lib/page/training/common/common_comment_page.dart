@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -226,6 +227,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       widgetArray.add(SizedBox(height: 12));
       widgetArray.add(getCourseTopEdit(onEditBoxClickBtn));
     }
+    print("111111111111111111111111111111111");
     widgetArray.add(_getCommentItemUi());
     return Container(
       color: AppColor.white,
@@ -241,9 +243,10 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     widgetArray.add(SizedBox(
       height: 23,
     ));
+    print("loadingStatusComment:${loadingStatusComment}");
     if (loadingStatusComment == LoadingStatus.STATUS_LOADING) {
       widgetArray.add(Container());
-    } else {
+    } else if(loadingStatusComment==LoadingStatus.STATUS_COMPLETED){
       if ((isHotOrTime ? (courseCommentHot) : (courseCommentTime)) == null ||
           (isHotOrTime ? (courseCommentHot) : (courseCommentTime)).list == null ||
           (isHotOrTime ? (courseCommentHot) : (courseCommentTime)).list.length < 1) {
@@ -251,6 +254,8 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       } else {
         widgetArray.addAll(getBigCommentList());
       }
+    }else{
+      widgetArray.add(getCommentNoData());
     }
     return Container(
       width: double.infinity,
@@ -570,6 +575,10 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
   //举报评论
   _profileMoreDenounce(int targetId) async {
+    if(await isOffline()){
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return false;
+    }
     bool isSucess = await ProfileMoreDenounce(targetId, 2);
     print("举报：isSucess:$isSucess");
     if (isSucess != null && isSucess) {
@@ -579,6 +588,10 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
   //删除评论
   _deleteComment(int commentId, CommentDtoModel commentDtoModel) async {
+    if(await isOffline()){
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return false;
+    }
     Map<String, dynamic> model = await deleteComment(commentId: commentId);
     print(model);
     if (model != null && model["state"] == true) {
@@ -818,20 +831,34 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     commentLoadingStatusList.addAll(loadingStatusList);
   }
 
+  bool isOfflineBool=false;
+  Future<bool> isOffline()async{
+    ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile) {
+      if(isOfflineBool){
+        isOfflineBool=false;
+        getDataAction();
+      }
+      return false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      if(isOfflineBool){
+        isOfflineBool=false;
+        getDataAction();
+      }
+      return false;
+    } else {
+      isOfflineBool=true;
+      return true;
+    }
+  }
+
   //发布评论
   _publishComment(String text, List<Rule> rules, int commentUId) async {
-    // BlackModel blackModel = await ProfileCheckBlack(commentUId);
-    // String promptText = "";
-    // if (blackModel.inYouBlack == 1) {
-    //   promptText = "发布失败，你已将对方加入黑名单";
-    //   ToastShow.show(msg: promptText, context: context);
-    //   return;
-    // } else if (blackModel.inThisBlack == 1) {
-    //   promptText = "发布失败，你已被对方加入黑名单";
-    //   ToastShow.show(msg: promptText, context: context);
-    //   return;
-    // }
 
+    if(await isOffline()){
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return false;
+    }
     List<AtUsersModel> atListModel = [];
     for (Rule rule in rules) {
       AtUsersModel atModel = new AtUsersModel();
@@ -1033,6 +1060,16 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
 
   //加载网络数据
   void getDataAction({bool isFold = false}) async {
+    if(await isOffline()){
+      loadingStatusComment = LoadingStatus.STATUS_IDEL;
+      widget.refreshController.loadNoData();
+      courseCommentHot=null;
+      courseCommentTime=null;
+      if (mounted) {
+        setState(() {});
+      }
+      return;
+    }
     try{
       print("courseCommentHot：${courseCommentHot.list.length}");
     }catch(e){
@@ -1420,9 +1457,13 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   }
 
   //输入框评论点击事件
-  onEditBoxClickBtn() {
+  onEditBoxClickBtn() async{
     if (ClickUtil.isFastClick()) {
       return;
+    }
+    if(await isOffline()){
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return false;
     }
     if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
       ToastShow.show(msg: "请先登陆app!", context: context);
@@ -1443,9 +1484,13 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   }
 
   //输入框评论点击事件
-  onPostComment(int targetId, int targetType, int replyId, int replyCommentId, {String hintText}) {
+  onPostComment(int targetId, int targetType, int replyId, int replyCommentId, {String hintText}) async{
     if (ClickUtil.isFastClick()) {
       return;
+    }
+    if(await isOffline()){
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return false;
     }
     if (!(mounted && context.read<TokenNotifier>().isLoggedIn)) {
       ToastShow.show(msg: "请先登陆app!", context: context);

@@ -5,20 +5,12 @@ import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:mirror/constant/color.dart';
 
 class ProfileModel{
-  int uid ;
-  int followingCount;
-  int followerCount;
-  int feedCount ;
-  int laudedCount;
-  Color titleColor;
-  ProfileModel(
-    {this.uid = 0,
-      this.followingCount = 0,
-      this.followerCount = 0,
-      this.feedCount = 0,
-      this.laudedCount = 0,
-      });
-
+  int uid;
+  int followingCount = 0;
+  int followerCount = 0;
+  int feedCount = 0;
+  int laudedCount = 0;
+  ProfileModel();
   ProfileModel.fromJson(Map<String, dynamic> json) {
     uid = json["uid"];
     followingCount = json["followingCount"];

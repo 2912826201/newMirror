@@ -54,6 +54,7 @@ class MessageInputBarState extends State<MessageInputBar> {
             top: BorderSide(color: Colors.grey, width: 0.2),
           ),
         ),
+        padding: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
         child: Stack(
           alignment: AlignmentDirectional.bottomEnd,
           children: [
