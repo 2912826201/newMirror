@@ -177,13 +177,12 @@ class _SmsCodePageState extends State<SmsCodePage> {
   Widget _statementArea() {
     var mainTitle = Text(
       "输入验证码",
-      style: TextStyle(fontFamily: 'PingFangSC', fontSize: 23, color: Colors.black, decoration: TextDecoration.none),
+      style: TextStyle(fontSize: 23, color: Colors.black, decoration: TextDecoration.none),
     );
     String phoneNumber = widget.phoneNumber.replaceFirst(RegExp(r'\d{4}'),"****",3);
     var subTitle = Text(
       "短信验证码已发送至 +86 " + phoneNumber,
       style: TextStyle(
-          fontFamily: "PingFangSC",
           color: Color.fromRGBO(153, 153, 153, 1),
           fontSize: 14,
           decoration: TextDecoration.none),
@@ -214,7 +213,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
           counterText: "",
           //不显示字数计数文字
           hintText: _textFieldPlaceholder,
-          hintStyle: TextStyle(color: Color.fromRGBO(204, 204, 204, 1), fontFamily: 'PingFangSC', fontSize: 16),
+          hintStyle: TextStyle(color: Color.fromRGBO(204, 204, 204, 1), fontSize: 16),
           suffixIcon: SmsCounterWidget(
             seconds: 60,
             requestTask: _smsSendApi,
@@ -270,7 +269,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
       },
       child: Text(
         _titleOfSendTextBtn,
-        style: TextStyle(fontFamily: "PingFangSC", fontSize: 16, color: _smsBtnTitleColor),
+        style: TextStyle(fontSize: 16, color: _smsBtnTitleColor),
       ),
       color: _smsBtnColor,
     );
@@ -390,7 +389,7 @@ class _SmsCounterWidgetState extends State<SmsCounterWidget> {
   final _resendText = Text(
     "重新获取",
     style: TextStyle(
-        color: Color.fromRGBO(17, 17, 17, 1), fontFamily: "PingFangSC", fontSize: 13, decoration: TextDecoration.none),
+        color: Color.fromRGBO(17, 17, 17, 1), fontSize: 13, decoration: TextDecoration.none),
   );
 
   final BoxDecoration _initialBorderStyle = BoxDecoration(
@@ -419,11 +418,10 @@ class _SmsCounterWidgetState extends State<SmsCounterWidget> {
   /// 按钮上的倒计时改变的文字
   Text _countText() {
     return Text(
-      '${_getTimeGap()}S',
+      '${_getTimeGap()}s',
       style: TextStyle(
           color: Color.fromRGBO(204, 204, 204, 1),
           fontSize: 13,
-          fontFamily: "PingFangSC",
           decoration: TextDecoration.none),
     );
   }

@@ -1,8 +1,1 @@
-<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
-    "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg class="icon" width="200px" height="200.00px" viewBox="0 0 1024 1024" version="1.1"
-    xmlns="http://www.w3.org/2000/svg">
-    <path d="M0 0h1024v1024H0V0z" fill="#2B353D" fill-opacity="0" />
-    <path d="M254.354286 277.101714l53.485714-49.92 470.345143 504.009143-53.467429 49.92z" fill="#111111" />
-    <path d="M254.354286 729.892571l470.345143-503.990857 53.485714 49.92-470.363429 503.990857z" fill="#111111" />
-</svg>
+<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="icon" width="200px" height="200.00px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h1024v1024H0V0z" fill="#2B353D" fill-opacity="0" /><path d="M254.354286 277.101714l53.485714-49.92 470.345143 504.009143-53.467429 49.92z" fill="#111111" /><path d="M254.354286 729.892571l470.345143-503.990857 53.485714 49.92-470.363429 503.990857z" fill="#111111" /></svg>
