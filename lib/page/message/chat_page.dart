@@ -1750,9 +1750,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       if(blackModel!=null) {
         String text = "";
         if (blackModel.inYouBlack == 1) {
-          text = "你已经将他拉黑了！";
+          text = "发送失败，你已将对方加入黑名单";
         } else if (blackModel.inThisBlack == 1) {
-          text = "他已经将你拉黑了！";
+          text = "发送失败，你已被对方加入黑名单";
         }
         // print("--------------text:$text");
         ToastShow.show(msg: text, context: context);
