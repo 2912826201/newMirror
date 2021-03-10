@@ -345,10 +345,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     if (conversation.getType() != RCConversationType.System) {
       bodyArray.add(getMessageInputBar());
       bodyArray.add(bottomSettingBox());
-      bodyArray.add(Container(
-        height: MediaQuery.of(this.context).viewInsets.bottom>0?0.0:ScreenUtil.instance.bottomBarHeight,
-        color: AppColor.white,
-      ));
+      // bodyArray.add(Container(
+      //   height: MediaQuery.of(this.context).viewInsets.bottom>0?0.0:ScreenUtil.instance.bottomBarHeight,
+      //   color: AppColor.white,
+      // ));
     }
 
     //接收当前会话的新的消息
