@@ -25,6 +25,7 @@ Future<BaseResponseModel> login(String grant_type, String username, String code,
   if (refresh_token != null) {
     params["refresh_token"] = refresh_token;
   }
+  params["anonymousToken"] = Application.token.accessToken;
   BaseResponseModel responseModel = await requestApi(LOGIN, params, authType: AUTH_TYPE_NONE);
   if (responseModel.isSuccess) {
     //TODO 这里实际需要将请求结果处理为具体的业务数据
