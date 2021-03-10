@@ -8,10 +8,12 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/data/model/message/emoji_model.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/page/feed/release_page.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
+import 'package:mirror/page/message/item/emoji_manager.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:provider/provider.dart';
@@ -115,12 +117,24 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
   // 是否点击了弹起的@用户列表
   bool isClickAtUser = false;
 
+  ///是否显示表情
+  bool _emojiState = false;
+
+  ///表情的列表
+  List<EmojiModel> emojiModelList = <EmojiModel>[];
+
+  // 记录唤起表情前的光标位置
+  int emojiCursorPosition;
+
   @override
   void initState() {
     super.initState();
     requestBothFollowList();
+    getEmojiData();
     _scrollController.addListener(() {
-      String atStr = context.read<CommentEnterNotifier>().atSearchStr;
+      String atStr = context
+          .read<CommentEnterNotifier>()
+          .atSearchStr;
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
         if (atStr != null && atStr.isNotEmpty) {
           requestSearchFollowList(atStr);
@@ -137,14 +151,24 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
     _textEditingController.addListener(() {
       // print("值改变了");
       print("监听文字光标${_textEditingController.selection}");
-
-      List<Rule> rules = context.read<CommentEnterNotifier>().rules;
+      List<Rule> rules = context
+          .read<CommentEnterNotifier>()
+          .rules;
       int atIndex = 0;
-      if (context.read<CommentEnterNotifier>().atindexs.isNotEmpty) {
-        atIndex = context.read<CommentEnterNotifier>().atindexs.first.index;
+      if (context
+          .read<CommentEnterNotifier>()
+          .atindexs
+          .isNotEmpty) {
+        atIndex = context
+            .read<CommentEnterNotifier>()
+            .atindexs
+            .first
+            .index;
       }
       print("当前值￥${_textEditingController.text}");
-      print(context.read<CommentEnterNotifier>().textFieldStr);
+      print(context
+          .read<CommentEnterNotifier>()
+          .textFieldStr);
       // 获取光标位置
       int cursorIndex = _textEditingController.selection.baseOffset;
       print("实时光标位置$cursorIndex");
@@ -200,10 +224,14 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       isSwitchCursor = true;
     });
     _formatter = ReleaseFeedInputFormatter(
-      atIndexs: context.read<CommentEnterNotifier>().atindexs,
+      atIndexs: context
+          .read<CommentEnterNotifier>()
+          .atindexs,
       isMonitorTop: false,
       controller: _textEditingController,
-      rules: context.read<CommentEnterNotifier>().rules,
+      rules: context
+          .read<CommentEnterNotifier>()
+          .rules,
       // @回调
       triggerAtCallback: (String str) async {
         if (widget.isShowAt) {
@@ -249,6 +277,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
 
   /// 获得文本输入框样式
   List<RangeStyle> getTextFieldStyle(List<Rule> rules) {
+    print("11111111111");
     List<RangeStyle> result = [];
     for (Rule rule in rules) {
       result.add(
@@ -259,6 +288,13 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
       );
     }
     return result.length == 0 ? null : result;
+  }
+
+  // 获取表情数据
+  getEmojiData() async {
+    //获取表情的数据
+    emojiModelList = await EmojiManager.getEmojiModelList();
+    print("emojiModelList:${emojiModelList.length}");
   }
 
   // 搜索全局用户
@@ -359,24 +395,60 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
     });
   }
 
+  // 计算输入框偏移值
+  double returnInputOffset() {
+    double offset = 0.0;
+    if (_emojiState) {
+      offset = 12 + Application.keyboardHeight;
+    } else {
+      if (MediaQuery
+          .of(context)
+          .viewInsets
+          .bottom == 0 && Platform.isIOS) {
+        offset = ScreenUtil.instance.bottomBarHeight + 12;
+      } else {
+        offset = 12;
+      }
+    }
+    return offset;
+  }
+
   @override
   Widget build(BuildContext context) {
-    List<Rule> rules = context.watch<CommentEnterNotifier>().rules;
-    String atStr = context.watch<CommentEnterNotifier>().atSearchStr;
-    print("键盘高度${MediaQuery.of(context).viewInsets.bottom}");
+    print("111111111111111111111");
+    List<Rule> rules = context
+        .watch<CommentEnterNotifier>()
+        .rules;
+    print("222222222222222222222");
+    String atStr = context
+        .watch<CommentEnterNotifier>()
+        .atSearchStr;
+    print("键盘高度${MediaQuery
+        .of(context)
+        .viewInsets
+        .bottom}");
     return Container(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        padding: EdgeInsets.only(bottom: _emojiState ? 0.0 : MediaQuery
+            .of(context)
+            .viewInsets
+            .bottom),
         decoration: BoxDecoration(
           color: AppColor.white,
           borderRadius: BorderRadius.only(
-            topLeft: context.watch<CommentEnterNotifier>().keyWord != "@" ? Radius.circular(0) : Radius.circular(10),
-            topRight: context.watch<CommentEnterNotifier>().keyWord != "@" ? Radius.circular(0) : Radius.circular(10),
+            topLeft: context
+                .watch<CommentEnterNotifier>()
+                .keyWord != "@" ? Radius.circular(0) : Radius.circular(10),
+            topRight: context
+                .watch<CommentEnterNotifier>()
+                .keyWord != "@" ? Radius.circular(0) : Radius.circular(10),
           ),
         ),
         child: Stack(
           children: [
             Offstage(
-              offstage: context.watch<CommentEnterNotifier>().keyWord != "@",
+              offstage: context
+                  .watch<CommentEnterNotifier>()
+                  .keyWord != "@",
               child: Container(
                 height: 232,
                 decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5)))),
@@ -400,7 +472,9 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                             // At的文字长度
                             int AtLength = followList[index].nickName.length;
                             // 获取输入框内的规则
-                            var rules = context.read<CommentEnterNotifier>().rules;
+                            var rules = context
+                                .read<CommentEnterNotifier>()
+                                .rules;
                             // 检测是否添加过
                             if (rules.isNotEmpty) {
                               for (Rule rule in rules) {
@@ -412,11 +486,20 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                             }
                             // 获取@的光标
                             int atIndex = 0;
-                            if (context.read<CommentEnterNotifier>().atindexs.isNotEmpty) {
-                              atIndex = context.read<CommentEnterNotifier>().atindexs.first.index;
+                            if (context
+                                .read<CommentEnterNotifier>()
+                                .atindexs
+                                .isNotEmpty) {
+                              atIndex = context
+                                  .read<CommentEnterNotifier>()
+                                  .atindexs
+                                  .first
+                                  .index;
                             }
                             // 获取实时搜索文本
-                            String searchStr = context.read<CommentEnterNotifier>().atSearchStr;
+                            String searchStr = context
+                                .read<CommentEnterNotifier>()
+                                .atSearchStr;
                             // @前的文字
                             String atBeforeStr = _textEditingController.text.substring(0, atIndex);
                             // @后的文字
@@ -518,10 +601,14 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
             Container(
                 width: ScreenUtil.instance.screenWidthDp,
                 padding: EdgeInsets.only(
-                    top: context.watch<CommentEnterNotifier>().keyWord != "@" ? 12 : 244,
-                    bottom: MediaQuery.of(context).viewInsets.bottom == 0 && Platform.isIOS
-                        ? ScreenUtil.instance.bottomBarHeight + 12
-                        : 12),
+                  top: context
+                      .watch<CommentEnterNotifier>()
+                      .keyWord != "@" ? 12 : 244,
+                  bottom: returnInputOffset(),
+                  // MediaQuery.of(context).viewInsets.bottom == 0 && Platform.isIOS
+                  //     ? ScreenUtil.instance.bottomBarHeight + 12
+                  //     : 12
+                ),
                 child: Stack(
                   children: [
                     Container(
@@ -570,9 +657,12 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                 }
                                 Navigator.of(context).pop(1);
                               },
-                              // onEditingComplete:() {
-                              //   print("编辑完成");
-                              // },
+                              onTap: () {
+                                // 开启键盘关闭表情
+                                if (!commentFocus.hasFocus) {
+                                  _emojiState = false;
+                                }
+                              },
                               // 装饰器修改外观
                               decoration: InputDecoration(
                                 // 去除下滑线
@@ -589,7 +679,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                               rangeStyles: getTextFieldStyle(rules),
                               textInputAction: TextInputAction.send,
                               inputFormatters:
-                                  inputFormatters == null ? [_formatter] : (inputFormatters..add(_formatter)),
+                              inputFormatters == null ? [_formatter] : (inputFormatters..add(_formatter)),
                             ),
                           ),
                           Positioned(
@@ -621,7 +711,18 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                               right: 16,
                               bottom: 6,
                               child: GestureDetector(
-                                  onTap: () {},
+                                  onTap: () {
+                                    // 隐藏@视图
+                                    context.read<CommentEnterNotifier>().openAtCallback("");
+                                    // 获取光标位置
+                                    emojiCursorPosition = _textEditingController.selection.baseOffset;
+                                    // 关闭输入框
+                                    commentFocus.unfocus();
+                                    // 显示表情刷新Ui
+                                    setState(() {
+                                      _emojiState = true;
+                                    });
+                                  },
                                   child: Image.asset(
                                     "images/resource/2.0x/ic_dynamic_expression@2x.png",
                                     width: 24,
@@ -646,15 +747,19 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                               },
                               child: IgnorePointer(
                                 // 监听输入框的值==""使外层点击不生效。非""手势生效。
-                                ignoring: context.watch<CommentEnterNotifier>().textFieldStr == "",
+                                ignoring: context
+                                    .watch<CommentEnterNotifier>()
+                                    .textFieldStr == "",
                                 child: Container(
-                                    // padding: EdgeInsets.only(top: 6,left: 12,bottom: 6,right: 12),
+                                  // padding: EdgeInsets.only(top: 6,left: 12,bottom: 6,right: 12),
                                     height: 32,
                                     width: 52,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.all(Radius.circular(16)),
                                       // 监听输入框的值动态改变样式
-                                      color: context.watch<CommentEnterNotifier>().textFieldStr != ""
+                                      color: context
+                                          .watch<CommentEnterNotifier>()
+                                          .textFieldStr != ""
                                           ? AppColor.textPrimary1
                                           : AppColor.textSecondary,
                                     ),
@@ -667,8 +772,139 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                               )),
                         ))
                   ],
+                )),
+            Visibility(
+                visible: _emojiState,
+                child: Positioned(
+                  bottom: 0,
+                  child: bottomSettingBox(),
                 ))
           ],
+        ));
+  }
+
+//键盘与表情的框
+  Widget bottomSettingBox() {
+    return Container(
+      color: AppColor.white,
+      child: Stack(
+        children: [
+          emoji(),
+        ],
+      ),
+    );
+  }
+
+  //表情框
+  Widget emoji() {
+    double emojiHeight = Application.keyboardHeight;
+    return Container(
+      height: emojiHeight,
+      width: ScreenUtil.instance.width,
+      decoration: BoxDecoration(
+        color: AppColor.white,
+        border: Border(
+          top: BorderSide(color: Colors.grey, width: 0.2),
+        ),
+      ),
+      child: emojiList(),
+    );
+  }
+
+  //emoji具体是什么界面
+  Widget emojiList() {
+    if (emojiModelList == null || emojiModelList.length < 1) {
+      return Center(
+        child: Text("暂无表情"),
+      );
+    } else {
+      return GestureDetector(
+        child: Container(
+          width: double.infinity,
+          color: AppColor.transparent,
+          child: Column(
+            children: [
+              Expanded(
+                  child: SizedBox(
+                    child: _emojiGridTop(),
+                  )),
+            ],
+          ),
+        ),
+        onTap: () {},
+      );
+    }
+  }
+
+  //获取表情头部的 内嵌的表情
+  Widget _emojiGridTop() {
+    return Container(
+      padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+      child: GridView.builder(
+        physics: BouncingScrollPhysics(),
+        itemCount: emojiModelList.length,
+        gridDelegate:
+        SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8, crossAxisSpacing: 1, mainAxisSpacing: 1),
+        itemBuilder: (context, index) {
+          return _emojiGridItem(emojiModelList[index], index);
+        },
+      ),
+    );
+  }
+
+  //每一个_emojiGridItem
+  Widget _emojiGridItem(EmojiModel emojiModel, int index) {
+    TextStyle textStyle = const TextStyle(
+      fontSize: 24,
+    );
+    print("加载表情数据;${emojiModel.emoji}");
+    return Material(
+        color: Colors.white,
+        child: new InkWell(
+          child: Container(
+            alignment: Alignment.center,
+            child: Text(
+              emojiModel.emoji,
+              style: textStyle,
+            ),
+          ),
+          onTap: () {
+            // 表情光标改动前的位置
+            int changeFrontPosition = emojiCursorPosition ?? 0;
+            print("changeFrontPosition:1:$changeFrontPosition");
+            // 获取输入框内的规则
+            var rules = context
+                .read<CommentEnterNotifier>()
+                .rules;
+            if (emojiCursorPosition != null) {
+              _textEditingController.text =
+                  _textEditingController.text.substring(0, emojiCursorPosition) + emojiModel.code +
+                      _textEditingController.text.substring(emojiCursorPosition, _textEditingController.text.length);
+            } else {
+              _textEditingController.text += emojiModel.code;
+            }
+            context.read<CommentEnterNotifier>().changeCallback(_textEditingController.text);
+            // 记录新的emoji光标位置
+            emojiCursorPosition = emojiCursorPosition + emojiModel.code.length;
+            print(emojiModel.code.length);
+            print("emojiCursorPosition:$emojiCursorPosition");
+            // 这是替换输入的文本修改后面输入的@的规则
+            if (rules.isNotEmpty) {
+              print("不为空");
+              print("changeFrontPosition:2:$changeFrontPosition");
+              int diffLength = emojiCursorPosition - changeFrontPosition;
+              print("diffLength:$diffLength");
+              for (int i = 0; i < rules.length; i++) {
+                if (rules[i].startIndex >= changeFrontPosition) {
+                  int newStartIndex = rules[i].startIndex + diffLength;
+                  int newEndIndex = rules[i].endIndex + diffLength;
+                  rules.replaceRange(i, i + 1, <Rule>[rules[i].copy(newStartIndex, newEndIndex)]);
+                }
+              }
+            }
+            // 替换
+            context.read<CommentEnterNotifier>().replaceRules(rules);
+          },
         ));
   }
 }
@@ -717,6 +953,11 @@ class CommentEnterNotifier extends ChangeNotifier {
 
   addRules(Rule role) {
     this.rules.add(role);
+    notifyListeners();
+  }
+
+  replaceRules(List<Rule> roles) {
+    this.rules = roles;
     notifyListeners();
   }
 

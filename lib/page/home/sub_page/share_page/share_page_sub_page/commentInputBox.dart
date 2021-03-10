@@ -120,32 +120,34 @@ class CommentInputBoxState extends State<CommentInputBox> {
                             atUsers: jsonEncode(atListModel),
                             commentModelCallback: (BaseResponseModel commentModel) {
                               CommentDtoModel comModel;
-                              if (commentModel.code == CODE_BLACKED) {
-                                ToastShow.show(msg: "发布失败，你已被对方加入黑名单", context: context, gravity: Toast.CENTER);
-                              } else if (commentModel.code == CODE_NO_DATA) {
-                                String alertString = "原动态已删除或失效";
-                                ToastShow.show(msg: alertString, context: context, gravity: Toast.CENTER);
-                              } else {
-                                if (commentModel.data != null) {
-                                  comModel = (CommentDtoModel.fromJson(commentModel.data));
-                                  print("发布成功：${comModel.toString()}");
-                                  print("1111111");
-                                  new Future.delayed(Duration.zero, () {
-                                    context.read<FeedMapNotifier>().feedPublishComment(comModel, widget.feedModel.id);
-                                  });
+                              if (commentModel != null) {
+                                if (commentModel.code == CODE_BLACKED) {
+                                  ToastShow.show(msg: commentModel.message, context: context, gravity: Toast.CENTER);
+                                } else if (commentModel.code == CODE_NO_DATA) {
+                                  String alertString = commentModel.message;
+                                  ToastShow.show(msg: alertString, context: context, gravity: Toast.CENTER);
+                                } else {
+                                  if (commentModel.data != null) {
+                                    comModel = (CommentDtoModel.fromJson(commentModel.data));
+                                    print("发布成功：${comModel.toString()}");
+                                    print("1111111");
+                                    new Future.delayed(Duration.zero, () {
+                                      context.read<FeedMapNotifier>().feedPublishComment(comModel, widget.feedModel.id);
+                                    });
 
-                                  print(
-                                      '==========hotComment=====${context.read<FeedMapNotifier>().feedMap[widget.feedModel.id].hotComment.hashCode}');
-                                  print(
-                                      '=======comments========${context.read<FeedMapNotifier>().feedMap[widget.feedModel.id].comments.hashCode}');
-                                  if (context.read<FeedMapNotifier>().feedMap[widget.feedModel.id].hotComment.length <
-                                      2) {
-                                    print("{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{小于二");
-                                    context.read<FeedMapNotifier>().updateHotComment(widget.feedModel.id,
-                                        commentDtoModel: comModel, isDelete: false);
+                                    print(
+                                        '==========hotComment=====${context.read<FeedMapNotifier>().feedMap[widget.feedModel.id].hotComment.hashCode}');
+                                    print(
+                                        '=======comments========${context.read<FeedMapNotifier>().feedMap[widget.feedModel.id].comments.hashCode}');
+                                    if (context.read<FeedMapNotifier>().feedMap[widget.feedModel.id].hotComment.length <
+                                        2) {
+                                      print("{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{小于二");
+                                      context.read<FeedMapNotifier>().updateHotComment(widget.feedModel.id,
+                                          commentDtoModel: comModel, isDelete: false);
+                                    }
+                                    print(
+                                        '=======updateHotComment}}}}}}}}}}}}}}}}}}}}}}}}}${context.read<FeedMapNotifier>().feedMap[widget.feedModel.id].hotComment.toString()}');
                                   }
-                                  print(
-                                      '=======updateHotComment}}}}}}}}}}}}}}}}}}}}}}}}}${context.read<FeedMapNotifier>().feedMap[widget.feedModel.id].hotComment.toString()}');
                                 }
                               }
                               // 关闭评论输入框
