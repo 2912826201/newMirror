@@ -251,14 +251,9 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                     //   isInverted=true;
                     // }
 
-                    var isInverted = (position.top +
-                            (MediaQuery.of(context).size.height -
-                                    position.top -
-                                    position.bottom) /
-                                2.0 -
-                            (menuHeight + _triangleHeight)) <
-                        (menuHeight + _triangleHeight) * 2;
-                    // print("1:${position.top}");
+                    var isInverted1 = position.top-ScreenUtil.instance.statusBarHeight-44< 80;
+                    print("isInverted:${isInverted1}");
+                    print("isInverted1:${position.top-ScreenUtil.instance.statusBarHeight-44}");
                     // print("1:${MediaQuery.of(context).size.height}");
                     // print("1:${position.bottom}");
                     // print("1:${(MediaQuery.of(context).size.height -
@@ -300,9 +295,6 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                         _curPageWidth) {
                       print("如果内容的宽度小于长按框的宽度-则对齐用户头像位置");
                       marginLeftOrRightWidth = 0;
-                      alignment = widget.isMySelf
-                          ? Alignment.topRight
-                          : Alignment.topLeft;
                       customPaintWidth = widgetContentWidth;
                     }
 
@@ -323,29 +315,29 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                           widget._height,
                           widget.contentHeight,
                           widget.contentWidth,
-                          isInverted,),
+                          isInverted1,
+                          widget.isMySelf,),
                       child: Container(
-                        alignment: alignment,
+                        color: Colors.deepPurple.withOpacity(0.245),
+                        alignment: widget.isMySelf ? Alignment.topRight : Alignment.topLeft,
                         height: menuHeight + _triangleHeight,
-                        margin: widget.isMySelf ? marginMySelf : marginNoMySelf,
+                        // margin: widget.isMySelf ? marginMySelf : marginNoMySelf,
                         width: double.infinity,
                         child: UnconstrainedBox(
                           child: GestureDetector(
                             child: SizedBox(
                               height: menuHeight + _triangleHeight,
-                              width: _curPageWidth+11,
                               child: Material(
                                 color: Colors.transparent,
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: <Widget>[
-                                    isInverted
+                                    isInverted1
                                         ? Container(
-                                            width: menuWidth+11,
+                                            width: menuWidth,
                                             alignment: alignment,
                                             child: UnconstrainedBox(
                                               child: Container(
-                                                width: customPaintWidth - 2,
                                                 child: CustomPaint(
                                                   size: Size(_curPageWidth,
                                                       _triangleHeight),
@@ -467,14 +459,14 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                                         borderRadius: BorderRadius.circular(3),
                                       ),
                                     )),
-                                    isInverted
+                                    isInverted1
                                         ? Container()
                                         : Container(
-                                        width: menuWidth - 2,
+                                        width: menuWidth,
                                         alignment: alignment,
                                         child: UnconstrainedBox(
                                           child: Container(
-                                            width: menuWidth - 2,
+                                            width: menuWidth,
                                             child: CustomPaint(
                                               size: Size(_curPageWidth,
                                                   _triangleHeight),
@@ -551,7 +543,7 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
 class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
   _PopupMenuRouteLayout(this.position, this.selectedItemOffset,
       this.textDirection, this.width, this.menuWidth, this.height
-      ,this.contentHeight,this.contentWidth,this.isInverted);
+      ,this.contentHeight,this.contentWidth,this.isInverted,this.isMySelf);
 
   // Rectangle of underlying button, relative to the overlay's dimensions.
   final RelativeRect position;
@@ -570,6 +562,7 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
   final double contentHeight;
   final double contentWidth;
   final bool isInverted;
+  final bool isMySelf;
 
   // We put the child wherever position specifies, so long as it will fit within
   // the specified parent size padded (inset) by 8. If necessary, we adjust the
@@ -614,7 +607,11 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
 
     y=position.top;
 
-    x=-48.0;
+    if(isMySelf) {
+      x = -48.0;
+    }else{
+      x= 60.0;
+    }
 
     if(isInverted){
       y+=contentHeight+11;
@@ -622,6 +619,8 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
       y-=selectedItemOffset;
     }
 
+    // print("x:$x");
+    // print("y:$y");
 
     return Offset(x, y);
   }

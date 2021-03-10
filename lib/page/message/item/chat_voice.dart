@@ -60,7 +60,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
 
   bool automaticPost=false;
 
-  int maxTimeSecond=10;
+  int maxTimeSecond=60;
 
   @override
   void initState() {
