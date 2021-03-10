@@ -63,11 +63,11 @@ class AppIconButton extends StatefulWidget {
     @required this.iconSize,
     this.buttonHeight,
     this.buttonWidth,
-    this.iconColor = AppColor.black,
+    this.iconColor,
     this.bgColor = AppColor.transparent,
     this.isCircle = false,
     this.onTap,
-  })  : assert(iconColor != null || svgName != null),
+  })  : assert(icon != null || svgName != null),
         assert(iconSize != null),
         super(key: key);
 
