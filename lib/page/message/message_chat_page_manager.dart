@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/database/group_chat_user_information_helper.dart';
 import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/group_chat_user_information_dto.dart';
@@ -23,12 +25,16 @@ import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:provider/provider.dart';
+import 'package:text_span_field/range_style.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 import 'more_page/group_more_page.dart';
@@ -783,7 +789,98 @@ String getChatTypeModel(ChatDataModel chatDataModel){
   }
 }
 
+//加入时间提示
+void getTimeAlert(List<ChatDataModel> chatDataList,String chatId) {
+  if (chatDataList != null && chatDataList.length > 0) {
+    for (int i = chatDataList.length - 1; i >= 0; i--) {
+      if (i == chatDataList.length - 1) {
+        chatDataList.add(getTimeAlertModel(chatDataList[i].msg.sentTime,chatId));
+      } else if (chatDataList[i].msg!=null&&(chatDataList[i].msg.sentTime - chatDataList[i + 1].msg.sentTime > 5 * 60 * 1000)) {
+        chatDataList.insert(i + 1, getTimeAlertModel(chatDataList[i].msg.sentTime,chatId));
+      }
+    }
+  }
+}
+//获取时间戳
+ChatDataModel getTimeAlertModel(int sentTime,String chatId) {
+  ChatDataModel dataModel = new ChatDataModel();
+  dataModel.msg = getAlertTimeMsg(
+      time: sentTime, sendTime: sentTime, targetId: chatId, conversationType: RCConversationType.Private);
+  return dataModel;
+}
 
+//将发送的临时消息加入全局
+addTemporaryMessage(ChatDataModel chatDataModel,ConversationDto conversation){
+  if(Application.postChatDataModelList[conversation.id]==null){
+    List<ChatDataModel> modelList=<ChatDataModel>[];
+    modelList.add(chatDataModel);
+    Application.postChatDataModelList[conversation.id]=modelList;
+  }else{
+    Application.postChatDataModelList[conversation.id].add(chatDataModel);
+  }
+}
+
+//从全局的临时消息中删除发送完成的消息
+deletePostCompleteMessage(ConversationDto conversation){
+  if(Application.postChatDataModelList[conversation.id]==null
+      ||Application.postChatDataModelList[conversation.id].length<1){
+    return;
+  }else{
+    for(int i=0;i<Application.postChatDataModelList[conversation.id].length;i++){
+      if(!Application.postChatDataModelList[conversation.id][i].isTemporary){
+        Application.postChatDataModelList[conversation.id].removeAt(i);
+      }
+    }
+  }
+}
+
+//当删除消息时，修改外部提示
+void updateMessagePageAlert(ConversationDto conversation,BuildContext context)async{
+  List msgList = new List();
+  msgList = await RongCloud.init().getHistoryMessages(
+      conversation.getType(), conversation.conversationId, new DateTime.now().millisecondsSinceEpoch, 1, 0);
+  if(msgList!=null&&msgList.length>0){
+    MessageManager.updateConversationByMessageContent(context,conversation.id,msg:msgList[0]);
+  }else{
+    MessageManager.updateConversationByMessageContent(context,conversation.id);
+  }
+}
+
+/// 获得文本输入框样式
+List<RangeStyle> getTextFieldStyle(List<Rule> rules) {
+  List<RangeStyle> result = [];
+  for (Rule rule in rules) {
+    result.add(
+      RangeStyle(
+        range: TextRange(start: rule.startIndex, end: rule.endIndex),
+        style: TextStyle(color: AppColor.mainBlue),
+      ),
+    );
+  }
+  return result.length == 0 ? null : result;
+}
+//是否继续
+Future<bool> isContinue(BuildContext context)async{
+  if (ClickUtil.isFastClick()) {
+    print("快速点击");
+    return false;
+  }
+  if(await isOffline()){
+    ToastShow.show(msg: "请检查网络!", context: context);
+    return false;
+  }
+  return true;
+}
+Future<bool> isOffline()async{
+  ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
+  if (connectivityResult == ConnectivityResult.mobile) {
+    return false;
+  } else if (connectivityResult == ConnectivityResult.wifi) {
+    return false;
+  } else {
+    return true;
+  }
+}
 
 // 请求动态详情页数据
 getFeedDetail(int feedId,BuildContext context) async {

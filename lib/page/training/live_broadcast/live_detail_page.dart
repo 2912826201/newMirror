@@ -1,6 +1,7 @@
 
 import 'dart:convert';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -109,11 +110,9 @@ class LiveDetailPageState extends XCState {
   //判断是否绑定了终端
   bool bindingTerminal;
 
-
   @override
   void initState() {
     super.initState();
-
     isLoggedIn=context.read<TokenNotifier>().isLoggedIn;
     bindingTerminal=context.read<MachineNotifier>().machine!=null;
 
@@ -240,6 +239,9 @@ class LiveDetailPageState extends XCState {
       footer: footerWidget(),
       controller: _refreshController,
       onLoading: (){
+        if(childKey==null||childKey.currentState==null||childKey.currentState.onLoading==null){
+          return;
+        }
         childKey.currentState.onLoading();
       },
       child: CustomScrollView(
@@ -529,6 +531,9 @@ class LiveDetailPageState extends XCState {
   //滑动的回调
   bool _onDragNotification(ScrollNotification notification) {
     ScrollMetrics metrics = notification.metrics;
+    if(childKey==null||childKey.currentState==null||childKey.currentState.scrollHeightOld==null){
+      return false;
+    }
     childKey.currentState.scrollHeightOld=metrics.pixels;
     if (metrics.pixels < 10) {
       if (isBouncingScrollPhysics) {
@@ -549,7 +554,11 @@ class LiveDetailPageState extends XCState {
   }
 
   //分享的点击事件
-  void _shareBtnClick() {
+  void _shareBtnClick()async {
+    if(await isOffline()){
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
     openShareBottomSheet(
         context: context,
         map: liveModel.toJson(),
@@ -644,8 +653,8 @@ class LiveDetailPageState extends XCState {
     List<Reminder> _reminders = <Reminder>[];
     _reminders.add(new Reminder(minutes: howEarlyToRemind));
     _event.end = endTime;
-    _event.title = value.title ?? "直播课程预约";
-    _event.description = value.coursewareDto?.name;
+    _event.title = "IF:${value.title ?? "直播课程预约"}";
+    _event.description = "您预约的直播课${value.title!=null?"${value.title}":""}即将开始,快加入吧!";
     _event.reminders = _reminders;
     await _deviceCalendarPlugin.createOrUpdateEvent(_event);
   }
@@ -687,7 +696,11 @@ class LiveDetailPageState extends XCState {
 
 
   //判断是预约还是取消预约
-  void _judgeBookOrCancelBook({bool bindingTerminal, bool isVip}) {
+  void _judgeBookOrCancelBook({bool bindingTerminal, bool isVip})async {
+    if(await isOffline()){
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
     print("---------------------------");
     if (liveModel.playType == 2) {
       _bookLiveCourse(liveModel, 0, true,bindingTerminal: bindingTerminal);
@@ -744,11 +757,15 @@ class LiveDetailPageState extends XCState {
 
 
   ///这是关注的方法
-  onClickAttention() {
+  onClickAttention()async {
     if(!(mounted&&isLoggedIn)){
       ToastShow.show(msg: "请先登陆app!", context: context);
       AppRouter.navigateToLoginPage(context);
       return;
+    }
+    if(await isOffline()){
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return false;
     }
     if (!(liveModel.coachDto?.relation == 1 || liveModel.coachDto?.relation == 3)) {
       _getAttention(liveModel.coachDto?.uid);
@@ -768,7 +785,11 @@ class LiveDetailPageState extends XCState {
   }
 
   ///点击了教练
-  onClickCoach() {
+  onClickCoach()async {
+    if(await isOffline()){
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
     AppRouter.navigateToMineDetail(context, liveModel.coachDto?.uid);
   }
   ///点击了他人刚刚训练完成
@@ -776,6 +797,26 @@ class LiveDetailPageState extends XCState {
     // AppRouter.navigateToOtherCompleteCoursePage(context,liveModel.id);
   }
 
+  bool isOfflineBool=false;
+  Future<bool> isOffline()async{
+    ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile) {
+      if(isOfflineBool){
+        isOfflineBool=false;
+        getDataAction();
+      }
+      return false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      if(isOfflineBool){
+        isOfflineBool=false;
+        getDataAction();
+      }
+      return false;
+    } else {
+      isOfflineBool=true;
+      return true;
+    }
+  }
   //显示全部的动作
   onClickShowAllAction(){
     isShowAllItemAction=true;
@@ -784,6 +825,13 @@ class LiveDetailPageState extends XCState {
 
   //加载网络数据
   void getDataAction() async {
+    if(await isOffline()){
+      recommendLoadingStatus=LoadingStatus.STATUS_COMPLETED;
+      if(mounted){
+        reload(() {});
+      }
+      return;
+    }
     String startTime="";
     if(liveModel!=null){
       startTime=liveModel.startTime;

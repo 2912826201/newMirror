@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:azlistview/azlistview.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -100,7 +101,8 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
             icon: Icons.camera_alt_outlined,
             iconColor: AppColor.black,
             onTap: () {
-              AppRouter.navigateToMediaPickerPage(context, 1, typeImage, false, startPageGallery, false, _uploadImage);
+              AppRouter.navigateToMediaPickerPage(
+                  context, 1, typeImage, false, startPageGallery, false, _handleMediaResult);
             }),
       ],
     );
@@ -313,7 +315,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
     );
   }
 
-  _uploadImage(dynamic result) async {
+  _handleMediaResult(dynamic result) async {
     SelectedMediaFiles files = Application.selectedMediaFiles;
     if (true != result || files == null) {
       print("没有选择媒体文件");
@@ -326,6 +328,12 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
       return;
     }
 
+    Loading.showLoading(context);
+    // _showRetryDialog(files, null);
+    await _uploadImage(files);
+  }
+
+  _uploadImage(SelectedMediaFiles files) async {
     Loading.showLoading(context);
 
     try {
@@ -357,38 +365,73 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
         print("总进度:$percent");
       });
 
-      if (uploadResults.isSuccess) {
-        //整理接口入参 调接口
-        List<Map<String, dynamic>> paramList = [];
-        for (int i = 0; i < files.list.length; i++) {
-          MediaFileModel mediaFileModel = files.list[i];
-          paramList.add(TrainingGalleryImageModel(
-                  url: uploadResults.resultMap[mediaFileModel.file.path].url,
-                  width: mediaFileModel.sizeInfo.width.toDouble(),
-                  height: mediaFileModel.sizeInfo.height.toDouble(),
-                  createTime: mediaFileModel.sizeInfo.createTime)
-              .toJson());
-        }
-        List<TrainingGalleryImageModel> saveList = await saveAlbum(paramList);
+      await _afterUpload(files, uploadResults);
 
-        if (saveList != null) {
-          saveList.forEach((saveImage) {
-            _insertImageToDataList(saveImage);
-          });
-          setState(() {});
-          context.read<ProfileNotifier>().setImagePageSize(_getImageSize());
-        } else {
-          ToastShow.show(msg: "保存失败", context: context);
-        }
-      } else {
-        ToastShow.show(msg: "上传失败", context: context);
-      }
+      Loading.hideLoading(context);
     } catch (e) {
-      print(e);
-      ToastShow.show(msg: "保存失败", context: context);
+      Loading.hideLoading(context);
+      print("回调保存失败:$e");
+      _showRetryDialog(files, null);
+      // ToastShow.show(msg: "回调保存失败", context: context);
     }
+  }
 
-    Loading.hideLoading(context);
+  _afterUpload(SelectedMediaFiles files, UploadResults uploadResults) async {
+    if (uploadResults.isSuccess) {
+      //整理接口入参 调接口
+      List<Map<String, dynamic>> paramList = [];
+      for (int i = 0; i < files.list.length; i++) {
+        MediaFileModel mediaFileModel = files.list[i];
+        paramList.add(TrainingGalleryImageModel(
+                url: uploadResults.resultMap[mediaFileModel.file.path].url,
+                width: mediaFileModel.sizeInfo.width.toDouble(),
+                height: mediaFileModel.sizeInfo.height.toDouble(),
+                createTime: mediaFileModel.sizeInfo.createTime)
+            .toJson());
+      }
+      List<TrainingGalleryImageModel> saveList = await saveAlbum(paramList);
+
+      if (saveList != null) {
+        saveList.forEach((saveImage) {
+          _insertImageToDataList(saveImage);
+        });
+        setState(() {});
+        context.read<ProfileNotifier>().setImagePageSize(_getImageSize());
+      } else {
+        Loading.hideLoading(context);
+        _showRetryDialog(files, uploadResults);
+        print("接口保存失败");
+        // ToastShow.show(msg: "接口保存失败", context: context);
+      }
+    } else {
+      Loading.hideLoading(context);
+      _showRetryDialog(files, null);
+      print("文件上传失败");
+      // ToastShow.show(msg: "文件上传失败", context: context);
+    }
+  }
+
+  //如果uploadResults为空 视为没有完成上传
+  _showRetryDialog(SelectedMediaFiles files, UploadResults uploadResults) {
+    showAppDialog(
+      context,
+      title: "上传失败",
+      info: "照片上传失败，是否点击重试",
+      barrierDismissible: false,
+      confirm: AppDialogButton("重试", () {
+        //如果执行完再关闭弹窗可能会无限循环关不掉
+        Navigator.pop(context);
+        if (uploadResults == null) {
+          _uploadImage(files);
+        } else {
+          _afterUpload(files, uploadResults);
+        }
+        return false;
+      }),
+      cancel: AppDialogButton("取消", () {
+        return true;
+      }),
+    );
   }
 
   Widget _buildBottomView() {
