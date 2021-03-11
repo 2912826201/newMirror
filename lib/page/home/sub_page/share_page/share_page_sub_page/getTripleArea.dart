@@ -268,9 +268,9 @@ class GetTripleAreaState extends State<GetTripleArea> {
                         inquireCheckBlackCallback: (BlackModel blackModel) {
                           String promptText = "";
                           if (blackModel.inYouBlack == 1) {
-                            promptText = "发布失败，你已将对方加入黑名单";
+                            promptText = "分享失败，你已将对方加入黑名单";
                           } else if (blackModel.inThisBlack == 1) {
-                            promptText = "发布失败，你已被对方加入黑名单";
+                            promptText = "分享失败，你已被对方加入黑名单";
                           }
                           if (promptText != "") {
                             ToastShow.show(msg: promptText, context: context, gravity: Toast.CENTER);
