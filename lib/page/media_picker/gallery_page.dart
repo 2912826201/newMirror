@@ -39,7 +39,8 @@ class GalleryPage extends StatefulWidget {
       this.cropOnlySquare = false,
       this.publishMode = 0,
       this.fixedWidth,
-      this.fixedHeight})
+      this.fixedHeight,
+      this.startCount = 0})
       : super(key: key);
 
   final int maxImageAmount;
@@ -49,6 +50,7 @@ class GalleryPage extends StatefulWidget {
   final int publishMode;
   final int fixedWidth;
   final int fixedHeight;
+  final int startCount;
 
   // image是图片 common是图片和视频 目前需求只会用到这两种
   final RequestType requestType;
@@ -460,7 +462,7 @@ class _GalleryPageState extends State<GalleryPage> {
                                 size: 16,
                               )
                             : Text(
-                                notifier.selectedMap[entity.id].order.toString(),
+                                "${notifier.selectedMap[entity.id].order + widget.startCount}",
                                 style: TextStyle(color: AppColor.white, fontSize: 16),
                               ),
                       )
@@ -648,7 +650,7 @@ class _GalleryPageState extends State<GalleryPage> {
 
               Map<String, _OrderedAssetEntity> selectedMap = notifier.selectedMap;
               if (selectedMap.isEmpty) {
-                if(notifier.currentEntity != null){
+                if (notifier.currentEntity != null) {
                   // 将当前正在预览的放入已选map中
                   _OrderedAssetEntity orderedEntity = _OrderedAssetEntity(1, notifier.currentEntity);
                   selectedMap[notifier.currentEntity.id] = orderedEntity;

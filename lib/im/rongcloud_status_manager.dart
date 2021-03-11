@@ -26,6 +26,9 @@ class RongCloudStatusManager {
       //这里先断开融云连接再做其他处理
       Application.rongCloud.disconnect();
       Application.appLogout(isKicked: true);
+    }else if(connectionStatus==RCConnectionStatus.Connected){
+      //当融云连接上时-加入id为1的聊天室-并且不获取历史记录
+      Application.rongCloud.joinChatRoom("1");
     }
   }
 

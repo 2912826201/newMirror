@@ -111,7 +111,14 @@ class FileUtil {
     if (file.path.contains('.')) {
       ext = '.' + file.path.split('.').last;
     }
-    return "ifapp/${Application.token.uid}/" + DateTime.now().millisecondsSinceEpoch.toString() + ext;
+    //有可能是在完善用户资料前上传的头像 这里uid要做判断
+    int uid;
+    if (Application.token.anonymous == 1 && Application.tempToken != null) {
+      uid = Application.tempToken.uid;
+    } else {
+      uid = Application.token.uid;
+    }
+    return "ifapp/$uid/" + DateTime.now().millisecondsSinceEpoch.toString() + ext;
   }
 
   cancelUpload() {
@@ -130,7 +137,7 @@ class FileUtil {
 
   //获取视频第一帧的图片
   static String getVideoFirstPhoto(String videoUrl) {
-    if(videoUrl==null||videoUrl.length<1){
+    if (videoUrl == null || videoUrl.length < 1) {
       return "";
     }
     return videoUrl + "?vframe/jpg/offset/1";

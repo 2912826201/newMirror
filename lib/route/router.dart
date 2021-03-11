@@ -8,15 +8,12 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
-import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
-import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/page/scan_code/scan_result_page.dart';
 import 'package:mirror/route/route_handler.dart';
-import 'package:mirror/widget/feed/feed_friends_cell.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 /// router
@@ -254,9 +251,11 @@ class AppRouter {
   // startPage 起始页 startPageGallery或startPagePhoto
   // cropOnlySquare 是否只切正方形 只有needCrop为true时这个值才生效
   // publishMode 是否在操作完成后跳转到发布页 0关闭页面不跳转到发布页 1关闭页面跳转到发布页 2不关闭页面跳转到发布页
+  // fixedWidth fixedHeight固定约束的图片视频尺寸
+  // startCount 之前已经选择了多少文件，显示计数要加上这个数
   static void navigateToMediaPickerPage(BuildContext context, int maxImageAmount, int mediaType, bool needCrop,
       int startPage, bool cropOnlySquare, Function(dynamic result) callback,
-      {int publishMode = 0, int fixedWidth, int fixedHeight}) {
+      {int publishMode = 0, int fixedWidth, int fixedHeight, int startCount = 0}) {
     Map<String, dynamic> map = Map();
     map["maxImageAmount"] = maxImageAmount;
     map["mediaType"] = mediaType;
@@ -266,6 +265,7 @@ class AppRouter {
     map["publishMode"] = publishMode;
     map["fixedWidth"] = fixedWidth;
     map["fixedHeight"] = fixedHeight;
+    map["startCount"] = startCount;
     _navigateToPage(context, pathMediaPicker, map, callback: callback);
   }
 

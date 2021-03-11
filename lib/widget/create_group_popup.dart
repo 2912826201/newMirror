@@ -16,8 +16,11 @@ import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
+
+import 'Input_method_rules/pin_yin_text_edit_controller.dart';
 
 /// create_group_popup
 /// Created by yangjiayi on 2021/1/8.
@@ -40,8 +43,10 @@ class _CreateGroupPopup extends StatefulWidget {
 }
 
 class _CreateGroupPopupState extends State<_CreateGroupPopup> {
-  final TextEditingController controller = TextEditingController();
-  final FocusNode focusNode = FocusNode();
+  final int _maxSelectionCount = 20;
+  final PinYinTextEditController _inputController = PinYinTextEditController();
+  final FocusNode _focusNode = FocusNode();
+  List<BuddyModel> _originalFriendList = [];
   List<BuddyModel> _friendList = [];
   List<int> _selectedUidList = [];
   bool _isRequesting = false;
@@ -49,10 +54,19 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
 
   PageController _pageController = PageController();
 
+  String _lastSearchText = "";
+
   @override
   void initState() {
     super.initState();
     _getFriendList();
+    _inputController.addListener(() {
+      if (_lastSearchText != _inputController.completeText) {
+        _lastSearchText = _inputController.completeText;
+        _filterFriendList(_lastSearchText);
+        setState(() {});
+      }
+    });
   }
 
   _getFriendList({int lastTime}) async {
@@ -63,11 +77,12 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
       listModel = await getFollowBothList(100, lastTime: lastTime);
     }
     if (listModel != null) {
-      _friendList.addAll(listModel.list);
+      _originalFriendList.addAll(listModel.list);
       if (listModel.hasNext == 1) {
         _getFriendList(lastTime: listModel.lastTime);
       } else {
-        _sortFriendList();
+        _addFriendTagAndSort();
+        _filterFriendList(_lastSearchText);
         if (mounted) {
           setState(() {});
         }
@@ -75,8 +90,8 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
     }
   }
 
-  _sortFriendList() {
-    _friendList.forEach((friend) {
+  _addFriendTagAndSort() {
+    _originalFriendList.forEach((friend) {
       String pinyin = PinyinHelper.getPinyinE(friend.nickName);
       String tag = pinyin.substring(0, 1).toUpperCase();
       if (RegExp('[A-Z]').hasMatch(tag)) {
@@ -85,7 +100,21 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
         friend.tagIndex = '#';
       }
     });
-    SuspensionUtil.sortListBySuspensionTag(_friendList);
+    SuspensionUtil.sortListBySuspensionTag(_originalFriendList);
+  }
+
+  _filterFriendList(String text) {
+    _friendList.clear();
+    if (text.isEmpty) {
+      _friendList.addAll(_originalFriendList);
+    } else {
+      for (BuddyModel friend in _originalFriendList) {
+        if (friend.nickName.contains(text)) {
+          _friendList.add(friend);
+        }
+      }
+    }
+
     SuspensionUtil.setShowSuspensionStatus(_friendList);
   }
 
@@ -201,20 +230,35 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
               ),
             ),
           ),
-          Text(
-            _friendList[index].nickName,
-            style: TextStyle(color: AppColor.textPrimary2, fontSize: 16),
+          SizedBox(
+            width: 12,
           ),
-          Spacer(),
+          Expanded(
+            child: Text(
+              _friendList[index].nickName,
+              style: TextStyle(color: AppColor.textPrimary2, fontSize: 16),
+              maxLines: 1,
+              softWrap: false,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          SizedBox(
+            width: 20,
+          ),
           GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () {
               if (_selectedUidList.contains(_friendList[index].uid)) {
                 _selectedUidList.remove(_friendList[index].uid);
+                setState(() {});
               } else {
-                _selectedUidList.add(_friendList[index].uid);
+                if (_selectedUidList.length >= _maxSelectionCount) {
+                  ToastShow.show(msg: "一次性最多选择20名好友", context: context);
+                } else {
+                  _selectedUidList.add(_friendList[index].uid);
+                  setState(() {});
+                }
               }
-              setState(() {});
             },
             child: _selectedUidList.contains(_friendList[index].uid)
                 ? Container(
@@ -263,7 +307,6 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
           height: 32,
           color: AppColor.bgWhite.withOpacity(0.65),
           width: ScreenUtil.instance.screenWidthDp - 32,
@@ -283,8 +326,8 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
                   height: 32,
                   alignment: Alignment.center,
                   child: TextField(
-                    controller: controller,
-                    focusNode: focusNode,
+                    controller: _inputController,
+                    focusNode: _focusNode,
                     textInputAction: TextInputAction.search,
                     decoration: InputDecoration(
                         isCollapsed: true,
@@ -293,12 +336,25 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
                         hintStyle: AppStyle.textSecondaryRegular16,
                         border: InputBorder.none),
                     inputFormatters: [
-                      WhitelistingTextInputFormatter(RegExp("[a-zA-Z]|[\u4e00-\u9fa5]|[0-9]")), //只能输入汉字或者字母或数字
-                      LengthLimitingTextInputFormatter(30),
+                      // WhitelistingTextInputFormatter(RegExp("[a-zA-Z]|[\u4e00-\u9fa5]|[0-9]")), //只能输入汉字或者字母或数字
+                      LengthLimitingTextInputFormatter(20),
                     ],
                   ),
                 ),
               ),
+              _inputController.text.isEmpty
+                  ? Container(
+                      width: 42,
+                    )
+                  : AppIconButton(
+                      svgName: AppIcon.clear_circle_grey,
+                      iconSize: 16,
+                      buttonWidth: 40,
+                      buttonHeight: 32,
+                      onTap: () {
+                        _inputController.text = "";
+                      },
+                    ),
             ],
           ),
         ),
