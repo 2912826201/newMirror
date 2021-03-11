@@ -27,7 +27,7 @@ int startPagePhoto = _photoIndex;
 
 class MediaPickerPage extends StatefulWidget {
   MediaPickerPage(this.maxImageAmount, this.mediaType, this.needCrop, this.startPage, this.cropOnlySquare,
-      {Key key, this.publishMode, this.fixedWidth, this.fixedHeight})
+      {Key key, this.publishMode, this.fixedWidth, this.fixedHeight, this.startCount = 0})
       : super(key: key);
 
   final int maxImageAmount;
@@ -38,6 +38,7 @@ class MediaPickerPage extends StatefulWidget {
   final int publishMode;
   final int fixedWidth;
   final int fixedHeight;
+  final int startCount;
 
   @override
   _MediaPickerState createState() => _MediaPickerState();
@@ -69,6 +70,7 @@ class _MediaPickerState extends State<MediaPickerPage> {
           publishMode: widget.publishMode,
           fixedHeight: widget.fixedHeight,
           fixedWidth: widget.fixedWidth,
+          startCount: widget.startCount,
         ),
       ),
     );
