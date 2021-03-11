@@ -85,6 +85,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   @override
   void initState() {
     super.initState();
+    print('==============================个人主页initState');
     context.read<UserInteractiveNotifier>().setFirstModel(widget.userId);
 
     ///判断是自己的页面还是别人的页面
@@ -106,6 +107,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
       });
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      print('=========================个人主页addPostFrameCallback');
       _getUserInfo(id: widget.userId);
       _getFollowCount(id: widget.userId);
     });
@@ -126,6 +128,11 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     });
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    print('----------------------------个人主页didChangeDependencies');
+  }
   ///获取关注、粉丝、获赞数数
   _getFollowCount({int id}) async {
     ProfileModel attentionModel = await ProfileFollowCount(id: id);
@@ -160,13 +167,12 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         _signatureHeight = testSize.height;
       }
       _textName = userModel.nickName;
-      relation = userModel.relation;
       if (mounted) {
         setState(() {});
       }
-      if (relation == 0 || relation == 2) {
+      if (userModel.relation == 0 || userModel.relation == 2) {
         context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.userId);
-      } else if (relation == 1 || relation == 3) {
+      } else if (userModel.relation == 1 || userModel.relation == 3) {
         context.read<UserInteractiveNotifier>().changeIsFollow(true, false, widget.userId);
       }
     }
