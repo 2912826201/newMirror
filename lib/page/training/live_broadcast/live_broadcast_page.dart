@@ -1,7 +1,9 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 
 import 'live_broadcast_item_page.dart';
@@ -47,88 +49,52 @@ class LiveBroadcastPageState extends XCState {
     getTopCalendarDate();
 
     return Scaffold(
-      appBar: null,
+      appBar: CustomAppBar(
+        hasDivider:false,
+        titleString: "直播课",
+        actions: [
+          // CustomAppBarIconButton(
+          //   icon:Icons.search,
+          //   iconColor:AppColor.black,
+          //   onTap:() {
+          //     print("点击了搜索");
+          //   },
+          // ),
+        ],
+      ),
       body: _buildSuggestions(),
     );
   }
 
   Widget _buildSuggestions() {
-    return Column(
-      children: [
-        SizedBox(height: 40,),
-        _getTitleBar(),
-        SizedBox(height: 10,),
-        Container(
-          width: double.infinity,
-          child: LiveBroadcastTitlePage(
-            stringDateList,
-            setCall: _pageChangedCall,
-            itemClick: _titleItemClickCall,
-          ),
-        ),
-        SizedBox(height: 10,),
-        Expanded(
-            child: SizedBox(
-              child: BodyPage(
-                dates: stringDateList,
-                controller: _pageController,
-                pageChangeCall: _pageChange,
-              ),
-            )
-        )
-      ],
-    );
-  }
-
-  //头部bar
-  Widget _getTitleBar() {
     return Container(
-      width: MediaQuery.of(context).size.width,
-      height: 30,
-      child: Stack(
+      color: AppColor.white,
+      child: Column(
         children: [
-          Positioned(
-            child: GestureDetector(
-              child: Container(
-                height: 30,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.arrow_back_ios_rounded,
-                      size: 22,
-                      color: Colors.black,
-                    )
-                  ],
-                ),
-              ),
-              onTap: () {
-                Navigator.of(context).pop("1");
-              },
-            ),
-            left: 16,
-          ),
+          SizedBox(height: 10,),
           Container(
-              width: double.infinity,
-              child: Container(
-                height: 30,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "直播课",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 20,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ],
+            width: double.infinity,
+            child: LiveBroadcastTitlePage(
+              stringDateList,
+              setCall: _pageChangedCall,
+              itemClick: _titleItemClickCall,
+            ),
+          ),
+          SizedBox(height: 10,),
+          Expanded(
+              child: SizedBox(
+                child: BodyPage(
+                  dates: stringDateList,
+                  controller: _pageController,
+                  pageChangeCall: _pageChange,
                 ),
-              )),
+              )
+          )
         ],
       ),
     );
   }
+
 
   //设置头部日期数据
   void getTopCalendarDate() {

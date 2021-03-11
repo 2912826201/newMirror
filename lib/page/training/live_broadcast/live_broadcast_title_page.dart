@@ -114,7 +114,7 @@ class LiveBroadcastTitlePageState extends State<LiveBroadcastTitlePage> {
       height: 72,
       margin: const EdgeInsets.only(left: 16, right: 16),
       decoration: BoxDecoration(
-          color: AppColor.bgWhite.withOpacity(0.45),
+          color: AppColor.bgWhite.withOpacity(0.35),
           borderRadius: BorderRadius.circular(3)),
       child: ScrollConfiguration(
         behavior: NoBlueEffectBehavior(),
