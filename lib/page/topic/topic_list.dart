@@ -78,7 +78,11 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
   void initState() {
     // TODO: implement initState
     super.initState();
-    requestRecommendTopic(refreshOrLoading: true);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Future.delayed(Duration(milliseconds: 500),(){
+        requestRecommendTopic(refreshOrLoading: true);
+      });
+    });
   }
   @override
   Widget build(BuildContext context) {

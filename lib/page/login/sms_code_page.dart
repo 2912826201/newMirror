@@ -20,6 +20,7 @@ import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
@@ -319,7 +320,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
     ProfileDto profile = ProfileDto.fromUserModel(user);
     await ProfileDBHelper().insertProfile(profile);
     context.read<ProfileNotifier>().setProfile(profile);
-    context.read<ProfilePageNotifier>().clearProfileUiChangeModel();
+    context.read<UserInteractiveNotifier>().clearProfileUiChangeModel();
     //连接融云
     Application.rongCloud.connect();
     //TODO 处理登录完成后的数据加载

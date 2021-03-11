@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/message/chat_data_model.dart';
 import 'package:mirror/data/model/profile/fitness_entry_model.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
@@ -197,7 +198,7 @@ class Application {
 
   static _clearUserRuntimeCache() {
     appContext.read<MachineNotifier>().setMachine(null);
-    appContext.read<ProfilePageNotifier>().clearProfileUiChangeModel();
+    appContext.read<UserInteractiveNotifier>().clearProfileUiChangeModel();
     //TODO 其他的provider还需整理出来清掉
     atMesGroupModel?.atMsgMap?.clear();
     topChatModelList.clear();

@@ -9,6 +9,7 @@ import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
@@ -97,8 +98,8 @@ class HeadViewState extends State<HeadView> {
         if (!widget.isShowConcern) {
           widget.removeFollowChanged(widget.model);
         }
-        context.read<ProfilePageNotifier>().changeIsFollow(true, true, widget.model.pushId);
-        context.read<ProfilePageNotifier>().changeFollowCount(context.read<ProfileNotifier>().profile.uid, false);
+        context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.model.pushId);
+        context.read<UserInteractiveNotifier>().changeFollowCount(context.read<ProfileNotifier>().profile.uid, false);
         ToastShow.show(msg: "取消关注成功", context: context);
       } else {
         ToastShow.show(msg: "取消关注失败,请重试", context: context);
@@ -107,8 +108,8 @@ class HeadViewState extends State<HeadView> {
       int relation = await ProfileAddFollow(id);
       if (relation != null) {
         if (relation == 1 || relation == 3) {
-          context.read<ProfilePageNotifier>().changeIsFollow(true, false, widget.model.pushId);
-          context.read<ProfilePageNotifier>().changeFollowCount(context.read<ProfileNotifier>().profile.uid, true);
+          context.read<UserInteractiveNotifier>().changeIsFollow(true, false, widget.model.pushId);
+          context.read<UserInteractiveNotifier>().changeFollowCount(context.read<ProfileNotifier>().profile.uid, true);
           ToastShow.show(msg: "关注成功!", context: context);
           opacity = 1;
           Future.delayed(Duration(milliseconds: 1000), () {
@@ -125,7 +126,7 @@ class HeadViewState extends State<HeadView> {
   // 是否显示关注按钮
   isShowFollowButton(BuildContext context) {
     if (widget.isShowConcern &&
-        context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.model.pushId].isFollow == true &&
+        context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.model.pushId].isFollow == true &&
         widget.model.pushId != context.watch<ProfileNotifier>().profile.uid) {
       return GestureDetector(
         onTap: () {
@@ -206,16 +207,16 @@ class HeadViewState extends State<HeadView> {
   Widget build(BuildContext context) {
     if (widget.model.pushId == context.watch<ProfileNotifier>().profile.uid) {
       isMySelf = true;
-        context.watch<ProfilePageNotifier>().setFirstModel(widget.model.pushId);
+        context.watch<UserInteractiveNotifier>().setFirstModel(widget.model.pushId);
       if (!context
-          .watch<ProfilePageNotifier>()
+          .watch<UserInteractiveNotifier>()
           .profileUiChangeModel[widget.model.pushId]
           .feedStringList
           .contains("删除")) {
-        context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.model.pushId].feedStringList.add("删除");
+        context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.model.pushId].feedStringList.add("删除");
       }
     } else {
-      context.watch<ProfilePageNotifier>().setFirstModel(widget.model.pushId,
+      context.watch<UserInteractiveNotifier>().setFirstModel(widget.model.pushId,
           isFollow: widget.model.isFollow == 1 || widget.model.isFollow == 3 ? false : true);
     }
     return GestureDetector(
@@ -227,6 +228,7 @@ class HeadViewState extends State<HeadView> {
           if (!context.read<TokenNotifier>().isLoggedIn) {
             AppRouter.navigateToLoginPage(context);
           } else {
+            FocusScope.of(context).requestFocus(FocusNode());
             AppRouter.navigateToMineDetail(context, widget.model.pushId);
           }
         },
@@ -284,12 +286,12 @@ class HeadViewState extends State<HeadView> {
                         openMoreBottomSheet(
                             context: context,
                             lists: context
-                                .read<ProfilePageNotifier>()
+                                .read<UserInteractiveNotifier>()
                                 .profileUiChangeModel[widget.model.pushId]
                                 .feedStringList,
                             onItemClickListener: (index) {
                               switch (context
-                                  .read<ProfilePageNotifier>()
+                                  .read<UserInteractiveNotifier>()
                                   .profileUiChangeModel[widget.model.pushId]
                                   .feedStringList[index]) {
                                 case "删除":

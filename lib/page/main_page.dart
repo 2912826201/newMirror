@@ -8,6 +8,7 @@ import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/release_progress_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/home/home_page.dart';
 import 'package:mirror/page/if_page.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
@@ -132,7 +133,7 @@ class MainPageState extends XCState {
       if (attentionModel != null) {
         print('  666666666666666666666666666666666666${attentionModel.toJson().toString()}');
         context
-            .read<ProfilePageNotifier>()
+            .read<UserInteractiveNotifier>()
             .changeAttentionModel(attentionModel, context.read<ProfileNotifier>().profile.uid);
       }
     });

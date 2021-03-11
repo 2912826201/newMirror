@@ -6,6 +6,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -438,8 +439,8 @@ class _FollowButtonState extends State<FollowButton> {
     print('关注监听=========================================$attntionResult');
     if (attntionResult == 1 || attntionResult == 3) {
       ToastShow.show(msg: "关注成功!", context: context);
-      context.read<ProfilePageNotifier>().changeIsFollow(true, false, id);
-      context.read<ProfilePageNotifier>().changeFollowCount(context.read<ProfileNotifier>().profile.uid, true);
+      context.read<UserInteractiveNotifier>().changeIsFollow(true, false, id);
+      context.read<UserInteractiveNotifier>().changeFollowCount(context.read<ProfileNotifier>().profile.uid, true);
     }
   }
 
@@ -453,30 +454,30 @@ class _FollowButtonState extends State<FollowButton> {
         widget.buttonType == FollowButtonType.TOPIC) {
       return Container();
     }
-      context.watch<ProfilePageNotifier>().setFirstModel(widget.id, isFollow: !widget.isFollow);
+      context.watch<UserInteractiveNotifier>().setFirstModel(widget.id, isFollow: !widget.isFollow);
     return GestureDetector(
       child: Container(
         width: 56,
         height: 24,
         alignment: Alignment.centerRight,
         decoration: BoxDecoration(
-          color: context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].isFollow
+          color: context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].isFollow
               ? AppColor.textPrimary1
               : AppColor.transparent,
           borderRadius: BorderRadius.all(Radius.circular(14)),
           border: Border.all(
-              width: context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].isFollow ? 0.5 : 0.0),
+              width: context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].isFollow ? 0.5 : 0.0),
         ),
         child: Center(
           child: Text(
-              context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].isFollow
+              context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].isFollow
                   ? widget.buttonType == FollowButtonType.FOLLOW || widget.buttonType == FollowButtonType.SERCH
                       ? "关注"
                       : widget.isMysList
                           ? "回粉"
                           : "关注"
                   : "已关注",
-              style: context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].isFollow
+              style: context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].isFollow
                   ? AppStyle.whiteRegular12
                   : AppStyle.textSecondaryRegular12),
         ),
@@ -487,7 +488,7 @@ class _FollowButtonState extends State<FollowButton> {
           AppRouter.navigateToLoginPage(context);
           return false;
         }
-        if (context.read<ProfilePageNotifier>().profileUiChangeModel[widget.id].isFollow) {
+        if (context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.id].isFollow) {
           _checkBlackStatus();
         }
       },

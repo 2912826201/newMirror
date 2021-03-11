@@ -13,6 +13,7 @@ import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/topic/topic_list.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -115,7 +116,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
         widget.model.isFollow = 1;
       });
       if (widget.isTopicList) {
-        context.read<ProfilePageNotifier>().removeListId(null);
+        context.read<UserInteractiveNotifier>().removeListId(null);
       }
     } else {
       ToastShow.show(msg: "关注失败", context: context);
@@ -130,7 +131,7 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
         widget.model.isFollow = 0;
       });
       if (widget.isTopicList) {
-        context.read<ProfilePageNotifier>().removeListId(widget.model.id);
+        context.read<UserInteractiveNotifier>().removeListId(widget.model.id);
       }
     } else {
       ToastShow.show(msg: "取消关注失败", context: context);
@@ -431,7 +432,7 @@ class TopicDetailNotifier extends ChangeNotifier {
 }
 
 class TopicUiChangeModel {
-  Color titleColor = AppColor.bgBlack;
-  Color iconColor = AppColor.bgBlack;
+  Color titleColor = AppColor.white;
+  Color iconColor = AppColor.white;
   bool canOnclick = true;
 }

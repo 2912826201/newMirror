@@ -8,6 +8,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/black_list_model.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -45,7 +46,7 @@ class _BlackListState extends State<BlackListPage>{
   @override
   void initState() {
     super.initState();
-    context.read<ProfilePageNotifier>().removeId = null;
+    context.read<UserInteractiveNotifier>().removeId = null;
     _getBlackList();
   }
   @override
@@ -100,10 +101,10 @@ class _BlackListState extends State<BlackListPage>{
           InkWell(
             onTap: (){
               AppRouter.navigateToMineDetail(context, blackList[index].uid,callback: (result){
-                if(context.read<ProfilePageNotifier>().removeId!=null){
+                if(context.read<UserInteractiveNotifier>().removeId!=null){
                   List<blackUserModel> list = [];
                   blackList.forEach((element) {
-                    if(element.uid!=context.read<ProfilePageNotifier>().removeId){
+                    if(element.uid!=context.read<UserInteractiveNotifier>().removeId){
                         list.add(element);
                     }
                   });
