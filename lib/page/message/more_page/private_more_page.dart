@@ -9,6 +9,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -288,9 +289,9 @@ class PrivateMorePageState extends State<PrivateMorePage> {
             dismissProgressDialog();
           });
         }
-        if(context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(int.parse(widget.chatUserId))){
+        if(context.read<UserInteractiveNotifier>().profileUiChangeModel.containsKey(int.parse(widget.chatUserId))){
           print('====================================个人主页的方法进了');
-          context.read<ProfilePageNotifier>().changeIsFollow(true, true, int.parse(widget.chatUserId));
+          context.read<UserInteractiveNotifier>().changeIsFollow(true, true, int.parse(widget.chatUserId));
         }
         print('====================================个人主页的方法完了');
       } else {

@@ -202,6 +202,7 @@ class SearchTopiciItem extends StatelessWidget {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () async {
+        FocusScope.of(context).requestFocus(FocusNode());
         TopicDtoModel topicModel = await getTopicInfo(topicId: model.id);
         AppRouter.navigateToTopicDetailPage(context, topicModel);
       },

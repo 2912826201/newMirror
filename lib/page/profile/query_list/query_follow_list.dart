@@ -10,6 +10,7 @@ import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/model/profile/topic_list_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -171,7 +172,7 @@ class _QueryFollowState extends State<QueryFollowList> {
     });
     if(buddyList.length>1){
       for(int i = 0;i<buddyList.length;i++){
-        context.watch<ProfilePageNotifier>().changeIsFollow(true,
+        context.watch<UserInteractiveNotifier>().changeIsFollow(true,
             buddyList[i].relation==0||buddyList[i].relation==2
                 ?true:false, buddyList[i].uid);
       }
@@ -345,7 +346,7 @@ class _QueryFollowState extends State<QueryFollowList> {
   @override
   void initState() {
     super.initState();
-    context.read<ProfilePageNotifier>().removeId = null;
+    context.read<UserInteractiveNotifier>().removeId = null;
     if (widget.userId == context
         .read<ProfileNotifier>()
         .profile
@@ -511,9 +512,9 @@ class _QueryFollowState extends State<QueryFollowList> {
                               child: _followTopic(width),
                             );
                           } else {
-                              context.watch<ProfilePageNotifier>().setFirstModel(buddyList[index].uid,isFollow:
+                              context.watch<UserInteractiveNotifier>().setFirstModel(buddyList[index].uid,isFollow:
                               buddyList[index].relation==0||buddyList[index].relation==2?true:false);
-                            if(widget.userId!=context.watch<ProfileNotifier>().profile.uid||!context.watch<ProfilePageNotifier>().profileUiChangeModel[buddyList[index].uid]
+                            if(widget.userId!=context.watch<ProfileNotifier>().profile.uid||!context.watch<UserInteractiveNotifier>().profileUiChangeModel[buddyList[index].uid]
                                 .isFollow){
                               return QueryFollowItem(
                                 type: widget.type,
@@ -543,10 +544,10 @@ class _QueryFollowState extends State<QueryFollowList> {
                               isMySelf: isMySelf,
                               topicDeleteCallBack: (){
                                 print('=========================话题详情返回');
-                                if(context.read<ProfilePageNotifier>().removeId!=null){
+                                if(context.read<UserInteractiveNotifier>().removeId!=null){
                                   List<TopicDtoModel> list = [];
                                   topicList.forEach((element) {
-                                    if(element.id!=context.read<ProfilePageNotifier>().removeId){
+                                    if(element.id!=context.read<UserInteractiveNotifier>().removeId){
                                       list.add(element);
                                     }
                                   });

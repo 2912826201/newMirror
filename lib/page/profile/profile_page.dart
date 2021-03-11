@@ -11,6 +11,7 @@ import 'package:mirror/data/model/user_extrainfo_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/vip/vip_not_open_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -65,7 +66,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   Widget build(BuildContext context) {
     // TODO: implement build
     super.build(context);
-    context.watch<ProfilePageNotifier>().setFirstModel(context.watch<ProfileNotifier>().profile.uid);
+    context.watch<UserInteractiveNotifier>().setFirstModel(context.watch<ProfileNotifier>().profile.uid);
     print('===============================我的页build');
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
@@ -274,7 +275,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                     child: _textAndNumber(
                         "关注",
                         StringUtil.getNumber(context
-                            .watch<ProfilePageNotifier>()
+                            .watch<UserInteractiveNotifier>()
                             .profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
                             .attentionModel
                             .followingCount)),
@@ -292,7 +293,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                     child: _textAndNumber(
                         "粉丝",
                         StringUtil.getNumber(context
-                            .watch<ProfilePageNotifier>()
+                            .watch<UserInteractiveNotifier>()
                             .profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
                             .attentionModel
                             .followerCount)),
@@ -307,7 +308,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                     child: _textAndNumber(
                         "动态",
                         StringUtil.getNumber(context
-                            .watch<ProfilePageNotifier>()
+                            .watch<UserInteractiveNotifier>()
                             .profileUiChangeModel[context.watch<ProfileNotifier>().profile.uid]
                             .attentionModel
                             .feedCount)),

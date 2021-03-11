@@ -13,6 +13,7 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/image_preview/image_preview_page.dart';
 import 'package:mirror/page/image_preview/image_preview_view.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
@@ -263,14 +264,14 @@ class _SlideBannerState extends State<SlideBanner> {
         BaseResponseModel model = await laud(id: widget.model.id, laud: widget.model.isLaud == 0 ? 1 : 0);
         // 点赞/取消赞成功
         if (model.code == CODE_BLACKED) {
-          ToastShow.show(msg: "你已被拉黑", context: context, gravity: Toast.CENTER);
+          ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
         } else {
           // print("state:${model.data["state"]}");
           // if (model.data["state"]) {
           context
               .read<FeedMapNotifier>()
               .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
-          context.read<ProfilePageNotifier>().loadChange(widget.model.pushId, context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud);
+          context.read<UserInteractiveNotifier>().loadChange(widget.model.pushId, context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud);
           // } else {
           //   // 失败
           //   print("shib ");

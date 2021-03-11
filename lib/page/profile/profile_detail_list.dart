@@ -7,6 +7,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -46,9 +47,10 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
     DataResponseModel model =
         await getPullList(type: widget.type, size: 20, targetId: widget.id, lastTime: followlastTime);
     if (followDataPage == 1) {
+      _refreshController.loadComplete();
       if (model != null) {
         if (model.list.isNotEmpty) {
-          context.read<ProfilePageNotifier>().idListClear(widget.id, type: widget.type);
+          context.read<UserInteractiveNotifier>().idListClear(widget.id, type: widget.type);
           followModel.clear();
           model.list.forEach((result) {
             followModel.add(HomeFeedModel.fromJson(result));
@@ -77,7 +79,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
       setState(() {});
     }
     List<HomeFeedModel> feedList = [];
-    context.read<ProfilePageNotifier>().setFeedIdList(widget.id, idList, widget.type);
+    context.read<UserInteractiveNotifier>().setFeedIdList(widget.id, idList, widget.type);
     context.read<FeedMapNotifier>().feedMap.forEach((key, value) {
       feedList.add(value);
     });
@@ -110,11 +112,11 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
     return Container(
       width: ScreenUtil.instance.screenWidthDp,
       color: AppColor.white,
-
       ///刷新控件
       child: SmartRefresher(
         enablePullUp: true,
         enablePullDown: true,
+
         footer: CustomFooter(
           builder: (BuildContext context, LoadStatus mode) {
             Widget body;
@@ -151,15 +153,15 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
         shrinkWrap: true, //解决无限高度问题
         physics: AlwaysScrollableScrollPhysics(),
         itemCount: widget.type == 2
-            ? context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].profileFeedListId.length
-            : context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].profileLikeListId.length,
+            ? context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].profileFeedListId.length
+            : context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].profileLikeListId.length,
         itemBuilder: (context, index) {
           HomeFeedModel model;
           if (index > 0) {
             try {
               int id = widget.type == 2
-                  ? context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].profileFeedListId[index]
-                  : context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].profileLikeListId[index];
+                  ? context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].profileFeedListId[index]
+                  : context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].profileLikeListId[index];
               model = context.read<FeedMapNotifier>().feedMap[id];
             } catch (e) {
               print(e);
@@ -181,7 +183,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
               key: GlobalObjectKey("attention$index"),
               removeFollowChanged: (model) {},
               deleteFeedChanged: (feedId) {
-                context.read<ProfilePageNotifier>().synchronizeIdList(widget.id, feedId);
+                context.read<UserInteractiveNotifier>().synchronizeIdList(widget.id, feedId);
                 if (context.read<FeedMapNotifier>().feedMap.containsKey(feedId)) {
                   context.read<FeedMapNotifier>().deleteFeed(feedId);
                 }
@@ -216,11 +218,10 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
             )
           ],
         ));
-
-    if ((widget.type == 6 &&
-            context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].profileLikeListId.length < 2) ||
+    if (((widget.type == 6||widget.type==3)&&
+            context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].profileLikeListId.length < 2) ||
         (widget.type == 2 &&
-            context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].profileFeedListId.length < 2)) {
+            context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].profileFeedListId.length < 2)) {
       return noDataUi;
     } else {
       return list;
