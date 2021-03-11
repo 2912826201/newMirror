@@ -285,12 +285,12 @@ Future<BuddyListModel> getFollowBothList(int size, {String uid, int lastTime}) a
   map["size"] = size;
   BaseResponseModel responseModel = await requestApi(FOLLOW_BOTH_LIST, map);
   if (responseModel.isSuccess) {
-    print('用户关注列表请求接口=============================');
+    print('用户互相关注列表请求接口=============================');
     BuddyListModel model;
     model = BuddyListModel.fromJson(responseModel.data);
     return model;
   } else {
-    print('用户关注列表请求接口失败============================================');
+    print('用户互相关注列表请求接口失败============================================');
     return null;
   }
 }

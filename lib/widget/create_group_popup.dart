@@ -16,6 +16,7 @@ import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
 
 /// create_group_popup
@@ -44,6 +45,9 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
   List<BuddyModel> _friendList = [];
   List<int> _selectedUidList = [];
   bool _isRequesting = false;
+  List<GroupChatModel> _groupList = [];
+
+  PageController _pageController = PageController();
 
   @override
   void initState() {
@@ -85,124 +89,46 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
     SuspensionUtil.setShowSuspensionStatus(_friendList);
   }
 
+  _getGroupList() {
+    getGroupChatList().then((groupChatListMap) {
+      if (groupChatListMap != null && groupChatListMap["list"] != null) {
+        groupChatListMap["list"].forEach((v) {
+          _groupList.add(GroupChatModel.fromJson(v));
+        });
+        setState(() {});
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
         color: AppColor.white,
       ),
       height: ScreenUtil.instance.height * 0.75,
-      child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-        Container(
-          width: 32,
-          height: 4,
-          color: AppColor.bgWhite,
-          margin: const EdgeInsets.only(top: 16, bottom: 24),
-        ),
-        Container(
-          height: 32,
-          color: AppColor.bgWhite.withOpacity(0.65),
-          width: ScreenUtil.instance.screenWidthDp - 32,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: 12,
-              ),
-              Image.asset(
-                "images/resource/2.0x/search_icon_gray@2x.png",
-                width: 21,
-                height: 21,
-              ),
-              Expanded(
-                child: Container(
-                  height: 32,
-                  alignment: Alignment.center,
-                  child: TextField(
-                    controller: controller,
-                    focusNode: focusNode,
-                    textInputAction: TextInputAction.search,
-                    decoration: InputDecoration(
-                        isCollapsed: true,
-                        contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
-                        hintText: '搜索用户',
-                        hintStyle: AppStyle.textSecondaryRegular16,
-                        border: InputBorder.none),
-                    inputFormatters: [
-                      WhitelistingTextInputFormatter(RegExp("[a-zA-Z]|[\u4e00-\u9fa5]|[0-9]")), //只能输入汉字或者字母或数字
-                      LengthLimitingTextInputFormatter(30),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: 32,
+            height: 4,
+            color: AppColor.bgWhite,
+            margin: const EdgeInsets.only(top: 16, bottom: 24),
           ),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Container(
-          height: 48,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: 12,
-              ),
-              Icon(
-                Icons.group,
-                size: 24,
-                color: AppColor.textPrimary1,
-              ),
-              SizedBox(
-                width: 4,
-              ),
-              Text(
-                "已加入的群聊",
-                style: AppStyle.textRegular16,
-              ),
-              Spacer(),
-              Icon(
-                Icons.chevron_right,
-                size: 18,
-                color: AppColor.textHint,
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-            child: Container(
-          child: AzListView(
-            data: _friendList,
-            itemCount: _friendList.length,
-            padding: EdgeInsets.zero,
-            itemBuilder: _buildItem,
-            susItemBuilder: _buildHeader,
-            indexBarData: [],
-          ),
-        )),
-        GestureDetector(
-          onTap: _createGroupOrGoToChat,
-          child: Container(
-            margin: const EdgeInsets.fromLTRB(0, 6, 0, 6),
-            alignment: Alignment.center,
-            height: 36,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(3)),
-              color: _selectedUidList.length > 0 ? AppColor.textPrimary1 : AppColor.bgWhite,
-            ),
-            child: Text(
-              _selectedUidList.length > 1 ? "发起群聊(${_selectedUidList.length})" : "发起聊天",
-              style: TextStyle(color: AppColor.white, fontSize: 16),
+          Expanded(
+            child: PageView(
+              physics: NeverScrollableScrollPhysics(),
+              controller: _pageController,
+              children: [
+                _buildFriendListPage(),
+                _buildGroupListPage(),
+              ],
             ),
           ),
-        ),
-        SizedBox(
-          height: ScreenUtil.instance.bottomBarHeight,
-        ),
-      ]),
+        ],
+      ),
     );
   }
 
@@ -210,8 +136,8 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
     if (_selectedUidList.length == 1) {
       //只选中1人 私聊
       //FIXME 按理说BuddyModel就是UserModel
-      for(BuddyModel friend in _friendList){
-        if(friend.uid == _selectedUidList.first){
+      for (BuddyModel friend in _friendList) {
+        if (friend.uid == _selectedUidList.first) {
           UserModel user = UserModel();
           user.uid = friend.uid;
           user.avatarUri = friend.avatarUri;
@@ -256,8 +182,9 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
     }
   }
 
-  Widget _buildItem(BuildContext context, int index) {
+  Widget _buildFriendItem(BuildContext context, int index) {
     return Container(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
       height: 44,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -322,12 +249,291 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
 
   Widget _buildHeader(BuildContext context, int index) {
     return Container(
+      padding: const EdgeInsets.fromLTRB(22, 0, 16, 0),
       alignment: Alignment.centerLeft,
-      padding: const EdgeInsets.only(left: 6),
       height: 28,
       child: Text(
         _friendList[index].getSuspensionTag(),
         style: AppStyle.textSecondaryRegular14,
+      ),
+    );
+  }
+
+  Widget _buildFriendListPage() {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+          height: 32,
+          color: AppColor.bgWhite.withOpacity(0.65),
+          width: ScreenUtil.instance.screenWidthDp - 32,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 12,
+              ),
+              Image.asset(
+                "images/resource/2.0x/search_icon_gray@2x.png",
+                width: 21,
+                height: 21,
+              ),
+              Expanded(
+                child: Container(
+                  height: 32,
+                  alignment: Alignment.center,
+                  child: TextField(
+                    controller: controller,
+                    focusNode: focusNode,
+                    textInputAction: TextInputAction.search,
+                    decoration: InputDecoration(
+                        isCollapsed: true,
+                        contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
+                        hintText: '搜索用户',
+                        hintStyle: AppStyle.textSecondaryRegular16,
+                        border: InputBorder.none),
+                    inputFormatters: [
+                      WhitelistingTextInputFormatter(RegExp("[a-zA-Z]|[\u4e00-\u9fa5]|[0-9]")), //只能输入汉字或者字母或数字
+                      LengthLimitingTextInputFormatter(30),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            if (_groupList.isEmpty) {
+              _getGroupList();
+            }
+            _pageController.animateToPage(1, duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
+          },
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+            height: 48,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 12,
+                ),
+                Icon(
+                  Icons.group,
+                  size: 24,
+                  color: AppColor.textPrimary1,
+                ),
+                SizedBox(
+                  width: 4,
+                ),
+                Text(
+                  "已加入的群聊",
+                  style: AppStyle.textRegular16,
+                ),
+                Spacer(),
+                Icon(
+                  Icons.chevron_right,
+                  size: 18,
+                  color: AppColor.textHint,
+                ),
+              ],
+            ),
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+          height: 0.5,
+          color: AppColor.bgWhite,
+        ),
+        Expanded(
+          child: Container(
+            child: AzListView(
+              data: _friendList,
+              itemCount: _friendList.length,
+              padding: EdgeInsets.zero,
+              itemBuilder: _buildFriendItem,
+              susItemBuilder: _buildHeader,
+              indexBarData: [],
+            ),
+          ),
+        ),
+        GestureDetector(
+          onTap: _createGroupOrGoToChat,
+          child: Container(
+            margin: const EdgeInsets.fromLTRB(0, 6, 0, 6),
+            alignment: Alignment.center,
+            height: 36,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(3)),
+              color: _selectedUidList.length > 0 ? AppColor.textPrimary1 : AppColor.bgWhite,
+            ),
+            child: Text(
+              _selectedUidList.length > 1 ? "发起群聊(${_selectedUidList.length})" : "发起聊天",
+              style: TextStyle(color: AppColor.white, fontSize: 16),
+            ),
+          ),
+        ),
+        SizedBox(
+          height: ScreenUtil.instance.bottomBarHeight,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGroupListPage() {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.only(right: 16),
+          height: 48,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              AppIconButton(
+                iconSize: 18,
+                icon: Icons.chevron_left,
+                iconColor: AppColor.textHint,
+                buttonHeight: 48,
+                buttonWidth: 50,
+                onTap: () {
+                  _pageController.animateToPage(0, duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
+                },
+              ),
+              Spacer(),
+              Text(
+                "已加入的群聊",
+                style: AppStyle.textRegular16,
+              )
+            ],
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+          height: 0.5,
+          color: AppColor.bgWhite,
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: _groupList.length,
+            itemBuilder: _buildGroupItem,
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _buildGroupItem(BuildContext context, int index) {
+    List<String> avatarList = _groupList[index].coverUrl.split(",");
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+      height: 48,
+      margin: const EdgeInsets.only(bottom: 8),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          Navigator.pop(context);
+          jumpGroupPage(context, _groupList[index].modifiedName ?? _groupList[index].name, _groupList[index].id);
+        },
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              height: 32,
+              width: 32,
+              child: Stack(
+                children: [
+                  avatarList.length == 1
+                      ? ClipOval(
+                          child: CachedNetworkImage(
+                            height: 32,
+                            width: 32,
+                            imageUrl: avatarList.first,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Image.asset(
+                              "images/test.png",
+                              fit: BoxFit.cover,
+                            ),
+                            errorWidget: (context, url, error) => Image.asset(
+                              "images/test.png",
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        )
+                      : avatarList.length > 1
+                          ? Positioned(
+                              top: 0,
+                              right: 0,
+                              child: ClipOval(
+                                child: CachedNetworkImage(
+                                  height: 20,
+                                  width: 20,
+                                  imageUrl: avatarList.first,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) => Image.asset(
+                                    "images/test.png",
+                                    fit: BoxFit.cover,
+                                  ),
+                                  errorWidget: (context, url, error) => Image.asset(
+                                    "images/test.png",
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ))
+                          : Container(),
+                  avatarList.length > 1
+                      ? Positioned(
+                          bottom: 0,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle, border: Border.all(width: 3, color: AppColor.white)),
+                            child: ClipOval(
+                              child: CachedNetworkImage(
+                                height: 20,
+                                width: 20,
+                                imageUrl: avatarList[1],
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) => Image.asset(
+                                  "images/test.png",
+                                  fit: BoxFit.cover,
+                                ),
+                                errorWidget: (context, url, error) => Image.asset(
+                                  "images/test.png",
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      : Container(),
+                ],
+              ),
+            ),
+            SizedBox(
+              width: 13,
+            ),
+            Expanded(
+              child: Text(
+                _groupList[index].modifiedName ?? _groupList[index].name,
+                style: TextStyle(color: AppColor.textPrimary2, fontSize: 16),
+                maxLines: 1,
+                softWrap: false,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            SizedBox(
+              width: 26,
+            ),
+            Icon(
+              Icons.chevron_right,
+              size: 18,
+              color: AppColor.textHint,
+            ),
+          ],
+        ),
       ),
     );
   }
