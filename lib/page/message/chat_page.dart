@@ -717,6 +717,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
           ),
           onTap: () {
             // _textController.text = emojiModel.code;
+            // 获取输入框内的规则
+            var rules = context.read<ChatEnterNotifier>().rules;
+
             if( _textController.text==null|| _textController.text.length<1){
               _textController.text="";
               cursorIndexPr=0;
@@ -727,8 +730,22 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
             }else{
               _textController.text += emojiModel.code;
             }
-            cursorIndexPr+=emojiModel.code.length;
             _changTextLen(_textController.text);
+            if (rules.isNotEmpty) {
+              print("不为空");
+              int diffLength = emojiModel.code.length;
+              print("diffLength:$diffLength");
+              for (int i = 0; i < rules.length; i++) {
+                if (rules[i].startIndex >= cursorIndexPr) {
+                  int newStartIndex = rules[i].startIndex + diffLength;
+                  int newEndIndex = rules[i].endIndex + diffLength;
+                  rules.replaceRange(i, i + 1, <Rule>[rules[i].copy(newStartIndex, newEndIndex)]);
+                }
+              }
+            }
+            cursorIndexPr+=emojiModel.code.length;
+            // 替换
+            context.read<ChatEnterNotifier>().replaceRules(rules);
             Future.delayed(Duration(milliseconds: 100),(){
               textScrollController.jumpTo(textScrollController.position.maxScrollExtent);
             });
@@ -1542,11 +1559,16 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
           print("scrollPositionPixels：$scrollPositionPixels");
           judgeAddAlertTime();
           chatDataList.insert(0, chatDataModel);
-          if (message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
-            //判断是不是群通知
-            if (chatTypeId == RCConversationType.Group) {
-              print("--------------------------------");
-              getChatGroupUserModelList1(chatId, context);
+          //判断是不是群通知
+          if (message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF&&chatTypeId == RCConversationType.Group) {
+            Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
+            switch (dataMap["subType"]) {
+              case 4:
+                chatName=dataMap["groupChatName"];
+                break;
+              default:
+                getChatGroupUserModelList1(chatId, context);
+                break;
             }
           }
           isHaveReceiveChatDataList = true;

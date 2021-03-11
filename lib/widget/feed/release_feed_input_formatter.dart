@@ -269,7 +269,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
       Rule rule = rules[i];
       print(rule);
       if ((startIndex >= rule.startIndex && startIndex <= rule.endIndex - 1) ||
-          (endIndex >= rule.startIndex && endIndex <= rule.endIndex)) {
+          (endIndex > rule.startIndex && endIndex <= rule.endIndex)) {
         isRule=true;
         print("光标开始位置$startIndex");
         print("光标结束位置$endIndex");
