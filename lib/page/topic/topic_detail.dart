@@ -13,15 +13,8 @@ import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/data_response_model.dart';
-import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/data/model/loading_status.dart';
-import 'package:mirror/data/model/message/chat_type_model.dart';
-import 'package:mirror/data/model/profile/topic_list_model.dart';
-import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
-import 'package:mirror/page/topic/topic_newest.dart';
-import 'package:mirror/page/topic/topic_recommend.dart';
+import 'package:mirror/page/topic/topic_list.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -30,6 +23,7 @@ import 'package:mirror/widget/feed/feed_share_popups.dart';
 import 'package:mirror/widget/primary_scrollcontainer.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class TopicDetail extends StatefulWidget {
   TopicDetail({Key key, this.isTopicList, this.model}) : super(key: key);
@@ -58,33 +52,6 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   // 头部滑动距离
   double headSlideHeight;
 
-  // 推荐加载中默认文字
-  String recommendLoadText = "";
-
-  // 推荐加载状态
-  LoadingStatus recommendLoadStatus = LoadingStatus.STATUS_IDEL;
-
-  // 推荐数据是否存在下一页
-  int recommendHasNext;
-
-  // 推荐话题ListModel
-  List<HomeFeedModel> recommendTopicList = [];
-
-  // 最新加载中默认文字
-  String newestLoadText = "";
-
-  // 最新加载状态
-  LoadingStatus newestLoadStatus = LoadingStatus.STATUS_IDEL;
-
-  // 最新数据是否存在下一页
-  int newestHasNext;
-
-  // 最新话题ListModel
-  List<HomeFeedModel> newestTopicList = [];
-
-  // 最新话题动态请求下一页
-  int newestLastTime;
-
   List<GlobalKey> scrollChildKeys;
   GlobalKey<PrimaryScrollContainerState> leftKey = GlobalKey();
   GlobalKey<PrimaryScrollContainerState> rightKey = GlobalKey();
@@ -92,6 +59,8 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   StreamController<TopicUiChangeModel> appBarStreamController = StreamController<TopicUiChangeModel>();
   bool streamCanChange = false;
   TopicUiChangeModel topicUiChangeModel = TopicUiChangeModel();
+  RefreshController _newsRefereshController = RefreshController();
+  RefreshController _recommendRefereshController = RefreshController();
   @override
   void dispose() {
     _tabController.dispose();
@@ -102,10 +71,6 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   @override
   void initState() {
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      requestRecommendTopic();
-      requestNewestTopic();
-    });
     scrollChildKeys = [leftKey, rightKey];
     _tabController.addListener(() {
       for (int i = 0; i < scrollChildKeys.length; i++) {
@@ -137,86 +102,9 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
             streamCanChange = true;
           }
         }
-        if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-          if (_tabController.index == 0) {
-            requestRecommendTopic();
-          } else if (_tabController.index == 1) {
-            requestNewestTopic();
-          }
-          print("lalalalalalalalalalalalal");
-        }
+
       });
     super.initState();
-  }
-
-  // // 请求动态详情接口
-  // requestTopicDetail() async {
-  //   model = await getTopicInfo(topicId: widget.topicId);
-  //   if (mounted) {
-  //     setState(() {});
-  //   }
-  // }
-
-  // 请求推荐话题动态接口
-  requestRecommendTopic() async {
-    if (recommendHasNext != 0) {
-      if (recommendLoadStatus == LoadingStatus.STATUS_IDEL) {
-        // 先设置状态，防止下拉就直接加载
-        setState(() {
-          recommendLoadStatus = LoadingStatus.STATUS_LOADING;
-        });
-      }
-      DataResponseModel model = await pullTopicList(type: 5, size: 20, targetId: widget.model.id);
-      recommendHasNext = model.hasNext;
-      if (model.list.isNotEmpty) {
-        model.list.forEach((v) {
-          recommendTopicList.add(HomeFeedModel.fromJson(v));
-        });
-        recommendLoadStatus = LoadingStatus.STATUS_IDEL;
-        recommendLoadText = "加载中...";
-      }
-      context.read<FeedMapNotifier>().updateFeedMap(recommendTopicList);
-    }
-    if (recommendHasNext == 0) {
-      // 加载完毕
-      recommendLoadText = "已加载全部话题动态";
-      recommendLoadStatus = LoadingStatus.STATUS_COMPLETED;
-    }
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
-  // 请求最新话题动态
-  requestNewestTopic() async {
-    if (newestHasNext != 0) {
-      if (newestLoadStatus == LoadingStatus.STATUS_IDEL) {
-        // 先设置状态，防止下拉就直接加载
-        setState(() {
-          newestLoadStatus = LoadingStatus.STATUS_LOADING;
-        });
-      }
-      DataResponseModel model =
-          await pullTopicList(type: 4, size: 20, targetId: widget.model.id, lastTime: newestLastTime);
-      newestLastTime = model.lastTime;
-      newestHasNext = model.hasNext;
-      if (model.list.isNotEmpty) {
-        model.list.forEach((v) {
-          newestTopicList.add(HomeFeedModel.fromJson(v));
-        });
-        newestLoadStatus = LoadingStatus.STATUS_IDEL;
-        newestLoadText = "加载中...";
-      }
-      context.read<FeedMapNotifier>().updateFeedMap(newestTopicList);
-    }
-    if (newestHasNext == 0) {
-      // 加载完毕
-      newestLoadText = "已加载全部话题动态";
-      newestLoadStatus = LoadingStatus.STATUS_COMPLETED;
-    }
-    if (mounted) {
-      setState(() {});
-    }
   }
 
   // 请求关注话题
@@ -440,44 +328,20 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                   children: <Widget>[
                     PrimaryScrollContainer(
                       scrollChildKeys[0],
-                      TopicRecommend(
-                        topicList: recommendTopicList,
+                      TopicList(
                         topicId: widget.model.id,
-                        loadStatus: recommendLoadStatus,
-                        loadText: recommendLoadText,
-                        refreshCallBack: (bool) {
-                          print("回调");
-                          setState(() {
-                            recommendLoadText = "";
-                            recommendTopicList.clear();
-                            recommendHasNext = null;
-                            recommendLoadStatus = LoadingStatus.STATUS_IDEL;
-                            requestRecommendTopic();
-                          });
-                        },
+                        type: 5,
                       ),
                     ),
                     // 推荐话题
-
                     // 最新话题
                     PrimaryScrollContainer(
-                        scrollChildKeys[1],
-                        TopicNewest(
-                          topicList: newestTopicList,
-                          loadStatus: newestLoadStatus,
-                          topicId: widget.model.id,
-                          loadText: newestLoadText,
-                          refreshCallBack: (bool) {
-                            setState(() {
-                              newestLoadText = "";
-                              newestTopicList.clear();
-                              newestHasNext = null;
-                              newestLastTime = null;
-                              newestLoadStatus = LoadingStatus.STATUS_IDEL;
-                              requestNewestTopic();
-                            });
-                          },
-                        )),
+                      scrollChildKeys[1],
+                      TopicList(
+                        topicId: widget.model.id,
+                        type: 4,
+                      ),
+                    ),
                   ],
                 ),
               )
