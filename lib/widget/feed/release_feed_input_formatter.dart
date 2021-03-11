@@ -290,9 +290,10 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
       }
     }
 
-    if(!isRule) {
-      return newValue;
-    }
+    // if(!isRule) {
+    //   print("提前返回了");
+    //   return newValue;
+    // }
     // 一次性全部删除时
    if(newValue.text.isEmpty) {
      print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%全部删除了");
