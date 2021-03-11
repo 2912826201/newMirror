@@ -98,6 +98,7 @@ class HeadViewState extends State<HeadView> {
           widget.removeFollowChanged(widget.model);
         }
         context.read<ProfilePageNotifier>().changeIsFollow(true, true, widget.model.pushId);
+        context.read<ProfilePageNotifier>().changeFollowCount(context.read<ProfileNotifier>().profile.uid, false);
         ToastShow.show(msg: "取消关注成功", context: context);
       } else {
         ToastShow.show(msg: "取消关注失败,请重试", context: context);
@@ -107,6 +108,7 @@ class HeadViewState extends State<HeadView> {
       if (relation != null) {
         if (relation == 1 || relation == 3) {
           context.read<ProfilePageNotifier>().changeIsFollow(true, false, widget.model.pushId);
+          context.read<ProfilePageNotifier>().changeFollowCount(context.read<ProfileNotifier>().profile.uid, true);
           ToastShow.show(msg: "关注成功!", context: context);
           opacity = 1;
           Future.delayed(Duration(milliseconds: 1000), () {
@@ -204,9 +206,7 @@ class HeadViewState extends State<HeadView> {
   Widget build(BuildContext context) {
     if (widget.model.pushId == context.watch<ProfileNotifier>().profile.uid) {
       isMySelf = true;
-      if (!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey(widget.model.pushId)) {
         context.watch<ProfilePageNotifier>().setFirstModel(widget.model.pushId);
-      }
       if (!context
           .watch<ProfilePageNotifier>()
           .profileUiChangeModel[widget.model.pushId]
@@ -214,7 +214,7 @@ class HeadViewState extends State<HeadView> {
           .contains("删除")) {
         context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.model.pushId].feedStringList.add("删除");
       }
-    } else if (!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey(widget.model.pushId)) {
+    } else {
       context.watch<ProfilePageNotifier>().setFirstModel(widget.model.pushId,
           isFollow: widget.model.isFollow == 1 || widget.model.isFollow == 3 ? false : true);
     }

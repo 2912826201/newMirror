@@ -4,6 +4,7 @@ import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
+import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -200,6 +201,7 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
     print('取消关注监听==============================$cancelResult');
     if (cancelResult == 0 || cancelResult == 2) {
       ToastShow.show(msg: "已取消关注该用户", context: context);
+      context.read<ProfilePageNotifier>().changeFollowCount(context.read<ProfileNotifier>().profile.uid, false);
       context.read<ProfilePageNotifier>().changeIsFollow(true, true, widget.userId);
       Navigator.pop(context);
     }

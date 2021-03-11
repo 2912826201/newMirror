@@ -72,6 +72,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   bool isScroll = false;
 
   bool canOnClick = true;
+
   ///该用户和我的关系
   int relation;
   ScrollController scrollController = ScrollController();
@@ -83,9 +84,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   @override
   void initState() {
     super.initState();
-    if (!context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(widget.userId)) {
-      context.read<ProfilePageNotifier>().setFirstModel(widget.userId);
-    }
+    context.read<ProfilePageNotifier>().setFirstModel(widget.userId);
 
     ///判断是自己的页面还是别人的页面
     if (context.read<ProfileNotifier>().profile.uid == widget.userId) {
@@ -205,20 +204,21 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           print('=====================innerBoxIsScrolled$innerBoxIsScrolled');
           return <Widget>[
             ///这里使用NestedScrollView的AppBar，设置pinned: true,表示不会跟随滚动消失
-          StreamBuilder<Color>(
-          initialData: AppColor.transparent,
-          stream: streamController.stream,
-          builder: (BuildContext stramContext, AsyncSnapshot<Color> snapshot) {
-          return SliverAppBar(
+            SliverAppBar(
               brightness: Brightness.light,
               pinned: true,
               forceElevated: false,
               elevation: 0.5,
               centerTitle: true,
-              title:  Text(
+              title: StreamBuilder<Color>(
+                  initialData: AppColor.transparent,
+                  stream: streamController.stream,
+                  builder: (BuildContext stramContext, AsyncSnapshot<Color> snapshot) {
+                    return Text(
                       "$_textName",
                       style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18, color: snapshot.data),
-                    ),
+                    );
+                  }),
 
               leading: InkWell(
                 onTap: () {
@@ -284,7 +284,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                   background: Container(
                 child: mineHomeData(height, width),
               )),
-            );}),
+            ),
 
             ///根据布尔值返回视图
             isMselfId
@@ -504,7 +504,9 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 
   ///关注，编辑资料，私聊按钮
   Widget _mineButton(double height) {
-    return GestureDetector(
+    return Consumer<ProfilePageNotifier>(
+        builder: (context, notifier, child) {
+          return GestureDetector(
         onTap: () {
           if (canOnClick) {
             if (isMselfId) {
@@ -513,7 +515,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                 _getUserInfo();
               });
             } else {
-              if (context.read<ProfilePageNotifier>().profileUiChangeModel[widget.userId].isFollow) {
+              if (notifier.profileUiChangeModel[widget.userId].isFollow) {
                 _checkBlackStatus();
               } else {
                 ///这里跳转到私聊界面
@@ -529,7 +531,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
           width: 72,
           decoration: BoxDecoration(
               color: !isMselfId
-                  ? context.read<ProfilePageNotifier>().profileUiChangeModel[widget.userId].isFollow
+                  ? notifier.profileUiChangeModel[widget.userId].isFollow
                       ? AppColor.mainRed
                       : AppColor.transparent
                   : AppColor.transparent,
@@ -538,7 +540,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                   width: 0.5,
                   color: isMselfId
                       ? AppColor.black
-                      : !context.read<ProfilePageNotifier>().profileUiChangeModel[widget.userId].isFollow
+                      : !notifier.profileUiChangeModel[widget.userId].isFollow
                           ? AppColor.black
                           : AppColor.transparent)),
 
@@ -550,16 +552,16 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                     style: AppStyle.textRegular12,
                   ),
                 )
-              : _buttonLayoutSelect(),
-        ));
+              : _buttonLayoutSelect(notifier),
+        ));});
   }
 
-  Widget _buttonLayoutSelect() {
+  Widget _buttonLayoutSelect(ProfilePageNotifier notifier) {
     return Stack(
       children: [
         ///关注按钮
         Opacity(
-          opacity: context.read<ProfilePageNotifier>().profileUiChangeModel[widget.userId].isFollow ? 1 : 0,
+          opacity: notifier.profileUiChangeModel[widget.userId].isFollow ? 1 : 0,
           child: Center(
               child: Text(
             "+ 关注",
@@ -569,7 +571,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 
         ///私聊按钮
         Opacity(
-          opacity: context.read<ProfilePageNotifier>().profileUiChangeModel[widget.userId].isFollow ? 0 : 1,
+          opacity: notifier.profileUiChangeModel[widget.userId].isFollow ? 0 : 1,
           child: Center(
             child: Row(
               children: [
@@ -634,6 +636,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     int attntionResult = await ProfileAddFollow(widget.userId);
     if (attntionResult == 1 || attntionResult == 3) {
       context.read<ProfilePageNotifier>().changeIsFollow(true, false, widget.userId);
+      context.read<ProfilePageNotifier>().changeFollowCount(context.read<ProfileNotifier>().profile.uid, true);
       _getFollowCount(id: widget.userId);
       ToastShow.show(msg: "关注成功!", context: context);
     }
@@ -662,16 +665,18 @@ class ProfilePageNotifier extends ChangeNotifier {
   }
 
   void setFirstModel(int id, {bool isFollow}) {
-    ProfileUiChangeModel model = ProfileUiChangeModel();
-    if (isFollow != null) {
-      model.isFollow = isFollow;
-      model.feedStringList.clear();
-      if (!isFollow) {
-        model.feedStringList.add("取消关注");
+    if (!profileUiChangeModel.containsKey(id)) {
+      ProfileUiChangeModel model = ProfileUiChangeModel();
+      if (isFollow != null) {
+        model.isFollow = isFollow;
+        model.feedStringList.clear();
+        if (!isFollow) {
+          model.feedStringList.add("取消关注");
+        }
+        model.feedStringList.add("举报");
       }
-      model.feedStringList.add("举报");
+      profileUiChangeModel[id] = model;
     }
-    profileUiChangeModel[id] = model;
   }
 
   void setFeedIdList(int id, List<int> feedIdList, int type) {
@@ -721,7 +726,6 @@ class ProfilePageNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-
   void changeIsFollow(bool needNotify, bool bl, int id) {
     profileUiChangeModel[id].isFollow = bl;
     profileUiChangeModel[id].feedStringList.clear();
@@ -730,10 +734,21 @@ class ProfilePageNotifier extends ChangeNotifier {
     }
     profileUiChangeModel[id].feedStringList.add("举报");
     if (needNotify) {
+      print('=====================关注以后的notify${profileUiChangeModel[id].isFollow}');
       notifyListeners();
     }
   }
 
+  void changeFollowCount(int id, bool follow) {
+    if (profileUiChangeModel.containsKey(id)) {
+      if (follow) {
+        profileUiChangeModel[id].attentionModel.followingCount += 1;
+      } else {
+        profileUiChangeModel[id].attentionModel.followingCount -= 1;
+      }
+      notifyListeners();
+    }
+  }
 
   void changeAttentionModel(ProfileModel model, int id) {
     print('=id==========id======id=======id======$id');

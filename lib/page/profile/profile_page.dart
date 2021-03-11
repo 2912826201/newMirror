@@ -65,13 +65,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
   Widget build(BuildContext context) {
     // TODO: implement build
     super.build(context);
-    if (!context
-        .watch<ProfilePageNotifier>()
-        .profileUiChangeModel
-        .containsKey(context.watch<ProfileNotifier>().profile.uid)) {
-      print('=======================================不存在该id的key');
-      context.watch<ProfilePageNotifier>().setFirstModel(context.watch<ProfileNotifier>().profile.uid);
-    }
+    context.watch<ProfilePageNotifier>().setFirstModel(context.watch<ProfileNotifier>().profile.uid);
     print('===============================我的页build');
     double width = ScreenUtil.instance.screenWidthDp;
     double height = ScreenUtil.instance.height;
