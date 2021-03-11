@@ -366,41 +366,41 @@ class VideoCourseListPageState extends XCState {
           ),
           onNotification: (ScrollNotification notification) {
             ScrollMetrics metrics = notification.metrics;
-            if (metrics.axisDirection == AxisDirection.up || metrics.axisDirection == AxisDirection.down) {
-              // 注册通知回调
-              if (notification is ScrollStartNotification) {
-                // 滚动开始
-                print('滚动开始');
-              } else if (notification is ScrollUpdateNotification) {
-                // 当前位置
-                print("当前位置${metrics.pixels}");
-                if (metrics.pixels > showBackTopBoxHeight) {
-                  if (metrics.pixels - showBackTopBoxHeight > topItemHeight) {
-                    topItemOpacity = 1.0;
-                  } else {
-                    topItemOpacity = (metrics.pixels - showBackTopBoxHeight) / topTitleItemHeight;
-                    if (topItemOpacity > 1) {
-                      topItemOpacity = 1.0;
-                    }
-                  }
-                } else {
-                  topItemOpacity = 0.0;
-                }
-                if (mounted) {
-                  reload(() {
-                    if (topItemOpacity == 0) {
-                      topItemHeight = 0;
-                    } else if (metrics.pixels > showBackTopBoxHeight && topItemHeight == 0) {
-                      topItemHeight = topItemHeight1;
-                      topItemOpacity = 0.0;
-                    }
-                  });
-                }
-              } else if (notification is ScrollEndNotification) {
-                // 滚动结束
-                print('滚动结束');
-              }
-            }
+            // if (metrics.axisDirection == AxisDirection.up || metrics.axisDirection == AxisDirection.down) {
+            //   // 注册通知回调
+            //   if (notification is ScrollStartNotification) {
+            //     // 滚动开始
+            //     // print('滚动开始');
+            //   } else if (notification is ScrollUpdateNotification) {
+            //     // 当前位置
+            //     // print("当前位置${metrics.pixels}");
+            //     if (metrics.pixels > showBackTopBoxHeight) {
+            //       if (metrics.pixels - showBackTopBoxHeight > topItemHeight) {
+            //         topItemOpacity = 1.0;
+            //       } else {
+            //         topItemOpacity = (metrics.pixels - showBackTopBoxHeight) / topTitleItemHeight;
+            //         if (topItemOpacity > 1) {
+            //           topItemOpacity = 1.0;
+            //         }
+            //       }
+            //     } else {
+            //       topItemOpacity = 0.0;
+            //     }
+            //     if (mounted) {
+            //       reload(() {
+            //         if (topItemOpacity == 0) {
+            //           topItemHeight = 0;
+            //         } else if (metrics.pixels > showBackTopBoxHeight && topItemHeight == 0) {
+            //           topItemHeight = topItemHeight1;
+            //           topItemOpacity = 0.0;
+            //         }
+            //       });
+            //     }
+            //   } else if (notification is ScrollEndNotification) {
+            //     // 滚动结束
+            //     // print('滚动结束');
+            //   }
+            // }
             return false;
           }),
     );
@@ -742,15 +742,17 @@ class VideoCourseListPageState extends XCState {
       level: _level,
     );
     if (model != null && model["list"] != null) {
+
+      if(isRefreshOrLoad){
+        videoModelArray.clear();
+      }
+
       int count = videoModelArray.length;
 
-      print("videoModelArray.length1111:${videoModelArray.length}");
       model["list"].forEach((v) {
         videoModelArray.add(LiveVideoModel.fromJson(v));
-        print('8888888888888888888888888888888888888------${v["id"]}');
       });
 
-      print("videoModelArray.length222222:${videoModelArray.length}");
 
       Future.delayed(Duration(milliseconds: 500), () {
         if (isRefreshOrLoad) {
@@ -802,7 +804,6 @@ class VideoCourseListPageState extends XCState {
 
   //刷新数据
   _onRefresh() async {
-    videoModelArray.clear();
     topItemOpacity = 0.0;
     topItemHeight = 0;
     pagePosition = 1;
