@@ -122,7 +122,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
                               CommentDtoModel comModel;
                               if (commentModel != null) {
                                 if (commentModel.code == CODE_BLACKED) {
-                                  ToastShow.show(msg: commentModel.message, context: context, gravity: Toast.CENTER);
+                                  ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
                                 } else if (commentModel.code == CODE_NO_DATA) {
                                   String alertString = commentModel.message;
                                   ToastShow.show(msg: alertString, context: context, gravity: Toast.CENTER);

@@ -263,7 +263,7 @@ class _SlideBannerState extends State<SlideBanner> {
         BaseResponseModel model = await laud(id: widget.model.id, laud: widget.model.isLaud == 0 ? 1 : 0);
         // 点赞/取消赞成功
         if (model.code == CODE_BLACKED) {
-          ToastShow.show(msg: "你已被拉黑", context: context, gravity: Toast.CENTER);
+          ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
         } else {
           // print("state:${model.data["state"]}");
           // if (model.data["state"]) {
