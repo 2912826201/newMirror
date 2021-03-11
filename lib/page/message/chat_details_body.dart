@@ -73,7 +73,7 @@ class ChatDetailsBody extends StatelessWidget {
       chatData.insert(0, model);
     }
 
-    if(loadStatus != LoadingStatus.STATUS_COMPLETED) {
+    if(loadStatus != LoadingStatus.STATUS_COMPLETED&&!isShowTop) {
       ChatDataModel chatDataModel = new ChatDataModel();
       chatDataModel.content = "加载动画";
       chatData.add(chatDataModel);
@@ -143,7 +143,7 @@ class ChatDetailsBody extends StatelessWidget {
       reverse: true,
       shrinkWrap: isShowTop,
       childrenDelegate: FirstEndItemChildrenDelegate((BuildContext context, int index) {
-        if (index == chatData.length - 1&&loadStatus != LoadingStatus.STATUS_COMPLETED) {
+        if (index == chatData.length - 1&&loadStatus != LoadingStatus.STATUS_COMPLETED&&!isShowTop) {
           return getLoadingUi();
         } else {
           return Container(

@@ -13,12 +13,15 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 class GroupChatUserInformationDBHelper {
   
   Future<bool> update({Message message,ChatGroupUserModel chatGroupUserModel,String groupId}) async {
-    if (message != null&&message.conversationType!=RCConversationType.Group) {
+    if (message != null&&message.conversationType!=RCConversationType.Group&&
+        message.objectName==ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
       return false;
     }
-    if(message==null&&(chatGroupUserModel==null||groupId==null)){
+    if((message==null||message.content==null||message.content.sendUserInfo==null)&&
+        (chatGroupUserModel==null||groupId==null)){
       return false;
     }
+
 
     GroupChatUserInformationDto informationDto=_getDto(message, chatGroupUserModel, groupId);
 

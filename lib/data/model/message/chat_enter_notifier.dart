@@ -41,7 +41,10 @@ class ChatEnterNotifier extends ChangeNotifier {
     this.rules.add(role);
     notifyListeners();
   }
-
+  replaceRules(List<Rule> roles) {
+    this.rules = roles;
+    notifyListeners();
+  }
   clearRules() {
     this.rules.clear();
   }

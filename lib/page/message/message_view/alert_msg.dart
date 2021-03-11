@@ -225,13 +225,13 @@ class AlertMsg extends StatelessWidget {
       try {
         if (d != null) {
           if (d["uid"] == Application.profile.uid) {
-            textArray.add("你${userCount >= users.length ? " " : "、"}");
+            textArray.add("你${userCount > users.length ? " " : "、"}");
             isHaveUserSelf=true;
           } else {
             if (mapGroupModel["subType"] == 3) {
-              textArray.add("${d["currentMasterName"]}${userCount >= users.length ? " " : "、"}");
+              textArray.add("${d["currentMasterName"]}${userCount > users.length ? " " : "、"}");
             } else {
-              textArray.add("${d["groupNickName"]}${userCount >= users.length ? " " : "、"}");
+              textArray.add("${d["groupNickName"]}${userCount > users.length ? " " : "、"}");
             }
           }
           isChangColorArray.add(true);

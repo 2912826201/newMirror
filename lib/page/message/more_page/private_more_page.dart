@@ -165,12 +165,16 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     print(map.toString());
     if (map != null && map["state"] != null && map["state"]) {
       TopChatModel topChatModel = new TopChatModel(type: 0, chatId: int.parse(widget.chatUserId));
-      if (topChatIndex > 0 && !topChat) {
-        Application.topChatModelList.removeAt(topChatIndex);
-        topChatIndex = -1;
-      } else {
+      if(topChat){
         Application.topChatModelList.add(topChatModel);
         topChatIndex = Application.topChatModelList.length - 1;
+        topChat=true;
+      }else{
+        if(topChatIndex>=0) {
+          Application.topChatModelList.removeAt(topChatIndex);
+        }
+        topChatIndex = -1;
+        topChat=false;
       }
     } else {
       topChat = !topChat;
@@ -266,45 +270,59 @@ class PrivateMorePageState extends State<PrivateMorePage> {
   //拉黑了这个人
   void addToBlackList() async {
     showProgressDialog();
-    bool blackStatus = await ProfileAddBlack(int.parse(widget.chatUserId));
-    if (blackStatus!=null&&blackStatus) {
-      isBlackList = true;
-      ToastShow.show(msg: "已拉黑", context: context);
-      if(widget.listener!=null){
-        widget.listener(2,"拉黑");
+    Future.delayed(Duration(milliseconds: 300),()async{
+      if(await isOffline()){
+        ToastShow.show(msg: "请检查网络!", context: context);
+        dismissProgressDialog();
+        return;
       }
-      if(mounted) {
-        setState(() {
-          dismissProgressDialog();
-        });
+      bool blackStatus = await ProfileAddBlack(int.parse(widget.chatUserId));
+      if (blackStatus!=null&&blackStatus) {
+        isBlackList = true;
+        ToastShow.show(msg: "已拉黑", context: context);
+        if(widget.listener!=null){
+          widget.listener(2,"拉黑");
+        }
+        if(mounted) {
+          setState(() {
+            dismissProgressDialog();
+          });
+        }
+        if(context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(int.parse(widget.chatUserId))){
+          print('====================================个人主页的方法进了');
+          context.read<ProfilePageNotifier>().changeIsFollow(true, true, int.parse(widget.chatUserId));
+        }
+        print('====================================个人主页的方法完了');
+      } else {
+        ToastShow.show(msg: "拉黑失败", context: context);
+        dismissProgressDialog();
       }
-      if(context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(int.parse(widget.chatUserId))){
-        print('====================================个人主页的方法进了');
-        context.read<ProfilePageNotifier>().changeIsFollow(true, true, int.parse(widget.chatUserId));
-      }
-      print('====================================个人主页的方法完了');
-    } else {
-      ToastShow.show(msg: "拉黑失败", context: context);
-      dismissProgressDialog();
-    }
+    });
   }
 
   //解除了拉黑
   void removeFromBlackList() async {
     showProgressDialog();
-    bool blackStatus = await ProfileCancelBlack(int.parse(widget.chatUserId));
-    if (blackStatus) {
-      isBlackList = false;
-      ToastShow.show(msg: "已解除拉黑", context: context);
-      if(mounted) {
-        setState(() {
-          dismissProgressDialog();
-        });
+    Future.delayed(Duration(milliseconds: 300),()async{
+      if(await isOffline()){
+        ToastShow.show(msg: "请检查网络!", context: context);
+        dismissProgressDialog();
+        return;
       }
-    } else {
-      ToastShow.show(msg: "解除拉黑失败", context: context);
-      dismissProgressDialog();
-    }
+      bool blackStatus = await ProfileCancelBlack(int.parse(widget.chatUserId));
+      if (blackStatus) {
+        isBlackList = false;
+        ToastShow.show(msg: "已解除拉黑", context: context);
+        if(mounted) {
+          setState(() {
+            dismissProgressDialog();
+          });
+        }
+      } else {
+        ToastShow.show(msg: "解除拉黑失败", context: context);
+        dismissProgressDialog();
+      }
+    });
   }
 
 

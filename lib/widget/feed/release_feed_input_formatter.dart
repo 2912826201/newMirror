@@ -1,6 +1,7 @@
 // TextInputFormatter
 // import 'dart:js';
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -28,6 +29,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
   final String triggerTopicSymbol;
   // 是否监听#话题
   final bool isMonitorTop;
+  final Function correctRulesListener;
 
   // 记录@的光标
   List<AtIndex> atIndexs;
@@ -53,6 +55,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     this.triggerTopicSymbol = "#",
     this.isMonitorTop = true,
     this.atIndexs,
+    this.correctRulesListener,
     this.rules,
   })  : assert(triggerAtCallback != null && controller != null),
         _triggerAtCallback = triggerAtCallback,
@@ -66,7 +69,9 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
 
     bool isAdd = oldValue.text.length < newValue.text.length;
     print("新值$newValue");
+    // print("utf8.encode(inputText):${utf8.encode(newValue.text).length}");
     print("新值前光标${newValue.selection.start}");
+
     print("新值后光标${newValue.selection.end}");
     print("旧值$oldValue");
     print("旧值前光标${oldValue.selection.start}");
@@ -199,14 +204,19 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
     print(newLength);
     print(oldStartIndex);
     int diffLength = newLength - oldLength;
+    bool judge=false;
     for (int i = 0; i < rules.length; i++) {
       print(rules[i]);
       if (rules[i].startIndex >= oldStartIndex) {
+        judge=true;
         int newStartIndex = rules[i].startIndex + diffLength;
         int newEndIndex = rules[i].endIndex + diffLength;
         rules.replaceRange(i, i + 1, <Rule>[rules[i].copy(newStartIndex, newEndIndex)]);
         print(rules[i]);
       }
+    }
+    if(judge&&correctRulesListener!=null){
+      correctRulesListener();
     }
   }
 
@@ -259,7 +269,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
       Rule rule = rules[i];
       print(rule);
       if ((startIndex >= rule.startIndex && startIndex <= rule.endIndex - 1) ||
-          (endIndex >= rule.startIndex && endIndex <= rule.endIndex)) {
+          (endIndex > rule.startIndex && endIndex <= rule.endIndex)) {
         isRule=true;
         print("光标开始位置$startIndex");
         print("光标结束位置$endIndex");
@@ -280,9 +290,10 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
       }
     }
 
-    if(!isRule) {
-      return newValue;
-    }
+    // if(!isRule) {
+    //   print("提前返回了");
+    //   return newValue;
+    // }
     // 一次性全部删除时
    if(newValue.text.isEmpty) {
      print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%全部删除了");

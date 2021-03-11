@@ -46,6 +46,7 @@ class MessageManager {
   static updateConversationByMessageList(BuildContext context, List<Message> msgList) async {
     //TODO 需要对list进行一次处理 各会话只保留最新的一条 但需要计算未读数
     for (Message msg in msgList) {
+      await judgeIsGroupUpdateUserInformation(msg);
       await updateConversationByMessage(context, msg);
     }
   }
@@ -246,9 +247,9 @@ class MessageManager {
   }
 
   //判断是不是群聊的消息-更新群成员的信息
-  static void judgeIsGroupUpdateUserInformation(Message msg) {
+  static Future<void> judgeIsGroupUpdateUserInformation(Message msg)async {
     if (msg != null && msg.conversationType ==RCConversationType.Group) {
-      GroupChatUserInformationDBHelper().update(message:msg);
+     await GroupChatUserInformationDBHelper().update(message:msg);
     }
   }
 
@@ -383,11 +384,25 @@ class MessageManager {
       }
     } else if (message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
       //群聊通知
+
+      Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
+      switch (dataMap["subType"]) {
+        case 4:
+        //修改群名
+          print("修改了群名");
+          ConversationDto dto =new ConversationDto();
+          dto.uid=Application.profile.uid;
+          dto.type=GROUP_TYPE;
+          dto.conversationId=message.targetId;
+          Application.appContext.read<ConversationNotifier>().updateConversationName(dataMap["groupChatName"], dto);
+          break;
+        default:
+          break;
+      }
       Application.appContext.read<ChatMessageProfileNotifier>().judgeConversationMessage(message);
     } else {
       //普通消息
       judgeIsHaveAtUserMes(message);
-      judgeIsGroupUpdateUserInformation(message);
       Application.appContext.read<ChatMessageProfileNotifier>().judgeConversationMessage(message);
     }
   }

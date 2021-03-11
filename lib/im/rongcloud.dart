@@ -77,18 +77,33 @@ class RongCloud {
   }
 
   //todo 现在没有加 每一秒只发送5条数据的限制
-  Future<Message> sendGroupMessage(String targetId, MessageContent content) {
-    return RongIMClient.sendMessage(RCConversationType.Group, targetId, content);
+  Future<Message> sendGroupMessage(String targetId, MessageContent content)async {
+    if(Application.platform==1){
+      return RongIMClient.getMessage(
+          (await RongIMClient.sendMessage(RCConversationType.Group, targetId, content)).messageId);
+    }else{
+      return RongIMClient.sendMessage(RCConversationType.Group, targetId, content);
+    }
   }
 
   //todo 现在没有加 每一秒只发送5条数据的限制
-  Future<Message> sendPrivateMessage(String targetId, MessageContent content) {
-    return RongIMClient.sendMessage(RCConversationType.Private, targetId, content);
+  Future<Message> sendPrivateMessage(String targetId, MessageContent content)async {
+    if(Application.platform==1){
+      return RongIMClient.getMessage(
+          (await RongIMClient.sendMessage(RCConversationType.Private, targetId, content)).messageId);
+    }else{
+      return RongIMClient.sendMessage(RCConversationType.Private, targetId, content);
+    }
   }
 
   //todo 现在没有加 每一秒只发送5条数据的限制
-  Future<Message> sendVoiceMessage(Message message) {
-    return RongIMClient.sendIntactMessageWithCallBack(message, "", "", null);
+  Future<Message> sendVoiceMessage(Message message)async {
+    if(Application.platform==1){
+      return RongIMClient.getMessage(
+          (await RongIMClient.sendIntactMessageWithCallBack(message, "", "", null)).messageId);
+    }else{
+      return RongIMClient.sendIntactMessageWithCallBack(message, "", "", null);
+    }
   }
 
   //撤回消息

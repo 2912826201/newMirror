@@ -138,7 +138,7 @@ class GetTripleAreaState extends State<GetTripleArea> {
         BaseResponseModel model = await laud(
             id: widget.model.id, laud: context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud == 0 ? 1 : 0);
         if (model.code == CODE_BLACKED) {
-          ToastShow.show(msg: "你已被拉黑", context: context, gravity: Toast.CENTER);
+          ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
         } else {
           // 点赞/取消赞成功
           // print("state:${model.data["state"]}");
@@ -268,9 +268,9 @@ class GetTripleAreaState extends State<GetTripleArea> {
                         inquireCheckBlackCallback: (BlackModel blackModel) {
                           String promptText = "";
                           if (blackModel.inYouBlack == 1) {
-                            promptText = "发布失败，你已将对方加入黑名单";
+                            promptText = "分享失败，你已将对方加入黑名单";
                           } else if (blackModel.inThisBlack == 1) {
-                            promptText = "发布失败，你已被对方加入黑名单";
+                            promptText = "分享失败，你已被对方加入黑名单";
                           }
                           if (promptText != "") {
                             ToastShow.show(msg: promptText, context: context, gravity: Toast.CENTER);
