@@ -1585,10 +1585,12 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     );
   }
 
-
+  //获取数据库内的messageUId
   void getHistoryMessage(ChatDataModel model)async{
-    model.msg=await Application.rongCloud.getMessageById(model.msg.messageId);
-    delayedSetState();
+    if(null==model.msg.messageUId||model.msg.messageUId.length<1){
+      model.msg=await Application.rongCloud.getMessageById(model.msg.messageId);
+      delayedSetState();
+    }
   }
 
 //判断是否退出界面加入群聊
