@@ -162,7 +162,7 @@ class FeedMapNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-//  发布动态评论
+    // 发布动态评论
   void feedPublishComment(CommentDtoModel comModel, int id) {
     print("评论model赋值");
     feedMap[id].comments.insert(0, comModel);

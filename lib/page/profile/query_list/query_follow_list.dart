@@ -511,11 +511,8 @@ class _QueryFollowState extends State<QueryFollowList> {
                               child: _followTopic(width),
                             );
                           } else {
-                            if(!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey
-                              (buddyList[index].uid)){
                               context.watch<ProfilePageNotifier>().setFirstModel(buddyList[index].uid,isFollow:
                               buddyList[index].relation==0||buddyList[index].relation==2?true:false);
-                            }
                             if(widget.userId!=context.watch<ProfileNotifier>().profile.uid||!context.watch<ProfilePageNotifier>().profileUiChangeModel[buddyList[index].uid]
                                 .isFollow){
                               return QueryFollowItem(

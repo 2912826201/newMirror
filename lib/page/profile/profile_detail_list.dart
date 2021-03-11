@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -30,12 +32,10 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
   ///动态model
   List<HomeFeedModel> followModel = [];
 
-
   int followDataPage = 1;
   int followlastTime;
   RefreshController _refreshController = RefreshController();
   ScrollController scrollController = ScrollController();
-  StateResult fllowState = StateResult.RESULTNULL;
 
   _getDynamicData() async {
     if (followDataPage > 1 && followlastTime == null) {
@@ -45,40 +45,39 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
     List<int> idList = [];
     DataResponseModel model =
         await getPullList(type: widget.type, size: 20, targetId: widget.id, lastTime: followlastTime);
-    setState(() {
-      if (followDataPage == 1) {
-        followModel.clear();
-        context.read<ProfilePageNotifier>().idListClear(widget.id, type:widget.type);
-        if (model!=null&&model.list.isNotEmpty) {
+    if (followDataPage == 1) {
+      if (model != null) {
+        if (model.list.isNotEmpty) {
+          context.read<ProfilePageNotifier>().idListClear(widget.id, type: widget.type);
+          followModel.clear();
           model.list.forEach((result) {
             followModel.add(HomeFeedModel.fromJson(result));
             idList.add(HomeFeedModel.fromJson(result).id);
           });
-          context.read<ProfilePageNotifier>().setFeedIdList(widget.id, idList, widget.type);
-          fllowState = StateResult.HAVERESULT;
-          _refreshController.refreshCompleted();
-        } else {
-          print('======================没有数据');
-          fllowState = StateResult.RESULTNULL;
-          _refreshController.refreshCompleted();
-          setState(() {
-          });
         }
-      } else if (followDataPage > 1 && followlastTime != null) {
-        if (model!=null&&model.list.isNotEmpty) {
-          model.list.forEach((result) {
-            followModel.add(HomeFeedModel.fromJson(result));
-            idList.add(HomeFeedModel.fromJson(result).id);
-          });
-          context.read<ProfilePageNotifier>().setFeedIdList(widget.id, idList, widget.type);
-          _refreshController.loadComplete();
-        }
+        _refreshController.refreshCompleted();
       } else {
-        _refreshController.loadNoData();
+        _refreshController.refreshFailed();
       }
-    });
+    } else if (followDataPage > 1 && followlastTime != null) {
+      if (model != null) {
+        if (model.list.isNotEmpty) {
+          model.list.forEach((result) {
+            followModel.add(HomeFeedModel.fromJson(result));
+            idList.add(HomeFeedModel.fromJson(result).id);
+          });
+        }
+        _refreshController.loadComplete();
+      } else {
+        _refreshController.loadFailed();
+      }
+    }
     followlastTime = model.lastTime;
+    if (mounted) {
+      setState(() {});
+    }
     List<HomeFeedModel> feedList = [];
+    context.read<ProfilePageNotifier>().setFeedIdList(widget.id, idList, widget.type);
     context.read<FeedMapNotifier>().feedMap.forEach((key, value) {
       feedList.add(value);
     });
@@ -101,14 +100,14 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero,(){
+    Future.delayed(Duration.zero, () {
       _getDynamicData();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-   return Container(
+    return Container(
       width: ScreenUtil.instance.screenWidthDp,
       color: AppColor.white,
 
@@ -145,28 +144,24 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
         child: _showDataUi(),
       ),
     );
-
-
-
   }
-  Widget _showDataUi(){
+
+  Widget _showDataUi() {
     var list = ListView.builder(
         shrinkWrap: true, //解决无限高度问题
         physics: AlwaysScrollableScrollPhysics(),
-        itemCount: widget.type==2
-            ?context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].profileFeedListId.length
-            :context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].profileLikeListId.length,
+        itemCount: widget.type == 2
+            ? context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].profileFeedListId.length
+            : context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].profileLikeListId.length,
         itemBuilder: (context, index) {
           HomeFeedModel model;
-          if(index>0){
-            try{
-              int id = widget.type==2
-                  ?context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id]
-                  .profileFeedListId[index]
-                  :context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id]
-                  .profileLikeListId[index];
+          if (index > 0) {
+            try {
+              int id = widget.type == 2
+                  ? context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].profileFeedListId[index]
+                  : context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].profileLikeListId[index];
               model = context.read<FeedMapNotifier>().feedMap[id];
-            }catch(e){
+            } catch (e) {
               print(e);
             }
           }
@@ -186,19 +181,8 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
               key: GlobalObjectKey("attention$index"),
               removeFollowChanged: (model) {},
               deleteFeedChanged: (feedId) {
-                context.read<ProfilePageNotifier>().synchronizeIdList(widget.id,feedId);
-                if(widget.type==2&&context.read<ProfilePageNotifier>().profileUiChangeModel[widget.id]
-                    .profileFeedListId.length<2){
-                  print('=====================动态列表删完了');
-                  fllowState = StateResult.RESULTNULL;
-                }else if(widget.type==6&&context.read<ProfilePageNotifier>().profileUiChangeModel[widget.id]
-                    .profileLikeListId.length<2){
-                  print('=====================喜欢列表删完了');
-                  fllowState = StateResult.RESULTNULL;
-                }
-                setState(() {
-                });
-                if(context.read<FeedMapNotifier>().feedMap.containsKey(feedId)){
+                context.read<ProfilePageNotifier>().synchronizeIdList(widget.id, feedId);
+                if (context.read<FeedMapNotifier>().feedMap.containsKey(feedId)) {
                   context.read<FeedMapNotifier>().deleteFeed(feedId);
                 }
               },
@@ -222,21 +206,27 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
             ),
             Center(
               child: Text(
-                widget.type == 3 ? "ta还没有发布动态" :widget.type==2?"发布你的第一条动态吧~": "你还没有喜欢的内容~去逛逛吧",
+                widget.type == 3
+                    ? "ta还没有发布动态"
+                    : widget.type == 2
+                        ? "发布你的第一条动态吧~"
+                        : "你还没有喜欢的内容~去逛逛吧",
                 style: AppStyle.textPrimary3Regular14,
               ),
             )
           ],
         ));
-    switch (fllowState) {
-      case StateResult.RESULTNULL:
-        return noDataUi;
-        break;
-      case StateResult.HAVERESULT:
-        return list;
-        break;
+
+    if ((widget.type == 6 &&
+            context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].profileLikeListId.length < 2) ||
+        (widget.type == 2 &&
+            context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].profileFeedListId.length < 2)) {
+      return noDataUi;
+    } else {
+      return list;
     }
   }
+
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;

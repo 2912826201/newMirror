@@ -439,6 +439,7 @@ class _FollowButtonState extends State<FollowButton> {
     if (attntionResult == 1 || attntionResult == 3) {
       ToastShow.show(msg: "关注成功!", context: context);
       context.read<ProfilePageNotifier>().changeIsFollow(true, false, id);
+      context.read<ProfilePageNotifier>().changeFollowCount(context.read<ProfileNotifier>().profile.uid, true);
     }
   }
 
@@ -452,9 +453,7 @@ class _FollowButtonState extends State<FollowButton> {
         widget.buttonType == FollowButtonType.TOPIC) {
       return Container();
     }
-    if (!context.watch<ProfilePageNotifier>().profileUiChangeModel.containsKey(widget.id)) {
       context.watch<ProfilePageNotifier>().setFirstModel(widget.id, isFollow: !widget.isFollow);
-    }
     return GestureDetector(
       child: Container(
         width: 56,
