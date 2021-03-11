@@ -46,6 +46,7 @@ class MessageManager {
   static updateConversationByMessageList(BuildContext context, List<Message> msgList) async {
     //TODO 需要对list进行一次处理 各会话只保留最新的一条 但需要计算未读数
     for (Message msg in msgList) {
+      await judgeIsGroupUpdateUserInformation(msg);
       await updateConversationByMessage(context, msg);
     }
   }
@@ -246,9 +247,9 @@ class MessageManager {
   }
 
   //判断是不是群聊的消息-更新群成员的信息
-  static void judgeIsGroupUpdateUserInformation(Message msg) {
+  static Future<void> judgeIsGroupUpdateUserInformation(Message msg)async {
     if (msg != null && msg.conversationType ==RCConversationType.Group) {
-      GroupChatUserInformationDBHelper().update(message:msg);
+     await GroupChatUserInformationDBHelper().update(message:msg);
     }
   }
 
@@ -387,7 +388,6 @@ class MessageManager {
     } else {
       //普通消息
       judgeIsHaveAtUserMes(message);
-      judgeIsGroupUpdateUserInformation(message);
       Application.appContext.read<ChatMessageProfileNotifier>().judgeConversationMessage(message);
     }
   }

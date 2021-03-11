@@ -177,9 +177,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
   int userNumber=0;
 
-  int addEmojiModelIosCurrent=-1;
   int cursorIndexPr=-1;
-  bool isShowEmjiPageWhite=false;
+  // bool isShowEmjiPageWhite=false;
 
   ScrollController textScrollController=ScrollController();
 
@@ -277,41 +276,21 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
-
-  double oldKeyboardHeight=0;
+  double oldBottom=-1;
   // @override
   void didChangeMetrics() {
     super.didChangeMetrics();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (this.context != null) {
         if (MediaQuery.of(this.context).viewInsets.bottom == 0) {
-          //关闭键盘
+          print("关闭键盘");
         } else {
-          //显示键盘
-          print("显示键盘：${Application.keyboardHeight},${MediaQuery.of(this.context).viewInsets.bottom}");
+          print("显示键盘");
           if (Application.keyboardHeight <= MediaQuery.of(this.context).viewInsets.bottom) {
             Application.keyboardHeight = MediaQuery.of(this.context).viewInsets.bottom;
             reload(() {});
-            // if(Application.keyboardHeight>600) {
-            //   reload(() {});
-            // }
           }
         }
-        if(_focusNode.hasFocus){
-          if(MediaQuery.of(this.context).viewInsets.bottom>=oldKeyboardHeight){
-            print("打开键盘");
-            isShowEmjiPageWhite=true;
-          }else{
-            print("自带的收起键盘$_emojiState");
-            _focusNode.unfocus();
-            if(_emojiState){
-              onEmojioClick();
-            }
-          }
-        }else{
-          print("没有焦点：-收起键盘");
-        }
-        oldKeyboardHeight=MediaQuery.of(this.context).viewInsets.bottom;
       }
     });
   }
@@ -495,11 +474,12 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     return MessageInputBar(
       voiceOnTap: _voiceOnTapClick,
       onEmojio: (){
-        isShowEmjiPageWhite=false;
-        reload(() {});
-        Future.delayed(Duration(milliseconds: 10),(){
-          onEmojioClick();
-        });
+        // isShowEmjiPageWhite=false;
+        // reload(() {});
+        // Future.delayed(Duration(milliseconds: 10),(){
+        //   onEmojioClick();
+        // });
+        onEmojioClick();
       },
       isVoice: _isVoiceState,
       voiceFile: _voiceFile,
@@ -528,6 +508,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
               ? ScreenUtil.instance.screenWidthDp - 32 - 32 - 64
               : ScreenUtil.instance.screenWidthDp - 32 - 32 - 64 - 52 - 12),
       child: TextSpanField(
+        onTap: (){
+          // Future.delayed(Duration(milliseconds: 100),(){
+          //   isShowEmjiPageWhite=true;
+          // });
+        },
         scrollController: textScrollController,
         controller: _textController,
         focusNode: _focusNode,
@@ -544,6 +529,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         onChanged: _changTextLen,
         textInputAction: TextInputAction.send,
         onSubmitted: (text) {
+          if(ClickUtil.isFastClick(time: 200)){
+            return;
+          }
           if (text.isNotEmpty) {
             _postText(text);
           }
@@ -624,7 +612,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       } else {
         return GestureDetector(
           child: Visibility(
-            visible: !isShowEmjiPageWhite,
+            // visible: !isShowEmjiPageWhite,
+            visible: true,
             child: Container(
               width: double.infinity,
               color: AppColor.transparent,
@@ -738,18 +727,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
             }else{
               _textController.text += emojiModel.code;
             }
-            if(Application.platform==0) {
-              var setCursor = TextSelection(
-                baseOffset: cursorIndexPr+emojiModel.code.length,
-                extentOffset:cursorIndexPr+emojiModel.code.length,
-              );
-              _textController.selection = setCursor;
-              cursorIndexPr=cursorIndexPr+emojiModel.code.length;
-            }else{
-              addEmojiModelIosCurrent=cursorIndexPr+emojiModel.code.length;
-              _textController.text=_textController.text;
-              cursorIndexPr=cursorIndexPr+emojiModel.code.length;
-            }
+            cursorIndexPr+=emojiModel.code.length;
             _changTextLen(_textController.text);
             Future.delayed(Duration(milliseconds: 100),(){
               textScrollController.jumpTo(textScrollController.position.maxScrollExtent);
@@ -984,7 +962,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
   //listview 当前显示的是第几个 回调
   void firstEndCallbackListView(int firstIndex, int lastIndex) {
-    if (ClickUtil.isFastClick(time: 200)) {
+    if (ClickUtil.isFastClickFirstEndCallbackListView(time: 200)) {
       return;
     }
     //print('0chatPage----firstIndex: $firstIndex, lastIndex: $lastIndex, isHaveAtMeMsgIndex:$isHaveAtMeMsgIndex，isHaveAtMeMsgPr:$isHaveAtMeMsgPr,isHaveAtMeMsg:$isHaveAtMeMsg');
@@ -1482,14 +1460,24 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   }
 
   //延迟更新
-  void delayedSetState() {
-    Future.delayed(Duration(milliseconds: 200), () {
-      //print("setState--delayedSetState");
-      _timerCount = 0;
-      if (mounted) {
-        reload(() {});
-      }
-    });
+  void delayedSetState({int milliseconds=200}) {
+    if(milliseconds<=0){
+      Future.delayed(Duration.zero, () {
+        //print("setState--delayedSetState");
+        _timerCount = 0;
+        if (mounted) {
+          reload(() {});
+        }
+      });
+    }else{
+      Future.delayed(Duration(milliseconds: milliseconds), () {
+        //print("setState--delayedSetState");
+        _timerCount = 0;
+        if (mounted) {
+          reload(() {});
+        }
+      });
+    }
   }
 
 //判断接收消息
@@ -1632,15 +1620,6 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         );
         _textController.selection = setCursor;
       }
-      if (Platform.isIOS &&addEmojiModelIosCurrent>=0) {
-        addEmojiModelIosCurrent=-1;
-        // 设置光标
-        var setCursor = TextSelection(
-          baseOffset: addEmojiModelIosCurrent,
-          extentOffset: addEmojiModelIosCurrent,
-        );
-        _textController.selection = setCursor;
-      }
       if (Platform.isAndroid && isClickAtUser) {
         print("at位置&${atIndex}");
         var setCursor = TextSelection(
@@ -1689,6 +1668,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   initReleaseFeedInputFormatter() {
     _formatter = ReleaseFeedInputFormatter(
       controller: _textController,
+      correctRulesListener:()=>delayedSetState(milliseconds: 0),
       rules: context.read<ChatEnterNotifier>().rules,
       // @回调
       triggerAtCallback: (String str) async {
@@ -1833,6 +1813,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
   //发送按钮点击事件
   _onSubmitClick() {
+    if(ClickUtil.isFastClick(time: 200)){
+      return;
+    }
     String text = _textController.text;
     if (text == null || text.isEmpty || text.length < 1) {
       ToastShow.show(msg: "消息为空,请输入消息！", context: context);
@@ -2200,6 +2183,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       _postSelectMessage(content);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_SELECT) {
       ToastShow.show(msg: "选择列表选择了-底部点击了：$content", context: context);
+      if(ClickUtil.isFastClick(time: 200)){
+        return;
+      }
       // _textController.text=content;
       _postText(content);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_CLICK_ERROR_BTN) {

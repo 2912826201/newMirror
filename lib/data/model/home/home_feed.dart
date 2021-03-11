@@ -164,7 +164,11 @@ class HomeFeedModel {
     }
     if (json["comments"] != null) {
       json["comments"].forEach((v) {
-        comments.add(CommentDtoModel.fromJson(v));
+        if(v is CommentDtoModel){
+          comments.add(v);
+        }else {
+          comments.add(CommentDtoModel.fromJson(v));
+        }
       });
     }
     if (json["atUsers"] != null) {

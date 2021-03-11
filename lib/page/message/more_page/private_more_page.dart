@@ -165,12 +165,16 @@ class PrivateMorePageState extends State<PrivateMorePage> {
     print(map.toString());
     if (map != null && map["state"] != null && map["state"]) {
       TopChatModel topChatModel = new TopChatModel(type: 0, chatId: int.parse(widget.chatUserId));
-      if (topChatIndex > 0 && !topChat) {
-        Application.topChatModelList.removeAt(topChatIndex);
-        topChatIndex = -1;
-      } else {
+      if(topChat){
         Application.topChatModelList.add(topChatModel);
         topChatIndex = Application.topChatModelList.length - 1;
+        topChat=true;
+      }else{
+        if(topChatIndex>=0) {
+          Application.topChatModelList.removeAt(topChatIndex);
+        }
+        topChatIndex = -1;
+        topChat=false;
       }
     } else {
       topChat = !topChat;
