@@ -1542,11 +1542,16 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
           print("scrollPositionPixels：$scrollPositionPixels");
           judgeAddAlertTime();
           chatDataList.insert(0, chatDataModel);
-          if (message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
-            //判断是不是群通知
-            if (chatTypeId == RCConversationType.Group) {
-              print("--------------------------------");
-              getChatGroupUserModelList1(chatId, context);
+          //判断是不是群通知
+          if (message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF&&chatTypeId == RCConversationType.Group) {
+            Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
+            switch (dataMap["subType"]) {
+              case 4:
+                chatName=dataMap["groupChatName"];
+                break;
+              default:
+                getChatGroupUserModelList1(chatId, context);
+                break;
             }
           }
           isHaveReceiveChatDataList = true;

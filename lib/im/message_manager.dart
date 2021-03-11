@@ -384,6 +384,21 @@ class MessageManager {
       }
     } else if (message.objectName == ChatTypeModel.MESSAGE_TYPE_GRPNTF) {
       //群聊通知
+
+      Map<String, dynamic> dataMap = json.decode(message.originContentMap["data"]);
+      switch (dataMap["subType"]) {
+        case 4:
+        //修改群名
+          print("修改了群名");
+          ConversationDto dto =new ConversationDto();
+          dto.uid=Application.profile.uid;
+          dto.type=GROUP_TYPE;
+          dto.conversationId=message.targetId;
+          Application.appContext.read<ConversationNotifier>().updateConversationName(dataMap["groupChatName"], dto);
+          break;
+        default:
+          break;
+      }
       Application.appContext.read<ChatMessageProfileNotifier>().judgeConversationMessage(message);
     } else {
       //普通消息
