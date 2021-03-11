@@ -9,6 +9,7 @@ import 'package:mirror/page/login/sms_code_page.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 
 class PhoneLoginPage extends StatefulWidget {
   @override
@@ -25,9 +26,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
   final _stringOfSubtitle = "此刻开始分享你的健身生活和经验吧~";
   final _placeholderOfInputField = "请输入你的手机号";
   final _sendingTitle = "发送中";
-  final _loggingTitle = "登录中";
   final _sendSmsInitialtitle = "发送验证码";
-  final _sendFaildTitle = "发送失败";
   final _resendTitle = "重新发送";
 
   //
@@ -71,12 +70,10 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
 
   //UI复位
   _recoverUi() {
-    if (this.mounted) {
-      setState(() {
-        _smsBtnColor = _sendSmsOriginColor;
-        _smsBtnTitleColor = _sendSmsOriginTitleColor;
-      });
-    }
+    setState(() {
+      _smsBtnColor = _sendSmsOriginColor;
+      _smsBtnTitleColor = _sendSmsOriginTitleColor;
+    });
   }
 
   //可发送短信的条件判断
@@ -91,51 +88,53 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
 
   //条件满足时的需要做的事情
   _everythingReady() {
-    if (this.mounted) {
-      setState(() {
-        _smsBtnColor = _sendSmsHighLightedColor;
-        _smsBtnTitleColor = _sendSmsHighLightedTitleColor;
-      });
-    }
+    setState(() {
+      _smsBtnColor = _sendSmsHighLightedColor;
+      _smsBtnTitleColor = _sendSmsHighLightedTitleColor;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(hasDivider: false,),
-        body: InkWell(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
-      child: Container(
-        padding: EdgeInsets.only(top: 40),
-        color: Colors.white,
+      appBar: CustomAppBar(
+        hasDivider: false,
+      ),
+      body: InkWell(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
         child: Container(
-          margin: const EdgeInsets.only(top: 42.5),
-          //整体居中
-          child: Center(
+          padding: EdgeInsets.only(top: 40),
+          color: Colors.white,
+          child: Container(
+            margin: const EdgeInsets.only(top: 42.5),
+            //整体居中
+            child: Center(
               child: Padding(
-            padding: EdgeInsets.only(left: 41, right: 41),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _sloganArea(),
-                //文本和下方的输入框等小胡控件需要分开布局，因为文本的显示效果比较灵活
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                padding: EdgeInsets.only(left: 41, right: 41),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    //输入框
-                    _inputFields(),
-                    //发送按钮区域
-                    _certificateBtn()
+                    _sloganArea(),
+                    //文本和下方的输入框等小胡控件需要分开布局，因为文本的显示效果比较灵活
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        //输入框
+                        _inputFields(),
+                        //发送按钮区域
+                        _certificateBtn()
+                      ],
+                    ),
                   ],
                 ),
-              ],
+              ),
             ),
-          )),
+          ),
         ),
       ),
-    ));
+    );
   }
 
   //判断是否重新进入发送验证码的界面
@@ -155,7 +154,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
   //发送验证码的函数
   _sendMessage() async {
     //如果是发送验证码可以重入的情况，则重新进入，此时不会触发相应的接口
-    if (_reEnterSendSmsPage()&&Application.sendSmsPhoneNum == this.inputController.text) {
+    if (_reEnterSendSmsPage() && Application.sendSmsPhoneNum == this.inputController.text) {
       print("发送验证码页面重入");
       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
         return SmsCodePage(
@@ -172,7 +171,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
       });
     }
     BaseResponseModel responseModel = await sendSms(inputController.text, 0);
-    if (responseModel!=null&&responseModel.code==200) {
+    if (responseModel != null && responseModel.code == 200) {
       print("发送验证码成功");
       _titleOfSendTextBtn = "发送";
       Application.smsCodeSendTime = DateTime.now().millisecondsSinceEpoch;
@@ -183,14 +182,12 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
         );
       }));
     } else {
-    ToastShow.show(msg: "${responseModel.message}", context: context);
-    _titleOfSendTextBtn = _resendTitle;
+      ToastShow.show(msg: "${responseModel.message}", context: context);
+      _titleOfSendTextBtn = _resendTitle;
       print("发送验证码失败");
     }
-  setState(() {
-  });
+    setState(() {});
   }
-
 
   Widget _sloganArea() {
     var hellotext = Text(
@@ -199,10 +196,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
     );
     var subtext = Text(
       _stringOfSubtitle,
-      style: TextStyle(
-          color: Color.fromRGBO(153, 153, 153, 1),
-          fontSize: 14,
-          decoration: TextDecoration.none),
+      style: TextStyle(color: Color.fromRGBO(153, 153, 153, 1), fontSize: 14, decoration: TextDecoration.none),
     );
     var area1 = Container(
       child: hellotext,
@@ -221,8 +215,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
 
   //一键清除输入框
   _clearAllText() {
-    inputController.text = "";
-    if (this.mounted) {
+    if (inputController.text.isNotEmpty) {
       setState(() {
         inputController.text = "";
       });
@@ -230,40 +223,19 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
   }
 
   Widget _inputFields() {
-    Icon deleteIcon = Icon(Icons.cancel, color: Color.fromRGBO(220, 221, 224, 1));
-    // var btn = IconButton(icon: deleteIcon, onPressed: _clearAllText,iconSize: 24,color: Colors.green,);
-    var clearBtn = FlatButton(
-      onPressed: _clearAllText,
-      child: SizedBox(
-        child: deleteIcon,
-        width: 16,
-        height: 16,
-      ),
-      padding: EdgeInsets.only(right: 4, bottom: 3),
-      minWidth: 16,
-      height: 16,
-    );
-    var palceholderTextStyle =
-        TextStyle(color: Color.fromRGBO(204, 204, 204, 1), fontSize: 16);
+    var palceholderTextStyle = TextStyle(color: Color.fromRGBO(204, 204, 204, 1), fontSize: 16);
     //输入框的样式
     var inputFieldDecoration = InputDecoration(
-        counterText: "",
-        // 不显示计数文字
-        hintText: _placeholderOfInputField,
-        hintStyle: palceholderTextStyle,
-        suffix: Container(
-          child: clearBtn,
-          padding: EdgeInsets.all(0),
-          alignment: Alignment.centerRight,
-          width: 16,
-          height: 16,
-        ),
-        suffixIconConstraints: BoxConstraints(minWidth: 1, maxHeight: 1),
-        isDense: true,
-        focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: AppColor.bgWhite, width: 0.5),
-        ),
-        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite)),);
+      counterText: "",
+      // 不显示计数文字
+      hintText: _placeholderOfInputField,
+      hintStyle: palceholderTextStyle,
+      isDense: true,
+      focusedBorder: UnderlineInputBorder(
+        borderSide: BorderSide(color: AppColor.bgWhite, width: 0.5),
+      ),
+      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: AppColor.bgWhite)),
+    );
     if (_textField == null) {
       _textField = TextField(
         maxLength: 11,
@@ -274,9 +246,27 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
       );
     }
     var encapsulateBoxArea = Container(
-      child: _textField,
+      child: Stack(
+        children: [
+          _textField,
+          Positioned(
+            right: 0,
+            child: inputController.text.isEmpty
+                ? Container()
+                : Container(
+                    height: 44,
+                    alignment: Alignment.center,
+                    child: AppIconButton(
+                      svgName: AppIcon.clear_circle_grey,
+                      iconSize: 16,
+                      onTap: _clearAllText,
+                    ),
+                  ),
+          ),
+        ],
+      ),
       margin: const EdgeInsets.only(top: 38, bottom: 32),
-      width: 292.75,
+      width: 293,
       height: 44,
     );
     return encapsulateBoxArea;
@@ -288,15 +278,14 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
       minWidth: 293,
       height: 44,
       shape: btnStyle,
-      onPressed:(){
+      onPressed: () {
         FocusScope.of(context).requestFocus(FocusNode());
-        if(_validationJudge()){
+        if (_validationJudge()) {
           _sendMessage();
-        }else{
-       ToastShow.show(msg:"请输入正确的手机号", context: context);
+        } else {
+          ToastShow.show(msg: "请输入正确的手机号", context: context);
           return false;
         }
-
       },
       child: Text(
         _titleOfSendTextBtn,
