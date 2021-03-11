@@ -216,8 +216,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
             )
           ],
         ));
-
-    if ((widget.type == 6 &&
+    if (((widget.type == 6||widget.type==3)&&
             context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].profileLikeListId.length < 2) ||
         (widget.type == 2 &&
             context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.id].profileFeedListId.length < 2)) {
