@@ -365,7 +365,7 @@ class VideoCourseListPageState extends XCState {
                 }),
           ),
           onNotification: (ScrollNotification notification) {
-            ScrollMetrics metrics = notification.metrics;
+            // ScrollMetrics metrics = notification.metrics;
             // if (metrics.axisDirection == AxisDirection.up || metrics.axisDirection == AxisDirection.down) {
             //   // 注册通知回调
             //   if (notification is ScrollStartNotification) {
