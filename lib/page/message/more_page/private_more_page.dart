@@ -271,6 +271,11 @@ class PrivateMorePageState extends State<PrivateMorePage> {
   void addToBlackList() async {
     showProgressDialog();
     Future.delayed(Duration(milliseconds: 300),()async{
+      if(await isOffline()){
+        ToastShow.show(msg: "请检查网络!", context: context);
+        dismissProgressDialog();
+        return;
+      }
       bool blackStatus = await ProfileAddBlack(int.parse(widget.chatUserId));
       if (blackStatus!=null&&blackStatus) {
         isBlackList = true;
@@ -299,6 +304,11 @@ class PrivateMorePageState extends State<PrivateMorePage> {
   void removeFromBlackList() async {
     showProgressDialog();
     Future.delayed(Duration(milliseconds: 300),()async{
+      if(await isOffline()){
+        ToastShow.show(msg: "请检查网络!", context: context);
+        dismissProgressDialog();
+        return;
+      }
       bool blackStatus = await ProfileCancelBlack(int.parse(widget.chatUserId));
       if (blackStatus) {
         isBlackList = false;
