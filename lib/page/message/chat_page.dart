@@ -1519,8 +1519,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
                     return Container();
                   } else {
                     dataModel.msg?.sentStatus = status;
-                    if (status == 20) {
+                    if (status == RCSentStatus.Failed) {
                       profileCheckBlack();
+                    }else if(status==RCSentStatus.Sent){
+                      getHistoryMessage(dataModel);
                     }
                     delayedSetState();
                     return Container();
@@ -1580,6 +1582,12 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         return Container();
       },
     );
+  }
+
+
+  void getHistoryMessage(ChatDataModel model)async{
+    model.msg=await Application.rongCloud.getMessageById(model.msg.messageId);
+    delayedSetState();
   }
 
 //判断是否退出界面加入群聊
