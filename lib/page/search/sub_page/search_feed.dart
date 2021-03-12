@@ -32,6 +32,7 @@ import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:mirror/widget/feed_video_player.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/slide_banner.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
@@ -125,7 +126,7 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
         });
       }
       DataResponseModel model = await searchFeed(key: widget.keyWord, size: 20, lastTime: lastTime);
-      if (model!=null&&model.list.isNotEmpty) {
+      if (model != null && model.list.isNotEmpty) {
         lastTime = model.lastTime;
         hasNext = model.hasNext;
         model.list.forEach((v) {
@@ -638,15 +639,16 @@ class LaudItemState extends State<LaudItem> {
           onTap: () {
             setUpLuad();
           },
-          child: Icon(
-            Icons.favorite,
-            color: (context.select((FeedMapNotifier value) => value.feedMap) != null &&
+          child: AppIcon.getAppIcon(
+            (context.select((FeedMapNotifier value) => value.feedMap) != null &&
                     context.select((FeedMapNotifier value) => value.feedMap[widget.model.id]) != null &&
                     context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) != null &&
                     context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 1)
-                ? Colors.red
-                : Colors.grey,
-            size: 16,
+                ? AppIcon.like_red_12
+                : AppIcon.like_12,
+            12,
+            containerWidth: 16,
+            containerHeight: 16,
           ),
         ),
         SizedBox(

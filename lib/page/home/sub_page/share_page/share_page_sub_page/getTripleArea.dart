@@ -206,8 +206,8 @@ class GetTripleAreaState extends State<GetTripleArea> {
                   context.select((FeedMapNotifier value) => value.feedMap[widget.model.id]) != null &&
                   context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) != null &&
                   context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 0)
-              ? AppIcon.like_feed
-              : AppIcon.like_feed_red,
+              ? AppIcon.like_24
+              : AppIcon.like_red_24,
           iconSize: 24,
           onTap: () {
             setUpLuad();

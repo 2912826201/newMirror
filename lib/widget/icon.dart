@@ -20,8 +20,12 @@ class AppIcon {
   static const String login_apple = "assets/svg/login_apple.svg";
   static const String login_qq = "assets/svg/login_qq.svg";
   static const String login_wechat = "assets/svg/login_wechat.svg";
-  static const String like_feed = "assets/svg/like_feed.svg";
-  static const String like_feed_red = "assets/svg/like_feed_red.svg";
+  static const String like_24 = "assets/svg/like_24.svg";
+  static const String like_red_24 = "assets/svg/like_red_24.svg";
+  static const String like_18 = "assets/svg/like_18.svg";
+  static const String like_red_18 = "assets/svg/like_red_18.svg";
+  static const String like_12 = "assets/svg/like_12.svg";
+  static const String like_red_12 = "assets/svg/like_red_12.svg";
   static const String more_feed = "assets/svg/more_feed.svg";
   static const String comment_feed = "assets/svg/comment_feed.svg";
   static const String share_feed = "assets/svg/share_feed.svg";
@@ -31,10 +35,13 @@ class AppIcon {
   static const String tag_location = "assets/svg/tag_location.svg";
   static const String tag_course = "assets/svg/tag_course.svg";
   static const String check = "assets/svg/check.svg";
+  static const String topic = "assets/svg/topic.svg";
+  static const String trash_bucket = "assets/svg/trash_bucket.svg";
   static const String add_circle_black = "assets/svg/add_circle_black.svg";
   static const String clear_circle_grey = "assets/svg/clear_circle_grey.svg";
   static const String arrow_right_12 = "assets/svg/arrow_right_12.svg";
   static const String arrow_right_18 = "assets/svg/arrow_right_18.svg";
+  static const String close_18 = "assets/svg/close_18.svg";
 
   static const String qrcode_scan = "assets/svg/qrcode_scan.svg";
   static const String machine_connected = "assets/svg/machine_connected.svg";

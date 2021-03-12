@@ -90,7 +90,7 @@ class _SearchHeaderState extends State<SearchHeader> {
 
   @override
   void initState() {
-    Future.delayed(Duration.zero,(){
+    Future.delayed(Duration.zero, () {
       context.read<SearchEnterNotifier>().EditTextController(controller);
     });
     _formatter = InputFormatter(
@@ -151,15 +151,15 @@ class _SearchHeaderState extends State<SearchHeader> {
                     ),
                   ),
                 ),
-                SizedBox(width: 12),
                 Visibility(
-                  visible: context.watch<SearchEnterNotifier>().enterText!=null&&
-                      context.watch<SearchEnterNotifier>().enterText.length>0,
-                  child: IconButton(
-                    icon: new Icon(Icons.cancel),
-                    color: Color.fromRGBO(220, 221, 224, 1),
-                    iconSize: 18.0,
-                    onPressed: () {
+                  visible: context.watch<SearchEnterNotifier>().enterText != null &&
+                      context.watch<SearchEnterNotifier>().enterText.length > 0,
+                  child: AppIconButton(
+                    svgName: AppIcon.clear_circle_grey,
+                    iconSize: 16,
+                    buttonWidth: 40,
+                    buttonHeight: 32,
+                    onTap: () {
                       print("清空数据");
                       controller.clear();
                       print(controller.text);
@@ -174,7 +174,9 @@ class _SearchHeaderState extends State<SearchHeader> {
           CustomAppBarTextButton("取消", AppColor.textPrimary1, () {
             Navigator.of(context).pop(true);
           }),
-          SizedBox(width: CustomAppBar.appBarHorizontalPadding,)
+          SizedBox(
+            width: CustomAppBar.appBarHorizontalPadding,
+          )
         ],
       ),
     );
@@ -262,17 +264,16 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
             style: AppStyle.textMedium15,
           ),
           Spacer(),
-          MyIconBtn(
-            width: 18,
-            height: 18,
-            iconSting: "images/resource/2.0x/delete_icon_black@2x.png",
-            onPressed: () {
+          AppIconButton(
+            iconSize: 18,
+            svgName: AppIcon.trash_bucket,
+            onTap: () {
               SearchHistoryDBHelper().clearSearchHistory(context.read<ProfileNotifier>().profile.uid);
               setState(() {
                 searchHistoryList.clear();
               });
             },
-          )
+          ),
         ],
       ),
     );
@@ -450,18 +451,13 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      margin: EdgeInsets.only(left: 10, top: 3),
-                      child: Icon(
-                        Icons.import_contacts_sharp,
-                        size: 32,
-                      ),
-                      width: 32,
-                      height: 32,
+                      margin: EdgeInsets.only(left: 10, top: 3.5),
+                      child: AppIcon.getAppIcon(AppIcon.topic, 24, containerHeight: 32, containerWidth: 32),
                     ),
                     // Expanded(
                     //     child:
                     Container(
-                      width: ScreenUtil.instance.screenWidthDp*0.68,
+                      width: ScreenUtil.instance.screenWidthDp * 0.68,
                       margin: EdgeInsets.only(left: 12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
