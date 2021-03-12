@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/widget/dialog.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
 import 'package:azlistview/azlistview.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -98,7 +99,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
       titleString: "健身相册",
       actions: [
         CustomAppBarIconButton(
-            icon: Icons.camera_alt_outlined,
+            svgName: AppIcon.nav_camera,
             iconColor: AppColor.black,
             onTap: () {
               AppRouter.navigateToMediaPickerPage(

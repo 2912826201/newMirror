@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:mirror/widget/icon.dart';
 
 import 'commom_button.dart';
 
@@ -21,34 +21,35 @@ class ChatMoreIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isComMomButton) {
-      return ComMomButton(
-        text: '发送',
-        height: 25,
-        style: TextStyle(color: Colors.white),
-        width: 50.0,
-        margin: EdgeInsets.only(left: 6.0, right: 16),
-        radius: 4.0,
-        onTap: () {
-          if (onTap != null) {
-            onTap();
-          }
-        },
+      return UnconstrainedBox(
+        child: ComMomButton(
+          text: '发送',
+          height: 32,
+          style: TextStyle(color: Colors.white),
+          width: 50.0,
+          margin: EdgeInsets.only(left:6,right: 16),
+          radius: 4.0,
+          onTap: () {
+            if (onTap != null) {
+              onTap();
+            }
+          },
+        ),
       );
     } else {
-      return InkWell(
-        child: new Container(
-          width: 23,
-          margin: EdgeInsets.only(left: 6.0, right: 16),
-          child: Icon(
-            Icons.photo_size_select_actual_outlined,
-            size: 25,
-          ),
+      return Container(
+        margin: EdgeInsets.only(right: 10),
+        child: AppIconButton(
+          onTap: () {
+            if (moreTap != null) {
+              moreTap();
+            }
+          },
+          iconSize: 24,
+          buttonWidth: 36,
+          buttonHeight: 36,
+          svgName: AppIcon.input_gallery,
         ),
-        onTap: () {
-          if (moreTap != null) {
-            moreTap();
-          }
-        },
       );
     }
   }

@@ -365,12 +365,16 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
                       },
                       child: Text("获取最新版本"),
                     ),
-                    AppIcon.getAppIcon("assets/svg/test_favorite-black-24dp.svg", 22,
-                        color: AppColor.mainBlue, containerHeight: 44, containerWidth: 44),
-                    AppIcon.getAppIcon("assets/svg/test_shoucang.svg", 22,
-                        color: AppColor.mainBlue, containerHeight: 44, containerWidth: 44),
-                    AppIcon.getAppIcon(AppIcon.nav_return, 22,
-                        color: AppColor.mainBlue, containerHeight: 44, containerWidth: 44),
+                    AppIconButton(
+                      iconSize: 22,
+                      buttonHeight: 44,
+                      buttonWidth: 44,
+                      iconColor: AppColor.mainBlue,
+                      svgName: AppIcon.nav_return,
+                      onTap: () {
+                        AppRouter.navigateToLoginSucess(context);
+                      },
+                    )
                   ]),
             ],
           ),

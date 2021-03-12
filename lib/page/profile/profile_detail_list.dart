@@ -103,7 +103,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Future.delayed(Duration.zero, () {
+      Future.delayed(Duration(milliseconds: 500), () {
         _getDynamicData();
       });
     });

@@ -8,13 +8,20 @@ import 'package:mirror/constant/color.dart';
 class AppIcon {
   static const String nav_return = "assets/svg/nav_return.svg";
   static const String nav_close = "assets/svg/nav_close.svg";
+  static const String nav_camera = "assets/svg/nav_camera.svg";
+  static const String nav_search = "assets/svg/nav_search.svg";
+  static const String input_at = "assets/svg/input_at.svg";
+  static const String input_keyboard = "assets/svg/input_keyboard.svg";
+  static const String input_voice = "assets/svg/input_voice.svg";
+  static const String input_gallery = "assets/svg/input_gallery.svg";
+  static const String input_emotion = "assets/svg/input_emotion.svg";
   static const String login_phone = "assets/svg/login_phone.svg";
   static const String login_apple = "assets/svg/login_apple.svg";
   static const String login_qq = "assets/svg/login_qq.svg";
   static const String login_wechat = "assets/svg/login_wechat.svg";
   static const String add_circle_black = "assets/svg/add_circle_black.svg";
   static const String clear_circle_grey = "assets/svg/clear_circle_grey.svg";
-  static const String arrow_right = "assets/svg/arrow_right.svg";
+  static const String arrow_right_12 = "assets/svg/arrow_right_12.svg";
 
   static const String qrcode_scan = "assets/svg/qrcode_scan.svg";
   static const String machine_connected = "assets/svg/machine_connected.svg";

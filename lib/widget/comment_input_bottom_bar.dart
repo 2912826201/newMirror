@@ -22,6 +22,7 @@ import 'package:text_span_field/text_span_field.dart';
 import 'package:toast/toast.dart';
 
 import 'feed/release_feed_input_formatter.dart';
+import 'icon.dart';
 
 typedef VoidCallback = void Function(String content, List<Rule> rules);
 
@@ -116,7 +117,6 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
 
   // 是否点击了弹起的@用户列表
   bool isClickAtUser = false;
-
 
   ///表情的列表
   List<EmojiModel> emojiModelList = <EmojiModel>[];
@@ -399,7 +399,8 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
     String atStr = context.watch<CommentEnterNotifier>().atSearchStr;
     print("键盘高度${MediaQuery.of(context).viewInsets.bottom}");
     return Container(
-        padding: EdgeInsets.only(bottom: context.watch<CommentEnterNotifier>().emojiState ? 0.0 : MediaQuery.of(context).viewInsets.bottom),
+        padding: EdgeInsets.only(
+            bottom: context.watch<CommentEnterNotifier>().emojiState ? 0.0 : MediaQuery.of(context).viewInsets.bottom),
         decoration: BoxDecoration(
           color: AppColor.white,
           borderRadius: BorderRadius.only(
@@ -636,46 +637,41 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                               bottom: 6,
                               child: Visibility(
                                 visible: widget.isShowAt,
-                                child: GestureDetector(
-                                    onTap: () {
-                                      isClickAtUser = true;
-                                      // 输入的文字
-                                      String text = _textEditingController.text;
-                                      // 获取光标位置
-                                      int cursorIndex = _textEditingController.selection.baseOffset;
-                                      print("cursorIndex关闭：${cursorIndex}");
-                                      context.read<CommentEnterNotifier>().getAtCursorIndex(cursorIndex + 1);
-                                      _textEditingController.text = text.substring(0, cursorIndex) +
-                                          "@" +
-                                          text.substring(cursorIndex, text.length);
-                                      context.read<CommentEnterNotifier>().openAtCallback("@");
-                                    },
-                                    child: Image.asset(
-                                      "images/resource/2.0x/ic_dynamic_at@2x.png",
-                                      width: 24,
-                                      height: 24,
-                                    )),
+                                child: AppIconButton(
+                                  onTap: () {
+                                    isClickAtUser = true;
+                                    // 输入的文字
+                                    String text = _textEditingController.text;
+                                    // 获取光标位置
+                                    int cursorIndex = _textEditingController.selection.baseOffset;
+                                    print("cursorIndex关闭：${cursorIndex}");
+                                    context.read<CommentEnterNotifier>().getAtCursorIndex(cursorIndex + 1);
+                                    _textEditingController.text =
+                                        text.substring(0, cursorIndex) + "@" + text.substring(cursorIndex, text.length);
+                                    context.read<CommentEnterNotifier>().openAtCallback("@");
+                                  },
+                                  iconSize: 24,
+                                  svgName: AppIcon.input_at,
+                                ),
                               )),
                           Positioned(
-                              right: 16,
-                              bottom: 6,
-                              child: GestureDetector(
-                                  onTap: () {
-                                    // 隐藏@视图
-                                    context.read<CommentEnterNotifier>().openAtCallback("");
-                                    // 获取光标位置
-                                    emojiCursorPosition = _textEditingController.selection.baseOffset;
-                                    // 关闭输入框
-                                    commentFocus.unfocus();
-                                    // 显示表情刷新Ui
-                                    context.read<CommentEnterNotifier>().openEmojiCallback(true);
-                                  },
-                                  child: Image.asset(
-                                    "images/resource/2.0x/ic_dynamic_expression@2x.png",
-                                    width: 24,
-                                    height: 24,
-                                  ))),
-                          // MyIconBtn()
+                            right: 16,
+                            bottom: 6,
+                            child: AppIconButton(
+                              onTap: () {
+                                // 隐藏@视图
+                                context.read<CommentEnterNotifier>().openAtCallback("");
+                                // 获取光标位置
+                                emojiCursorPosition = _textEditingController.selection.baseOffset;
+                                // 关闭输入框
+                                commentFocus.unfocus();
+                                // 显示表情刷新Ui
+                                context.read<CommentEnterNotifier>().openEmojiCallback(true);
+                              },
+                              iconSize: 24,
+                              svgName: AppIcon.input_emotion,
+                            ),
+                          ),
                         ],
                       ),
                     ),

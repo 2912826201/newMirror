@@ -17,8 +17,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
 //黑名单
 class BlackListPage extends StatefulWidget{
-  PanelController pc;
-  BlackListPage({this.pc});
+
   @override
   State<StatefulWidget> createState() {
    return _BlackListState();
