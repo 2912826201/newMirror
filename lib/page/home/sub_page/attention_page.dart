@@ -503,7 +503,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         // 注册通知回调
         if (notification is ScrollStartNotification) {
           // 滚动开始
-          print('滚动开始');
+          // print('滚动开始');
         } else if (notification is ScrollUpdateNotification) {
           // 纵向滚动
           if (metrics.axis == Axis.vertical) {
@@ -512,16 +512,15 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
               timer.cancel();
             }
           }
-          print('滚动位置更新');
+          // print('滚动位置更新');
           // 当前位置
-          print("当前位置${metrics.pixels}");
+          // print("当前位置${metrics.pixels}");
         } else if (notification is ScrollEndNotification) {
-          print("本地存储的数据长度2:${context.read<FeedMapNotifier>().feedMap.length}");
+          // print("本地存储的数据长度2:${context.read<FeedMapNotifier>().feedMap.length}");
           // 纵向滚动
           if (metrics.axis == Axis.vertical) {
             // 延迟器:
             timer = Timer(Duration(milliseconds: 3000), () {
-              print("定时3秒到了");
               for (int i = 0; i < attentionModelList.length; i++) {
                 HomeFeedModel value = attentionModelList[i];
                 // 屏幕可滑动区域
@@ -534,13 +533,12 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                 double screenOffser = metrics.pixels + (slidingArea / 2);
                 if (screenOffser >= value.headOffset && screenOffser < value.bottomOffset) {
                   print("进了");
-                  context.read<FeedMapNotifier>().showInputBox(value.id);
+                  // context.read<FeedMapNotifier>().showInputBox(value.id);
                 }
               }
             });
           }
           // 滚动结束
-          print('滚动结束');
         }
       },
       child: RefreshIndicator(

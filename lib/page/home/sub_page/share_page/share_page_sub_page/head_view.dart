@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -278,8 +279,8 @@ class HeadViewState extends State<HeadView> {
                     svgName: AppIcon.more_feed,
                     iconSize: 24,
                     onTap: () {
-                      if (context.read<FeedMapNotifier>().postFeedModel != null) {
-                        ToastShow.show(msg: "不响应", context: context);
+                      if (context.read<FeedMapNotifier>().postFeedModel != null && context.read<FeedMapNotifier>().feedMap[widget.model.id].id != Application.insertFeedId) {
+                        // ToastShow.show(msg: "不响应", context: context);
                       } else {
                         openMoreBottomSheet(
                             context: context,

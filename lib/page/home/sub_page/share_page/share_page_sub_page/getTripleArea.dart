@@ -133,8 +133,8 @@ class GetTripleAreaState extends State<GetTripleArea> {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     print("是否点赞了￥${context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud}");
     if (isLoggedIn) {
-      if (context.read<FeedMapNotifier>().postFeedModel != null) {
-        ToastShow.show(msg: "不响应", context: context);
+      if (context.read<FeedMapNotifier>().postFeedModel != null && context.read<FeedMapNotifier>().feedMap[widget.model.id].id != Application.insertFeedId) {
+        // ToastShow.show(msg: "不响应", context: context);
       } else {
         BaseResponseModel model = await laud(
             id: widget.model.id, laud: context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud == 0 ? 1 : 0);
@@ -221,7 +221,7 @@ class GetTripleAreaState extends State<GetTripleArea> {
             onTap: () {
               bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
               if (isLoggedIn) {
-                if (context.read<FeedMapNotifier>().postFeedModel != null) {
+                if (context.read<FeedMapNotifier>().postFeedModel != null && context.read<FeedMapNotifier>().feedMap[widget.model.id].id != Application.insertFeedId) {
                   ToastShow.show(msg: "不响应", context: context);
                 } else {
                   openFeedCommentBottomSheet(
@@ -247,7 +247,7 @@ class GetTripleAreaState extends State<GetTripleArea> {
             iconSize: 24,
             onTap: () {
               if (context.read<TokenNotifier>().isLoggedIn) {
-                if (context.read<FeedMapNotifier>().postFeedModel != null) {
+                if (context.read<FeedMapNotifier>().postFeedModel != null && context.read<FeedMapNotifier>().feedMap[widget.model.id].id != Application.insertFeedId) {
                   ToastShow.show(msg: "不响应", context: context);
                 } else {
                   InquireCheckBlack(

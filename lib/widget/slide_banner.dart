@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -58,6 +59,25 @@ class _SlideBannerState extends State<SlideBanner> {
   // 指示器横向布局
   final scrollDirection = Axis.horizontal;
 
+  /*
+   初始化一个StreamController<任何数据> 简单的可以扔一个int,string,开发中经常扔一个网络请求的model进去，具体看你使用场景了
+   */
+  // 分页指示器下方的小点
+  final StreamController<int> pagingIndicatorStreamController = StreamController<int>();
+
+  // 分页标签数字
+  final StreamController<int> paginationTabStreamController = StreamController<int>();
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    // 关流，不管流会消耗资源，同时会引起内存泄漏
+    print("轮播图页面销毁了");
+    pagingIndicatorStreamController.close();
+    paginationTabStreamController.close();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -82,13 +102,12 @@ class _SlideBannerState extends State<SlideBanner> {
   autoPlay(int index) {
     slidingPosition(index);
     print("轮播图回调");
-    setState(() {
-      zindex = index;
-    });
+    pagingIndicatorStreamController.sink.add(index);
+    paginationTabStreamController.sink.add(index);
   }
 
   // 返回指示器的总宽度
-  double getWidth() {
+  double getWidth(int zindex) {
     var num = imageCount;
     if (num <= 5) {
       return 3 * 8.0 + 6 + 10;
@@ -119,7 +138,7 @@ class _SlideBannerState extends State<SlideBanner> {
   }
 
   // 返回指示器内部元素size。
-  double elementSize(int index) {
+  double elementSize(int index, int zindex) {
     if (imageCount <= 5) {
       if (index == zindex) {
         return 7;
@@ -161,88 +180,108 @@ class _SlideBannerState extends State<SlideBanner> {
     }
   }
 
-  /// 列表中的每个条目的Widget
-  /// [choseIndex] 列表条目对应的索引
-  // buildOpenContainerItem(int index) {
-  //   return OpenContainer(
-  //     // 动画时长
-  //     transitionDuration: const Duration(milliseconds: 700),
-  //     transitionType: ContainerTransitionType.fade,
-  //     //阴影
-  //     closedElevation: 0.0,
-  //     //圆角
-  //     closedShape: const RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.all(Radius.circular(0.0)),
-  //     ),
-  //     ///将要打开的页面
-  //     openBuilder:
-  //         (BuildContext context, void Function({Object returnValue}) action) {
-  //       return Item2Page(photoUrl: widget.model.picUrls[index].url,);
-  //     },
-  //     ///现在显示的页面
-  //     closedBuilder: (BuildContext context, void Function() action) {
-  //       ///条目显示的一张图片
-  //       return buildShowItemContainer(index);
-  //     },
-  //   );
-  // }
-  // 轮播图图片设置
-  Widget buildShowItemContainer(int indexs, double height) {
-    return widget.isDynamicDetails
-        ? CupertinoButton(
-            borderRadius: BorderRadius.zero,
-            padding: EdgeInsets.zero,
-            onPressed: () {
-              ImagePreview.preview(
-                context,
-                initialIndex: indexs,
-                onIndexChanged: (ind) {
-                  // 移动到指定下标，设置不播放动画
-                  swiperController.move(ind, animation: false);
-                  autoPlay(ind);
-                },
-                images: List.generate(widget.model.picUrls.length, (index) {
-                  return ImageOptions(
-                    url: widget.model.picUrls[index].url != null ? widget.model.picUrls[index].url : "",
-                    tag: widget.model.picUrls[index].url + "$indexs",
-                  );
-                }),
-              );
-            },
-            child: ImagePreviewHero(
-              tag: widget.model.picUrls[indexs].url + "$indexs",
-              child: CachedNetworkImage(
-                imageUrl: widget.model.picUrls[indexs].url,
-                width: ScreenUtil.instance.width,
-                height: height,
-                fit: BoxFit.cover,
-              ),
+  // 轮播图设置预览设置
+  List<Widget> buildShowItemContainer(double height) {
+    List<Widget> cupertinoButtons = [];
+    List.generate(widget.model.picUrls.length, (indexs) {
+      PicUrlsModel item = widget.model.picUrls[indexs];
+      // 查看大图设置
+      if (widget.isDynamicDetails) {
+        cupertinoButtons.add(CupertinoButton(
+          borderRadius: BorderRadius.zero,
+          padding: EdgeInsets.zero,
+          onPressed: () {
+            ImagePreview.preview(
+              context,
+              initialIndex: indexs,
+              onIndexChanged: (ind) {
+                // 移动到指定下标，设置不播放动画
+                swiperController.move(ind, animation: false);
+                autoPlay(ind);
+              },
+              images: List.generate(widget.model.picUrls.length, (index) {
+                return ImageOptions(
+                  url: widget.model.picUrls[index].url != null ? widget.model.picUrls[index].url : "",
+                  tag: widget.model.picUrls[index].url + "$indexs",
+                );
+              }),
+            );
+          },
+          child: ImagePreviewHero(
+            tag: widget.model.picUrls[indexs].url + "$indexs",
+            child: CachedNetworkImage(
+              /// imageUrl的淡入动画的持续时间。
+              fadeInDuration: Duration(milliseconds: 0),
+              imageUrl: item.url,
+              width: ScreenUtil.instance.width,
+              height: height,
+              fit: BoxFit.cover,
+              useOldImageOnUrlChange: true,
             ),
-          )
-        : widget.model.picUrls.isNotEmpty
+          ),
+        ));
+      } else {
+        // 轮播图设置
+        cupertinoButtons.add((!widget.isHero)
             ? Container(
                 width: ScreenUtil.instance.width,
                 height: height,
                 child: CachedNetworkImage(
+                  /// imageUrl的淡入动画的持续时间。
+                  fadeInDuration: Duration(milliseconds: 0),
+                  // useOldImageOnUrlChange: true,
                   fit: BoxFit.cover,
-                  placeholder: (context, url) => new Container(
-                      child: new Center(
-                    child: new CircularProgressIndicator(),
-                  )),
-                  imageUrl: widget.model.picUrls[indexs].url != null ? widget.model.picUrls[indexs].url : "",
+                  imageUrl: item != null ?item : "",
                   errorWidget: (context, url, error) => new Image.asset("images/test.png"),
                 ))
-            : widget.model != null && widget.model.selectedMediaFiles != null
-                ? Container(
+            : Hero(
+                tag: widget.pageName + "${widget.model.id}${widget.index}",
+                child: Container(
                     width: ScreenUtil.instance.width,
-                    height: height,
-                    child: widget.model.selectedMediaFiles.list[indexs].file != null
-                        ? Image.file(
-                            widget.model.selectedMediaFiles.list[indexs].file,
-                            fit: BoxFit.cover,
-                          )
-                        : Container())
-                : Container();
+                    height: setAspectRatio(widget.height),
+                    child: CachedNetworkImage(
+                      /// imageUrl的淡入动画的持续时间。
+                      fadeInDuration: Duration(milliseconds: 0),
+                      useOldImageOnUrlChange: true,
+                      fit: BoxFit.cover,
+                      imageUrl: item != null ? item : "",
+                      errorWidget: (context, url, error) => new Image.asset("images/test.png"),
+                    )),
+              ));
+      }
+    });
+    return cupertinoButtons;
+  }
+
+  // 本地图片
+  List<Widget> localPicture(double height) {
+    List<Widget> localImages = [];
+    for (MediaFileModel item in widget.model.selectedMediaFiles.list) {
+      int indexs = widget.model.selectedMediaFiles.list.indexOf(item);
+      localImages.add(widget.isDynamicDetails || (!widget.isHero)
+          ? Container(
+              width: ScreenUtil.instance.width,
+              height: height,
+              child: widget.model.selectedMediaFiles.list[indexs].file != null
+                  ? Image.file(
+                      widget.model.selectedMediaFiles.list[indexs].file,
+                      fit: BoxFit.cover,
+                    )
+                  : Container())
+          : Hero(
+              tag: widget.pageName + "${widget.model.id}${widget.index}",
+              child: Container(
+                  width: ScreenUtil.instance.width,
+                  height: height,
+                  child: widget.model.selectedMediaFiles.list[indexs].file != null
+                      ? Image.file(
+                          widget.model.selectedMediaFiles.list[indexs].file,
+                          fit: BoxFit.cover,
+                        )
+                      : Container()),
+            ));
+    }
+    return localImages;
   }
 
   // 宽高比
@@ -258,8 +297,9 @@ class _SlideBannerState extends State<SlideBanner> {
   setUpLuad() async {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     if (isLoggedIn) {
-      if (context.read<FeedMapNotifier>().postFeedModel != null) {
-        ToastShow.show(msg: "不响应", context: context);
+      if (context.read<FeedMapNotifier>().postFeedModel != null &&
+          context.read<FeedMapNotifier>().feedMap[widget.model.id].id != Application.insertFeedId) {
+        // ToastShow.show(msg: "不响应", context: context);
       } else {
         BaseResponseModel model = await laud(id: widget.model.id, laud: widget.model.isLaud == 0 ? 1 : 0);
         print('===================================model.code==${model.code}');
@@ -267,16 +307,15 @@ class _SlideBannerState extends State<SlideBanner> {
         if (model.code == CODE_BLACKED) {
           ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
         } else {
-          // print("state:${model.data["state"]}");
-          // if (model.data["state"]) {
           context
               .read<FeedMapNotifier>()
               .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
-          context.read<UserInteractiveNotifier>().loadChange(widget.model.pushId, context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud);
-          // } else {
-          //   // 失败
-          //   print("shib ");
-          // }
+          context
+              .read<UserInteractiveNotifier>()
+              .loadChange(widget.model.pushId, context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud);
+          // context
+          //     .read<ProfilePageNotifier>()
+          //     .loadChange(widget.model.pushId, context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud);
         }
       }
     } else {
@@ -289,6 +328,12 @@ class _SlideBannerState extends State<SlideBanner> {
   Widget build(BuildContext context) {
     final width = ScreenUtil.instance.screenWidthDp;
     print("轮播图builder：${widget.model.id}");
+    List<Widget> cupertinoButtonList = [];
+    if (widget.model.picUrls.isNotEmpty) {
+      cupertinoButtonList = buildShowItemContainer(setAspectRatio(widget.height));
+    } else if (widget.model != null && widget.model.selectedMediaFiles != null) {
+      cupertinoButtonList = localPicture(setAspectRatio(widget.height));
+    }
 
     return Container(
       child: Column(
@@ -307,130 +352,77 @@ class _SlideBannerState extends State<SlideBanner> {
                 child: Container(
                     width: width,
                     height: setAspectRatio(widget.height),
-                    // setAspectRatio(widget.height)
-
-                    // child: Swiper(
-                    //   controller: swiperController,
-                    //   itemCount: widget.model.picUrls.length,
-                    //   itemBuilder: (BuildContext context, int index) {
-                    //     print("index:${widget.index}-widget.isHero:${widget.isHero}- widget.isDynamicDetails:${ widget.isDynamicDetails}, widget.pageName :${widget.model.id}");
-                    //     return widget.isDynamicDetails||(!widget.isHero)
-                    //         ? buildShowItemContainer(
-                    //             index,
-                    //             setAspectRatio(widget.height),
-                    //           )
-                    //         : Hero(
-                    //             tag: widget.pageName + "${widget.model.id}${widget.index}",
-                    //             child: buildShowItemContainer(
-                    //               index,
-                    //               setAspectRatio(widget.height),
-                    //             ));
-                    //     // buildOpenContainerItem(index);
-                    //   },
-                    //   loop: false,
-                    //   onIndexChanged: (index) {
-                    //     autoPlay(index);
-                    //   },
-                    //   onTap: (index) {
-                    //
-                    //   },
-                    // ),
-                    child: widget.model.picUrls.isNotEmpty
-                        ? Swiper.children(
-                            children: [
-                              for (PicUrlsModel item in widget.model.picUrls)
-                                widget.isDynamicDetails || (!widget.isHero)
-                                    ? buildShowItemContainer(
-                                        widget.model.picUrls.indexOf(item),
-                                        setAspectRatio(widget.height),
-                                      )
-                                    : Hero(
-                                        tag: widget.pageName + "${widget.model.id}${widget.index}",
-                                        child: buildShowItemContainer(
-                                          widget.model.picUrls.indexOf(item),
-                                          setAspectRatio(widget.height),
-                                        ))
-                            ],
-                            controller: swiperController,
-                            loop: false,
-                            onIndexChanged: (index) {
-                              autoPlay(index);
-                            },
-                            onTap: (index) {},
-                          )
-                        : widget.model != null && widget.model.selectedMediaFiles != null
-                            ? Swiper.children(
-                                children: [
-                                  for (MediaFileModel item in widget.model.selectedMediaFiles.list)
-                                    widget.isDynamicDetails || (!widget.isHero)
-                                        ? buildShowItemContainer(
-                                            widget.model.selectedMediaFiles.list.indexOf(item),
-                                            setAspectRatio(widget.height),
-                                          )
-                                        : Hero(
-                                            tag: widget.pageName + "${widget.model.id}${widget.index}",
-                                            child: buildShowItemContainer(
-                                              widget.model.selectedMediaFiles.list.indexOf(item),
-                                              setAspectRatio(widget.height),
-                                            ))
-                                ],
-                                controller: swiperController,
-                                loop: false,
-                                onIndexChanged: (index) {
-                                  autoPlay(index);
-                                },
-                                onTap: (index) {},
-                              )
-                            : Container()),
+                    child: Swiper.children(
+                      children: cupertinoButtonList,
+                      autoplayDelay:0,
+                      controller: swiperController,
+                      loop: false,
+                      onIndexChanged: (index) {
+                        autoPlay(index);
+                      },
+                      onTap: (index) {},
+                    )),
               ),
               Positioned(
                 top: 13,
                 right: 16,
                 child: Offstage(
-                  offstage: imageCount == 1,
-                  child: Container(
-                    padding: EdgeInsets.only(left: 6, top: 3, right: 6, bottom: 3),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(12)),
-                        color: AppColor.textPrimary1.withOpacity(0.5)),
-                    child: Text(
-                      "${zindex + 1}/${imageCount}",
-                      style: TextStyle(color: AppColor.white, fontSize: 12),
-                    ),
-                  ),
-                ),
+                    offstage: imageCount == 1,
+                    child: StreamBuilder<int>(
+                        // 监听Stream，每次值改变的时候，更新Text中的内容
+                        stream: paginationTabStreamController.stream, //数据流
+                        initialData: zindex, //初始值
+                        builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+                          return Container(
+                            padding: EdgeInsets.only(left: 6, top: 3, right: 6, bottom: 3),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(12)),
+                                color: AppColor.textPrimary1.withOpacity(0.5)),
+                            child: Text(
+                              "${snapshot.data + 1}/${imageCount}",
+                              style: TextStyle(color: AppColor.white, fontSize: 12),
+                            ),
+                          );
+                        })),
                 // child:
               )
             ],
           ),
           Offstage(
-            offstage: imageCount == 1,
-            child: Container(
-              width: getWidth(),
-              height: 10,
-              margin: const EdgeInsets.only(top: 5),
-              // color: Colors.orange,
-              child: ListView.builder(
-                  scrollDirection: scrollDirection,
-                  controller: controller,
-                  itemCount: imageCount,
-                  // 禁止手动滑动
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return AutoScrollTag(
-                        key: ValueKey(index),
-                        controller: controller,
-                        index: index,
-                        child: Container(
-                            width: elementSize(index),
-                            height: elementSize(index),
-                            margin: const EdgeInsets.only(right: 3),
-                            decoration: BoxDecoration(
-                                color: index == zindex ? AppColor.black : AppColor.textPrimary1.withOpacity(0.12),
-                                shape: BoxShape.circle)));
-                  }),
-            ),
-          )
+              offstage: imageCount == 1,
+              child: StreamBuilder<int>(
+                  // 监听Stream，每次值改变的时候，更新Text中的内容
+                  stream: pagingIndicatorStreamController.stream, //数据流
+                  initialData: zindex, //初始值
+                  builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+                    return Container(
+                      width: getWidth(snapshot.data),
+                      height: 10,
+                      margin: const EdgeInsets.only(top: 5),
+                      // color: Colors.orange,
+                      child: ListView.builder(
+                          scrollDirection: scrollDirection,
+                          controller: controller,
+                          itemCount: imageCount,
+                          // 禁止手动滑动
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return AutoScrollTag(
+                                key: ValueKey(index),
+                                controller: controller,
+                                index: index,
+                                child: Container(
+                                    width: elementSize(index, snapshot.data),
+                                    height: elementSize(index, snapshot.data),
+                                    margin: const EdgeInsets.only(right: 3),
+                                    decoration: BoxDecoration(
+                                        color: index == snapshot.data
+                                            ? AppColor.black
+                                            : AppColor.textPrimary1.withOpacity(0.12),
+                                        shape: BoxShape.circle)));
+                          }),
+                    );
+                  }))
         ],
       ),
     );

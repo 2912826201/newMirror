@@ -56,9 +56,9 @@ class _ExpandableTextState extends State<ExpandableText> {
           if(widget.topicId == toModel.id) {
             return;
           }
-          TopicDtoModel topicModel = await getTopicInfo(topicId: model.id);
+          TopicDtoModel topicModel = await getTopicInfo(topicId: toModel.id);
           AppRouter.navigateToTopicDetailPage(context, topicModel);
-          print("点击用户${toModel.id}");
+          print("点击话题${toModel.id}");
         },
       ));
     }
