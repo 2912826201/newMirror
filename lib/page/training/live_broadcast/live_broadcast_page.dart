@@ -8,6 +8,8 @@ import 'package:mirror/widget/no_blue_effect_behavior.dart';
 
 import 'live_broadcast_item_page.dart';
 import 'live_broadcast_title_page.dart';
+import 'live_room_test_page.dart';
+import 'live_room_test_page_1.dart';
 
 /// 直播日程页--框架页
 class LiveBroadcastPage extends StatefulWidget {
@@ -53,13 +55,23 @@ class LiveBroadcastPageState extends XCState {
         hasDivider:false,
         titleString: "直播课",
         actions: [
-          // CustomAppBarIconButton(
-          //   icon:Icons.search,
-          //   iconColor:AppColor.black,
-          //   onTap:() {
-          //     print("点击了搜索");
-          //   },
-          // ),
+          CustomAppBarIconButton(
+            icon:Icons.search,
+            iconColor:AppColor.black,
+            onTap:() {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return LiveRoomTestPage();
+              }));
+              Navigator.of(context).push(SimpleRoute(
+                name: 'aaa',
+                title: 'aaa',
+                builder: (_) {
+                  return LiveRoomTestPageDialog();
+                },
+              ));
+              print("点击了搜索");
+            },
+          ),
         ],
       ),
       body: _buildSuggestions(),
