@@ -4,12 +4,15 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
 import 'package:mirror/page/message/item/emoji_manager.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/volume_popup.dart';
 import 'package:text_span_field/text_span_field.dart';
 
 
@@ -51,6 +54,9 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
     // TODO: implement initState
     super.initState();
 
+    messageChatList.add("请你遵守直播间的规则!请你遵守直播间的规则!"
+        "请你遵守直播间的规则!请你遵守直播间的规则!请你遵守直播间的规则!");
+    
     _focusNode.addListener(() {
       cursorIndexPr=_textController.selection.baseOffset;
     });
@@ -144,7 +150,10 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
           SizedBox(height: 16),
           Visibility(
             visible: !isCleaningMode,
-            child: otherUserUi(),
+            child: GestureDetector(
+              child: otherUserUi(),
+              onTap: getBottomDialog,
+            ),
           )
         ],
       ),
@@ -340,7 +349,7 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
 
   Widget getBottomBarAnimatedContainer(){
     return AnimatedContainer(
-      duration: Duration(milliseconds: 100),
+      duration: Duration(milliseconds: 50),
       height: (_focusNode.hasFocus||_emojiState)?48.0:0.0,
       child: getBottomBar1(),
     );
@@ -390,11 +399,36 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
 
   //表情框
   Widget emojiPlan() {
+
+
+    //Application.keyboardHeight
+    double keyboardHeight=300.0;
+    if(_focusNode.hasFocus&&MediaQuery.of(this.context).viewInsets.bottom>0){
+      Future.delayed(Duration(milliseconds: 200),(){
+        if(Application.keyboardHeight!=MediaQuery.of(this.context).viewInsets.bottom){
+          Application.keyboardHeight=MediaQuery.of(this.context).viewInsets.bottom;
+          if (mounted) {
+            setState(() {
+
+            });
+          }
+        }
+      });
+    }
+
+    if(Application.keyboardHeight>0){
+      keyboardHeight=Application.keyboardHeight;
+    }
+    if(keyboardHeight<90){
+      keyboardHeight=300.0;
+    }
+
+
     return  AnimatedContainer(
-      duration: Duration(milliseconds: 100),
-      height: _emojiState?300.0:0.0,
+      duration: Duration(milliseconds: 50),
+      height: _emojiState?keyboardHeight:0.0,
       child: Container(
-        height: _emojiState?300.0:0.0,
+        height: _emojiState?keyboardHeight:0.0,
         width: double.infinity,
         decoration: BoxDecoration(
           color: AppColor.white,
@@ -402,13 +436,13 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
             top: BorderSide(color: Colors.grey, width: 0.2),
           ),
         ),
-        child: emojiList(),
+        child: emojiList(keyboardHeight),
       ),
     );
   }
 
   //emoji具体是什么界面
-  Widget emojiList() {
+  Widget emojiList(double keyboardHeight) {
     if (emojiModelList == null || emojiModelList.length < 1) {
       return Center(
         child: Text("暂无表情"),
@@ -421,7 +455,7 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
           child: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(
-                child: _emojiGridTop(),
+                child: _emojiGridTop(keyboardHeight),
               ),
               SliverToBoxAdapter(
                 child: _emojiBottomBox(),
@@ -435,9 +469,9 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
   }
 
   //获取表情头部的 内嵌的表情
-  Widget _emojiGridTop() {
+  Widget _emojiGridTop(double keyboardHeight) {
     return Container(
-      height: 300.0-45.0,
+      height: keyboardHeight-45.0,
       padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
       child: GridView.builder(
         physics: BouncingScrollPhysics(),
@@ -609,14 +643,19 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
             },
           ),
           SizedBox(width: 12),
-          Container(
-            width: 32.0,
-            height: 32.0,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(16)),
-              color: AppColor.white.withOpacity(0.06),
+          GestureDetector(
+            child: Container(
+              width: 32.0,
+              height: 32.0,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+                color: AppColor.white.withOpacity(0.06),
+              ),
+              child: Icon(Icons.settings,color: AppColor.white,size: 12),
             ),
-            child: Icon(Icons.settings,color: AppColor.white,size: 12),
+            onTap:(){
+              showVolumePopup(context);
+            },
           ),
           SizedBox(width: 12),
           GestureDetector(
@@ -692,6 +731,37 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
       ),
     );
   }
+
+
+
+
+
+
+  void getBottomDialog(){
+
+    if(_focusNode.hasFocus){
+      _focusNode.unfocus();
+    }
+    if(_emojiState){
+      setState(() {
+        _emojiState=!_emojiState;
+      });
+    }
+    List<String> list = [];
+    list.add("回复");
+    list.add("举报");
+    list.add("复制");
+    openMoreBottomSheet(
+      context: context,
+      isFillet: true,
+      lists: list,
+      onItemClickListener: (index) {
+        print("value${list[index]}");
+      },
+    );
+  }
+
+
 }
 
 class SimpleRoute extends PageRoute {
