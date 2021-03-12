@@ -108,8 +108,10 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       print('=========================个人主页addPostFrameCallback');
-      _getUserInfo(id: widget.userId);
-      _getFollowCount(id: widget.userId);
+        Future.delayed(Duration(milliseconds: 500),(){
+          _getUserInfo(id: widget.userId);
+          _getFollowCount(id: widget.userId);
+        });
     });
     scrollController.addListener(() {
       if (scrollController.offset >= ScreenUtil.instance.height * 0.33 + _signatureHeight) {
