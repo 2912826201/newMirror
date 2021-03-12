@@ -18,6 +18,11 @@ class AppIcon {
   static const String login_phone = "assets/svg/login_phone.svg";
   static const String login_apple = "assets/svg/login_apple.svg";
   static const String login_qq = "assets/svg/login_qq.svg";
+  static const String like_feed = "assets/svg/like_feed.svg";
+  static const String like_feed_red = "assets/svg/like_feed_red.svg";
+  static const String more_feed = "assets/svg/more_feed.svg";
+  static const String comment_feed = "assets/svg/comment_feed.svg";
+  static const String share_feed = "assets/svg/share_feed.svg";
   static const String login_wechat = "assets/svg/login_wechat.svg";
   static const String add_circle_black = "assets/svg/add_circle_black.svg";
   static const String clear_circle_grey = "assets/svg/clear_circle_grey.svg";
