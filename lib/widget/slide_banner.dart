@@ -208,7 +208,7 @@ class _SlideBannerState extends State<SlideBanner> {
             );
           },
           child: ImagePreviewHero(
-            tag: widget.model.picUrls[indexs].url + "$indexs",
+            tag: item.url + "$indexs",
             child: CachedNetworkImage(
               /// imageUrl的淡入动画的持续时间。
               fadeInDuration: Duration(milliseconds: 0),
@@ -231,7 +231,7 @@ class _SlideBannerState extends State<SlideBanner> {
                   fadeInDuration: Duration(milliseconds: 0),
                   // useOldImageOnUrlChange: true,
                   fit: BoxFit.cover,
-                  imageUrl: item != null ?item : "",
+                  imageUrl: item.url != null ?item.url : "",
                   errorWidget: (context, url, error) => new Image.asset("images/test.png"),
                 ))
             : Hero(
@@ -244,7 +244,7 @@ class _SlideBannerState extends State<SlideBanner> {
                       fadeInDuration: Duration(milliseconds: 0),
                       useOldImageOnUrlChange: true,
                       fit: BoxFit.cover,
-                      imageUrl: item != null ? item : "",
+                      imageUrl: item.url != null ? item.url : "",
                       errorWidget: (context, url, error) => new Image.asset("images/test.png"),
                     )),
               ));
