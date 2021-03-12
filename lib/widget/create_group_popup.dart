@@ -314,13 +314,9 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                width: 12,
+                width: 9,
               ),
-              Image.asset(
-                "images/resource/2.0x/search_icon_gray@2x.png",
-                width: 21,
-                height: 21,
-              ),
+              AppIcon.getAppIcon(AppIcon.input_search, 24),
               Expanded(
                 child: Container(
                   height: 32,

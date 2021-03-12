@@ -15,6 +15,7 @@ class AppIcon {
   static const String input_voice = "assets/svg/input_voice.svg";
   static const String input_gallery = "assets/svg/input_gallery.svg";
   static const String input_emotion = "assets/svg/input_emotion.svg";
+  static const String input_search = "assets/svg/input_search.svg";
   static const String login_phone = "assets/svg/login_phone.svg";
   static const String login_apple = "assets/svg/login_apple.svg";
   static const String login_qq = "assets/svg/login_qq.svg";
@@ -24,13 +25,16 @@ class AppIcon {
   static const String more_feed = "assets/svg/more_feed.svg";
   static const String comment_feed = "assets/svg/comment_feed.svg";
   static const String share_feed = "assets/svg/share_feed.svg";
+  static const String location_feed = "assets/svg/location_feed.svg";
   static const String camera_switch = "assets/svg/camera_switch.svg";
   static const String gallery_fullsize = "assets/svg/gallery_fullsize.svg";
   static const String tag_location = "assets/svg/tag_location.svg";
   static const String tag_course = "assets/svg/tag_course.svg";
+  static const String check = "assets/svg/check.svg";
   static const String add_circle_black = "assets/svg/add_circle_black.svg";
   static const String clear_circle_grey = "assets/svg/clear_circle_grey.svg";
   static const String arrow_right_12 = "assets/svg/arrow_right_12.svg";
+  static const String arrow_right_18 = "assets/svg/arrow_right_18.svg";
 
   static const String qrcode_scan = "assets/svg/qrcode_scan.svg";
   static const String machine_connected = "assets/svg/machine_connected.svg";

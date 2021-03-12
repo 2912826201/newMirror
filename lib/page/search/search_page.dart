@@ -22,6 +22,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/Input_method_rules/input_formatter.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
 
@@ -121,13 +122,9 @@ class _SearchHeaderState extends State<SearchHeader> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(
-                  width: 12,
+                  width: 9,
                 ),
-                Image.asset(
-                  "images/resource/2.0x/search_icon_gray@2x.png",
-                  width: 21,
-                  height: 21,
-                ),
+                AppIcon.getAppIcon(AppIcon.input_search, 24),
                 Expanded(
                   child: Container(
                     height: 32,
