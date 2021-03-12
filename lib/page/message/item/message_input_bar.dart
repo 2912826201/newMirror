@@ -60,66 +60,12 @@ class MessageInputBarState extends State<MessageInputBar> {
           alignment: AlignmentDirectional.bottomEnd,
           children: [
             Container(
-              constraints: BoxConstraints(
-                maxHeight: 4.0 * 16 + 16 + 18,
-                //最小高度为50像素
-              ),
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-                border: Border(
-                  top: BorderSide(color: AppColor.bgWhite, width: 0.2),
-                  bottom: BorderSide(color: AppColor.bgWhite, width: 0.2),
-                ),
-              ),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  SizedBox(
-                    width: 25,
-                  ),
-                  Expanded(
-                    child: Container(
-                      constraints: BoxConstraints(
-                          maxHeight: 80.0,
-                          minHeight: 16.0,
-                          maxWidth: Platform.isIOS
-                              ? ScreenUtil.instance.screenWidthDp - 32 - 32 - 64
-                              : ScreenUtil.instance.screenWidthDp - 32 - 32 - 64 - 52 - 12),
-                      margin: const EdgeInsets.only(top: 12.0, bottom: 12.0, left: 13.0, right: 13.0),
-                      decoration: BoxDecoration(
-                          color: AppColor.bgWhite.withOpacity(0.65),
-                          // color: Colors.red,
-                          borderRadius: BorderRadius.circular(16.0)),
-                      child: widget.isVoice
-                          ? ChatVoice(
-                              voiceFile: widget.voiceFile,
-                            )
-                          : LayoutBuilder(builder: widget.edit),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 25,
-                  ),
-                  StringUtil.strNoEmpty(widget.value)
-                      ? SizedBox(
-                          width: 63,
-                        )
-                      : SizedBox(
-                          width: 36,
-                        ),
-                ],
-              ),
-            ),
-            Container(
-              constraints: BoxConstraints(
-                maxHeight: 48, //宽度尽可能大
-                //最小高度为50像素
-              ),
-              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
                   Container(
-                    margin: EdgeInsets.only(left: 10, right: 10),
+                    height: 48.0,
+                    padding: EdgeInsets.only(left: 10, right: 10),
                     child: AppIconButton(
                       onTap: () {
                         if (widget.voiceOnTap != null) {
@@ -132,9 +78,23 @@ class MessageInputBarState extends State<MessageInputBar> {
                       svgName: widget.isVoice ? AppIcon.input_keyboard : AppIcon.input_voice,
                     ),
                   ),
-                  Expanded(child: SizedBox()),
+                  Expanded(child: SizedBox(
+                    child: Container(
+                      constraints: BoxConstraints(
+                        minHeight: 32.0,
+                        maxHeight: 5*16.0,
+                      ),
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: BoxDecoration(
+                          color: AppColor.bgWhite.withOpacity(0.65),
+                          borderRadius: BorderRadius.circular(16.0)
+                      ),
+                      child: widget.isVoice?ChatVoice(voiceFile: widget.voiceFile): LayoutBuilder(builder: widget.edit),
+                    ),
+                  )),
                   Container(
-                    margin: EdgeInsets.only(left: 10),
+                    height: 48.0,
+                    padding: EdgeInsets.only(left: 10),
                     child: AppIconButton(
                       onTap: () {
                         widget.onEmojio();
@@ -145,7 +105,10 @@ class MessageInputBarState extends State<MessageInputBar> {
                       svgName: AppIcon.input_emotion,
                     ),
                   ),
-                  widget.more,
+                  Container(
+                    height: 48.0,
+                    child: widget.more,
+                  )
                 ],
               ),
             ),
