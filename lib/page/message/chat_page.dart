@@ -34,7 +34,6 @@ import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
 import 'package:mirror/page/message/message_view/message_item_height_util.dart';
-import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -105,7 +104,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
   bool isContentClickOrEmojiClick = true;
 
   ///界面能不能被输入法顶起
-  bool isResizeToAvoidBottomInset = true;
+  // bool isResizeToAvoidBottomInset = true;
 
   ///表情的列表
   List<EmojiModel> emojiModelList = <EmojiModel>[];
@@ -243,7 +242,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     }
     return WillPopScope(
       child: Scaffold(
-        resizeToAvoidBottomInset: isResizeToAvoidBottomInset,
+        // resizeToAvoidBottomInset: isResizeToAvoidBottomInset,
         appBar: getAppBar(),
         body: MessageInputBody(
           onTap: () => _messageInputBodyClick(),
@@ -511,9 +510,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
               : ScreenUtil.instance.screenWidthDp - 32 - 32 - 64 - 52 - 12),
       child: TextSpanField(
         onTap: (){
-          // Future.delayed(Duration(milliseconds: 100),(){
-          //   isShowEmjiPageWhite=true;
-          // });
+          if(_emojiState){
+            reload(() {
+              _emojiState=!_emojiState;
+            });
+          }
         },
         scrollController: textScrollController,
         controller: _textController,
@@ -562,85 +563,80 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
   //键盘与表情的框
   Widget bottomSettingBox() {
-    bool isOffstage = true;
-    if (!_focusNode.hasFocus && MediaQuery.of(context).viewInsets.bottom > 0 && !isContentClickOrEmojiClick) {
-      isOffstage = false;
-    }
-    return Container(
-      color: AppColor.white,
-      child: Stack(
-        children: [
-          emoji(),
-          Offstage(
-            offstage: isOffstage,
-            child: Container(
-              height: Application.keyboardHeight,
-              width: double.infinity,
-            ),
-          )
-        ],
-      ),
-    );
+    return emoji();
   }
 
   //表情框
   Widget emoji() {
-    //fixme 这里的300高度只是临时方案 其实应该是获取键盘的高度 但是在没有打开键盘时 暂时不知道键盘高度是多少
-    double emojiHeight = Application.keyboardHeight > 0 ? Application.keyboardHeight : 300;
-    if (!_emojiState) {
-      emojiHeight = 0.0;
+    //Application.keyboardHeight
+    double keyboardHeight=300.0;
+    if(_focusNode.hasFocus&&MediaQuery.of(this.context).viewInsets.bottom>0){
+      Future.delayed(Duration(milliseconds: 200),(){
+        if(Application.keyboardHeight!=MediaQuery.of(this.context).viewInsets.bottom){
+          Application.keyboardHeight=MediaQuery.of(this.context).viewInsets.bottom;
+          if (mounted) {
+            reload(() {
+            });
+          }
+        }
+      });
     }
 
-    return  Container(
-      height: emojiHeight,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppColor.white,
-        border: Border(
-          top: BorderSide(color: Colors.grey, width: 0.2),
+    if(Application.keyboardHeight>0){
+      keyboardHeight=Application.keyboardHeight;
+    }
+    if(keyboardHeight<90){
+      keyboardHeight=300.0;
+    }
+
+    return  AnimatedContainer(
+      duration: Duration(milliseconds: 50),
+      height: _emojiState?keyboardHeight:0.0,
+      child: Container(
+        height: _emojiState?keyboardHeight:0.0,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: AppColor.white,
+          border: Border(
+            top: BorderSide(color: Colors.grey, width: 0.2),
+          ),
         ),
+        child: emojiList(keyboardHeight),
       ),
-      child: emojiList(),
     );
   }
 
   //emoji具体是什么界面
-  Widget emojiList() {
-    if (_emojiState) {
-      if (emojiModelList == null || emojiModelList.length < 1) {
-        return Center(
-          child: Text("暂无表情"),
-        );
-      } else {
-        return GestureDetector(
-          child: Visibility(
-            // visible: !isShowEmjiPageWhite,
-            visible: true,
-            child: Container(
-              width: double.infinity,
-              color: AppColor.transparent,
-              child: Column(
-                children: [
-                  Expanded(
-                      child: SizedBox(
-                        child: _emojiGridTop(),
-                      )),
-                  _emojiBottomBox(),
-                ],
-              ),
-            ),
-          ),
-          onTap: () {},
-        );
-      }
+  Widget emojiList(double keyboardHeight) {
+    if (emojiModelList == null || emojiModelList.length < 1) {
+      return Center(
+        child: Text("暂无表情"),
+      );
     } else {
-      return Container();
+      return GestureDetector(
+        child: Container(
+          width: double.infinity,
+          color: AppColor.transparent,
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: _emojiGridTop(keyboardHeight),
+              ),
+              SliverToBoxAdapter(
+                child: _emojiBottomBox(),
+              ),
+            ],
+          ),
+        ),
+        onTap: () {},
+      );
     }
   }
 
   //获取表情头部的 内嵌的表情
-  Widget _emojiGridTop() {
+  Widget _emojiGridTop(double keyboardHeight) {
     return Container(
+      height: keyboardHeight-45.0,
       padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
       child: GridView.builder(
         physics: BouncingScrollPhysics(),
@@ -659,45 +655,43 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     TextStyle textStyle = const TextStyle(
       fontSize: 24,
     );
-    return SingleChildScrollView(
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          border: Border(
-            top: BorderSide(color: AppColor.bgWhite, width: 1),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        border: Border(
+          top: BorderSide(color: AppColor.bgWhite, width: 1),
+        ),
+      ),
+      padding: const EdgeInsets.only(left: 10, right: 10),
+      width: double.infinity,
+      height: 44,
+      child: Row(
+        children: [
+          Container(
+            height: 44,
+            width: 44,
+            child: Center(
+              child: Text(
+                emojiModelList[64].emoji,
+                style: textStyle,
+              ),
+            ),
           ),
-        ),
-        padding: const EdgeInsets.only(left: 10, right: 10),
-        width: double.infinity,
-        height: 44,
-        child: Row(
-          children: [
-            Container(
-              height: 44,
-              width: 44,
-              child: Center(
-                child: Text(
-                  emojiModelList[64].emoji,
-                  style: textStyle,
+          Spacer(),
+          Container(
+            height: 44,
+            width: 44,
+            child: Center(
+              child: IconButton(
+                icon: Icon(
+                  Icons.send,
+                  size: 24,
                 ),
+                onPressed: () => _onSubmitClick(),
               ),
             ),
-            Spacer(),
-            Container(
-              height: 44,
-              width: 44,
-              child: Center(
-                child: IconButton(
-                  icon: Icon(
-                    Icons.send,
-                    size: 24,
-                  ),
-                  onPressed: () => _onSubmitClick(),
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -766,7 +760,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     } else {
       if (_emojiState) {
         _emojiState = false;
-        isResizeToAvoidBottomInset = !_emojiState;
+        // isResizeToAvoidBottomInset = !_emojiState;
         b = false;
         if (mounted) {
           reload(() {
@@ -1797,7 +1791,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
         if (mounted) {
           reload(() {
             _timerCount = 0;
-            isResizeToAvoidBottomInset = !_emojiState;
+            // isResizeToAvoidBottomInset = !_emojiState;
           });
         }
       });
@@ -1806,19 +1800,12 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
   //表情的点击事件
   void onEmojioClick() {
-    if (MediaQuery.of(context).viewInsets.bottom > 0) {
-      _emojiState = false;
+    if(_focusNode.hasFocus){
+      cursorIndexPr=_textController.selection.baseOffset;
+      _focusNode.unfocus();
     }
     _emojiState = !_emojiState;
-    isResizeToAvoidBottomInset = !_emojiState;
-    if (_emojiState) {
-      if(_focusNode.hasFocus){
-        cursorIndexPr=_textController.selection.baseOffset;
-      }
-      FocusScope.of(context).requestFocus(new FocusNode());
-    }
     isContentClickOrEmojiClick = false;
-    _focusNode.unfocus();
     _isVoiceState = false;
     if (mounted) {
       reload(() {
