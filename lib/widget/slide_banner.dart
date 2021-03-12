@@ -183,8 +183,8 @@ class _SlideBannerState extends State<SlideBanner> {
   // 轮播图设置预览设置
   List<Widget> buildShowItemContainer(double height) {
     List<Widget> cupertinoButtons = [];
-    for (PicUrlsModel item in widget.model.picUrls) {
-      int indexs = widget.model.picUrls.indexOf(item);
+    List.generate(widget.model.picUrls.length, (indexs) {
+      PicUrlsModel item = widget.model.picUrls[indexs];
       // 查看大图设置
       if (widget.isDynamicDetails) {
         cupertinoButtons.add(CupertinoButton(
@@ -212,7 +212,7 @@ class _SlideBannerState extends State<SlideBanner> {
             child: CachedNetworkImage(
               /// imageUrl的淡入动画的持续时间。
               fadeInDuration: Duration(milliseconds: 0),
-              imageUrl: widget.model.picUrls[indexs].url,
+              imageUrl: item.url,
               width: ScreenUtil.instance.width,
               height: height,
               fit: BoxFit.cover,
@@ -231,7 +231,7 @@ class _SlideBannerState extends State<SlideBanner> {
                   fadeInDuration: Duration(milliseconds: 0),
                   // useOldImageOnUrlChange: true,
                   fit: BoxFit.cover,
-                  imageUrl: widget.model.picUrls[indexs].url != null ? widget.model.picUrls[indexs].url : "",
+                  imageUrl: item != null ?item : "",
                   errorWidget: (context, url, error) => new Image.asset("images/test.png"),
                 ))
             : Hero(
@@ -244,12 +244,12 @@ class _SlideBannerState extends State<SlideBanner> {
                       fadeInDuration: Duration(milliseconds: 0),
                       useOldImageOnUrlChange: true,
                       fit: BoxFit.cover,
-                      imageUrl: widget.model.picUrls[indexs].url != null ? widget.model.picUrls[indexs].url : "",
+                      imageUrl: item != null ? item : "",
                       errorWidget: (context, url, error) => new Image.asset("images/test.png"),
                     )),
               ));
       }
-    }
+    });
     return cupertinoButtons;
   }
 
@@ -297,7 +297,8 @@ class _SlideBannerState extends State<SlideBanner> {
   setUpLuad() async {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     if (isLoggedIn) {
-      if (context.read<FeedMapNotifier>().postFeedModel != null && context.read<FeedMapNotifier>().feedMap[widget.model.id].id != Application.insertFeedId) {
+      if (context.read<FeedMapNotifier>().postFeedModel != null &&
+          context.read<FeedMapNotifier>().feedMap[widget.model.id].id != Application.insertFeedId) {
         // ToastShow.show(msg: "不响应", context: context);
       } else {
         BaseResponseModel model = await laud(id: widget.model.id, laud: widget.model.isLaud == 0 ? 1 : 0);
@@ -306,19 +307,15 @@ class _SlideBannerState extends State<SlideBanner> {
         if (model.code == CODE_BLACKED) {
           ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
         } else {
-          // print("state:${model.data["state"]}");
-          // if (model.data["state"]) {
           context
               .read<FeedMapNotifier>()
               .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
           context
-              .read<ProfilePageNotifier>()
+              .read<UserInteractiveNotifier>()
               .loadChange(widget.model.pushId, context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud);
-          context.read<UserInteractiveNotifier>().loadChange(widget.model.pushId, context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud);
-          // } else {
-          //   // 失败
-          //   print("shib ");
-          // }
+          // context
+          //     .read<ProfilePageNotifier>()
+          //     .loadChange(widget.model.pushId, context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud);
         }
       }
     } else {
@@ -331,6 +328,13 @@ class _SlideBannerState extends State<SlideBanner> {
   Widget build(BuildContext context) {
     final width = ScreenUtil.instance.screenWidthDp;
     print("轮播图builder：${widget.model.id}");
+    List<Widget> cupertinoButtonList = [];
+    if (widget.model.picUrls.isNotEmpty) {
+      cupertinoButtonList = buildShowItemContainer(setAspectRatio(widget.height));
+    } else if (widget.model != null && widget.model.selectedMediaFiles != null) {
+      cupertinoButtonList = localPicture(setAspectRatio(widget.height));
+    }
+
     return Container(
       child: Column(
         children: [
@@ -348,28 +352,16 @@ class _SlideBannerState extends State<SlideBanner> {
                 child: Container(
                     width: width,
                     height: setAspectRatio(widget.height),
-                    child: widget.model.picUrls.isNotEmpty
-                        ? Swiper.children(
-                            children: buildShowItemContainer(setAspectRatio(widget.height)),
-                            controller: swiperController,
-                            loop: false,
-                            onIndexChanged: (index) {
-                              autoPlay(index);
-                            },
-                            onTap: (index) {},
-                          )
-                        : widget.model != null && widget.model.selectedMediaFiles != null
-                            ? Swiper.children(
-                                autoplayDelay: 1,
-                                children: localPicture(setAspectRatio(widget.height)),
-                                controller: swiperController,
-                                loop: false,
-                                onIndexChanged: (index) {
-                                  autoPlay(index);
-                                },
-                                onTap: (index) {},
-                              )
-                            : Container()),
+                    child: Swiper.children(
+                      children: cupertinoButtonList,
+                      autoplayDelay:0,
+                      controller: swiperController,
+                      loop: false,
+                      onIndexChanged: (index) {
+                        autoPlay(index);
+                      },
+                      onTap: (index) {},
+                    )),
               ),
               Positioned(
                 top: 13,
