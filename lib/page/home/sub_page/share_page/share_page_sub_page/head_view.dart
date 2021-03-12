@@ -17,6 +17,7 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_more_popups.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
@@ -153,7 +154,6 @@ class HeadViewState extends State<HeadView> {
                   color: AppColor.textPrimary1,
                   size: 16,
                 ),
-
                 SizedBox(
                   width: 4,
                 ),
@@ -190,9 +190,7 @@ class HeadViewState extends State<HeadView> {
                 style: AppStyle.textRegular12,
               ),
             )),
-        onEnd: () {
-
-        },
+        onEnd: () {},
       );
     }
   }
@@ -207,7 +205,7 @@ class HeadViewState extends State<HeadView> {
   Widget build(BuildContext context) {
     if (widget.model.pushId == context.watch<ProfileNotifier>().profile.uid) {
       isMySelf = true;
-        context.watch<UserInteractiveNotifier>().setFirstModel(widget.model.pushId);
+      context.watch<UserInteractiveNotifier>().setFirstModel(widget.model.pushId);
       if (!context
           .watch<UserInteractiveNotifier>()
           .profileUiChangeModel[widget.model.pushId]
@@ -276,9 +274,9 @@ class HeadViewState extends State<HeadView> {
                 isShowFollowButton(context),
                 Container(
                   margin: EdgeInsets.only(right: 16),
-                  child: GestureDetector(
-                    child: Image.asset("images/resource/2.0x/ic_dynamic_Set up@2x.png",
-                        fit: BoxFit.cover, width: 24, height: 24),
+                  child: AppIconButton(
+                    svgName: AppIcon.more_feed,
+                    iconSize: 24,
                     onTap: () {
                       if (context.read<FeedMapNotifier>().postFeedModel != null) {
                         ToastShow.show(msg: "不响应", context: context);

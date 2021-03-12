@@ -201,10 +201,6 @@ flutter:
     - images/resource/2.0x/vip_notopen_icon@2x.png
     - images/resource/2.0x/chose_pay@2x.png
     - images/resource/2.0x/add_avatar_icon_@2x.png
-    - images/resource/2.0x/ic_dynamic_Set up@2x.png
-    - images/resource/2.0x/ic_dynamic_Forward@2x.png
-    - images/resource/2.0x/ic_dynamic_like@2x.png
-    - images/resource/2.0x/ic_dynamic_review@2x.png
     - images/resource/2.0x/ic_recommend_Close_small@2x.png
     - images/resource/2.0x/ic_recommend_follow@2x.png
     - images/resource/2.0x/ic_recommend_Followed@2x.png
@@ -213,7 +209,6 @@ flutter:
     - images/resource/2.0x/ic_dynamic_big_address_blue@2x.png
     - images/resource/2.0x/ic_dynamic_Right arrow@2x.png
     - images/resource/2.0x/ic_dynamic_Up arrow@2x.png
-    - images/resource/2.0x/ic_comment_like_Selected@2x.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

@@ -42,6 +42,7 @@ class _FitnessPartState extends State<FitnessPartPage> {
         hasDivider: false,
       ),
       body: Container(
+        padding: EdgeInsets.only(left: 31,right: 31),
         width: width,
         height: height,
         child: Column(
@@ -49,30 +50,23 @@ class _FitnessPartState extends State<FitnessPartPage> {
             SizedBox(
               height: height * 0.05,
             ),
-            Center(
-              child: Container(
-                width: width * 0.78,
-                child: Container(
+            Container(
                   alignment: Alignment.bottomLeft,
                   child: Text(
                     "有重要想要训练的部位吗？",
                     style: AppStyle.textMedium23,
                   ),
                 ),
-              ),
-            ),
             SizedBox(
               height: 12,
             ),
-            Center(
-              child: Container(
-                alignment: Alignment.centerLeft,
-                width: width * 0.78,
+             Container(
+               width: width,
+                alignment: Alignment.bottomLeft,
                 child: Text(
                   "可选全身或1-2个重点部位",
                   style: AppStyle.textRegular14,
                 ),
-              ),
             ),
             SizedBox(
               height: height * 0.05,
@@ -90,7 +84,6 @@ class _FitnessPartState extends State<FitnessPartPage> {
             ),
             Container(
               width: width,
-              padding: EdgeInsets.only(left: 41, right: 41),
               child: ClickLineBtn(
                 title: "下一步",
                 height: 44.0,
@@ -119,9 +112,9 @@ class _FitnessPartState extends State<FitnessPartPage> {
 
   List<Widget> _boxitem() => List.generate(partList.length, (index) {
         return Container(
-          width: ScreenUtil.instance.screenWidthDp / 3,
-          child: Center(
-            child: ClickLineBtn(
+          width: (ScreenUtil.instance.screenWidthDp - 62) / 3,
+          alignment: Alignment.centerLeft,
+          child:  ClickLineBtn(
                 title: partList[index].name,
                 height: 44.0,
                 width: 88,
@@ -147,7 +140,6 @@ class _FitnessPartState extends State<FitnessPartPage> {
                     _changeListData(index);
                   }
                 }),
-          ),
         );
       });
 

@@ -165,7 +165,7 @@ Future<Map> getAllTags() async {
     print('====================标签请求成功');
     return responseModel.data;
   } else {
-    print('====================标签请求失败');
+    print('===================标签请求失败=');
     return null;
   }
 }

@@ -12,6 +12,7 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// camera_video_page
@@ -102,7 +103,13 @@ class CameraVideoState extends State<CameraVideoPage> with WidgetsBindingObserve
                       Positioned(
                         right: 16,
                         bottom: 16,
-                        child: GestureDetector(
+                        child: AppIconButton(
+                          isCircle: true,
+                          bgColor: AppColor.textPrimary2.withOpacity(0.65),
+                          buttonHeight: 32,
+                          buttonWidth: 32,
+                          iconSize: 24,
+                          svgName: AppIcon.camera_switch,
                           onTap: () {
                             int currentTime = DateTime.now().millisecondsSinceEpoch;
                             if (currentTime - _latestSwitchCameraTime < _switchCameraInterval) {
@@ -119,11 +126,6 @@ class CameraVideoState extends State<CameraVideoPage> with WidgetsBindingObserve
                             _cameraIndex = (_cameraIndex + 1) % Application.cameras.length;
                             onCameraSelected(Application.cameras[_cameraIndex]);
                           },
-                          child: Icon(
-                            Icons.camera,
-                            size: 32,
-                            color: Colors.white,
-                          ),
                         ),
                       ),
                       // 进度条

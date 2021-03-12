@@ -276,21 +276,10 @@ class _GalleryPageState extends State<GalleryPage> {
               ? Positioned(
                   top: context.watch<PreviewHeightNotifier>().previewHeight - 36,
                   left: 12,
-                  child: GestureDetector(
+                  child: AppIconButton(
                     onTap: _changeCurrentRatio,
-                    child: Container(
-                      height: 24,
-                      width: 24,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColor.textPrimary2.withOpacity(0.65),
-                      ),
-                      child: Icon(
-                        Icons.fullscreen,
-                        color: AppColor.white,
-                        size: 24,
-                      ),
-                    ),
+                    iconSize: 24,
+                    svgName: AppIcon.gallery_fullsize,
                   ),
                 )
               : Container(),
