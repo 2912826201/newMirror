@@ -8,6 +8,7 @@ import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/constants.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/feed/feed_tag_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
@@ -17,6 +18,7 @@ import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/course_
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/getTripleArea.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/head_view.dart';
 import 'package:mirror/page/training/common/common_comment_page.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -29,7 +31,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 // 动态详情页
 class FeedDetailPage extends StatefulWidget {
-  FeedDetailPage({Key key, this.model, this.type, this.index, this.comment, this.fatherModel,this.errorCode,this.isInterative});
+  FeedDetailPage(
+      {Key key, this.model, this.type, this.index, this.comment, this.fatherModel, this.errorCode, this.isInterative});
 
   CommentDtoModel fatherModel;
   CommentDtoModel comment;
@@ -38,6 +41,7 @@ class FeedDetailPage extends StatefulWidget {
   int type;
   int errorCode;
   bool isInterative;
+
   @override
   FeedDetailPageState createState() => FeedDetailPageState();
 }
@@ -55,6 +59,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   int totalCount = 0;
   double itemHeight = 0;
   int isBlack = 0;
+
   @override
   void dispose() {
     _controller.dispose();
@@ -64,7 +69,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   @override
   void initState() {
     print("进入详情页");
-    if(widget.errorCode==CODE_SUCCESS){
+    if (widget.errorCode == CODE_SUCCESS) {
       feedModel = context.read<FeedMapNotifier>().feedMap[widget.model.id];
       _checkBlackStatus();
       itemHeight += ScreenUtil.instance.statusBarHeight + kToolbarHeight + 76 + 48 + 18 + 16;
@@ -91,6 +96,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
       return (ScreenUtil.instance.width / feedModel.picUrls[0].width) * height;
     }
   }
+
   ///请求黑名单关系
   _checkBlackStatus() async {
     BlackModel model = await ProfileCheckBlack(feedModel.pushId);
@@ -99,11 +105,12 @@ class FeedDetailPageState extends State<FeedDetailPage> {
       print('inYouBlack===================${model.inYouBlack}');
       if (model.inYouBlack == 1) {
         isBlack = 1;
-      } else if(model.inThisBlack == 1){
+      } else if (model.inThisBlack == 1) {
         isBlack = 2;
       }
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -114,135 +121,143 @@ class FeedDetailPageState extends State<FeedDetailPage> {
             Navigator.of(context).pop(true);
           },
         ),
-        body: widget.errorCode!=CODE_NO_DATA?Stack(
-          children: [
-            Container(
-              height: ScreenUtil.instance.height,
-              child: SmartRefresher(
-                  enablePullDown: false,
-                  enablePullUp: true,
-                  footer: footerWidget(),
-                  controller: _refreshController,
-                  onLoading: () {
-                    childKey.currentState.onLoading();
-                  },
-                  child: CustomScrollView(physics: ClampingScrollPhysics(), controller: _controller, slivers: <Widget>[
-                    SliverToBoxAdapter(
-                      child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                        // 顶部间距
-                        SizedBox(
-                          height: 14,
-                        ),
-                        // 头部布局
-                        HeadView(
-                          isBlack: isBlack,
-                            isShowConcern: true,
-                            model: feedModel,
-                            deleteFeedChanged: (id) {
-                              // deleteFeedChanged(id);
-                            },
-                            removeFollowChanged: (m) {
-                              // removeFollowChanged(m);
-                            }),
-                        // 图片区域
-                        feedModel.picUrls.isNotEmpty
-                            ? SlideBanner(
-                                height: feedModel?.picUrls[0]?.height?.toDouble(),
-                                model: feedModel,
-                                index:widget.index,
-                                pageName: "FeedDetailPage",
-                                isDynamicDetails: true,
-                              )
-                            : Container(),
-                        // 视频区域
-                        feedModel.videos.isNotEmpty ? getVideo(feedModel?.videos) : Container(),
-                        // 点赞，转发，评论三连区域 getTripleArea
-                        GetTripleArea(
-                          offsetKey: _key,
-                          model: feedModel,
-                          // back: () {
-                          //   context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
-                          // },
-                        ),
-                        // 课程信息和地址
-                        Offstage(
-                          offstage: (feedModel.address == null && feedModel.courseDto == null),
-                          child: Container(
-                            margin: EdgeInsets.only(left: 16, right: 16),
-                            // color: Colors.orange,
-                            width: ScreenUtil.instance.width,
-                            child: getCourseInfo(feedModel),
-                          ),
-                        ),
-                        // // 文本文案
-                        Offstage(
-                          offstage: feedModel.content.length == 0,
-                          child: Container(
-                            // color: Colors.cyan,
-                            margin: EdgeInsets.only(left: 16, right: 16, top: 12),
-                            width: ScreenUtil.instance.width,
-                            child: ExpandableText(
-                              text: feedModel.content,
-                              model: feedModel,
-                              maxLines: 2,
-                              style: TextStyle(fontSize: 14, color: AppColor.textPrimary1),
-                            ),
-                          ),
-                        ),
-                        context.watch<FeedMapNotifier>().feedMap[feedModel.id].totalCount != -1
-                            ? Container(
-                                // color: AppColor.mainRed,
-                                margin: EdgeInsets.only(top: 18, left: 16),
-                                alignment: Alignment(-1, 0),
-                                child:
-                                    // context.watch<FeedMapNotifier>().feedMap[feedModel.id].totalCount != -1
-                                    //     ?
-                                    // DynamicModelNotifier
-                                    Selector<FeedMapNotifier, int>(builder: (context, totalCount, child) {
-                                  return Text(
-                                    "共${StringUtil.getNumber(totalCount)}条评论",
-                                    style: AppStyle.textRegular16,
-                                  );
-                                }, selector: (context, notifier) {
-                                  return notifier.feedMap[feedModel.id].totalCount;
-                                }))
-                            : Container(),
-                      ]),
+        body: widget.errorCode != CODE_NO_DATA
+            ? Stack(
+                children: [
+                  Container(
+                    height: ScreenUtil.instance.height,
+                    child: SmartRefresher(
+                        enablePullDown: false,
+                        enablePullUp: true,
+                        footer: footerWidget(),
+                        controller: _refreshController,
+                        onLoading: () {
+                          childKey.currentState.onLoading();
+                        },
+                        child: CustomScrollView(
+                            physics: ClampingScrollPhysics(),
+                            controller: _controller,
+                            slivers: <Widget>[
+                              SliverToBoxAdapter(
+                                child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                                  // 顶部间距
+                                  SizedBox(
+                                    height: 14,
+                                  ),
+                                  // 头部布局
+                                  HeadView(
+                                      isBlack: isBlack,
+                                      isShowConcern: true,
+                                      model: feedModel,
+                                      deleteFeedChanged: (id) {
+                                        // deleteFeedChanged(id);
+                                      },
+                                      removeFollowChanged: (m) {
+                                        // removeFollowChanged(m);
+                                      }),
+                                  // 图片区域
+                                  feedModel.picUrls.isNotEmpty
+                                      ? SlideBanner(
+                                          height: feedModel?.picUrls[0]?.height?.toDouble(),
+                                          model: feedModel,
+                                          index: widget.index,
+                                          pageName: "FeedDetailPage",
+                                          isDynamicDetails: true,
+                                        )
+                                      : Container(),
+                                  // 视频区域
+                                  feedModel.videos.isNotEmpty ? getVideo(feedModel?.videos) : Container(),
+                                  // 点赞，转发，评论三连区域 getTripleArea
+                                  GetTripleArea(
+                                    offsetKey: _key,
+                                    model: feedModel,
+                                    // back: () {
+                                    //   context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
+                                    // },
+                                  ),
+                                  // 课程信息和地址
+                                  Offstage(
+                                    offstage: (feedModel.address == null && feedModel.courseDto == null),
+                                    child: Container(
+                                      margin: EdgeInsets.only(left: 16, right: 16),
+                                      // color: Colors.orange,
+                                      width: ScreenUtil.instance.width,
+                                      child: getCourseInfo(feedModel),
+                                    ),
+                                  ),
+                                  // // 文本文案
+                                  Offstage(
+                                    offstage: feedModel.content.length == 0,
+                                    child: Container(
+                                      // color: Colors.cyan,
+                                      margin: EdgeInsets.only(left: 16, right: 16, top: 12),
+                                      width: ScreenUtil.instance.width,
+                                      child: ExpandableText(
+                                        text: feedModel.content,
+                                        model: feedModel,
+                                        maxLines: 2,
+                                        style: TextStyle(fontSize: 14, color: AppColor.textPrimary1),
+                                      ),
+                                    ),
+                                  ),
+                                  context.watch<FeedMapNotifier>().feedMap[feedModel.id].totalCount != -1
+                                      ? Container(
+                                          // color: AppColor.mainRed,
+                                          margin: EdgeInsets.only(top: 18, left: 16),
+                                          alignment: Alignment(-1, 0),
+                                          child:
+                                              // context.watch<FeedMapNotifier>().feedMap[feedModel.id].totalCount != -1
+                                              //     ?
+                                              // DynamicModelNotifier
+                                              Selector<FeedMapNotifier, int>(builder: (context, totalCount, child) {
+                                            return Text(
+                                              "共${StringUtil.getNumber(totalCount)}条评论",
+                                              style: AppStyle.textRegular16,
+                                            );
+                                          }, selector: (context, notifier) {
+                                            return notifier.feedMap[feedModel.id].totalCount;
+                                          }))
+                                      : Container(),
+                                ]),
+                              ),
+                              _getCourseCommentUi(),
+                              SliverToBoxAdapter(
+                                child: SizedBox(
+                                  height: ScreenUtil.instance.bottomBarHeight,
+                                ),
+                              ),
+                            ])),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    child: CommentInputBox(
+                      isUnderline: true,
+                      isFeedDetail: true,
+                      feedModel: context.watch<FeedMapNotifier>().feedMap[feedModel.id],
                     ),
-                    _getCourseCommentUi(),
-                    SliverToBoxAdapter(
-                      child: SizedBox(
-                        height: ScreenUtil.instance.bottomBarHeight,
-                      ),
+                  )
+                ],
+              )
+            : Container(
+                width: ScreenUtil.instance.screenWidthDp,
+                height: ScreenUtil.instance.height,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Spacer(),
+                    Container(
+                      height: ScreenUtil.instance.screenWidthDp * 0.59,
+                      width: ScreenUtil.instance.screenWidthDp * 0.59,
+                      color: AppColor.bgWhite,
                     ),
-                  ])),
-            ),
-            Positioned(
-              bottom: 0,
-              child: CommentInputBox(
-                isUnderline: true,
-                isFeedDetail: true,
-                feedModel: context.watch<FeedMapNotifier>().feedMap[feedModel.id],
-              ),
-            )
-          ],
-        ):Container(
-      width: ScreenUtil.instance.screenWidthDp,
-      height: ScreenUtil.instance.height,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Spacer(),
-          Container(
-            height: ScreenUtil.instance.screenWidthDp * 0.59,
-            width: ScreenUtil.instance.screenWidthDp * 0.59,
-            color: AppColor.bgWhite,
-          ),
-          Text("该动态已失效",style: AppStyle.textHintRegular16,),
-          Spacer()
-        ],
-      ),
-    ));
+                    Text(
+                      "该动态已失效",
+                      style: AppStyle.textHintRegular16,
+                    ),
+                    Spacer()
+                  ],
+                ),
+              ));
   }
 
   Widget _getCourseCommentUi() {
@@ -341,15 +356,47 @@ class FeedDetailPageState extends State<FeedDetailPage> {
 
   // 课程信息和地址
   Widget getCourseInfo(HomeFeedModel model) {
-    List<String> tags = [];
+    List<FeedTagModel> tags = [];
     if (model.courseDto != null) {
-      tags.add(model.courseDto.title);
+      FeedTagModel tag = FeedTagModel();
+      tag.type = feed_tag_type_course;
+      tag.text = model.courseDto.title;
+      tag.courseId = model.courseDto.id;
+      tags.add(tag);
     }
     if (model.address != null) {
-      tags.add(model.address);
+      FeedTagModel tag = FeedTagModel();
+      tag.type = feed_tag_type_location;
+      tag.text = model.address;
+      tag.longitude = model.longitude;
+      tag.latitude = model.latitude;
+      tags.add(tag);
     }
     return Row(
-      children: [for (String item in tags) CourseAddressLabel(item, tags)],
+      children: [
+        for (int i = 0; i < tags.length; i++)
+          GestureDetector(
+            onTap: () {
+              FeedTagModel tag = tags[i];
+              switch (tag.type) {
+                case feed_tag_type_course:
+                  AppRouter.navigateToVideoDetail(context, tag.courseId);
+                  break;
+                case feed_tag_type_location:
+                  AppRouter.navigateCreateMapScreenPage(
+                    context,
+                    tag.longitude,
+                    tag.latitude,
+                    tag.text,
+                  );
+                  break;
+                default:
+                  break;
+              }
+            },
+            child: CourseAddressLabel(i, tags),
+          )
+      ],
     );
   }
 }

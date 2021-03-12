@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/feed/feed_tag_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
@@ -214,52 +215,45 @@ class DynamicListLayout extends StatelessWidget {
 
   // 课程信息和地址
   Widget getCourseInfo(HomeFeedModel model, BuildContext context) {
-    List<String> tags = [];
-    double longitude;
-    double latitude;
-    bool isAddress = false;
-    bool isCourse = false;
+    List<FeedTagModel> tags = [];
     if (model.courseDto != null) {
-      tags.add(model.courseDto.title);
-      isCourse = true;
+      FeedTagModel tag = FeedTagModel();
+      tag.type = feed_tag_type_course;
+      tag.text = model.courseDto.title;
+      tag.courseId = model.courseDto.id;
+      tags.add(tag);
     }
     if (model.address != null) {
-      tags.add(model.address);
-      longitude = model.longitude;
-      latitude = model.latitude;
-      isAddress = true;
+      FeedTagModel tag = FeedTagModel();
+      tag.type = feed_tag_type_location;
+      tag.text = model.address;
+      tag.longitude = model.longitude;
+      tag.latitude = model.latitude;
+      tags.add(tag);
     }
     return Row(
       children: [
-        for (String item in tags)
+        for (int i = 0; i < tags.length; i++)
           GestureDetector(
             onTap: () {
-              if (tags.length > 1) {
-                if (tags.indexOf(item) == 0) {
-                  AppRouter.navigateToVideoDetail(context, model.courseDto.id);
-                } else {
+              FeedTagModel tag = tags[i];
+              switch (tag.type) {
+                case feed_tag_type_course:
+                  AppRouter.navigateToVideoDetail(context, tag.courseId);
+                  break;
+                case feed_tag_type_location:
                   AppRouter.navigateCreateMapScreenPage(
                     context,
-                    longitude,
-                    latitude,
-                    model.address,
+                    tag.longitude,
+                    tag.latitude,
+                    tag.text,
                   );
-                }
-              } else {
-                if (isAddress) {
-                  AppRouter.navigateCreateMapScreenPage(
-                    context,
-                    longitude,
-                    latitude,
-                    model.address,
-                  );
-                }
-                if (isCourse) {
-                  AppRouter.navigateToVideoDetail(context, model.courseDto.id);
-                }
+                  break;
+                default:
+                  break;
               }
             },
-            child: CourseAddressLabel(item, tags),
+            child: CourseAddressLabel(i, tags),
           )
       ],
     );
