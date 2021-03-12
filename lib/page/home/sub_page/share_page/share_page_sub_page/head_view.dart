@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
@@ -278,8 +279,8 @@ class HeadViewState extends State<HeadView> {
                     child: Image.asset("images/resource/2.0x/ic_dynamic_Set up@2x.png",
                         fit: BoxFit.cover, width: 24, height: 24),
                     onTap: () {
-                      if (context.read<FeedMapNotifier>().postFeedModel != null) {
-                        ToastShow.show(msg: "不响应", context: context);
+                      if (context.read<FeedMapNotifier>().postFeedModel != null && context.read<FeedMapNotifier>().feedMap[widget.model.id].id != Application.insertFeedId) {
+                        // ToastShow.show(msg: "不响应", context: context);
                       } else {
                         openMoreBottomSheet(
                             context: context,

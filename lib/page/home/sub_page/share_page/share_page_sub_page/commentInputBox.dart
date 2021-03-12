@@ -95,7 +95,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
               onTap: () {
                 if (context.read<TokenNotifier>().isLoggedIn) {
                   if (context.read<FeedMapNotifier>().postFeedModel != null) {
-                    ToastShow.show(msg: "不响应", context: context);
+                    // ToastShow.show(msg: "不响应", context: context);
                   } else {
                     openInputBottomSheet(
                       buildContext: context,

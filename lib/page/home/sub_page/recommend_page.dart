@@ -297,7 +297,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                             double screenOffser = metrics.pixels + (slidingArea / 2);
                             if (screenOffser >= value.headOffset && screenOffser < value.bottomOffset) {
                               print("进了");
-                              context.read<FeedMapNotifier>().showInputBox(value.id);
+                              // context.read<FeedMapNotifier>().showInputBox(value.id);
                             }
                           }
                         });
