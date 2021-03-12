@@ -10,6 +10,7 @@ import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
@@ -163,7 +164,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
               print('==========================dataModel.list.isNotEmpty');
               dataModel.list.forEach((v) {
                 context
-                    .read<ProfilePageNotifier>()
+                    .read<UserInteractiveNotifier>()
                     .profileUiChangeModel
                     .remove(HomeFeedModel
                     .fromJson(v)

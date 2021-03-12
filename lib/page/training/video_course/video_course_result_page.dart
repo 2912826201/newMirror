@@ -8,12 +8,14 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:provider/provider.dart';
+
 /// video_course_result_page
 /// Created by yangjiayi on 2021/1/14.
 
@@ -89,10 +91,10 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.camera_alt_outlined,
+                AppIcon.getAppIcon(
+                  AppIcon.nav_camera,
+                  24,
                   color: AppColor.white,
-                  size: 24,
                 ),
                 SizedBox(
                   width: 6,
@@ -340,8 +342,10 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                         setState(() {
                           _relation = relation;
                         });
-                        if(relation==1||relation==3){
-                          context.read<ProfilePageNotifier>().changeFollowCount(context.read<ProfileNotifier>().profile.uid, true);
+                        if (relation == 1 || relation == 3) {
+                          context
+                              .read<UserInteractiveNotifier>()
+                              .changeFollowCount(context.read<ProfileNotifier>().profile.uid, true);
                         }
                       }
                     });

@@ -12,7 +12,6 @@ import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
 import 'package:mirror/config/application.dart';
-import 'package:mirror/config/config.dart';
 import 'package:mirror/config/shared_preferences.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/data_response_model.dart';
@@ -25,7 +24,6 @@ import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/data/notifier/release_progress_notifier.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
@@ -37,7 +35,6 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:reorderables/reorderables.dart';
@@ -200,48 +197,53 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     double inputHeight = MediaQuery.of(context).viewInsets.bottom;
-    return Scaffold(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.dark,
+      child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: ChangeNotifierProvider(
-            create: (_) => ReleaseFeedInputNotifier(
-                  inputText: "",
-                  rules: [],
-                  atSearchStr: "",
-                  topicSearchStr: "",
-                ),
-            builder: (context, _) {
-              String str = context.watch<ReleaseFeedInputNotifier>().keyWord;
-              return Container(
-                color: AppColor.white,
-                margin: EdgeInsets.only(
-                  top: ScreenUtil.instance.statusBarHeight,
-                ),
-                child: Column(
-                  children: [
-                    // 头部布局
-                    FeedHeader(selectedMediaFiles: _selectedMediaFiles),
-                    // 输入框
-                    KeyboardInput(controller: _controller),
-                    // 中间主视图
-                    str == "@"
-                        ? Expanded(
-                            child: Container(
-                                child: AtList(controller: _controller),
-                                margin: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom)))
-                        : str == "#"
-                            ? Expanded(
-                                child: Container(
-                                    child: TopicList(controller: _controller),
-                                    margin: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom)))
-                            : ReleaseFeedMainView(
-                                selectedMediaFiles: _selectedMediaFiles,
-                                permissions: permissions,
-                                pois: pois,
-                              )
-                  ],
-                ),
-              );
-            }));
+          create: (_) => ReleaseFeedInputNotifier(
+            inputText: "",
+            rules: [],
+            atSearchStr: "",
+            topicSearchStr: "",
+          ),
+          builder: (context, _) {
+            String str = context.watch<ReleaseFeedInputNotifier>().keyWord;
+            return Container(
+              color: AppColor.white,
+              margin: EdgeInsets.only(
+                top: ScreenUtil.instance.statusBarHeight,
+              ),
+              child: Column(
+                children: [
+                  // 头部布局
+                  FeedHeader(selectedMediaFiles: _selectedMediaFiles),
+                  // 输入框
+                  KeyboardInput(controller: _controller),
+                  // 中间主视图
+                  str == "@"
+                      ? Expanded(
+                          child: Container(
+                              child: AtList(controller: _controller),
+                              margin: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom)))
+                      : str == "#"
+                          ? Expanded(
+                              child: Container(
+                                  child: TopicList(controller: _controller),
+                                  margin: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom)))
+                          : ReleaseFeedMainView(
+                              selectedMediaFiles: _selectedMediaFiles,
+                              permissions: permissions,
+                              pois: pois,
+                            )
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
   }
 }
 
@@ -405,6 +407,7 @@ class FeedHeader extends StatelessWidget {
       Navigator.pop(context, true);
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -569,7 +572,6 @@ class KeyboardInputState extends State<KeyboardInput> {
         }
         // 唤起@#后切换光标关闭视图
         if (atIndex != null && cursorIndex != atIndex) {
-
           context.read<ReleaseFeedInputNotifier>().changeCallback("");
         }
         if (topicIndex != null && cursorIndex != topicIndex) {
@@ -834,7 +836,7 @@ class TopicListState extends State<TopicList> {
   @override
   void initState() {
     requestRecommendTopic();
-    Future.delayed(Duration.zero,(){
+    Future.delayed(Duration.zero, () {
       context.read<ReleaseFeedInputNotifier>().setTopScrollController(_scrollController);
     });
     _scrollController.addListener(() {
@@ -1656,7 +1658,7 @@ class SeletedPhotoState extends State<SeletedPhoto> {
             widget.selectedMediaFiles.list.addAll(files.list);
             context.read<ReleaseFeedInputNotifier>().setSelectedMediaFiles(widget.selectedMediaFiles);
             setState(() {});
-          }, fixedWidth: fixedWidth, fixedHeight: fixedHeight);
+          }, fixedWidth: fixedWidth, fixedHeight: fixedHeight, startCount: widget.selectedMediaFiles.list.length);
         },
         child: Container(
           margin: EdgeInsets.only(left: 10, top: 9, right: 16),

@@ -216,4 +216,9 @@ class RongCloud {
   Future<Message> getMessageById(int messageId) {
     return RongIMClient.getMessage(messageId);
   }
+
+  //加入聊天室
+  void joinChatRoom(String targetId,{int messageCount=-1}) {
+     RongIMClient.joinChatRoom(targetId,messageCount);
+  }
 }

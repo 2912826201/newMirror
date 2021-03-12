@@ -12,6 +12,7 @@ import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/feed/like.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/if_page.dart';
@@ -21,8 +22,8 @@ import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/feed_comment_popups.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/post_comments.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
@@ -146,7 +147,9 @@ class GetTripleAreaState extends State<GetTripleArea> {
           context
               .read<FeedMapNotifier>()
               .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
-          context.read<ProfilePageNotifier>().loadChange(widget.model.pushId, context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud);
+          context
+              .read<UserInteractiveNotifier>()
+              .loadChange(widget.model.pushId, context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud);
           // } else { // 失败
           //   print("shib ");
           // }
@@ -198,101 +201,81 @@ class GetTripleAreaState extends State<GetTripleArea> {
   roundedTriple() {
     return Row(
       children: [
+        AppIconButton(
+          svgName: (context.select((FeedMapNotifier value) => value.feedMap) != null &&
+                  context.select((FeedMapNotifier value) => value.feedMap[widget.model.id]) != null &&
+                  context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) != null &&
+                  context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 0)
+              ? AppIcon.like_feed
+              : AppIcon.like_feed_red,
+          iconSize: 24,
+          onTap: () {
+            setUpLuad();
+          },
+        ),
         Container(
-          child: GestureDetector(
+          margin: EdgeInsets.only(left: 16),
+          child: AppIconButton(
+            svgName: AppIcon.comment_feed,
+            iconSize: 24,
             onTap: () {
-              setUpLuad();
+              bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
+              if (isLoggedIn) {
+                if (context.read<FeedMapNotifier>().postFeedModel != null && context.read<FeedMapNotifier>().feedMap[widget.model.id].id != Application.insertFeedId) {
+                  ToastShow.show(msg: "不响应", context: context);
+                } else {
+                  openFeedCommentBottomSheet(
+                      context: context,
+                      feedId: widget.model.id,
+                      callback: () {
+                        if (widget.back != null) {
+                          widget.back();
+                        }
+                      });
+                }
+              } else {
+                // 去登录
+                AppRouter.navigateToLoginPage(context);
+              }
             },
-            child: Image.asset(
-              (context.select((FeedMapNotifier value) => value.feedMap) != null &&
-                      context.select((FeedMapNotifier value) => value.feedMap[widget.model.id]) != null &&
-                      context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) != null &&
-                      context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 0)
-                  ? "images/resource/2.0x/ic_dynamic_like@2x.png"
-                  : "images/resource/2.0x/ic_comment_like_Selected@2x.png",
-              width: 24,
-              height: 24,
-            ),
-            // child: Icon(
-            //   Icons.favorite,
-            //   color:
-            //       // widget.model.isLaud == 0
-            //       (context.select((FeedMapNotifier value) => value.feedMap) != null &&
-            //               context.select((FeedMapNotifier value) => value.feedMap[widget.model.id]) != null &&
-            //               context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) != null &&
-            //               context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 0)
-            //           ? Colors.grey
-            //           : Colors.redAccent,
-            //   size: 24,
-            // ),
           ),
         ),
         Container(
-            margin: EdgeInsets.only(left: 16),
-            child: GestureDetector(
-                child: Image.asset(
-                  "images/resource/2.0x/ic_dynamic_review@2x.png",
-                  width: 24,
-                  height: 24,
-                ),
-                onTap: () {
-                  bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
-                  if (isLoggedIn) {
-                    if (context.read<FeedMapNotifier>().postFeedModel != null && context.read<FeedMapNotifier>().feedMap[widget.model.id].id != Application.insertFeedId) {
-                      // ToastShow.show(msg: "不响应", context: context);
-                    } else {
-                      openFeedCommentBottomSheet(
-                          context: context,
-                          feedId: widget.model.id,
-                          callback: () {
-                            if (widget.back != null) {
-                              widget.back();
-                            }
-                          });
-                    }
-                  } else {
-                    // 去登录
-                    AppRouter.navigateToLoginPage(context);
-                  }
-                })),
-        Container(
           margin: EdgeInsets.only(left: 16),
-          child: GestureDetector(
-              onTap: () {
-                if (context.read<TokenNotifier>().isLoggedIn) {
-                  if (context.read<FeedMapNotifier>().postFeedModel != null && context.read<FeedMapNotifier>().feedMap[widget.model.id].id != Application.insertFeedId) {
-                    // ToastShow.show(msg: "不响应", context: context);
-                  } else {
-                    InquireCheckBlack(
-                        checkId: widget.model.pushId,
-                        inquireCheckBlackCallback: (BlackModel blackModel) {
-                          String promptText = "";
-                          if (blackModel.inYouBlack == 1) {
-                            promptText = "分享失败，你已将对方加入黑名单";
-                          } else if (blackModel.inThisBlack == 1) {
-                            promptText = "分享失败，你已被对方加入黑名单";
-                          }
-                          if (promptText != "") {
-                            ToastShow.show(msg: promptText, context: context, gravity: Toast.CENTER);
-                            return;
-                          }
-                          openShareBottomSheet(
-                              context: context,
-                              map: widget.model.toJson(),
-                              chatTypeModel: ChatTypeModel.MESSAGE_TYPE_FEED,
-                              sharedType: 1);
-                        });
-                  }
+          child: AppIconButton(
+            svgName: AppIcon.share_feed,
+            iconSize: 24,
+            onTap: () {
+              if (context.read<TokenNotifier>().isLoggedIn) {
+                if (context.read<FeedMapNotifier>().postFeedModel != null && context.read<FeedMapNotifier>().feedMap[widget.model.id].id != Application.insertFeedId) {
+                  ToastShow.show(msg: "不响应", context: context);
                 } else {
-                  // 去登录
-                  AppRouter.navigateToLoginPage(context);
+                  InquireCheckBlack(
+                      checkId: widget.model.pushId,
+                      inquireCheckBlackCallback: (BlackModel blackModel) {
+                        String promptText = "";
+                        if (blackModel.inYouBlack == 1) {
+                          promptText = "分享失败，你已将对方加入黑名单";
+                        } else if (blackModel.inThisBlack == 1) {
+                          promptText = "分享失败，你已被对方加入黑名单";
+                        }
+                        if (promptText != "") {
+                          ToastShow.show(msg: promptText, context: context, gravity: Toast.CENTER);
+                          return;
+                        }
+                        openShareBottomSheet(
+                            context: context,
+                            map: widget.model.toJson(),
+                            chatTypeModel: ChatTypeModel.MESSAGE_TYPE_FEED,
+                            sharedType: 1);
+                      });
                 }
-              },
-              child: Image.asset(
-                "images/resource/2.0x/ic_dynamic_Forward@2x.png",
-                width: 24,
-                height: 24,
-              )),
+              } else {
+                // 去登录
+                AppRouter.navigateToLoginPage(context);
+              }
+            },
+          ),
         ),
       ],
     );

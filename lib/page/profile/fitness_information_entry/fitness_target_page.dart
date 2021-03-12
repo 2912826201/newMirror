@@ -6,6 +6,7 @@ import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 
 class FitnessTargetPage extends StatefulWidget {
   @override
@@ -89,38 +90,39 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
   }
 
   Widget _choseItem(int order, String title, String introduction, int index) {
-    return InkWell(
-      onTap: () {
-        setState(() {
-          beforIndex = index;
-          Application.fitnessEntryModel.target = targetList[index].id - 1;
-          /*context.read<FitnessInformationNotifier>().setTarget(targetList[index].id-1);*/
-          if(Application.videoTagModel!=null){
-           if(Application.videoTagModel.level!=null){
-              AppRouter.navigateToFitnessLevelPage(context);
-            }else if(Application.videoTagModel.part!=null){
-              AppRouter.navigateToFitnessPartPage(context);
-            }else{
-              AppRouter.navigateToTrainSeveralPage(context);
-            }
-          }else{
-            AppRouter.navigateToTrainSeveralPage(context);
-          }
-        });
-      },
-      child: Container(
+    return Container(
         height: 78,
-        color: beforIndex == index ? AppColor.bgWhite : AppColor.white,
         margin: EdgeInsets.only(
             left: ScreenUtil.instance.screenWidthDp * 0.10, right: ScreenUtil.instance.screenWidthDp * 0.10),
         padding: EdgeInsets.only(left: 7, right: 7),
-        child: Row(
+        child:InkWell(
+          onTap: () {
+            setState(() {
+              beforIndex = index;
+              Application.fitnessEntryModel.target = targetList[index].id - 1;
+              /*context.read<FitnessInformationNotifier>().setTarget(targetList[index].id-1);*/
+              if (Application.videoTagModel != null) {
+                if (Application.videoTagModel.level != null) {
+                  AppRouter.navigateToFitnessLevelPage(context);
+                } else if (Application.videoTagModel.part != null) {
+                  AppRouter.navigateToFitnessPartPage(context);
+                } else {
+                  AppRouter.navigateToTrainSeveralPage(context);
+                }
+              } else {
+                AppRouter.navigateToTrainSeveralPage(context);
+              }
+            });
+          },
+          child: Container(
+            color: beforIndex == index ? AppColor.bgWhite : AppColor.transparent,
+            child:Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               margin: EdgeInsets.only(top: 12),
               child: Text(
-                "${index+1}",
+                "${index + 1}",
                 style: beforIndex == index ? AppStyle.textMedium29 : AppStyle.textPrimary3Medium29,
               ),
             ),
@@ -130,7 +132,7 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(child: SizedBox()),
+                Spacer(),
                 Text(
                   title,
                   style: beforIndex == index ? AppStyle.textMedium21 : AppStyle.textPrimary3Medium21,
@@ -144,15 +146,20 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                Expanded(child: SizedBox()),
+                Spacer(),
               ],
             ),
             Spacer(),
             Center(
-              child: Icon(Icons.arrow_forward_ios),
+              child: AppIcon.getAppIcon(
+                AppIcon.arrow_right_12,
+                12,
+                containerWidth: 22,
+                containerHeight: 22,
+              ),
             ),
           ],
-        ),
+        ) ,),
       ),
     );
   }

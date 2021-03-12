@@ -5,6 +5,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -61,7 +62,7 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
             height: height,
             width: width,
             color: AppColor.white,
-            child: !context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.userId].isFollow
+            child: !context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow
                 ? _follow(width)
                 : _notFollow(width)));
   }
@@ -147,7 +148,7 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
           onTap: () {
             _cancelFollow();
           },
-          child: !context.watch<ProfilePageNotifier>().profileUiChangeModel[widget.userId].isFollow
+          child: !context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.userId].isFollow
               ? _itemSelect(width, AppStyle.redRegular16, "取消关注")
               : Container(),
         ),
@@ -201,8 +202,8 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
     print('取消关注监听==============================$cancelResult');
     if (cancelResult == 0 || cancelResult == 2) {
       ToastShow.show(msg: "已取消关注该用户", context: context);
-      context.read<ProfilePageNotifier>().changeFollowCount(context.read<ProfileNotifier>().profile.uid, false);
-      context.read<ProfilePageNotifier>().changeIsFollow(true, true, widget.userId);
+      context.read<UserInteractiveNotifier>().changeFollowCount(context.read<ProfileNotifier>().profile.uid, false);
+      context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.userId);
       Navigator.pop(context);
     }
   }
@@ -215,8 +216,8 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
       isBlack = true;
       setState(() {
       });
-      context.read<ProfilePageNotifier>().changeIsFollow(true, true, widget.userId);
-      context.read<ProfilePageNotifier>().removeListId(null);
+      context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.userId);
+      context.read<UserInteractiveNotifier>().removeListId(null);
       ToastShow.show(msg: "拉黑成功", context: context);
     } else {
       ToastShow.show(msg: "操作失败", context: context);
@@ -233,7 +234,7 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
         isBlack = false;
         setState(() {
         });
-        context.read<ProfilePageNotifier>().removeListId(widget.userId);
+        context.read<UserInteractiveNotifier>().removeListId(widget.userId);
       } else {
         ToastShow.show(msg: "操作失败", context: context);
       }

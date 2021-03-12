@@ -15,6 +15,7 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/data/notifier/machine_notifier.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
@@ -270,7 +271,7 @@ class _PerfectUserState extends State<PerfectUserPage> {
     ProfileDto profile = ProfileDto.fromUserModel(user);
     await ProfileDBHelper().insertProfile(profile);
     context.read<ProfileNotifier>().setProfile(profile);
-    context.read<ProfilePageNotifier>().clearProfileUiChangeModel();
+    context.read<UserInteractiveNotifier>().clearProfileUiChangeModel();
     //连接融云
     Application.rongCloud.connect();
     //TODO 处理登录完成后的数据加载

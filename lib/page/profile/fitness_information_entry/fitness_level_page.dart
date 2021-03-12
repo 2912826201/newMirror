@@ -6,6 +6,7 @@ import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 
 class FitnessLevelPage extends StatefulWidget {
   @override
@@ -90,19 +91,19 @@ class _FitnessLevelState extends State<FitnessLevelPage> {
         Application.fitnessEntryModel.hard = index;
         /*context.read<FitnessInformationNotifier>().setHard(index);*/
         print('index===============================$index');
-        if(Application.videoTagModel!=null){
-          if(Application.videoTagModel.part!=null){
+        if (Application.videoTagModel != null) {
+          if (Application.videoTagModel.part != null) {
             AppRouter.navigateToFitnessPartPage(context);
-          }else{
+          } else {
             AppRouter.navigateToTrainSeveralPage(context);
           }
-        }else{
+        } else {
           AppRouter.navigateToTrainSeveralPage(context);
         }
       },
       child: Container(
         height: 95,
-        color: beforIndex == index ? AppColor.bgWhite : AppColor.white,
+        color: beforIndex == index ? AppColor.bgWhite : AppColor.transparent,
         padding: EdgeInsets.only(left: 7, right: 7),
         child: Row(
           children: [
@@ -144,7 +145,12 @@ class _FitnessLevelState extends State<FitnessLevelPage> {
             ),
             Expanded(child: Container()),
             Center(
-              child: Icon(Icons.arrow_forward_ios),
+              child: AppIcon.getAppIcon(
+                AppIcon.arrow_right_12,
+                12,
+                containerWidth: 22,
+                containerHeight: 22,
+              ),
             )
           ],
         ),

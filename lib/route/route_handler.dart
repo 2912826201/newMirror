@@ -127,6 +127,7 @@ var handlerMediaPicker = Handler(handlerFunc: (BuildContext context, Map<String,
     publishMode: data["publishMode"],
     fixedWidth: data["fixedWidth"],
     fixedHeight: data["fixedHeight"],
+    startCount: data["startCount"],
   );
 });
 

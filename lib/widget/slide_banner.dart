@@ -14,6 +14,7 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/image_preview/image_preview_page.dart';
 import 'package:mirror/page/image_preview/image_preview_view.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
@@ -224,7 +225,7 @@ class _SlideBannerState extends State<SlideBanner> {
         cupertinoButtons.add((!widget.isHero)
             ? Container(
                 width: ScreenUtil.instance.width,
-                height: setAspectRatio(widget.height),
+                height: height,
                 child: CachedNetworkImage(
                   /// imageUrl的淡入动画的持续时间。
                   fadeInDuration: Duration(milliseconds: 0),
@@ -300,6 +301,7 @@ class _SlideBannerState extends State<SlideBanner> {
         // ToastShow.show(msg: "不响应", context: context);
       } else {
         BaseResponseModel model = await laud(id: widget.model.id, laud: widget.model.isLaud == 0 ? 1 : 0);
+        print('===================================model.code==${model.code}');
         // 点赞/取消赞成功
         if (model.code == CODE_BLACKED) {
           ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
@@ -312,6 +314,7 @@ class _SlideBannerState extends State<SlideBanner> {
           context
               .read<ProfilePageNotifier>()
               .loadChange(widget.model.pushId, context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud);
+          context.read<UserInteractiveNotifier>().loadChange(widget.model.pushId, context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud);
           // } else {
           //   // 失败
           //   print("shib ");

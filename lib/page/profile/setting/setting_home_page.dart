@@ -78,12 +78,7 @@ class _SettingHomePageState extends State<SettingHomePage> {
             ),
             InkWell(
               onTap: () {
-                /* AppRouter.navigateToSettingBlackList(context);*/
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                  return BlackListPage(
-                    pc: widget.pcController,
-                  );
-                }));
+                 AppRouter.navigateToSettingBlackList(context);
               },
               child: _rowItem(width, "黑名单"),
             ),

@@ -28,6 +28,7 @@ import 'package:mirror/data/model/message/emoji_model.dart';
 import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/im/rongcloud.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
@@ -1931,10 +1932,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
           if (mounted) {
             reload(() {});
           }
-          context.read<ProfilePageNotifier>().changeFollowCount(context.read<ProfileNotifier>().profile.uid, true);
-          if (context.read<ProfilePageNotifier>().profileUiChangeModel.containsKey(int.parse(chatId))) {
+          context.read<UserInteractiveNotifier>().changeFollowCount(context.read<ProfileNotifier>().profile.uid, true);
+          if (context.read<UserInteractiveNotifier>().profileUiChangeModel.containsKey(int.parse(chatId))) {
             print('=================个人主页同步');
-            context.read<ProfilePageNotifier>().changeIsFollow(true, false, int.parse(chatId));
+            context.read<UserInteractiveNotifier>().changeIsFollow(true, false, int.parse(chatId));
           }
         }
       }

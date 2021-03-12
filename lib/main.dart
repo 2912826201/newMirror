@@ -53,6 +53,7 @@ import 'data/notifier/release_progress_notifier.dart';
 import 'data/notifier/token_notifier.dart';
 import 'data/notifier/profile_notifier.dart';
 import 'data/notifier/unread_message_notifier.dart';
+import 'data/notifier/user_interactive_notifier.dart';
 import 'im/message_manager.dart';
 import 'route/router.dart';
 
@@ -84,7 +85,7 @@ void main() {
             //群聊界面的@用户功能
             ChangeNotifierProvider(create: (_) => ChatEnterNotifier()),
             //用户相关界面信息
-            ChangeNotifierProvider(create: (_) => ProfilePageNotifier()),
+            ChangeNotifierProvider(create: (_) => UserInteractiveNotifier()),
             //群成员信息
             ChangeNotifierProvider(create: (_) => GroupUserProfileNotifier()),
             //记录未读消息数 目前只记录3种互动通知的数量 从接口获取更新数据

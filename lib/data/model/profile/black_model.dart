@@ -7,8 +7,8 @@ class BlackModel{
   BlackModel({this.inThisBlack,this.inYouBlack});
 
   BlackModel.fromJson(Map<String, dynamic> json) {
-    inYouBlack = json["inYouBlack"];
-    inThisBlack = json["inThisBlack"];
+    inYouBlack = json["inYouBlack"]!=null?json["inYouBlack"]:null;
+    inThisBlack = json["inThisBlack"]!=null?json["inYouBlack"]:null;
   }
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
