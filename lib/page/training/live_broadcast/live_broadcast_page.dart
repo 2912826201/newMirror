@@ -54,25 +54,6 @@ class LiveBroadcastPageState extends XCState {
       appBar: CustomAppBar(
         hasDivider:false,
         titleString: "直播课",
-        actions: [
-          CustomAppBarIconButton(
-            icon:Icons.search,
-            iconColor:AppColor.black,
-            onTap:() {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return LiveRoomTestPage();
-              }));
-              Navigator.of(context).push(SimpleRoute(
-                name: 'aaa',
-                title: 'aaa',
-                builder: (_) {
-                  return LiveRoomTestPageDialog();
-                },
-              ));
-              print("点击了搜索");
-            },
-          ),
-        ],
       ),
       body: _buildSuggestions(),
     );
