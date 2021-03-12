@@ -16,7 +16,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 
 ///个人主页动态List
-class ProfileDetailsList extends StatefulWidget {
+class ProfileDetailsList extends StatefulWidget  {
   int type;
   int id;
   bool isMySelf;
@@ -29,7 +29,7 @@ class ProfileDetailsList extends StatefulWidget {
   }
 }
 
-class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKeepAliveClientMixin {
+class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKeepAliveClientMixin,WidgetsBindingObserver {
   ///动态model
   List<HomeFeedModel> followModel = [];
 
@@ -86,7 +86,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
     // 只同步没有的数据
     context.read<FeedMapNotifier>().updateFeedMap(StringUtil.followModelFilterDeta(followModel, feedList));
   }
-
   ///上拉加载
   _onLoadding() {
     followDataPage += 1;
@@ -102,11 +101,42 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero, () {
-      _getDynamicData();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Future.delayed(Duration.zero, () {
+        _getDynamicData();
+      });
     });
   }
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    print(state);
+    switch(state){
+    ///resumed 界面可见， 同安卓的onResume
+      case AppLifecycleState.resumed:
+        print('============================resumed');
+        break;
 
+    ///inactive界面退到后台或弹出对话框情况下， 即失去了焦点但仍可以执行
+    ///drawframe回调；同安卓的onPause
+      case AppLifecycleState.inactive:
+        print('============================inactive');
+        break;
+
+    ///paused应用挂起，比如退到后台，失去了焦点且不会收到
+    ///drawframe 回调；同安卓的onStop
+      case AppLifecycleState.paused:
+        print('============================paused');
+        break;
+
+    ///页面销毁
+      case AppLifecycleState.detached:
+        print('============================detached');
+      /// TODO: Handle this case.
+        break;
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -155,7 +185,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList> with AutomaticKe
         itemCount: widget.type == 2
             ? context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].profileFeedListId.length
             : context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].profileLikeListId.length,
-        itemBuilder: (context, index) {
+    itemBuilder: (context, index) {
           HomeFeedModel model;
           if (index > 0) {
             try {
