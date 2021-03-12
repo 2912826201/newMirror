@@ -21,18 +21,20 @@ class ChatMoreIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isComMomButton) {
-      return ComMomButton(
-        text: '发送',
-        height: 25,
-        style: TextStyle(color: Colors.white),
-        width: 50.0,
-        margin: EdgeInsets.only(left: 6.0, right: 16),
-        radius: 4.0,
-        onTap: () {
-          if (onTap != null) {
-            onTap();
-          }
-        },
+      return UnconstrainedBox(
+        child: ComMomButton(
+          text: '发送',
+          height: 32,
+          style: TextStyle(color: Colors.white),
+          width: 50.0,
+          margin: EdgeInsets.only(left:6,right: 16),
+          radius: 4.0,
+          onTap: () {
+            if (onTap != null) {
+              onTap();
+            }
+          },
+        ),
       );
     } else {
       return Container(

@@ -303,9 +303,11 @@ class _SmsCodePageState extends State<SmsCodePage> {
         //所有都齐全的情况 登录完成
         await _afterLogin(token);
       }
-    } else {
+    } else if(responseModel.code==500){
+      ToastShow.show(msg:"服务器异常,请稍后重试", context: context);
+    }else{
       Loading.hideLoading(context);
-     ToastShow.show(msg:responseModel.message, context: context);
+      ToastShow.show(msg:responseModel.message, context: context);
     }
   }
 
