@@ -6,6 +6,7 @@ import 'package:mirror/data/model/video_tag_madel.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 
 class FitnessTargetPage extends StatefulWidget {
   @override
@@ -95,15 +96,15 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
           beforIndex = index;
           Application.fitnessEntryModel.target = targetList[index].id - 1;
           /*context.read<FitnessInformationNotifier>().setTarget(targetList[index].id-1);*/
-          if(Application.videoTagModel!=null){
-           if(Application.videoTagModel.level!=null){
+          if (Application.videoTagModel != null) {
+            if (Application.videoTagModel.level != null) {
               AppRouter.navigateToFitnessLevelPage(context);
-            }else if(Application.videoTagModel.part!=null){
+            } else if (Application.videoTagModel.part != null) {
               AppRouter.navigateToFitnessPartPage(context);
-            }else{
+            } else {
               AppRouter.navigateToTrainSeveralPage(context);
             }
-          }else{
+          } else {
             AppRouter.navigateToTrainSeveralPage(context);
           }
         });
@@ -120,7 +121,7 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
             Container(
               margin: EdgeInsets.only(top: 12),
               child: Text(
-                "${index+1}",
+                "${index + 1}",
                 style: beforIndex == index ? AppStyle.textMedium29 : AppStyle.textPrimary3Medium29,
               ),
             ),
@@ -149,7 +150,12 @@ class _FitnessTargetState extends State<FitnessTargetPage> {
             ),
             Spacer(),
             Center(
-              child: Icon(Icons.arrow_forward_ios),
+              child: AppIcon.getAppIcon(
+                AppIcon.arrow_right_12,
+                12,
+                containerWidth: 22,
+                containerHeight: 22,
+              ),
             ),
           ],
         ),
