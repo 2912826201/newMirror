@@ -23,6 +23,8 @@ class AppIcon {
   static const String more_feed = "assets/svg/more_feed.svg";
   static const String comment_feed = "assets/svg/comment_feed.svg";
   static const String share_feed = "assets/svg/share_feed.svg";
+  static const String camera_switch = "assets/svg/camera_switch.svg";
+  static const String gallery_fullsize = "assets/svg/gallery_fullsize.svg";
   static const String login_wechat = "assets/svg/login_wechat.svg";
   static const String add_circle_black = "assets/svg/add_circle_black.svg";
   static const String clear_circle_grey = "assets/svg/clear_circle_grey.svg";
