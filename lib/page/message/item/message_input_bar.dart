@@ -5,6 +5,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/page/message/item/chat_voice.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/widget/icon.dart';
 
 typedef VoiceFile = void Function(String path, int time);
 
@@ -85,8 +86,7 @@ class MessageInputBarState extends State<MessageInputBar> {
                           maxWidth: Platform.isIOS
                               ? ScreenUtil.instance.screenWidthDp - 32 - 32 - 64
                               : ScreenUtil.instance.screenWidthDp - 32 - 32 - 64 - 52 - 12),
-                      margin: const EdgeInsets.only(
-                          top: 12.0, bottom: 12.0, left: 13.0, right: 13.0),
+                      margin: const EdgeInsets.only(top: 12.0, bottom: 12.0, left: 13.0, right: 13.0),
                       decoration: BoxDecoration(
                           color: AppColor.bgWhite.withOpacity(0.65),
                           // color: Colors.red,
@@ -118,41 +118,32 @@ class MessageInputBarState extends State<MessageInputBar> {
               ),
               child: Row(
                 children: <Widget>[
-                  GestureDetector(
-                    child: Container(
-                      color: Colors.transparent,
-                      height: 48,
-                      width: 48,
-                      padding: EdgeInsets.only(left: 16.0, right: 13.0),
-                      child: Icon(
-                        widget.isVoice?Icons.keyboard:Icons.settings_voice,
-                        size: 21,
-                      ),
+                  Container(
+                    margin: EdgeInsets.only(left: 10, right: 10),
+                    child: AppIconButton(
+                      onTap: () {
+                        if (widget.voiceOnTap != null) {
+                          widget.voiceOnTap();
+                        }
+                      },
+                      iconSize: 24,
+                      buttonWidth: 36,
+                      buttonHeight: 36,
+                      svgName: widget.isVoice ? AppIcon.input_keyboard : AppIcon.input_voice,
                     ),
-                    onTap: () {
-                      if (widget.voiceOnTap != null) {
-                        widget.voiceOnTap();
-                      }
-                    },
                   ),
                   Expanded(child: SizedBox()),
-                  GestureDetector(
-                    child: Container(
-                      width: 32,
-                      height: 48,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Icon(
-                            Icons.emoji_emotions_outlined,
-                            size: 24,
-                          )
-                        ],
-                      ),
+                  Container(
+                    margin: EdgeInsets.only(left: 10),
+                    child: AppIconButton(
+                      onTap: () {
+                        widget.onEmojio();
+                      },
+                      iconSize: 24,
+                      buttonWidth: 36,
+                      buttonHeight: 36,
+                      svgName: AppIcon.input_emotion,
                     ),
-                    onTap: () {
-                      widget.onEmojio();
-                    },
                   ),
                   widget.more,
                 ],

@@ -16,6 +16,7 @@ import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 /// 视频课程列表-筛选页
@@ -109,11 +110,11 @@ class VideoCourseListPageState extends XCState {
         titleString: "课程库",
         actions: [
           CustomAppBarIconButton(
-            icon:Icons.search,
-            iconColor:AppColor.black,
-            onTap:() {
+            svgName: AppIcon.nav_search,
+            iconColor: AppColor.black,
+            onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return SearchPage(defaultIndex:1);
+                return SearchPage(defaultIndex: 1);
               }));
               print("点击了搜索");
             },
@@ -215,8 +216,8 @@ class VideoCourseListPageState extends XCState {
       }
     }
 
-    if(showScreenTitlePosition<0){
-      filterBoxHeight=100;
+    if (showScreenTitlePosition < 0) {
+      filterBoxHeight = 100;
     }
 
     return Container(
@@ -261,21 +262,21 @@ class VideoCourseListPageState extends XCState {
                   ),
                   Expanded(
                       child: SizedBox(
-                        child: GestureDetector(
-                          child: Container(
-                            width: double.infinity,
-                            height: double.infinity,
-                            color: AppColor.transparent,
-                          ),
-                          onTap: () {
-                            _titleItemListTemp.clear();
-                            showScreenTitlePosition = -1;
-                            if (mounted) {
-                              reload(() {});
-                            }
-                          },
-                        ),
-                      ))
+                    child: GestureDetector(
+                      child: Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        color: AppColor.transparent,
+                      ),
+                      onTap: () {
+                        _titleItemListTemp.clear();
+                        showScreenTitlePosition = -1;
+                        if (mounted) {
+                          reload(() {});
+                        }
+                      },
+                    ),
+                  ))
                 ],
               ),
             ),
@@ -436,8 +437,8 @@ class VideoCourseListPageState extends XCState {
           //上半部分可滑动区域
           Expanded(
               child: SizedBox(
-                child: _filterBoxItem(),
-              )),
+            child: _filterBoxItem(),
+          )),
           //底部按钮
           _filterBoxBottomBtn(),
         ],

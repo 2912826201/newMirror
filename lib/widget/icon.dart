@@ -8,6 +8,13 @@ import 'package:mirror/constant/color.dart';
 class AppIcon {
   static const String nav_return = "assets/svg/nav_return.svg";
   static const String nav_close = "assets/svg/nav_close.svg";
+  static const String nav_camera = "assets/svg/nav_camera.svg";
+  static const String nav_search = "assets/svg/nav_search.svg";
+  static const String input_at = "assets/svg/input_at.svg";
+  static const String input_keyboard = "assets/svg/input_keyboard.svg";
+  static const String input_voice = "assets/svg/input_voice.svg";
+  static const String input_gallery = "assets/svg/input_gallery.svg";
+  static const String input_emotion = "assets/svg/input_emotion.svg";
   static const String login_phone = "assets/svg/login_phone.svg";
   static const String login_apple = "assets/svg/login_apple.svg";
   static const String login_qq = "assets/svg/login_qq.svg";

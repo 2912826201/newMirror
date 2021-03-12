@@ -26,6 +26,7 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
@@ -261,7 +262,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
           backgroundColor: AppColor.white,
           appBar: CustomAppBar(
             leading: CustomAppBarIconButton(
-                icon: Icons.camera_alt_outlined,
+                svgName: AppIcon.nav_camera,
                 iconColor: AppColor.black,
                 // isLeading: true,
                 onTap: () {
@@ -309,9 +310,8 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
             ),
             actions: [
               CustomAppBarIconButton(
-                  icon: Icons.search,
+                  svgName: AppIcon.nav_search,
                   iconColor: AppColor.black,
-                  // isLeading: false,
                   onTap: () {
                     AppRouter.navigateSearchPage(context);
                   }),
