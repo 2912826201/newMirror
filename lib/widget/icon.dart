@@ -21,7 +21,7 @@ class AppIcon {
   static const String login_wechat = "assets/svg/login_wechat.svg";
   static const String add_circle_black = "assets/svg/add_circle_black.svg";
   static const String clear_circle_grey = "assets/svg/clear_circle_grey.svg";
-  static const String arrow_right = "assets/svg/arrow_right.svg";
+  static const String arrow_right_12 = "assets/svg/arrow_right_12.svg";
 
   static const String qrcode_scan = "assets/svg/qrcode_scan.svg";
   static const String machine_connected = "assets/svg/machine_connected.svg";
