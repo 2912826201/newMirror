@@ -6,6 +6,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// camera_photo_page
@@ -87,31 +88,33 @@ class CameraPhotoState extends State<CameraPhotoPage> with WidgetsBindingObserve
                               child: CameraPreview(_controller),
                             )),
                         Positioned(
-                            right: 16,
-                            bottom: 16,
-                            child: GestureDetector(
-                              onTap: () {
-                                int currentTime = DateTime.now().millisecondsSinceEpoch;
-                                if (currentTime - _latestSwitchCameraTime < _switchCameraInterval) {
-                                  //避免切换摄像头过于频繁
-                                  return;
-                                }
-                                if (_controller.value.isTakingPicture || _controller.value.isRecordingVideo) {
-                                  //拍照或录像过程中不能切换
-                                  return;
-                                }
-                                //FIXME 模拟器会有切到后置摄像头后第一次点击无反应的问题 要持续关注
-                                print("切换摄像头！");
-                                _latestSwitchCameraTime = currentTime;
-                                _cameraIndex = (_cameraIndex + 1) % Application.cameras.length;
-                                onCameraSelected(Application.cameras[_cameraIndex]);
-                              },
-                              child: Icon(
-                                Icons.camera,
-                                size: 32,
-                                color: Colors.white,
-                              ),
-                            )),
+                          right: 16,
+                          bottom: 16,
+                          child: AppIconButton(
+                            isCircle: true,
+                            bgColor: AppColor.textPrimary2.withOpacity(0.65),
+                            buttonHeight: 32,
+                            buttonWidth: 32,
+                            iconSize: 24,
+                            svgName: AppIcon.camera_switch,
+                            onTap: () {
+                              int currentTime = DateTime.now().millisecondsSinceEpoch;
+                              if (currentTime - _latestSwitchCameraTime < _switchCameraInterval) {
+                                //避免切换摄像头过于频繁
+                                return;
+                              }
+                              if (_controller.value.isTakingPicture || _controller.value.isRecordingVideo) {
+                                //拍照或录像过程中不能切换
+                                return;
+                              }
+                              //FIXME 模拟器会有切到后置摄像头后第一次点击无反应的问题 要持续关注
+                              print("切换摄像头！");
+                              _latestSwitchCameraTime = currentTime;
+                              _cameraIndex = (_cameraIndex + 1) % Application.cameras.length;
+                              onCameraSelected(Application.cameras[_cameraIndex]);
+                            },
+                          ),
+                        ),
                       ],
                     )),
                 Expanded(

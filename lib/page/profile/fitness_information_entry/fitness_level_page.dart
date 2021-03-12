@@ -103,7 +103,7 @@ class _FitnessLevelState extends State<FitnessLevelPage> {
       },
       child: Container(
         height: 95,
-        color: beforIndex == index ? AppColor.bgWhite : AppColor.white,
+        color: beforIndex == index ? AppColor.bgWhite : AppColor.transparent,
         padding: EdgeInsets.only(left: 7, right: 7),
         child: Row(
           children: [
