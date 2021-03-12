@@ -60,8 +60,6 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   StreamController<TopicUiChangeModel> appBarStreamController = StreamController<TopicUiChangeModel>();
   bool streamCanChange = false;
   TopicUiChangeModel topicUiChangeModel = TopicUiChangeModel();
-  RefreshController _newsRefereshController = RefreshController();
-  RefreshController _recommendRefereshController = RefreshController();
   @override
   void dispose() {
     _tabController.dispose();
