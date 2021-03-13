@@ -231,7 +231,7 @@ class _SlideBannerState extends State<SlideBanner> {
                   fadeInDuration: Duration(milliseconds: 0),
                   // useOldImageOnUrlChange: true,
                   fit: BoxFit.cover,
-                  imageUrl: item.url != null ?item.url : "",
+                  imageUrl: item.url != null ? item.url : "",
                   errorWidget: (context, url, error) => new Image.asset("images/test.png"),
                 ))
             : Hero(
@@ -313,9 +313,6 @@ class _SlideBannerState extends State<SlideBanner> {
           context
               .read<UserInteractiveNotifier>()
               .loadChange(widget.model.pushId, context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud);
-          // context
-          //     .read<ProfilePageNotifier>()
-          //     .loadChange(widget.model.pushId, context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud);
         }
       }
     } else {
@@ -354,7 +351,7 @@ class _SlideBannerState extends State<SlideBanner> {
                     height: setAspectRatio(widget.height),
                     child: Swiper.children(
                       children: cupertinoButtonList,
-                      autoplayDelay:0,
+                      autoplayDelay: 0,
                       controller: swiperController,
                       loop: false,
                       onIndexChanged: (index) {
