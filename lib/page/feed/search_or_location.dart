@@ -8,6 +8,7 @@ import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SearchOrLocationWidget extends StatefulWidget {
@@ -96,13 +97,9 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SizedBox(
-                          width: 12,
+                          width: 9,
                         ),
-                        Image.asset(
-                          "images/resource/2.0x/search_icon_gray@2x.png",
-                          width: 21,
-                          height: 21,
-                        ),
+                        AppIcon.getAppIcon(AppIcon.input_search, 24),
                         Expanded(
                           child: Container(
                             height: 32,
@@ -165,9 +162,12 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
                             itemBuilder: (context, index) {
                               return GestureDetector(
                                   onTap: () {
-                                    Navigator.pop(context,searchController.text != null && searchController.text.isNotEmpty
-                                        ? searchPois[index]
-                                        : pois[index],);
+                                    Navigator.pop(
+                                      context,
+                                      searchController.text != null && searchController.text.isNotEmpty
+                                          ? searchPois[index]
+                                          : pois[index],
+                                    );
                                   },
                                   child: LocationItem(
                                     poi: searchController.text != null && searchController.text.isNotEmpty
@@ -191,13 +191,14 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
   Future<Null> searchHttp() async {
     if (searchController.text != null && searchController.text.isNotEmpty) {
       searchPois.clear();
-      PeripheralInformationEntity locationInformationEntity = await searchForHttp(searchController.text,currentAddressInfo.city,page: 1);
+      PeripheralInformationEntity locationInformationEntity =
+          await searchForHttp(searchController.text, currentAddressInfo.city, page: 1);
       if (locationInformationEntity.status == "1") {
         _refreshController.refreshCompleted();
         print('请求成功');
         pageIndex = 1;
         print(locationInformationEntity.pois);
-        if(locationInformationEntity.pois.isNotEmpty) {
+        if (locationInformationEntity.pois.isNotEmpty) {
           searchPois = locationInformationEntity.pois;
           // 城市信息导入
           PeripheralInformationPoi poi1 = PeripheralInformationPoi();
@@ -232,7 +233,6 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
             pages = (total / pageSize).floor() + 1;
           }
         }
-
       } else {
         _refreshController.refreshFailed();
         // Fluttertoast.showToast(msg: "请求失败");
@@ -245,7 +245,8 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
   Future<Null> onLoadMore() async {
     if (searchController.text != null && searchController.text.isNotEmpty) {
       if (pageIndex < pages) {
-        PeripheralInformationEntity locationInformationEntity = await searchForHttp(searchController.text,currentAddressInfo.city,page:pageIndex + 1);
+        PeripheralInformationEntity locationInformationEntity =
+            await searchForHttp(searchController.text, currentAddressInfo.city, page: pageIndex + 1);
         if (locationInformationEntity.status == "1") {
           print('请求成功');
           pageIndex++;
@@ -265,7 +266,9 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
       }
     } else {
       if (pageIndex < pages) {
-        PeripheralInformationEntity locationInformationEntity = await aroundForHttp(currentAddressInfo.latLng.longitude,currentAddressInfo.latLng.latitude,page: pageIndex + 1);
+        PeripheralInformationEntity locationInformationEntity = await aroundForHttp(
+            currentAddressInfo.latLng.longitude, currentAddressInfo.latLng.latitude,
+            page: pageIndex + 1);
         if (locationInformationEntity.status == "1") {
           print('请求成功');
           pageIndex++;
@@ -288,7 +291,8 @@ class _SearchOrLocationWidgetState extends State<SearchOrLocationWidget> {
 
   //高德接口获取周边数据
   aroundHttp() async {
-    PeripheralInformationEntity locationInformationEntity = await aroundForHttp(currentAddressInfo.latLng.longitude,currentAddressInfo.latLng.latitude,page: 1);
+    PeripheralInformationEntity locationInformationEntity =
+        await aroundForHttp(currentAddressInfo.latLng.longitude, currentAddressInfo.latLng.latitude, page: 1);
     if (locationInformationEntity.status == "1") {
       print('请求成功');
       pois = locationInformationEntity.pois;
@@ -365,12 +369,7 @@ class LocationItem extends StatelessWidget {
           Spacer(),
           Offstage(
             offstage: index != checkIndex,
-            child: Image.asset(
-              "images/resource/2.0x/ic_address_Selected@2x.png",
-              width: 18,
-              height: 18,
-            )
-
+            child: AppIcon.getAppIcon(AppIcon.check, 18, color: AppColor.mainRed),
           ),
           SizedBox(
             width: 12,

@@ -18,6 +18,7 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:provider/provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
+import '../icon.dart';
 import 'feed_friends_cell.dart';
 import 'feed_index_bar.dart';
 
@@ -290,13 +291,9 @@ class _FriendsPageState extends State<FriendsPage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
-            width: 12,
+            width: 9,
           ),
-          Image.asset(
-            "images/resource/2.0x/search_icon_gray@2x.png",
-            width: 21,
-            height: 21,
-          ),
+          AppIcon.getAppIcon(AppIcon.input_search, 24),
           Expanded(
             child: Container(
               height: 32,

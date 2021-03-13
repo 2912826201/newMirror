@@ -34,7 +34,7 @@ class AppStyle {
   static const textSecondaryRegular12 =
       TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
   static const textSecondaryRegular11 =
-  TextStyle(fontSize: 11, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
+      TextStyle(fontSize: 11, fontWeight: FontWeight.w400, color: AppColor.textSecondary);
 
   // Medium textSecondary 辅助字体灰色
   static const textSecondaryMedium14 =
@@ -51,7 +51,7 @@ class AppStyle {
   static const textPrimary3Regular14 =
       TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColor.textPrimary3);
   static const textPrimary3Regular13 =
-  TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textPrimary3);
+      TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColor.textPrimary3);
   static const textPrimary3Regular12 =
       TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColor.textPrimary3);
 
@@ -68,6 +68,8 @@ class AppStyle {
   // Medium primary2 黑色
   static const textPrimary2Medium16 =
       TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColor.textPrimary2);
+  static const textPrimary2Medium14 =
+      TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.textPrimary2);
 
   //红色
   static const redRegular16 = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColor.mainRed);
@@ -85,6 +87,7 @@ class AppStyle {
   static const whiteMedium18 = TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColor.white);
   static const whiteMedium15 = TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.white);
   static const whiteMedium14 = TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColor.white);
+
   //纯黑色
   static const blackBold21 = TextStyle(fontSize: 21, fontWeight: FontWeight.w700, color: AppColor.black);
 
@@ -98,5 +101,5 @@ class AppStyle {
     decorationColor: AppColor.textHint,
   );
   static const textSemibold23 = TextStyle(fontSize: 23, fontWeight: FontWeight.w500, color: AppColor.textVipSemibold);
-  static const textAddressText = TextStyle(color: Color(0xFF000046), fontSize: 16.0,fontWeight:FontWeight.w500);
+  static const textAddressText = TextStyle(color: Color(0xFF000046), fontSize: 16.0, fontWeight: FontWeight.w500);
 }

@@ -208,8 +208,6 @@ flutter:
     - images/resource/2.0x/ic_recommend_follow@2x.png
     - images/resource/2.0x/ic_recommend_Followed@2x.png
     - images/resource/2.0x/ic_address_Selected@2x.png
-    - images/resource/2.0x/ic_dynamic_big_address_black@2x.png
-    - images/resource/2.0x/ic_dynamic_big_address_blue@2x.png
     - images/resource/2.0x/ic_dynamic_Right arrow@2x.png
     - images/resource/2.0x/ic_dynamic_Up arrow@2x.png
   # An image asset can refer to one or more resolution-specific "variants", see

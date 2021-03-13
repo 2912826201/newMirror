@@ -1,15 +1,18 @@
-
 //  动态子元素课程信息和地址标签
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/data/model/feed/feed_tag_model.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
+import 'package:mirror/widget/icon.dart';
 
+//FIXME 目前只支持tags最多2个标签 需要做优化兼容
 class CourseAddressLabel extends StatelessWidget {
-  final String text;
-  List tas;
-  CourseAddressLabel(this.text, this.tas);
+  final int index;
+  final List<FeedTagModel> tags;
+
+  CourseAddressLabel(this.index, this.tags);
 
   // 最外层圆角背景的宽度
   double getBgWidth() {
@@ -20,11 +23,11 @@ class CourseAddressLabel extends StatelessWidget {
     // 文本最大宽度
     double textMaxWidth = maxWidth - 16 - 16 - 3; // 文本最大宽度要减去两边间距16，图片 16，文本和图片间距3.
     // 获取文本宽度
-    double textWidth = getTextSize(text, TextStyle(fontSize: 12),1).width;
+    double textWidth = getTextSize(tags[index].text, TextStyle(fontSize: 12), 1).width;
     // 获取背景边框宽度
     double BgWidth = textWidth + 16 + 16 + 3;
     // 为课程时
-    if (tas.indexOf(text) == 0) {
+    if (index == 0) {
       // 文字宽度超长
       if (textWidth >= textMaxWidth) {
         return maxWidth;
@@ -33,12 +36,12 @@ class CourseAddressLabel extends StatelessWidget {
       }
     } else {
       // 地址位置
-      if (getTextSize(tas[0], TextStyle(fontSize: 12),1).width >= textMaxWidth) {
+      if (getTextSize(tags[0].text, TextStyle(fontSize: 12), 1).width >= textMaxWidth) {
         return (screenWidth - 32 - 12) * 0.25;
       } else {
-        if (getTextSize(tas[0], TextStyle(fontSize: 12),1).width + textWidth >
+        if (getTextSize(tags[0].text, TextStyle(fontSize: 12), 1).width + textWidth >
             (screenWidth - 32 - 12 - 32 - 3 - 32 - 3)) {
-          return (screenWidth - 32 - 12) - getTextSize(tas[0], TextStyle(fontSize: 12),1).width - 35;
+          return (screenWidth - 32 - 12) - getTextSize(tags[0].text, TextStyle(fontSize: 12), 1).width - 35;
         } else {
           return BgWidth;
         }
@@ -56,12 +59,12 @@ class CourseAddressLabel extends StatelessWidget {
   // 虽然有属性可设置，但是有个问题是汉字和数字，或者汉字和英文混排时，flutter 设置属性超出显示...数字和英文会自动换行。
   String interceptText(String textStr) {
     // 获取文本宽度
-    double textWidth = getTextSize(text, TextStyle(fontSize: 12),1,getTextWidth()).width;
+    double textWidth = getTextSize(tags[index].text, TextStyle(fontSize: 12), 1, getTextWidth()).width;
     if (textWidth > getTextWidth()) {
       String frontText = textStr.substring(0, getTextWidth() ~/ 13);
       if (interceptNum(frontText) > 0) {
         return textStr.substring(
-            0, (getTextWidth() ~/ 12 + (interceptNum(frontText) ~/ (Platform.isIOS ? 2.1 : 1.5)))) +
+                0, (getTextWidth() ~/ 12 + (interceptNum(frontText) ~/ (Platform.isIOS ? 2.1 : 1.5)))) +
             "...";
       }
       ;
@@ -87,7 +90,7 @@ class CourseAddressLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     // coverUrls.indexOf(i)
     return Container(
-      margin: EdgeInsets.only(left: tas.indexOf(text) != 0 ? 12 : 0),
+      margin: EdgeInsets.only(left: index != 0 ? 12 : 0),
       padding: EdgeInsets.only(top: 3.5, bottom: 3.5),
       width: getBgWidth(),
       decoration: BoxDecoration(
@@ -99,15 +102,18 @@ class CourseAddressLabel extends StatelessWidget {
         children: [
           Container(
             margin: EdgeInsets.only(left: 8),
-            child: CircleAvatar(
-              backgroundImage: AssetImage("images/test/yxlm9.jpeg"),
-              maxRadius: 8,
-            ),
+            child: tags[index].type == feed_tag_type_location
+                ? AppIcon.getAppIcon(AppIcon.tag_location, 16)
+                : tags[index].type == feed_tag_type_course
+                    ? AppIcon.getAppIcon(AppIcon.tag_course, 16)
+                    : Container(
+                        width: 16,
+                      ),
           ),
           Container(
             width: getTextWidth(),
             child: Text(
-              interceptText(text),
+              interceptText(tags[index].text),
               style: TextStyle(fontSize: 12),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
