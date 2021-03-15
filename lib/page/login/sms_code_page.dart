@@ -284,33 +284,43 @@ class _SmsCodePageState extends State<SmsCodePage> {
   _loginWithPhoneCode() async {
     SmsCodePage phoneNumPage = widget;
     BaseResponseModel responseModel = await login("sms", phoneNumPage.phoneNumber, inputController.text, null);
-    if (responseModel != null&&responseModel.code==200) {
-      print("登录成功");
-      Loading.hideLoading(context);
-      TokenModel token = TokenModel.fromJson(responseModel.data);
-      if (token.anonymous == 1 || token.uid == null) {
-        //如果token是匿名的或者没有uid则token出了问题
-        print("token错误");
-      } else if (token.isPhone == 0) {
-        print("没有绑定手机");
-        Application.tempToken = token;
-      } else if (token.isPerfect == 0) {
-        print("没有完善资料");
-        Application.tempToken = token;
-        //FIXME 这里要去完善资料页 先写个请求完善资料接口的示例
-        AppRouter.navigateToPerfectUserPage(context);
-      } else {
-        //所有都齐全的情况 登录完成
-        await _afterLogin(token);
+    if (responseModel != null) {
+      if(responseModel.code==200){
+        print("登录成功");
+        Loading.hideLoading(context);
+        TokenModel token = TokenModel.fromJson(responseModel.data);
+        if (token.anonymous == 1 || token.uid == null) {
+          //如果token是匿名的或者没有uid则token出了问题
+          print("token错误");
+        } else if (token.isPhone == 0) {
+          print("没有绑定手机");
+          Application.tempToken = token;
+        } else if (token.isPerfect == 0) {
+          print("没有完善资料");
+          Application.tempToken = token;
+          //FIXME 这里要去完善资料页 先写个请求完善资料接口的示例
+          AppRouter.navigateToPerfectUserPage(context);
+        } else {
+          //所有都齐全的情况 登录完成
+          await _afterLogin(token);
+        }
+      }else{
+        Loading.hideLoading(context);
+        ToastShow.show(msg:responseModel.message, context: context);
       }
-    } else if(responseModel.code==500){
-      ToastShow.show(msg:"服务器异常,请稍后重试", context: context);
     }else{
+      test("","");
       Loading.hideLoading(context);
-      ToastShow.show(msg:responseModel.message, context: context);
+      ToastShow.show(msg:"登录失败", context: context);
     }
   }
 
+
+
+
+  String test(String name,[String age]){
+    return "";
+  }
   //TODO 完整的用户的处理方法 这个方法在登录页 绑定手机号页 完善资料页都会用到 需要单独提出来
   _afterLogin(TokenModel token) async {
     TokenDto tokenDto = TokenDto.fromTokenModel(token);

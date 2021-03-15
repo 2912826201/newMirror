@@ -17,6 +17,8 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
+import 'package:mirror/widget/sliding_element_exposure/exposure_detector_controller.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
@@ -122,9 +124,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
   void initState() {
     // 合并请求
     mergeRequest();
-    isLogin = context
-        .read<TokenNotifier>()
-        .isLoggedIn;
+    isLogin = context.read<TokenNotifier>().isLoggedIn;
     _controller.addListener(() {
       if (_controller.position.pixels == _controller.position.maxScrollExtent) {
         getRecommendFeed();
@@ -163,15 +163,8 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
             if (dataModel.list.isNotEmpty) {
               print('==========================dataModel.list.isNotEmpty');
               dataModel.list.forEach((v) {
-                context
-                    .read<UserInteractiveNotifier>()
-                    .profileUiChangeModel
-                    .remove(HomeFeedModel
-                    .fromJson(v)
-                    .pushId);
-                recommendIdList.add(HomeFeedModel
-                    .fromJson(v)
-                    .id);
+                context.read<UserInteractiveNotifier>().profileUiChangeModel.remove(HomeFeedModel.fromJson(v).pushId);
+                recommendIdList.add(HomeFeedModel.fromJson(v).id);
                 recommendModelList.add(HomeFeedModel.fromJson(v));
               });
             }
@@ -217,9 +210,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
         print('===============================dataModel!=null&&dataModel.list.isNotEmpty');
         hasNext = dataModel.hasNext;
         dataModel.list.forEach((v) {
-          recommendIdList.add(HomeFeedModel
-              .fromJson(v)
-              .id);
+          recommendIdList.add(HomeFeedModel.fromJson(v).id);
           // modelList.add(HomeFeedModel.fromJson(v));
           recommendModelList.add(HomeFeedModel.fromJson(v));
         });
@@ -263,128 +254,96 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
         return Stack(
           children: [
             Container(
-                child: NotificationListener<ScrollNotification>(
-                  onNotification: (ScrollNotification notification) {
-                    ScrollMetrics metrics = notification.metrics;
-                    // 注册通知回调
-                    if (notification is ScrollStartNotification) {
-                      // 滚动开始
-                      // print('滚动开始');
-                    } else if (notification is ScrollUpdateNotification) {
-                      // 滚动位置更新
-                      // print('滚动位置更新');
-                      // 纵向滚动
-                      if (metrics.axis == Axis.vertical) {
-                        if (timer != null) {
-                          timer.cancel();
-                        }
-                      }
-                      // 当前位置
-                      // print("当前位置${metrics.pixels}");
-                    } else if (notification is ScrollEndNotification) {
-                      // 纵向滚动
-                      if (metrics.axis == Axis.vertical) {
-                        timer = Timer(Duration(milliseconds: 3000), () {
-                          print("定时3秒到了");
-                          for (int i = 0; i < recommendModelList.length; i++) {
-                            HomeFeedModel value = recommendModelList[i];
-                            // 屏幕可滑动区域
-                            double slidingArea = ScreenUtil.instance.height -
-                                ScreenUtil.instance.statusBarHeight -
-                                ScreenUtil.instance.bottomBarHeight -
-                                44 -
-                                51;
-                            // 屏幕的一半偏移值
-                            double screenOffser = metrics.pixels + (slidingArea / 2);
-                            if (screenOffser >= value.headOffset && screenOffser < value.bottomOffset) {
-                              print("进了");
-                              // context.read<FeedMapNotifier>().showInputBox(value.id);
-                            }
-                          }
-                        });
-                      }
-                      // 滚动结束
-                      // print('滚动结束');
-                    }
+              child: RefreshIndicator(
+                  onRefresh: () async {
+                    print("推荐ye下拉刷新");
+                    // dataPage = 1;
+                    loadStatus = LoadingStatus.STATUS_LOADING;
+                    // 清空曝光过的listKey
+                    ExposureDetectorController.instance.signOutClearHistory();
+                    loadText = "加载中...";
+                    hasNext = null;
+                    mergeRequest();
                   },
-                  child: RefreshIndicator(
-                      onRefresh: () async {
-                        print("推荐ye下拉刷新");
-                        // dataPage = 1;
-                        loadStatus = LoadingStatus.STATUS_LOADING;
-                        loadText = "加载中...";
-                        hasNext = null;
-                        mergeRequest();
-                      },
-                      child: CustomScrollView(
-                        controller: _controller,
-                        // BouncingScrollPhysics
-                        physics:
+                  child: CustomScrollView(
+                    controller: _controller,
+                    // BouncingScrollPhysics
+                    physics:
                         // ClampingScrollPhysics(),
                         // FixedExtentScrollPhysics(),
                         AlwaysScrollableScrollPhysics(),
-                        // BouncingScrollPhysics(),
-                        slivers: [
-                          // 因为SliverList并不支持设置滑动方向由CustomScrollView统一管理，所有这里使用自定义滚动
-                          // CustomScrollView要求内部元素为Sliver组件， SliverToBoxAdapter可包裹普通的组件。
-                          // 横向滑动区域
-                          SliverToBoxAdapter(
-                            child: liveVideoModel.isNotEmpty ? getCourse() : Container(),
-                          ),
-                          // 垂直列表
-                          isRequestData == null ? SliverToBoxAdapter() :
-                          recommendIdList.isNotEmpty
+                    // BouncingScrollPhysics(),
+                    slivers: [
+                      // 因为SliverList并不支持设置滑动方向由CustomScrollView统一管理，所有这里使用自定义滚动
+                      // CustomScrollView要求内部元素为Sliver组件， SliverToBoxAdapter可包裹普通的组件。
+                      // 横向滑动区域
+                      SliverToBoxAdapter(
+                        child: liveVideoModel.isNotEmpty ? getCourse() : Container(),
+                      ),
+                      // 垂直列表
+                      isRequestData == null
+                          ? SliverToBoxAdapter()
+                          : recommendIdList.isNotEmpty
                               ? SliverList(
-                            // controller: _controller,
-                            delegate: SliverChildBuilderDelegate((content, index) {
-                              // 获取动态id
-                              int id;
-                              // 获取动态id指定model
-                              HomeFeedModel model;
-                              if (index < recommendIdList.length) {
-                                id = recommendIdList[index];
-                                model = context
-                                    .read<FeedMapNotifier>()
-                                    .feedMap[id];
-                              }
-                              if (index == recommendIdList.length) {
-                                return LoadingView(
-                                  loadText: loadText,
-                                  loadStatus: loadStatus,
-                                );
-                              } else {
-                                return DynamicListLayout(
-                                    index: index,
-                                    model: model,
-                                    pageName: "recommendPage",
-                                    isShowConcern: true,
-                                    // 可选参数 子Item的个数
-                                    key: GlobalObjectKey("recommend$index"),
-                                    isShowRecommendUser: false);
-                              }
-                            }, childCount: recommendIdList.length + 1),
-                          )
+                                  // controller: _controller,
+                                  delegate: SliverChildBuilderDelegate((content, index) {
+                                    // 获取动态id
+                                    int id;
+                                    // 获取动态id指定model
+                                    HomeFeedModel model;
+                                    if (index < recommendIdList.length) {
+                                      id = recommendIdList[index];
+                                      model = context.read<FeedMapNotifier>().feedMap[id];
+                                    }
+                                    if (index == recommendIdList.length) {
+                                      return LoadingView(
+                                        loadText: loadText,
+                                        loadStatus: loadStatus,
+                                      );
+                                    } else {
+                                      return ExposureDetector(
+                                        key: Key('recommend_page_$id'),
+                                        child: DynamicListLayout(
+                                            index: index,
+                                            model: model,
+                                            pageName: "recommendPage",
+                                            isShowConcern: true,
+                                            // 可选参数 子Item的个数
+                                            key: GlobalObjectKey("recommend$index"),
+                                            isShowRecommendUser: false),
+                                        onExposure: (visibilityInfo) {
+                                          print("回调看数据:${recommendIdList.toString()}");
+                                          // 如果没有显示
+                                          if ( context.read<FeedMapNotifier>().feedMap[recommendIdList[index]].isShowInputBox) {
+                                            context.read<FeedMapNotifier>().showInputBox(recommendIdList[index]);
+                                          }
+                                          print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+                                        },
+                                      );
+                                    }
+                                  }, childCount: recommendIdList.length + 1),
+                                )
                               : SliverToBoxAdapter(
-                              child: Container(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      width: 224,
-                                      height: 224,
-                                      color: AppColor.color246,
-                                      margin: EdgeInsets.only(bottom: 16, top: 188),
-                                    ),
-                                    Text(
-                                      "这里空空如也，去关注看看吧",
-                                      style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
-                                    ),
-                                  ],
-                                ),
-                              )),
-                        ],
-                      )),
-                )),
+                                  child: Container(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 224,
+                                        height: 224,
+                                        color: AppColor.color246,
+                                        margin: EdgeInsets.only(bottom: 16, top: 188),
+                                      ),
+                                      Text(
+                                        "这里空空如也，去关注看看吧",
+                                        style: TextStyle(fontSize: 14, color: AppColor.textSecondary),
+                                      ),
+                                    ],
+                                  ),
+                                )),
+                    ],
+                  )),
+            ),
           ],
           // )
         );
@@ -404,9 +363,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              if (context
-                  .read<TokenNotifier>()
-                  .isLoggedIn) {
+              if (context.read<TokenNotifier>().isLoggedIn) {
                 if (liveVideoModel[index].coachDto.isLiving == 0) {
                   AppRouter.navigateToMineDetail(context, liveVideoModel[index].coachDto.uid);
                 } else {

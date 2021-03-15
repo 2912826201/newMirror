@@ -57,6 +57,7 @@ class FeedMapNotifier extends ChangeNotifier {
   }
 
   void showInputBox(int id) {
+    print("id::${id}");
     feedMap[id].isShowInputBox = false;
     notifyListeners();
   }
@@ -79,8 +80,6 @@ class FeedMapNotifier extends ChangeNotifier {
       if (element.comments.isNotEmpty) {
         feedMap[element.id].hotComment.addAll(element.comments);
       }
-      print("headOffset:::${element.headOffset}");
-      print("bottomOffset:::${element.bottomOffset}");
     });
     notifyListeners();
   }

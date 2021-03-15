@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:mirror/page/profile/profile_detail_page.dart';
+import 'package:mirror/widget/sliding_element_exposure/exposure_detector_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:mirror/api/version_api.dart';
 import 'package:mirror/config/config.dart';
@@ -142,6 +143,8 @@ class _SettingHomePageState extends State<SettingHomePage> {
   Widget _signOutRow(double width) {
     return InkWell(
       onTap: () async {
+        // 清空曝光过的listKey
+        ExposureDetectorController.instance.signOutClearHistory();
         await Application.appLogout();
       },
       child: Container(

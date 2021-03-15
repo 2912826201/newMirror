@@ -108,10 +108,11 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       print('=========================个人主页addPostFrameCallback');
-        Future.delayed(Duration(milliseconds: 500),(){
+        Future.delayed(Duration(milliseconds: 250),(){
           _getUserInfo(id: widget.userId);
           _getFollowCount(id: widget.userId);
         });
+
     });
     scrollController.addListener(() {
       if (scrollController.offset >= ScreenUtil.instance.height * 0.33 + _signatureHeight) {
@@ -444,16 +445,16 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
             Spacer(),
 
             ///关注，获赞，粉丝
-            Container(
+        Consumer<UserInteractiveNotifier>(
+            builder: (context, notifier, child) {
+              return  Container(
               padding: EdgeInsets.only(left: 16, right: 16),
               child: Row(
                 children: [
                   InkWell(
                     child: _textAndNumber(
                         "关注",
-                        StringUtil.getNumber(context
-                            .read<UserInteractiveNotifier>()
-                            .profileUiChangeModel[widget.userId]
+                        StringUtil.getNumber(notifier.profileUiChangeModel[widget.userId]
                             .attentionModel
                             .followingCount),
                         height),
@@ -480,9 +481,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                     },
                     child: _textAndNumber(
                         "粉丝",
-                        StringUtil.getNumber(context
-                            .read<UserInteractiveNotifier>()
-                            .profileUiChangeModel[widget.userId]
+                        StringUtil.getNumber(notifier.profileUiChangeModel[widget.userId]
                             .attentionModel
                             .followerCount),
                         height),
@@ -492,15 +491,13 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                   ),
                   _textAndNumber(
                       "获赞",
-                      StringUtil.getNumber(context
-                          .read<UserInteractiveNotifier>()
-                          .profileUiChangeModel[widget.userId]
+                      StringUtil.getNumber(notifier.profileUiChangeModel[widget.userId]
                           .attentionModel
                           .laudedCount),
                       height),
                 ],
               ),
-            ),
+            );}),
             Spacer(),
             Container(
               color: AppColor.bgWhite.withOpacity(0.65),
@@ -645,8 +642,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     int attntionResult = await ProfileAddFollow(widget.userId);
     if (attntionResult == 1 || attntionResult == 3) {
       context.read<UserInteractiveNotifier>().changeIsFollow(true, false, widget.userId);
-      context.read<UserInteractiveNotifier>().changeFollowCount(context.read<ProfileNotifier>().profile.uid, true);
-      _getFollowCount(id: widget.userId);
+      context.read<UserInteractiveNotifier>().changeFollowCount(widget.userId, true);
       ToastShow.show(msg: "关注成功!", context: context);
     }
   }

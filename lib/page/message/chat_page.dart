@@ -1919,7 +1919,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
           if (mounted) {
             reload(() {});
           }
-          context.read<UserInteractiveNotifier>().changeFollowCount(context.read<ProfileNotifier>().profile.uid, true);
+          context.read<UserInteractiveNotifier>().changeFollowCount(int.parse(chatId),
+              true);
           if (context.read<UserInteractiveNotifier>().profileUiChangeModel.containsKey(int.parse(chatId))) {
             print('=================个人主页同步');
             context.read<UserInteractiveNotifier>().changeIsFollow(true, false, int.parse(chatId));

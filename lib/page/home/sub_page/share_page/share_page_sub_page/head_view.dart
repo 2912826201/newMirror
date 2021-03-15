@@ -101,7 +101,7 @@ class HeadViewState extends State<HeadView> {
           widget.removeFollowChanged(widget.model);
         }
         context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.model.pushId);
-        context.read<UserInteractiveNotifier>().changeFollowCount(context.read<ProfileNotifier>().profile.uid, false);
+        context.read<UserInteractiveNotifier>().changeFollowCount( widget.model.pushId,false);
         ToastShow.show(msg: "取消关注成功", context: context);
       } else {
         ToastShow.show(msg: "取消关注失败,请重试", context: context);
@@ -111,7 +111,6 @@ class HeadViewState extends State<HeadView> {
       if (relation != null) {
         if (relation == 1 || relation == 3) {
           context.read<UserInteractiveNotifier>().changeIsFollow(true, false, widget.model.pushId);
-          context.read<UserInteractiveNotifier>().changeFollowCount(context.read<ProfileNotifier>().profile.uid, true);
           ToastShow.show(msg: "关注成功!", context: context);
           opacity = 1;
           Future.delayed(Duration(milliseconds: 1000), () {
@@ -200,24 +199,24 @@ class HeadViewState extends State<HeadView> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    if (widget.model.pushId == context.read<ProfileNotifier>().profile.uid) {
+      isMySelf = true;
+      context.read<UserInteractiveNotifier>().setFirstModel(widget.model.pushId);
+      if (!context
+          .read<UserInteractiveNotifier>()
+          .profileUiChangeModel[widget.model.pushId]
+          .feedStringList
+          .contains("删除")) {
+        context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.model.pushId].feedStringList.add("删除");
+      }
+    } else {
+      context.read<UserInteractiveNotifier>().setFirstModel(widget.model.pushId,
+          isFollow: widget.model.isFollow == 1 || widget.model.isFollow == 3 ? false : true);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.model.pushId == context.watch<ProfileNotifier>().profile.uid) {
-      isMySelf = true;
-      context.watch<UserInteractiveNotifier>().setFirstModel(widget.model.pushId);
-      if (!context
-          .watch<UserInteractiveNotifier>()
-          .profileUiChangeModel[widget.model.pushId]
-          .feedStringList
-          .contains("删除")) {
-        context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.model.pushId].feedStringList.add("删除");
-      }
-    } else {
-      context.watch<UserInteractiveNotifier>().setFirstModel(widget.model.pushId,
-          isFollow: widget.model.isFollow == 1 || widget.model.isFollow == 3 ? false : true);
-    }
     return GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {
