@@ -20,6 +20,8 @@ import 'package:mirror/widget/icon.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 
+import '../overscroll_behavior.dart';
+
 class QueryFollowList extends StatefulWidget {
   //传1为关注，传2为粉丝，3为话题
   int type;
@@ -458,104 +460,106 @@ class _QueryFollowState extends State<QueryFollowList> {
 
               buddyList.isNotEmpty || topicList.isNotEmpty
                   ? Expanded(
-                      child: SmartRefresher(
-                          controller: _refreshController,
-                          enablePullUp: true,
-                          enablePullDown: true,
-                          footer: CustomFooter(
-                            builder: (BuildContext context, LoadStatus mode) {
-                              Widget body;
-                              if (mode == LoadStatus.loading) {
-                                body = CircularProgressIndicator();
-                              } else if (mode == LoadStatus.noMore) {
-                                body = Text("没有更多了");
-                              } else if (mode == LoadStatus.failed) {
-                                body = Text("加载错误,请重试");
-                              } else {
-                                body = Text(" ");
-                              }
-                              return Container(
-                                child: Center(
-                                  child: body,
-                                ),
-                              );
-                            },
-                          ),
-                          header: WaterDropHeader(
-                            complete: Text("刷新完成"),
-                            failed: Text(" "),
-                          ),
-                          onRefresh: __onRefresh,
-                          onLoading: _onLoading,
-                          child: ListView.builder(
-                              shrinkWrap: true, //解决无限高度问题
-                              physics: AlwaysScrollableScrollPhysics(),
-                              //这里是将插入的假数据展示成跳转话题页的item
-                              itemCount: widget.type == 1 || widget.type == 2 ? buddyList.length : topicList.length,
-                              itemBuilder: (context, index) {
-                                ///type为1,关注
-                                if (widget.type == 1) {
-                                  //index=0的时候展示跳转话题页的item,否则展示关注item
-                                  if (index == 0) {
-                                    return InkWell(
-                                      onTap: () {
-                                        AppRouter.navigateToQueryFollowList(context, 3, widget.userId);
-                                      },
-                                      child: _followTopic(width),
-                                    );
+                      child: ScrollConfiguration(
+                          behavior: OverScrollBehavior(),
+                          child: SmartRefresher(
+                              controller: _refreshController,
+                              enablePullUp: true,
+                              enablePullDown: true,
+                              footer: CustomFooter(
+                                builder: (BuildContext context, LoadStatus mode) {
+                                  Widget body;
+                                  if (mode == LoadStatus.loading) {
+                                    body = CircularProgressIndicator();
+                                  } else if (mode == LoadStatus.noMore) {
+                                    body = Text("没有更多了");
+                                  } else if (mode == LoadStatus.failed) {
+                                    body = Text("加载错误,请重试");
                                   } else {
-                                    context.watch<UserInteractiveNotifier>().setFirstModel(buddyList[index].uid,
-                                        isFollow: buddyList[index].relation == 0 || buddyList[index].relation == 2
-                                            ? true
-                                            : false);
-                                    if (widget.userId != context.watch<ProfileNotifier>().profile.uid ||
-                                        !context
-                                            .watch<UserInteractiveNotifier>()
-                                            .profileUiChangeModel[buddyList[index].uid]
-                                            .isFollow) {
+                                    body = Text(" ");
+                                  }
+                                  return Container(
+                                    child: Center(
+                                      child: body,
+                                    ),
+                                  );
+                                },
+                              ),
+                              header: WaterDropHeader(
+                                complete: Text("刷新完成"),
+                                failed: Text(" "),
+                              ),
+                              onRefresh: __onRefresh,
+                              onLoading: _onLoading,
+                              child: ListView.builder(
+                                  shrinkWrap: true, //解决无限高度问题
+                                  physics: AlwaysScrollableScrollPhysics(),
+                                  //这里是将插入的假数据展示成跳转话题页的item
+                                  itemCount: widget.type == 1 || widget.type == 2 ? buddyList.length : topicList.length,
+                                  itemBuilder: (context, index) {
+                                    ///type为1,关注
+                                    if (widget.type == 1) {
+                                      //index=0的时候展示跳转话题页的item,否则展示关注item
+                                      if (index == 0) {
+                                        return InkWell(
+                                          onTap: () {
+                                            AppRouter.navigateToQueryFollowList(context, 3, widget.userId);
+                                          },
+                                          child: _followTopic(width),
+                                        );
+                                      } else {
+                                        context.watch<UserInteractiveNotifier>().setFirstModel(buddyList[index].uid,
+                                            isFollow: buddyList[index].relation == 0 || buddyList[index].relation == 2
+                                                ? true
+                                                : false);
+                                        if (widget.userId != context.watch<ProfileNotifier>().profile.uid ||
+                                            !context
+                                                .watch<UserInteractiveNotifier>()
+                                                .profileUiChangeModel[buddyList[index].uid]
+                                                .isFollow) {
+                                          return QueryFollowItem(
+                                            type: widget.type,
+                                            buddyModel: buddyList[index],
+                                            width: width,
+                                            userId: widget.userId,
+                                            isMySelf: isMySelf,
+                                          );
+                                        } else {
+                                          return Container();
+                                        }
+                                      }
+                                      //type为2的时候展示粉丝
+                                    } else if (widget.type == 2) {
+                                      return QueryFollowItem(
+                                          type: widget.type,
+                                          buddyModel: buddyList[index],
+                                          width: width,
+                                          userId: widget.userId,
+                                          isMySelf: isMySelf);
+                                    } else {
                                       return QueryFollowItem(
                                         type: widget.type,
-                                        buddyModel: buddyList[index],
+                                        tpcModel: topicList[index],
                                         width: width,
                                         userId: widget.userId,
                                         isMySelf: isMySelf,
-                                      );
-                                    } else {
-                                      return Container();
-                                    }
-                                  }
-                                  //type为2的时候展示粉丝
-                                } else if (widget.type == 2) {
-                                  return QueryFollowItem(
-                                      type: widget.type,
-                                      buddyModel: buddyList[index],
-                                      width: width,
-                                      userId: widget.userId,
-                                      isMySelf: isMySelf);
-                                } else {
-                                  return QueryFollowItem(
-                                    type: widget.type,
-                                    tpcModel: topicList[index],
-                                    width: width,
-                                    userId: widget.userId,
-                                    isMySelf: isMySelf,
-                                    topicDeleteCallBack: () {
-                                      print('=========================话题详情返回');
-                                      if (context.read<UserInteractiveNotifier>().removeId != null) {
-                                        List<TopicDtoModel> list = [];
-                                        topicList.forEach((element) {
-                                          if (element.id != context.read<UserInteractiveNotifier>().removeId) {
-                                            list.add(element);
+                                        topicDeleteCallBack: () {
+                                          print('=========================话题详情返回');
+                                          if (context.read<UserInteractiveNotifier>().removeId != null) {
+                                            List<TopicDtoModel> list = [];
+                                            topicList.forEach((element) {
+                                              if (element.id != context.read<UserInteractiveNotifier>().removeId) {
+                                                list.add(element);
+                                              }
+                                            });
+                                            topicList.clear();
+                                            topicList.addAll(list);
+                                            setState(() {});
                                           }
-                                        });
-                                        topicList.clear();
-                                        topicList.addAll(list);
-                                        setState(() {});
-                                      }
-                                    },
-                                  );
-                                }
-                              })),
+                                        },
+                                      );
+                                    }
+                                  }))),
                     )
                   : Expanded(
                       child: Column(

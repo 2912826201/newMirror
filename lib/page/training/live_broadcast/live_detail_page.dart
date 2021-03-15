@@ -784,7 +784,6 @@ class LiveDetailPageState extends XCState {
       if(mounted){
         reload(() {});
       }
-      context.read<UserInteractiveNotifier>().changeFollowCount(context.read<ProfileNotifier>().profile.uid, true);
     }
   }
 

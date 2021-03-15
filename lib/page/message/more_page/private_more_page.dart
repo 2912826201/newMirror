@@ -19,6 +19,7 @@ import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/loading_progress.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:provider/provider.dart';
+import 'package:mirror/data/notifier/profile_notifier.dart';
 ///私人聊天-更多界面--管家-系统消息
 class PrivateMorePage extends StatefulWidget {
   ///对话用户id
@@ -292,6 +293,8 @@ class PrivateMorePageState extends State<PrivateMorePage> {
         if(context.read<UserInteractiveNotifier>().profileUiChangeModel.containsKey(int.parse(widget.chatUserId))){
           print('====================================个人主页的方法进了');
           context.read<UserInteractiveNotifier>().changeIsFollow(true, true, int.parse(widget.chatUserId));
+          context.read<UserInteractiveNotifier>().changeFollowCount(int.parse(widget.chatUserId),
+              false);
         }
         print('====================================个人主页的方法完了');
       } else {

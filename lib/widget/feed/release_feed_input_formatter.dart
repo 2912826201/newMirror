@@ -113,6 +113,7 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
               newValue.text.substring(newValue.selection.start - 1, newValue.selection.end) == "\n")) {
         atIndex = 0;
         topicIndex = 0;
+        //关闭列表回调
         _shutDownCallback();
       }
 

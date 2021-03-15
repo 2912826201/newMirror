@@ -440,7 +440,7 @@ class _FollowButtonState extends State<FollowButton> {
     if (attntionResult == 1 || attntionResult == 3) {
       ToastShow.show(msg: "关注成功!", context: context);
       context.read<UserInteractiveNotifier>().changeIsFollow(true, false, id);
-      context.read<UserInteractiveNotifier>().changeFollowCount(context.read<ProfileNotifier>().profile.uid, true);
+      context.read<UserInteractiveNotifier>().changeFollowCount(id, true);
     }
   }
 
