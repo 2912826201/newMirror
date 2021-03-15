@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/data/model/comment_model.dart';
 import 'package:mirror/data/model/feed/post_feed.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
+import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 
 class FeedMapNotifier extends ChangeNotifier {
   FeedMapNotifier({this.feedMap, this.feedId, this.isPublish = true});
@@ -20,7 +21,8 @@ class FeedMapNotifier extends ChangeNotifier {
 
   // 发布动态需要的model
   PostFeedModel postFeedModel;
-
+  //话题页快速跳转发布动态的话题文字信息
+  Rule rule;
   // 是否可以发布动态
   bool isPublish = true;
 

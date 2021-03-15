@@ -131,7 +131,7 @@ class _IntroductionState extends State<EditInformationIntroduction> {
           TextField(
             focusNode: _commentFocus,
             autofocus: true,
-            maxLength: 90,
+            maxLength: 30,
             maxLines: 5,
             cursorColor: AppColor.black,
             style: AppStyle.textRegular16,
@@ -147,7 +147,7 @@ class _IntroductionState extends State<EditInformationIntroduction> {
           Container(
             alignment: Alignment.bottomRight,
             child: Text(
-              "$textLength/90",
+              "$textLength/30",
               style: AppStyle.textHintRegular12,
             ),
           )

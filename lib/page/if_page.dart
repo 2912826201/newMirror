@@ -153,7 +153,8 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
   List<Widget> _createTabContent() {
     List<Widget> tabContent = List();
     //四个常规业务tabBar
-    tabContent.add(MediaPickerPage(
+    tabContent.add(
+        MediaPickerPage(
       9,
       typeImageAndVideo,
       true,

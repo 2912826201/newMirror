@@ -378,25 +378,43 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
 /// @和#话题的规则
 class Rule {
   // 起始的索引值
-  final int startIndex;
+   int startIndex;
 
   // 结束的索引值
-  final int endIndex;
+   int endIndex;
 
   // 元素
-  final String params;
+  String params;
 
   // 用于防重复添加
-  final int clickIndex;
+   int clickIndex;
 
   // 区分时at还是话题
-  final bool isAt;
+   bool isAt;
 
   // atUid
-  final int id;
+   int id;
 
   Rule(this.startIndex, this.endIndex, this.params, this.clickIndex, this.isAt, [this.id]);
 
+  Rule.fromJson(Map<String, dynamic> json){
+    startIndex = json["startIndex"];
+    endIndex = json["endIndex"];
+    params = json["params"];
+    clickIndex = json["clickIndex"];
+    isAt = json["isAt"];
+    id = json["id"];
+  }
+   Map<String, dynamic> toJson() {
+     var map = <String, dynamic>{};
+     map["startIndex"] = startIndex;
+     map["endIndex"] = endIndex;
+     map["params"] = params;
+     map["clickIndex"] = clickIndex;
+     map["isAt"] = isAt;
+     map["id"] = id;
+     return map;
+   }
   Rule copy([startIndex, endIndex, params]) {
     return Rule(startIndex ?? this.startIndex, endIndex ?? this.endIndex, params ?? this.params,
         clickIndex ?? this.clickIndex, isAt ?? this.isAt, id ?? this.id);

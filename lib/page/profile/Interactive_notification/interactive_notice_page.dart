@@ -268,7 +268,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
 
   _getRefData(BuildContext context) {
     print('=======================${widget.msgModel.refType}');
-    if (widget.type == 0) {
+    if (widget.type == 0||widget.type==1) {
       if (widget.msgModel.commentData == null) {
         commentIsDelete = true;
       } else {
