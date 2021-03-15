@@ -425,10 +425,5 @@ class _SlideBannerState extends State<SlideBanner> {
       ),
     );
   }
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    print('===================轮播图销毁');
-  }
+
 }

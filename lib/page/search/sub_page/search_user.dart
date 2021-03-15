@@ -10,6 +10,7 @@ import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/page/profile/overscroll_behavior.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -136,7 +137,9 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
     return !noData
         ? Container(
             padding: EdgeInsets.only(left: 16, right: 16),
-            child: SmartRefresher(
+            child: ScrollConfiguration(
+                behavior: OverScrollBehavior(),
+                child:SmartRefresher(
               enablePullUp: true,
               enablePullDown: true,
               footer: CustomFooter(
@@ -174,7 +177,7 @@ class _SearchUserState extends State<SearchUser> with AutomaticKeepAliveClientMi
                       type: 1,
                     );
                   }),
-            ))
+            )))
         : Container(
             height: ScreenUtil.instance.height,
             width: ScreenUtil.instance.screenWidthDp,

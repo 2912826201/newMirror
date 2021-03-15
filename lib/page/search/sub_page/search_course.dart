@@ -9,6 +9,7 @@ import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
+import 'package:mirror/page/profile/overscroll_behavior.dart';
 import 'package:mirror/page/training/video_course/video_course_list_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
@@ -122,48 +123,52 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
   Widget build(BuildContext context) {
     if (liveVideoList.isNotEmpty) {
       return Container(
-          child: RefreshIndicator(
-              onRefresh: () async {
-                liveVideoList.clear();
-                lastTime = null;
-                hasNext = null;
-                loadStatus = LoadingStatus.STATUS_LOADING;
-                loadText = "加载中...";
-                requestSearchCourse();
-              },
-              child:
-                  CustomScrollView(controller: _scrollController, physics: AlwaysScrollableScrollPhysics(), slivers: [
-                SliverToBoxAdapter(
-                    child: Container(
-                  margin: EdgeInsets.only(left: 16, right: 16),
-                  child: MediaQuery.removePadding(
-                      removeTop: true,
-                      context: context,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        primary: false,
-                        itemCount: liveVideoList.length + 1,
-                        itemBuilder: (context, index) {
-                          // if (feedList.isNotEmpty) {
-                          if (index == liveVideoList.length) {
-                            return LoadingView(
-                              loadText: loadText,
-                              loadStatus: loadStatus,
-                            );
-                          } else if (index == liveVideoList.length + 1) {
-                            return Container();
-                          } else {
-                            return SearchCourseItem(
-                              videoModel: liveVideoList[index],
-                              index: index,
-                              count: liveVideoList.length,
-                            );
-                          }
-                          // }
-                        },
-                      )),
-                ))
-              ])));
+          child: ScrollConfiguration(
+              behavior: OverScrollBehavior(),
+              child: RefreshIndicator(
+                  onRefresh: () async {
+                    liveVideoList.clear();
+                    lastTime = null;
+                    hasNext = null;
+                    loadStatus = LoadingStatus.STATUS_LOADING;
+                    loadText = "加载中...";
+                    requestSearchCourse();
+                  },
+                  child: CustomScrollView(
+                      controller: _scrollController,
+                      physics: AlwaysScrollableScrollPhysics(),
+                      slivers: [
+                        SliverToBoxAdapter(
+                            child: Container(
+                          margin: EdgeInsets.only(left: 16, right: 16),
+                          child: MediaQuery.removePadding(
+                              removeTop: true,
+                              context: context,
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                primary: false,
+                                itemCount: liveVideoList.length + 1,
+                                itemBuilder: (context, index) {
+                                  // if (feedList.isNotEmpty) {
+                                  if (index == liveVideoList.length) {
+                                    return LoadingView(
+                                      loadText: loadText,
+                                      loadStatus: loadStatus,
+                                    );
+                                  } else if (index == liveVideoList.length + 1) {
+                                    return Container();
+                                  } else {
+                                    return SearchCourseItem(
+                                      videoModel: liveVideoList[index],
+                                      index: index,
+                                      count: liveVideoList.length,
+                                    );
+                                  }
+                                  // }
+                                },
+                              )),
+                        ))
+                      ]))));
     } else {
       return Container(
         child: Column(

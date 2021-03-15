@@ -9,6 +9,7 @@ import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
+import 'package:mirror/page/profile/overscroll_behavior.dart';
 import 'package:mirror/page/topic/topic_detail.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -128,46 +129,50 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
   Widget build(BuildContext context) {
     if (topicList.isNotEmpty) {
       return Container(
-          child: RefreshIndicator(
-              onRefresh: () async {
-                topicList.clear();
-                lastScore = null;
-                hasNext = null;
-                loadStatus = LoadingStatus.STATUS_LOADING;
-                loadText = "加载中...";
-                requestFeednIterface();
-              },
-              child:
-                  CustomScrollView(controller: _scrollController, physics: AlwaysScrollableScrollPhysics(), slivers: [
-                SliverToBoxAdapter(
-                    child: Container(
-                  margin: EdgeInsets.only(left: 16, right: 16),
-                  child: MediaQuery.removePadding(
-                      removeTop: true,
-                      context: context,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        primary: false,
-                        itemCount: topicList.length + 1,
-                        itemBuilder: (context, index) {
-                          // if (feedList.isNotEmpty) {
-                          if (index == topicList.length) {
-                            return LoadingView(
-                              loadText: loadText,
-                              loadStatus: loadStatus,
-                            );
-                          } else if (index == topicList.length + 1) {
-                            return Container();
-                          } else {
-                            return SearchTopiciItem(
-                              model: topicList[index],
-                            );
-                          }
-                          // }
-                        },
-                      )),
-                ))
-              ])));
+          child: ScrollConfiguration(
+              behavior: OverScrollBehavior(),
+              child: RefreshIndicator(
+                  onRefresh: () async {
+                    topicList.clear();
+                    lastScore = null;
+                    hasNext = null;
+                    loadStatus = LoadingStatus.STATUS_LOADING;
+                    loadText = "加载中...";
+                    requestFeednIterface();
+                  },
+                  child: CustomScrollView(
+                      controller: _scrollController,
+                      physics: AlwaysScrollableScrollPhysics(),
+                      slivers: [
+                        SliverToBoxAdapter(
+                            child: Container(
+                          margin: EdgeInsets.only(left: 16, right: 16),
+                          child: MediaQuery.removePadding(
+                              removeTop: true,
+                              context: context,
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                primary: false,
+                                itemCount: topicList.length + 1,
+                                itemBuilder: (context, index) {
+                                  // if (feedList.isNotEmpty) {
+                                  if (index == topicList.length) {
+                                    return LoadingView(
+                                      loadText: loadText,
+                                      loadStatus: loadStatus,
+                                    );
+                                  } else if (index == topicList.length + 1) {
+                                    return Container();
+                                  } else {
+                                    return SearchTopiciItem(
+                                      model: topicList[index],
+                                    );
+                                  }
+                                  // }
+                                },
+                              )),
+                        ))
+                      ]))));
     } else {
       return Container(
         child: Column(
