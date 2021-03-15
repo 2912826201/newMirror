@@ -6,6 +6,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/custom_button.dart';
+import 'package:mirror/widget/icon.dart';
 
 class AttentionUser extends StatefulWidget {
   AttentionUser({Key key}) : super(key: key);
@@ -33,7 +34,7 @@ class AttentionUserState extends State<AttentionUser> {
         child: Column(
           children: [
             Container(
-              margin: EdgeInsets.only(left: 16, right: 16,top: 18),
+              margin: EdgeInsets.only(left: 16, right: 16, top: 18),
               height: 25,
               width: ScreenUtil.instance.screenWidthDp,
               child: Row(
@@ -45,8 +46,9 @@ class AttentionUserState extends State<AttentionUser> {
                   ),
                   Spacer(),
                   Container(
-                      width: getTextSize("查看全部", TextStyle(fontSize: 14),1).width + 20,
-                      child: Row(children: [
+                    width: getTextSize("查看全部", TextStyle(fontSize: 14), 1).width + 20,
+                    child: Row(
+                      children: [
                         Container(
                           margin: EdgeInsets.only(right: 4),
                           child: Text(
@@ -54,17 +56,14 @@ class AttentionUserState extends State<AttentionUser> {
                             style: TextStyle(fontSize: 14, color: AppColor.textPrimary3),
                           ),
                         ),
-                        MyIconBtn(
-                          width: 16,
-                          height: 16,
-                          iconSting: "images/resource/2.0x/return2x.png",
-                          onPressed: () {},
-                        )
-                      ])),
+                        AppIcon.getAppIcon(AppIcon.arrow_right_16, 16, color: AppColor.textPrimary3),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-            attentionList()
+            attentionList(),
           ],
         ),
       ),
@@ -132,17 +131,17 @@ class attentionUserAnimateList extends StatefulWidget {
 
   attentionUserAnimateList(
       {Key key,
-        @required this.itemCount,
-        // @required this.itemBuilder,
-        @required this.onActionFinished,
-        this.scrollDirection = Axis.horizontal,
-        this.reverse = false,
-        this.controller,
-        this.primary,
-        this.physics,
-        this.shrinkWrap = false,
-        this.padding,
-        this.lists})
+      @required this.itemCount,
+      // @required this.itemBuilder,
+      @required this.onActionFinished,
+      this.scrollDirection = Axis.horizontal,
+      this.reverse = false,
+      this.controller,
+      this.primary,
+      this.physics,
+      this.shrinkWrap = false,
+      this.padding,
+      this.lists})
       : super(key: key);
 
   @override
@@ -161,7 +160,7 @@ class attentionUserAnimateListState<T> extends State<attentionUserAnimateList> {
         controller: widget.controller,
         primary: widget.primary,
         physics:
-        (widget.physics != null ? widget.physics : BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics())),
+            (widget.physics != null ? widget.physics : BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics())),
         shrinkWrap: widget.shrinkWrap,
         padding: widget.padding,
         itemBuilder: (context, index) {
@@ -261,139 +260,135 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
 
   Widget itemBuilder(BuildContext context) {
     return AnimatedOpacity(
-        opacity: _opacity,
-        onEnd: () {
-          _slideController.forward().whenComplete(() {
-            _opacity = 1.0;
-            setState(() {
-              _slideEnd = true;
-              _sizeController.forward().whenComplete(() {
-                _sizeEnd = true;
-                // 通知list 进行数据刷新操作
-                widget.onAnimateFinished(widget.index);
-              });
+      opacity: _opacity,
+      onEnd: () {
+        _slideController.forward().whenComplete(() {
+          _opacity = 1.0;
+          setState(() {
+            _slideEnd = true;
+            _sizeController.forward().whenComplete(() {
+              _sizeEnd = true;
+              // 通知list 进行数据刷新操作
+              widget.onAnimateFinished(widget.index);
             });
           });
-        },
-        duration: Duration(milliseconds: 250),
-        child: Container(
-          height: 190,
-          width: 151,
-          decoration: BoxDecoration(
-            //背景
-            color: Colors.white,
-            //设置四周圆角 角度
-            borderRadius: BorderRadius.all(Radius.circular(4.0)),
-            //设置四周边框
-            border: new Border.all(width: 0.5, color: AppColor.bgWhite),
-          ),
-          child: Stack(
-            children: [
-              Container(
-                margin: EdgeInsets.only(top: 6, left: 127),
-                child: MyIconBtn(
-                  width: 18,
-                  height: 18,
-                  iconSting: "images/resource/2.0x/ic_recommend_Close_small@2x.png",
-                  onPressed: () {
-                    // _slideController.forward().whenComplete(() {
-                    //   setState(() {
-                    //     _slideEnd = true;
-                    //     _sizeController.forward().whenComplete(() {
-                    //       _sizeEnd = true;
-                    //       // 通知list 进行数据刷新操作
-                    //       widget.onAnimateFinished(widget.index);
-                    //     });
-                    //   });
-                    // });
-                    setState(() {
-                      _opacity = 0;
-                    });
-                  },
-                ),
+        });
+      },
+      duration: Duration(milliseconds: 250),
+      child: Container(
+        height: 190,
+        width: 151,
+        decoration: BoxDecoration(
+          //背景
+          color: Colors.white,
+          //设置四周圆角 角度
+          borderRadius: BorderRadius.all(Radius.circular(4.0)),
+          //设置四周边框
+          border: new Border.all(width: 0.5, color: AppColor.bgWhite),
+        ),
+        child: Stack(
+          children: [
+            Positioned(
+              right: 0,
+              child: AppIconButton(
+                svgName: AppIcon.close_18,
+                iconSize: 18,
+                buttonWidth: 30,
+                buttonHeight: 30,
+                iconColor: AppColor.textHint,
+                onTap: () {
+                  // _slideController.forward().whenComplete(() {
+                  //   setState(() {
+                  //     _slideEnd = true;
+                  //     _sizeController.forward().whenComplete(() {
+                  //       _sizeEnd = true;
+                  //       // 通知list 进行数据刷新操作
+                  //       widget.onAnimateFinished(widget.index);
+                  //     });
+                  //   });
+                  // });
+                  setState(() {
+                    _opacity = 0;
+                  });
+                },
               ),
-              Container(
-                margin: EdgeInsets.only(top: 18),
-                width: 151,
-                height: 172,
-                // child: Expanded(
-                child: Column(
-                  // mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      // backgroundImage: NetworkImage("https://pic2.zhimg.com/v2-639b49f2f6578eabddc458b84eb3c6a1.jpg"),
-                      backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
-                      maxRadius: 23.5,
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 18),
+              width: 151,
+              height: 172,
+              // child: Expanded(
+              child: Column(
+                // mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    // backgroundImage: NetworkImage("https://pic2.zhimg.com/v2-639b49f2f6578eabddc458b84eb3c6a1.jpg"),
+                    backgroundImage: AssetImage("images/test/yxlm1.jpeg"),
+                    maxRadius: 23.5,
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 8),
+                    child: Text(
+                      "金卡卡西${widget.str}",
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.textPrimary1),
                     ),
-                    Container(
-                      margin: EdgeInsets.only(top: 8),
-                      child: Text(
-                        "金卡卡西${widget.str}",
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.textPrimary1),
-                      ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 2, bottom: 12),
+                    width: 100,
+                    child: Text(
+                      "夕柚和其他2位用户关注了",
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 13, color: AppColor.textSecondary),
                     ),
-                    Container(
-                      margin: EdgeInsets.only(top: 2, bottom: 12),
-                      width: 100,
-                      child: Text(
-                        "夕柚和其他2位用户关注了",
-                        maxLines: 2,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 13, color: AppColor.textSecondary),
-                      ),
+                  ),
+                  Container(
+                    width: 119,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: isToggle ? AppColor.textHint : Colors.black,
+                      borderRadius: BorderRadius.all(Radius.circular(16)),
                     ),
-                    Container(
-                      width: 119,
-                      height: 28,
-                      decoration: BoxDecoration(
-                        color: isToggle ? AppColor.textHint : Colors.black,
-                        borderRadius: BorderRadius.all(Radius.circular(16)),
-                      ),
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () {
-                          toggleutton();
-                        },
-                        child: Container(
-                          alignment: Alignment.center,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: 16,
-                                height: 16,
-                                child: Image.asset(
-                                  isToggle
-                                      ? "images/resource/2.0x/ic_recommend_Followed@2x.png"
-                                      : "images/resource/2.0x/ic_recommend_follow@2x.png",
-                                  fit: BoxFit.cover,
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        toggleutton();
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            isToggle
+                                ? AppIcon.getAppIcon(AppIcon.check_follow, 16)
+                                : AppIcon.getAppIcon(AppIcon.add_follow, 16),
+                            SizedBox(
+                              width: 4,
+                            ),
+                            Container(
+                              child: Text(
+                                isToggle ? "已关注" : "关注",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColor.white,
                                 ),
                               ),
-                              SizedBox(
-                                width: 4,
-                              ),
-                              Container(
-                                child: Text(
-                                  isToggle ? "已关注" : "关注",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: AppColor.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
-                    )
-                  ],
-                ),
-                // ),
-              )
-            ],
-          ),
-        ));
+                    ),
+                  )
+                ],
+              ),
+              // ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -406,17 +401,17 @@ class _ListItemState extends State<_ListItem> with TickerProviderStateMixin {
     }
     return (_slideEnd
         ? SizeTransition(
-      axis: Axis.horizontal,
-      sizeFactor: _sizeAnimation,
-      child: Container(
-        color: Colors.transparent,
-        height: 190,
-        width: 151,
-      ),
-    )
+            axis: Axis.horizontal,
+            sizeFactor: _sizeAnimation,
+            child: Container(
+              color: Colors.transparent,
+              height: 190,
+              width: 151,
+            ),
+          )
         : SlideTransition(
-      position: _slideAnimation,
-      child: itemBuilder(context),
-    ));
+            position: _slideAnimation,
+            child: itemBuilder(context),
+          ));
   }
 }

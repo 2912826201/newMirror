@@ -181,7 +181,7 @@ class _feedBackPage extends State<FeedBackPage> {
                 borderRadius: BorderRadius.all(Radius.circular(3.0)),
               ),
               child: Center(
-                child: AppIcon.getAppIcon(AppIcon.add, 13),
+                child: AppIcon.getAppIcon(AppIcon.add_gallery, 13),
               ),
             ),
           )
