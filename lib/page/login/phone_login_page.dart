@@ -171,20 +171,23 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
       });
     }
     BaseResponseModel responseModel = await sendSms(inputController.text, 0);
-    if (responseModel != null && responseModel.code == 200) {
-      print("发送验证码成功");
-      _titleOfSendTextBtn = "发送";
-      Application.smsCodeSendTime = DateTime.now().millisecondsSinceEpoch;
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-        return SmsCodePage(
-          phoneNumber: inputController.text,
-          isSent: true,
-        );
-      }));
-    } else {
-      ToastShow.show(msg: "${responseModel.message}", context: context);
-      _titleOfSendTextBtn = _resendTitle;
-      print("发送验证码失败");
+    if (responseModel != null) {
+      if(responseModel.code==200){
+        print("发送验证码成功");
+        ToastShow.show(msg: "验证码发送成功！", context: context);
+        _titleOfSendTextBtn = "发送";
+        Application.smsCodeSendTime = DateTime.now().millisecondsSinceEpoch;
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+          return SmsCodePage(
+            phoneNumber: inputController.text,
+            isSent: true,
+          );
+        }));
+      }else {
+        ToastShow.show(msg: "${responseModel.message}", context: context);
+        _titleOfSendTextBtn = _resendTitle;
+        print("发送验证码失败");
+      }
     }
     setState(() {});
   }

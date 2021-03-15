@@ -5,6 +5,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/precision_limit_Formatter.dart';
@@ -93,10 +94,14 @@ class _HeightAndWeightState extends State<HeightAndWeightPage> {
                 color: AppColor.transparent,
                 onTap: () {
                   FocusScope.of(context).requestFocus(blankNode);
-                  print('=height=======$heights===weight==========$weight');
-                  Application.fitnessEntryModel.height = heights;
-                  Application.fitnessEntryModel.weight = weight;
-                  AppRouter.navigateToBodyTypePage(context);
+                  if(heights.bitLength<2||weight.bitLength<2){
+                    ToastShow.show(msg: "请输入正确的身高体重", context: context);
+                  }else{
+                    print('=height=======$heights===weight==========$weight');
+                    Application.fitnessEntryModel.height = heights;
+                    Application.fitnessEntryModel.weight = weight;
+                    AppRouter.navigateToBodyTypePage(context);
+                  }
                 },
               ),
             ),

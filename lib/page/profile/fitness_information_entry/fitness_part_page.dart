@@ -25,11 +25,8 @@ class _FitnessPartState extends State<FitnessPartPage> {
     super.initState();
     List<SubTagModel> list = Application.videoTagModel.part;
     partList = list;
+    //根据id排序
     partList.sort((a, b) => a.id.compareTo(b.id));
-    partList.forEach((element) {
-      print('partId========================${element.id}');
-      print('partName========================${element.name}');
-    });
   }
 
   @override

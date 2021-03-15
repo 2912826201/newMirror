@@ -286,6 +286,7 @@ class _SlideBannerState extends State<SlideBanner> {
 
   // 宽高比
   double setAspectRatio(double height) {
+
     if (height == 0) {
       return ScreenUtil.instance.width;
     } else {
@@ -423,5 +424,11 @@ class _SlideBannerState extends State<SlideBanner> {
         ],
       ),
     );
+  }
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    print('===================轮播图销毁');
   }
 }

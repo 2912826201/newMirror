@@ -12,6 +12,7 @@ import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
+import 'package:mirror/page/profile/overscroll_behavior.dart';
 import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -79,7 +80,7 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Future.delayed(Duration(milliseconds: 500),(){
+      Future.delayed(Duration(milliseconds: 250),(){
         requestRecommendTopic(refreshOrLoading: true);
       });
     });
@@ -92,7 +93,9 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
                     child: MediaQuery.removePadding(
                         removeTop: true,
                         context: context,
-                        child: SmartRefresher(
+                        child:  ScrollConfiguration(
+                            behavior: OverScrollBehavior(),
+                            child:SmartRefresher(
                           enablePullDown: true,
                           enablePullUp: true,
                           footer: CustomFooter(
@@ -140,7 +143,7 @@ class TopicListState extends State<TopicList> with AutomaticKeepAliveClientMixin
                                   // 可选参数 子Item的个数
                                   key: GlobalObjectKey("attention$index"),
                                 );
-                            }),))
+                            }),)))
                     // margin: EdgeInsets.only(left: 16, right: 16),
                     // child: WaterfallFlow.builder(
                     //   gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
