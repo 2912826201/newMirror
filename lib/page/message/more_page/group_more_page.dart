@@ -262,7 +262,7 @@ class GroupMorePageState extends State<GroupMorePage> {
                   fontWeight: FontWeight.w500)),
           Expanded(child: SizedBox()),
           subtitle != null
-              ? Text(getMaxLengthString(subtitle),
+              ? Text(maxLength(subtitle,15),
             style: AppStyle.textSecondaryMedium14,)
               : Container(),
           subtitle != null ? SizedBox(width: 12) : Container(),
@@ -481,7 +481,11 @@ class GroupMorePageState extends State<GroupMorePage> {
       return text;
     }
   }
-
+  static String maxLength(String str, int len) {
+    // 删除emoji表情
+    var sRunes = str.runes;
+    return sRunes.length > len ?  String.fromCharCodes(sRunes, 0, sRunes.length - len) +"...":str;
+  }
 
   void updateUserName() {
     if (isUpdateGroupMeName) {
