@@ -267,7 +267,7 @@ var handlerTrainingRecordAllPage = Handler(handlerFunc: (BuildContext context, M
 
 var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return ReleasePage(topicRule: Rule.fromJson(data["topicRule"]),);
+  return ReleasePage(topicRule: data["topicRule"]!=null?Rule.fromJson(data["topicRule"]):null,);
 });
 
 var handlerLiveBroadcast = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
