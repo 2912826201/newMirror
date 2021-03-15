@@ -448,4 +448,24 @@ class MessageManager {
         return msg.content.encode();
     }
   }
+
+
+  //判断消息是不是弹幕消息
+  static bool judgeBarrageMessage(Message message){
+    if(message.objectName!=ChatTypeModel.MESSAGE_TYPE_TEXT){
+      return false;
+    }else{
+      Map<String, dynamic> contentMap = json.decode((message.content as TextMessage).content);
+      if(null!=contentMap){
+        switch (contentMap["subObjectName"]) {
+          case ChatTypeModel.MESSAGE_TYPE_SYS_BARRAGE:
+          case ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE:
+            return true;
+          default:
+            return false;
+        }
+      }
+    }
+    return false;
+  }
 }

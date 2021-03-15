@@ -148,8 +148,8 @@ class RCTestState extends State<RCTestPage> {
     Map<String, dynamic> textMap = Map();
     textMap["fromUserId"] = msg.sendUserInfo.userId.toString();
     textMap["toUserId"] = "1";
-    textMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_TEXT;
-    textMap["name"] = ChatTypeModel.MESSAGE_TYPE_TEXT_NAME;
+    textMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE;
+    textMap["name"] = ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE_NAME;
     textMap["data"] = "测试消息${Random().nextInt(10000)}";
     msg.content = jsonEncode(textMap);
     await Application.rongCloud.sendChatRoomMessage("1", msg);
