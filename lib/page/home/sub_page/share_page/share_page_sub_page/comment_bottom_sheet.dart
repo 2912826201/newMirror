@@ -1,10 +1,5 @@
 // 底部评论抽屉
-import 'dart:async';
-import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/commentInputBox.dart';
@@ -21,8 +16,8 @@ class CommentBottomSheet extends StatefulWidget {
   CommentBottomSheet({Key key, this.feedId, this.commentDtoModel}) : super(key: key);
 
   // 动态id
-  int feedId;
-  CommentDtoModel commentDtoModel;
+  final int feedId;
+  final CommentDtoModel commentDtoModel;
 
   CommentBottomSheetState createState() => CommentBottomSheetState(feedId: feedId, commentDtoModel: commentDtoModel);
 }

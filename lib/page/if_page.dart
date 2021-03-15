@@ -86,73 +86,77 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
     }
     ;
     return AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.dark,
-        // child: Scaffold(
-        //     resizeToAvoidBottomInset: false,
-        child:
-            // NotificationListener<ScrollNotification>(
-            //     onNotification: (ScrollNotification notification) {
-            //       ScrollMetrics metrics = notification.metrics;
-            // 注册通知回调
-            // if (notification is ScrollStartNotification) {
-            //   // 滚动开始
-            //   // print('滚动开始');
-            // print(notification.dragDetails.globalPosition);
-            // print("viewportDimension::${metrics.viewportDimension}");
-            // print("axisDirection::${metrics.axisDirection}");
-            // if (metrics.axis == Axis.horizontal && notification.dragDetails != null) {
-            //   _initialSwipeOffset = notification.dragDetails.globalPosition;
-            // }
-            // print("_initialSwipeOffset::${_initialSwipeOffset}");
-            // } else if (notification is ScrollUpdateNotification) {
-            //   print('滚动位置更新');
-            //   // 滚动位置更新
-            //   if (metrics.axis == Axis.horizontal && notification.dragDetails != null) {
-            //     // 左滑
-            //     print(notification.dragDetails.globalPosition.dx);
-            //     if (_initialSwipeOffset.dx > notification.dragDetails.globalPosition.dx) {
-            //       context.read<FeedMapNotifier>().storageIsSwipeLeft(false);
-            //     } else {
-            //       // 右滑
-            //       context.read<FeedMapNotifier>().storageIsSwipeLeft(true);
-            //     }
-            //   }
-            //   } else if (notification is ScrollEndNotification) {
-            //     // 滚动结束
-            //     print('滚动结束');
-            //     print(ScreenUtil.instance.width);
-            //   }
-            // },
-            // GestureDetector(
-            //     onHorizontalDragStart:  _onHorizontalDragStart ,/*横向拖动的开始状态*/
-            //     onHorizontalDragUpdate: _onHorizontalDragUpdate,/*横向拖动的状态*/
-            // onHorizontalDragEnd:  _onHorizontalDragEnd,/*横向拖动的结束状态*/
-            Container(
-          child: Stack(children: [
+      value: SystemUiOverlayStyle.dark,
+      // child: Scaffold(
+      //     resizeToAvoidBottomInset: false,
+      child:
+          // NotificationListener<ScrollNotification>(
+          //     onNotification: (ScrollNotification notification) {
+          //       ScrollMetrics metrics = notification.metrics;
+          // 注册通知回调
+          // if (notification is ScrollStartNotification) {
+          //   // 滚动开始
+          //   // print('滚动开始');
+          // print(notification.dragDetails.globalPosition);
+          // print("viewportDimension::${metrics.viewportDimension}");
+          // print("axisDirection::${metrics.axisDirection}");
+          // if (metrics.axis == Axis.horizontal && notification.dragDetails != null) {
+          //   _initialSwipeOffset = notification.dragDetails.globalPosition;
+          // }
+          // print("_initialSwipeOffset::${_initialSwipeOffset}");
+          // } else if (notification is ScrollUpdateNotification) {
+          //   print('滚动位置更新');
+          //   // 滚动位置更新
+          //   if (metrics.axis == Axis.horizontal && notification.dragDetails != null) {
+          //     // 左滑
+          //     print(notification.dragDetails.globalPosition.dx);
+          //     if (_initialSwipeOffset.dx > notification.dragDetails.globalPosition.dx) {
+          //       context.read<FeedMapNotifier>().storageIsSwipeLeft(false);
+          //     } else {
+          //       // 右滑
+          //       context.read<FeedMapNotifier>().storageIsSwipeLeft(true);
+          //     }
+          //   }
+          //   } else if (notification is ScrollEndNotification) {
+          //     // 滚动结束
+          //     print('滚动结束');
+          //     print(ScreenUtil.instance.width);
+          //   }
+          // },
+          // GestureDetector(
+          //     onHorizontalDragStart:  _onHorizontalDragStart ,/*横向拖动的开始状态*/
+          //     onHorizontalDragUpdate: _onHorizontalDragUpdate,/*横向拖动的状态*/
+          // onHorizontalDragEnd:  _onHorizontalDragEnd,/*横向拖动的结束状态*/
+          Container(
+        child: Stack(
+          children: [
             ChangeNotifierProvider(
-                create: (_) => SelectedbottomNavigationBarNotifier(0),
-                builder: (context, _) {
-                  return ScrollConfiguration(
-                    behavior: NoBlueEffectBehavior(),
-                    child: UnionOuterTabBarView(
-                      physics: context.watch<SelectedbottomNavigationBarNotifier>().selectedIndex == 0
-                          //ClampingScrollPhysics 禁止回弹效果 NeverScrollableScrollPhysics 禁止滚动效果
-                          ? ClampingScrollPhysics()
-                          : NeverScrollableScrollPhysics(),
-                      controller: _controller,
-                      children: _createTabContent(),
-                    ),
-                  );
-                })
-          ]),
-        )
-        // )
-        );
+              create: (_) => SelectedbottomNavigationBarNotifier(0),
+              builder: (context, _) {
+                // 暂时屏蔽负一屏
+                return MainPage();
+                // return ScrollConfiguration(
+                //   behavior: NoBlueEffectBehavior(),
+                //   child: UnionOuterTabBarView(
+                //     physics: context.watch<SelectedbottomNavigationBarNotifier>().selectedIndex == 0
+                //         //ClampingScrollPhysics 禁止回弹效果 NeverScrollableScrollPhysics 禁止滚动效果
+                //         ? ClampingScrollPhysics()
+                //         : NeverScrollableScrollPhysics(),
+                //     controller: _controller,
+                //     children: _createTabContent(),
+                //   ),
+                // );
+              },
+            ),
+          ],
+        ),
+      ),
+      // )
+    );
   }
 
   List<Widget> _createTabContent() {
     List<Widget> tabContent = List();
-    //四个常规业务tabBar
     tabContent.add(MediaPickerPage(
       9,
       typeImageAndVideo,
@@ -161,6 +165,7 @@ class IfPageState extends XCState with TickerProviderStateMixin, WidgetsBindingO
       false,
       publishMode: 2,
     ));
+    //四个常规业务tabBar
     tabContent.add(MainPage());
     return tabContent;
   }

@@ -71,6 +71,8 @@ followModelarrayDate(List<BuddyModel> array1, List<BuddyModel> array2) {
 }
 
 class ReleasePage extends StatefulWidget {
+  Rule topicRule;
+  ReleasePage({this.topicRule});
   @override
   ReleasePageState createState() => ReleasePageState();
 }
@@ -79,7 +81,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
   SelectedMediaFiles _selectedMediaFiles;
   TextEditingController _controller = TextEditingController();
   FocusNode feedFocus = FocusNode();
-
+  bool isFirst = true;
   // 权限
   PermissionStatus permissions;
 
@@ -210,6 +212,11 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
             topicSearchStr: "",
           ),
           builder: (context, _) {
+            if(widget.topicRule!=null&&isFirst){
+              print('--------------------------widget.topicRule!=null');
+              context.watch<ReleaseFeedInputNotifier>().rules.insert(0, widget.topicRule);
+              isFirst = false;
+            }
             String str = context.watch<ReleaseFeedInputNotifier>().keyWord;
             return Container(
               color: AppColor.white,
@@ -405,6 +412,7 @@ class FeedHeader extends StatelessWidget {
       context.read<FeedMapNotifier>().setPublishFeedModel(feedModel);
       context.read<ReleaseFeedInputNotifier>().rules.clear();
       context.read<ReleaseFeedInputNotifier>().selectAddress = null;
+      FocusScope.of(context).requestFocus(FocusNode());
       Navigator.pop(context, true);
     }
   }
@@ -430,6 +438,7 @@ class FeedHeader extends StatelessWidget {
               showAppDialog(
                 context,
                 confirm: AppDialogButton("确定", () {
+                  FocusScope.of(context).requestFocus(FocusNode());
                   Navigator.of(context).pop(true);
                   return true;
                 }),
@@ -505,7 +514,7 @@ class KeyboardInput extends StatefulWidget {
 class KeyboardInputState extends State<KeyboardInput> {
   ReleaseFeedInputFormatter _formatter;
   FocusNode commentFocus;
-
+  bool isFirst = true;
   // 判断是否只是切换光标
   bool isSwitchCursor = true;
 
@@ -757,6 +766,13 @@ class KeyboardInputState extends State<KeyboardInput> {
   @override
   Widget build(BuildContext context) {
     List<Rule> rules = context.watch<ReleaseFeedInputNotifier>().rules;
+    if(widget.controller.text.length<1&&context.watch<ReleaseFeedInputNotifier>().rules.isNotEmpty){
+      widget.controller.text = "#${context.watch<ReleaseFeedInputNotifier>().rules.first.params}";
+      widget.controller.selection =  TextSelection(
+        baseOffset: context.watch<ReleaseFeedInputNotifier>().rules.first.endIndex,
+        extentOffset: context.watch<ReleaseFeedInputNotifier>().rules.first.endIndex,
+      );
+    }
     return Container(
       height: 129,
       width: ScreenUtil.instance.screenWidthDp,
@@ -1560,7 +1576,7 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        widget.selectedMediaFiles.list != null
+        widget.selectedMediaFiles!=null&&widget.selectedMediaFiles.list != null
             ? SeletedPhoto(
                 selectedMediaFiles: widget.selectedMediaFiles,
               )
@@ -1655,7 +1671,7 @@ class SeletedPhotoState extends State<SeletedPhoto> {
             borderRadius: BorderRadius.all(Radius.circular(3.0)),
           ),
           child: Center(
-            child: AppIcon.getAppIcon(AppIcon.add, 13),
+            child: AppIcon.getAppIcon(AppIcon.add_gallery, 13),
           ),
         ),
       );

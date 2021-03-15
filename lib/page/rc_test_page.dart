@@ -1,11 +1,11 @@
-
-
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:mirror/api/rongcloud_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/database/conversation_db_helper.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/notifier/rongcloud_status_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -25,15 +25,16 @@ class RCTestState extends State<RCTestPage> {
   String _token = "";
   String _status = "未连接";
   TextEditingController controller = TextEditingController();
-  TextField inputText ;
+  TextField inputText;
+
   @override
   void initState() {
     super.initState();
     _token = "";
-    controller.addListener(() {
-
-    });
-    inputText = TextField(controller: controller,);
+    controller.addListener(() {});
+    inputText = TextField(
+      controller: controller,
+    );
   }
 
   @override
@@ -73,7 +74,8 @@ class RCTestState extends State<RCTestPage> {
               width: 100,
               height: 20,
             ),
-            FlatButton(onPressed:  () async {
+            FlatButton(
+              onPressed: () async {
                 TextMessage msg = TextMessage();
                 UserInfo userInfo = UserInfo();
                 userInfo.userId = Application.profile.uid.toString();
@@ -83,16 +85,25 @@ class RCTestState extends State<RCTestPage> {
                 msg.content = "测试消息${Random().nextInt(10000)}";
                 Message message = await Application.rongCloud.sendPrivateMessage(controller.text, msg);
                 print(message.toString());
-             }, child: Text("发送消息"),minWidth: 100,height: 20,),
+              },
+              child: Text("发送消息"),
+              minWidth: 100,
+              height: 20,
+            ),
             RaisedButton(
               onPressed: _clearConversations,
               child: Text("清除所有会话数据"),
+            ),
+            RaisedButton(
+              onPressed: _sendChatRoomMsg,
+              child: Text("发送聊天室消息"),
             ),
           ],
         ),
       ),
     );
   }
+
   void _connectRC() {
     print("开始连接");
     Application.rongCloud.doConnect(_token, (int code, String userId) {
@@ -104,7 +115,7 @@ class RCTestState extends State<RCTestPage> {
         setState(() {
           _status = "连接成功，userId为" + userId;
         });
-      } else if(code == 34001) {
+      } else if (code == 34001) {
         // 已经连接上了
       } else if (code == 31004) {
         // token 非法，需要重新从 APP 服务获取新 token 并连接
@@ -114,6 +125,7 @@ class RCTestState extends State<RCTestPage> {
       }
     });
   }
+
   void _disconnectRC() {
     Application.rongCloud.disconnect();
     setState(() {
@@ -121,8 +133,25 @@ class RCTestState extends State<RCTestPage> {
     });
   }
 
-  void _clearConversations() async{
+  void _clearConversations() async {
     await ConversationDBHelper().clearConversation(Application.profile.uid);
     MessageManager.clearUserMessage(context);
+  }
+
+  _sendChatRoomMsg() async {
+    TextMessage msg = TextMessage();
+    UserInfo userInfo = UserInfo();
+    userInfo.userId = Application.profile.uid.toString();
+    userInfo.name = Application.profile.nickName;
+    userInfo.portraitUri = Application.profile.avatarUri;
+    msg.sendUserInfo = userInfo;
+    Map<String, dynamic> textMap = Map();
+    textMap["fromUserId"] = msg.sendUserInfo.userId.toString();
+    textMap["toUserId"] = "1";
+    textMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_TEXT;
+    textMap["name"] = ChatTypeModel.MESSAGE_TYPE_TEXT_NAME;
+    textMap["data"] = "测试消息${Random().nextInt(10000)}";
+    msg.content = jsonEncode(textMap);
+    await Application.rongCloud.sendChatRoomMessage("1", msg);
   }
 }
