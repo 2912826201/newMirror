@@ -16,6 +16,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/loading.dart';
 import 'package:toast/toast.dart';
 
@@ -107,9 +108,9 @@ class _feedBackPage extends State<FeedBackPage> {
     );
   }
 
-Widget _imageList(double width){
-    if(imageDataList.length>8){
-      imageDataList.removeRange(8,imageDataList.length);
+  Widget _imageList(double width) {
+    if (imageDataList.length > 8) {
+      imageDataList.removeRange(8, imageDataList.length);
     }
     return Container(
       height: 95,
@@ -150,56 +151,48 @@ Widget _imageList(double width){
                 height: 86,
               )),
           Positioned(
-              top: 2,
-              right: 0,
-              child: InkWell(
-                onTap: () {
-                  imageDataList.removeAt(index);
-                  setState(() {});
-                },
-                child: Container(
-                  width: 16,
-                  height: 16,
-                  decoration:
-                      BoxDecoration(color: AppColor.bgBlack, borderRadius: BorderRadius.all(Radius.circular(8))),
-                  child: Center(
-                      child: Icon(
-                    Icons.close,
-                    color: AppColor.white,
-                    size: 12,
-                  )),
-                ),
-              )),
+            right: 0,
+            child: AppIconButton(
+              svgName: AppIcon.delete,
+              iconSize: 18,
+              onTap: () {
+                imageDataList.removeAt(index);
+                setState(() {});
+              },
+            ),
+          ),
         ],
       ),
     );
   }
 
-Widget _addImageItem(){
-    return imageDataList.length<8?InkWell(
-      onTap: (){
-        _getImage();
-      },
-      child: Container(
-      margin: EdgeInsets.only( top: 9, right: 16),
-      width: 86,
-      height: 86,
-      decoration: BoxDecoration(
-        color: AppColor.bgWhite,
-        borderRadius: BorderRadius.all(Radius.circular(3.0)),
-      ),
-      child: Center(
-        child: Icon(Icons.add, color: AppColor.textHint),
-      ),
-    ),):Container();
-}
+  Widget _addImageItem() {
+    return imageDataList.length < 8
+        ? InkWell(
+            onTap: () {
+              _getImage();
+            },
+            child: Container(
+              margin: EdgeInsets.only(top: 9, right: 16),
+              width: 86,
+              height: 86,
+              decoration: BoxDecoration(
+                color: AppColor.bgWhite,
+                borderRadius: BorderRadius.all(Radius.circular(3.0)),
+              ),
+              child: Center(
+                child: AppIcon.getAppIcon(AppIcon.add, 13),
+              ),
+            ),
+          )
+        : Container();
+  }
 
-    //从相册获取照片
-  _getImage(){
-    AppRouter.navigateToMediaPickerPage(
-      context, 8, typeImage, true, startPageGallery, false, (result) {
+  //从相册获取照片
+  _getImage() {
+    AppRouter.navigateToMediaPickerPage(context, 8, typeImage, true, startPageGallery, false, (result) {
       SelectedMediaFiles files = Application.selectedMediaFiles;
-      if (!result|| files == null) {
+      if (!result || files == null) {
         print('===============================值为空退回');
         return;
       }

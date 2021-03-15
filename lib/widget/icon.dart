@@ -42,6 +42,9 @@ class AppIcon {
   static const String arrow_right_12 = "assets/svg/arrow_right_12.svg";
   static const String arrow_right_18 = "assets/svg/arrow_right_18.svg";
   static const String close_18 = "assets/svg/close_18.svg";
+  static const String add_avatar_big = "assets/svg/add_avatar_big.svg";
+  static const String add = "assets/svg/add.svg";
+  static const String delete = "assets/svg/delete.svg";
 
   static const String qrcode_scan = "assets/svg/qrcode_scan.svg";
   static const String machine_connected = "assets/svg/machine_connected.svg";
