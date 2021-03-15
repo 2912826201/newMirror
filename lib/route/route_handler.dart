@@ -80,6 +80,7 @@ import 'package:mirror/page/training/video_course/video_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/widget/address_Picker.dart';
 import 'package:mirror/widget/feed/feed_share_select_contact.dart';
+import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:provider/provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
@@ -266,7 +267,7 @@ var handlerTrainingRecordAllPage = Handler(handlerFunc: (BuildContext context, M
 
 var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return ReleasePage();
+  return ReleasePage(topicRule: Rule.fromJson(data["topicRule"]),);
 });
 
 var handlerLiveBroadcast = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
@@ -460,8 +461,8 @@ var handlerTopicDetailPage = Handler(handlerFunc: (BuildContext context, Map<Str
   if(data["topicModel"] != null ) {
     topicModel = TopicDtoModel.fromJson(data["topicModel"]);
   }
-  return ChangeNotifierProvider(create: (_) => TopicDetailNotifier(),child: TopicDetail(model:topicModel ,
-  isTopicList: data["isTopicList"],),);
+  return TopicDetail(model:topicModel ,
+  isTopicList: data["isTopicList"],);
 });
 // 搜索页面
 var handlerSearchPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {

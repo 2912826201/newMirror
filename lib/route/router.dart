@@ -14,6 +14,7 @@ import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/page/scan_code/scan_result_page.dart';
 import 'package:mirror/route/route_handler.dart';
+import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 /// router
@@ -484,8 +485,11 @@ class AppRouter {
   static void navigateToTrainSeveralPage(BuildContext context) {
     _navigateToPage(context, pathTrainSeveralPage, {});
   }
-  static void navigateToReleasePage(BuildContext context) {
+  static void navigateToReleasePage(BuildContext context, {Rule topicRule}) {
     Map<String, dynamic> map = Map();
+    if(topicRule!=null){
+      map["topicRule"] = topicRule.toJson();
+    }
     _navigateToPage(context, pathRelease, map);
   }
 
