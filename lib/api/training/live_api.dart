@@ -69,10 +69,9 @@ Future<Map> getLiveCoursesByDate({@required String date, @required int type}) as
 ///直播课程详情
 ///请求参数
 ///courseId:1
-Future<Map> liveCourseDetail({@required int courseId, @required String startTime}) async {
+Future<Map> liveCourseDetail({@required int courseId}) async {
   Map<String, dynamic> params = {};
   params["courseId"] = courseId.toString();
-  params["startTime"] = startTime;
   BaseResponseModel responseModel = await requestApi(LIVECOURSEDETAIL, params);
   if (responseModel.isSuccess) {
     return responseModel.data;
@@ -85,7 +84,7 @@ Future<Map> liveCourseDetail({@required int courseId, @required String startTime
 ///直播课程详情--根据id获取
 ///请求参数
 ///courseId:1
-Future<Map> getLatestLiveById({@required int courseId,String startTime}) async {
+Future<Map> getLatestLiveById({@required int courseId}) async {
   Map<String, dynamic> params = {};
   params["courseId"] = courseId.toString();
   BaseResponseModel responseModel = await requestApi(GETLATESTLIVEBYID, params);

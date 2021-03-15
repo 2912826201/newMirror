@@ -74,7 +74,6 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
 
   @override
   Widget build(BuildContext context) {
-
     return WillPopScope(
         child: Scaffold(
           backgroundColor: Colors.transparent,
