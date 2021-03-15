@@ -707,7 +707,9 @@ class _GalleryPageState extends State<GalleryPage> {
                 AppRouter.navigateToReleasePage(context);
               } else if (widget.publishMode == 2) {
                 AppRouter.navigateToReleasePage(context);
-                Application.ifPageController.index = Application.ifPageController.length - 1;
+                if(Application.ifPageController != null) {
+                  Application.ifPageController.index = Application.ifPageController.length - 1;
+                }
               } else {
                 Navigator.pop(context, true);
               }
