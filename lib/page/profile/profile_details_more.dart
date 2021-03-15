@@ -202,7 +202,7 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
     print('取消关注监听==============================$cancelResult');
     if (cancelResult == 0 || cancelResult == 2) {
       ToastShow.show(msg: "已取消关注该用户", context: context);
-      context.read<UserInteractiveNotifier>().changeFollowCount(context.read<ProfileNotifier>().profile.uid, false);
+      context.read<UserInteractiveNotifier>().changeFollowCount(widget.userId, false);
       context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.userId);
       Navigator.pop(context);
     }

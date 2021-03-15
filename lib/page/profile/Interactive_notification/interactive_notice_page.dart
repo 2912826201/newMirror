@@ -22,6 +22,8 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 
+import '../overscroll_behavior.dart';
+
 ///消息提醒列表
 class InteractiveNoticePage extends StatefulWidget {
   int type;
@@ -156,7 +158,9 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
             width: width,
             height: height,
             child: haveData
-                ? SmartRefresher(
+                ?  ScrollConfiguration(
+              behavior: OverScrollBehavior(),
+              child:SmartRefresher(
                     controller: controller,
                     enablePullUp: true,
                     enablePullDown: true,
@@ -195,7 +199,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                               msgModel: msgList[index],
                               index: index,);
                         }),
-                  )
+                  ))
                 : Center(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -264,19 +268,21 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
 
   _getRefData(BuildContext context) {
     print('=======================${widget.msgModel.refType}');
-    if (widget.type == 0 || widget.type == 1) {
+    if (widget.type == 0) {
       if (widget.msgModel.commentData == null) {
         commentIsDelete = true;
       } else {
         atUserList = widget.msgModel.commentData.atUsers;
         comment = widget.msgModel.commentData.content;
       }
-    } else {
+    } else if(widget.type == 2){
       if(widget.msgModel.commentData!=null){
         comment = "赞了你的评论";
       }else{
         comment = "赞了你的动态";
       }
+    }else{
+      print('--------------------------${widget.msgModel.refType}');
     }
     if (widget.msgModel.refData != null) {
       if (widget.msgModel.refType == 0) {

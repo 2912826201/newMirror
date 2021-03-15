@@ -342,11 +342,6 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                         setState(() {
                           _relation = relation;
                         });
-                        if (relation == 1 || relation == 3) {
-                          context
-                              .read<UserInteractiveNotifier>()
-                              .changeFollowCount(context.read<ProfileNotifier>().profile.uid, true);
-                        }
                       }
                     });
                   }
