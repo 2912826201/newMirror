@@ -40,8 +40,9 @@ class CommentInputBoxState extends State<CommentInputBox> {
   @override
   Widget build(BuildContext context) {
     return Offstage(
-      offstage: false
-      // widget.isUnderline ? false : context.watch<FeedMapNotifier>().feedMap[widget.feedModel.id].isShowInputBox
+      offstage:
+      // false
+      widget.isUnderline ? false : context.watch<FeedMapNotifier>().feedMap[widget.feedModel.id].isShowInputBox
       ,
       child: Container(
         height: widget.isFeedDetail ? 48 + ScreenUtil.instance.bottomBarHeight : 48,
@@ -95,7 +96,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
               onTap: () {
                 if (context.read<TokenNotifier>().isLoggedIn) {
                   if (context.read<FeedMapNotifier>().postFeedModel != null) {
-                    ToastShow.show(msg: "不响应", context: context);
+                    // ToastShow.show(msg: "不响应", context: context);
                   } else {
                     openInputBottomSheet(
                       buildContext: context,

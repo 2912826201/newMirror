@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/commentInputBox.dart';
@@ -12,26 +13,31 @@ import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/page/training/common/common_comment_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 
 class CommentBottomSheet extends StatefulWidget {
-  CommentBottomSheet({Key key, this.feedId,this.commentDtoModel}) : super(key: key);
+  CommentBottomSheet({Key key, this.feedId, this.commentDtoModel}) : super(key: key);
+
   // 动态id
   int feedId;
   CommentDtoModel commentDtoModel;
-  CommentBottomSheetState createState() => CommentBottomSheetState(feedId: feedId,commentDtoModel: commentDtoModel);
+
+  CommentBottomSheetState createState() => CommentBottomSheetState(feedId: feedId, commentDtoModel: commentDtoModel);
 }
 
-class CommentBottomSheetState extends XCState
-// State<CommentBottomSheet>
+class CommentBottomSheetState extends XCState // State<CommentBottomSheet>
 {
-  CommentBottomSheetState({this.feedId,this.commentDtoModel});
+  CommentBottomSheetState({this.feedId, this.commentDtoModel});
+
   // 列表监听
   ScrollController _controller = new ScrollController();
+
   // 动态id
   int feedId;
   CommentDtoModel commentDtoModel;
+
   //上拉加载数据
   RefreshController _refreshController = RefreshController(initialRefresh: false);
   GlobalKey<CommonCommentPageState> childKey = GlobalKey();
@@ -42,6 +48,7 @@ class CommentBottomSheetState extends XCState
     print('================================底部弹窗dispose');
     super.dispose();
   }
+
   //底部或滑动
   Widget footerWidget() {
     return CustomFooter(
@@ -74,9 +81,9 @@ class CommentBottomSheetState extends XCState
   createMiddleView() {
     // print(context.select((FeedMapNotifier value) => value.feedMap[feedId].totalCount));
     return Expanded(
-      child:NotificationListener<ScrollNotification>(
+      child: NotificationListener<ScrollNotification>(
         onNotification: _onDragNotification,
-        child:SmartRefresher(
+        child: SmartRefresher(
             enablePullDown: false,
             enablePullUp: true,
             footer: footerWidget(),
@@ -94,10 +101,10 @@ class CommentBottomSheetState extends XCState
                   commentDtoModel: commentDtoModel,
                   pushId: context.read<FeedMapNotifier>().feedMap[feedId].pushId,
                   targetType: 0,
-                  isBottomSheetAndHomePage:true,
+                  isBottomSheetAndHomePage: true,
                   pageCommentSize: 20,
                   pageSubCommentSize: 3,
-                  externalBoxHeight:MediaQuery.of(context).size.height*0.75,
+                  externalBoxHeight: MediaQuery.of(context).size.height * 0.75,
                 ),
               )
             ])),
@@ -108,7 +115,7 @@ class CommentBottomSheetState extends XCState
   //滑动的回调
   bool _onDragNotification(ScrollNotification notification) {
     ScrollMetrics metrics = notification.metrics;
-    childKey.currentState.scrollHeightOld=metrics.pixels;
+    childKey.currentState.scrollHeightOld = metrics.pixels;
     return false;
   }
 
@@ -189,12 +196,12 @@ class CommentBottomSheetState extends XCState
                 //     ?
                 Positioned(
                   left: 16,
-                  top: 17,
+                  top: 14,
                   // DynamicModelNotifier
                   child: Selector<FeedMapNotifier, int>(builder: (context, totalCount, child) {
                     return Text(
                       "共${StringUtil.getNumber(totalCount)}条评论",
-                      style: AppStyle.textRegular12,
+                      style: AppStyle.textPrimary2Medium14,
                     );
                   }, selector: (context, notifier) {
                     return notifier.feedMap[feedId].totalCount;
@@ -207,14 +214,18 @@ class CommentBottomSheetState extends XCState
                 // : Container()
                 ,
                 Positioned(
-                    top: 15,
-                    right: 16,
-                    child: GestureDetector(
-                      child: Image.asset("images/resource/2.0x/ic_big_nav_closepage@2x.png", width: 18, height: 18),
-                      onTap: () {
-                        Navigator.pop(context, true);
-                      },
-                    ))
+                  top: 6,
+                  right: 7,
+                  child: AppIconButton(
+                    svgName: AppIcon.close_18,
+                    iconSize: 18,
+                    buttonHeight: 36,
+                    buttonWidth: 36,
+                    onTap: () {
+                      Navigator.pop(context, true);
+                    },
+                  ),
+                ),
               ],
             ),
           ),
