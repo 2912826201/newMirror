@@ -256,9 +256,12 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                               mainAxisAlignment: MainAxisAlignment.center,
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                Text(
+                                                Container(
+                                                  width:ScreenUtil.instance.width*(168/ScreenUtil.instance.width),
+                                                  child:Text(
                                                   "#${widget.model.name}",
                                                   style: AppStyle.textMedium16,
+                                                ) ,
                                                 ),
                                                 SizedBox(
                                                   height: 3,
