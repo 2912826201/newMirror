@@ -90,6 +90,13 @@ class ChatTypeModel {
   static const String MESSAGE_TYPE_CLICK_ERROR_BTN = "IF:ClickMessageErrorBtn";
   static const String MESSAGE_TYPE_CLICK_ERROR_BTN_NAME = "消息列表-消息发送失败-点击了失败按钮";
 
+  //系统的弹幕消息
+  static const String MESSAGE_TYPE_SYS_BARRAGE="IF:SysBarrageMessage";
+  static const String MESSAGE_TYPE_SYS_BARRAGE_NAME="系统弹幕消息,该版本较低请升级版本再行查看";
+
+  //普通用户的弹幕消息
+  static const String MESSAGE_TYPE_USER_BARRAGE="IF:SysBarrageMessage";
+  static const String MESSAGE_TYPE_USER_BARRAGE_NAME="用户弹幕消息,该版本较低请升级版本再行查看";
 
 
 }

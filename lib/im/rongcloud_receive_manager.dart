@@ -35,6 +35,13 @@ class RongCloudReceiveManager {
       return;
     }
 
+    //判断是不是弹幕消息
+    if(MessageManager.judgeBarrageMessage(msg)){
+      print("收到了弹幕消息：${msg.content.encode()}");
+      return;
+    }
+
+
     //分析消息是什么类型
     MessageManager.splitMessage(msg);
 
