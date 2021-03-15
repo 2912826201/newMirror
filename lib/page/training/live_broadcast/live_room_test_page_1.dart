@@ -282,9 +282,26 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
   Widget getBottomPlan(){
     return Column(
       children: [
-        Container(
-          height: getBottomHeight(),
-          child: getListView(),
+        ShaderMask(
+          shaderCallback: (Rect bounds) {
+            return LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.transparent,
+                Colors.black,
+                Colors.black,
+                Colors.black,
+                Colors.black,
+                Colors.transparent,
+              ],
+            ).createShader(Rect.fromLTRB(0,0, bounds.width,bounds.height));
+          },
+          blendMode: BlendMode.dstIn,
+          child: Container(
+            height: getBottomHeight(),
+            child: getListView(),
+          ),
         ),
         Container(
           height: 48.0,
