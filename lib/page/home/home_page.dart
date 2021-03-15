@@ -21,6 +21,7 @@ import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/home/sub_page/attention_page.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/release_progress_view.dart';
+import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -241,7 +242,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
         PostFeedModel postFeedModel = notifier.postFeedModel;
         HomeFeedModel homeFeedModel = HomeFeedModel().conversionModel(postFeedModel, context);
         // 定位到main_page页
-        Application.ifPageController.index = Application.ifPageController.length - 1;
+        // Application.ifPageController.index = Application.ifPageController.length - 1;
         // 定位到关注页
         controller.index = 0;
         // 关注页回到顶部
@@ -276,7 +277,11 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin, 
                   } else {
                     // 从打开新页面改成滑到负一屏
                     if (context.read<TokenNotifier>().isLoggedIn) {
-                      Application.ifPageController.animateTo(0);
+                      // 暂时屏蔽负一屏
+                      AppRouter.navigateToMediaPickerPage(
+                          context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
+                          publishMode: 1);
+                      // Application.ifPageController.animateTo(0);
                     } else {
                       AppRouter.navigateToLoginPage(context);
                     }

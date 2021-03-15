@@ -87,6 +87,11 @@ class RongCloud {
   }
 
   //todo 现在没有加 每一秒只发送5条数据的限制
+  Future<Message> sendChatRoomMessage(String targetId, MessageContent content) {
+    return RongIMClient.sendMessage(RCConversationType.ChatRoom, targetId, content);
+  }
+
+  //todo 现在没有加 每一秒只发送5条数据的限制
   Future<Message> sendVoiceMessage(Message message)async {
     if(Application.platform==1){
       return RongIMClient.getMessage(

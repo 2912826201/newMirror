@@ -35,13 +35,19 @@ class AppIcon {
   static const String tag_location = "assets/svg/tag_location.svg";
   static const String tag_course = "assets/svg/tag_course.svg";
   static const String check = "assets/svg/check.svg";
+  static const String check_follow = "assets/svg/check_follow.svg";
   static const String topic = "assets/svg/topic.svg";
   static const String trash_bucket = "assets/svg/trash_bucket.svg";
   static const String add_circle_black = "assets/svg/add_circle_black.svg";
   static const String clear_circle_grey = "assets/svg/clear_circle_grey.svg";
   static const String arrow_right_12 = "assets/svg/arrow_right_12.svg";
+  static const String arrow_right_16 = "assets/svg/arrow_right_18.svg";
   static const String arrow_right_18 = "assets/svg/arrow_right_18.svg";
   static const String close_18 = "assets/svg/close_18.svg";
+  static const String add_avatar_big = "assets/svg/add_avatar_big.svg";
+  static const String add_gallery = "assets/svg/add_gallery.svg";
+  static const String add_follow = "assets/svg/add_follow.svg";
+  static const String delete = "assets/svg/delete.svg";
 
   static const String qrcode_scan = "assets/svg/qrcode_scan.svg";
   static const String machine_connected = "assets/svg/machine_connected.svg";
