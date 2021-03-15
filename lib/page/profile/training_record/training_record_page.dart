@@ -9,6 +9,7 @@ import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/profile/training_record_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
@@ -414,7 +415,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
                   SizedBox(width: 12),
                   Icon(Icons.local_fire_department, size: 12, color: AppColor.textHint),
                   SizedBox(width: 4),
-                  Text("$calorie千卡", style: TextStyle(fontSize: 12, color: AppColor.textPrimary2)),
+                  Text(IntegerUtil.formationCalorie(calorie), style: TextStyle(fontSize: 12, color: AppColor.textPrimary2)),
                 ],
               ),
             ),
@@ -427,7 +428,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
           SizedBox(height: 11),
           Text(courseModel.title, style: TextStyle(fontSize: 16, color: AppColor.textPrimary1)),
           SizedBox(height: 6),
-          Text("第${courseModel.no}次  ${courseModel.mseconds ~/ 1000 ~/ 60}分钟  ${courseModel.calorie}千卡",
+          Text("第${courseModel.no}次  ${courseModel.mseconds ~/ 1000 ~/ 60}分钟  ${IntegerUtil.formationCalorie(courseModel.calorie)}",
               style: TextStyle(fontSize: 12, color: AppColor.textSecondary)),
           SizedBox(height: 12),
           Container(
@@ -451,17 +452,17 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
       DateTime dateTime = DateUtil.stringToDateTime(dayModelList[daySelectPosition].finishTime);
       subTitle = "${dateTime.month}月${dateTime.day}日";
       time = (dayModelList[daySelectPosition].dmsecondsCount ~/ 1000 ~/ 60).toString() + "分钟";
-      calorie = dayModelList[daySelectPosition].dcalorieCount.toString() + "千卡";
+      calorie = IntegerUtil.formationCalorie(dayModelList[daySelectPosition].dcalorieCount);
     } else if (typeString == "周") {
       title = "训练共${weekModelList[weekSelectPosition].allCount}次";
       subTitle = weekModelList[weekSelectPosition].dateCompleteString;
       time = (weekModelList[weekSelectPosition].dmsecondsCount ~/ 1000 ~/ 60).toString() + "分钟";
-      calorie = weekModelList[weekSelectPosition].dcalorieCount.toString() + "千卡";
+      calorie = IntegerUtil.formationCalorie(weekModelList[weekSelectPosition].dcalorieCount);
     } else {
       title = "训练共${monthModelList[monthSelectPosition].allCount}次";
       subTitle = monthModelList[monthSelectPosition].dateCompleteString1;
       time = (monthModelList[monthSelectPosition].dmsecondsCount ~/ 1000 ~/ 60).toString() + "分钟";
-      calorie = monthModelList[monthSelectPosition].dcalorieCount.toString() + "千卡";
+      calorie = IntegerUtil.formationCalorie(monthModelList[monthSelectPosition].dcalorieCount);
     }
 
     return SliverToBoxAdapter(
@@ -853,14 +854,14 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
       if (allDataMap == null || allDataMap["calorieCount"] == null) {
         return "0";
       } else {
-        return (allDataMap["calorieCount"]).toString();
+        return IntegerUtil.formationCalorie(allDataMap["calorieCount"],isHaveCompany: false);
       }
     } else if (typeString == "月") {
-      return monthModelList[monthSelectPosition].dcalorieCount.toString();
+      return IntegerUtil.formationCalorie(monthModelList[monthSelectPosition].dcalorieCount,isHaveCompany: false);
     } else if (typeString == "周") {
-      return weekModelList[weekSelectPosition].dcalorieCount.toString();
+      return IntegerUtil.formationCalorie(weekModelList[weekSelectPosition].dcalorieCount,isHaveCompany: false);
     } else {
-      return dayModelList[daySelectPosition].dcalorieCount.toString();
+      return IntegerUtil.formationCalorie(dayModelList[daySelectPosition].dcalorieCount,isHaveCompany: false);
     }
   }
 

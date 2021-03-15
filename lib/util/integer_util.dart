@@ -23,4 +23,12 @@ class IntegerUtil {
       return data.toString();
     }
   }
+
+  //将卡转换为千卡
+  static String formationCalorie(int calorie,{bool isHaveCompany=true}){
+    if(null==calorie||calorie<=0){
+      return "0${isHaveCompany?"千卡":""}";
+    }
+    return "${calorie/1000}${isHaveCompany?"千卡":""}";
+  }
 }
