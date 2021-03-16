@@ -101,7 +101,7 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
             Expanded(
                 child: Container(
               alignment: Alignment.center,
-              color: AppColor.bgBlack,
+              color: AppColor.black,
             ))
           ],
         ));

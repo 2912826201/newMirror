@@ -156,7 +156,7 @@ class CameraVideoState extends State<CameraVideoPage> with WidgetsBindingObserve
                 Expanded(
                   child: Container(
                     alignment: Alignment.center,
-                    color: AppColor.bgBlack,
+                    color: AppColor.black,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,

@@ -120,7 +120,7 @@ class CameraPhotoState extends State<CameraPhotoPage> with WidgetsBindingObserve
                 Expanded(
                     child: Container(
                   alignment: Alignment.center,
-                  color: AppColor.bgBlack,
+                  color: AppColor.black,
                   child: GestureDetector(
                     onTap: () async {
                       print("拍照！");

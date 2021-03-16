@@ -98,7 +98,7 @@ class _MediaPickerState extends State<MediaPickerPage> {
         physics: NeverScrollableScrollPhysics(),
       ),
       bottomNavigationBar: BottomAppBar(
-        color: AppColor.bgBlack,
+        color: AppColor.black,
         child: SizedBox(
           height: 48,
           child: Flex(
