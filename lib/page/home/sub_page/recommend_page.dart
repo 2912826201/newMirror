@@ -238,7 +238,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
 
   @override
   Widget build(BuildContext context) {
-    print("推荐页");
+    print("RecommendPageState_______build ");
     return Consumer<TokenNotifier>(
       builder: (context, notifier, child) {
         if (notifier.isLoggedIn && !isLogin) {
@@ -283,7 +283,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                       // 垂直列表
                       isRequestData == null
                           ? SliverToBoxAdapter()
-                          : recommendIdList.isNotEmpty
+                          : recommendModelList.isNotEmpty
                               ? SliverList(
                                   // controller: _controller,
                                   delegate: SliverChildBuilderDelegate((content, index) {
@@ -293,7 +293,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                     HomeFeedModel model;
                                     if (index < recommendIdList.length) {
                                       id = recommendIdList[index];
-                                      model = context.read<FeedMapNotifier>().feedMap[id];
+                                      model = context.read<FeedMapNotifier>().value.feedMap[id];
                                     }
                                     if (index == recommendIdList.length) {
                                       return LoadingView(
@@ -302,7 +302,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                       );
                                     } else {
                                       return ExposureDetector(
-                                        key: Key('recommend_page_$id'),
+                                        key: Key('recommend_page_${id}'),
                                         child: DynamicListLayout(
                                             index: index,
                                             model: model,
@@ -314,7 +314,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                         onExposure: (visibilityInfo) {
                                           print("回调看数据:${recommendIdList.toString()}");
                                           // 如果没有显示
-                                          if ( context.read<FeedMapNotifier>().feedMap[recommendIdList[index]].isShowInputBox) {
+                                          if ( context.read<FeedMapNotifier>().value.feedMap[recommendIdList[index]].isShowInputBox) {
                                             context.read<FeedMapNotifier>().showInputBox(recommendIdList[index]);
                                           }
                                           print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');

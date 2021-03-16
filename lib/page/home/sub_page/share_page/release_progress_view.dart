@@ -28,7 +28,8 @@ class ReleaseProgressView extends StatefulWidget {
 class ReleaseProgressViewState extends State<ReleaseProgressView> {
   @override
   Widget build(BuildContext context) {
-    return context.watch<FeedMapNotifier>().postFeedModel != null
+    return context.select(( ReleaseProgressNotifier value) => value.postFeedModel) != null
+      // context.watch<FeedMapNotifier>().value.postFeedModel != null
         ? Container(
             height: 60,
             width: ScreenUtil.instance.screenWidthDp,
@@ -43,7 +44,7 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            context.select((FeedMapNotifier value) => value.postFeedModel.selectedMediaFiles) != null
+                            context.select((ReleaseProgressNotifier value) => value.postFeedModel.selectedMediaFiles) != null
                                 ? Container(
                                     width: 36,
                                     height: 36,
@@ -51,24 +52,24 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
                                     child: Stack(
                                       alignment: const FractionalOffset(0.5, 0.5),
                                       children: [
-                                        context.select((FeedMapNotifier value) =>
+                                        context.select((ReleaseProgressNotifier value) =>
                                                     value.postFeedModel.selectedMediaFiles.type) ==
                                                 mediaTypeKeyVideo
                                             ? Image.file(
-                                                context.select((FeedMapNotifier value) =>
+                                                context.select((ReleaseProgressNotifier value) =>
                                                     File(value.postFeedModel.selectedMediaFiles.list.first.thumbPath)),
                                                 fit: BoxFit.cover,
                                               )
-                                            : context.select((FeedMapNotifier value) =>
+                                            : context.select((ReleaseProgressNotifier value) =>
                                                         value.postFeedModel.selectedMediaFiles.list.first.file) !=
                                                     null
                                                 ? Image.file(
-                                                    context.select((FeedMapNotifier value) =>
+                                                    context.select((ReleaseProgressNotifier value) =>
                                                         value.postFeedModel.selectedMediaFiles.list.first.file),
                                                     fit: BoxFit.cover,
                                                   )
                                                 : Container(),
-                                        context.select((FeedMapNotifier value) =>
+                                        context.select((ReleaseProgressNotifier value) =>
                                                     value.postFeedModel.selectedMediaFiles.type) ==
                                                 // context.watch<ReleaseProgressNotifier>().postFeedModel.selectedMediaFiles.type ==
                                                 mediaTypeKeyVideo
@@ -114,12 +115,12 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
                         ))),
                 LinearProgressIndicator(
                   value:
-                      // context.select((ReleaseProgressNotifier value) => value.plannedSpeed) != -1
-                      context.watch<ReleaseProgressNotifier>().plannedSpeed != -1
-                          ? context.watch<ReleaseProgressNotifier>().plannedSpeed
+                      context.select((ReleaseProgressNotifier value) => value.plannedSpeed) != -1
+                      // context.watch<ReleaseProgressNotifier>().plannedSpeed != -1
+                          ?  context.select((ReleaseProgressNotifier value) => value.plannedSpeed)
                           : 1,
                   valueColor: new AlwaysStoppedAnimation<Color>(
-                      context.watch<ReleaseProgressNotifier>().plannedSpeed != -1
+                      context.select((ReleaseProgressNotifier value) => value.plannedSpeed) != -1
                           ? AppColor.mainRed
                           : Colors.amberAccent),
                   backgroundColor: AppColor.white,

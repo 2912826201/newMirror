@@ -13,6 +13,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/data/notifier/release_progress_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/image_preview/image_preview_page.dart';
@@ -298,8 +299,8 @@ class _SlideBannerState extends State<SlideBanner> {
   setUpLuad() async {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     if (isLoggedIn) {
-      if (context.read<FeedMapNotifier>().postFeedModel != null &&
-          context.read<FeedMapNotifier>().feedMap[widget.model.id].id != Application.insertFeedId) {
+      if (context.read<ReleaseProgressNotifier>().postFeedModel != null &&
+          context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id != Application.insertFeedId) {
         // ToastShow.show(msg: "不响应", context: context);
       } else {
         BaseResponseModel model = await laud(id: widget.model.id, laud: widget.model.isLaud == 0 ? 1 : 0);
@@ -313,7 +314,7 @@ class _SlideBannerState extends State<SlideBanner> {
               .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
           context
               .read<UserInteractiveNotifier>()
-              .loadChange(widget.model.pushId, context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud);
+              .loadChange(widget.model.pushId, context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud);
         }
       }
     } else {

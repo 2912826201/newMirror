@@ -16,6 +16,7 @@ import 'package:mirror/data/database/region_db_helper.dart';
 import 'package:mirror/data/database/token_db_helper.dart';
 import 'package:mirror/data/dto/region_dto.dart';
 import 'package:mirror/data/model/base_response_model.dart';
+import 'package:mirror/data/model/feed/post_feed.dart';
 import 'package:mirror/data/model/message/at_mes_group_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
@@ -71,7 +72,7 @@ void main() {
             //当前用户所登录的机器终端信息 如果没有则为null
             ChangeNotifierProvider(create: (_) => MachineNotifier(Application.machine)),
             // ValueListenableProvider<FeedMapNotifier>(builder: (_) => {},)
-            ChangeNotifierProvider(create: (_) => FeedMapNotifier(feedMap: {})),
+            ChangeNotifierProvider(create: (_) => FeedMapNotifier(FeedMap({}))),
             //融云的连接状态 初始值为-1
             ChangeNotifierProvider(create: (_) => RongCloudStatusNotifier()),
             //用户的融云会话信息 登录后会从数据库查出来放到此provider中
@@ -91,7 +92,9 @@ void main() {
             //记录未读消息数 目前只记录3种互动通知的数量 从接口获取更新数据
             ChangeNotifierProvider(create: (_) => UnreadMessageNotifier()),
             ChangeNotifierProvider(create: (_) => FeedFlowDataNotifier()),
-            ChangeNotifierProvider(create: (_)=>AddressPickerNotifier())
+            ChangeNotifierProvider(create: (_)=>AddressPickerNotifier()),
+            // 发布动态进度
+            ChangeNotifierProvider(create: (_)=> ReleaseProgressNotifier(plannedSpeed: 0.0))
           ],
           child: MyApp(),
         ),

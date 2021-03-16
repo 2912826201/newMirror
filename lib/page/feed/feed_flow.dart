@@ -74,7 +74,7 @@ class FeedFlowState extends State<FeedFlow> {
         _refreshController.loadComplete();
       }
       List<HomeFeedModel> feedList = [];
-      context.read<FeedMapNotifier>().feedMap.forEach((key, value) {
+      context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
         feedList.add(value);
       });
       // 更新全局内没有的数据
@@ -108,7 +108,7 @@ class FeedFlowState extends State<FeedFlow> {
       _refreshController.resetNoData();
     }
     List<HomeFeedModel> feedList = [];
-    context.read<FeedMapNotifier>().feedMap.forEach((key, value) {
+    context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
       feedList.add(value);
     });
     // 更新全局内没有的数据

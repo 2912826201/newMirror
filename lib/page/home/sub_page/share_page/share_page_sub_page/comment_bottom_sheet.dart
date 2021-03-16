@@ -94,7 +94,7 @@ class CommentBottomSheetState extends XCState // State<CommentBottomSheet>
                   refreshController: _refreshController,
                   targetId: feedId,
                   commentDtoModel: commentDtoModel,
-                  pushId: context.read<FeedMapNotifier>().feedMap[feedId].pushId,
+                  pushId: context.read<FeedMapNotifier>().value.feedMap[feedId].pushId,
                   targetType: 0,
                   isBottomSheetAndHomePage: true,
                   pageCommentSize: 20,
@@ -199,7 +199,7 @@ class CommentBottomSheetState extends XCState // State<CommentBottomSheet>
                       style: AppStyle.textPrimary2Medium14,
                     );
                   }, selector: (context, notifier) {
-                    return notifier.feedMap[feedId].totalCount;
+                    return notifier.value.feedMap[feedId].totalCount;
                   }),
                   // Text(
                   //    "共${commentModel != [] ?  commentModel[0].totalCount : 0}条评论",
@@ -227,7 +227,7 @@ class CommentBottomSheetState extends XCState // State<CommentBottomSheet>
           createMiddleView(),
           CommentInputBox(
             isUnderline: true,
-            feedModel: context.watch<FeedMapNotifier>().feedMap[feedId],
+            feedModel: context.watch<FeedMapNotifier>().value.feedMap[feedId],
           ),
           SizedBox(
             height: ScreenUtil.instance.bottomHeight,

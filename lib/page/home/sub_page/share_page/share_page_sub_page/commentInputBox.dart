@@ -10,6 +10,7 @@ import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/data/notifier/release_progress_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -41,9 +42,13 @@ class CommentInputBoxState extends State<CommentInputBox> {
   Widget build(BuildContext context) {
     return Offstage(
       offstage:
-      // false
-      widget.isUnderline ? false : context.watch<FeedMapNotifier>().feedMap[widget.feedModel.id].isShowInputBox
-      ,
+          // false,
+          widget.isUnderline ? false :
+          (context.select((FeedMapNotifier value) => value.value.feedMap) != null &&
+              context.select((FeedMapNotifier value) => value.value.feedMap[widget.feedModel.id]) != null &&
+              context.select((FeedMapNotifier value) => value.value.feedMap[widget.feedModel.id].isShowInputBox) != null) ? context.select((FeedMapNotifier value) => value.value.feedMap[widget.feedModel.id].isShowInputBox) : true,
+          // context
+          //     .select((FeedMapNotifier feedNotifier) => feedNotifier.value.feedMap[widget.feedModel.id].isShowInputBox),
       child: Container(
         height: widget.isFeedDetail ? 48 + ScreenUtil.instance.bottomBarHeight : 48,
         width: ScreenUtil.instance.width,
@@ -95,7 +100,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
               ),
               onTap: () {
                 if (context.read<TokenNotifier>().isLoggedIn) {
-                  if (context.read<FeedMapNotifier>().postFeedModel != null) {
+                  if (context.read<ReleaseProgressNotifier>().postFeedModel != null) {
                     // ToastShow.show(msg: "不响应", context: context);
                   } else {
                     openInputBottomSheet(
@@ -133,12 +138,24 @@ class CommentInputBoxState extends State<CommentInputBox> {
                                     print("发布成功：${comModel.toString()}");
                                     print("1111111");
                                       context.read<FeedMapNotifier>().feedPublishComment(comModel, widget.feedModel.id);
-                                    if (context.read<FeedMapNotifier>().feedMap[widget.feedModel.id].hotComment.length <
+
+                                    print(
+                                        '==========hotComment=====${context.read<FeedMapNotifier>().value.feedMap[widget.feedModel.id].hotComment.hashCode}');
+                                    print(
+                                        '=======comments========${context.read<FeedMapNotifier>().value.feedMap[widget.feedModel.id].comments.hashCode}');
+                                    if (context
+                                            .read<FeedMapNotifier>()
+                                            .value
+                                            .feedMap[widget.feedModel.id]
+                                            .hotComment
+                                            .length <
                                         2) {
                                       print("{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{小于二");
                                       context.read<FeedMapNotifier>().updateHotComment(widget.feedModel.id,
                                           commentDtoModel: comModel, isDelete: false);
                                     }
+                                    print(
+                                        '=======updateHotComment}}}}}}}}}}}}}}}}}}}}}}}}}${context.read<FeedMapNotifier>().value.feedMap[widget.feedModel.id].hotComment.toString()}');
                                   }
                                 }
                               }

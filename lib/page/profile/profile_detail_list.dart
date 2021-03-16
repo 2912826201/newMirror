@@ -84,7 +84,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     }
     List<HomeFeedModel> feedList = [];
     context.read<UserInteractiveNotifier>().setFeedIdList(widget.id, idList, widget.type);
-    context.read<FeedMapNotifier>().feedMap.forEach((key, value) {
+    context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
       feedList.add(value);
     });
     // 只同步没有的数据
@@ -207,7 +207,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
               int id = widget.type == 2
                   ? context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].profileFeedListId[index]
                   : context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].profileLikeListId[index];
-              model = context.read<FeedMapNotifier>().feedMap[id];
+              model = context.read<FeedMapNotifier>().value.feedMap[id];
             } catch (e) {
               print(e);
             }
@@ -229,7 +229,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
               removeFollowChanged: (model) {},
               deleteFeedChanged: (feedId) {
                 context.read<UserInteractiveNotifier>().synchronizeIdList(widget.id, feedId);
-                if (context.read<FeedMapNotifier>().feedMap.containsKey(feedId)) {
+                if (context.read<FeedMapNotifier>().value.feedMap.containsKey(feedId)) {
                   context.read<FeedMapNotifier>().deleteFeed(feedId);
                 }
               },
