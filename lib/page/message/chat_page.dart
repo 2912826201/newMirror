@@ -1756,14 +1756,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     if (conversation.type == PRIVATE_TYPE) {
       BlackModel blackModel = await ProfileCheckBlack(int.parse(chatId));
       if(blackModel!=null) {
-        String text = "";
         if (blackModel.inYouBlack == 1) {
-          text = "发送失败，你已将对方加入黑名单";
+          ToastShow.show(msg: "发送失败，你已将对方加入黑名单", context: context);
         } else if (blackModel.inThisBlack == 1) {
-          text = "发送失败，你已被对方加入黑名单";
+          ToastShow.show(msg: "发送失败，你已被对方加入黑名单", context: context);
         }
-        // print("--------------text:$text");
-        ToastShow.show(msg: text, context: context);
       }
     }
   }
@@ -2213,6 +2210,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       _postText(content);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_CLICK_ERROR_BTN) {
       print("点击了发送失败的按钮-重新发送：$position");
+
+      profileCheckBlack();
       _resetPostMessage(position);
       // _textController.text=content;
       // _postText(content);
