@@ -1092,6 +1092,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
             targetType: widget.targetType,
             lastId: courseCommentHot?.lastId ?? null,
             size: widget.pageCommentSize);
+        print('=================totalCount----------${CommentModel.fromJson(commentModel).toString()}');
         if (commentModel != null) {
           courseCommentHot = CommentModel.fromJson(commentModel);
         }
@@ -1155,6 +1156,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         courseCommentPageHot++;
 
         if (!widget.isShowHotOrTime) {
+          print('=================totalCount----------${courseCommentHot.totalCount}');
           if (mounted) {
             context
                 .read<FeedMapNotifier>()

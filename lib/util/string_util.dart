@@ -387,9 +387,18 @@ class StringUtil {
     containerHeight = containerWidth / containerRatio;
     return containerHeight;
   }
+
+  ///截取显示，由于可能存在表情，不能使用subString，characters可以将表情看做一个字符
   static String maxLength(String str, int len,{bool isOmit=true}) {
-    // 删除emoji表情
-    var sRunes = str.runes;
-    return sRunes.length > len ?  String.fromCharCodes(sRunes, 0, sRunes.length - len) +"${isOmit?"...":""}":str;
+    if(str.length>len){
+      String backString = "";
+      for(int i = 0;i < str.characters.toList().length;i++){
+        if((backString+str.characters.toList()[i]).length<=len){
+          backString += str.characters.toList()[i];
+        }
+      }
+      return backString;
+    }
+    return str;
   }
 }

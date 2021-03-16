@@ -41,7 +41,7 @@ class _EditInformationNameState extends State<EditInformationName> {
     if (widget.userName != null) {
       _EditText =StringUtil.maxLength(widget.userName,15,isOmit: false);
       controller.text = _EditText;
-      textLength = _EditText.characters.length;
+      textLength = _EditText.length;
       _reciprocal += beforeLength - textLength;
       beforeLength = textLength;
       // 设置光标
@@ -61,7 +61,7 @@ class _EditInformationNameState extends State<EditInformationName> {
         ///通知onChanged
         setState(() {
           _EditText = lastInput;
-          textLength = lastInput.characters.length;
+          textLength = lastInput.length;
           _reciprocal += beforeLength - textLength;
           beforeLength = textLength;
         });
@@ -174,7 +174,7 @@ class _EditInformationNameState extends State<EditInformationName> {
         border: InputBorder.none,
       ),
       inputFormatters: [
-        ExpressionTeamDeleteFormatter()
+        ExpressionTeamDeleteFormatter(maxLength: 15)
          ],
     );
     return Container(padding: EdgeInsets.only(left: 16, right: 16), child: putFiled);
