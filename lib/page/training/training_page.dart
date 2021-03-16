@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:intl/intl.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
@@ -135,10 +136,10 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
                 itemBuilder: (context, index) {
                   if (index == 0) {
                     return _buildTopView(context.watch<MachineNotifier>());
-                  // } else if (index == _videoCourseList.length + 1) {
-                  //   return Container(
-                  //     height: 40,
-                  //   );
+                    // } else if (index == _videoCourseList.length + 1) {
+                    //   return Container(
+                    //     height: 40,
+                    //   );
                   } else {
                     return _buildCourseItem(index - 1);
                   }
@@ -422,7 +423,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
                                 Row(
                                   children: [
                                     Text(
-                                      "${_liveList.first.coursewareDto.targetDto.name}·${_liveList.first.coursewareDto.calories}Kcal",
+                                      "${_liveList.first.coursewareDto.targetDto.name}·${IntegerUtil.formationCalorie(_liveList.first.coursewareDto.calories, isHaveCompany: false)}Kcal",
                                       style: TextStyle(
                                           fontSize: 10,
                                           fontWeight: FontWeight.w400,
