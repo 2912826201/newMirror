@@ -106,7 +106,7 @@ class MainPageState extends XCState {
                               Positioned(
                                   top: 0,
                                   right: 0,
-                                  child: context.watch<FeedMapNotifier>().unReadFeedCount != 0 && index == 0
+                                  child: context.watch<FeedMapNotifier>().value.unReadFeedCount != 0 && index == 0
                                       ? ClipOval(
                                           child: Container(
                                             height: 10,
@@ -142,13 +142,13 @@ class MainPageState extends XCState {
                           reload(() {
                             currentIndex = index;
                             if (index == 0) {
-                              if (context.read<FeedMapNotifier>().unReadFeedCount == 0) {
+                              if (context.read<FeedMapNotifier>().value.unReadFeedCount == 0) {
                                 _getUnReadFeedCount();
                               }
                               _start = itemWidth / 7;
                             }
                             if (index == 1) {
-                              if (context.read<FeedMapNotifier>().unReadFeedCount == 0) {
+                              if (context.read<FeedMapNotifier>().value.unReadFeedCount == 0) {
                                 _getUnReadFeedCount();
                               }
                               _start = itemWidth + itemWidth * 0.4;
@@ -156,7 +156,7 @@ class MainPageState extends XCState {
                             if (index == 2) {
                               //在切换到消息页时 请求未读互动通知数
                               getUnReads();
-                              if (context.read<FeedMapNotifier>().unReadFeedCount == 0) {
+                              if (context.read<FeedMapNotifier>().value.unReadFeedCount == 0) {
                                 _getUnReadFeedCount();
                               }
                               _start = 2 * itemWidth + itemWidth * 0.64;
@@ -164,7 +164,7 @@ class MainPageState extends XCState {
                             if (index == 3) {
                               //切换到我的页时刷新关注数
                               _getFollowCount();
-                              if (context.read<FeedMapNotifier>().unReadFeedCount == 0) {
+                              if (context.read<FeedMapNotifier>().value.unReadFeedCount == 0) {
                                 _getUnReadFeedCount();
                               }
                               _start = 3 * itemWidth + itemWidth * 0.9;
@@ -191,9 +191,9 @@ class MainPageState extends XCState {
     // return ChangeNotifierProvider(
     //     create: (_) => ReleaseProgressNotifier(plannedSpeed: 0.0),
     // builder: (context, _) {
-    return ChangeNotifierProvider(
-      create: (_) => ReleaseProgressNotifier(plannedSpeed: 0.0),
-      builder: (context, _) {
+    // return ChangeNotifierProvider(
+    //   create: (_) => ReleaseProgressNotifier(plannedSpeed: 0.0),
+    //   builder: (context, _) {
         return Scaffold(
           // 此属性是重新计算布局空间大小
           // 内部元素要监听键盘高度必需要设置为false,
@@ -256,8 +256,8 @@ class MainPageState extends XCState {
           ),
           // returnView(currentIndex),
         );
-      },
-    );
+    //   },
+    // );
   }
 }
 

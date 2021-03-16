@@ -70,7 +70,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
   void initState() {
     print("进入详情页");
     if (widget.errorCode == CODE_SUCCESS) {
-      feedModel = context.read<FeedMapNotifier>().feedMap[widget.model.id];
+      feedModel = context.read<FeedMapNotifier>().value.feedMap[widget.model.id];
       _checkBlackStatus();
       itemHeight += ScreenUtil.instance.statusBarHeight + kToolbarHeight + 76 + 48 + 18 + 16;
       if (feedModel.picUrls.isNotEmpty) {
@@ -200,7 +200,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                                       ),
                                     ),
                                   ),
-                                  context.watch<FeedMapNotifier>().feedMap[feedModel.id].totalCount != -1
+                                  context.watch<FeedMapNotifier>().value.feedMap[feedModel.id].totalCount != -1
                                       ? Container(
                                           // color: AppColor.mainRed,
                                           margin: EdgeInsets.only(top: 18, left: 16),
@@ -215,7 +215,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                                               style: AppStyle.textRegular16,
                                             );
                                           }, selector: (context, notifier) {
-                                            return notifier.feedMap[feedModel.id].totalCount;
+                                            return notifier.value.feedMap[feedModel.id].totalCount;
                                           }))
                                       : Container(),
                                 ]),
@@ -233,7 +233,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                     child: CommentInputBox(
                       isUnderline: true,
                       isFeedDetail: true,
-                      feedModel: context.watch<FeedMapNotifier>().feedMap[feedModel.id],
+                      feedModel: context.watch<FeedMapNotifier>().value.feedMap[feedModel.id],
                     ),
                   )
                 ],

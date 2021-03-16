@@ -24,6 +24,7 @@ import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/data/notifier/release_progress_notifier.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
@@ -350,7 +351,7 @@ class FeedHeader extends StatelessWidget {
         AppPrefs.setPublishFeedLocalInsertData(
             "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}",
             jsonEncode(feedModel.toJson()));
-        context.read<FeedMapNotifier>().setPublishFeedModel(feedModel);
+        context.read<ReleaseProgressNotifier>().setPublishFeedModel(feedModel);
         context.read<ReleaseFeedInputNotifier>().rules.clear();
         context.read<ReleaseFeedInputNotifier>().selectAddress = null;
         Navigator.pop(context, true);
@@ -402,7 +403,7 @@ class FeedHeader extends StatelessWidget {
           "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}",
           jsonEncode(feedModel.toJson()));
       // 传入发布动态model
-      context.read<FeedMapNotifier>().setPublishFeedModel(feedModel);
+      context.read<ReleaseProgressNotifier>().setPublishFeedModel(feedModel);
       context.read<ReleaseFeedInputNotifier>().rules.clear();
       context.read<ReleaseFeedInputNotifier>().selectAddress = null;
       Navigator.pop(context, true);
