@@ -13,7 +13,6 @@ import 'package:mirror/data/model/message/group_user_model.dart';
 import 'package:mirror/data/model/message/no_prompt_uid_model.dart';
 import 'package:mirror/data/model/message/top_chat_model.dart';
 import 'package:mirror/page/message/message_view/currency_msg.dart';
-import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -21,7 +20,6 @@ import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/loading_progress.dart';
 import 'package:mirror/widget/dialog.dart';
-import 'package:mirror/widget/feed/feed_share_select_contact.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -56,7 +54,6 @@ class GroupMorePageState extends State<GroupMorePage> {
   bool disturbTheNews = false;
   bool topChat = false;
   String groupMeName = "还未取名";
-  bool isUpdateGroupMeName = false;
   GroupChatModel groupChatModel;
   String groupName;
   DialogLoadingController _dialogLoadingController;
@@ -68,14 +65,6 @@ class GroupMorePageState extends State<GroupMorePage> {
     super.initState();
     getGroupInformation();
   }
-
-  @override
-  void dispose() {
-    super.dispose();
-    updateUserName();
-    isUpdateGroupMeName = false;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -456,7 +445,12 @@ class GroupMorePageState extends State<GroupMorePage> {
       print(model == null ? "" : model.toString());
       if (model != null && model["uid"] != null) {
         groupMeName = newName;
-        isUpdateGroupMeName = true;
+        ChatGroupUserModel chatGroupUserModel=new ChatGroupUserModel();
+        chatGroupUserModel.uid=Application.profile.uid;
+        chatGroupUserModel.groupNickName=groupMeName;
+        chatGroupUserModel.nickName=Application.profile.nickName;
+        chatGroupUserModel.avatarUri=Application.profile.avatarUri;
+        GroupChatUserInformationDBHelper().update(chatGroupUserModel: chatGroupUserModel,groupId: widget.chatGroupId);
         if(mounted) {
           setState(() {
 
@@ -487,29 +481,6 @@ class GroupMorePageState extends State<GroupMorePage> {
     return sRunes.length > len ?  String.fromCharCodes(sRunes, 0, sRunes.length - len) +"...":str;
   }
 
-  void updateUserName() {
-    if (isUpdateGroupMeName) {
-      if (context
-          .read<GroupUserProfileNotifier>()
-          .loadingStatus == LoadingStatus.STATUS_COMPLETED) {
-        for (int i = 0; i < context
-            .watch<GroupUserProfileNotifier>()
-            .chatGroupUserModelList
-            .length; i++) {
-          if (context
-              .watch<GroupUserProfileNotifier>()
-              .chatGroupUserModelList[i].uid == Application.profile.uid) {
-            context
-                .watch<GroupUserProfileNotifier>()
-                .chatGroupUserModelList[i].groupNickName = groupMeName;
-            if (widget.listener != null) {
-              widget.listener(0,groupMeName);
-            }
-          }
-        }
-      }
-    }
-  }
 
 
   //查看更多群成员
