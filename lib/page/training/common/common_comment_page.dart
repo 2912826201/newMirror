@@ -204,12 +204,12 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
     }
     if (!widget.isShowHotOrTime &&
         courseCommentHot != null &&
-        context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments != null &&
-        context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length > 0) {
-      if (context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length != courseCommentHot.list.length ||
+        context.watch<FeedMapNotifier>().value.feedMap[widget.targetId].comments != null &&
+        context.watch<FeedMapNotifier>().value.feedMap[widget.targetId].comments.length > 0) {
+      if (context.watch<FeedMapNotifier>().value.feedMap[widget.targetId].comments.length != courseCommentHot.list.length ||
           courseCommentHot.list.length != commentListSubSettingList.length) {
         List<CommentDtoModel> list = <CommentDtoModel>[];
-        list.addAll(context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments);
+        list.addAll(context.watch<FeedMapNotifier>().value.feedMap[widget.targetId].comments);
         courseCommentHot.list = list;
         resetSubSetting(courseCommentHot);
       }
@@ -598,11 +598,11 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
             .commensAssignment(widget.targetId, courseCommentHot.list, courseCommentHot.totalCount);
       }
       context.read<FeedMapNotifier>().deleteContent(commentId);
-      if (context.read<FeedMapNotifier>().feedMap[widget.targetId] != null &&
+      if (context.read<FeedMapNotifier>().value.feedMap[widget.targetId] != null &&
           !widget.isShowHotOrTime &&
-          context.read<FeedMapNotifier>().feedMap[widget.targetId].hotComment.isNotEmpty) {
-        for (int i = 0; i < context.read<FeedMapNotifier>().feedMap[widget.targetId].hotComment.length; i++) {
-          if (context.read<FeedMapNotifier>().feedMap[widget.targetId].hotComment[i].id == commentId) {
+          context.read<FeedMapNotifier>().value.feedMap[widget.targetId].hotComment.isNotEmpty) {
+        for (int i = 0; i < context.read<FeedMapNotifier>().value.feedMap[widget.targetId].hotComment.length; i++) {
+          if (context.read<FeedMapNotifier>().value.feedMap[widget.targetId].hotComment[i].id == commentId) {
             context
                 .read<FeedMapNotifier>()
                 .updateHotComment(widget.targetId, commentDtoModel: commentDtoModel, isDelete: true);
@@ -919,9 +919,9 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                       }
                       commentListSubSettingList[i].subCommentAllHeight = null;
                       if (!widget.isShowHotOrTime &&
-                          context.read<FeedMapNotifier>().feedMap[widget.targetId].comments != null &&
-                          context.read<FeedMapNotifier>().feedMap[widget.targetId].comments.length > 0) {
-                        context.read<FeedMapNotifier>().feedMap[widget.targetId].comments[i].screenOutIds.add(model.id);
+                          context.read<FeedMapNotifier>().value.feedMap[widget.targetId].comments != null &&
+                          context.read<FeedMapNotifier>().value.feedMap[widget.targetId].comments.length > 0) {
+                        context.read<FeedMapNotifier>().value.feedMap[widget.targetId].comments[i].screenOutIds.add(model.id);
                       }
                     }
                   }
@@ -939,10 +939,10 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                       }
 
                       if (!widget.isShowHotOrTime &&
-                          context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments != null &&
-                          context.watch<FeedMapNotifier>().feedMap[widget.targetId].comments.length > 0) {
+                          context.watch<FeedMapNotifier>().value.feedMap[widget.targetId].comments != null &&
+                          context.watch<FeedMapNotifier>().value.feedMap[widget.targetId].comments.length > 0) {
                         context
-                            .watch<FeedMapNotifier>()
+                            .watch<FeedMapNotifier>().value
                             .feedMap[widget.targetId]
                             .comments[i]
                             .screenOutIds
@@ -954,7 +954,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
               }
             }
             if (widget.isBottomSheetAndHomePage &&
-                context.read<FeedMapNotifier>().feedMap[widget.targetId].hotComment.length < 2) {
+                context.read<FeedMapNotifier>().value.feedMap[widget.targetId].hotComment.length < 2) {
               context
                   .read<FeedMapNotifier>()
                   .updateHotComment(widget.targetId, commentDtoModel: model, isDelete: false);
@@ -1077,15 +1077,15 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       if (widget.isInteractiveIn != null &&
           widget.isInteractiveIn &&
           widget.commentDtoModel != null &&
-          context.read<FeedMapNotifier>().courseCommentHot[widget.commentDtoModel.id] != null) {
+          context.read<FeedMapNotifier>().value.courseCommentHot[widget.commentDtoModel.id] != null) {
         courseCommentHot = CommentModel();
         courseCommentHot.list = [];
-        context.read<FeedMapNotifier>().courseCommentHot[widget.commentDtoModel.id].list.forEach((element) {
+        context.read<FeedMapNotifier>().value.courseCommentHot[widget.commentDtoModel.id].list.forEach((element) {
           courseCommentHot.list.add(element);
         });
-        courseCommentHot.lastId = context.read<FeedMapNotifier>().courseCommentHot[widget.commentDtoModel.id].lastId;
+        courseCommentHot.lastId = context.read<FeedMapNotifier>().value.courseCommentHot[widget.commentDtoModel.id].lastId;
         courseCommentHot.totalCount =
-            context.read<FeedMapNotifier>().courseCommentHot[widget.commentDtoModel.id].totalCount;
+            context.read<FeedMapNotifier>().value.courseCommentHot[widget.commentDtoModel.id].totalCount;
       } else {
         commentModel = await queryListByHot2(
             targetId: widget.targetId,

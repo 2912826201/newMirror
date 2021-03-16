@@ -57,7 +57,7 @@ class CommentLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return context.watch<FeedMapNotifier>().feedMap[model.id] != null
+    return context.watch<FeedMapNotifier>().value.feedMap[model.id] != null
         ? Container(
             width: ScreenUtil.instance.width,
             margin: EdgeInsets.only(left: 16, right: 16, top: 8),
@@ -80,12 +80,12 @@ class CommentLayout extends StatelessWidget {
                       child: Text("共${StringUtil.getNumber(commentCount)}条评论", style: AppStyle.textSecondaryRegular12),
                     );
                   }, selector: (context, notifier) {
-                    return notifier.feedMap[model.id].commentCount;
+                    return notifier.value.feedMap[model.id].commentCount;
                   }),
                   // Text("共${model.commentCount}条评论", style: AppStyle.textHintRegular12)
                 ),
                 for (CommentDtoModel item
-                    in context.select((FeedMapNotifier value) => value.feedMap[model.id].hotComment))
+                    in context.select((FeedMapNotifier value) => value.value.feedMap[model.id].hotComment))
                   Container(
                     width: ScreenUtil.instance.width,
                     child: GestureDetector(

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/api.dart';
 import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
@@ -803,16 +804,8 @@ class VideoDetailPageState extends XCState {
     //获取视频详情数据
     //加载数据
     Map<String, dynamic> model = await getVideoCourseDetail(courseId: videoCourseId);
-    if (model == null) {
-      loadingStatus = LoadingStatus.STATUS_IDEL;
-      Future.delayed(Duration(seconds: 1), () {
-        if (mounted) {
-          reload(() {});
-        }
-      });
-    } else {
-      videoModel = LiveVideoModel.fromJson(model);
-
+    if (model["code"]!=null&&model["code"]==CODE_SUCCESS && model["dataMap"]!=null) {
+      videoModel = LiveVideoModel.fromJson(model["dataMap"]);
       if (videoModel.isInMyCourseList != null) {
         isFavor = videoModel.isInMyCourseList == 1;
       }
@@ -820,6 +813,13 @@ class VideoDetailPageState extends XCState {
       if (mounted) {
         reload(() {});
       }
+    }else{
+      loadingStatus = LoadingStatus.STATUS_IDEL;
+      Future.delayed(Duration(seconds: 1), () {
+        if (mounted) {
+          reload(() {});
+        }
+      });
     }
   }
 

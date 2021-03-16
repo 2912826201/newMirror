@@ -46,7 +46,10 @@ class DownloadCourseVideoDto {
       courseFilePaths = map[COLUMN_NAME_DOWNLOAD_COURSE_FILEPATHS].toString().split(",");
     }
     if (map[COLUMN_NAME_DOWNLOAD_COURSE_MODEL] != null) {
-      videoCourseModel = json.decode(map[COLUMN_NAME_DOWNLOAD_COURSE_MODEL]);
+      dynamic mapDynamic=json.decode(map[COLUMN_NAME_DOWNLOAD_COURSE_MODEL]);
+      if(mapDynamic!=null) {
+        videoCourseModel = LiveVideoModel.fromJson(mapDynamic);
+      }
     }
   }
 

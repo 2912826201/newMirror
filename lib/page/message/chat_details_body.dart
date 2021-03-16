@@ -34,6 +34,7 @@ class ChatDetailsBody extends StatelessWidget {
   final String chatId;
   final LoadingStatus loadStatus;
   final bool isShowTop;
+  final bool isShowHaveAnimation;
 
   ChatDetailsBody(
       {this.scrollController,
@@ -50,6 +51,7 @@ class ChatDetailsBody extends StatelessWidget {
         this.chatName,
         this.onTap,
         this.isShowTop=false,
+        this.isShowHaveAnimation=false,
         this.isPersonalButler = false,
         this.voidMessageClickCallBack,
         this.onRefresh,
@@ -220,9 +222,9 @@ class ChatDetailsBody extends StatelessWidget {
 
   //判断有没有动画
   Widget judgeStartAnimation(ChatDataModel model, int position) {
-    if (model.isHaveAnimation && !isShowTop) {
+    if (model.isHaveAnimation && isShowHaveAnimation) {
       AnimationController animationController = AnimationController(
-        duration: new Duration(milliseconds: 200),
+        duration: new Duration(milliseconds: 100),
         vsync: vsync,
       );
       Future.delayed(Duration(milliseconds: 100), () {

@@ -183,10 +183,12 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
   ScrollController textScrollController=ScrollController();
 
+  bool isShowHaveAnimation;
+
   @override
   void initState() {
     super.initState();
-
+    isShowHaveAnimation=false;
     //初始化
     WidgetsBinding.instance.addObserver(this);
 
@@ -373,6 +375,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       isShowTop: !MessageItemHeightUtil.init().judgeMessageItemHeightIsThenScreenHeight(chatDataList, isShowName),
       onRefresh: (conversation.getType() != RCConversationType.System) ? _onRefresh : _onRefreshSystemInformation,
       loadText: loadText,
+      isShowHaveAnimation: isShowHaveAnimation,
       loadStatus: loadStatus,
       isShowChatUserName: isShowName,
       onAtUiClickListener: onAtUiClickListener,
@@ -856,6 +859,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       }
       //加入时间提示
       getTimeAlert(chatDataList,chatId);
+      bool isShowName = conversation.getType() == RCConversationType.Group;
+      isShowHaveAnimation=MessageItemHeightUtil.init().
+        judgeMessageItemHeightIsThenScreenHeight(chatDataList, isShowName);
+
 
       //获取有没有at我的消息
       judgeIsHaveAtMeMsg();
@@ -1756,14 +1763,11 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
     if (conversation.type == PRIVATE_TYPE) {
       BlackModel blackModel = await ProfileCheckBlack(int.parse(chatId));
       if(blackModel!=null) {
-        String text = "";
         if (blackModel.inYouBlack == 1) {
-          text = "发送失败，你已将对方加入黑名单";
+          ToastShow.show(msg: "发送失败，你已将对方加入黑名单", context: context);
         } else if (blackModel.inThisBlack == 1) {
-          text = "发送失败，你已被对方加入黑名单";
+          ToastShow.show(msg: "发送失败，你已被对方加入黑名单", context: context);
         }
-        // print("--------------text:$text");
-        ToastShow.show(msg: text, context: context);
       }
     }
   }
@@ -2213,6 +2217,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       _postText(content);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_CLICK_ERROR_BTN) {
       print("点击了发送失败的按钮-重新发送：$position");
+
+      profileCheckBlack();
       _resetPostMessage(position);
       // _textController.text=content;
       // _postText(content);

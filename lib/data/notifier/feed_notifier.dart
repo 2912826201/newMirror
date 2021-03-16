@@ -4,35 +4,55 @@ import 'package:mirror/data/model/feed/post_feed.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 
-class FeedMapNotifier extends ChangeNotifier {
-  FeedMapNotifier({this.feedMap, this.feedId, this.isPublish = true});
+class FeedMap {
+  Map<int, HomeFeedModel> _feedMap = {};
 
-  // 动态的id加model组成的Map
-  Map<int, HomeFeedModel> feedMap = {};
+  Map<int, HomeFeedModel> get feedMap => _feedMap;
 
-  Map<int, HomeFeedModel> oldFeedMap = {};
+  Map<int, HomeFeedModel> _oldFeedMap = {};
+
+  Map<int, HomeFeedModel> get oldFeedMap => _oldFeedMap;
+
+  bool _buildIsOver = false;
+
+  bool get buildIsOver => _buildIsOver;
 
   // 点击评论图标记录此动态的Id用于请求评论列表
-  int feedId;
+  int _feedId;
 
-  List<CommentDtoModel> commentList = [];
+  int get feedId => _feedId;
 
-  CommentDtoModel childModel;
+  List<CommentDtoModel> _commentList = [];
 
-  // 发布动态需要的model
-  PostFeedModel postFeedModel;
-  //话题页快速跳转发布动态的话题文字信息
-  Rule rule;
-  // 是否可以发布动态
-  bool isPublish = true;
+  List<CommentDtoModel> get commentList => _commentList;
 
-  bool buildIsOver = false;
-  Map<int,dynamic> courseCommentHot = {};
+  CommentDtoModel _childModel;
+
+  CommentDtoModel get childModel => _childModel;
+
+  Map<int, dynamic> _courseCommentHot = {};
+
+  Map<int, dynamic> get courseCommentHot => _courseCommentHot;
+
+  //关注未读数
+  int _unReadFeedCount = 0;
+
+  int get unReadFeedCount => _unReadFeedCount;
+  FeedMapNotifier wrapper;
+
+  FeedMap(this._feedMap);
+}
+
+class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
+    {
+  FeedMapNotifier(FeedMap value) : super(value) {
+    value.wrapper = this;
+  }
+
   // 是否是左滑
   bool isSwipeLeft;
   double metricsPixels;
-  //关注未读数
-  int unReadFeedCount = 0;
+
   storageIsSwipeLeft(bool offset) {
     this.isSwipeLeft = offset;
     notifyListeners();
@@ -45,77 +65,85 @@ class FeedMapNotifier extends ChangeNotifier {
 
   int deleteId;
 
-  void interacticeNoticeChange({CommentModel courseCommentHots,int commentId}){
-    courseCommentHot[commentId] = courseCommentHots;
+  void interacticeNoticeChange({CommentModel courseCommentHots, int commentId}) {
+    value.courseCommentHot[commentId] = courseCommentHots;
   }
 
-  void setUnReadFeedCount(int count){
-    unReadFeedCount = count;
+  void setUnReadFeedCount(int count) {
+    value._unReadFeedCount = count;
     notifyListeners();
   }
-  void deleteContent(int dtId){
+
+  void deleteContent(int dtId) {
     deleteId = dtId;
     notifyListeners();
   }
 
   void showInputBox(int id) {
     print("id::${id}");
-    feedMap[id].isShowInputBox = false;
+    value._feedMap[id].isShowInputBox = false;
+    // _feedMap[id].isShowInputBox = false;
     notifyListeners();
   }
 
   void changeCommentList(List<CommentDtoModel> modelList) {
-    commentList.addAll(modelList);
+    value.commentList.addAll(modelList);
     notifyListeners();
   }
 
   void insertChildModel(CommentDtoModel model) {
-    childModel = model;
+    value._childModel = model;
     notifyListeners();
   }
 
 // 更新全局动态map
   void updateFeedMap(List<HomeFeedModel> _feedList) {
     _feedList.forEach((element) {
-      feedMap[element.id] = element;
-      feedMap[element.id].hotComment = [];
+      value._feedMap[element.id] = element;
+      value._feedMap[element.id].hotComment = [];
       if (element.comments.isNotEmpty) {
-        feedMap[element.id].hotComment.addAll(element.comments);
+        value._feedMap[element.id].hotComment.addAll(element.comments);
       }
     });
+    notifyListeners();
+  }
+
+  // 插入动态Map
+  void insertFeedMap(HomeFeedModel model) {
+    value._feedMap[model.id] = model;
     notifyListeners();
   }
 
   void updateHotComment(int feedId, {CommentDtoModel commentDtoModel, bool isDelete}) {
     print('9(((((((((((((((((((((((9updateHotComment');
     if (isDelete) {
-      feedMap[feedId].commentCount -= 1 + commentDtoModel.replyCount;
-      feedMap[feedId].hotComment.removeWhere((element) {
+      value._feedMap[feedId].commentCount -= 1 + commentDtoModel.replyCount;
+      value._feedMap[feedId].hotComment.removeWhere((element) {
         return element.id == commentDtoModel.id || element.targetId == commentDtoModel.id;
       });
     } else {
-      if (!feedMap[feedId].hotComment.contains(commentDtoModel)) {
+      if (!value._feedMap[feedId].hotComment.contains(commentDtoModel)) {
         print('))))))))))))))))))))))))))))))))))))))))))添加');
-        feedMap[feedId].hotComment.add(commentDtoModel);
+        value._feedMap[feedId].hotComment.add(commentDtoModel);
       }
-      print('===============hotComment============${feedMap[feedId].hotComment.length}');
-      print('===============hotComment============${feedMap[feedId].hotComment.toString()}');
+      print('===============hotComment============${value._feedMap[feedId].hotComment.length}');
+      print('===============hotComment============${value._feedMap[feedId].hotComment.toString()}');
     }
     notifyListeners();
   }
 
   // 删除动态
   void deleteFeed(int id) {
-    feedMap.remove(id);
+    value._feedMap.remove(id);
   }
 
   // 关注or取消关注
   void setIsFollow(int id, int isFollow) {
     if (isFollow == 0) {
-      feedMap[id].isFollow = 1;
+      value._feedMap[id].isFollow = 1;
     }
     if (isFollow == 1) {
-      feedMap[id].isFollow = 0;
+      value._feedMap[id].isFollow = 0;
     }
     notifyListeners();
   }
@@ -124,61 +152,59 @@ class FeedMapNotifier extends ChangeNotifier {
   void setLaud(int laud, String avatarUrl, int id) {
     print("点赞了：：：：：：：：");
     if (laud == 0) {
-      feedMap[id].laudCount += 1;
-      feedMap[id].laudUserInfo.insert(0, avatarUrl);
+      value._feedMap[id].laudCount += 1;
+      value._feedMap[id].laudUserInfo.insert(0, avatarUrl);
       laud = 1;
     } else {
-      feedMap[id].laudCount -= 1;
-      feedMap[id].laudUserInfo.removeAt(0);
+      value._feedMap[id].laudCount -= 1;
+      value._feedMap[id].laudUserInfo.removeAt(0);
       laud = 0;
     }
 
-    feedMap[id].isLaud = laud;
+    value._feedMap[id].isLaud = laud;
     notifyListeners();
   }
 
 // 父评论点赞
   void mainCommentLaud(int laud, int id, int index) {
     if (laud == 0) {
-      feedMap[id].comments[index].laudCount += 1;
+      value._feedMap[id].comments[index].laudCount += 1;
       laud = 1;
     } else {
-      feedMap[id].comments[index].laudCount -= 1;
+      value._feedMap[id].comments[index].laudCount -= 1;
       laud = 0;
     }
-    feedMap[id].comments[index].isLaud = laud;
+    value._feedMap[id].comments[index].isLaud = laud;
     notifyListeners();
   }
 
   // 子评论点赞
   void subCommentLaud(int laud, int id, int mainIndex, int subIndex) {
     if (laud == 0) {
-      feedMap[id].comments[mainIndex].replys[subIndex].laudCount += 1;
+      value._feedMap[id].comments[mainIndex].replys[subIndex].laudCount += 1;
       laud = 1;
     } else {
-      feedMap[id].comments[mainIndex].replys[subIndex].laudCount -= 1;
+      value._feedMap[id].comments[mainIndex].replys[subIndex].laudCount -= 1;
       laud = 0;
     }
-    feedMap[id].comments[mainIndex].replys[subIndex].isLaud = laud;
+    value._feedMap[id].comments[mainIndex].replys[subIndex].isLaud = laud;
     notifyListeners();
   }
 
-    // 发布动态评论
+  // 发布动态评论
   void feedPublishComment(CommentDtoModel comModel, int id) {
     print("评论model赋值");
-    feedMap[id].comments.insert(0, comModel);
+    value._feedMap[id].comments.insert(0, comModel);
     print("评论model成功");
-    feedMap[id].commentCount += 1;
+    value._feedMap[id].commentCount += 1;
     print("评论数量l成功");
-    feedMap[id].totalCount += 1;
+    value._feedMap[id].totalCount += 1;
     notifyListeners();
   }
 
   // 修改动态Id
-  changeFeeId(
-    int id,
-  ) {
-    this.feedId = id;
+  changeFeeId(int id,) {
+    value._feedId = id;
     notifyListeners();
   }
 
@@ -186,28 +212,28 @@ class FeedMapNotifier extends ChangeNotifier {
   void commensAssignment(int id, List<CommentDtoModel> commentList, int totalCount) {
     List<CommentDtoModel> listComment = <CommentDtoModel>[];
     listComment.addAll(commentList);
-    feedMap[id].comments = listComment;
-    feedMap[id].totalCount = totalCount;
+    value._feedMap[id].comments = listComment;
+    value._feedMap[id].totalCount = totalCount;
     notifyListeners();
   }
 
   // 同步不同的评论数据
   void commensUpdate(int id, List<CommentDtoModel> commentList, int totalCount) {
-    feedMap[id].comments.forEach((element) {
-      feedMap[id].comments.addAll(commentList);
+    value._feedMap[id].comments.forEach((element) {
+      value._feedMap[id].comments.addAll(commentList);
     });
     // feedMap[id].comments = commentList;
-    feedMap[id].totalCount = totalCount;
+    value._feedMap[id].totalCount = totalCount;
     notifyListeners();
   }
 
   // 评论动态的评论
   void commentFeedCom(int id, int index, CommentDtoModel model) {
-    feedMap[id].comments[index].replys.insert(0, model);
-    print('provider========================${feedMap[id].comments[index].replys.toString()}');
-    feedMap[id].commentCount += 1;
-    feedMap[id].totalCount += 1;
-    feedMap[id].comments[index].replyCount += 1;
+    value._feedMap[id].comments[index].replys.insert(0, model);
+    print('provider========================${value._feedMap[id].comments[index].replys.toString()}');
+    value._feedMap[id].commentCount += 1;
+    value._feedMap[id].totalCount += 1;
+    value._feedMap[id].comments[index].replyCount += 1;
     notifyListeners();
   }
 
@@ -215,42 +241,32 @@ class FeedMapNotifier extends ChangeNotifier {
   // void commentFeedSubCom()
   // 关闭抽屉还原评论抽屉内的评论总数
   void clearTotalCount() {
-    feedMap[feedId].totalCount = -1;
+    value._feedMap[value._feedId].totalCount = -1;
     notifyListeners();
   }
 
   // 测试手动插入评论
   void a(CommentDtoModel comModel, int id) {
     print("评论model赋值");
-    feedMap[id].comments.insert(0, comModel);
+    value._feedMap[id].comments.insert(0, comModel);
     notifyListeners();
   }
 
   // 发布插入数据
   void PublishInsertData(int id, HomeFeedModel model) {
-    feedMap[id] = model;
+    value._feedMap[id] = model;
     notifyListeners();
   }
 
   void removeComment(int id, CommentDtoModel model) {
-    feedMap[id].comments.remove(model);
+    value._feedMap[id].comments.remove(model);
     notifyListeners();
   }
 
-  // 发布数据需要的model
-  void setPublishFeedModel(PostFeedModel model) {
-    this.postFeedModel = model;
-    notifyListeners();
-  }
 
-  // 是否调用发布接口
-  setPublish(bool b) {
-    this.isPublish = b;
-    notifyListeners();
-  }
 
-  setBuildCallBack(bool b){
-    buildIsOver = b;
+  setBuildCallBack(bool b) {
+    value._buildIsOver = b;
     notifyListeners();
   }
 }

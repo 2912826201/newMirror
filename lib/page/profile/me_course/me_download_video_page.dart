@@ -1,12 +1,16 @@
 import 'dart:io';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/api.dart';
+import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/database/download_video_course_db_helper.dart';
 import 'package:mirror/data/dto/download_video_dto.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -297,7 +301,7 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
   }
 
   //每一个item的点击事件
-  void onItemCLick(int index) {
+  void onItemCLick(int index)async {
     if (topText == "取消") {
       if (selectDeleteIndexList.contains(index)) {
         selectDeleteIndexList.remove(index);
@@ -309,7 +313,17 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
         setState(() {});
       }
     } else {
-      AppRouter.navigateToVideoDetail(context, courseVideoModelList[index].courseId);
+      //获取视频详情数据
+      //加载数据
+      Map<String, dynamic> model = await getVideoCourseDetail(courseId: courseVideoModelList[index].courseId);
+      if (model["code"]!=null&&model["code"]==CODE_SUCCESS && model["dataMap"]!=null) {
+        LiveVideoModel videoModel = LiveVideoModel.fromJson(model["dataMap"]);
+        AppRouter.navigateToVideoDetail(context, courseVideoModelList[index].courseId,videoModel: videoModel);
+      }else if(model["code"]!=null&&model["code"]==CODE_NO_DATA){
+        ToastShow.show(msg: "该课程已失效!", context: context);
+      }else{
+        ToastShow.show(msg: "请求课程失败!", context: context);
+      }
     }
   }
 
@@ -450,5 +464,16 @@ class _MeDownloadVideoCoursePageState extends State<MeDownloadVideoCoursePage> {
     }
 
     loadData();
+  }
+
+  Future<bool> isOffline()async{
+    ConnectivityResult connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile) {
+      return false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      return false;
+    } else {
+      return true;
+    }
   }
 }

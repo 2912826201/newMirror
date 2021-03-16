@@ -13,6 +13,7 @@ import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/feed/post_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/data/notifier/release_progress_notifier.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/route/router.dart';
@@ -198,7 +199,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     attentionModelList.forEach((element) {
       var obj = element.id;
       var isExist = false;
-      context.read<FeedMapNotifier>().feedMap.forEach((key, value) {
+      context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
         var aj = value.id;
         if (obj == aj) {
           isExist = true;
@@ -216,7 +217,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     }
     // 更新全局监听
     context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
-    print("本地存储的数据长度1:${context.read<FeedMapNotifier>().feedMap.length}");
+    print("本地存储的数据长度1:${context.read<FeedMapNotifier>().value.feedMap.length}");
   }
 
   // 删除本地插入数据
@@ -246,7 +247,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     // attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList, isShowRecommendUser: true);
     // // 更新全局监听
     new Future.delayed(Duration.zero, () {
-      context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
+      context.read<FeedMapNotifier>().insertFeedMap(model);
+      // context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
     });
     status = Status.concern;
     print("插入结束");
@@ -263,7 +265,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     // // 重新计算
     // attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList, isShowRecommendUser: true);
     // // 更新全局监听
-    context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
+    context.read<FeedMapNotifier>().insertFeedMap(model);
+    // context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
     print(attentionIdList.toString());
     print("更新结束");
   }
@@ -297,8 +300,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             attentionIdList.remove(id);
             context.read<FeedMapNotifier>().deleteFeed(id);
             attentionModelList.removeWhere((v) => v.id == id);
-            // // 重新计算
-            // attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList, isShowRecommendUser: true);
             // 更新全局监听
             context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
             print(attentionIdList.toString());
@@ -313,7 +314,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         },
         removeFollowChanged: (model) {
           int pushId = model.pushId;
-          Map<int, HomeFeedModel> feedMap = context.read<FeedMapNotifier>().feedMap;
+          Map<int, HomeFeedModel> feedMap = context.read<FeedMapNotifier>().value.feedMap;
 
           ///临时的空数组
           List<int> themList = [];
@@ -497,16 +498,16 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             loadText = "";
             // 清空曝光过的listKey
             ExposureDetectorController.instance.signOutClearHistory();
-            if (context.read<FeedMapNotifier>().postFeedModel != null) {
+            if (context.read<ReleaseProgressNotifier>().postFeedModel != null) {
               attentionIdList.insert(
                   0,
                   HomeFeedModel()
-                      .conversionModel(context.read<FeedMapNotifier>().postFeedModel, context, isRefresh: true)
+                      .conversionModel(context.read<ReleaseProgressNotifier>().postFeedModel, context, isRefresh: true)
                       .id);
               attentionModelList.insert(
                   0,
                   HomeFeedModel()
-                      .conversionModel(context.read<FeedMapNotifier>().postFeedModel, context, isRefresh: true));
+                      .conversionModel(context.read<ReleaseProgressNotifier>().postFeedModel, context, isRefresh: true));
             }
             getRecommendFeed();
           },
@@ -523,7 +524,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                 HomeFeedModel feedModel;
                 if (index < attentionIdList.length) {
                   id = attentionIdList[index];
-                  feedModel = context.read<FeedMapNotifier>().feedMap[id];
+                  feedModel = context.read<FeedMapNotifier>().value.feedMap[id];
                 }
                 return ExposureDetector(
                   key: Key('attention_page_$id'),
@@ -531,7 +532,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
                   onExposure: (visibilityInfo) {
                     print("回调看数据:${attentionIdList.toString()}");
                     // 如果没有显示
-                    if(attentionIdList[index] != -1 &&  context.read<FeedMapNotifier>().feedMap[attentionIdList[index]].isShowInputBox) {
+                    if(attentionIdList[index] != -1 &&  context.read<FeedMapNotifier>().value.feedMap[attentionIdList[index]].isShowInputBox) {
                       context.read<FeedMapNotifier>().showInputBox(attentionIdList[index]);
                       print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
                     }

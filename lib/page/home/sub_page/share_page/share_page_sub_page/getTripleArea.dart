@@ -11,6 +11,7 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:mirror/data/notifier/release_progress_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/feed/like.dart';
@@ -53,11 +54,11 @@ class GetTripleAreaState extends State<GetTripleArea> {
             Selector<FeedMapNotifier, List<String>>(builder: (context, laudUserInfo, child) {
               return laudUserInfo.length == 0 ? Container() : avatarOverlap(laudUserInfo.length, context, laudUserInfo);
             }, selector: (context, notifier) {
-              return (notifier.feedMap == null ||
-                      notifier.feedMap[widget.model.id] == null ||
-                      notifier.feedMap[widget.model.id].laudUserInfo == null)
+              return (notifier.value.feedMap == null ||
+                      notifier.value.feedMap[widget.model.id] == null ||
+                      notifier.value.feedMap[widget.model.id].laudUserInfo == null)
                   ? <String>[]
-                  : notifier.feedMap[widget.model.id].laudUserInfo;
+                  : notifier.value.feedMap[widget.model.id].laudUserInfo;
             }),
             // context
             // widget.model.laudUserInfo.length > 0 ? avatarOverlap(widget.model.laudUserInfo.length, context,widget.model.laudUserInfo) : Container(),
@@ -65,11 +66,11 @@ class GetTripleAreaState extends State<GetTripleArea> {
             Selector<FeedMapNotifier, List<String>>(builder: (context, laudUserInfo, child) {
               return laudUserInfo.length == 0 ? Container() : roundedLikeNum(context);
             }, selector: (context, notifier) {
-              return (notifier.feedMap == null ||
-                      notifier.feedMap[widget.model.id] == null ||
-                      notifier.feedMap[widget.model.id].laudUserInfo == null)
+              return (notifier.value.feedMap == null ||
+                      notifier.value.feedMap[widget.model.id] == null ||
+                      notifier.value.feedMap[widget.model.id].laudUserInfo == null)
                   ? <String>[]
-                  : notifier.feedMap[widget.model.id].laudUserInfo;
+                  : notifier.value.feedMap[widget.model.id].laudUserInfo;
             }),
             // widget.model.laudUserInfo.length > 0 ? roundedLikeNum(context) : Container(),
             Spacer(),
@@ -131,13 +132,13 @@ class GetTripleAreaState extends State<GetTripleArea> {
   // 点赞
   setUpLuad() async {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
-    print("是否点赞了￥${context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud}");
+    print("是否点赞了￥${context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud}");
     if (isLoggedIn) {
-      if (context.read<FeedMapNotifier>().postFeedModel != null && context.read<FeedMapNotifier>().feedMap[widget.model.id].id != Application.insertFeedId) {
+      if (context.read<ReleaseProgressNotifier>().postFeedModel != null && context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id != Application.insertFeedId) {
         // ToastShow.show(msg: "不响应", context: context);
       } else {
         BaseResponseModel model = await laud(
-            id: widget.model.id, laud: context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud == 0 ? 1 : 0);
+            id: widget.model.id, laud: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 1 : 0);
         if (model.code == CODE_BLACKED) {
           ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
         } else {
@@ -149,7 +150,7 @@ class GetTripleAreaState extends State<GetTripleArea> {
               .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
           context
               .read<UserInteractiveNotifier>()
-              .laudedChange(widget.model.pushId, context.read<FeedMapNotifier>().feedMap[widget.model.id].isLaud);
+              .laudedChange(widget.model.pushId, context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud);
           // } else { // 失败
           //   print("shib ");
           // }
@@ -183,7 +184,7 @@ class GetTripleAreaState extends State<GetTripleArea> {
       child: Container(
           // margin: EdgeInsets.only(left: 6),
           child: Offstage(
-        offstage: context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].laudCount) == null,
+        offstage: context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].laudCount) == null,
         child: //用Selector的方式监听数据
             Selector<FeedMapNotifier, int>(builder: (context, laudCount, child) {
           return Text(
@@ -191,7 +192,7 @@ class GetTripleAreaState extends State<GetTripleArea> {
             style: TextStyle(fontSize: 12),
           );
         }, selector: (context, notifier) {
-          return notifier.feedMap[widget.model.id].laudCount;
+          return notifier.value.feedMap[widget.model.id].laudCount;
         }),
       )),
     );
@@ -202,10 +203,10 @@ class GetTripleAreaState extends State<GetTripleArea> {
     return Row(
       children: [
         AppIconButton(
-          svgName: (context.select((FeedMapNotifier value) => value.feedMap) != null &&
-                  context.select((FeedMapNotifier value) => value.feedMap[widget.model.id]) != null &&
-                  context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) != null &&
-                  context.select((FeedMapNotifier value) => value.feedMap[widget.model.id].isLaud) == 0)
+          svgName: (context.select((FeedMapNotifier value) => value.value.feedMap) != null &&
+                  context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id]) != null &&
+                  context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) != null &&
+                  context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 0)
               ? AppIcon.like_24
               : AppIcon.like_red_24,
           iconSize: 24,
@@ -221,7 +222,7 @@ class GetTripleAreaState extends State<GetTripleArea> {
             onTap: () {
               bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
               if (isLoggedIn) {
-                if (context.read<FeedMapNotifier>().postFeedModel != null && context.read<FeedMapNotifier>().feedMap[widget.model.id].id != Application.insertFeedId) {
+                if (context.read<ReleaseProgressNotifier>().postFeedModel != null && context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id != Application.insertFeedId) {
                   ToastShow.show(msg: "不响应", context: context);
                 } else {
                   openFeedCommentBottomSheet(
@@ -247,7 +248,7 @@ class GetTripleAreaState extends State<GetTripleArea> {
             iconSize: 24,
             onTap: () {
               if (context.read<TokenNotifier>().isLoggedIn) {
-                if (context.read<FeedMapNotifier>().postFeedModel != null && context.read<FeedMapNotifier>().feedMap[widget.model.id].id != Application.insertFeedId) {
+                if (context.read<ReleaseProgressNotifier>().postFeedModel != null && context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id != Application.insertFeedId) {
                   ToastShow.show(msg: "不响应", context: context);
                 } else {
                   InquireCheckBlack(

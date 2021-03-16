@@ -508,10 +508,10 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       return;
     }
     try {
-      if (widget.msgModel.commentData!=null&&context.read<FeedMapNotifier>().courseCommentHot[widget.msgModel
+      if (widget.msgModel.commentData!=null&&context.read<FeedMapNotifier>().value.courseCommentHot[widget.msgModel
           .commentData
         .id].list != null) {
-        context.read<FeedMapNotifier>().courseCommentHot[widget.msgModel.commentData.id].list.forEach((element) {
+        context.read<FeedMapNotifier>().value.courseCommentHot[widget.msgModel.commentData.id].list.forEach((element) {
           if (element.replys.isNotEmpty) {
             element.replys.clear();
           }
