@@ -16,6 +16,7 @@ import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/message/item/emoji_manager.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
+import 'package:mirror/widget/expression_team_delete_Formatter.dart';
 import 'package:provider/provider.dart';
 import 'package:text_span_field/range_style.dart';
 import 'package:text_span_field/text_span_field.dart';
@@ -72,7 +73,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
   CommentInputBottomBarState(this.voidCallback, this.hintText, this.commentFocus);
 
   ReleaseFeedInputFormatter _formatter;
-  List<TextInputFormatter> inputFormatters;
+  List<TextInputFormatter> inputFormatters = [];
 
   // 判断是否只是切换光标
   bool isSwitchCursor = true;
@@ -127,6 +128,7 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
   @override
   void initState() {
     super.initState();
+    /*inputFormatters.add(ExpressionTeamDeleteFormatter());*/
     requestBothFollowList();
     getEmojiData();
     _scrollController.addListener(() {

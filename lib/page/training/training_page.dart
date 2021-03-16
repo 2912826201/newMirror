@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:intl/intl.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
@@ -33,7 +34,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
 
   bool _isVideoCourseRequesting = false;
   int _isVideoCourseLastTime;
-  bool _videoCourseHasNext = false;
+  bool _videoCourseHasNext;
 
   RefreshController _refreshController = RefreshController();
 
@@ -61,6 +62,10 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
 
   _requestCourse() {
     if (_isVideoCourseRequesting) {
+      return;
+    }
+    if (_videoCourseHasNext != null && !_videoCourseHasNext) {
+      // 不是第一次取数据 且没有下一页时直接返回
       return;
     }
     _isVideoCourseRequesting = true;
@@ -100,9 +105,11 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
             behavior: NoBlueEffectBehavior(),
             child: SmartRefresher(
               enablePullDown: false,
-              enablePullUp: _videoCourseHasNext,
+              // enablePullUp: _videoCourseHasNext,
+              enablePullUp: true,
               controller: _refreshController,
               footer: CustomFooter(
+                height: 40,
                 builder: (BuildContext context, LoadStatus mode) {
                   Widget body;
                   if (mode == LoadStatus.loading) {
@@ -124,15 +131,15 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
               onLoading: _requestCourse,
               child: ListView.builder(
                 physics: BouncingScrollPhysics(),
-                //有个头部 有个尾部
-                itemCount: _videoCourseList.length + 2,
+                //有个头部 尾部用SmartRefresher的上拉加载footer代替
+                itemCount: _videoCourseList.length + 1,
                 itemBuilder: (context, index) {
                   if (index == 0) {
                     return _buildTopView(context.watch<MachineNotifier>());
-                  } else if (index == _videoCourseList.length + 1) {
-                    return SizedBox(
-                      height: 40,
-                    );
+                    // } else if (index == _videoCourseList.length + 1) {
+                    //   return Container(
+                    //     height: 40,
+                    //   );
                   } else {
                     return _buildCourseItem(index - 1);
                   }
@@ -356,10 +363,9 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
                     SizedBox(
                       width: 4,
                     ),
-                    //TODO 之后替换图标
-                    Icon(
-                      Icons.chevron_right,
-                      size: 16,
+                    AppIcon.getAppIcon(
+                      AppIcon.arrow_right_16,
+                      16,
                       color: AppColor.textPrimary3,
                     ),
                   ],
@@ -417,7 +423,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
                                 Row(
                                   children: [
                                     Text(
-                                      "${_liveList.first.coursewareDto.targetDto.name}·${_liveList.first.coursewareDto.calories}Kcal",
+                                      "${_liveList.first.coursewareDto.targetDto.name}·${IntegerUtil.formationCalorie(_liveList.first.coursewareDto.calories, isHaveCompany: false)}Kcal",
                                       style: TextStyle(
                                           fontSize: 10,
                                           fontWeight: FontWeight.w400,

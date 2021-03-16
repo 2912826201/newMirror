@@ -98,7 +98,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                     width: width * 0.27,
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      "训练计录",
+                      "训练记录",
                       style: AppStyle.textRegular12,
                     ),
                   ),

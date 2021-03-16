@@ -54,21 +54,23 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     QueryListModel model = await queryMsgList(type, 20, lastTime);
 
     if (listPage == 1) {
-      if (model != null && model.list != null) {
-        haveData = true;
-        msgList.clear();
-        controller.loadComplete();
+      controller.loadComplete();
+      if (model != null) {
         lastTime = model.lastTime;
-        model.list.forEach((element) {
-          if (isRefreash) {
-            element.isRead = 1;
-          }
-          msgList.add(element);
-        });
+        msgList.clear();
+        if( model.list != null){
+          haveData = true;
+          model.list.forEach((element) {
+            if (isRefreash) {
+              element.isRead = 1;
+            }
+            msgList.add(element);
+          });
+        }
         controller.refreshCompleted();
       } else {
         haveData = false;
-        controller.resetNoData();
+        controller.refreshCompleted();
       }
     } else if (listPage > 1 && lastTime != null) {
       if (model != null && model.list != null) {
@@ -265,10 +267,10 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
   bool feedIsDelete = false;
   bool commentIsDelete = false;
   String commentState;
-
+  CommentDtoModel feedData;
   _getRefData(BuildContext context) {
     print('=======================${widget.msgModel.refType}');
-    if (widget.type == 0||widget.type==1) {
+    if (widget.type == 0) {
       if (widget.msgModel.commentData == null) {
         commentIsDelete = true;
       } else {
@@ -282,7 +284,15 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
         comment = "赞了你的动态";
       }
     }else{
-      print('--------------------------${widget.msgModel.refType}');
+      if(widget.msgModel.commentData!=null){
+        atUserList = widget.msgModel.commentData.atUsers;
+        comment = widget.msgModel.commentData.content;
+      }else if(widget.msgModel.refData!=null){
+        atUserList = HomeFeedModel.fromJson(widget.msgModel.refData).atUsers;
+        comment =HomeFeedModel.fromJson(widget.msgModel.refData).content;
+      }else{
+        commentIsDelete = true;
+      }
     }
     if (widget.msgModel.refData != null) {
       if (widget.msgModel.refType == 0) {

@@ -16,6 +16,7 @@ import 'package:mirror/page/message/message_view/currency_msg.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/loading_progress.dart';
@@ -251,7 +252,7 @@ class GroupMorePageState extends State<GroupMorePage> {
                   fontWeight: FontWeight.w500)),
           Expanded(child: SizedBox()),
           subtitle != null
-              ? Text(maxLength(subtitle,15),
+              ? Text(StringUtil.maxLength(subtitle,15),
             style: AppStyle.textSecondaryMedium14,)
               : Container(),
           subtitle != null ? SizedBox(width: 12) : Container(),
@@ -474,11 +475,6 @@ class GroupMorePageState extends State<GroupMorePage> {
     } else {
       return text;
     }
-  }
-  static String maxLength(String str, int len) {
-    // 删除emoji表情
-    var sRunes = str.runes;
-    return sRunes.length > len ?  String.fromCharCodes(sRunes, 0, sRunes.length - len) +"...":str;
   }
 
 
