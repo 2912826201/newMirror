@@ -13,6 +13,7 @@ import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -396,7 +397,7 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
                                               ),
                                               Container(
                                                 child: Text(
-                                                  "${value.coursewareDto?.calories}千卡",
+                                                  "${IntegerUtil.formationCalorie(value.coursewareDto?.calories)}",
                                                   style: TextStyle(
                                                     fontSize: 10,
                                                     color: AppColor.textPrimary1,

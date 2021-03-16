@@ -22,6 +22,8 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 
+import '../overscroll_behavior.dart';
+
 ///消息提醒列表
 class InteractiveNoticePage extends StatefulWidget {
   int type;
@@ -52,21 +54,23 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     QueryListModel model = await queryMsgList(type, 20, lastTime);
 
     if (listPage == 1) {
-      if (model != null && model.list != null) {
-        haveData = true;
-        msgList.clear();
-        controller.loadComplete();
+      controller.loadComplete();
+      if (model != null) {
         lastTime = model.lastTime;
-        model.list.forEach((element) {
-          if (isRefreash) {
-            element.isRead = 1;
-          }
-          msgList.add(element);
-        });
+        msgList.clear();
+        if( model.list != null){
+          haveData = true;
+          model.list.forEach((element) {
+            if (isRefreash) {
+              element.isRead = 1;
+            }
+            msgList.add(element);
+          });
+        }
         controller.refreshCompleted();
       } else {
         haveData = false;
-        controller.resetNoData();
+        controller.refreshCompleted();
       }
     } else if (listPage > 1 && lastTime != null) {
       if (model != null && model.list != null) {
@@ -156,7 +160,9 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
             width: width,
             height: height,
             child: haveData
-                ? SmartRefresher(
+                ?  ScrollConfiguration(
+              behavior: OverScrollBehavior(),
+              child:SmartRefresher(
                     controller: controller,
                     enablePullUp: true,
                     enablePullDown: true,
@@ -195,7 +201,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                               msgModel: msgList[index],
                               index: index,);
                         }),
-                  )
+                  ))
                 : Center(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -261,21 +267,31 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
   bool feedIsDelete = false;
   bool commentIsDelete = false;
   String commentState;
-
+  CommentDtoModel feedData;
   _getRefData(BuildContext context) {
     print('=======================${widget.msgModel.refType}');
-    if (widget.type == 0 || widget.type == 1) {
+    if (widget.type == 0) {
       if (widget.msgModel.commentData == null) {
         commentIsDelete = true;
       } else {
         atUserList = widget.msgModel.commentData.atUsers;
         comment = widget.msgModel.commentData.content;
       }
-    } else {
+    } else if(widget.type == 2){
       if(widget.msgModel.commentData!=null){
         comment = "赞了你的评论";
       }else{
         comment = "赞了你的动态";
+      }
+    }else{
+      if(widget.msgModel.commentData!=null){
+        atUserList = widget.msgModel.commentData.atUsers;
+        comment = widget.msgModel.commentData.content;
+      }else if(widget.msgModel.refData!=null){
+        atUserList = HomeFeedModel.fromJson(widget.msgModel.refData).atUsers;
+        comment =HomeFeedModel.fromJson(widget.msgModel.refData).content;
+      }else{
+        commentIsDelete = true;
       }
     }
     if (widget.msgModel.refData != null) {

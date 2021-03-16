@@ -33,7 +33,7 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
-import 'package:mirror/widget/custom_button.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/icon.dart';
@@ -72,6 +72,8 @@ followModelarrayDate(List<BuddyModel> array1, List<BuddyModel> array2) {
 }
 
 class ReleasePage extends StatefulWidget {
+  Rule topicRule;
+  ReleasePage({this.topicRule});
   @override
   ReleasePageState createState() => ReleasePageState();
 }
@@ -80,7 +82,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
   SelectedMediaFiles _selectedMediaFiles;
   TextEditingController _controller = TextEditingController();
   FocusNode feedFocus = FocusNode();
-
+  bool isFirst = true;
   // 权限
   PermissionStatus permissions;
 
@@ -211,6 +213,11 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
             topicSearchStr: "",
           ),
           builder: (context, _) {
+            if(widget.topicRule!=null&&isFirst){
+              print('--------------------------widget.topicRule!=null');
+              context.watch<ReleaseFeedInputNotifier>().rules.insert(0, widget.topicRule);
+              isFirst = false;
+            }
             String str = context.watch<ReleaseFeedInputNotifier>().keyWord;
             return Container(
               color: AppColor.white,
@@ -406,12 +413,14 @@ class FeedHeader extends StatelessWidget {
       context.read<ReleaseProgressNotifier>().setPublishFeedModel(feedModel);
       context.read<ReleaseFeedInputNotifier>().rules.clear();
       context.read<ReleaseFeedInputNotifier>().selectAddress = null;
+      FocusScope.of(context).requestFocus(FocusNode());
       Navigator.pop(context, true);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    //TODO 应改用CustomAppBar
     return Container(
       width: ScreenUtil.instance.screenWidthDp,
       height: 44,
@@ -421,27 +430,26 @@ class FeedHeader extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            margin: EdgeInsets.only(left: 16),
-            child: MyIconBtn(
-              width: 28,
-              height: 28,
-              iconSting: "images/resource/2.0x/shut_down@2x.png",
-              onPressed: () {
-                showAppDialog(
-                  context,
-                  confirm: AppDialogButton("确定", () {
-                    Navigator.of(context).pop(true);
-                    return true;
-                  }),
-                  cancel: AppDialogButton("取消", () {
-                    return true;
-                  }),
-                  title: "退出编辑",
-                  info: "退出后动态内容将不保存，确定放弃编辑动态吗？",
-                );
-              },
-            ),
+          SizedBox(
+            width: 8,
+          ),
+          CustomAppBarIconButton(
+            svgName: AppIcon.nav_close,
+            onTap: () {
+              showAppDialog(
+                context,
+                confirm: AppDialogButton("确定", () {
+                  FocusScope.of(context).requestFocus(FocusNode());
+                  Navigator.of(context).pop(true);
+                  return true;
+                }),
+                cancel: AppDialogButton("取消", () {
+                  return true;
+                }),
+                title: "退出编辑",
+                info: "退出后动态内容将不保存，确定放弃编辑动态吗？",
+              );
+            },
           ),
           Spacer(),
           GestureDetector(
@@ -486,7 +494,7 @@ class FeedHeader extends StatelessWidget {
           ),
           SizedBox(
             width: 16,
-          )
+          ),
         ],
       ),
     );
@@ -507,7 +515,7 @@ class KeyboardInput extends StatefulWidget {
 class KeyboardInputState extends State<KeyboardInput> {
   ReleaseFeedInputFormatter _formatter;
   FocusNode commentFocus;
-
+  bool isFirst = true;
   // 判断是否只是切换光标
   bool isSwitchCursor = true;
 
@@ -759,6 +767,13 @@ class KeyboardInputState extends State<KeyboardInput> {
   @override
   Widget build(BuildContext context) {
     List<Rule> rules = context.watch<ReleaseFeedInputNotifier>().rules;
+    if(widget.controller.text.length<1&&context.watch<ReleaseFeedInputNotifier>().rules.isNotEmpty){
+      widget.controller.text = "#${context.watch<ReleaseFeedInputNotifier>().rules.first.params}";
+      widget.controller.selection =  TextSelection(
+        baseOffset: context.watch<ReleaseFeedInputNotifier>().rules.first.endIndex,
+        extentOffset: context.watch<ReleaseFeedInputNotifier>().rules.first.endIndex,
+      );
+    }
     return Container(
       height: 129,
       width: ScreenUtil.instance.screenWidthDp,
@@ -1562,7 +1577,7 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        widget.selectedMediaFiles.list != null
+        widget.selectedMediaFiles!=null&&widget.selectedMediaFiles.list != null
             ? SeletedPhoto(
                 selectedMediaFiles: widget.selectedMediaFiles,
               )
@@ -1657,7 +1672,7 @@ class SeletedPhotoState extends State<SeletedPhoto> {
             borderRadius: BorderRadius.all(Radius.circular(3.0)),
           ),
           child: Center(
-            child: Icon(Icons.add, color: AppColor.textHint),
+            child: AppIcon.getAppIcon(AppIcon.add_gallery, 13),
           ),
         ),
       );
@@ -1740,33 +1755,23 @@ class SeletedPhotoState extends State<SeletedPhoto> {
                               : Container(),
                 ),
                 Positioned(
-                    right: 0,
-                    // top: ,
-                    child: GestureDetector(
-                      onTap: () {
-                        print("关闭");
-                        setState(() {
-                          if (widget.selectedMediaFiles.list.length == 1) {
-                            ToastShow.show(msg: "最后一个了", context: context, gravity: Toast.CENTER);
-                            return;
-                            // widget.selectedMediaFiles.type = null;
-                          }
-                          widget.selectedMediaFiles.list.removeAt(index);
-                        });
-                      },
-                      child: Container(
-                        width: 16,
-                        height: 16,
-                        decoration:
-                            BoxDecoration(color: AppColor.bgBlack, borderRadius: BorderRadius.all(Radius.circular(8))),
-                        child: Center(
-                            child: Icon(
-                          Icons.close,
-                          color: AppColor.white,
-                          size: 12,
-                        )),
-                      ),
-                    ))
+                  right: 0,
+                  child: AppIconButton(
+                    svgName: AppIcon.delete,
+                    iconSize: 18,
+                    onTap: () {
+                      print("关闭");
+                      setState(() {
+                        if (widget.selectedMediaFiles.list.length == 1) {
+                          ToastShow.show(msg: "最后一个了", context: context, gravity: Toast.CENTER);
+                          return;
+                          // widget.selectedMediaFiles.type = null;
+                        }
+                        widget.selectedMediaFiles.list.removeAt(index);
+                      });
+                    },
+                  ),
+                ),
               ],
             ),
           );

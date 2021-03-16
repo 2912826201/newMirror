@@ -98,7 +98,7 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
                     width: width * 0.27,
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      "训练计录",
+                      "训练记录",
                       style: AppStyle.textRegular12,
                     ),
                   ),
@@ -438,7 +438,6 @@ class ProfileState extends State<ProfilePage> with AutomaticKeepAliveClientMixin
     } else if ("我的课程" == title) {
       AppRouter.navigateToMeCoursePage(context);
     } else if ("我的订单" == title) {
-      AppRouter.navigateToFitnessPartPage(context);
       /*if (userModel.isVip != 0) {
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
           return VipNotOpenPage(type: VipState.NOTOPEN);

@@ -19,13 +19,13 @@ import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
-import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/loading.dart';
 import 'package:mirror/data/dto/token_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
@@ -69,107 +69,110 @@ class _PerfectUserState extends State<PerfectUserPage> {
     double height = ScreenUtil.instance.height;
     return Scaffold(
       backgroundColor: AppColor.white,
-      appBar: CustomAppBar(hasDivider: false,),
+      appBar: CustomAppBar(
+        hasDivider: false,
+      ),
       body: Container(
-          width: width,
-          height: height,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ///头像
-              SizedBox(
-                height: 40,
-              ),
-              Center(
-                child: _avatarWidget(),
-              ),
-              SizedBox(height: 48),
-              Container(
-                  padding: EdgeInsets.only(left: 41, right: 41),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      ///输入框
-                      _inputWidget(),
-                      SizedBox(
-                        height: 32,
-                      ),
+        width: width,
+        height: height,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ///头像
+            SizedBox(
+              height: 40,
+            ),
+            Center(
+              child: _avatarWidget(),
+            ),
+            SizedBox(height: 48),
+            Container(
+              padding: EdgeInsets.only(left: 41, right: 41),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ///输入框
+                  _inputWidget(),
+                  SizedBox(
+                    height: 32,
+                  ),
 
-                      ///完成按钮
-                      _perfectUserBtn(width)
-                    ],
-                  ))
-            ],
-          )),
+                  ///完成按钮
+                  _perfectUserBtn(width)
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   Widget _avatarWidget() {
     return Container(
-        width: 90,
-        height: 90,
-        child: InkWell(
-            onTap: () {
-              AppRouter.navigateToMediaPickerPage(context, 1, typeImage, true, startPageGallery, true, (result) async {
-                SelectedMediaFiles files = Application.selectedMediaFiles;
-                if (result != true || files == null) {
-                  print('===============================值为空退回');
-                  return;
-                }
-                if (fileList.isNotEmpty) {
-                  fileList.clear();
-                }
-                Application.selectedMediaFiles = null;
-                MediaFileModel model = files.list.first;
-                print(
-                    'model croppedImageData 1=========================${model.croppedImageData}  ${model.croppedImage}   ${model.file}');
-                if (model != null) {
-                  print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-                  ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
-                  print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
-                  Uint8List picBytes = byteData.buffer.asUint8List();
-                  print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
-                  model.croppedImageData = picBytes;
-                }
-                String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
-                if (model.croppedImageData != null) {
-                  print('==================================model.croppedImageData!=null');
-                  File imageFile = await FileUtil().writeImageDataToFile(model.croppedImageData, timeStr);
-                  print('imageFile==============================$imageFile');
-                  fileList.add(imageFile);
-                  print('===============================${fileList.length}');
-                }
-                print('model.croppedImageData 2===========================${model.croppedImageData}');
-                setState(() {
-                  imageData = model.croppedImageData;
-                });
-              });
-            },
-            child: Stack(
-              children: [
-                Container(
-                  height: 90,
-                  width: 90,
-                  child: ClipOval(
-                      child: imageData != null
-                          ? Image.memory(
-                              imageData,
-                              fit: BoxFit.cover,
-                            )
-                          : Container(
-                              color: AppColor.black,
-                            )),
-                ),
-                Positioned(
-                    bottom: 0,
-                    right: 6,
-                    child: Container(
-                      width: 24,
-                      height: 24,
-                      child: Image.asset("images/resource/2.0x/add_avatar_icon_@2x.png"),
-                    ))
-              ],
-            )));
+      width: 90,
+      height: 90,
+      child: InkWell(
+        onTap: () {
+          AppRouter.navigateToMediaPickerPage(context, 1, typeImage, true, startPageGallery, true, (result) async {
+            SelectedMediaFiles files = Application.selectedMediaFiles;
+            if (result != true || files == null) {
+              print('===============================值为空退回');
+              return;
+            }
+            if (fileList.isNotEmpty) {
+              fileList.clear();
+            }
+            Application.selectedMediaFiles = null;
+            MediaFileModel model = files.list.first;
+            print(
+                'model croppedImageData 1=========================${model.croppedImageData}  ${model.croppedImage}   ${model.file}');
+            if (model != null) {
+              print("开始获取ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+              ByteData byteData = await model.croppedImage.toByteData(format: ui.ImageByteFormat.png);
+              print("已获取到ByteData" + DateTime.now().millisecondsSinceEpoch.toString());
+              Uint8List picBytes = byteData.buffer.asUint8List();
+              print("已获取到Uint8List" + DateTime.now().millisecondsSinceEpoch.toString());
+              model.croppedImageData = picBytes;
+            }
+            String timeStr = DateTime.now().millisecondsSinceEpoch.toString();
+            if (model.croppedImageData != null) {
+              print('==================================model.croppedImageData!=null');
+              File imageFile = await FileUtil().writeImageDataToFile(model.croppedImageData, timeStr);
+              print('imageFile==============================$imageFile');
+              fileList.add(imageFile);
+              print('===============================${fileList.length}');
+            }
+            print('model.croppedImageData 2===========================${model.croppedImageData}');
+            setState(() {
+              imageData = model.croppedImageData;
+            });
+          });
+        },
+        child: Stack(
+          children: [
+            Container(
+              height: 90,
+              width: 90,
+              child: ClipOval(
+                  child: imageData != null
+                      ? Image.memory(
+                          imageData,
+                          fit: BoxFit.cover,
+                        )
+                      : Container(
+                          color: AppColor.black,
+                        )),
+            ),
+            Positioned(
+              bottom: 0,
+              right: 4.5,
+              child: AppIcon.getAppIcon(AppIcon.add_avatar_big, 25.5),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   ///输入框
@@ -242,7 +245,7 @@ class _PerfectUserState extends State<PerfectUserPage> {
       //成功后重新刷新token
       Loading.hideLoading(context);
       BaseResponseModel responseModel = await login("refresh_token", null, null, Application.tempToken.refreshToken);
-      if (responseModel != null&&responseModel.code==200) {
+      if (responseModel != null && responseModel.code == 200) {
         TokenModel token = TokenModel.fromJson(responseModel.data);
         print("刷新用户token成功");
         await _afterLogin(token, context);

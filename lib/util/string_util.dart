@@ -387,4 +387,9 @@ class StringUtil {
     containerHeight = containerWidth / containerRatio;
     return containerHeight;
   }
+  static String maxLength(String str, int len,{bool isOmit=true}) {
+    // 删除emoji表情
+    var sRunes = str.runes;
+    return sRunes.length > len ?  String.fromCharCodes(sRunes, 0, sRunes.length - len) +"${isOmit?"...":""}":str;
+  }
 }

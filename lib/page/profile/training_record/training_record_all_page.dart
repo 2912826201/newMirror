@@ -6,6 +6,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/loading_status.dart';
 import 'package:mirror/data/model/profile/training_record_model.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dotted_line.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
@@ -368,7 +369,8 @@ class _TrainingRecordAllPageState extends State<TrainingRecordAllPage> {
           SizedBox(height: 11),
           Text(courseModelList.title, style: TextStyle(fontSize: 16, color: AppColor.textPrimary1)),
           SizedBox(height: 6),
-          Text("第${courseModelList.no}次  ${courseModelList.mseconds ~/ 1000 ~/ 60}分钟  ${courseModelList.calorie}千卡",
+          Text("第${courseModelList.no}次  ${courseModelList.mseconds ~/ 1000 ~/ 60}分钟 "
+              " ${IntegerUtil.formationCalorie(courseModelList.calorie)}",
               style: TextStyle(fontSize: 12, color: AppColor.textSecondary)),
           SizedBox(height: 12),
           Visibility(

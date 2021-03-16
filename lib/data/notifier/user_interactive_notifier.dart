@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/data/model/profile/profile_model.dart';
-
+import 'package:mirror/data/notifier/profile_notifier.dart';
+import 'package:provider/provider.dart';
 class UserInteractiveNotifier extends ChangeNotifier {
   bool watchScroll = true;
   Map<int, ProfileUiChangeModel> profileUiChangeModel = {};
@@ -100,12 +102,19 @@ class UserInteractiveNotifier extends ChangeNotifier {
   void changeFollowCount(int id, bool follow) {
     if (profileUiChangeModel.containsKey(id)) {
       if (follow) {
-        profileUiChangeModel[id].attentionModel.followingCount += 1;
+        profileUiChangeModel[id].attentionModel.followerCount += 1;
       } else {
-        profileUiChangeModel[id].attentionModel.followingCount -= 1;
+        profileUiChangeModel[id].attentionModel.followerCount -= 1;
       }
-      notifyListeners();
     }
+    if(profileUiChangeModel.containsKey(Application.appContext.read<ProfileNotifier>().profile.uid)){
+      if (follow) {
+        profileUiChangeModel[Application.appContext.read<ProfileNotifier>().profile.uid].attentionModel.followingCount += 1;
+      } else {
+        profileUiChangeModel[Application.appContext.read<ProfileNotifier>().profile.uid].attentionModel.followingCount -= 1;
+      }
+    }
+    notifyListeners();
   }
 
   void changeAttentionModel(ProfileModel model, int id) {

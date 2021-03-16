@@ -10,6 +10,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/file_util.dart';
+import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -95,7 +96,7 @@ Widget getTitleWidget(LiveVideoModel videoModel,BuildContext context,GlobalKey g
   var widgetArray = <Widget>[];
   var titleArray = [
     ((videoModel.times??0) ~/ 60000).toString(),
-    videoModel.calories.toString(),
+    IntegerUtil.formationCalorie(videoModel.calories,isHaveCompany: false),
     videoModel.levelDto?.ename
   ];
   var subTitleArray = ["分钟", "千卡", videoModel.levelDto?.name];

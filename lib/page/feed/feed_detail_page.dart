@@ -17,6 +17,7 @@ import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/comment
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/course_address_label.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/getTripleArea.dart';
 import 'package:mirror/page/home/sub_page/share_page/share_page_sub_page/head_view.dart';
+import 'package:mirror/page/profile/overscroll_behavior.dart';
 import 'package:mirror/page/training/common/common_comment_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -126,7 +127,9 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                 children: [
                   Container(
                     height: ScreenUtil.instance.height,
-                    child: SmartRefresher(
+                    child: ScrollConfiguration(
+                      behavior: OverScrollBehavior(),
+                      child: SmartRefresher(
                         enablePullDown: false,
                         enablePullUp: true,
                         footer: footerWidget(),
@@ -226,8 +229,7 @@ class FeedDetailPageState extends State<FeedDetailPage> {
                                   height: ScreenUtil.instance.bottomBarHeight,
                                 ),
                               ),
-                            ])),
-                  ),
+                            ])))),
                   Positioned(
                     bottom: 0,
                     child: CommentInputBox(

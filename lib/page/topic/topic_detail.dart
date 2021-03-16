@@ -16,11 +16,13 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/topic/topic_list.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
+import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/primary_scrollcontainer.dart';
 import 'package:mirror/widget/round_underline_tab_indicator.dart';
 import 'package:provider/provider.dart';
@@ -155,7 +157,9 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: widget.model != null
+        body: Stack(children: [
+
+        widget.model != null
             ? NestedScrollView(
                 controller: _scrollController,
                 headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -256,9 +260,12 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                                               mainAxisAlignment: MainAxisAlignment.center,
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                Text(
+                                                Container(
+                                                  width:ScreenUtil.instance.width*(168/ScreenUtil.instance.width),
+                                                  child:Text(
                                                   "#${widget.model.name}",
                                                   style: AppStyle.textMedium16,
+                                                ) ,
                                                 ),
                                                 SizedBox(
                                                   height: 3,
@@ -344,9 +351,50 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
                   ],
                 ),
               )
-            : Container());
+            : Container(),
+          Positioned(
+            bottom: ScreenUtil.instance.bottomBarHeight+28,
+            left: (ScreenUtil.instance.width-127)/2,
+            right: (ScreenUtil.instance.width-127)/2,
+            child: _gotoRelease(),)
+        ],));
   }
+Widget _gotoRelease(){
+    return InkWell(
+      onTap: (){
+       Rule re = Rule(0, widget.model.name.length, widget.model.name, null, false);
+        AppRouter.navigateToReleasePage(context,topicRule: re);
+      },
+      child: Container(
+      width: 127,
+      height: 43,
+      decoration:BoxDecoration(
+          color: AppColor.bgBlack,
+          borderRadius: BorderRadius.all(Radius.circular(24)),
+          ) ,
+      padding: EdgeInsets.only(left: 12,right: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+            Container(
+              height: 27,
+              width: 27,
+              decoration:BoxDecoration(
+                color: AppColor.white,
+                borderRadius: BorderRadius.all(Radius.circular(24)),
+              ) ,
+              child:Center(
+                child: Icon(Icons.camera_alt,color: AppColor.black,),
+              ),
+            ),
+          Spacer(),
+          Text("立即参与",style: AppStyle.whiteRegular16,)
+        ],
+      ),
+    ),);
 
+
+}
   Widget _followButton() {
     return GestureDetector(
         onTap: () {
@@ -407,30 +455,8 @@ class TopicDetailTabBarDelegate extends SliverPersistentHeaderDelegate {
   }
 }
 
-class TopicDetailNotifier extends ChangeNotifier {
-  Color titleColor = AppColor.transparent;
-  Color iconColor = AppColor.bgWhite;
-  bool scrollWatch = false;
-  bool canOnclick = false;
-
-  void ChangeColor(bool scrollBig) {
-    if (scrollBig) {
-      titleColor = AppColor.bgBlack;
-      iconColor = AppColor.bgBlack;
-      canOnclick = true;
-      scrollWatch = true;
-    } else {
-      titleColor = AppColor.transparent;
-      iconColor = AppColor.bgWhite;
-      canOnclick = false;
-      scrollWatch = false;
-    }
-    notifyListeners();
-  }
-}
-
 class TopicUiChangeModel {
-  Color titleColor = AppColor.white;
+  Color titleColor = AppColor.transparent;
   Color iconColor = AppColor.white;
   bool canOnclick = true;
 }

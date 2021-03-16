@@ -49,7 +49,7 @@ Future<bool> putFeedBack(String content,String picUrls)async{
   BaseResponseModel responseModel = await requestApi(FEED_BACK,{"content":content,"picUrls":picUrls});
   if(responseModel.isSuccess){
     print("==================这是接口请求成功的输出");
-    return true;
+    return responseModel.data["state"];
   }else{
     print("==================这是接口请求失败的输出");
     return false;

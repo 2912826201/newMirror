@@ -8,6 +8,7 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
 import 'package:mirror/page/message/item/emoji_manager.dart';
+import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/feed/feed_more_popups.dart';
@@ -29,6 +30,9 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
   TextEditingController _textController = TextEditingController();
   ///输入框的焦点
   FocusNode _focusNode = new FocusNode();
+
+  bool isShowEditPlan=false;
+  bool isShowEmojiBtn=true;
 
   //是否显示弹幕消息
   bool isShowMessage=true;
@@ -70,7 +74,6 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
 
   @override
   Widget build(BuildContext context) {
-
     return WillPopScope(
         child: Scaffold(
           backgroundColor: Colors.transparent,
@@ -89,10 +92,10 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
               if(_focusNode.hasFocus){
                 _focusNode.unfocus();
               }
+              isShowEditPlan=false;
               if(_emojiState){
-                setState(() {
-                  _emojiState=!_emojiState;
-                });
+                _emojiState=!_emojiState;
+                setState(() {});
               }
             },
           ),
@@ -278,9 +281,26 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
   Widget getBottomPlan(){
     return Column(
       children: [
-        Container(
-          height: getBottomHeight(),
-          child: getListView(),
+        ShaderMask(
+          shaderCallback: (Rect bounds) {
+            return LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.transparent,
+                Colors.black,
+                Colors.black,
+                Colors.black,
+                Colors.black,
+                Colors.transparent,
+              ],
+            ).createShader(Rect.fromLTRB(0,0, bounds.width,bounds.height));
+          },
+          blendMode: BlendMode.dstIn,
+          child: Container(
+            height: getBottomHeight(),
+            child: getListView(),
+          ),
         ),
         Container(
           height: 48.0,
@@ -350,14 +370,15 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
   Widget getBottomBarAnimatedContainer(){
     return AnimatedContainer(
       duration: Duration(milliseconds: 50),
-      height: (_focusNode.hasFocus||_emojiState)?48.0:0.0,
+      height: (_focusNode.hasFocus||isShowEditPlan||_emojiState)?48.0:0.0,
       child: getBottomBar1(),
     );
   }
 
   Widget getBottomBar1(){
     return Container(
-      height: (_focusNode.hasFocus||_emojiState)?48.0:0.0,
+      height: (_focusNode.hasFocus||isShowEditPlan||_emojiState)?48.0:0.0,
+      // height: 48.0,
       child: SingleChildScrollView(
         child: Container(
           color: AppColor.white,
@@ -376,17 +397,25 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
                   padding: EdgeInsets.only(left: 10),
                   child: AppIconButton(
                     onTap: () {
-                      if(_focusNode.hasFocus){
-                        _focusNode.unfocus();
+                      if(ClickUtil.isFastClick()){
+                        return;
                       }
-                      setState(() {
-                        _emojiState=!_emojiState;
-                      });
+                      if(isShowEmojiBtn){
+                        if(_focusNode.hasFocus){
+                          _focusNode.unfocus();
+                        }
+                      }else{
+                        FocusScope.of(context).requestFocus(_focusNode);
+                      }
+                      _emojiState=isShowEmojiBtn;
+                      isShowEditPlan=false;
+                      isShowEmojiBtn=!isShowEmojiBtn;
+                      setState(() {});
                     },
                     iconSize: 24,
                     buttonWidth: 36,
                     buttonHeight: 36,
-                    svgName: AppIcon.input_emotion,
+                    svgName: isShowEmojiBtn?AppIcon.input_emotion:AppIcon.input_keyboard,
                   ),
                 ),
               ],
@@ -580,11 +609,9 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
   Widget edit() {
     return TextSpanField(
       onTap: (){
-        if(_emojiState){
-          setState(() {
-            _emojiState=!_emojiState;
-          });
-        }
+        isShowEmojiBtn=true;
+        _emojiState=false;
+        setState(() {});
       },
       controller: _textController,
       focusNode: _focusNode,
@@ -695,7 +722,17 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
         child: Text("说点什么吧...",style: TextStyle(color: AppColor.white.withOpacity(0.35),fontSize: 14)),
       ),
       onTap: (){
-        FocusScope.of(context).requestFocus(_focusNode);
+        if(ClickUtil.isFastClick()){
+          return;
+        }
+        isShowEditPlan=true;
+        setState(() {
+
+        });
+        Future.delayed(Duration(milliseconds: 80),(){
+          FocusScope.of(context).requestFocus(_focusNode);
+          setState(() {});
+        });
       },
     );
   }
@@ -742,6 +779,7 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
     if(_focusNode.hasFocus){
       _focusNode.unfocus();
     }
+    isShowEditPlan=false;
     if(_emojiState){
       setState(() {
         _emojiState=!_emojiState;

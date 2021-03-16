@@ -10,6 +10,7 @@ import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
+import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
@@ -209,7 +210,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                                 crossAxisAlignment: CrossAxisAlignment.baseline,
                                 children: [
                                   Text(
-                                    "${widget.result.calorie}",
+                                    "${IntegerUtil.formationCalorie(widget.result.calorie,isHaveCompany: false)}",
                                     style: TextStyle(color: AppColor.textPrimary2, fontSize: 23),
                                   ),
                                   Text(
@@ -342,11 +343,6 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                         setState(() {
                           _relation = relation;
                         });
-                        if (relation == 1 || relation == 3) {
-                          context
-                              .read<UserInteractiveNotifier>()
-                              .changeFollowCount(context.read<ProfileNotifier>().profile.uid, true);
-                        }
                       }
                     });
                   }

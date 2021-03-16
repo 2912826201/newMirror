@@ -448,4 +448,37 @@ class MessageManager {
         return msg.content.encode();
     }
   }
+
+
+  //判断消息是不是弹幕消息
+  static bool judgeBarrageMessage(Message message){
+    if(message==null){
+      return false;
+    }else if(message.objectName!=ChatTypeModel.MESSAGE_TYPE_TEXT){
+      return false;
+    }else{
+      Map<String, dynamic> contentMap = json.decode((message.content as TextMessage).content);
+      if(null!=contentMap){
+        switch (contentMap["subObjectName"]) {
+          case ChatTypeModel.MESSAGE_TYPE_SYS_BARRAGE:
+          case ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE:
+            return true;
+          default:
+            return false;
+        }
+      }
+    }
+    return false;
+  }
+
+  //判断是不是聊天室的通知
+  static bool judgeBarrageNotice(Message message){
+    if(message==null){
+      return false;
+    }else if(message.objectName==ChatTypeModel.MESSAGE_TYPE_CMD&&
+        message.conversationType==RCConversationType.ChatRoom){
+      return true;
+    }
+    return false;
+  }
 }

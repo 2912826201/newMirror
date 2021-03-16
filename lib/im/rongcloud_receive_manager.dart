@@ -35,6 +35,17 @@ class RongCloudReceiveManager {
       return;
     }
 
+
+    if(MessageManager.judgeBarrageNotice(msg)){
+      print("聊天室的私聊通知消息：${msg.originContentMap}");
+      return;
+    }else if(MessageManager.judgeBarrageMessage(msg)){
+      //判断是不是弹幕消息
+      print("收到了弹幕消息：${msg.content.encode()}");
+      return;
+    }
+
+
     //分析消息是什么类型
     MessageManager.splitMessage(msg);
 

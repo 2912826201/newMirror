@@ -137,9 +137,7 @@ class CommentInputBoxState extends State<CommentInputBox> {
                                     comModel = (CommentDtoModel.fromJson(commentModel.data));
                                     print("发布成功：${comModel.toString()}");
                                     print("1111111");
-                                    new Future.delayed(Duration.zero, () {
                                       context.read<FeedMapNotifier>().feedPublishComment(comModel, widget.feedModel.id);
-                                    });
 
                                     print(
                                         '==========hotComment=====${context.read<FeedMapNotifier>().value.feedMap[widget.feedModel.id].hotComment.hashCode}');

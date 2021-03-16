@@ -5,6 +5,7 @@ import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -136,7 +137,7 @@ class _MeCoursePageState extends State<MeCoursePage> {
               )),
               SizedBox(width: 15),
               Text(
-                "总时长${videoModel.times ~/ 1000 ~/ 60}分钟  ${videoModel.calories}千卡",
+                "总时长${videoModel.times ~/ 1000 ~/ 60}分钟  ${IntegerUtil.formationCalorie(videoModel.calories)}",
                 style: TextStyle(fontSize: 12, color: AppColor.textPrimary2),
               ),
             ],
