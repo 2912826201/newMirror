@@ -27,6 +27,7 @@ class DownloadVideoCourseDBHelper {
     dto.courseFilePaths = courseFilePaths;
     dto.courseUrls = courseUrls;
     dto.downloadTime = new DateTime.now().millisecondsSinceEpoch;
+    // dto.videoCourseModel=videoCourseModel;
     var result = await DBHelper.instance.db.insert(TABLE_NAME_DOWNLOAD_COURSE_VIDEO, dto.toMap());
     return result > 0;
   }
@@ -41,6 +42,7 @@ class DownloadVideoCourseDBHelper {
     dto.courseFilePaths = courseFilePaths;
     dto.courseUrls = courseUrls;
     dto.downloadTime = new DateTime.now().millisecondsSinceEpoch;
+    // dto.videoCourseModel=videoCourseModel;
     var result = await DBHelper.instance.db.update(TABLE_NAME_DOWNLOAD_COURSE_VIDEO, dto.toMap(),
         where: "$COLUMN_NAME_DOWNLOAD_COURSE_ID = '${dto.courseId}'");
     return result > 0;

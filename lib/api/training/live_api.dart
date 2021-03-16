@@ -102,11 +102,9 @@ Future<Map> getVideoCourseDetail({@required int courseId}) async {
   Map<String, dynamic> params = {};
   params["courseId"] = courseId.toString();
   BaseResponseModel responseModel = await requestApi(GETVIDEOCOURSEDETAIL, params);
-  if (responseModel.isSuccess) {
-    return responseModel.data;
-  } else {
-    return null;
-  }
+  params["code"]=responseModel.code;
+  params["dataMap"]=responseModel.data;
+  return params;
 }
 
 ///预约直播
