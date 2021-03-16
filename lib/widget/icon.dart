@@ -41,7 +41,7 @@ class AppIcon {
   static const String add_circle_black = "assets/svg/add_circle_black.svg";
   static const String clear_circle_grey = "assets/svg/clear_circle_grey.svg";
   static const String arrow_right_12 = "assets/svg/arrow_right_12.svg";
-  static const String arrow_right_16 = "assets/svg/arrow_right_18.svg";
+  static const String arrow_right_16 = "assets/svg/arrow_right_16.svg";
   static const String arrow_right_18 = "assets/svg/arrow_right_18.svg";
   static const String close_18 = "assets/svg/close_18.svg";
   static const String add_avatar_big = "assets/svg/add_avatar_big.svg";
