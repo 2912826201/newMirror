@@ -290,7 +290,16 @@ class ReleaseFeedInputFormatter extends TextInputFormatter {
         print("用来自动覆盖$startIndex,,,,,,,,,,,$endIndex");
       }
     }
-
+    if(!isRule){
+      if((oldValue.text.length-newValue.text.length)<=oldValue.text.characters
+          .last.length){
+        print('------------------------------表情删除监听');
+        return TextEditingValue(text:oldValue.text.characters.skipLast(1).string,selection: TextSelection
+          (baseOffset:oldValue.text.characters.skipLast(1).string
+            .length,extentOffset: oldValue.text.characters.skipLast(1).string.length,
+        ));
+      }
+    }
     // if(!isRule) {
     //   print("提前返回了");
     //   return newValue;

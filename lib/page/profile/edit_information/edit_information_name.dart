@@ -1,17 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
-import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
-import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
+import 'package:mirror/widget/expression_team_delete_Formatter.dart';
+import 'package:mirror/widget/precision_limit_Formatter.dart';
 
 ///编辑昵称
 class EditInformationName extends StatefulWidget {
@@ -41,9 +39,9 @@ class _EditInformationNameState extends State<EditInformationName> {
   void initState() {
     super.initState();
     if (widget.userName != null) {
-      _EditText = widget.userName;
-      controller.text = widget.userName;
-      textLength = widget.userName.length;
+      _EditText =StringUtil.maxLength(widget.userName,15,isOmit: false);
+      controller.text = _EditText;
+      textLength = _EditText.characters.length;
       _reciprocal += beforeLength - textLength;
       beforeLength = textLength;
       // 设置光标
@@ -60,11 +58,10 @@ class _EditInformationNameState extends State<EditInformationName> {
     controller.addListener(() {
       if (lastInput != controller.completeText) {
         lastInput = controller.completeText;
-
         ///通知onChanged
         setState(() {
           _EditText = lastInput;
-          textLength = lastInput.length;
+          textLength = lastInput.characters.length;
           _reciprocal += beforeLength - textLength;
           beforeLength = textLength;
         });
@@ -165,6 +162,7 @@ class _EditInformationNameState extends State<EditInformationName> {
     var putFiled = TextField(
       autofocus: true,
       maxLength: 15,
+      /*maxLines: 1,*/
       focusNode: _commentFocus,
       controller: controller,
       cursorColor: AppColor.black,
@@ -175,6 +173,9 @@ class _EditInformationNameState extends State<EditInformationName> {
         hintStyle: TextStyle(fontSize: 16, color: AppColor.textHint),
         border: InputBorder.none,
       ),
+      inputFormatters: [
+        ExpressionTeamDeleteFormatter()
+         ],
     );
     return Container(padding: EdgeInsets.only(left: 16, right: 16), child: putFiled);
   }

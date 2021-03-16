@@ -52,9 +52,9 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     if (followDataPage == 1) {
       _refreshController.loadComplete();
       if (model != null) {
+        context.read<UserInteractiveNotifier>().idListClear(widget.id, type: widget.type);
+        followModel.clear();
         if (model.list.isNotEmpty) {
-          context.read<UserInteractiveNotifier>().idListClear(widget.id, type: widget.type);
-          followModel.clear();
           model.list.forEach((result) {
             followModel.add(HomeFeedModel.fromJson(result));
             idList.add(HomeFeedModel.fromJson(result).id);

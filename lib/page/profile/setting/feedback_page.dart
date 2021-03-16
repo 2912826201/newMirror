@@ -92,7 +92,7 @@ class _feedBackPage extends State<FeedBackPage> {
       child: TextField(
         cursorColor: AppColor.black,
         style: AppStyle.textRegular16,
-        maxLines: 10,
+        maxLength: 500,
         decoration: InputDecoration(
           counterText: '',
           hintText: "请告诉我们您的宝贵意见,我们会认真对待~",
@@ -239,7 +239,7 @@ class _feedBackPage extends State<FeedBackPage> {
         });
       }
       bool model = await putFeedBack(editText, jsonEncode(list));
-      if (model) {
+      if (model!=null && model) {
         Toast.show("反馈成功", context);
         Navigator.pop(context);
       }

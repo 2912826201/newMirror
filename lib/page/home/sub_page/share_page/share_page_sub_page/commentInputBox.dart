@@ -132,22 +132,13 @@ class CommentInputBoxState extends State<CommentInputBox> {
                                     comModel = (CommentDtoModel.fromJson(commentModel.data));
                                     print("发布成功：${comModel.toString()}");
                                     print("1111111");
-                                    new Future.delayed(Duration.zero, () {
                                       context.read<FeedMapNotifier>().feedPublishComment(comModel, widget.feedModel.id);
-                                    });
-
-                                    print(
-                                        '==========hotComment=====${context.read<FeedMapNotifier>().feedMap[widget.feedModel.id].hotComment.hashCode}');
-                                    print(
-                                        '=======comments========${context.read<FeedMapNotifier>().feedMap[widget.feedModel.id].comments.hashCode}');
                                     if (context.read<FeedMapNotifier>().feedMap[widget.feedModel.id].hotComment.length <
                                         2) {
                                       print("{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{小于二");
                                       context.read<FeedMapNotifier>().updateHotComment(widget.feedModel.id,
                                           commentDtoModel: comModel, isDelete: false);
                                     }
-                                    print(
-                                        '=======updateHotComment}}}}}}}}}}}}}}}}}}}}}}}}}${context.read<FeedMapNotifier>().feedMap[widget.feedModel.id].hotComment.toString()}');
                                   }
                                 }
                               }
