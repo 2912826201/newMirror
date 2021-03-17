@@ -3,6 +3,8 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:interactiveviewer_gallery/hero_dialog_route.dart';
+import 'package:interactiveviewer_gallery/interactiveviewer_gallery.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
@@ -26,6 +28,8 @@ import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/expandable_text.dart';
 import 'package:mirror/widget/feed_video_player.dart';
+import 'package:mirror/widget/interactiveviewer/interactive_video_item.dart';
+import 'package:mirror/widget/interactiveviewer/interactiveview_page.dart';
 import 'package:mirror/widget/slide_banner.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -126,110 +130,111 @@ class FeedDetailPageState extends State<FeedDetailPage> {
             ? Stack(
                 children: [
                   Container(
-                    height: ScreenUtil.instance.height,
-                    child: ScrollConfiguration(
-                      behavior: OverScrollBehavior(),
-                      child: SmartRefresher(
-                        enablePullDown: false,
-                        enablePullUp: true,
-                        footer: footerWidget(),
-                        controller: _refreshController,
-                        onLoading: () {
-                          childKey.currentState.onLoading();
-                        },
-                        child: CustomScrollView(
-                            physics: ClampingScrollPhysics(),
-                            controller: _controller,
-                            slivers: <Widget>[
-                              SliverToBoxAdapter(
-                                child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                                  // 顶部间距
-                                  SizedBox(
-                                    height: 14,
-                                  ),
-                                  // 头部布局
-                                  HeadView(
-                                      isBlack: isBlack,
-                                      isShowConcern: true,
-                                      model: feedModel,
-                                      deleteFeedChanged: (id) {
-                                        // deleteFeedChanged(id);
-                                      },
-                                      removeFollowChanged: (m) {
-                                        // removeFollowChanged(m);
-                                      }),
-                                  // 图片区域
-                                  feedModel.picUrls.isNotEmpty
-                                      ? SlideBanner(
-                                          height: feedModel?.picUrls[0]?.height?.toDouble(),
+                      height: ScreenUtil.instance.height,
+                      child: ScrollConfiguration(
+                          behavior: OverScrollBehavior(),
+                          child: SmartRefresher(
+                              enablePullDown: false,
+                              enablePullUp: true,
+                              footer: footerWidget(),
+                              controller: _refreshController,
+                              onLoading: () {
+                                childKey.currentState.onLoading();
+                              },
+                              child: CustomScrollView(
+                                  physics: ClampingScrollPhysics(),
+                                  controller: _controller,
+                                  slivers: <Widget>[
+                                    SliverToBoxAdapter(
+                                      child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                                        // 顶部间距
+                                        SizedBox(
+                                          height: 14,
+                                        ),
+                                        // 头部布局
+                                        HeadView(
+                                            isBlack: isBlack,
+                                            isShowConcern: true,
+                                            model: feedModel,
+                                            deleteFeedChanged: (id) {
+                                              // deleteFeedChanged(id);
+                                            },
+                                            removeFollowChanged: (m) {
+                                              // removeFollowChanged(m);
+                                            }),
+                                        // 图片区域
+                                        feedModel.picUrls.isNotEmpty
+                                            ? SlideBanner(
+                                                height: feedModel?.picUrls[0]?.height?.toDouble(),
+                                                model: feedModel,
+                                                index: widget.index,
+                                                pageName: "FeedDetailPage",
+                                                isDynamicDetails: true,
+                                              )
+                                            : Container(),
+                                        // 视频区域
+                                        feedModel.videos.isNotEmpty ? getVideo(feedModel?.videos) : Container(),
+                                        // 点赞，转发，评论三连区域 getTripleArea
+                                        GetTripleArea(
+                                          offsetKey: _key,
                                           model: feedModel,
-                                          index: widget.index,
-                                          pageName: "FeedDetailPage",
-                                          isDynamicDetails: true,
-                                        )
-                                      : Container(),
-                                  // 视频区域
-                                  feedModel.videos.isNotEmpty ? getVideo(feedModel?.videos) : Container(),
-                                  // 点赞，转发，评论三连区域 getTripleArea
-                                  GetTripleArea(
-                                    offsetKey: _key,
-                                    model: feedModel,
-                                    // back: () {
-                                    //   context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
-                                    // },
-                                  ),
-                                  // 课程信息和地址
-                                  Offstage(
-                                    offstage: (feedModel.address == null && feedModel.courseDto == null),
-                                    child: Container(
-                                      margin: EdgeInsets.only(left: 16, right: 16),
-                                      // color: Colors.orange,
-                                      width: ScreenUtil.instance.width,
-                                      child: getCourseInfo(feedModel),
+                                          // back: () {
+                                          //   context.read<FeedMapNotifier>().commensAssignment(feedModel.id, commentModel, totalCount);
+                                          // },
+                                        ),
+                                        // 课程信息和地址
+                                        Offstage(
+                                          offstage: (feedModel.address == null && feedModel.courseDto == null),
+                                          child: Container(
+                                            margin: EdgeInsets.only(left: 16, right: 16),
+                                            // color: Colors.orange,
+                                            width: ScreenUtil.instance.width,
+                                            child: getCourseInfo(feedModel),
+                                          ),
+                                        ),
+                                        // // 文本文案
+                                        Offstage(
+                                          offstage: feedModel.content.length == 0,
+                                          child: Container(
+                                            // color: Colors.cyan,
+                                            margin: EdgeInsets.only(left: 16, right: 16, top: 12),
+                                            width: ScreenUtil.instance.width,
+                                            child: ExpandableText(
+                                              text: feedModel.content,
+                                              model: feedModel,
+                                              maxLines: 2,
+                                              style: TextStyle(fontSize: 14, color: AppColor.textPrimary1),
+                                            ),
+                                          ),
+                                        ),
+                                        context.watch<FeedMapNotifier>().value.feedMap[feedModel.id].totalCount != -1
+                                            ? Container(
+                                                // color: AppColor.mainRed,
+                                                margin: EdgeInsets.only(top: 18, left: 16),
+                                                alignment: Alignment(-1, 0),
+                                                child:
+                                                    // context.watch<FeedMapNotifier>().feedMap[feedModel.id].totalCount != -1
+                                                    //     ?
+                                                    // DynamicModelNotifier
+                                                    Selector<FeedMapNotifier, int>(
+                                                        builder: (context, totalCount, child) {
+                                                  return Text(
+                                                    "共${StringUtil.getNumber(totalCount)}条评论",
+                                                    style: AppStyle.textRegular16,
+                                                  );
+                                                }, selector: (context, notifier) {
+                                                  return notifier.value.feedMap[feedModel.id].totalCount;
+                                                }))
+                                            : Container(),
+                                      ]),
                                     ),
-                                  ),
-                                  // // 文本文案
-                                  Offstage(
-                                    offstage: feedModel.content.length == 0,
-                                    child: Container(
-                                      // color: Colors.cyan,
-                                      margin: EdgeInsets.only(left: 16, right: 16, top: 12),
-                                      width: ScreenUtil.instance.width,
-                                      child: ExpandableText(
-                                        text: feedModel.content,
-                                        model: feedModel,
-                                        maxLines: 2,
-                                        style: TextStyle(fontSize: 14, color: AppColor.textPrimary1),
+                                    _getCourseCommentUi(),
+                                    SliverToBoxAdapter(
+                                      child: SizedBox(
+                                        height: ScreenUtil.instance.bottomBarHeight,
                                       ),
                                     ),
-                                  ),
-                                  context.watch<FeedMapNotifier>().value.feedMap[feedModel.id].totalCount != -1
-                                      ? Container(
-                                          // color: AppColor.mainRed,
-                                          margin: EdgeInsets.only(top: 18, left: 16),
-                                          alignment: Alignment(-1, 0),
-                                          child:
-                                              // context.watch<FeedMapNotifier>().feedMap[feedModel.id].totalCount != -1
-                                              //     ?
-                                              // DynamicModelNotifier
-                                              Selector<FeedMapNotifier, int>(builder: (context, totalCount, child) {
-                                            return Text(
-                                              "共${StringUtil.getNumber(totalCount)}条评论",
-                                              style: AppStyle.textRegular16,
-                                            );
-                                          }, selector: (context, notifier) {
-                                            return notifier.value.feedMap[feedModel.id].totalCount;
-                                          }))
-                                      : Container(),
-                                ]),
-                              ),
-                              _getCourseCommentUi(),
-                              SliverToBoxAdapter(
-                                child: SizedBox(
-                                  height: ScreenUtil.instance.bottomBarHeight,
-                                ),
-                              ),
-                            ])))),
+                                  ])))),
                   Positioned(
                     bottom: 0,
                     child: CommentInputBox(
@@ -320,11 +325,42 @@ class FeedDetailPageState extends State<FeedDetailPage> {
     sizeInfo.offsetRatioX = videos.first.offsetRatioX ?? 0.0;
     sizeInfo.offsetRatioY = videos.first.offsetRatioY ?? 0.0;
     sizeInfo.videoCroppedRatio = videos.first.videoCroppedRatio;
-    return FeedVideoPlayer(
-      videos.last.url,
-      sizeInfo,
-      ScreenUtil.instance.width,
-      isInListView: true,
+    return Hero(
+      tag: videos.first.url,
+      child: GestureDetector(
+        onTap: () {
+          // Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context){
+          //   return InteractiveviewDemoPage();
+          // }));
+          Navigator.of(context).push(
+            HeroDialogRoute<void>(
+              builder: (BuildContext context) => InteractiveviewerGallery<VideosModel>(
+                sources: videos,
+                initIndex: 0,
+                itemBuilder: itemBuilder,
+              ),
+            ),
+          );
+        },
+        child: FeedVideoPlayer(
+          videos.last.url,
+          sizeInfo,
+          ScreenUtil.instance.width,
+          isInListView: true,
+        ),
+      ),
+    );
+  }
+
+  Widget itemBuilder(
+    BuildContext context,
+    int index,
+    bool isFocus,
+  ) {
+    VideosModel videosModel = feedModel.videos[index];
+    return DemoVideoItem(
+      videosModel,
+      isFocus: isFocus,
     );
   }
 

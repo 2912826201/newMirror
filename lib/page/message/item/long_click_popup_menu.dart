@@ -78,12 +78,20 @@ class _LongClickPopupMenuState extends State<LongClickPopupMenu> {
         child: widget.child,
         onTap: () {
           if (widget.pressType == PressType.singleClick && widget.isCanLongClick) {
-            onTap();
+            if(button==null){
+              print("没有获取widget！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！");
+            }else{
+              onTap();
+            }
           }
         },
         onLongPress: () {
           if (widget.pressType == PressType.longPress && widget.isCanLongClick) {
-            onTap();
+            if(button==null){
+              print("没有获取widget！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！");
+            }else{
+              onTap();
+            }
           }
         },
       ),
@@ -194,6 +202,13 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
 
   @override
   Widget build(BuildContext context) {
+
+    if(position==null){
+      print("位置信息为空！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！");
+      return Container();
+    }
+
+
     menuWidth = 57.0 * widget.actions?.length;
 
     // 这里计算出来 当前页的 child 一共有多少个
@@ -242,7 +257,7 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                 removeRight: true,
                 child: Builder(
                   builder: (BuildContext context) {
-                    var isInverted1 = position==null?0:position.top-ScreenUtil.instance.statusBarHeight-44< 80;
+                    var isInverted1 = position==null?false:position.top-ScreenUtil.instance.statusBarHeight-44< 80;
 
                     return CustomSingleChildLayout(
                       // 这里计算偏移量

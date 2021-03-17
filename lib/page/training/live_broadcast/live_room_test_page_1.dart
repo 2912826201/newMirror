@@ -121,7 +121,7 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
 
   Widget getNoMessageBottomPlan(){
     return Container(
-      height: 48.0,
+      height: 48.0 + ScreenUtil.instance.bottomBarHeight,
       padding: EdgeInsets.only(bottom: ScreenUtil.instance.bottomBarHeight),
       margin: EdgeInsets.symmetric(horizontal: 16),
       alignment: Alignment.centerRight,
