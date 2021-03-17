@@ -10,10 +10,12 @@ import 'package:flutter/material.dart';
 // hide NestedScrollView, NestedScrollViewState;
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/topic/topic_api.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
+import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/topic/topic_list.dart';
 import 'package:mirror/route/router.dart';
@@ -362,8 +364,10 @@ class TopicDetailState extends State<TopicDetail> with SingleTickerProviderState
 Widget _gotoRelease(){
     return InkWell(
       onTap: (){
-       Rule re = Rule(0, widget.model.name.length, widget.model.name, null, false);
-        AppRouter.navigateToReleasePage(context,topicRule: re);
+        Application.topicMap[widget.model.id] = widget.model;
+        AppRouter.navigateToMediaPickerPage(
+            context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
+            publishMode: 1, topicId: widget.model.id);
       },
       child: Container(
       width: 127,

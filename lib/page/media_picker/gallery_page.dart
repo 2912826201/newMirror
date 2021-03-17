@@ -42,7 +42,8 @@ class GalleryPage extends StatefulWidget {
       this.publishMode = 0,
       this.fixedWidth,
       this.fixedHeight,
-      this.startCount = 0})
+      this.startCount = 0,
+      this.topicId})
       : super(key: key);
 
   final int maxImageAmount;
@@ -53,6 +54,7 @@ class GalleryPage extends StatefulWidget {
   final int fixedWidth;
   final int fixedHeight;
   final int startCount;
+  final int topicId;
 
   // image是图片 common是图片和视频 目前需求只会用到这两种
   final RequestType requestType;
@@ -847,9 +849,9 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
 
               if (widget.publishMode == 1) {
                 Navigator.pop(context, true);
-                AppRouter.navigateToReleasePage(context);
+                AppRouter.navigateToReleasePage(context, topicId: widget.topicId);
               } else if (widget.publishMode == 2) {
-                AppRouter.navigateToReleasePage(context);
+                AppRouter.navigateToReleasePage(context, topicId: widget.topicId);
                 if (Application.ifPageController != null) {
                   Application.ifPageController.index = Application.ifPageController.length - 1;
                 }

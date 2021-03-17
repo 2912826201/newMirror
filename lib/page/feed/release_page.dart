@@ -72,8 +72,10 @@ followModelarrayDate(List<BuddyModel> array1, List<BuddyModel> array2) {
 }
 
 class ReleasePage extends StatefulWidget {
-  Rule topicRule;
-  ReleasePage({this.topicRule});
+  final int topicId;
+
+  ReleasePage({this.topicId});
+
   @override
   ReleasePageState createState() => ReleasePageState();
 }
@@ -82,7 +84,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
   SelectedMediaFiles _selectedMediaFiles;
   TextEditingController _controller = TextEditingController();
   FocusNode feedFocus = FocusNode();
-  bool isFirst = true;
+
   // 权限
   PermissionStatus permissions;
 
@@ -90,6 +92,9 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
   List<Rule> rules = [];
   Location currentAddressInfo; //当前位置的信息
   List<PeripheralInformationPoi> pois = []; //返回周边信息页面显示的数据集合
+
+  Rule topicRule;// 传入的话题生成规则
+
   @override
   void dispose() {
     _controller.dispose();
@@ -106,6 +111,14 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _selectedMediaFiles = Application.selectedMediaFiles;
     Application.selectedMediaFiles = null;
+
+    //如果topicId不为空 则取topicModel出来生成预设的插入话题
+    if (widget.topicId != null) {
+      TopicDtoModel topicModel = Application.topicMap[widget.topicId];
+      if (topicModel != null) {
+        topicRule = Rule(0, topicModel.name.length, topicModel.name, null, false, topicModel.id);
+      }
+    }
     super.initState();
   }
 
@@ -208,16 +221,11 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
         body: ChangeNotifierProvider(
           create: (_) => ReleaseFeedInputNotifier(
             inputText: "",
-            rules: [],
+            rules: topicRule == null?[]:[topicRule],
             atSearchStr: "",
             topicSearchStr: "",
           ),
           builder: (context, _) {
-            if(widget.topicRule!=null&&isFirst){
-              print('--------------------------widget.topicRule!=null');
-              context.watch<ReleaseFeedInputNotifier>().rules.insert(0, widget.topicRule);
-              isFirst = false;
-            }
             String str = context.watch<ReleaseFeedInputNotifier>().keyWord;
             return Container(
               color: AppColor.white,
@@ -516,6 +524,7 @@ class KeyboardInputState extends State<KeyboardInput> {
   ReleaseFeedInputFormatter _formatter;
   FocusNode commentFocus;
   bool isFirst = true;
+
   // 判断是否只是切换光标
   bool isSwitchCursor = true;
 
@@ -767,9 +776,9 @@ class KeyboardInputState extends State<KeyboardInput> {
   @override
   Widget build(BuildContext context) {
     List<Rule> rules = context.watch<ReleaseFeedInputNotifier>().rules;
-    if(widget.controller.text.length<1&&context.watch<ReleaseFeedInputNotifier>().rules.isNotEmpty){
+    if (widget.controller.text.length < 1 && context.watch<ReleaseFeedInputNotifier>().rules.isNotEmpty) {
       widget.controller.text = "#${context.watch<ReleaseFeedInputNotifier>().rules.first.params}";
-      widget.controller.selection =  TextSelection(
+      widget.controller.selection = TextSelection(
         baseOffset: context.watch<ReleaseFeedInputNotifier>().rules.first.endIndex,
         extentOffset: context.watch<ReleaseFeedInputNotifier>().rules.first.endIndex,
       );
@@ -1577,7 +1586,7 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        widget.selectedMediaFiles!=null&&widget.selectedMediaFiles.list != null
+        widget.selectedMediaFiles != null && widget.selectedMediaFiles.list != null
             ? SeletedPhoto(
                 selectedMediaFiles: widget.selectedMediaFiles,
               )
