@@ -48,7 +48,7 @@ class EventBus{
   }
 
   //加广播的方法-回调的方法-需要广播的界面-广播的类型
-  void register(listener,String pageName,{String registerName}){
+  void register(listener,String pageName ,{String registerName}){
     if(null ==registerName){
       registerName = defName;
     }
