@@ -112,7 +112,7 @@ class DynamicListLayout extends StatelessWidget {
 
               // 文本文案
               Offstage(
-                offstage: model.content.length == 0 || model.topics.isEmpty || model.atUsers.isEmpty,
+                offstage: model.content.length == 0,
                 child: Container(
                   margin: EdgeInsets.only(left: 16, right: 16, top: 12),
                   width: ScreenUtil.instance.screenWidthDp,
