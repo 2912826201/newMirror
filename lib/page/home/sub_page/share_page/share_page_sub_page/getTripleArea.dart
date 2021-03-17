@@ -259,9 +259,7 @@ class GetTripleAreaState extends State<GetTripleArea> {
                       checkId: widget.model.pushId,
                       inquireCheckBlackCallback: (BlackModel blackModel) {
                         String promptText = "";
-                        if (blackModel.inYouBlack == 1) {
-                          promptText = "分享失败，你已将对方加入黑名单";
-                        } else if (blackModel.inThisBlack == 1) {
+                        if (blackModel.inThisBlack == 1) {
                           promptText = "分享失败，你已被对方加入黑名单";
                         }
                         if (promptText != "") {
