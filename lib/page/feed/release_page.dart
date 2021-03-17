@@ -235,7 +235,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
               child: Column(
                 children: [
                   // 头部布局
-                  FeedHeader(selectedMediaFiles: _selectedMediaFiles),
+                  FeedHeader(selectedMediaFiles: _selectedMediaFiles,controller: _controller),
                   // 输入框
                   KeyboardInput(controller: _controller),
                   // 中间主视图
@@ -274,8 +274,8 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
 
 class FeedHeader extends StatelessWidget {
   SelectedMediaFiles selectedMediaFiles;
-
-  FeedHeader({this.selectedMediaFiles});
+  TextEditingController controller;
+  FeedHeader({this.selectedMediaFiles,this.controller});
 
   // 发布动态
   pulishFeed(BuildContext context, String inputText, int uid, List<Rule> rules, PeripheralInformationPoi poi) async {
@@ -463,7 +463,8 @@ class FeedHeader extends StatelessWidget {
           GestureDetector(
             onTap: () {
               // 读取输入框最新的值
-              var inputText = context.read<ReleaseFeedInputNotifier>().inputText;
+              var inputText = controller.text;
+                  // context.read<ReleaseFeedInputNotifier>().inputText;
 
               // 获取输入框内的规则
               var rules = context.read<ReleaseFeedInputNotifier>().rules;
