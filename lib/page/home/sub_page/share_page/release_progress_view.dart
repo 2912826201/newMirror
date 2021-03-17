@@ -9,6 +9,7 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/release_progress_notifier.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
 
 class ReleaseProgressView extends StatefulWidget {
@@ -28,8 +29,8 @@ class ReleaseProgressView extends StatefulWidget {
 class ReleaseProgressViewState extends State<ReleaseProgressView> {
   @override
   Widget build(BuildContext context) {
-    return context.select(( ReleaseProgressNotifier value) => value.postFeedModel) != null
-      // context.watch<FeedMapNotifier>().value.postFeedModel != null
+    return context.select((ReleaseProgressNotifier value) => value.postFeedModel) != null
+        // context.watch<FeedMapNotifier>().value.postFeedModel != null
         ? Container(
             height: 60,
             width: ScreenUtil.instance.screenWidthDp,
@@ -44,7 +45,8 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            context.select((ReleaseProgressNotifier value) => value.postFeedModel.selectedMediaFiles) != null
+                            context.select((ReleaseProgressNotifier value) => value.postFeedModel.selectedMediaFiles) !=
+                                    null
                                 ? Container(
                                     width: 36,
                                     height: 36,
@@ -91,34 +93,30 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
                                   width: 48,
                                   child: Row(
                                     children: [
-                                      GestureDetector(
+                                      AppIconButton(
+                                        iconSize: 18,
+                                        svgName: AppIcon.trash_bucket,
+                                        buttonHeight: 30,
+                                        buttonWidth: 30,
                                         onTap: widget.resendFeedChanged,
-                                        child: Container(
-                                          width: 18,
-                                          height: 18,
-                                          color: Colors.lime,
-                                        ),
                                       ),
-                                      Spacer(),
-                                      GestureDetector(
+                                      AppIconButton(
+                                        iconSize: 18,
+                                        svgName: AppIcon.trash_bucket,
+                                        buttonHeight: 30,
+                                        buttonWidth: 30,
                                         onTap: widget.deleteReleaseFeedChanged,
-                                        child: Container(
-                                          width: 18,
-                                          height: 18,
-                                          color: Colors.lime,
-                                        ),
-                                      )
+                                      ),
                                     ],
                                   ),
                                 ))
                           ],
                         ))),
                 LinearProgressIndicator(
-                  value:
-                      context.select((ReleaseProgressNotifier value) => value.plannedSpeed) != -1
+                  value: context.select((ReleaseProgressNotifier value) => value.plannedSpeed) != -1
                       // context.watch<ReleaseProgressNotifier>().plannedSpeed != -1
-                          ?  context.select((ReleaseProgressNotifier value) => value.plannedSpeed)
-                          : 1,
+                      ? context.select((ReleaseProgressNotifier value) => value.plannedSpeed)
+                      : 1,
                   valueColor: new AlwaysStoppedAnimation<Color>(
                       context.select((ReleaseProgressNotifier value) => value.plannedSpeed) != -1
                           ? AppColor.mainRed
