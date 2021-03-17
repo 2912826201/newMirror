@@ -4,18 +4,19 @@ import 'package:fijkplayer/fijkplayer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 
 import 'live_room_test_page_1.dart';
 
 class LiveRoomTestPage extends StatefulWidget {
-  final String url = "rtmp://58.200.131.2:1935/livetv/cctv13";
   @override
   _LiveRoomTestPageState createState() => _LiveRoomTestPageState();
 }
 
-class _LiveRoomTestPageState extends State<LiveRoomTestPage> {
+class _LiveRoomTestPageState extends XCState {
+  final String url = "rtmp://58.200.131.2:1935/livetv/cctv13";
   List<Widget> textArray=[];
   final FijkPlayer player = FijkPlayer();
 
@@ -23,7 +24,7 @@ class _LiveRoomTestPageState extends State<LiveRoomTestPage> {
   void initState() {
     super.initState();
 
-    player.setDataSource(widget.url, autoPlay: true);
+    player.setDataSource(url, autoPlay: true);
     EventBus.getDefault().register(exit,"LiveRoomTestPage",registerName: "LiveRoomTestPage-exit");
 
     for(int i=0;i<100;i++){
@@ -45,7 +46,7 @@ class _LiveRoomTestPageState extends State<LiveRoomTestPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget shouldBuild(BuildContext context) {
     return Scaffold(
       appBar: null,
       body: Container(
@@ -66,12 +67,22 @@ class _LiveRoomTestPageState extends State<LiveRoomTestPage> {
       alignment: Alignment.centerLeft,
       width: ScreenUtil.instance.width,
       height: ScreenUtil.instance.height,
-      child: FijkView(
-        player: player,
-        color: AppColor.bgBlack,
-        fit: FijkFit.cover,
-        fsFit: FijkFit.cover,
-        cover: AssetImage("images/test.png"),
+      child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                width: ScreenUtil.instance.width,
+                height: ScreenUtil.instance.height,
+                child: FijkView(
+                  player: player,
+                  color: AppColor.bgBlack,
+                  fit: FijkFit.cover,
+                  fsFit: FijkFit.cover,
+                  cover: AssetImage("images/test.png"),
+                ),
+              )
+            ],
+          )
       ),
     );
   }
