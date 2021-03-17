@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
@@ -17,12 +18,31 @@ import 'package:mirror/widget/volume_popup.dart';
 import 'package:text_span_field/text_span_field.dart';
 
 
-class LiveRoomTestPageDialog extends StatefulWidget {
+class LiveRoomTestOperationPage extends StatefulWidget {
+  final int liveCourseId;
+  final int coachId;
+  final String coachUrl;
+  final String coachName;
+  final int coachRelation;
+
+  const LiveRoomTestOperationPage({
+    Key key,
+    @required this.liveCourseId,
+    @required this.coachName,
+    @required this.coachUrl,
+    @required this.coachRelation,
+    @required this.coachId,}) : super(key: key);
+
   @override
-  _LiveRoomTestPageDialogState createState() => _LiveRoomTestPageDialogState();
+  _LiveRoomTestOperationPageState createState() => _LiveRoomTestOperationPageState(coachRelation);
 }
 
-class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
+class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
+
+  _LiveRoomTestOperationPageState(this.coachRelation);
+
+  //与教练的关系
+  int coachRelation;
 
   List<String> messageChatList=[];
 
@@ -45,11 +65,6 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
 
   bool _emojiState=false;
 
-  // 监听返回
-  Future<bool> _requestPop() {
-    EventBus.getDefault().post("",registerName: "LiveRoomTestPage-exit");
-    return new Future.value(true);
-  }
 
   int cursorIndexPr=-1;
 
@@ -88,22 +103,7 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
                 ],
               ),
             ),
-            onTap: (){
-              if(isCleaningMode){
-                setState(() {
-                  isCleaningMode=!isCleaningMode;
-                });
-                return;
-              }
-              if(_focusNode.hasFocus){
-                _focusNode.unfocus();
-              }
-              isShowEditPlan=false;
-              if(_emojiState){
-                _emojiState=!_emojiState;
-                setState(() {});
-              }
-            },
+            onTap: _onClickBodyListener,
           ),
         ),
         onWillPop: _requestPop);
@@ -229,7 +229,7 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
   Widget getCoachNameUi(){
     return UnconstrainedBox(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 11,vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 6,vertical: 4),
         decoration: BoxDecoration(
           color: AppColor.white.withOpacity(0.06),
           borderRadius: BorderRadius.circular(24),
@@ -237,26 +237,38 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            getUserImage(null,28,28),
+            getUserImage(widget.coachUrl,28,28),
             SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("洪荒少女我FaceJu",style: TextStyle(fontSize: 11,color: AppColor.white.withOpacity(0.85))),
+                Text(widget.coachName,style: TextStyle(fontSize: 11,color: AppColor.white.withOpacity(0.85))),
                 Text("在线人数8524.2万",style: TextStyle(fontSize: 9,color: AppColor.white.withOpacity(0.65))),
               ],
             ),
             SizedBox(width: 8),
-            Container(
-              decoration: BoxDecoration(
-                color: AppColor.mainRed,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 11,vertical: 2),
-              child: Text("关注",style: TextStyle(fontSize: 10,color: AppColor.white)),
-            )
+            getFollowBtn(),
           ],
         ),
+      ),
+    );
+  }
+
+
+  Widget getFollowBtn(){
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(100)),
+        color: AppColor.mainRed,
+      ),
+      padding: const EdgeInsets.only(left: 11, right: 11, top: 2, bottom: 2),
+      child: Text(
+        coachRelation == 1 || coachRelation == 3 ? "已关注" : "关注",
+        style: TextStyle(
+            color: coachRelation == 1 || coachRelation == 3
+                ? AppColor.textHint
+                : AppColor.white,
+            fontSize: 11),
       ),
     );
   }
@@ -804,7 +816,47 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
   }
 
 
+  // 监听返回事件
+  Future<bool> _requestPop() {
+    EventBus.getDefault().post("",registerName: "LiveRoomTestPage-exit");
+    return new Future.value(true);
+  }
+
+  //界面空白处点击事件
+  void _onClickBodyListener(){
+    if(isCleaningMode){
+      setState(() {
+        isCleaningMode=!isCleaningMode;
+      });
+      return;
+    }
+    if(_focusNode.hasFocus){
+      _focusNode.unfocus();
+    }
+    isShowEditPlan=false;
+    if(_emojiState){
+      _emojiState=!_emojiState;
+      setState(() {});
+    }
+  }
+
+  ///这是关注的方法
+  _onClickAttention()async {
+    if (!(coachRelation == 1 || coachRelation == 3)) {
+      int attntionResult = await ProfileAddFollow(widget.coachId);
+      print('关注监听=========================================$attntionResult');
+      if (attntionResult == 1 || attntionResult == 3) {
+        coachRelation = 1;
+        if (mounted) {
+          setState(() {});
+        }
+      }
+    }
+  }
+
 }
+
+
 
 class SimpleRoute extends PageRoute {
   SimpleRoute({
