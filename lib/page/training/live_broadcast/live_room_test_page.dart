@@ -25,7 +25,7 @@ class _LiveRoomTestPageState extends XCState {
     super.initState();
 
     player.setDataSource(url, autoPlay: true);
-    EventBus.getDefault().register(exit,"LiveRoomTestPage",registerName: "LiveRoomTestPage-exit");
+    EventBus.getDefault().register(exit,EVENTBUS_LIVEROOM_TESTPAGE,registerName: EVENTBUS_LIVEROOM_EXIT);
 
     for(int i=0;i<100;i++){
       textArray.add(Text("$i"));
@@ -40,7 +40,7 @@ class _LiveRoomTestPageState extends XCState {
 
   void exit(name){
     Future.delayed(Duration(milliseconds: 100),(){
-      EventBus.getDefault().unRegister(pageName:"LiveRoomTestPage",registerName: "LiveRoomTestPage-exit");
+      EventBus.getDefault().unRegister(pageName:EVENTBUS_LIVEROOM_TESTPAGE,registerName: EVENTBUS_LIVEROOM_EXIT);
       Navigator.of(context).pop();
     });
   }

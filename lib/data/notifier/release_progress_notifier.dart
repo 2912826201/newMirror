@@ -18,6 +18,7 @@ class ReleaseProgressNotifier extends ChangeNotifier {
   // 发布数据需要的model
   void setPublishFeedModel(PostFeedModel model) {
     this._postFeedModel = model;
+    print('---------------^^^^^^---${_postFeedModel.toString()}');
     notifyListeners();
   }
 

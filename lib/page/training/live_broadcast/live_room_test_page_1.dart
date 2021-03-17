@@ -47,7 +47,7 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
 
   // 监听返回
   Future<bool> _requestPop() {
-    EventBus.getDefault().post("",registerName: "LiveRoomTestPage-exit");
+    EventBus.getDefault().post(registerName: EVENTBUS_LIVEROOM_EXIT);
     return new Future.value(true);
   }
 
@@ -137,7 +137,7 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
             child: Icon(Icons.close,color: AppColor.white,size: 12),
           ),
           onTap: (){
-            EventBus.getDefault().post("",registerName: "LiveRoomTestPage-exit");
+            EventBus.getDefault().post(registerName: EVENTBUS_LIVEROOM_EXIT);
             Navigator.of(context).pop();
           },
         ),
@@ -701,7 +701,7 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
               child: Icon(Icons.close,color: AppColor.white,size: 12),
             ),
             onTap: (){
-              EventBus.getDefault().post("",registerName: "LiveRoomTestPage-exit");
+              EventBus.getDefault().post(registerName: EVENTBUS_LIVEROOM_EXIT);
               Navigator.of(context).pop();
             },
           ),

@@ -50,13 +50,16 @@ class EventBus{
   //加广播的方法-回调的方法-需要广播的界面-广播的类型
   void register(listener,String pageName ,{String registerName}){
     if(null ==registerName){
+      print('-------------------null ==registerName');
       registerName = defName;
     }
     if(_registerMap[registerName]==null){
+      print('--------------_registerMap[registerName]==null');
       Map<String,StreamController> map=Map();
       map[pageName]=StreamController.broadcast();
       _registerMap[registerName]=map;
     }else if(_registerMap[registerName][pageName]==null){
+      print('--------------_registerMap[registerName][pageName]==null');
       _registerMap[registerName][pageName]=StreamController.broadcast();
     }
     _registerMap[registerName][pageName].stream.listen(listener);
@@ -65,6 +68,7 @@ class EventBus{
 
   //移除广播的方法-广播的类型-需要广播的界面
   void unRegister({String registerName,String pageName}){
+    print('-----------------------广播移除');
     if(null ==registerName){
       registerName =defName;
     }
@@ -78,16 +82,29 @@ class EventBus{
   }
 
   //发送广播-msg消息-广播的类型
-  void post(msg,{String registerName}){
+  void post({String msg,String registerName}){
+
+    print('--------------//进入post方法');
     if(null ==registerName){
+      print('--------------registerName为空');
       registerName =defName;
     }
     if(_registerMap.containsKey(registerName)){
+      print('----------------------存在registerName');
       _registerMap[registerName].forEach((key, value) {
         if(_registerMap[registerName][key]!=null){
+          print('-------------------------eventbus__add');
           _registerMap[registerName][key].add(msg);
         }
       });
     }
   }
 }
+  //页面名称
+ const String  EVENTBUS_MAIN_PAGE = "main_page";
+ const String  EVENTBUS_LIVEROOM_TESTPAGE = "LiveRoomTestPage";
+
+
+  //广播类型
+ const String  EVENTBUS_POSTFEED_CALLBACK = "mainpage_postFeedCallBack";
+ const String  EVENTBUS_LIVEROOM_EXIT = "liveRoomTestPage_exit";

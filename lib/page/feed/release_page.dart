@@ -29,6 +29,7 @@ import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
@@ -369,12 +370,15 @@ class FeedHeader extends StatelessWidget {
         context.read<ReleaseProgressNotifier>().setPublishFeedModel(feedModel);
         context.read<ReleaseFeedInputNotifier>().rules.clear();
         context.read<ReleaseFeedInputNotifier>().selectAddress = null;
-        Navigator.pop(context, true);
+        EventBus.getDefault().post(registerName:EVENTBUS_POSTFEED_CALLBACK);
+        print('--------------Navigator------Navigator-------------Navigator------');
+        Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
         print("打印结束");
       } else {
         ToastShow.show(msg: "你发布的动态可能存在敏感内容", context: context, gravity: Toast.CENTER);
       }
     } else {
+
       for (Rule rule in rules) {
         if (rule.isAt) {
           AtUsersModel atModel = AtUsersModel();
@@ -383,7 +387,6 @@ class FeedHeader extends StatelessWidget {
           atModel.uid = rule.id;
           atUsersModel.add(atModel);
         } else {
-          print("查看发布话题动态——————————————————————————————");
           print(rule.toString());
           TopicDtoModel topicDtoModel = TopicDtoModel();
 
@@ -392,11 +395,13 @@ class FeedHeader extends StatelessWidget {
             topicDtoModel.index = rule.startIndex;
             topicDtoModel.len = rule.endIndex;
           } else {
+            print('-------------------rule.id = -1');
             topicDtoModel.name = rule.params.substring(1, rule.params.length);
             topicDtoModel.index = rule.startIndex;
             topicDtoModel.len = rule.endIndex - 1;
           }
           topics.add(topicDtoModel);
+          print('-------------topics------------${topics.toString()}');
         }
       }
       if (poi != null) {
@@ -422,7 +427,9 @@ class FeedHeader extends StatelessWidget {
       context.read<ReleaseFeedInputNotifier>().rules.clear();
       context.read<ReleaseFeedInputNotifier>().selectAddress = null;
       FocusScope.of(context).requestFocus(FocusNode());
-      Navigator.pop(context, true);
+      EventBus.getDefault().post(registerName:EVENTBUS_POSTFEED_CALLBACK);
+      print('--------------Navigator------Navigator-------------Navigator------');
+      Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
     }
   }
 
