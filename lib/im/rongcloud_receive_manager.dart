@@ -73,9 +73,11 @@ class RongCloudReceiveManager {
     //   static const int Read = 50; //对方已阅读
     //将发送的消息插入记录
     print("发送了融云消息：messageId:${messageId},status:${status},code:${code}");
-    Application.appContext
-        .read<ChatMessageProfileNotifier>()
-        .setIsSettingStatus(isSettingStatus: true, messageId: messageId, status: status);
+    if (code != -1) {
+      Application.appContext
+          .read<ChatMessageProfileNotifier>()
+          .setIsSettingStatus(isSettingStatus: true, messageId: messageId, status: status);
+    }
     // 需要更新会话
     Application.rongCloud.getMessageById(messageId).then((msg) {
       MessageManager.updateConversationByMessageList(_context, [msg]);
