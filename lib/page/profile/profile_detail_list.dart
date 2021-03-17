@@ -35,7 +35,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   ///动态model
   List<HomeFeedModel> followModel = [];
-
+  String hintText;
   int followDataPage = 1;
   int followlastTime;
   RefreshController _refreshController = RefreshController();
@@ -52,6 +52,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     if (followDataPage == 1) {
       _refreshController.loadComplete();
       if (model != null) {
+        followlastTime = model.lastTime;
         context.read<UserInteractiveNotifier>().idListClear(widget.id, type: widget.type);
         followModel.clear();
         if (model.list.isNotEmpty) {
@@ -62,11 +63,13 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         }
         _refreshController.refreshCompleted();
       } else {
+        hintText = "内容君在来的路上出了点状况...";
         _refreshController.refreshFailed();
       }
       refreshOver = true;
     } else if (followDataPage > 1 && followlastTime != null) {
       if (model != null) {
+        followlastTime = model.lastTime;
         if (model.list.isNotEmpty) {
           model.list.forEach((result) {
             followModel.add(HomeFeedModel.fromJson(result));
@@ -78,17 +81,18 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         _refreshController.loadFailed();
       }
     }
-    followlastTime = model.lastTime;
     if (mounted) {
       setState(() {});
     }
-    List<HomeFeedModel> feedList = [];
-    context.read<UserInteractiveNotifier>().setFeedIdList(widget.id, idList, widget.type);
-    context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
-      feedList.add(value);
+    Future.delayed(Duration.zero,(){
+      List<HomeFeedModel> feedList = [];
+      context.read<UserInteractiveNotifier>().setFeedIdList(widget.id, idList, widget.type);
+      context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
+        feedList.add(value);
+      });
+      // 只同步没有的数据
+      context.read<FeedMapNotifier>().updateFeedMap(StringUtil.followModelFilterDeta(followModel, feedList));
     });
-    // 只同步没有的数据
-    context.read<FeedMapNotifier>().updateFeedMap(StringUtil.followModelFilterDeta(followModel, feedList));
   }
 
   ///上拉加载
@@ -106,6 +110,11 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   @override
   void initState() {
     super.initState();
+    widget.type == 3
+        ? hintText = "这个人很懒，什么都没发"
+        : widget.type == 2
+        ? hintText = "发布动态，增加人气哦"
+        : hintText = "你还没有喜欢的内容~去逛逛吧";
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Future.delayed(Duration(milliseconds: 250), () {
@@ -179,7 +188,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             ),
             header: WaterDropHeader(
               complete: Text("刷新完成"),
-              failed: Text(""),
+              failed: Text("刷新失败"),
             ),
             controller: _refreshController,
             onLoading: () {
@@ -253,11 +262,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             ),
             Center(
               child: Text(
-                widget.type == 3
-                    ? "ta还没有发布动态"
-                    : widget.type == 2
-                        ? "发布你的第一条动态吧~"
-                        : "你还没有喜欢的内容~去逛逛吧",
+                hintText,
                 style: AppStyle.textPrimary3Regular14,
               ),
             )

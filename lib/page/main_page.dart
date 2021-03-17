@@ -1,3 +1,6 @@
+import 'dart:core';
+import 'dart:core';
+
 import 'package:flutter/material.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/message_api.dart';
@@ -17,17 +20,21 @@ import 'package:mirror/page/message/message_page.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/click_util.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:provider/provider.dart';
 
 import 'profile/profile_page.dart';
 import 'training/training_page.dart';
 
+
+
 class MainPage extends StatefulWidget {
   MainPageState createState() => MainPageState();
 }
 
 class MainPageState extends XCState {
+
   int currentIndex;
   bool isInit = false;
 
@@ -51,12 +58,21 @@ class MainPageState extends XCState {
     super.initState();
     currentIndex = 0;
     _start = (ScreenUtil.instance.width / 5) / 7;
+    EventBus.getDefault().register(_postFeedCallBack, EVENTBUS_MAIN_PAGE,registerName:EVENTBUS_POSTFEED_CALLBACK);
   }
 
+  void _postFeedCallBack(result){
+    print('--------------广播监听回调');
+    reload(() {
+      _start = (ScreenUtil.instance.width / 5) / 7;
+      currentIndex = 0;
+    });
+  }
   @override
   void dispose() {
     // controller.dispose();
     super.dispose();
+   /* EventBus.getDefault().unRegister(registerName:EVENTBUS_POSTFEED_CALLBACK,pageName:EVENTBUS_MAIN_PAGE);*/
   }
   _getFollowCount() async {
     ProfileFollowCount().then((attentionModel) {

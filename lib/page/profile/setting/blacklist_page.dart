@@ -83,7 +83,7 @@ class _BlackListState extends State<BlackListPage>{
                 color: AppColor.bgWhite,
               ),
               SizedBox(height: 8,),
-              Text("还没有人被你拉黑，快去拉黑两个吧!",style: AppStyle.textHintRegular12,),
+              Text("暂无内容",style: AppStyle.textHintRegular12,),
               Spacer(),
             ],
         ),

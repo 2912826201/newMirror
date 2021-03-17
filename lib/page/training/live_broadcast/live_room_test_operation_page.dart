@@ -137,7 +137,7 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
             child: Icon(Icons.close,color: AppColor.white,size: 12),
           ),
           onTap: (){
-            EventBus.getDefault().post("",registerName: "LiveRoomTestPage-exit");
+            EventBus.getDefault().post(registerName: EVENTBUS_LIVEROOM_EXIT);
             Navigator.of(context).pop();
           },
         ),
@@ -713,7 +713,7 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
               child: Icon(Icons.close,color: AppColor.white,size: 12),
             ),
             onTap: (){
-              EventBus.getDefault().post("",registerName: "LiveRoomTestPage-exit");
+              EventBus.getDefault().post(registerName: EVENTBUS_LIVEROOM_EXIT);
               Navigator.of(context).pop();
             },
           ),

@@ -6,6 +6,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
 
+import 'camera_record_page.dart';
 import 'gallery_page.dart';
 
 /// media_picker_page
@@ -77,18 +78,20 @@ class _MediaPickerState extends State<MediaPickerPage> {
       ),
     );
     _pageList.add(
-      CameraPhotoPage(
+      CameraRecordPage(
         publishMode: widget.publishMode,
         fixedHeight: widget.fixedHeight,
         fixedWidth: widget.fixedWidth,
         topicId: widget.topicId,
+        startMode: 0,
       ),
     );
     if (widget.mediaType == typeImageAndVideo) {
       _pageList.add(
-        CameraVideoPage(
+        CameraRecordPage(
           publishMode: widget.publishMode,
           topicId: widget.topicId,
+          startMode: 1,
         ),
       );
     }

@@ -71,6 +71,7 @@ class _QueryFollowState extends State<QueryFollowList> {
   bool refreshOver = true;
   String lastString = "";
 
+  String hintText;
   ///获取关注列表
   _getFollowList() async {
     if (listPage > 1 && _lastTime == null) {
@@ -82,27 +83,34 @@ class _QueryFollowState extends State<QueryFollowList> {
     BuddyListModel model = await GetFollowList(15, uid: widget.userId.toString(), lastTime: _lastTime);
     if (listPage == 1 && _lastTime == null) {
       _refreshController.loadComplete();
-      buddyList.clear();
       if (model != null) {
+          buddyList.clear();
         _lastTime = model.lastTime;
-        model.list.forEach((element) {
-          buddyList.add(element);
-        });
-        _refreshController.refreshCompleted();
+        if(model.list.isNotEmpty){
+          model.list.forEach((element) {
+            buddyList.add(element);
+          });
+        }
+          _refreshController.refreshCompleted();
       } else {
-        _refreshController.resetNoData();
+        hintText = "内容君在来的路上出了点状况...";
+        _refreshController.refreshFailed();
       }
       //这是插入的作为话题入口的假数据
       buddyList.insert(0, BuddyModel());
     } else if (listPage > 1 && _lastTime != null) {
       if (model != null) {
         _lastTime = model.lastTime;
-        model.list.forEach((element) {
-          buddyList.add(element);
-        });
-        _refreshController.loadComplete();
+        if(model.list.isNotEmpty){
+          model.list.forEach((element) {
+            buddyList.add(element);
+          });
+          _refreshController.loadComplete();
+        }else{
+          _refreshController.loadNoData();
+        }
       } else {
-        _refreshController.loadNoData();
+        _refreshController.loadFailed();
       }
     }
     if (mounted) {
@@ -122,9 +130,11 @@ class _QueryFollowState extends State<QueryFollowList> {
     SearchUserModel model = await searchFollowUser(text, 6, uids: widget.userId.toString(), lastTime: _lastTime);
     if (listPage == 1) {
       _refreshController.loadComplete();
-      if (model.list.isNotEmpty) {
+      if (model!=null) {
         print('===================== =============model有值');
         buddyList.clear();
+        buddyList.insert(0, BuddyModel());
+        if(model.list.isNotEmpty){
         //这是插入的作为话题入口的假数据
         buddyList.insert(0, BuddyModel());
         model.list.forEach((element) {
@@ -144,31 +154,33 @@ class _QueryFollowState extends State<QueryFollowList> {
         });
         _lastTime = model.lastTime;
         _refreshController.refreshCompleted();
-      } else {
-        buddyList.clear();
-        buddyList.insert(0, BuddyModel());
-        _refreshController.refreshCompleted();
+        }
       }
+      _refreshController.refreshCompleted();
     } else if (listPage > 1 && _lastTime != null) {
-      if (model.list != null) {
-        model.list.forEach((element) {
-          searchModel.clear();
-          searchModel.insert(0, BuddyModel());
-          searchModel.first.uid = element.uid;
-          searchModel.first.avatarUri = element.avatarUri;
-          searchModel.first.description = element.description;
-          searchModel.first.nickName = element.nickName;
-          if (element.relation == 0 || element.relation == 2) {
-            searchModel.first.relation = 0;
-          } else {
-            searchModel.first.relation = 1;
-          }
-          buddyList.add(searchModel.first);
-        });
-        _lastTime = model.lastTime;
-        _refreshController.loadComplete();
-      } else {
-        _refreshController.loadNoData();
+      if(model!=null){
+        if (model.list != null) {
+          model.list.forEach((element) {
+            searchModel.clear();
+            searchModel.insert(0, BuddyModel());
+            searchModel.first.uid = element.uid;
+            searchModel.first.avatarUri = element.avatarUri;
+            searchModel.first.description = element.description;
+            searchModel.first.nickName = element.nickName;
+            if (element.relation == 0 || element.relation == 2) {
+              searchModel.first.relation = 0;
+            } else {
+              searchModel.first.relation = 1;
+            }
+            buddyList.add(searchModel.first);
+          });
+          _lastTime = model.lastTime;
+          _refreshController.loadComplete();
+        } else {
+          _refreshController.loadNoData();
+        }
+      }else{
+        _refreshController.loadFailed();
       }
     }
     refreshOver = true;
@@ -193,29 +205,33 @@ class _QueryFollowState extends State<QueryFollowList> {
 
     if (listPage == 1 && _lastTime == null) {
       _refreshController.loadComplete();
-      buddyList.clear();
-      if (model.list != null) {
+      if (model != null) {
+        buddyList.clear();
         hasNext = model.hasNext;
         _lastTime = model.lastTime;
-        print('粉丝数=====================================${model.list.length}');
-        model.list.forEach((element) {
-          buddyList.add(element);
-        });
-        print('model粉丝数=====================================${buddyList.length}');
+        if(model.list.isNotEmpty){
+          model.list.forEach((element) {
+            buddyList.add(element);
+          });
+        }
         _refreshController.refreshCompleted();
-      } else {
-        _refreshController.resetNoData();
+      }else{
+          hintText = "内容君在来的路上出了点状况...";
+        _refreshController.refreshFailed();
       }
     } else if (listPage > 1 && _lastTime != null) {
       print('lastTime================================$_lastTime');
-      if (model.list != null) {
+      if (model != null) {
         _lastTime = model.lastTime;
-        model.list.forEach((element) {
-          buddyList.add(element);
-        });
-        _refreshController.loadComplete();
-      } else {
+        if(model.list.isNotEmpty){
+          model.list.forEach((element) {
+            buddyList.add(element);
+          });
+        }else{
         _refreshController.loadNoData();
+        }
+      }else{
+        _refreshController.loadFailed();
       }
     }
     if (mounted) {
@@ -234,26 +250,31 @@ class _QueryFollowState extends State<QueryFollowList> {
 
     if (listPage == 1) {
       _refreshController.loadComplete();
-      topicList.clear();
       if (model != null) {
+        topicList.clear();
         _lastTime = model.lastTime;
-        model.list.forEach((element) {
-          print('话题名称============================${element.name}');
-          topicList.add(element);
-        });
+        if(model.list.isNotEmpty){
+          model.list.forEach((element) {
+            print('话题名称============================${element.name}');
+            topicList.add(element);
+          });
+        }
         _refreshController.refreshCompleted();
-      } else {
-        _refreshController.resetNoData();
+      } else{
+        hintText = "内容君在来的路上出了点状况...";
+        _refreshController.refreshFailed();
       }
     } else if (listPage > 1 && _lastTime != null) {
       if (model != null) {
         _lastTime = model.lastTime;
-        model.list.forEach((element) {
-          topicList.add(element);
-        });
+        if(model.list.isNotEmpty){
+          model.list.forEach((element) {
+            topicList.add(element);
+          });
+        }
         _refreshController.loadComplete();
       } else {
-        _refreshController.loadNoData();
+        _refreshController.loadFailed();
       }
     }
     if (mounted) {
@@ -274,29 +295,33 @@ class _QueryFollowState extends State<QueryFollowList> {
     if (listPage == 1) {
       _refreshController.loadComplete();
       _refreshController.isRefresh;
-      if (model.list.isNotEmpty) {
-        topicList.clear();
-        print('===================== =============model有值');
-        model.list.forEach((element) {
-          print('model================ ${element.id}');
-          topicList.add(element);
-        });
+      if(model!=null){
         _lastScore = model.lastScore;
-        _refreshController.refreshCompleted();
-      } else {
         topicList.clear();
-        _refreshController.resetNoData();
+        if (model.list.isNotEmpty) {
+          print('===================== =============model有值');
+          model.list.forEach((element) {
+            print('model================ ${element.id}');
+            topicList.add(element);
+          });
+        }
+        _refreshController.refreshCompleted();
+      }else{
+        hintText = "内容君在来的路上出了点状况...";
+        _refreshController.refreshFailed();
       }
     } else if (listPage > 1 && _lastScore != null) {
       _refreshController.isLoading;
-      if (model.list != null) {
-        model.list.forEach((element) {
-          topicList.add(element);
-        });
+      if(model!=null){
         _lastScore = model.lastScore;
-        _refreshController.loadComplete();
-      } else {
-        _refreshController.loadNoData();
+        if (model.list != null) {
+          model.list.forEach((element) {
+            topicList.add(element);
+          });
+          _refreshController.loadComplete();
+        }
+      }else{
+       _refreshController.loadFailed();
       }
     }
     refreshOver = true;
@@ -347,6 +372,7 @@ class _QueryFollowState extends State<QueryFollowList> {
   @override
   void initState() {
     super.initState();
+    hintText = "静悄悄的,什么都没有";
     context.read<UserInteractiveNotifier>().removeId = null;
     if (widget.userId == context.read<ProfileNotifier>().profile.uid) {
       isMySelf = true;
@@ -490,7 +516,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                               ),
                               header: WaterDropHeader(
                                 complete: Text("刷新完成"),
-                                failed: Text(" "),
+                                failed: Text("刷新失败"),
                               ),
                               onRefresh: __onRefresh,
                               onLoading: _onLoading,
@@ -578,7 +604,7 @@ class _QueryFollowState extends State<QueryFollowList> {
                             height: 12,
                           ),
                           Text(
-                            "没有你要的东西,一会儿再来看看吧",
+                            "静悄悄的,什么都没有",
                             style: AppStyle.textHintRegular14,
                           ),
                           Spacer(),

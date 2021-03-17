@@ -24,6 +24,7 @@ import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:mirror/page/search/sub_page/search_user.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 import 'search_topic.dart';
@@ -407,11 +408,7 @@ class ItemTitleState extends State<ItemTitle> with SingleTickerProviderStateMixi
               children: [
                 Text("更多", style: AppStyle.textSecondaryRegular13),
                 SizedBox(width: 6),
-                Image.asset(
-                  "images/resource/2.0x/delete_icon_black@2x.png",
-                  width: 16,
-                  height: 16,
-                )
+                AppIcon.getAppIcon(AppIcon.arrow_right_16, 16, color: AppColor.textPrimary3),
               ],
             ),
           )

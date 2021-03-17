@@ -45,7 +45,7 @@ class _LiveRoomTestPageState extends XCState {
     //加入聊天室
     Application.rongCloud.joinChatRoom(coachId);
     // player.setDataSource(url, autoPlay: true);
-    EventBus.getDefault().register(exit,"LiveRoomTestPage",registerName: "LiveRoomTestPage-exit");
+    EventBus.getDefault().register(exit,EVENTBUS_LIVEROOM_TESTPAGE,registerName: EVENTBUS_LIVEROOM_EXIT);
     loadingStatus=LoadingStatus.STATUS_LOADING;
     getLiveVideoUrl();
   }
@@ -53,7 +53,7 @@ class _LiveRoomTestPageState extends XCState {
   //退出界面
   void exit(name){
     Future.delayed(Duration(milliseconds: 100),(){
-      EventBus.getDefault().unRegister(pageName:"LiveRoomTestPage",registerName: "LiveRoomTestPage-exit");
+      EventBus.getDefault().unRegister(pageName:EVENTBUS_LIVEROOM_TESTPAGE,registerName: EVENTBUS_LIVEROOM_EXIT);
       //退出聊天室
       Application.rongCloud.quitChatRoom(coachId);
       player.release();
