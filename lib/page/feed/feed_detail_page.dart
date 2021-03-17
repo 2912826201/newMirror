@@ -357,14 +357,11 @@ class FeedDetailPageState extends State<FeedDetailPage> {
     int index,
     bool isFocus,
   ) {
-    // DemoSourceEntity sourceEntity = sourceList[index];
     VideosModel videosModel = feedModel.videos[index];
-    // if (sourceEntity.type == 'video') {
     return DemoVideoItem(
       videosModel,
       isFocus: isFocus,
     );
-    // }
   }
 
   //底部或滑动

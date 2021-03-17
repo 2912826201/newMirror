@@ -18,6 +18,7 @@ import 'package:mirror/page/search/sub_page/search_course.dart';
 import 'package:mirror/page/search/sub_page/search_feed.dart';
 import 'package:mirror/page/search/sub_page/search_topic.dart';
 import 'package:mirror/page/search/sub_page/search_user.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/Input_method_rules/input_formatter.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -126,26 +127,25 @@ class _SearchHeaderState extends State<SearchHeader> {
                 ),
                 AppIcon.getAppIcon(AppIcon.input_search, 24),
                 Expanded(
-                    child: TextField(
-                      controller: controller,
-                      textInputAction: TextInputAction.search,
-                      onSubmitted: (text) {
-                        if (text.isNotEmpty) {
-                          SearchHistoryDBHelper()
-                              .insertSearchHistory(context.read<ProfileNotifier>().profile.uid, text);
-                        }
-                      },
-                      decoration: new InputDecoration(
-                          isCollapsed: true,
-                          contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
-                          hintText: '搜索用户、话题、课程、动态',
-                          border: InputBorder.none),
-                      inputFormatters: inputFormatters == null ? [_formatter] : (inputFormatters..add(_formatter)),
-                      // inputFormatters: [
-                      //   WhitelistingTextInputFormatter(RegExp("[a-zA-Z]|[\u4e00-\u9fa5]|[0-9]")), //只能输入汉字或者字母或数字
-                      //   LengthLimitingTextInputFormatter(30),
-                      // ],
-                    ),
+                  child: TextField(
+                    controller: controller,
+                    textInputAction: TextInputAction.search,
+                    onSubmitted: (text) {
+                      if (text.isNotEmpty) {
+                        SearchHistoryDBHelper().insertSearchHistory(context.read<ProfileNotifier>().profile.uid, text);
+                      }
+                    },
+                    decoration: new InputDecoration(
+                        isCollapsed: true,
+                        contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 6),
+                        hintText: '搜索用户、话题、课程、动态',
+                        border: InputBorder.none),
+                    inputFormatters: inputFormatters == null ? [_formatter] : (inputFormatters..add(_formatter)),
+                    // inputFormatters: [
+                    //   WhitelistingTextInputFormatter(RegExp("[a-zA-Z]|[\u4e00-\u9fa5]|[0-9]")), //只能输入汉字或者字母或数字
+                    //   LengthLimitingTextInputFormatter(30),
+                    // ],
+                  ),
                 ),
                 Visibility(
                   visible: context.watch<SearchEnterNotifier>().enterText != null &&
@@ -415,91 +415,97 @@ class SearchMiddleViewState extends State<SearchMiddleView> {
         itemHeight: (ScreenUtil.instance.screenWidthDp - 38) * 0.43,
         layout: SwiperLayout.STACK,
         itemBuilder: (BuildContext context, int index) {
-          return Stack(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                    // 渐变色
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomLeft,
-                      colors: [
-                        AppColor.bgWhite,
-                        Colors.white,
-                      ],
-                    ),
-                    // 设置阴影
-                    boxShadow: [
-                      BoxShadow(
-                          color: AppColor.textHint.withOpacity(0.3),
-                          offset: Offset(0.0, 1.0), //阴影xy轴偏移量
-                          blurRadius: 1.0, //阴影模糊程度
-                          spreadRadius: 2.6 //阴影扩散程度
-                          )
-                    ]),
-              ),
-              Image.asset(
-                "images/resource/2.0x/bg_topic@2x.png",
-              ),
-              Container(
-                margin: EdgeInsets.only(top: 9),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(left: 10, top: 3.5),
-                      child: AppIcon.getAppIcon(AppIcon.topic, 24, containerHeight: 32, containerWidth: 32),
-                    ),
-                    // Expanded(
-                    //     child:
-                    Container(
-                      width: ScreenUtil.instance.screenWidthDp * 0.68,
-                      margin: EdgeInsets.only(left: 12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "#${topicList[index].name}",
-                            maxLines: 3,
-                            style: AppStyle.textRegular15,
-                          ),
-                          SizedBox(
-                            height: 2,
-                          ),
-                          Text(
-                            "${topicList[index].feedCount}条动态",
-                            style: AppStyle.textSecondaryRegular12,
-                          ),
+          return GestureDetector(
+            onTap: () async {
+              TopicDtoModel topicModel = await getTopicInfo(topicId: topicList[index].id);
+              AppRouter.navigateToTopicDetailPage(context, topicModel);
+            },
+            child: Stack(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                      // 渐变色
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomLeft,
+                        colors: [
+                          AppColor.bgWhite,
+                          Colors.white,
                         ],
                       ),
-                      // )
-                    ),
-                  ],
+                      // 设置阴影
+                      boxShadow: [
+                        BoxShadow(
+                            color: AppColor.textHint.withOpacity(0.3),
+                            offset: Offset(0.0, 1.0), //阴影xy轴偏移量
+                            blurRadius: 1.0, //阴影模糊程度
+                            spreadRadius: 2.6 //阴影扩散程度
+                            )
+                      ]),
                 ),
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 10, top: 63, right: 10),
-                height: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
-                child: ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: topicList[index].pics.length,
-                    itemBuilder: (context, indexs) {
-                      return Container(
-                        height: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
-                        width: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
-                        margin: EdgeInsets.only(right: indexs != 3 ? 7 : 0),
-                        child: ClipRRect(
-                            //圆角图片
-                            borderRadius: BorderRadius.circular(2),
-                            child: Image.network(
-                              topicList[index].pics[indexs],
-                              fit: BoxFit.cover,
-                            )),
-                      );
-                    }),
-              ),
-            ],
+                Image.asset(
+                  "images/resource/2.0x/bg_topic@2x.png",
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 9),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(left: 10, top: 3.5),
+                        child: AppIcon.getAppIcon(AppIcon.topic, 24, containerHeight: 32, containerWidth: 32),
+                      ),
+                      // Expanded(
+                      //     child:
+                      Container(
+                        width: ScreenUtil.instance.screenWidthDp * 0.68,
+                        margin: EdgeInsets.only(left: 12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "#${topicList[index].name}",
+                              maxLines: 3,
+                              style: AppStyle.textRegular15,
+                            ),
+                            SizedBox(
+                              height: 2,
+                            ),
+                            Text(
+                              "${topicList[index].feedCount}条动态",
+                              style: AppStyle.textSecondaryRegular12,
+                            ),
+                          ],
+                        ),
+                        // )
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(left: 10, top: 63, right: 10),
+                  height: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
+                  child: ListView.builder(
+                      physics: NeverScrollableScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: topicList[index].pics.length,
+                      itemBuilder: (context, indexs) {
+                        return Container(
+                          height: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
+                          width: (ScreenUtil.instance.screenWidthDp - 38) * 0.42 * 0.53,
+                          margin: EdgeInsets.only(right: indexs != 3 ? 7 : 0),
+                          child: ClipRRect(
+                              //圆角图片
+                              borderRadius: BorderRadius.circular(2),
+                              child: Image.network(
+                                topicList[index].pics[indexs],
+                                fit: BoxFit.cover,
+                              )),
+                        );
+                      }),
+                ),
+              ],
+            ),
           );
         },
       ),
