@@ -131,9 +131,8 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
             child: Icon(Icons.close,color: AppColor.white,size: 12),
           ),
           onTap: (){
-            setState(() {
-              isCleaningMode=!isCleaningMode;
-            });
+            EventBus.getDefault().post("",registerName: "LiveRoomTestPage-exit");
+            Navigator.of(context).pop();
           },
         ),
       ),
@@ -665,7 +664,7 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
             ),
             onTap: (){
               setState(() {
-                isShowMessage=!isShowMessage;
+                isCleaningMode=!isCleaningMode;
               });
             },
           ),
@@ -696,9 +695,8 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
               child: Icon(Icons.close,color: AppColor.white,size: 12),
             ),
             onTap: (){
-              setState(() {
-                isCleaningMode=!isCleaningMode;
-              });
+              EventBus.getDefault().post("",registerName: "LiveRoomTestPage-exit");
+              Navigator.of(context).pop();
             },
           ),
         ],
