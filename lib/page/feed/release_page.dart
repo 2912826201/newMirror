@@ -93,7 +93,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
   Location currentAddressInfo; //当前位置的信息
   List<PeripheralInformationPoi> pois = []; //返回周边信息页面显示的数据集合
 
-  Rule topicRule;// 传入的话题生成规则
+  Rule topicRule; // 传入的话题生成规则
 
   @override
   void dispose() {
@@ -221,7 +221,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
         body: ChangeNotifierProvider(
           create: (_) => ReleaseFeedInputNotifier(
             inputText: "",
-            rules: topicRule == null?[]:[topicRule],
+            rules: topicRule == null ? [] : [topicRule],
             atSearchStr: "",
             topicSearchStr: "",
           ),
@@ -235,7 +235,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
               child: Column(
                 children: [
                   // 头部布局
-                  FeedHeader(selectedMediaFiles: _selectedMediaFiles,controller: _controller),
+                  FeedHeader(selectedMediaFiles: _selectedMediaFiles, controller: _controller),
                   // 输入框
                   KeyboardInput(controller: _controller),
                   // 中间主视图
@@ -275,7 +275,8 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
 class FeedHeader extends StatelessWidget {
   SelectedMediaFiles selectedMediaFiles;
   TextEditingController controller;
-  FeedHeader({this.selectedMediaFiles,this.controller});
+
+  FeedHeader({this.selectedMediaFiles, this.controller});
 
   // 发布动态
   pulishFeed(BuildContext context, String inputText, int uid, List<Rule> rules, PeripheralInformationPoi poi) async {
@@ -464,7 +465,7 @@ class FeedHeader extends StatelessWidget {
             onTap: () {
               // 读取输入框最新的值
               var inputText = controller.text;
-                  // context.read<ReleaseFeedInputNotifier>().inputText;
+              // context.read<ReleaseFeedInputNotifier>().inputText;
 
               // 获取输入框内的规则
               var rules = context.read<ReleaseFeedInputNotifier>().rules;
@@ -892,7 +893,7 @@ class TopicListState extends State<TopicList> {
       print("返回不请求数据");
       return;
     }
-    DataResponseModel model = await getRecommendTopic(size: 20);
+    DataResponseModel model = await getUserRecommendTopic(size: 20);
     if (dataPage == 1) {
       if (model.list.isNotEmpty) {
         model.list.forEach((v) {
