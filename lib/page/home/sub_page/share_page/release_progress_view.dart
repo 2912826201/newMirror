@@ -146,9 +146,10 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
       );
     } else if (plannedSpeed == -1) {
       return Container(
-        height: 36,
+        // height: 36,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               "发布失败",

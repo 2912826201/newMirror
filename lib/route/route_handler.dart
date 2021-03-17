@@ -7,13 +7,11 @@ import 'package:mirror/data/dto/conversation_dto.dart';
 import 'package:mirror/data/dto/profile_dto.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
-import 'package:mirror/data/model/profile/fitness_entry_model.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
 import 'package:mirror/page/feed/feed_flow/feed_flow_page.dart';
-import 'package:mirror/page/feed/feed_flow/two_column_feed_page.dart';
 import 'package:mirror/page/feed/create_map_screen.dart';
 import 'package:mirror/page/feed/feed_detail_page.dart';
 import 'package:mirror/page/feed/like.dart';
@@ -129,6 +127,7 @@ var handlerMediaPicker = Handler(handlerFunc: (BuildContext context, Map<String,
     fixedWidth: data["fixedWidth"],
     fixedHeight: data["fixedHeight"],
     startCount: data["startCount"],
+    topicId: data["topicId"],
   );
 });
 
@@ -161,7 +160,7 @@ var handlerProfileDetailMore = Handler(handlerFunc: (BuildContext context, Map<S
 });
 
 var handlerEditInformation = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return  EditInformation();
+  return EditInformation();
 });
 
 var handlerEditInformationName = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
@@ -230,28 +229,23 @@ var handlerHeightAndWeigetPage = Handler(handlerFunc: (BuildContext context, Map
   return HeightAndWeightPage();
 });
 var handlerFitnessLevelPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return FitnessLevelPage(
-  );
+  return FitnessLevelPage();
 });
 var handlerFitnessTargetPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return FitnessTargetPage(
-  );
+  return FitnessTargetPage();
 });
 var handlerFitnesspartPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return FitnessPartPage(
-  );
+  return FitnessPartPage();
 });
 var handlerBodyTypePage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return BodyTypePage(
-  );
+  return BodyTypePage();
 });
 var handlerTrainSeveralTimes = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return TrainSeveralTimes(
-  );
+  return TrainSeveralTimes();
 });
 var handlerTrainingRecord = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return TrainingRecordPage();
@@ -267,7 +261,9 @@ var handlerTrainingRecordAllPage = Handler(handlerFunc: (BuildContext context, M
 
 var handlerReleaseFeed = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
-  return ReleasePage(topicRule: data["topicRule"]!=null?Rule.fromJson(data["topicRule"]):null,);
+  return ReleasePage(
+    topicId: data["topicId"],
+  );
 });
 
 var handlerLiveBroadcast = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
@@ -303,7 +299,11 @@ var handlerLiveDetail = Handler(handlerFunc: (BuildContext context, Map<String, 
     isHaveStartTime: data["isHaveStartTime"],
     liveModel: liveModel,
     commentDtoModel: data["commentDtoModel"] == null ? null : CommentDtoModel.fromJson(data["commentDtoModel"]),
-    fatherComment: data["fatherComment"] == null ? null : CommentDtoModel.fromJson(data["fatherComment"],),
+    fatherComment: data["fatherComment"] == null
+        ? null
+        : CommentDtoModel.fromJson(
+            data["fatherComment"],
+          ),
     isInteractive: data["isInteractive"],
   );
 });
@@ -320,8 +320,11 @@ var handlerVideoDetail = Handler(handlerFunc: (BuildContext context, Map<String,
     videoCourseId: data["videoCourseId"],
     videoModel: videoModel,
     commentDtoModel: data["commentDtoModel"] == null ? null : CommentDtoModel.fromJson(data["commentDtoModel"]),
-    fatherComment: data["fatherComment"] == null ? null : CommentDtoModel.fromJson(data["fatherComment"],
-    ),
+    fatherComment: data["fatherComment"] == null
+        ? null
+        : CommentDtoModel.fromJson(
+            data["fatherComment"],
+          ),
     isInteractive: data["isInteractive"],
   );
 });
@@ -333,13 +336,12 @@ var handlerOtherCompleteCourse = Handler(handlerFunc: (BuildContext context, Map
   //   targetId:  data["liveCourseId"],
   // );
   return FeedFlowPage(
-    pageName:data["pageName"],
-    pullFeedType:data["pullFeedType"],
-    pullFeedTargetId:data["pullFeedTargetId"],
-    initScrollHeight:data["initScrollHeight"]??0.0,
+    pageName: data["pageName"],
+    pullFeedType: data["pullFeedType"],
+    pullFeedTargetId: data["pullFeedTargetId"],
+    initScrollHeight: data["initScrollHeight"] ?? 0.0,
   );
 });
-
 
 var handlerPreviewPhoto = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
@@ -458,11 +460,13 @@ var handlerMeDownloadVideoCoursePage = Handler(handlerFunc: (BuildContext contex
 var handlerTopicDetailPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   TopicDtoModel topicModel;
-  if(data["topicModel"] != null ) {
+  if (data["topicModel"] != null) {
     topicModel = TopicDtoModel.fromJson(data["topicModel"]);
   }
-  return TopicDetail(model:topicModel ,
-  isTopicList: data["isTopicList"],);
+  return TopicDetail(
+    model: topicModel,
+    isTopicList: data["isTopicList"],
+  );
 });
 // 搜索页面
 var handlerSearchPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
@@ -472,7 +476,7 @@ var handlerSearchPage = Handler(handlerFunc: (BuildContext context, Map<String, 
 var handlerFriendsPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   return FriendsPage(
-    type: data["type"]??0,
+    type: data["type"] ?? 0,
     groupChatId: data["groupChatId"],
     shareMap: data["shareMap"],
     chatTypeModel: data["chatTypeModel"],
@@ -517,7 +521,7 @@ var handlerFeedDetailPage = Handler(handlerFunc: (BuildContext context, Map<Stri
 var handlerSearchOrLocationPage = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   Map<String, dynamic> data = json.decode(params[AppRouter.paramData].first);
   PeripheralInformationPoi selectAddress;
-  if(data['selectAddress'] != null) {
+  if (data['selectAddress'] != null) {
     selectAddress = PeripheralInformationPoi.fromJson(data['selectAddress']);
   }
   return SearchOrLocationWidget(

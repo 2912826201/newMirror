@@ -20,9 +20,10 @@ import 'package:permission_handler/permission_handler.dart';
 
 //相机录视频页
 class CameraVideoPage extends StatefulWidget {
-  CameraVideoPage({Key key, this.publishMode = 0}) : super(key: key);
+  CameraVideoPage({Key key, this.publishMode = 0, this.topicId}) : super(key: key);
 
   final int publishMode;
+  final int topicId;
 
   @override
   CameraVideoState createState() => CameraVideoState();
@@ -378,10 +379,10 @@ class CameraVideoState extends State<CameraVideoPage> with WidgetsBindingObserve
           if (result != null) {
             if (widget.publishMode == 1) {
               Navigator.pop(context, result);
-              AppRouter.navigateToReleasePage(context);
+              AppRouter.navigateToReleasePage(context, topicId: widget.topicId);
             } else if (widget.publishMode == 2) {
-              AppRouter.navigateToReleasePage(context);
-              if(Application.ifPageController != null) {
+              AppRouter.navigateToReleasePage(context, topicId: widget.topicId);
+              if (Application.ifPageController != null) {
                 Application.ifPageController.index = Application.ifPageController.length - 1;
               }
               //FIXME 需要关了摄像头

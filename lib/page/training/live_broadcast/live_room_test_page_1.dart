@@ -89,6 +89,12 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
               ),
             ),
             onTap: (){
+              if(isCleaningMode){
+                setState(() {
+                  isCleaningMode=!isCleaningMode;
+                });
+                return;
+              }
               if(_focusNode.hasFocus){
                 _focusNode.unfocus();
               }

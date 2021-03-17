@@ -91,7 +91,7 @@ class SearchTopicState extends State<SearchTopic> with AutomaticKeepAliveClientM
     _scrollController.dispose();
 
     ///取消延时任务
-    timer.cancel();
+    timer?.cancel();
     super.dispose();
   }
 

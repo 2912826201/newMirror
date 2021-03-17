@@ -184,7 +184,9 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       }
       if (isUp) {
         print("取消发送");
-        records.removeLast();
+        if(records.length>0) {
+          records.removeLast();
+        }
       } else {
         print("进行发送");
         widget.voiceFile(_mPath, costTime);

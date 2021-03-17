@@ -646,10 +646,13 @@ class CommentInputBottomBarState extends State<CommentInputBottomBar> {
                                     String text = _textEditingController.text;
                                     // 获取光标位置
                                     int cursorIndex = _textEditingController.selection.baseOffset;
-                                    print("cursorIndex关闭：${cursorIndex}");
-                                    context.read<CommentEnterNotifier>().getAtCursorIndex(cursorIndex + 1);
-                                    _textEditingController.text =
-                                        text.substring(0, cursorIndex) + "@" + text.substring(cursorIndex, text.length);
+                                    if(cursorIndex >= 0) {
+                                      print("cursorIndex关闭：${cursorIndex}");
+                                      context.read<CommentEnterNotifier>().getAtCursorIndex(cursorIndex + 1);
+                                      _textEditingController.text =
+                                          text.substring(0, cursorIndex) + "@" +
+                                              text.substring(cursorIndex, text.length);
+                                    }
                                     context.read<CommentEnterNotifier>().openAtCallback("@");
                                   },
                                   iconSize: 24,

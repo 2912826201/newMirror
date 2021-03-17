@@ -85,6 +85,7 @@ class AppRouter {
   static String pathFitnessTargetPage = "/login/fitnesstargetpage";
   static String pathBodyTypePage = "/login/bodytypepage";
   static String pathTrainSeveralPage = "/login/trainseveralpage";
+
   // 话题详情页Pl
   static String pathTopicDetailPage = "topic/topicdetail";
 
@@ -188,31 +189,49 @@ class AppRouter {
   }
 
   // 封装了入参，无论入参是什么格式都转成map
+  //TODO 需要统一页面切换的过场效果
   static void _navigateToPage(BuildContext context, String path, Map<String, dynamic> params,
-      {Function(dynamic result) callback, bool replace = false,int transitionDuration=250,bool isBuilder=false}) {
+      {Function(dynamic result) callback, bool replace = false, int transitionDuration = 250, bool isBuilder = false}) {
     String data = Uri.encodeComponent(json.encode(params));
     String uri = path + "?$paramData=" + data;
     if (callback == null) {
-      if(isBuilder){
-        Application.router.navigateTo(context, uri, replace: replace,
+      if (isBuilder) {
+        Application.router.navigateTo(
+          context,
+          uri,
+          replace: replace,
           transitionDuration: Duration(milliseconds: transitionDuration),
-          transition:TransitionType.custom,
-          transitionBuilder:getCurvedAnimationPageRouteBuilder(),
+          transition: TransitionType.custom,
+          transitionBuilder: getFadeTransitionBuilder(),
         );
-      }else {
-        Application.router.navigateTo(context, uri, replace: replace,
-          transitionDuration: Duration(milliseconds: transitionDuration),);
+      } else {
+        Application.router.navigateTo(
+          context,
+          uri,
+          replace: replace,
+          transitionDuration: Duration(milliseconds: transitionDuration),
+        );
       }
     } else {
-      if(isBuilder){
-        Application.router.navigateTo(context, uri, replace: replace,
-          transitionDuration: Duration(milliseconds: transitionDuration),
-          transition:TransitionType.custom,
-          transitionBuilder: getCurvedAnimationPageRouteBuilder(),
-        ).then(callback);
-      }else {
-        Application.router.navigateTo(context, uri, replace: replace,
-          transitionDuration: Duration(milliseconds: transitionDuration),)
+      if (isBuilder) {
+        Application.router
+            .navigateTo(
+              context,
+              uri,
+              replace: replace,
+              transitionDuration: Duration(milliseconds: transitionDuration),
+              transition: TransitionType.custom,
+              transitionBuilder: getFadeTransitionBuilder(),
+            )
+            .then(callback);
+      } else {
+        Application.router
+            .navigateTo(
+              context,
+              uri,
+              replace: replace,
+              transitionDuration: Duration(milliseconds: transitionDuration),
+            )
             .then(callback);
       }
     }
@@ -258,9 +277,9 @@ class AppRouter {
   // startCount 之前已经选择了多少文件，显示计数要加上这个数
   static void navigateToMediaPickerPage(BuildContext context, int maxImageAmount, int mediaType, bool needCrop,
       int startPage, bool cropOnlySquare, Function(dynamic result) callback,
-      {int publishMode = 0, int fixedWidth, int fixedHeight, int startCount = 0}) async {
+      {int publishMode = 0, int fixedWidth, int fixedHeight, int startCount = 0, int topicId}) async {
     //TODO 先做权限校验 这里先写起始页为相册页的
-    if(startPage == startPageGallery){
+    if (startPage == startPageGallery) {
       PermissionStatus status;
       //安卓和iOS的权限不一样
       if (Application.platform == 0) {
@@ -296,6 +315,7 @@ class AppRouter {
     map["fixedWidth"] = fixedWidth;
     map["fixedHeight"] = fixedHeight;
     map["startCount"] = startCount;
+    map["topicId"] = topicId;
     _navigateToPage(context, pathMediaPicker, map, callback: callback);
   }
 
@@ -306,7 +326,7 @@ class AppRouter {
     if (route != null) {
       Application.loginPopRouteName = route.settings.name;
     }
-    _navigateToPage(context, pathLogin, map,callback: callback);
+    _navigateToPage(context, pathLogin, map, callback: callback);
   }
 
   static void navigateToPhoneLoginPage(BuildContext context) {
@@ -365,17 +385,20 @@ class AppRouter {
     if (fatherComment != null) {
       map["fatherComment"] = fatherComment.toJson();
     }
-    if(isInteractiveIn==null){
+    if (isInteractiveIn == null) {
       map["isInteractiveIn"] = false;
-    }else{
+    } else {
       map["isInteractiveIn"] = isInteractiveIn;
     }
     _navigateToPage(context, pathLiveDetail, map);
   }
 
   static void navigateToVideoDetail(BuildContext context, int liveCourseId,
-      {String heroTag, LiveVideoModel videoModel, CommentDtoModel commentDtoModel, CommentDtoModel fatherComment,
-        bool isInteractive = false,
+      {String heroTag,
+      LiveVideoModel videoModel,
+      CommentDtoModel commentDtoModel,
+      CommentDtoModel fatherComment,
+      bool isInteractive = false,
       Function(dynamic result) callback}) {
     Map<String, dynamic> map = Map();
     map["videoCourseId"] = liveCourseId;
@@ -392,7 +415,7 @@ class AppRouter {
       map["fatherComment"] = fatherComment.toJson();
     }
     map["isInteractive"] = isInteractive;
-    _navigateToPage(context, pathVideoDetail, map,callback:callback);
+    _navigateToPage(context, pathVideoDetail, map, callback: callback);
   }
 
   static void navigateToScanCodePage(BuildContext context) {
@@ -483,7 +506,7 @@ class AppRouter {
   static void navigateToMineDetail(BuildContext context, int uId, {Function(dynamic result) callback}) {
     Map<String, dynamic> map = Map();
     map["userId"] = uId;
-    _navigateToPage(context, pathProfileDetails, map,callback: callback);
+    _navigateToPage(context, pathProfileDetails, map, callback: callback);
   }
 
   static void navigateToVipOpenPage(BuildContext context) {
@@ -496,28 +519,35 @@ class AppRouter {
     map["index"] = index;
     _navigateToPage(context, pathVipNamePlatePage, map);
   }
+
   static void navigateToHeightAndWeigetPage(BuildContext context) {
     _navigateToPage(context, pathHeightAndWeigetPage, {});
   }
+
   static void navigateToFitnessTargetPage(BuildContext context) {
     _navigateToPage(context, pathFitnessTargetPage, {});
   }
+
   static void navigateToFitnessPartPage(BuildContext context) {
     _navigateToPage(context, pathFitnessPartPage, {});
   }
+
   static void navigateToFitnessLevelPage(BuildContext context) {
     _navigateToPage(context, pathFitnessLevelPage, {});
   }
+
   static void navigateToBodyTypePage(BuildContext context) {
     _navigateToPage(context, pathBodyTypePage, {});
   }
+
   static void navigateToTrainSeveralPage(BuildContext context) {
     _navigateToPage(context, pathTrainSeveralPage, {});
   }
-  static void navigateToReleasePage(BuildContext context, {Rule topicRule}) {
+
+  static void navigateToReleasePage(BuildContext context, {int topicId}) {
     Map<String, dynamic> map = Map();
-    if(topicRule!=null){
-      map["topicRule"] = topicRule.toJson();
+    if (topicId != null) {
+      map["topicId"] = topicId;
     }
     _navigateToPage(context, pathRelease, map);
   }
@@ -627,38 +657,36 @@ class AppRouter {
   }
 
   //时间 毫秒级
-  static void navigateToOtherCompleteCoursePage(BuildContext context,
-      int pullFeedTargetId,int pullFeedType,double initScrollHeight,
-      String pageName,
-      {int duration=0}) {
+  static void navigateToOtherCompleteCoursePage(
+      BuildContext context, int pullFeedTargetId, int pullFeedType, double initScrollHeight, String pageName,
+      {int duration = 0}) {
     Map<String, dynamic> map = Map();
     map["pageName"] = pageName;
     map["pullFeedTargetId"] = pullFeedTargetId;
     map["pullFeedType"] = pullFeedType;
     map["initScrollHeight"] = initScrollHeight;
-    _navigateToPage(context, pathOtherCompleteCourse, map,transitionDuration: duration,isBuilder: duration>0);
+    _navigateToPage(context, pathOtherCompleteCourse, map, transitionDuration: duration, isBuilder: duration > 0);
   }
 
   /// 自定义页面切换动画 - 渐变切换
-  static RouteTransitionsBuilder getCurvedAnimationPageRouteBuilder(){
+  static RouteTransitionsBuilder getFadeTransitionBuilder() {
     return (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
       return FadeTransition(
           opacity: CurvedAnimation(
             parent: animation,
             curve: Curves.linear,
           ),
-          child: child
-      );
+          child: child);
     };
   }
 
   // 话题详情页
-  static void navigateToTopicDetailPage(BuildContext context, TopicDtoModel topicModel, {bool isTopicList = false,Function(dynamic
-      result) callback}) {
+  static void navigateToTopicDetailPage(BuildContext context, TopicDtoModel topicModel,
+      {bool isTopicList = false, Function(dynamic result) callback}) {
     Map<String, dynamic> map = Map();
     map["topicModel"] = topicModel;
     map["isTopicList"] = isTopicList;
-    _navigateToPage(context, pathTopicDetailPage, map,callback: callback);
+    _navigateToPage(context, pathTopicDetailPage, map, callback: callback);
   }
 
   // 搜索页面
@@ -705,17 +733,16 @@ class AppRouter {
   }
 
   // 动态详情页
-  static void navigateFeedDetailPage({
-    BuildContext context,
-    CommentDtoModel fatherModel,
-    CommentDtoModel comment,
-    HomeFeedModel model,
-    int index,
-    int type,
-    int errorCode,
-    bool isInteractive = false,
-    Function(dynamic result) callBack
-  }) {
+  static void navigateFeedDetailPage(
+      {BuildContext context,
+      CommentDtoModel fatherModel,
+      CommentDtoModel comment,
+      HomeFeedModel model,
+      int index,
+      int type,
+      int errorCode,
+      bool isInteractive = false,
+      Function(dynamic result) callBack}) {
     Map<String, dynamic> map = Map();
     if (fatherModel != null) {
       map['fatherModel'] = fatherModel.toJson();
@@ -732,7 +759,7 @@ class AppRouter {
     map['type'] = type;
     map["isInteractive"] = isInteractive;
     map["errorCode"] = errorCode;
-    _navigateToPage(context, pathFeedDetailPage, map,callback: callBack);
+    _navigateToPage(context, pathFeedDetailPage, map, callback: callBack);
   }
 
   // 所在位置页面
