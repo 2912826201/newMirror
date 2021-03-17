@@ -818,7 +818,7 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
 
   // 监听返回事件
   Future<bool> _requestPop() {
-    EventBus.getDefault().post("",registerName: "LiveRoomTestPage-exit");
+    EventBus.getDefault().post(registerName: EVENTBUS_LIVEROOM_EXIT);
     return new Future.value(true);
   }
 
