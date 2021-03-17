@@ -35,6 +35,15 @@ class InputFormatter extends TextInputFormatter {
 
   /// 检查被删除/替换的内容是否涉及到rules里的特殊segment并处理，另外作字符的处理替换
   TextEditingValue checkRules(TextEditingValue oldValue, TextEditingValue newValue) {
+    if((oldValue.text.length-newValue.text.length)<=oldValue.text.characters
+        .last.length){
+      print('------------------------------表情删除监听');
+      _inputChangedCallback?.call(oldValue.text.characters.skipLast(1).string);
+      return TextEditingValue(text:oldValue.text.characters.skipLast(1).string,selection: TextSelection
+        (baseOffset:oldValue.text.characters.skipLast(1).string
+          .length,extentOffset: oldValue.text.characters.skipLast(1).string.length,
+      ));
+    }
     /// 旧的文本的光标是否选中了部分
     bool isOldSelectedPart = oldValue.selection.start != oldValue.selection.end;
     /// 因为选中删除 和 直接delete删除的开始光标位置不一，故作统一处理

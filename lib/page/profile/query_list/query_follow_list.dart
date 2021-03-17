@@ -16,6 +16,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
+import 'package:mirror/widget/expression_team_delete_Formatter.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
@@ -432,6 +433,8 @@ class _QueryFollowState extends State<QueryFollowList> {
                                     cursorColor: AppColor.black,
                                     style: AppStyle.textRegular16,
                                     controller: controller,
+                                    maxLines: 1,
+                                    inputFormatters: [ExpressionTeamDeleteFormatter()],
                                     decoration: InputDecoration(
                                       contentPadding: EdgeInsets.only(bottom: 12),
                                       counterText: '',

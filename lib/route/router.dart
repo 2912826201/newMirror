@@ -12,9 +12,11 @@ import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
+import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/scan_code/scan_result_page.dart';
 import 'package:mirror/route/route_handler.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 /// router
@@ -256,7 +258,34 @@ class AppRouter {
   // startCount 之前已经选择了多少文件，显示计数要加上这个数
   static void navigateToMediaPickerPage(BuildContext context, int maxImageAmount, int mediaType, bool needCrop,
       int startPage, bool cropOnlySquare, Function(dynamic result) callback,
-      {int publishMode = 0, int fixedWidth, int fixedHeight, int startCount = 0}) {
+      {int publishMode = 0, int fixedWidth, int fixedHeight, int startCount = 0}) async {
+    //TODO 先做权限校验 这里先写起始页为相册页的
+    if(startPage == startPageGallery){
+      PermissionStatus status;
+      //安卓和iOS的权限不一样
+      if (Application.platform == 0) {
+        status = await Permission.storage.status;
+      } else {
+        status = await Permission.photos.status;
+      }
+      if (status.isUndetermined) {
+        //未确定的情况下 都请求一下
+        if (Application.platform == 0) {
+          await Permission.storage.request();
+        } else {
+          await Permission.photos.request();
+        }
+      } else if (status.isGranted) {
+        //已授权直接进
+      } else if (status.isPermanentlyDenied) {
+        //安卓的拒绝不再提示也直接进 在里面点去授权
+      } else {
+        //安卓重新请求 iOS没法重新请求 在里面点去授权
+        if (Application.platform == 0) {
+          await Permission.storage.request();
+        }
+      }
+    }
     Map<String, dynamic> map = Map();
     map["maxImageAmount"] = maxImageAmount;
     map["mediaType"] = mediaType;

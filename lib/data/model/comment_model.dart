@@ -63,4 +63,10 @@ class CommentModel {
     map["totalCount"] = this.totalCount;
     return map;
   }
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return toJson().toString();
+  }
 }

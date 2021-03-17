@@ -183,10 +183,12 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
 
   ScrollController textScrollController=ScrollController();
 
+  bool isShowHaveAnimation;
+
   @override
   void initState() {
     super.initState();
-
+    isShowHaveAnimation=false;
     //初始化
     WidgetsBinding.instance.addObserver(this);
 
@@ -373,6 +375,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       isShowTop: !MessageItemHeightUtil.init().judgeMessageItemHeightIsThenScreenHeight(chatDataList, isShowName),
       onRefresh: (conversation.getType() != RCConversationType.System) ? _onRefresh : _onRefreshSystemInformation,
       loadText: loadText,
+      isShowHaveAnimation: isShowHaveAnimation,
       loadStatus: loadStatus,
       isShowChatUserName: isShowName,
       onAtUiClickListener: onAtUiClickListener,
@@ -856,6 +859,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin,WidgetsBinding
       }
       //加入时间提示
       getTimeAlert(chatDataList,chatId);
+      bool isShowName = conversation.getType() == RCConversationType.Group;
+      isShowHaveAnimation=MessageItemHeightUtil.init().
+        judgeMessageItemHeightIsThenScreenHeight(chatDataList, isShowName);
+
 
       //获取有没有at我的消息
       judgeIsHaveAtMeMsg();

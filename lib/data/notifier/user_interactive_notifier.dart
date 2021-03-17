@@ -10,8 +10,8 @@ class UserInteractiveNotifier extends ChangeNotifier {
 
   ///FIXME 当用户登出登录时需要重置provider为默认值
 
-  void loadChange(int id, int load) {
-    if (load == 0) {
+  void laudedChange(int id, int lauded) {
+    if (lauded == 0) {
       profileUiChangeModel[id].attentionModel.laudedCount -= 1;
     } else {
       profileUiChangeModel[id].attentionModel.laudedCount += 1;

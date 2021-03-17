@@ -126,9 +126,6 @@ class _SearchHeaderState extends State<SearchHeader> {
                 ),
                 AppIcon.getAppIcon(AppIcon.input_search, 24),
                 Expanded(
-                  child: Container(
-                    height: 32,
-                    alignment: Alignment.center,
                     child: TextField(
                       controller: controller,
                       textInputAction: TextInputAction.search,
@@ -149,7 +146,6 @@ class _SearchHeaderState extends State<SearchHeader> {
                       //   LengthLimitingTextInputFormatter(30),
                       // ],
                     ),
-                  ),
                 ),
                 Visibility(
                   visible: context.watch<SearchEnterNotifier>().enterText != null &&

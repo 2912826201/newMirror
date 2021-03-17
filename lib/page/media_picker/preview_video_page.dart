@@ -100,7 +100,7 @@ class _PreviewVideoState extends State<PreviewVideoPage> {
             Expanded(
                 child: Container(
               alignment: Alignment.center,
-              color: AppColor.bgBlack,
+              color: AppColor.black,
             ))
           ],
         ));

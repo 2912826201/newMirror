@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui' as ui;
 import 'dart:typed_data';
 
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mirror/config/application.dart';
@@ -16,6 +17,7 @@ import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/image_cropper.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:video_player/video_player.dart';
@@ -62,7 +64,7 @@ class GalleryPage extends StatefulWidget {
 // AutomaticKeepAliveClientMixin支持重新切回页面后保持之前页面状态
 // 需求修改 去掉了保留状态的需求
 // class _GalleryPageState extends State<GalleryPage> with AutomaticKeepAliveClientMixin {
-class _GalleryPageState extends State<GalleryPage> {
+class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
   var _cropperKey = GlobalKey<_GalleryPageState>();
 
   double _screenWidth = 0;
@@ -92,12 +94,17 @@ class _GalleryPageState extends State<GalleryPage> {
   // 已经请求的数据数量 因为要做过滤所以不能用_galleryList的长度
   int _galleryListLength = 0;
 
+  bool _permissionGranted;
+
+  bool _isPaused = false;
+
   // @override
   // bool get wantKeepAlive => true;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     //从notifier中取值
     _previewMaxHeight = context.read<PreviewHeightNotifier>().maxHeight;
     _previewMinHeight = context.read<PreviewHeightNotifier>().minHeight;
@@ -109,8 +116,57 @@ class _GalleryPageState extends State<GalleryPage> {
           .setFixedImageSize(Size(widget.fixedWidth.toDouble(), widget.fixedHeight.toDouble()));
     }
 
-    //初始化时立刻获取一次数据
-    _fetchGalleryData(true);
+    _checkPermission();
+  }
+
+  //TODO 还需要处理iOS只给部分照片权限的情况
+  _checkPermission() async {
+    bool isGranted;
+    //安卓和iOS的权限不一样
+    if (Application.platform == 0) {
+      isGranted = (await Permission.storage.status)?.isGranted;
+    } else {
+      isGranted = (await Permission.photos.status)?.isGranted;
+    }
+
+    if (isGranted == null) {
+      isGranted = false;
+    }
+    if (isGranted == _permissionGranted) {
+      //和当前权限一致 无需做处理
+      return;
+    } else if (isGranted) {
+      //有权限 取数据
+      _permissionGranted = isGranted;
+      _fetchGalleryData(true);
+    } else {
+      //无权限 刷新界面
+      _permissionGranted = isGranted;
+      if (mounted) {
+        setState(() {});
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // 返回前台 检查权限
+    // 只有paused才是真的离开了页面 会在弹窗弹出时进入inactived
+    if (state == AppLifecycleState.resumed) {
+      if (_isPaused) {
+        _isPaused = false;
+        _checkPermission();
+      }
+    }
+    if (state == AppLifecycleState.paused) {
+      _isPaused = true;
+    }
   }
 
   // 获取相册数据
@@ -120,8 +176,8 @@ class _GalleryPageState extends State<GalleryPage> {
       return;
     }
     _isFetchingData = true;
-    var result = await PhotoManager.requestPermission();
-    if (result) {
+    // 已在之前做了权限请求不需要再请求
+    if (_permissionGranted) {
       // success
       // load the album list
       if (_albums.isEmpty) {
@@ -211,82 +267,169 @@ class _GalleryPageState extends State<GalleryPage> {
     print("屏幕宽为：$_screenWidth");
     _itemSize = (_screenWidth - _itemMargin * (_horizontalCount - 1)) / _horizontalCount;
     print("item宽为：$_itemSize");
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: Stack(
-        overflow: Overflow.clip,
-        children: [
-          // 背景
-          Container(
-            color: AppColor.bgBlack,
-          ),
-          // 列表
-          ScrollConfiguration(
-            behavior: NoBlueEffectBehavior(),
-            child: _buildScrollBody(),
-          ),
-          widget.needCrop
-              ?
-              // 裁剪区域
-              Positioned(
-                  top: context.watch<PreviewHeightNotifier>().previewHeight - _previewMaxHeight,
-                  child: Container(
-                    color: AppColor.black,
-                    width: _previewMaxHeight,
-                    height: _previewMaxHeight,
-                    child: Builder(
-                      builder: (context) {
-                        AssetEntity entity = context.select((SelectedMapNotifier notifier) => notifier.currentEntity);
-                        Size selectedSize =
-                            context.select((SelectedMapNotifier notifier) => notifier.selectedImageSize);
-                        return entity == null
-                            ? Container()
-                            : entity.type == AssetType.video
-                                ? VideoPreviewArea(_fileMap[entity.id], _screenWidth,
-                                    context.select((SelectedMapNotifier notifier) => notifier.useOriginalRatio))
-                                : entity.type == AssetType.image
-                                    ? CropperImage(
-                                        FileImage(_fileMap[entity.id]),
-                                        round: 0,
-                                        maskPadding: 0,
-                                        outHeight: (selectedSize == null
-                                                ? _getImageOutSize(
-                                                    entity,
-                                                    context.select(
-                                                        (SelectedMapNotifier notifier) => notifier.useOriginalRatio))
-                                                : selectedSize)
-                                            .height,
-                                        outWidth: (selectedSize == null
-                                                ? _getImageOutSize(
-                                                    entity,
-                                                    context.select(
-                                                        (SelectedMapNotifier notifier) => notifier.useOriginalRatio))
-                                                : selectedSize)
-                                            .width,
-                                        key: _cropperKey,
-                                      )
-                                    : Container();
-                      },
-                    ),
-                  ))
-              : Container(),
-          widget.needCrop &&
-                  !widget.cropOnlySquare &&
-                  context.select((SelectedMapNotifier notifier) => notifier.selectedImageSize == null)
-              ? Positioned(
-                  top: context.watch<PreviewHeightNotifier>().previewHeight - 36,
-                  left: 12,
-                  child: AppIconButton(
-                    onTap: _changeCurrentRatio,
-                    iconSize: 24,
-                    svgName: AppIcon.gallery_fullsize,
-                  ),
-                )
-              : Container(),
-          context.select((SelectedMapNotifier value) => value.isAlbumListShow) ? _buildAlbumList() : Container(),
-        ],
-      ),
-    );
+    return _permissionGranted != null && _permissionGranted
+        ? Scaffold(
+            appBar: _buildAppBar(),
+            body: Stack(
+              overflow: Overflow.clip,
+              children: [
+                // 背景
+                Container(
+                  color: AppColor.bgBlack,
+                ),
+                // 列表
+                ScrollConfiguration(
+                  behavior: NoBlueEffectBehavior(),
+                  child: _buildScrollBody(),
+                ),
+                widget.needCrop
+                    ?
+                    // 裁剪区域
+                    Positioned(
+                        top: context.watch<PreviewHeightNotifier>().previewHeight - _previewMaxHeight,
+                        child: Container(
+                          color: AppColor.black,
+                          width: _previewMaxHeight,
+                          height: _previewMaxHeight,
+                          child: Builder(
+                            builder: (context) {
+                              AssetEntity entity =
+                                  context.select((SelectedMapNotifier notifier) => notifier.currentEntity);
+                              Size selectedSize =
+                                  context.select((SelectedMapNotifier notifier) => notifier.selectedImageSize);
+                              return entity == null
+                                  ? Container()
+                                  : entity.type == AssetType.video
+                                      ? VideoPreviewArea(_fileMap[entity.id], _screenWidth,
+                                          context.select((SelectedMapNotifier notifier) => notifier.useOriginalRatio))
+                                      : entity.type == AssetType.image
+                                          ? CropperImage(
+                                              FileImage(_fileMap[entity.id]),
+                                              round: 0,
+                                              maskPadding: 0,
+                                              outHeight: (selectedSize == null
+                                                      ? _getImageOutSize(
+                                                          entity,
+                                                          context.select((SelectedMapNotifier notifier) =>
+                                                              notifier.useOriginalRatio))
+                                                      : selectedSize)
+                                                  .height,
+                                              outWidth: (selectedSize == null
+                                                      ? _getImageOutSize(
+                                                          entity,
+                                                          context.select((SelectedMapNotifier notifier) =>
+                                                              notifier.useOriginalRatio))
+                                                      : selectedSize)
+                                                  .width,
+                                              key: _cropperKey,
+                                            )
+                                          : Container();
+                            },
+                          ),
+                        ))
+                    : Container(),
+                widget.needCrop &&
+                        !widget.cropOnlySquare &&
+                        context.select((SelectedMapNotifier notifier) => notifier.selectedImageSize == null)
+                    ? Positioned(
+                        top: context.watch<PreviewHeightNotifier>().previewHeight - 36,
+                        left: 12,
+                        child: AppIconButton(
+                          onTap: _changeCurrentRatio,
+                          iconSize: 24,
+                          svgName: AppIcon.gallery_fullsize,
+                        ),
+                      )
+                    : Container(),
+                context.select((SelectedMapNotifier value) => value.isAlbumListShow) ? _buildAlbumList() : Container(),
+              ],
+            ),
+          )
+        : Scaffold(
+            // 无权限时的布局
+            backgroundColor: AppColor.bgBlack,
+            appBar: CustomAppBar(
+              backgroundColor: AppColor.black,
+              brightness: Brightness.dark,
+              hasLeading: widget.publishMode == 2 ? false : true,
+              leading: CustomAppBarIconButton(
+                  svgName: AppIcon.nav_close,
+                  iconColor: AppColor.white,
+                  onTap: () {
+                    Navigator.pop(context);
+                  }),
+            ),
+            body: Container(
+              width: _screenWidth,
+              child: _permissionGranted != null
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "请授权iFitness照片权限",
+                          style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 16),
+                        ),
+                        Text(
+                          "便于您进行照片编辑和图片保存",
+                          style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 16),
+                        ),
+                        SizedBox(
+                          height: 24,
+                        ),
+                        GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () async {
+                            PermissionStatus status;
+                            //安卓和iOS的权限不一样
+                            if (Application.platform == 0) {
+                              status = await Permission.storage.status;
+                            } else {
+                              status = await Permission.photos.status;
+                            }
+
+                            if (status.isGranted) {
+                              _permissionGranted = true;
+                              _fetchGalleryData(true);
+                            } else if (status.isPermanentlyDenied) {
+                              //安卓的禁止且之后不提示
+                              AppSettings.openAppSettings();
+                            } else {
+                              //安卓重新请求 iOS跳设置页
+                              if (Application.platform == 0) {
+                                status = await Permission.storage.request();
+                                if (status.isGranted) {
+                                  _permissionGranted = true;
+                                  _fetchGalleryData(true);
+                                }
+                              } else {
+                                AppSettings.openAppSettings();
+                              }
+                            }
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            height: 34,
+                            width: 96,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(17),
+                              border: Border.all(color: AppColor.mainRed.withOpacity(0.85), width: 0.5),
+                            ),
+                            child: Text(
+                              "去授权",
+                              style: TextStyle(color: AppColor.mainRed.withOpacity(0.85), fontSize: 16),
+                            ),
+                          ),
+                        ),
+                        // 为了尽量让按钮居中
+                        SizedBox(
+                          height: 56,
+                        ),
+                      ],
+                    )
+                  : Container(),
+            ),
+          );
   }
 
   // item本体点击事件
@@ -707,7 +850,7 @@ class _GalleryPageState extends State<GalleryPage> {
                 AppRouter.navigateToReleasePage(context);
               } else if (widget.publishMode == 2) {
                 AppRouter.navigateToReleasePage(context);
-                if(Application.ifPageController != null) {
+                if (Application.ifPageController != null) {
                   Application.ifPageController.index = Application.ifPageController.length - 1;
                 }
               } else {

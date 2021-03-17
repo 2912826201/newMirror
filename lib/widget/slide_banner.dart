@@ -314,7 +314,7 @@ class _SlideBannerState extends State<SlideBanner> {
               .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
           context
               .read<UserInteractiveNotifier>()
-              .loadChange(widget.model.pushId, context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud);
+              .laudedChange(widget.model.pushId, context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud);
         }
       }
     } else {

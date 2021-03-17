@@ -1,5 +1,6 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fijkplayer/fijkplayer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
@@ -9,22 +10,31 @@ import 'package:mirror/util/screen_util.dart';
 import 'live_room_test_page_1.dart';
 
 class LiveRoomTestPage extends StatefulWidget {
+  final String url = "rtmp://58.200.131.2:1935/livetv/cctv13";
   @override
   _LiveRoomTestPageState createState() => _LiveRoomTestPageState();
 }
 
 class _LiveRoomTestPageState extends State<LiveRoomTestPage> {
   List<Widget> textArray=[];
+  final FijkPlayer player = FijkPlayer();
 
   @override
   void initState() {
     super.initState();
 
+    player.setDataSource(widget.url, autoPlay: true);
     EventBus.getDefault().register(exit,"LiveRoomTestPage",registerName: "LiveRoomTestPage-exit");
 
     for(int i=0;i<100;i++){
       textArray.add(Text("$i"));
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    player.release();
   }
 
   void exit(name){
@@ -56,10 +66,12 @@ class _LiveRoomTestPageState extends State<LiveRoomTestPage> {
       alignment: Alignment.centerLeft,
       width: ScreenUtil.instance.width,
       height: ScreenUtil.instance.height,
-      child: SingleChildScrollView(
-        child: Column(
-          children: textArray,
-        ),
+      child: FijkView(
+        player: player,
+        color: AppColor.bgBlack,
+        fit: FijkFit.cover,
+        fsFit: FijkFit.cover,
+        cover: AssetImage("images/test.png"),
       ),
     );
   }

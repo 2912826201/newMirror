@@ -218,7 +218,10 @@ Future<UserModel> ProfileUpdataUserInfo(String nickName, String avatarUri,
   }
   BaseResponseModel responseModel = await requestApi(UPDATA_USERINFO, map);
   if (responseModel.isSuccess) {
-    UserModel model = UserModel.fromJson(responseModel.data);
+    UserModel model;
+    if(responseModel.data!=null){
+    model = UserModel.fromJson(responseModel.data);
+    }
     return model;
   } else {
     return null;

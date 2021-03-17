@@ -164,7 +164,6 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
               }
               attentionIdList.insert(0, -1);
               status = Status.concern;
-              context.read<FeedMapNotifier>().setUnReadFeedCount(0);
             } else {
               status = Status.noConcern;
             }
@@ -213,7 +212,9 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       }
     });
     if (addFeedNum != 0) {
-      ToastShow.show(msg: "更新了$addFeedNum条动态", context: context, gravity: Toast.CENTER);
+      ToastShow.show(msg: "更新了${context.read<FeedMapNotifier>().value.unReadFeedCount}条动态", context: context, gravity:
+      Toast.CENTER);
+      context.read<FeedMapNotifier>().setUnReadFeedCount(0);
     }
     // 更新全局监听
     context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);

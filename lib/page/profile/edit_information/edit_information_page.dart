@@ -324,7 +324,7 @@ class _EditInformationState extends State<EditInformation> {
             child: Text(
               textContent != null ? textContent : "去编辑",
               style: AppStyle.textRegular16,
-              maxLines: 5,
+              maxLines: title != "简介"?1:5,
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -446,6 +446,11 @@ class _EditInformationState extends State<EditInformation> {
       Navigator.pop(context);
       print('更新过后的数据库用户头像${context.read<ProfileNotifier>().profile.avatarUri}');
     } else {
+      Loading.hideLoading(context);
+      Toast.show(
+        "资料修改失败",
+        context,
+      );
       print('=========================资料修改失败！=========================');
     }
   }
