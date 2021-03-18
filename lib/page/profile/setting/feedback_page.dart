@@ -50,6 +50,7 @@ class _feedBackPage extends State<FeedBackPage> {
               "提交",
               CustomRedButton.buttonStateNormal,
               () {
+                FocusScope.of(context).requestFocus(FocusNode());
                 _uploadImage();
               },
             ),
@@ -216,11 +217,11 @@ class _feedBackPage extends State<FeedBackPage> {
           print('imageFile==============================$imageFile');
           fileList.add(imageFile);
           print('===============================${fileList.length}');
+          setState(() {
+            imageDataList.add(element.croppedImageData);
+          });
         }
         print('=====================================${element.croppedImageData}');
-        setState(() {
-          imageDataList.add(element.croppedImageData);
-        });
       });
     });
   }
@@ -240,12 +241,17 @@ class _feedBackPage extends State<FeedBackPage> {
       }
       bool model = await putFeedBack(editText, jsonEncode(list));
       if (model!=null && model) {
-        Toast.show("反馈成功", context);
+        Toast.show("反馈成功!", context);
+        Loading.hideLoading(context);
         Navigator.pop(context);
+      }else{
+        Toast.show("反馈失败!", context);
+        Loading.hideLoading(context);
       }
     } else {
+      Loading.hideLoading(context);
       Toast.show("请添加图片", context);
     }
-    Loading.hideLoading(context);
+
   }
 }

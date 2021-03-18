@@ -346,21 +346,40 @@ class _CustomRedButtonState extends State<CustomRedButton> {
                         : AppColor.textHint,
             borderRadius: BorderRadius.circular(14)),
         //TODO loading状态需要加加载圈
-        child: Text(
-          widget.text,
-          style: TextStyle(
-              fontSize: 14,
-              color: widget.buttonState == CustomRedButton.buttonStateNormal
-                  ? isPressed
-                      ? AppColor.white.withOpacity(0.56)
-                      : AppColor.white
-                  : widget.buttonState == CustomRedButton.buttonStateDisable
-                      ? widget.isDarkBackground
-                          ? AppColor.white.withOpacity(0.24)
-                          : AppColor.white.withOpacity(0.16)
-                      : widget.buttonState == CustomRedButton.buttonStateLoading
-                          ? AppColor.white
-                          : AppColor.white),
+        child: Row(
+          children: [
+            Spacer(),
+            widget.buttonState == CustomRedButton.buttonStateLoading
+                ? Container(
+                    height: 17,
+                    width: 17,
+                    child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(AppColor.white),
+                        backgroundColor: AppColor.transparent,
+                        strokeWidth: 1.5))
+                : Container(),
+            widget.buttonState == CustomRedButton.buttonStateLoading
+                ? SizedBox(
+              width: 4.5,
+            ):Container(),
+            Text(
+              widget.text,
+              style: TextStyle(
+                  fontSize: 14,
+                  color: widget.buttonState == CustomRedButton.buttonStateNormal
+                      ? isPressed
+                          ? AppColor.white.withOpacity(0.56)
+                          : AppColor.white
+                      : widget.buttonState == CustomRedButton.buttonStateDisable
+                          ? widget.isDarkBackground
+                              ? AppColor.white.withOpacity(0.24)
+                              : AppColor.white.withOpacity(0.16)
+                          : widget.buttonState == CustomRedButton.buttonStateLoading
+                              ? AppColor.white
+                              : AppColor.white),
+            ),
+            Spacer()
+          ],
         ),
       ),
       onTapDown: (details) {
@@ -454,7 +473,7 @@ class _FollowButtonState extends State<FollowButton> {
         widget.buttonType == FollowButtonType.TOPIC) {
       return Container();
     }
-      context.watch<UserInteractiveNotifier>().setFirstModel(widget.id, isFollow: !widget.isFollow);
+    context.watch<UserInteractiveNotifier>().setFirstModel(widget.id, isFollow: !widget.isFollow);
     return GestureDetector(
       child: Container(
         width: 56,
