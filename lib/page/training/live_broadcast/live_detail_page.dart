@@ -37,6 +37,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import '../../../widget/sliver_custom_header_delegate.dart';
 import 'package:provider/provider.dart';
 
+import 'live_room_page_common.dart';
 import 'live_room_test_page.dart';
 import 'live_room_test_operation_page.dart';
 
@@ -348,9 +349,13 @@ class LiveDetailPageState extends XCState {
 
     var childrenArray = <Widget>[];
 
+
     if(liveModel.endState!=null&&liveModel.endState==0||(liveModel.getGetPlayType()=="已结束")){
       //已结束
-      childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget7, onTap: _login))));
+      childrenArray.add(Expanded(child: SizedBox(child: GestureDetector(child: widget7, onTap: (){
+        print("liveModel.endState:${liveModel.endState},${liveModel.getGetPlayType()},${liveModel.liveCourseState}");
+        ToastShow.show(msg: "直播已结束", context: context);
+      }))));
     }else {
       if (!isLoggedIn) {
         //没有登录
@@ -849,6 +854,7 @@ class LiveDetailPageState extends XCState {
             coachName:liveModel.coachDto.nickName,
             coachUrl:liveModel.coachDto.avatarUri,
             coachRelation:liveModel.coachDto.relation,
+            startTime:liveModel.startTime,
             coachId: liveModel.coachId);
       },
     ));

@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:video_player/video_player.dart';
 
-class DemoVideoItem extends StatefulWidget {
+class InteractiveVideoItem extends StatefulWidget {
   final VideosModel source;
   final bool isFocus;
 
-  DemoVideoItem(this.source, {this.isFocus});
+  InteractiveVideoItem(this.source, {this.isFocus});
 
   @override
-  _DemoVideoItemState createState() => _DemoVideoItemState();
+  _InteractiveVideoItemState createState() => _InteractiveVideoItemState();
 }
 
-class _DemoVideoItemState extends State<DemoVideoItem> {
+class _InteractiveVideoItemState extends State<InteractiveVideoItem> {
   VideoPlayerController _controller;
   VoidCallback listener;
   String localFileName;
@@ -53,7 +53,7 @@ class _DemoVideoItemState extends State<DemoVideoItem> {
   }
 
   @override
-  void didUpdateWidget(covariant DemoVideoItem oldWidget) {
+  void didUpdateWidget(covariant InteractiveVideoItem oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.isFocus && !widget.isFocus) {

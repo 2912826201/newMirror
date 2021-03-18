@@ -55,4 +55,5 @@ class AppColor {
   static const bgaims = Color.fromRGBO(0x40,0x40,0x40 ,1.0);
   static const textVipSemibold = Color.fromRGBO(0x8F,0x58,0x08,1.0);
   static const colorb9b9b9 = Color.fromRGBO(0xB9,0xB9,0xB9,1.0);
+  static const colorfcb6bf = Color.fromRGBO(0xFC,0xB6,0xBF,1.0);
 }
