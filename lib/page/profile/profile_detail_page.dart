@@ -74,6 +74,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
 
   bool canOnClick = true;
 
+  int userStatus;
   ///该用户和我的关系
   int relation;
   ScrollController scrollController = ScrollController();
@@ -164,6 +165,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
     if (userModel != null) {
       _avatar = userModel.avatarUri;
       _signature = userModel.description;
+      userStatus = userModel.status;
       if (_signature != null) {
         ///判断文字的高度，动态改变
         TextPainter testSize = calculateTextWidth(_signature, AppStyle.textRegular14, 255, 10);
@@ -332,7 +334,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
         },
 
         ///根据布尔值返回body
-        body: isMselfId
+        body: userStatus!=1?isMselfId
             ? TabBarView(
                 controller: _mController,
                 children: <Widget>[
@@ -354,7 +356,30 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
                   ),
                 ],
               )
-            : ProfileDetailsList(type: 3, isMySelf: isMselfId, id: widget.userId));
+            : ProfileDetailsList(type: 3, isMySelf: isMselfId, id: widget.userId):Container(
+            padding: EdgeInsets.only(top: 12),
+            color: AppColor.white,
+            child: Column(
+              children: [
+                Center(
+                  child: Container(
+                    width: 224,
+                    height: 224,
+                    color: AppColor.bgWhite.withOpacity(0.65),
+                  ),
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                Center(
+                  child: Text(
+                   "该账号封禁中·",
+                    style: AppStyle.textPrimary3Regular14,
+                  ),
+                )
+              ],
+            )));
+
   }
 
   ///高斯模糊

@@ -226,4 +226,9 @@ class RongCloud {
   void joinChatRoom(String targetId,{int messageCount=-1}) {
      RongIMClient.joinChatRoom(targetId,messageCount);
   }
+
+  //退出聊天室
+  void quitChatRoom(String targetId) {
+     RongIMClient.quitChatRoom(targetId);
+  }
 }

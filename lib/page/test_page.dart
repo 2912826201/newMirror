@@ -19,7 +19,7 @@ import 'package:mirror/page/media_test_page.dart';
 import 'package:mirror/page/qiniu_test_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_page.dart';
 import 'package:mirror/page/training/live_broadcast/live_room_test_page.dart';
-import 'package:mirror/page/training/live_broadcast/live_room_test_page_1.dart';
+import 'package:mirror/page/training/live_broadcast/live_room_test_operation_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -252,16 +252,16 @@ class _TestState extends State<TestPage> with AutomaticKeepAliveClientMixin {
 
               RaisedButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return LiveRoomTestPage();
-                  }));
-                  Navigator.of(context).push(SimpleRoute(
-                    name: 'aaa',
-                    title: 'aaa',
-                    builder: (_) {
-                      return LiveRoomTestPageDialog();
-                    },
-                  ));
+                  // Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  //   return LiveRoomTestPage();
+                  // }));
+                  // Navigator.of(context).push(SimpleRoute(
+                  //   name: 'aaa',
+                  //   title: 'aaa',
+                  //   builder: (_) {
+                  //     return LiveRoomTestPageDialog();
+                  //   },
+                  // ));
                 },
                 child: Text("直播测试页"),
               ),

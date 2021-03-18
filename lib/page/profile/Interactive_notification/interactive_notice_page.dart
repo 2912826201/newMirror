@@ -42,7 +42,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   int listPage = 1;
   List<QueryModel> msgList = [];
   bool haveData = false;
-
+  String hintText;
   int timeStamp;
 
   ///获取互动通知列表
@@ -70,7 +70,8 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
         controller.refreshCompleted();
       } else {
         haveData = false;
-        controller.refreshCompleted();
+        hintText = "内容君在来的路上出了点状况...";
+        controller.refreshFailed();
       }
     } else if (listPage > 1 && lastTime != null) {
       if (model != null && model.list != null) {
@@ -108,6 +109,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
 
   @override
   void initState() {
+    hintText = "这里什么都没有呢";
     timeStamp = DateTime.now().millisecondsSinceEpoch;
     super.initState();
     _getMsgList(widget.type);
@@ -159,7 +161,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
           body: Container(
             width: width,
             height: height,
-            child: haveData
+            child: msgList.isNotEmpty
                 ?  ScrollConfiguration(
               behavior: OverScrollBehavior(),
               child:SmartRefresher(
@@ -187,7 +189,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                     ),
                     header: WaterDropHeader(
                       complete: Text("刷新完成"),
-                      failed: Text(" "),
+                      failed: Text("刷新失败"),
                     ),
                     onRefresh: _onRefresh,
                     onLoading: _onLoading,
@@ -218,7 +220,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                           height: 16,
                         ),
                         Text(
-                          "没有找到你要的东西",
+                          "这里什么都没有呢",
                           style: AppStyle.textPrimary3Regular14,
                         )
                       ],

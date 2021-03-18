@@ -37,6 +37,9 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import '../../../widget/sliver_custom_header_delegate.dart';
 import 'package:provider/provider.dart';
 
+import 'live_room_test_page.dart';
+import 'live_room_test_operation_page.dart';
+
 /// 直播详情页
 class LiveDetailPage extends StatefulWidget {
   const LiveDetailPage({
@@ -688,77 +691,6 @@ class LiveDetailPageState extends XCState {
     }
   }
 
-  ///------------------------------底部按钮的所有点击事件  start --------------------------------------------------------
-
-  //去登陆
-  void _login() {
-    ToastShow.show(msg: "请先登陆app!", context: context);
-    // 去登录
-    AppRouter.navigateToLoginPage(context);
-  }
-
-
-  //判断是预约还是取消预约
-  void _judgeBookOrCancelBook({bool bindingTerminal, bool isVip})async {
-    if(await isOffline()){
-      ToastShow.show(msg: "请检查网络!", context: context);
-      return;
-    }
-    print("---------------------------");
-    if (liveModel.playType == 2) {
-      _bookLiveCourse(liveModel, 0, true,bindingTerminal: bindingTerminal);
-    } else {
-      showAppDialog(context,
-          title: "取消预约",
-          info: "确认取消预约吗？",
-          cancel: AppDialogButton("取消", () {
-            print("点了取消");
-            return true;
-          }),
-          confirm: AppDialogButton("确定", () {
-            print("点击了确定");
-            _bookLiveCourse(liveModel, 0, true);
-            return true;
-          }));
-    }
-  }
-
-  //回放和试听--看视频
-  void _seeVideo() {
-    if (liveModel.playType == 3) {
-      ToastShow.show(msg: "回放", context: context);
-    } else {
-      ToastShow.show(msg: "试听", context: context);
-    }
-  }
-
-  //使用终端进行训练
-  void _useTerminal() {
-    ToastShow.show(msg: "使用终端进行训练", context: context);
-  }
-
-  //登陆终端进行训练
-  void _loginTerminal() {
-    ToastShow.show(msg: "登陆终端进行训练", context: context);
-  }
-
-  //开通vip
-  void _openVip() {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return VipNotOpenPage(
-        type: VipState.NOTOPEN,
-      );
-    }));
-  }
-
-  //报名终端
-  void applyTerminalTrainingPr() async {
-    applyTerminalTraining(courseId: liveModel.id, startTime: liveModel.startTime);
-    ToastShow.show(msg: "已报名，若中选将收到系统消息", context: context);
-  }
-
-
-
   ///这是关注的方法
   onClickAttention()async {
     if(!(mounted&&isLoggedIn)){
@@ -857,5 +789,98 @@ class LiveDetailPageState extends XCState {
       }
     }
   }
+
+  ///------------------------------底部按钮的所有点击事件  start --------------------------------------------------------
+
+  //去登陆
+  void _login() {
+    ToastShow.show(msg: "请先登陆app!", context: context);
+    // 去登录
+    AppRouter.navigateToLoginPage(context);
+  }
+
+
+  //判断是预约还是取消预约
+  void _judgeBookOrCancelBook({bool bindingTerminal, bool isVip})async {
+    if(await isOffline()){
+      ToastShow.show(msg: "请检查网络!", context: context);
+      return;
+    }
+    print("---------------------------");
+    if (liveModel.playType == 2) {
+      _bookLiveCourse(liveModel, 0, true,bindingTerminal: bindingTerminal);
+    } else {
+      showAppDialog(context,
+          title: "取消预约",
+          info: "确认取消预约吗？",
+          cancel: AppDialogButton("取消", () {
+            print("点了取消");
+            return true;
+          }),
+          confirm: AppDialogButton("确定", () {
+            print("点击了确定");
+            _bookLiveCourse(liveModel, 0, true);
+            return true;
+          }));
+    }
+  }
+
+  //回放和试听--看视频
+  void _seeVideo() {
+    if (liveModel.playType == 3) {
+      ToastShow.show(msg: "回放", context: context);
+    } else {
+      gotoLiveVideoRoomPage();
+      ToastShow.show(msg: "试听", context: context);
+    }
+  }
+
+  //去直播页
+  void gotoLiveVideoRoomPage(){
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return LiveRoomTestPage(liveCourseId:liveCourseId,coachId: liveModel.coachId.toString());
+    }));
+    Navigator.of(context).push(SimpleRoute(
+      name: liveModel.title,
+      title: liveModel.coachDto.nickName+"直播间",
+      builder: (_) {
+        return LiveRoomTestOperationPage(
+            liveCourseId:liveCourseId,
+            coachName:liveModel.coachDto.nickName,
+            coachUrl:liveModel.coachDto.avatarUri,
+            coachRelation:liveModel.coachDto.relation,
+            coachId: liveModel.coachId);
+      },
+    ));
+  }
+
+
+  //使用终端进行训练
+  void _useTerminal() {
+    ToastShow.show(msg: "使用终端进行训练", context: context);
+  }
+
+  //登陆终端进行训练
+  void _loginTerminal() {
+    ToastShow.show(msg: "登陆终端进行训练", context: context);
+  }
+
+  //开通vip
+  void _openVip() {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+      return VipNotOpenPage(
+        type: VipState.NOTOPEN,
+      );
+    }));
+  }
+
+  //报名终端
+  void applyTerminalTrainingPr() async {
+    applyTerminalTraining(courseId: liveModel.id, startTime: liveModel.startTime);
+    ToastShow.show(msg: "已报名，若中选将收到系统消息", context: context);
+  }
+
+
+///------------------------------底部按钮的所有点击事件  end --------------------------------------------------------
 
 }
