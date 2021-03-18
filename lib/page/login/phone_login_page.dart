@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/basic_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/page/login/sms_code_page.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -47,6 +49,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
   var _smsBtnColor;
   var _textField;
 
+  bool sendMsging = false;
   //输入框控制器
   final TextEditingController inputController = TextEditingController();
 
@@ -156,6 +159,9 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
     //如果是发送验证码可以重入的情况，则重新进入，此时不会触发相应的接口
     if (_reEnterSendSmsPage() && Application.sendSmsPhoneNum == this.inputController.text) {
       print("发送验证码页面重入");
+      setState(() {
+        sendMsging = false;
+      });
       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
         return SmsCodePage(
           phoneNumber: inputController.text,
@@ -189,6 +195,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
         print("发送验证码失败");
       }
     }
+    sendMsging = false;
     setState(() {});
   }
 
@@ -276,25 +283,46 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
   }
 
   Widget _certificateBtn() {
-    var btnStyle = RoundedRectangleBorder(borderRadius: BorderRadius.circular(3));
-    var smsBtn = FlatButton(
-      minWidth: 293,
-      height: 44,
-      shape: btnStyle,
-      onPressed: () {
+    var smsBtn = InkWell(
+      onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
         if (_validationJudge()) {
+          setState(() {
+            sendMsging = true;
+          });
           _sendMessage();
         } else {
           ToastShow.show(msg: "请输入正确的手机号", context: context);
           return false;
         }
       },
-      child: Text(
+      child: Container(
+        width: ScreenUtil.instance.screenWidthDp,
+        height: 44,
+        decoration: BoxDecoration(
+            color:_smsBtnColor,
+            borderRadius: BorderRadius.all(Radius.circular(3)),),
+        child: Row(
+          children: [
+         Spacer(),
+            sendMsging
+                ?Container(
+              height: 17,
+              width: 17,
+              child: CircularProgressIndicator(
+                valueColor:AlwaysStoppedAnimation(AppColor.black),
+                backgroundColor: AppColor.white,
+                strokeWidth:1.5
+              )):Container(),
+          SizedBox(width: 2.5,),
+          Text(
         _titleOfSendTextBtn,
         style: TextStyle(fontSize: 16, color: _smsBtnTitleColor),
+          ),
+          Spacer()
+          ],
+        )
       ),
-      color: _smsBtnColor,
     );
     var returns = Container(
       child: smsBtn,
