@@ -39,7 +39,7 @@ class ImgVideoMsg extends StatelessWidget {
 
   ImgVideoMsg(
       {this.isMyself,
-        this.sendTime,
+      this.sendTime,
       this.isTemporary,
       this.isImgOrVideo,
       this.isShowChatUserName = false,
@@ -57,15 +57,20 @@ class ImgVideoMsg extends StatelessWidget {
 
   double width = 200.0;
   double height = 200.0;
-  //占位图
-  String placeholderMapImage="images/test/bg.png";
 
+  //占位图
+  String placeholderMapImage = "images/test/bg.png";
 
   @override
   Widget build(BuildContext context) {
     intData();
 
-    return getContentBoxItem(context);
+    return sizeInfoMap == null
+        ? getContentBoxItem(context)
+        : Hero(
+            tag: sizeInfoMap["messageId"],
+            child: getContentBoxItem(context),
+          );
   }
 
   Widget getContentBoxItem(BuildContext context) {
@@ -74,8 +79,7 @@ class ImgVideoMsg extends StatelessWidget {
       child: Column(
         children: [
           Row(
-            mainAxisAlignment:
-                isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
+            mainAxisAlignment: isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: getBody(context),
           ),
         ],
@@ -87,14 +91,13 @@ class ImgVideoMsg extends StatelessWidget {
   List<Widget> getBody(BuildContext context) {
     var body = [
       Row(
-        mainAxisAlignment:
-        isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isMyself ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: getSmallBody(context),
       ),
       Container(
         margin: isShowChatUserName ? const EdgeInsets.only(top: 16) : null,
-        child: getMessageState(status,position: position,voidMessageClickCallBack: voidMessageClickCallBack),
+        child: getMessageState(status, position: position, voidMessageClickCallBack: voidMessageClickCallBack),
       ),
     ];
     if (isMyself) {
@@ -175,13 +178,12 @@ class ImgVideoMsg extends StatelessWidget {
       actions: longClickStringList,
       contentWidth: width,
       contentHeight: MessageItemHeightUtil.init().getImgVideoMsgHeight(
-          isTemporary:isTemporary,
-          mediaFileModel:mediaFileModel,
-          imageMessage:imageMessage,
-          isShowName:isShowChatUserName,
-          sizeInfoMap:sizeInfoMap,
-          isOnlyContentHeight: true
-      ),
+          isTemporary: isTemporary,
+          mediaFileModel: mediaFileModel,
+          imageMessage: imageMessage,
+          isShowName: isShowChatUserName,
+          sizeInfoMap: sizeInfoMap,
+          isOnlyContentHeight: true),
       child: GestureDetector(
         child: imgVideoContentBox(context),
         onTap: () {
@@ -227,29 +229,29 @@ class ImgVideoMsg extends StatelessWidget {
 
   //获取视频的图片
   Widget getVideoUi() {
-    if(sizeInfoMap["isTemporary"]!=null&&sizeInfoMap["isTemporary"]) {
-      File videoImageFile=File(sizeInfoMap["videoFilePath"]);
-      File videoFile=File(sizeInfoMap["showImageUrl"]);
-      if(videoFile.existsSync()){
-        if(videoImageFile.existsSync()){
+    if (sizeInfoMap["isTemporary"] != null && sizeInfoMap["isTemporary"]) {
+      File videoImageFile = File(sizeInfoMap["videoFilePath"]);
+      File videoFile = File(sizeInfoMap["showImageUrl"]);
+      if (videoFile.existsSync()) {
+        if (videoImageFile.existsSync()) {
           //print("11111-videoImageFile");
           return getImageFile(videoImageFile);
-        }else{
+        } else {
           //print("文件缩略图失效");
           return getImageAsset(placeholderMapImage);
         }
-      }else{
+      } else {
         //print("文件失效");
         return getImageAsset(placeholderMapImage);
       }
-    }else{
+    } else {
       return getCachedNetworkImage(FileUtil.getVideoFirstPhoto(sizeInfoMap["showImageUrl"]));
     }
   }
 
   //获取视频的缺省图
   Widget getVideoShowImage() {
-    if (mediaFileModel != null&&mediaFileModel.thumb!=null) {
+    if (mediaFileModel != null && mediaFileModel.thumb != null) {
       return getImageMemory(mediaFileModel.thumb);
     } else {
       return getImageAsset(placeholderMapImage);
@@ -260,47 +262,43 @@ class ImgVideoMsg extends StatelessWidget {
   Widget getImageUi() {
     if (imageMessage != null) {
       Uint8List bytes = Base64Decoder().convert(imageMessage.content);
-      return bytes != null
-          ? getImageMemory(bytes)
-          : Container(child: Text("离线-图片资源有问题"));
+      return bytes != null ? getImageMemory(bytes) : Container(child: Text("离线-图片资源有问题"));
     } else {
-      if(sizeInfoMap["isTemporary"]!=null&&sizeInfoMap["isTemporary"]) {
-        File imageFile=File(sizeInfoMap["showImageUrl"]);
-        if(imageFile.existsSync()){
+      if (sizeInfoMap["isTemporary"] != null && sizeInfoMap["isTemporary"]) {
+        File imageFile = File(sizeInfoMap["showImageUrl"]);
+        if (imageFile.existsSync()) {
           return getImageFile(imageFile);
-        }else{
+        } else {
           //print("文件失效");
           return getImageAsset(placeholderMapImage);
         }
-      }else{
+      } else {
         return getCachedNetworkImage(sizeInfoMap["showImageUrl"] + "?imageslim");
       }
     }
   }
 
-
-
-  Widget getImageMemory(Uint8List thumb){
+  Widget getImageMemory(Uint8List thumb) {
     //print("thumb:${thumb.length}");
     return Image.memory(
-      thumb??"",
+      thumb ?? "",
       width: width,
       height: height,
       fit: BoxFit.cover,
     );
   }
 
-  Widget getImageAsset(String assetPath){
+  Widget getImageAsset(String assetPath) {
     //print("assetPath:${assetPath}");
     return Image.asset(
-      assetPath??"",
+      assetPath ?? "",
       width: width,
       height: height,
       fit: BoxFit.cover,
     );
   }
 
-  Widget getImageFile(File file){
+  Widget getImageFile(File file) {
     //print("file:${file.path}");
     return Image.file(
       file,
@@ -310,34 +308,33 @@ class ImgVideoMsg extends StatelessWidget {
     );
   }
 
-  Widget getCachedNetworkImage(String imageUrl){
+  Widget getCachedNetworkImage(String imageUrl) {
     //print("imageUrl:${imageUrl}");
     return CachedNetworkImage(
       height: height,
       width: width,
-      imageUrl: imageUrl??"",
+      imageUrl: imageUrl ?? "",
       fit: BoxFit.cover,
       placeholder: (context, url) => getImageShowImage(),
       errorWidget: (context, url, error) => getImageShowImage(),
     );
   }
 
-
   //获取过渡与错误图
   Widget getImageShowImage() {
-    if(isImgOrVideo){
-      if (mediaFileModel != null&&(mediaFileModel.file!=null||mediaFileModel.croppedImageData!=null)) {
+    if (isImgOrVideo) {
+      if (mediaFileModel != null && (mediaFileModel.file != null || mediaFileModel.croppedImageData != null)) {
         return mediaFileModel.croppedImageData == null
-            ? getImageFile(mediaFileModel.file):
-        getImageMemory(mediaFileModel.croppedImageData);
+            ? getImageFile(mediaFileModel.file)
+            : getImageMemory(mediaFileModel.croppedImageData);
       } else {
-        return  getImageAsset(placeholderMapImage);
+        return getImageAsset(placeholderMapImage);
       }
-    }else if(sizeInfoMap["videoFilePath"]!=null){
-      File videoImageFile=File(sizeInfoMap["videoFilePath"]);
+    } else if (sizeInfoMap["videoFilePath"] != null) {
+      File videoImageFile = File(sizeInfoMap["videoFilePath"]);
       return getImageFile(videoImageFile);
     } else {
-      return  getImageAsset(placeholderMapImage);
+      return getImageAsset(placeholderMapImage);
     }
   }
 
@@ -378,21 +375,18 @@ class ImgVideoMsg extends StatelessWidget {
     if (height == 0) {
       height = 1024.0;
     }
-    List<double> widthOrHeight =
-        ImageUtil.getImageWidthAndHeight(width, height);
+    List<double> widthOrHeight = ImageUtil.getImageWidthAndHeight(width, height);
     width = widthOrHeight[0];
     height = widthOrHeight[1];
   }
 
   void onImgVideoContentBoxClick(BuildContext context) {
-    String imageUrl=sizeInfoMap["showImageUrl"];
+    String imageUrl = sizeInfoMap["showImageUrl"];
     if (isImgOrVideo) {
-      voidMessageClickCallBack(
-          contentType: ChatTypeModel.MESSAGE_TYPE_IMAGE, content: imageUrl);
+      voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_IMAGE, content: imageUrl, position: position);
       // ToastShow.show(msg: "点击了图片", context: context);
     } else {
-      voidMessageClickCallBack(
-          contentType: ChatTypeModel.MESSAGE_TYPE_VIDEO, content: imageUrl);
+      voidMessageClickCallBack(contentType: ChatTypeModel.MESSAGE_TYPE_VIDEO, content: imageUrl, position: position);
       // ToastShow.show(msg: "点击了视频", context: context);
     }
   }
