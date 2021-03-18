@@ -1,30 +1,57 @@
 
-import 'dart:io';
+import 'dart:async';
+import 'dart:convert';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
 import 'package:mirror/page/message/item/emoji_manager.dart';
 import 'package:mirror/util/click_util.dart';
+import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:mirror/widget/icon.dart';
-import 'package:mirror/widget/volume_popup.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:text_span_field/text_span_field.dart';
 
+import 'dialog/live_room_setting_dialog.dart';
+import 'live_room_page_common.dart';
 
-class LiveRoomTestPageDialog extends StatefulWidget {
+
+class LiveRoomTestOperationPage extends StatefulWidget {
+  final int liveCourseId;
+  final int coachId;
+  final String coachUrl;
+  final String coachName;
+  final String startTime;
+  final int coachRelation;
+
+  const LiveRoomTestOperationPage({
+    Key key,
+    @required this.liveCourseId,
+    @required this.coachName,
+    @required this.coachUrl,
+    @required this.startTime,
+    @required this.coachRelation,
+    @required this.coachId,}) : super(key: key);
+
   @override
-  _LiveRoomTestPageDialogState createState() => _LiveRoomTestPageDialogState();
+  _LiveRoomTestOperationPageState createState() => _LiveRoomTestOperationPageState(coachRelation);
 }
 
-class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
+class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
 
-  List<String> messageChatList=[];
+  _LiveRoomTestOperationPageState(this.coachRelation);
+
+  //与教练的关系
+  int coachRelation;
+
+  List<UserMessageModel> messageChatList=[];
 
   ///输入框的监听
   TextEditingController _textController = TextEditingController();
@@ -45,31 +72,40 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
 
   bool _emojiState=false;
 
-  // 监听返回
-  Future<bool> _requestPop() {
-    EventBus.getDefault().post(registerName: EVENTBUS_LIVEROOM_EXIT);
-    return new Future.value(true);
-  }
 
   int cursorIndexPr=-1;
 
+
+  Timer timer;
+  Widget timeText;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
-    messageChatList.add("请你遵守直播间的规则!请你遵守直播间的规则!"
-        "请你遵守直播间的规则!请你遵守直播间的规则!请你遵守直播间的规则!");
-    
+    print("开播时间是:${widget.startTime}");
+
+
+    EventBus.getDefault().register(receiveBarrageMessage,EVENTBUS_ROOM_OPERATION_PAGE,
+        registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
+
+    timeText=Text(DateUtil.getSpecifyDateTimeDifferenceMinutesAndSeconds(widget.startTime)
+        ,style: TextStyle(fontSize: 18,color: AppColor.white.withOpacity(0.85)));
+
+    messageChatList.add(UserMessageModel(messageContent: "请遵守直播间规则"*10));
+    messageChatList.insert(0, UserMessageModel(
+      name: Application.profile.nickName,
+      uId: Application.profile.uid.toString(),
+      messageContent: "进入了直播",
+      isJoinLiveRoomMessage: true,
+    ));
+
+
     _focusNode.addListener(() {
       cursorIndexPr=_textController.selection.baseOffset;
     });
     initData();
-  }
-
-  void initData()async{
-    //获取表情的数据
-    emojiModelList = await EmojiManager.getEmojiModelList();
+    _initTimeDuration();
   }
 
   @override
@@ -88,26 +124,30 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
                 ],
               ),
             ),
-            onTap: (){
-              if(isCleaningMode){
-                setState(() {
-                  isCleaningMode=!isCleaningMode;
-                });
-                return;
-              }
-              if(_focusNode.hasFocus){
-                _focusNode.unfocus();
-              }
-              isShowEditPlan=false;
-              if(_emojiState){
-                _emojiState=!_emojiState;
-                setState(() {});
-              }
-            },
+            onTap: _onClickBodyListener,
           ),
         ),
         onWillPop: _requestPop);
+  }
 
+  Widget getTopUi(){
+    return Container(
+      margin: EdgeInsets.only(top: ScreenUtil.instance.statusBarHeight+8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          getTopInformationUi(),
+          SizedBox(height: 16),
+          Visibility(
+            visible: !isCleaningMode,
+            child: GestureDetector(
+              child: otherUserUi(),
+              onTap: getBottomDialog,
+            ),
+          )
+        ],
+      ),
+    );
   }
 
 
@@ -136,37 +176,10 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
             ),
             child: Icon(Icons.close,color: AppColor.white,size: 12),
           ),
-          onTap: (){
-            EventBus.getDefault().post(registerName: EVENTBUS_LIVEROOM_EXIT);
-            Navigator.of(context).pop();
-          },
+          onTap: _exitPageListener,
         ),
       ),
     );
-  }
-
-
-
-
-  Widget getTopUi(){
-    return Container(
-      margin: EdgeInsets.only(top: ScreenUtil.instance.statusBarHeight+8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          getTopInformationUi(),
-          SizedBox(height: 16),
-          Visibility(
-            visible: !isCleaningMode,
-            child: GestureDetector(
-              child: otherUserUi(),
-              onTap: getBottomDialog,
-            ),
-          )
-        ],
-      ),
-    );
-
   }
 
 
@@ -188,15 +201,15 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
             child: Stack(
               children: [
                 Positioned(
-                  child: getUserImage(null,21,21),
+                  child: LiveRoomPageCommon.init().getUserImage(null,21,21),
                   right: 0,
                 ),
                 Positioned(
-                  child: getUserImage(null,21,21),
+                  child: LiveRoomPageCommon.init().getUserImage(null,21,21),
                   right: 12,
                 ),
                 Positioned(
-                  child: getUserImage(null,21,21),
+                  child: LiveRoomPageCommon.init().getUserImage(null,21,21),
                   right: 24,
                 ),
               ],
@@ -229,7 +242,7 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
   Widget getCoachNameUi(){
     return UnconstrainedBox(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 11,vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 6,vertical: 4),
         decoration: BoxDecoration(
           color: AppColor.white.withOpacity(0.06),
           borderRadius: BorderRadius.circular(24),
@@ -237,27 +250,45 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            getUserImage(null,28,28),
+            LiveRoomPageCommon.init().getUserImage(widget.coachUrl,28,28),
             SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("洪荒少女我FaceJu",style: TextStyle(fontSize: 11,color: AppColor.white.withOpacity(0.85))),
+                Text(widget.coachName,style: TextStyle(fontSize: 11,color: AppColor.white.withOpacity(0.85))),
                 Text("在线人数8524.2万",style: TextStyle(fontSize: 9,color: AppColor.white.withOpacity(0.65))),
               ],
             ),
             SizedBox(width: 8),
-            Container(
-              decoration: BoxDecoration(
-                color: AppColor.mainRed,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 11,vertical: 2),
-              child: Text("关注",style: TextStyle(fontSize: 10,color: AppColor.white)),
-            )
+            getFollowBtn(),
           ],
         ),
       ),
+    );
+  }
+
+
+  Widget getFollowBtn(){
+    if(coachRelation == 1 || coachRelation == 3){
+      return Container();
+    }
+    return GestureDetector(
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(100)),
+          color: AppColor.mainRed,
+        ),
+        padding: const EdgeInsets.only(left: 11, right: 11, top: 2, bottom: 2),
+        child: Text(
+          coachRelation == 1 || coachRelation == 3 ? "已关注" : "关注",
+          style: TextStyle(
+              color: coachRelation == 1 || coachRelation == 3
+                  ? AppColor.textHint
+                  : AppColor.white,
+              fontSize: 11),
+        ),
+      ),
+      onTap: _onClickAttention,
     );
   }
 
@@ -266,21 +297,12 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
     return Container(
       child: Column(
         children: [
-          Text("120:23",style: TextStyle(fontSize: 18,color: AppColor.white.withOpacity(0.85))),
+          timeText,
           Text("训练时长",style: TextStyle(fontSize: 10,color: AppColor.white.withOpacity(0.35))),
         ],
       ),
     );
   }
-
-
-
-  double getBottomHeight(){
-    return (ScreenUtil.instance.height-
-        ScreenUtil.instance.statusBarHeight-
-        ScreenUtil.instance.bottomBarHeight-48.0)*0.25;
-  }
-  
 
 
   Widget getBottomPlan(){
@@ -297,13 +319,13 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
                 Colors.black,
                 Colors.black,
                 Colors.black,
-                Colors.transparent,
+                // Colors.transparent,
               ],
             ).createShader(Rect.fromLTRB(0,0, bounds.width,bounds.height));
           },
           blendMode: BlendMode.dstIn,
           child: Container(
-            height: getBottomHeight(),
+            height: getBottomMessageHeight(),
             child: getListView(),
           ),
         ),
@@ -357,15 +379,7 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
             color: AppColor.bgWhite.withOpacity(0.06),
             borderRadius: BorderRadius.circular(11.5),
           ),
-          child: Text(
-            messageChatList[index],
-            maxLines: 100,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 13,
-              color: AppColor.white.withOpacity(0.85),
-            ),
-          ),
+          child: LiveRoomPageCommon.init().getLiveRoomMessageText(messageChatList[index]),
         ),
       ),
     );
@@ -596,19 +610,7 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
       ),
     );
   }
-  //发送按钮点击事件
-  _onSubmitClick(text) {
-    if(null==text||text.length<1){
-      return;
-    }
-    setState(() {
-      messageChatList.insert(0, text);
-      _textController.text="";
-    });
-    if(!_emojiState) {
-      FocusScope.of(context).requestFocus(_focusNode);
-    }
-  }
+
 
   //输入框bar内的edit
   Widget edit() {
@@ -686,7 +688,7 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
               child: Icon(Icons.settings,color: AppColor.white,size: 12),
             ),
             onTap:(){
-              showVolumePopup(context);
+              openBottomSetDialog(buildContext:context,voidCallback:_isCleaningMode);
             },
           ),
           SizedBox(width: 12),
@@ -700,10 +702,7 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
               ),
               child: Icon(Icons.close,color: AppColor.white,size: 12),
             ),
-            onTap: (){
-              EventBus.getDefault().post(registerName: EVENTBUS_LIVEROOM_EXIT);
-              Navigator.of(context).pop();
-            },
+            onTap: _exitPageListener,
           ),
         ],
       ),
@@ -711,6 +710,14 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
   }
 
 
+  void _isCleaningMode(bool isCleaningMode){
+    print("isCleaningMode:$isCleaningMode");
+    Future.delayed(Duration(milliseconds: 50),(){
+      setState(() {
+        this.isCleaningMode=isCleaningMode;
+      });
+    });
+  }
 
   Widget getTextEditUi(){
     return GestureDetector(
@@ -744,40 +751,6 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
 
 
 
-
-
-
-
-  //获取用户的头像
-  Widget getUserImage(String imageUrl, double height, double width) {
-    if (imageUrl == null || imageUrl == "") {
-      imageUrl =
-      "http://pic.netbian.com/uploads/allimg/201220/220540-16084731404798.jpg";
-    }
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(height / 2),
-      child: CachedNetworkImage(
-        height: height,
-        width: width,
-        imageUrl: imageUrl == null ? "" : imageUrl,
-        fit: BoxFit.cover,
-        placeholder: (context, url) => Image.asset(
-          "images/test/bg.png",
-          fit: BoxFit.cover,
-        ),
-        errorWidget: (context, url, error) => Image.asset(
-          "images/test/bg.png",
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
-  }
-
-
-
-
-
-
   void getBottomDialog(){
 
     if(_focusNode.hasFocus){
@@ -804,60 +777,184 @@ class _LiveRoomTestPageDialogState extends State<LiveRoomTestPageDialog> {
   }
 
 
-}
-
-class SimpleRoute extends PageRoute {
-  SimpleRoute({
-    @required this.name,
-    @required this.title,
-    @required this.builder,
-  }) : super(
-    settings: RouteSettings(name: name),
-  );
-
-  final String title;
-  final String name;
-  final WidgetBuilder builder;
-
-  @override
-  String get barrierLabel => null;
-
-  @override
-  bool get opaque => false;
-
-  @override
-  bool get maintainState => true;
-
-  @override
-  Duration get transitionDuration => Duration(milliseconds: 0);
-
-  @override
-  Widget buildPage(
-      BuildContext context,
-      Animation<double> animation,
-      Animation<double> secondaryAnimation,
-      ) {
-    return Title(
-      title: title,
-      color: Theme.of(context).primaryColor,
-      child: builder(context),
-    );
+  //获取底部评论列表的高度
+  double getBottomMessageHeight(){
+    return (ScreenUtil.instance.height-
+        ScreenUtil.instance.statusBarHeight-
+        ScreenUtil.instance.bottomBarHeight-48.0)*0.25;
   }
 
-  /// 页面切换动画
-  @override
-  Widget buildTransitions(
-      BuildContext context,
-      Animation<double> animation,
-      Animation<double> secondaryAnimation,
-      Widget child,
-      ) {
-    return FadeTransition(
-      opacity: animation,
-      child: child,
-    );
+
+  void initData()async{
+    //获取表情的数据
+    emojiModelList = await EmojiManager.getEmojiModelList();
+  }
+
+  //监听动画是否开始
+  void _initTimeDuration() {
+    timer=Timer.periodic(Duration(seconds: 1), (timer) {
+      if(mounted) {
+        Element e = findChild(context as Element, timeText);
+        if (e != null) {
+          timeText = Text(DateUtil.getSpecifyDateTimeDifferenceMinutesAndSeconds(widget.startTime)
+              , style: TextStyle(fontSize: 18, color: AppColor.white.withOpacity(0.85)));
+          e.owner.lockState(() {
+            e.update(timeText);
+          });
+        }
+      }
+    });
+  }
+
+
+  // 监听返回事件
+  Future<bool> _requestPop() {
+    EventBus.getDefault().post(registerName: EVENTBUS_LIVEROOM_EXIT);
+    return new Future.value(true);
+  }
+
+  //退出界面
+  _exitPageListener(){
+    EventBus.getDefault().post(registerName: EVENTBUS_LIVEROOM_EXIT);
+    EventBus.getDefault().unRegister(pageName:EVENTBUS_ROOM_OPERATION_PAGE,registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
+    if(timer!=null){
+      timer.cancel();
+      timer=null;
+    }
+    Navigator.of(context).pop();
   }
 
   @override
-  Color get barrierColor => null;
+  void dispose() {
+    super.dispose();
+    EventBus.getDefault().unRegister(pageName:EVENTBUS_ROOM_OPERATION_PAGE,registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
+    if(timer!=null){
+      timer.cancel();
+      timer=null;
+    }
+  }
+
+  //接收直播间弹幕消息
+  void receiveBarrageMessage(message){
+    Message msg=(message as Message);
+    print("message:${msg.targetId},${widget.coachId}");
+    if(msg.targetId!=widget.coachId.toString()){
+      Application.rongCloud.quitChatRoom(msg.targetId);
+      return;
+    }
+    TextMessage textMessage=(msg.content as TextMessage);
+    Map<String, dynamic> contentMap = json.decode(textMessage.content);
+    if(null!=contentMap){
+      switch (contentMap["subObjectName"]) {
+        case ChatTypeModel.MESSAGE_TYPE_SYS_BARRAGE:
+          _onSubmitJoinLiveRoomMessage(textMessage.sendUserInfo.name,textMessage.sendUserInfo.userId);
+          break;
+        case ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE:
+          _onSubmitLiveRoomMessage(textMessage.sendUserInfo.name,textMessage.sendUserInfo.userId,contentMap["data"]);
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+
+  //界面空白处点击事件
+  void _onClickBodyListener(){
+    if(isCleaningMode){
+      setState(() {
+        isCleaningMode=!isCleaningMode;
+      });
+      return;
+    }
+    if(_focusNode.hasFocus){
+      _focusNode.unfocus();
+    }
+    isShowEditPlan=false;
+    if(_emojiState){
+      _emojiState=!_emojiState;
+      setState(() {});
+    }
+  }
+
+  ///这是关注的方法
+  _onClickAttention()async {
+    if (!(coachRelation == 1 || coachRelation == 3)) {
+      int attntionResult = await ProfileAddFollow(widget.coachId);
+      print('关注监听=========================================$attntionResult');
+      if (attntionResult == 1 || attntionResult == 3) {
+        coachRelation = 1;
+        if (mounted) {
+          setState(() {});
+        }
+      }
+    }
+  }
+
+
+  //发送按钮点击事件
+  _onSubmitClick(text) {
+    if(null==text||text.length<1){
+      return;
+    }
+    _sendChatRoomMsg(text);
+    _textController.text="";
+    _onSubmitLiveRoomMessage(Application.profile.nickName,Application.profile.uid.toString(),text);
+    if(!_emojiState) {
+      FocusScope.of(context).requestFocus(_focusNode);
+    }
+  }
+
+
+  //加入普通消息
+  _onSubmitLiveRoomMessage(String name,String userId,String content){
+    setState(() {
+      messageChatList.insert(0, UserMessageModel(
+        name: name,
+        uId: userId,
+        messageContent: content,
+      ));
+    });
+  }
+
+  //加入进入直播间的消息
+  _onSubmitJoinLiveRoomMessage(String name,String userId){
+    setState(() {
+      messageChatList.insert(0, UserMessageModel(
+        name: name,
+        uId: userId,
+        messageContent: "进入了直播",
+        isJoinLiveRoomMessage: true,
+      ));
+    });
+  }
+
+  _sendChatRoomMsg(text) async {
+    TextMessage msg = TextMessage();
+    UserInfo userInfo = UserInfo();
+    userInfo.userId = Application.profile.uid.toString();
+    userInfo.name = Application.profile.nickName;
+    userInfo.portraitUri = Application.profile.avatarUri;
+    msg.sendUserInfo = userInfo;
+    Map<String, dynamic> textMap = Map();
+    textMap["fromUserId"] = msg.sendUserInfo.userId.toString();
+    textMap["toUserId"] = "1";
+    textMap["subObjectName"] = ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE;
+    textMap["name"] = ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE_NAME;
+    textMap["data"] = text;
+    msg.content = jsonEncode(textMap);
+    await Application.rongCloud.sendChatRoomMessage(widget.coachId.toString(), msg);
+  }
+
+  static Element findChild(Element e, Widget w) {
+    Element child;
+    void visit(Element element) {
+      if (w == element.widget)
+        child = element;
+      else
+        element.visitChildren(visit);
+    }
+    visit(e);
+    return child;
+  }
 }

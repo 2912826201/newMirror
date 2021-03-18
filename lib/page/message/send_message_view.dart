@@ -210,7 +210,7 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
 
 
   //自定义的消息类型解析
-  Widget getTextMessage(Message msg){
+  Widget getTextMessage(Message msg,){
     TextMessage textMessage = ((msg.content) as TextMessage);
     try {
       Map<String, dynamic> mapModel = json.decode(textMessage.content);
@@ -234,6 +234,7 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
         //-------------------------------------------------图片消息--------------------------------------------
         Map<String, dynamic> map = json.decode(mapModel["data"]);
         map["isTemporary"]=mapModel["isTemporary"]??false;
+        map["messageId"] = msg.messageId;
         return getImgVideoMsg(isTemporary: false, isImg:true, mediaFileModel: widget.model.mediaFileModel, sizeInfoMap: map);
 
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
@@ -241,6 +242,7 @@ class SendMessageViewState extends  State<SendMessageView> with AutomaticKeepAli
         //-------------------------------------------------视频消息--------------------------------------------
         Map<String, dynamic> map = json.decode(mapModel["data"]);
         map["isTemporary"]=mapModel["isTemporary"]??false;
+        map["messageId"] =  msg.messageId;
         return getImgVideoMsg(isTemporary: false, isImg:false, mediaFileModel: widget.model.mediaFileModel, sizeInfoMap: map);
 
       } else if (mapModel["subObjectName"] == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {

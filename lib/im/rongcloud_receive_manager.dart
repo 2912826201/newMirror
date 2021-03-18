@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/im/message_manager.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:provider/provider.dart';
 
@@ -42,6 +43,7 @@ class RongCloudReceiveManager {
     }else if(MessageManager.judgeBarrageMessage(msg)){
       //判断是不是弹幕消息
       print("收到了弹幕消息：${msg.content.encode()}");
+      EventBus.getDefault().post(registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE,msg: msg);
       return;
     }
 

@@ -50,6 +50,12 @@ const String GETMYCOURSE = "/sport/web/videoCourse/getMyCourse";
 //获取我在终端训练过的列表
 const String GETTERMINALLEARNEDCOURSE = "/sport/web/videoCourse/getTerminalLearnedCourse";
 
+//获取直播地址
+const String GETPULLSTREAMURL = "/third/web/tencentcloud/getPullStreamUrl";
+
+
+
+
 ///根据日期获取直播课程列表
 ///请求参数
 ///date:2020-12-10
@@ -344,4 +350,17 @@ Future<Map> deleteFromMyCourse(int courseId) async {
   } else {
     return null;
   }
+}
+
+///获取直播地址
+///courseId：课程id
+///直播协议类型typr：HTTP_FLV、RTMP、HLS
+Future<Map> getPullStreamUrl(int courseId,{String type="RTMP"}) async {
+  Map<String, dynamic> params = {};
+  params["courseId"] = courseId;
+  params["type"] = type;
+  BaseResponseModel responseModel = await requestApi(GETPULLSTREAMURL, params);
+  params["code"]=responseModel.code;
+  params["data"]=responseModel.data;
+  return params;
 }

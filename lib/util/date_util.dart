@@ -442,6 +442,22 @@ class DateUtil {
   }
 
 
+  //指定时间的相差分秒
+  //字符串时间 2021-03-18 10:04:30
+  static String getSpecifyDateTimeDifferenceMinutesAndSeconds(String specifDateTime){
+    if(specifDateTime==null){
+      return "0:0";
+    }
+    DateTime dateTime=stringToDateTime(specifDateTime);
+    DateTime nowDateTime=DateTime.now();
+    int seconds=nowDateTime.millisecondsSinceEpoch-dateTime.millisecondsSinceEpoch;
+    seconds~/=1000;
+    if(seconds<=0){
+      return "0:0";
+    }
+    return "${seconds~/60}:${seconds%60<10?"0${seconds%60}":seconds%60}";
+  }
+
 
   static String full = "yyyy-MM-dd HH:mm:ss";
 
