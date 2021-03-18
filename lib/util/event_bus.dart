@@ -73,11 +73,15 @@ class EventBus{
       registerName =defName;
     }
     if(null==pageName){
-      _registerMap[registerName].clear();
-      _registerMap.remove(registerName);
+      if( _registerMap[registerName]!=null) {
+        _registerMap[registerName].clear();
+        _registerMap.remove(registerName);
+      }
     }else{
-      _registerMap[registerName][pageName].close();
-      _registerMap[registerName].remove(pageName);
+      if(_registerMap[registerName][pageName]!=null) {
+        _registerMap[registerName][pageName].close();
+        _registerMap[registerName].remove(pageName);
+      }
     }
   }
 

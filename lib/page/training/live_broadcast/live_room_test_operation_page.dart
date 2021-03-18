@@ -16,10 +16,10 @@ import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:mirror/widget/icon.dart';
-import 'package:mirror/widget/volume_popup.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:text_span_field/text_span_field.dart';
 
+import 'dialog/live_room_setting_dialog.dart';
 import 'live_room_page_common.dart';
 
 
@@ -269,6 +269,9 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
 
 
   Widget getFollowBtn(){
+    if(coachRelation == 1 || coachRelation == 3){
+      return Container();
+    }
     return GestureDetector(
       child: Container(
         decoration: BoxDecoration(
@@ -685,7 +688,7 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
               child: Icon(Icons.settings,color: AppColor.white,size: 12),
             ),
             onTap:(){
-              showVolumePopup(context);
+              openBottomSetDialog(buildContext:context,voidCallback:_isCleaningMode);
             },
           ),
           SizedBox(width: 12),
@@ -707,6 +710,14 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
   }
 
 
+  void _isCleaningMode(bool isCleaningMode){
+    print("isCleaningMode:$isCleaningMode");
+    Future.delayed(Duration(milliseconds: 50),(){
+      setState(() {
+        this.isCleaningMode=isCleaningMode;
+      });
+    });
+  }
 
   Widget getTextEditUi(){
     return GestureDetector(
