@@ -50,6 +50,8 @@ class _MediaPickerState extends State<MediaPickerPage> {
   List<Widget> _pageList = [];
 
   int _recordMode;
+  int _lastTimeStamp = 0;
+  int _tabSwitchInterval = 750;
 
   @override
   void initState() {
@@ -132,9 +134,14 @@ class _MediaPickerState extends State<MediaPickerPage> {
   //TODO 这里仍有优化空间 比如上次切换到的录制页和这次模式一样，则可以不移除重新添加，当只有相册和拍照两个tab时也不需要移除重新添加
   void _onGallerySelected() {
     if (_selectedIndex != _galleryIndex) {
+      int timeStamp = DateTime.now().millisecondsSinceEpoch;
+      if (timeStamp - _lastTimeStamp < _tabSwitchInterval) {
+        return;
+      }
       setState(() {
+        _lastTimeStamp = timeStamp;
         _selectedIndex = _galleryIndex;
-        _pageController.jumpToPage(_selectedIndex);
+        _pageController.animateToPage(_selectedIndex, duration: Duration(milliseconds: 250), curve: Curves.easeInOut);
       });
     }
   }
@@ -142,7 +149,12 @@ class _MediaPickerState extends State<MediaPickerPage> {
   void _onPhotoSelected() {
     if (_selectedIndex != _photoIndex) {
       if (_selectedIndex == _galleryIndex) {
+        int timeStamp = DateTime.now().millisecondsSinceEpoch;
+        if (timeStamp - _lastTimeStamp < _tabSwitchInterval) {
+          return;
+        }
         setState(() {
+          _lastTimeStamp = timeStamp;
           _recordMode = 0;
           _selectedIndex = _photoIndex;
           _pageList.removeLast();
@@ -153,7 +165,7 @@ class _MediaPickerState extends State<MediaPickerPage> {
             topicId: widget.topicId,
             startMode: _recordMode,
           ));
-          _pageController.jumpToPage(_photoIndex);
+          _pageController.animateToPage(_selectedIndex, duration: Duration(milliseconds: 250), curve: Curves.easeInOut);
         });
       } else {
         CameraRecordPage recordPage = _pageList.last as CameraRecordPage;
@@ -171,7 +183,12 @@ class _MediaPickerState extends State<MediaPickerPage> {
   void _onVideoSelected() {
     if (_selectedIndex != _videoIndex) {
       if (_selectedIndex == _galleryIndex) {
+        int timeStamp = DateTime.now().millisecondsSinceEpoch;
+        if (timeStamp - _lastTimeStamp < _tabSwitchInterval) {
+          return;
+        }
         setState(() {
+          _lastTimeStamp = timeStamp;
           _recordMode = 1;
           _selectedIndex = _videoIndex;
           _pageList.removeLast();
@@ -182,7 +199,7 @@ class _MediaPickerState extends State<MediaPickerPage> {
             topicId: widget.topicId,
             startMode: _recordMode,
           ));
-          _pageController.jumpToPage(_photoIndex);
+          _pageController.animateToPage(_photoIndex, duration: Duration(milliseconds: 250), curve: Curves.easeInOut);
         });
       } else {
         CameraRecordPage recordPage = _pageList.last as CameraRecordPage;
@@ -201,6 +218,7 @@ class _MediaPickerState extends State<MediaPickerPage> {
     return Expanded(
       flex: 1,
       child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: onTap,
         child: Container(
           alignment: Alignment.center,

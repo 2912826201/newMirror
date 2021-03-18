@@ -363,7 +363,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
             if (_groupList.isEmpty) {
               _getGroupList();
             }
-            _pageController.animateToPage(1, duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
+            _pageController.animateToPage(1, duration: Duration(milliseconds: 250), curve: Curves.easeInOut);
           },
           child: Container(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
@@ -452,7 +452,7 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
                 buttonHeight: 48,
                 buttonWidth: 50,
                 onTap: () {
-                  _pageController.animateToPage(0, duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
+                  _pageController.animateToPage(0, duration: Duration(milliseconds: 250), curve: Curves.easeInOut);
                 },
               ),
               Spacer(),
