@@ -870,6 +870,7 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
     if(_focusNode.hasFocus){
       _focusNode.unfocus();
     }
+    isShowEmojiBtn=true;
     isShowEditPlan=false;
     if(_emojiState){
       _emojiState=!_emojiState;

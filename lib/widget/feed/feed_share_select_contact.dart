@@ -406,7 +406,11 @@ class _FriendsPageState extends State<FriendsPage> {
       }
     } else if (widget.type == 4) {
       for (int i = 0; i < groupMapList.length; i++) {
-        addUserNameData(groupMapList[i]["name"], i, groupMap: groupMapList[i]);
+        if(groupMapList[i]["modifiedName"]==null||groupMapList[i]["modifiedName"].toString().length<1) {
+          addUserNameData(groupMapList[i]["name"], i, groupMap: groupMapList[i]);
+        }else{
+          addUserNameData(groupMapList[i]["modifiedName"], i, groupMap: groupMapList[i]);
+        }
       }
     } else {
       for (int i = 0; i < followListModel.list.length; i++) {
