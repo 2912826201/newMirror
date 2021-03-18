@@ -37,7 +37,7 @@ class LiveBroadcastPageState extends XCState {
   //标题被点击时回调  滚动body页面
   void _titleItemClickCall(int pos) {
     _pageController.animateToPage(pos,
-        duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
+        duration: Duration(milliseconds: 250), curve: Curves.easeInOut);
   }
 
   void _pageChange(int pos) {

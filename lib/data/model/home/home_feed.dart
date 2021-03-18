@@ -173,7 +173,11 @@ class HomeFeedModel {
     }
     if (json["atUsers"] != null) {
       json["atUsers"].forEach((v) {
-        atUsers.add(AtUsersModel.fromJson(v));
+        if(v is AtUsersModel){
+          atUsers.add(v);
+        }else{
+          atUsers.add(AtUsersModel.fromJson(v));
+        }
       });
     }
     if (json["topics"] != null) {
