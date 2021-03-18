@@ -30,8 +30,17 @@ class CameraRecordPage extends StatefulWidget {
 
   final int startMode; //0-拍照 1-录视频
 
+  CameraRecordState state;
+
   @override
-  CameraRecordState createState() => CameraRecordState();
+  CameraRecordState createState() {
+    state = CameraRecordState();
+    return state;
+  }
+
+  bool switchMode(int mode) {
+    return state._switchMode(mode);
+  }
 }
 
 class CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObserver {
@@ -265,6 +274,14 @@ class CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObser
                                   ),
                                 ),
                               ),
+                              SizedBox(
+                                height: 12,
+                              ),
+                              // 占个高度保证按钮居中
+                              Text(
+                                " ",
+                                style: TextStyle(color: AppColor.white.withOpacity(0.85), fontSize: 10),
+                              ),
                             ],
                           ),
                   ),
@@ -472,5 +489,21 @@ class CameraRecordState extends State<CameraRecordPage> with WidgetsBindingObser
     }
     _milliDuration = 0;
     _filePath = null;
+  }
+
+  bool _switchMode(int mode) {
+    if (_isRecording) {
+      return false;
+    }
+    if (mode == _currentMode) {
+      return true;
+    } else {
+      if (mounted) {
+        setState(() {
+          _currentMode = mode;
+        });
+      }
+      return true;
+    }
   }
 }
