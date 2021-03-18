@@ -82,7 +82,7 @@ class EventBus{
   }
 
   //发送广播-msg消息-广播的类型
-  void post({String msg,String registerName}){
+  void post({msg,String registerName}){
 
     print('--------------//进入post方法');
     if(null ==registerName){
@@ -100,11 +100,14 @@ class EventBus{
     }
   }
 }
-  //页面名称
+  ///页面名称
  const String  EVENTBUS_MAIN_PAGE = "main_page";
  const String  EVENTBUS_LIVEROOM_TESTPAGE = "LiveRoomTestPage";
+ const String  EVENTBUS_ROOM_OPERATION_PAGE = "LiveRoomTestOperationPage";
 
 
-  //广播类型
+ ///广播类型
  const String  EVENTBUS_POSTFEED_CALLBACK = "mainpage_postFeedCallBack";
  const String  EVENTBUS_LIVEROOM_EXIT = "liveRoomTestPage_exit";
+ //直播界面接收弹幕功能
+ const String  EVENTBUS_ROOM_RECEIVE_BARRAGE = "LiveRoomTestOperationPage_receive_barrage";
