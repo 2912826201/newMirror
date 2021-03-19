@@ -95,7 +95,7 @@ class ChatTypeModel {
   static const String MESSAGE_TYPE_SYS_BARRAGE_NAME="系统弹幕消息,该版本较低请升级版本再行查看";
 
   //普通用户的弹幕消息
-  static const String MESSAGE_TYPE_USER_BARRAGE="IF:SysBarrageMessage";
+  static const String MESSAGE_TYPE_USER_BARRAGE="IF:UserBarrageMessage";
   static const String MESSAGE_TYPE_USER_BARRAGE_NAME="用户弹幕消息,该版本较低请升级版本再行查看";
 
 

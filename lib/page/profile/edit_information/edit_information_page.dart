@@ -54,7 +54,7 @@ class _EditInformationState extends State<EditInformation> {
   Map<int, List<RegionDto>> cityMap = Application.cityMap;
   OnItemClickListener onItemClickListener;
   double textHeight;
-
+  int buttonState = CustomRedButton.buttonStateNormal;
   @override
   void initState() {
     super.initState();
@@ -133,12 +133,18 @@ class _EditInformationState extends State<EditInformation> {
               padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding),
               child: CustomRedButton(
                 "确定",
-                CustomRedButton.buttonStateNormal,
+                buttonState,
                 () {
+                  setState(() {
+                    buttonState = CustomRedButton.buttonStateLoading;
+                  });
                   if (userName != null && avataruri != null) {
                     Loading.showLoading(context);
                     _upDataUserInfo();
                   } else {
+                    setState(() {
+                      buttonState = CustomRedButton.buttonStateNormal;
+                    });
                     Toast.show("头像和昵称不能为空!", context);
                   }
                 },
@@ -446,6 +452,9 @@ class _EditInformationState extends State<EditInformation> {
       Navigator.pop(context);
       print('更新过后的数据库用户头像${context.read<ProfileNotifier>().profile.avatarUri}');
     } else {
+      setState(() {
+        buttonState = CustomRedButton.buttonStateNormal;
+      });
       Loading.hideLoading(context);
       Toast.show(
         "资料修改失败",

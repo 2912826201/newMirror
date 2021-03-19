@@ -96,12 +96,12 @@ class _EditInformationNameState extends State<EditInformationName> {
               "确定",
               CustomRedButton.buttonStateNormal,
               () {
-                if (_EditText.isEmpty) {
+                if (_EditText.isEmpty||_EditText.replaceAll(new RegExp(r"\s+"), "").length==0) {
                  ToastShow.show(msg: "昵称不能为空", context: context);
                   return;
                 }
                 _commentFocus.unfocus();
-                Navigator.pop(this.context, _EditText);
+                Navigator.pop(this.context,_EditText);
               },
             ),
           ),
