@@ -243,7 +243,7 @@ class ImagePreviewView extends StatefulWidget {
   final IndexedWidgetBuilder bottomBarBuilder;
   final ValueChanged<ImageOptions> onPressed;
   final ValueChanged<ImageOptions> onLongPressed;
-  final ValueChanged<PhotoViewScaleState> onScaleStateChanged;
+  // final ValueChanged<PhotoViewScaleState> onScaleStateChanged;
   final LoadingBuilder loadingBuilder;
   final ImageProviderBuilder imageProviderBuilder;
   final double dragReferenceDistance;
@@ -260,7 +260,7 @@ class ImagePreviewView extends StatefulWidget {
     this.bottomBarBuilder,
     this.onPressed,
     this.onLongPressed,
-    this.onScaleStateChanged,
+    // this.onScaleStateChanged,
     this.loadingBuilder,
     this.dragReferenceDistance = _kMaxDragDistance,
     this.duration = _kDuration,
@@ -371,9 +371,9 @@ class _ImagePreviewViewState extends State<ImagePreviewView> with SingleTickerPr
       _bottomBarOffsetPixels = bottomOffsetPixels;
       setState(() {});
     }
-    if (widget.onScaleStateChanged != null) {
-      widget.onScaleStateChanged(scaleState);
-    }
+    // if (widget.onScaleStateChanged != null) {
+    //   widget.onScaleStateChanged(scaleState);
+    // }
   }
 
   _onVerticalDragStart(DragStartDetails details) {
@@ -500,7 +500,7 @@ class _ImagePreviewViewState extends State<ImagePreviewView> with SingleTickerPr
               pageController: _pageController,
               onPageChanged: _onPageChanged,
               loadingBuilder: widget.loadingBuilder,
-              scaleStateChangedCallback: _onScaleStateChanged,
+              // scaleStateChangedCallback: _onScaleStateChanged,
               builder: _buildPageOptions,
             ),
           ),

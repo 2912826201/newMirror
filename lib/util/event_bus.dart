@@ -86,8 +86,7 @@ class EventBus{
   }
 
   //发送广播-msg消息-广播的类型
-  void post({msg,String registerName}){
-
+  void post({dynamic msg,String registerName}){
     print('--------------//进入post方法');
     if(null ==registerName){
       print('--------------registerName为空');
