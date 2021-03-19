@@ -431,7 +431,7 @@ class Rule {
 
   @override
   String toString() {
-    return "startIndex : $startIndex , endIndex : $endIndex, param :$params ,clickIndex :$clickIndex , isAt:$isAt, id : $id";
+    return "startIndex : $startIndex, endIndex : $endIndex, param :$params,clickIndex :$clickIndex, isAt:$isAt, id : $id";
   }
 }
 

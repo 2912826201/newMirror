@@ -12,6 +12,7 @@ import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
+import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 
@@ -41,6 +42,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   RefreshController _refreshController = RefreshController();
   ScrollController scrollController = ScrollController();
   bool refreshOver = false;
+
   _getDynamicData() async {
     if (followDataPage > 1 && followlastTime == null) {
       _refreshController.loadNoData();
@@ -84,7 +86,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     if (mounted) {
       setState(() {});
     }
-    Future.delayed(Duration.zero,(){
+    Future.delayed(Duration.zero, () {
       List<HomeFeedModel> feedList = [];
       context.read<UserInteractiveNotifier>().setFeedIdList(widget.id, idList, widget.type);
       context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
@@ -113,8 +115,8 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     widget.type == 3
         ? hintText = "这个人很懒，什么都没发"
         : widget.type == 2
-        ? hintText = "发布动态，增加人气哦"
-        : hintText = "你还没有喜欢的内容~去逛逛吧";
+            ? hintText = "发布动态，增加人气哦"
+            : hintText = "你还没有喜欢的内容~去逛逛吧";
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Future.delayed(Duration(milliseconds: 250), () {
@@ -226,21 +228,33 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
               height: 10,
             );
           } else {
-            return DynamicListLayout(
-              index: index,
-              pageName: "profileDetails",
-              isShowRecommendUser: false,
-              isShowConcern: false,
-              model: model,
-              isMySelf: widget.isMySelf,
-              mineDetailId: widget.id,
-              key: GlobalObjectKey("attention$index"),
-              removeFollowChanged: (model) {},
-              deleteFeedChanged: (feedId) {
-                context.read<UserInteractiveNotifier>().synchronizeIdList(widget.id, feedId);
-                if (context.read<FeedMapNotifier>().value.feedMap.containsKey(feedId)) {
-                  context.read<FeedMapNotifier>().deleteFeed(feedId);
+            return ExposureDetector(
+                key:  widget.type == 2
+                    ? Key('profile_feed_${context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].profileFeedListId[index]}')
+                    : Key('profile_like_${ context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].profileLikeListId[index]}'),
+                child: DynamicListLayout(
+                  index: index,
+                  pageName: "profileDetails",
+                  isShowRecommendUser: false,
+                  isShowConcern: false,
+                  model: model,
+                  isMySelf: widget.isMySelf,
+                  mineDetailId: widget.id,
+                  key: GlobalObjectKey("attention$index"),
+                  removeFollowChanged: (model) {},
+                  deleteFeedChanged: (feedId) {
+                    context.read<UserInteractiveNotifier>().synchronizeIdList(widget.id, feedId);
+                    if (context.read<FeedMapNotifier>().value.feedMap.containsKey(feedId)) {
+                      context.read<FeedMapNotifier>().deleteFeed(feedId);
+                    }
+                  },
+                ),
+              onExposure: (visibilityInfo) {
+                // 如果没有显示
+                if ( model.isShowInputBox) {
+                  context.read<FeedMapNotifier>().showInputBox(model.id);
                 }
+                print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
               },
             );
           }
