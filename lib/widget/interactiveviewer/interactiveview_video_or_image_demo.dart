@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class DemoSourceEntity {
-  int id;
+  String heroId;
   String url;
   String previewUrl;
   String type;
 
-  DemoSourceEntity(this.id, this.type, this.url, {this.previewUrl});
+  DemoSourceEntity(this.heroId, this.type, this.url, {this.previewUrl});
 
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
-    map["id"] = id;
+    map["heroId"] = heroId;
     map["url"] = url;
     map["previewUrl"] = previewUrl;
     map["type"] = type;
@@ -40,13 +40,13 @@ class _DemoImageItemState extends State<DemoImageItem> {
   @override
   void initState() {
     super.initState();
-    print('initState: ${widget.source.id}');
+    print('initState: ${widget.source.heroId}');
   }
 
   @override
   void dispose() {
     super.dispose();
-    print('dispose: ${widget.source.id}');
+    print('dispose: ${widget.source.heroId}');
   }
 
   @override
@@ -60,7 +60,7 @@ class _DemoImageItemState extends State<DemoImageItem> {
         Align(
           alignment: Alignment.center,
           child: Hero(
-            tag: widget.source.id,
+            tag: widget.source.heroId,
             child: CachedNetworkImage(
               placeholder: (context, url) {
                 return Image.network(
@@ -113,7 +113,7 @@ class _DemoVideoItemState extends State<DemoVideoItem> {
   @override
   void initState() {
     super.initState();
-    print('initState: ${widget.source.id}');
+    print('initState: ${widget.source.heroId}');
     init();
   }
 
@@ -129,7 +129,7 @@ class _DemoVideoItemState extends State<DemoVideoItem> {
   @override
   void dispose() {
     super.dispose();
-    print('dispose: ${widget.source.id}');
+    print('dispose: ${widget.source.heroId}');
     _controller.removeListener(listener);
     _controller?.pause();
     _controller?.dispose();
@@ -158,7 +158,7 @@ class _DemoVideoItemState extends State<DemoVideoItem> {
                   });
                 },
                 child: Hero(
-                  tag: widget.source.id,
+                  tag: widget.source.heroId,
                   child: AspectRatio(
                     aspectRatio: _controller.value.aspectRatio,
                     child: VideoPlayer(_controller),
