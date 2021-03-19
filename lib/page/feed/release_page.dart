@@ -369,6 +369,7 @@ class FeedHeader extends StatelessWidget {
             "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}",
             jsonEncode(feedModel.toJson()));
         context.read<ReleaseProgressNotifier>().setPublishFeedModel(feedModel);
+        context.read<ReleaseProgressNotifier>().setShowPublishView(true);
         context.read<ReleaseFeedInputNotifier>().rules.clear();
         context.read<ReleaseFeedInputNotifier>().selectAddress = null;
         EventBus.getDefault().post(registerName:EVENTBUS_POSTFEED_CALLBACK);
@@ -425,6 +426,7 @@ class FeedHeader extends StatelessWidget {
           jsonEncode(feedModel.toJson()));
       // 传入发布动态model
       context.read<ReleaseProgressNotifier>().setPublishFeedModel(feedModel);
+      context.read<ReleaseProgressNotifier>().setShowPublishView(true);
       context.read<ReleaseFeedInputNotifier>().rules.clear();
       context.read<ReleaseFeedInputNotifier>().selectAddress = null;
       FocusScope.of(context).requestFocus(FocusNode());

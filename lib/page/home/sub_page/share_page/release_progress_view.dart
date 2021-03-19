@@ -27,108 +27,137 @@ class ReleaseProgressView extends StatefulWidget {
 }
 
 class ReleaseProgressViewState extends State<ReleaseProgressView> {
+  bool show = true;
+  File imageFile;
+  String type;
   @override
   Widget build(BuildContext context) {
-    return context.select((ReleaseProgressNotifier value) => value.postFeedModel) != null
+    return context.select((ReleaseProgressNotifier value) => value.showPulishView)
         // context.watch<FeedMapNotifier>().value.postFeedModel != null
-        ? Container(
-            height: 60,
-            width: ScreenUtil.instance.screenWidthDp,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                    child: Container(
-                        margin: EdgeInsets.only(left: 16, right: 16),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            context.select((ReleaseProgressNotifier value) => value.postFeedModel.selectedMediaFiles) !=
-                                    null
-                                ? Container(
-                                    width: 36,
-                                    height: 36,
-                                    margin: EdgeInsets.only(right: 6),
-                                    child: Stack(
-                                      alignment: const FractionalOffset(0.5, 0.5),
-                                      children: [
-                                        context.select((ReleaseProgressNotifier value) =>
-                                                    value.postFeedModel.selectedMediaFiles.type) ==
-                                                mediaTypeKeyVideo
-                                            ? Image.file(
-                                                context.select((ReleaseProgressNotifier value) =>
-                                                    File(value.postFeedModel.selectedMediaFiles.list.first.thumbPath)),
-                                                fit: BoxFit.cover,
-                                              )
-                                            : context.select((ReleaseProgressNotifier value) =>
-                                                        value.postFeedModel.selectedMediaFiles.list.first.file) !=
-                                                    null
-                                                ? Image.file(
-                                                    context.select((ReleaseProgressNotifier value) =>
-                                                        value.postFeedModel.selectedMediaFiles.list.first.file),
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : Container(),
-                                        context.select((ReleaseProgressNotifier value) =>
-                                                    value.postFeedModel.selectedMediaFiles.type) ==
-                                                // context.watch<ReleaseProgressNotifier>().postFeedModel.selectedMediaFiles.type ==
-                                                mediaTypeKeyVideo
-                                            ? Container(
-                                                width: 13,
-                                                height: 13,
-                                                color: AppColor.mainRed,
-                                              )
-                                            : Container()
-                                      ],
-                                    ),
-                                  )
-                                : Container(),
-                            publishTextStatus(context.select((ReleaseProgressNotifier value) => value.plannedSpeed)),
-                            Spacer(),
-                            Offstage(
-                                offstage: context.select((ReleaseProgressNotifier value) => value.plannedSpeed) != -1,
-                                child: Container(
-                                  width: 48,
-                                  child: Row(
-                                    children: [
-                                      AppIconButton(
-                                        iconSize: 18,
-                                        svgName: AppIcon.trash_bucket,
-                                        buttonHeight: 30,
-                                        buttonWidth: 30,
-                                        onTap: widget.resendFeedChanged,
-                                      ),
-                                      AppIconButton(
-                                        iconSize: 18,
-                                        svgName: AppIcon.trash_bucket,
-                                        buttonHeight: 30,
-                                        buttonWidth: 30,
-                                        onTap: widget.deleteReleaseFeedChanged,
-                                      ),
-                                    ],
-                                  ),
-                                ))
-                          ],
-                        ))),
-                LinearProgressIndicator(
-                  value: context.select((ReleaseProgressNotifier value) => value.plannedSpeed) != -1
-                      // context.watch<ReleaseProgressNotifier>().plannedSpeed != -1
-                      ? context.select((ReleaseProgressNotifier value) => value.plannedSpeed)
-                      : 1,
-                  valueColor: new AlwaysStoppedAnimation<Color>(
-                      context.select((ReleaseProgressNotifier value) => value.plannedSpeed) != -1
-                          ? AppColor.mainRed
-                          : Colors.amberAccent),
-                  backgroundColor: AppColor.white,
-                ),
-              ],
-            ),
-          )
-        : Container();
+        ? AnimatedOpacity(
+      opacity: context.select((ReleaseProgressNotifier value) => value.postFeedModel) != null?1:0,
+      duration: Duration(milliseconds: 2000),
+      curve: Curves.ease,
+      child: _publishView(),
+      onEnd:(){
+        context.read<ReleaseProgressNotifier>().setShowPublishView(false);
+      }
+      ,)
+      : Container();
   }
 
+
+  _publishView(){
+    if(context.select((ReleaseProgressNotifier value) => value.postFeedModel)!=null&&context.select(
+            (ReleaseProgressNotifier value) => value.postFeedModel.selectedMediaFiles)!=null){
+      type = context.select((ReleaseProgressNotifier value) =>
+      value.postFeedModel.selectedMediaFiles.type);
+      if(context.select((ReleaseProgressNotifier value) =>
+      value.postFeedModel.selectedMediaFiles.type) ==
+          mediaTypeKeyVideo){
+        imageFile = File(context.select((ReleaseProgressNotifier value) => value.postFeedModel.selectedMediaFiles.list
+            .first
+            .thumbPath));
+      }else if(context.select((ReleaseProgressNotifier value) =>
+      value.postFeedModel.selectedMediaFiles.list.first.file) !=
+          null){
+        imageFile = context.select((ReleaseProgressNotifier value) =>
+        value.postFeedModel.selectedMediaFiles.list.first.file);
+      }
+
+    }
+    return Container(
+      height: 60,
+      width: ScreenUtil.instance.screenWidthDp,
+      color: AppColor.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+              child: Container(
+                  margin: EdgeInsets.only(left: 16, right: 16),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                     Container(
+                        width: 36,
+                        height: 36,
+                        margin: EdgeInsets.only(right: 6),
+                        child: Stack(
+                          alignment: const FractionalOffset(0.5, 0.5),
+                          children: [
+                           /* context.select((ReleaseProgressNotifier value) =>
+                            value.postFeedModel.selectedMediaFiles.type) ==
+                                mediaTypeKeyVideo
+                                ? Image.file(
+                              context.select((ReleaseProgressNotifier value) =>
+                                  File(value.postFeedModel.selectedMediaFiles.list.first.thumbPath)),
+                              fit: BoxFit.cover,
+                            )
+                                : context.select((ReleaseProgressNotifier value) =>
+                            value.postFeedModel.selectedMediaFiles.list.first.file) !=
+                                null
+                                ? Image.file(
+                              context.select((ReleaseProgressNotifier value) =>
+                              value.postFeedModel.selectedMediaFiles.list.first.file),
+                              fit: BoxFit.cover,
+                            )*/imageFile!=null?Image.file(imageFile):Container(),
+                            type!=null?type ==
+                                // context.watch<ReleaseProgressNotifier>().postFeedModel.selectedMediaFiles.type ==
+                                mediaTypeKeyVideo
+                                ? Container(
+                              width: 13,
+                              height: 13,
+                              color: AppColor.mainRed,
+                            )
+                            : Container():Container()
+                          ],
+                        ),
+                      ),
+                      publishTextStatus(context.select((ReleaseProgressNotifier value) => value.plannedSpeed)),
+                      Spacer(),
+                      Offstage(
+                          offstage: context.select((ReleaseProgressNotifier value) => value.plannedSpeed) != -1,
+                          child: Container(
+                            width: 48,
+                            child: Row(
+                              children: [
+                                AppIconButton(
+                                  iconSize: 18,
+                                  svgName: AppIcon.trash_bucket,
+                                  buttonHeight: 30,
+                                  buttonWidth: 30,
+                                  onTap: widget.resendFeedChanged,
+                                ),
+                                AppIconButton(
+                                  iconSize: 18,
+                                  svgName: AppIcon.trash_bucket,
+                                  buttonHeight: 30,
+                                  buttonWidth: 30,
+                                  onTap: widget.deleteReleaseFeedChanged,
+                                ),
+                              ],
+                            ),
+                          ))
+                    ],
+                  ))),
+          LinearProgressIndicator(
+            value: context.select((ReleaseProgressNotifier value) => value.plannedSpeed) != -1
+            // context.watch<ReleaseProgressNotifier>().plannedSpeed != -1
+                ? context.select((ReleaseProgressNotifier value) => value.plannedSpeed)
+                : 1,
+            valueColor: new AlwaysStoppedAnimation<Color>(
+                context.select((ReleaseProgressNotifier value) => value.plannedSpeed) != -1
+                    ? AppColor.mainRed
+                    : Colors.amberAccent),
+            backgroundColor: AppColor.white,
+          ),
+        ],
+      ),
+    );
+  }
   // 发布动态进度条视图
   publishTextStatus(double plannedSpeed) {
     print("空值的来历￥￥$plannedSpeed");

@@ -38,7 +38,6 @@ class MainPageState extends XCState {
 
   int currentIndex;
   bool isInit = false;
-  StreamController<bool> streamController = StreamController<bool>();
   List titles = ["首页", "训练", "消息", "我的"];
   List normalImgUrls = [
     "images/test/home-filling1.png",
