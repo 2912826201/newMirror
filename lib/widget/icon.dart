@@ -48,6 +48,10 @@ class AppIcon {
   static const String add_gallery = "assets/svg/add_gallery.svg";
   static const String add_follow = "assets/svg/add_follow.svg";
   static const String delete = "assets/svg/delete.svg";
+  static const String if_home = "assets/svg/if_home.svg";
+  static const String if_training = "assets/svg/if_training.svg";
+  static const String if_message = "assets/svg/if_message.svg";
+  static const String if_profile = "assets/svg/if_profile.svg";
 
   static const String qrcode_scan = "assets/svg/qrcode_scan.svg";
   static const String machine_connected = "assets/svg/machine_connected.svg";
