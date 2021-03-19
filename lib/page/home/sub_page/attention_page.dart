@@ -277,7 +277,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   backToTheTop() {
     // 判定滑动控制器是否绑定
     if (_controller.hasClients) {
-      _controller.jumpTo(0);
+      _controller.animateTo(0,duration: Duration(milliseconds: 1),curve: Curves.easeInOut);
     }
   }
 

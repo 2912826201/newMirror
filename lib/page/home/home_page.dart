@@ -45,7 +45,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
   // bool get wantKeepAlive => true; //必须重写
   // 发布进度
   double _process = 0.0;
-
+  double animalHeight = 0;
   StreamSubscription<ConnectivityResult> connectivityListener;
 
   @override
@@ -65,6 +65,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
             v.file = File(v.filePath);
           });
           context.read<ReleaseProgressNotifier>().setPublishFeedModel(feedModel);
+          context.read<ReleaseProgressNotifier>().setShowPublishView(true);
           context.read<ReleaseProgressNotifier>().setPublish(false);
           _process = -1.0;
           context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(_process);
@@ -213,6 +214,9 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
             context.read<ReleaseProgressNotifier>().setPublishFeedModel(null);
             //还原进度条
             _process = 0.0;
+            setState(() {
+              animalHeight = 0;
+            });
             context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(_process);
             // 设置可发布
             context.read<ReleaseProgressNotifier>().isPublish = true;
@@ -244,6 +248,10 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
       Application.ifPageController.index = Application.ifPageController.length - 1;
       // 定位到关注页
       controller.index = 0;
+      setState(() {
+        animalHeight = 60;
+      });
+      context.watch<ReleaseProgressNotifier>().setShowPublishView(true);
       // 关注页回到顶部
       if (attentionKey.currentState != null) {
         attentionKey.currentState.backToTheTop();
@@ -321,54 +329,68 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                 }),
           ],
         ),
-        body: Column(
+        body: Stack(
           children: [
             // context.watch<FeedMapNotifier>().postFeedModel != null
             //     ? Offstage(
             //         offstage: context.watch<FeedMapNotifier>().postFeedModel == null, child: createdPostPromptView()
-            ReleaseProgressView(
-              deleteReleaseFeedChanged: () {
-                // 重新赋值存入
-                AppPrefs.setPublishFeedLocalInsertData(
-                    "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}", null);
-                // todo 清除图片路径
-
-                // 清空发布model
-                context.read<ReleaseProgressNotifier>().setPublishFeedModel(null);
-                // 删除本地插入数据
-                if (attentionKey.currentState != null) {
-                  attentionKey.currentState.deleteData();
-                } else {
-                  new Future.delayed(Duration(milliseconds: 500), () {
-                    attentionKey.currentState.deleteData();
-                  });
-                }
-                //还原进度条
-                _process = 0.0;
-                context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(_process);
-                // 设置可发布
-                context.read<ReleaseProgressNotifier>().isPublish = true;
-              },
-              resendFeedChanged: () {
-                pulishFeed(context.read<ReleaseProgressNotifier>().postFeedModel);
-              },
+            Column(
+              children: [
+                AnimatedContainer(
+                  duration: Duration(milliseconds: 1000),
+                  curve: Curves.linear,
+                  height: animalHeight,
+                  child: Container(
+                    height: animalHeight,
+                  ),
+                ),
+                Expanded(
+                  child: UnionInnerTabBarView(
+                    controller: controller,
+                    children: [
+                      AttentionPage(
+                        key: attentionKey,
+                      ),
+                      RecommendPage()
+                      // RecommendPage()
+                    ],
+                  ),
+                ),
+              ],
             ),
+            Positioned(
+                top: 0,
+                child: ReleaseProgressView(
+                  deleteReleaseFeedChanged: () {
+                    // 重新赋值存入
+                    AppPrefs.setPublishFeedLocalInsertData(
+                        "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}", null);
+                    // todo 清除图片路径
+
+                    // 清空发布model
+                    context.read<ReleaseProgressNotifier>().setPublishFeedModel(null);
+                    // 删除本地插入数据
+                    if (attentionKey.currentState != null) {
+                      attentionKey.currentState.deleteData();
+                    } else {
+                      new Future.delayed(Duration(milliseconds: 500), () {
+                        attentionKey.currentState.deleteData();
+                      });
+                    }
+                    //还原进度条
+                    _process = 0.0;
+                    context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(_process);
+                    // 设置可发布
+                    context.read<ReleaseProgressNotifier>().isPublish = true;
+                  },
+                  resendFeedChanged: () {
+                    pulishFeed(context.read<ReleaseProgressNotifier>().postFeedModel);
+                  },
+                )),
             //     )
             // : Container(),
-            Expanded(
-              child: UnionInnerTabBarView(
-                controller: controller,
-                children: [
-                  AttentionPage(
-                    key: attentionKey,
-                  ),
-                  RecommendPage()
-                  // RecommendPage()
-                ],
-              ),
-            )
           ],
-        ));
+        ),);
     // });
   }
 }
