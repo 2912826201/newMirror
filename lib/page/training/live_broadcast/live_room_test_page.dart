@@ -48,6 +48,17 @@ class _LiveRoomTestPageState extends XCState {
     EventBus.getDefault().register(exit,EVENTBUS_LIVEROOM_TESTPAGE,registerName: EVENTBUS_LIVEROOM_EXIT);
     loadingStatus=LoadingStatus.STATUS_LOADING;
     getLiveVideoUrl();
+
+    player.addListener((){
+      if(player.state == FijkState.error){
+        if(null!=player.value.exception.message&&player.value.exception.message=="Operation not permitted"){
+          ToastShow.show(msg: "直播中断了", context: context);
+        }else{
+          ToastShow.show(msg: "直播异常", context: context);
+        }
+      }
+      print("走了监听:${player.value.exception.message},${player.value.exception.code}");
+    });
   }
 
   //退出界面
@@ -56,6 +67,7 @@ class _LiveRoomTestPageState extends XCState {
       EventBus.getDefault().unRegister(pageName:EVENTBUS_LIVEROOM_TESTPAGE,registerName: EVENTBUS_LIVEROOM_EXIT);
       //退出聊天室
       Application.rongCloud.quitChatRoom(coachId);
+      // player.stop();
       player.release();
       Navigator.of(context).pop();
     });
@@ -128,6 +140,7 @@ class _LiveRoomTestPageState extends XCState {
                 width: ScreenUtil.instance.width,
                 height: ScreenUtil.instance.height,
                 child: FijkView(
+                  panelBuilder: fijkPanel2Builder(snapShot: true),
                   player: player,
                   color: AppColor.bgBlack,
                   fit: FijkFit.cover,

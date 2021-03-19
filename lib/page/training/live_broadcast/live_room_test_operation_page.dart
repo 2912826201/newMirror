@@ -14,6 +14,7 @@ import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -815,19 +816,34 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
 
   //退出界面
   _exitPageListener(){
-    EventBus.getDefault().post(registerName: EVENTBUS_LIVEROOM_EXIT);
-    EventBus.getDefault().unRegister(pageName:EVENTBUS_ROOM_OPERATION_PAGE,registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
-    if(timer!=null){
-      timer.cancel();
-      timer=null;
-    }
-    Navigator.of(context).pop();
+    showAppDialog(context,
+        info: "课程还未结束,确认退出吗？",
+        topImageUrl: "",
+        cancel: AppDialogButton("仍要退出", () {
+          EventBus.getDefault().post(registerName: EVENTBUS_LIVEROOM_EXIT);
+          EventBus.getDefault().unRegister(
+            pageName:EVENTBUS_ROOM_OPERATION_PAGE,
+            registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE
+          );
+          if(timer!=null){
+            timer.cancel();
+            timer=null;
+          }
+          Navigator.of(context).pop();
+          return true;
+        }),
+        confirm: AppDialogButton("继续训练", () {
+          return true;
+        }));
   }
 
   @override
   void dispose() {
     super.dispose();
-    EventBus.getDefault().unRegister(pageName:EVENTBUS_ROOM_OPERATION_PAGE,registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
+    EventBus.getDefault().unRegister(
+        pageName:EVENTBUS_ROOM_OPERATION_PAGE,
+        registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE
+    );
     if(timer!=null){
       timer.cancel();
       timer=null;
