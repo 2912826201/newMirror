@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:core';
 
 import 'package:flutter/material.dart';
@@ -30,7 +31,6 @@ class MainPage extends StatefulWidget {
 class MainPageState extends XCState {
   int currentIndex;
   bool isInit = false;
-
   List titles = ["首页", "训练", "消息", "我的"];
   List<Widget> normalIcons = [];
   List<Widget> selectedIcons = [];
@@ -62,12 +62,14 @@ class MainPageState extends XCState {
     });
   }
 
+
   @override
   void dispose() {
     // controller.dispose();
     super.dispose();
     /* EventBus.getDefault().unRegister(registerName:EVENTBUS_POSTFEED_CALLBACK,pageName:EVENTBUS_MAIN_PAGE);*/
   }
+
 
   _getFollowCount() async {
     ProfileFollowCount().then((attentionModel) {
@@ -119,18 +121,20 @@ class MainPageState extends XCState {
                     child: Stack(
                       children: [
                         icon,
-                        Positioned(
-                            top: 0,
-                            right: 0,
-                            child: context.watch<FeedMapNotifier>().value.unReadFeedCount != 0 && index == 0
-                                ? ClipOval(
-                                    child: Container(
-                                      height: 10,
-                                      width: 10,
-                                      color: AppColor.mainRed,
-                                    ),
-                                  )
-                                : Container())
+                        Consumer<FeedMapNotifier>(builder: (context, notifier, child) {
+                          return Positioned(
+                              top: 0,
+                              right: 0,
+                              child: notifier.value.unReadFeedCount != 0 && index == 0
+                                  ? ClipOval(
+                                      child: Container(
+                                        height: 10,
+                                        width: 10,
+                                        color: AppColor.mainRed,
+                                      ),
+                                    )
+                                  : Container());
+                        })
                       ],
                     ),
                   ),

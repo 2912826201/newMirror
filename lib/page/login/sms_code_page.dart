@@ -77,7 +77,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
   //默认的标题颜色
   final _sendSmsOriginTitleColor = AppColor.textSecondary;
   bool _sendSmsValid = false;
-
+  bool logining = false;
   bool isSent;
 
   @override
@@ -180,13 +180,10 @@ class _SmsCodePageState extends State<SmsCodePage> {
       "输入验证码",
       style: TextStyle(fontSize: 23, color: Colors.black, decoration: TextDecoration.none),
     );
-    String phoneNumber = widget.phoneNumber.replaceFirst(RegExp(r'\d{4}'),"****",3);
+    String phoneNumber = widget.phoneNumber.replaceFirst(RegExp(r'\d{4}'), "****", 3);
     var subTitle = Text(
       "短信验证码已发送至 +86 " + phoneNumber,
-      style: TextStyle(
-          color: Color.fromRGBO(153, 153, 153, 1),
-          fontSize: 14,
-          decoration: TextDecoration.none),
+      style: TextStyle(color: Color.fromRGBO(153, 153, 153, 1), fontSize: 14, decoration: TextDecoration.none),
     );
     var area1 = Container(
       child: mainTitle,
@@ -237,7 +234,7 @@ class _SmsCodePageState extends State<SmsCodePage> {
 
   _smsSendApi() async {
     BaseResponseModel responseModel = await sendSms(widget.phoneNumber, 0);
-    if (responseModel != null&&responseModel.code==200) {
+    if (responseModel != null && responseModel.code == 200) {
       print("验证码已发送~");
       //跟新发送sms发送的时间
       Application.smsCodeSendTime = DateTime.now().millisecondsSinceEpoch;
@@ -252,27 +249,46 @@ class _SmsCodePageState extends State<SmsCodePage> {
   ///提交区域
   Widget _submitArea() {
     var btnStyle = RoundedRectangleBorder(borderRadius: BorderRadius.circular(3));
-    var smsBtn = FlatButton(
-      //FIXME 293这个数字哪来的
-      minWidth: certificateBtnWidth,
-      height: certificateBtnHeight,
-      shape: btnStyle,
-      //FIXME 没有做输入长度校验
-      onPressed:(){
+    var smsBtn = InkWell(
+      onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
-        if(inputController.text.length!=4){
+        if (inputController.text.length != 4) {
           ToastShow.show(msg: "请输入正确格式的验证码!", context: context);
-        }else{
-          Loading.showLoading(context);
+        } else {
+          setState(() {
+            logining = true;
+          });
           _loginWithPhoneCode();
         }
-
       },
-      child: Text(
-        _titleOfSendTextBtn,
-        style: TextStyle(fontSize: 16, color: _smsBtnTitleColor),
+      child: Container(
+        height: certificateBtnHeight,
+        decoration: BoxDecoration(
+        color:_smsBtnColor,
+        borderRadius: BorderRadius.all(Radius.circular(3)),),
+        child: Row(
+          children: [
+            Spacer(),
+            logining
+                ? Container(
+                    height: 17,
+                    width: 17,
+                    child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(AppColor.black),
+                        backgroundColor: AppColor.white,
+                        strokeWidth: 1.5))
+                : Container(),
+            SizedBox(
+              width: 2.5,
+            ),
+            Text(
+              _titleOfSendTextBtn,
+              style: TextStyle(fontSize: 16, color: _smsBtnTitleColor),
+            ),
+            Spacer()
+          ],
+        ),
       ),
-      color: _smsBtnColor,
     );
     var returns = Container(
       child: smsBtn,
@@ -285,9 +301,8 @@ class _SmsCodePageState extends State<SmsCodePage> {
     SmsCodePage phoneNumPage = widget;
     BaseResponseModel responseModel = await login("sms", phoneNumPage.phoneNumber, inputController.text, null);
     if (responseModel != null) {
-      if(responseModel.code==200){
+      if (responseModel.code == 200) {
         print("登录成功");
-        Loading.hideLoading(context);
         TokenModel token = TokenModel.fromJson(responseModel.data);
         if (token.anonymous == 1 || token.uid == null) {
           //如果token是匿名的或者没有uid则token出了问题
@@ -302,25 +317,24 @@ class _SmsCodePageState extends State<SmsCodePage> {
           AppRouter.navigateToPerfectUserPage(context);
         } else {
           //所有都齐全的情况 登录完成
-          await _afterLogin(token);
+          try{
+            await _afterLogin(token);
+          }catch(e){
+            print(e);
+          }
         }
-      }else{
-        Loading.hideLoading(context);
-        ToastShow.show(msg:responseModel.message, context: context);
+      } else {
+        ToastShow.show(msg: responseModel.message, context: context);
       }
-    }else{
-      test("","");
-      Loading.hideLoading(context);
-      ToastShow.show(msg:"登录失败", context: context);
+    } else {
+      ToastShow.show(msg: "登录失败", context: context);
     }
+    setState(() {
+      logining = false;
+    });
   }
 
 
-
-
-  String test(String name,[String age]){
-    return "";
-  }
   //TODO 完整的用户的处理方法 这个方法在登录页 绑定手机号页 完善资料页都会用到 需要单独提出来
   _afterLogin(TokenModel token) async {
     TokenDto tokenDto = TokenDto.fromTokenModel(token);
@@ -328,21 +342,24 @@ class _SmsCodePageState extends State<SmsCodePage> {
     context.read<TokenNotifier>().setToken(tokenDto);
     //然后要去取一次个人用户信息
     UserModel user = await getUserInfo();
-    print('((((((((((((((((((((((((((${user.uid}))))))))))))))))))))))))))))))');
-    ProfileDto profile = ProfileDto.fromUserModel(user);
-    await ProfileDBHelper().insertProfile(profile);
-    context.read<ProfileNotifier>().setProfile(profile);
-    context.read<UserInteractiveNotifier>().clearProfileUiChangeModel();
-    //连接融云
-    Application.rongCloud.connect();
-    //TODO 处理登录完成后的数据加载
-    MessageManager.loadConversationListFromDatabase(context);
+    if(user!=null){
+      print('((((((((((((((((((((((((((${user.uid}))))))))))))))))))))))))))))))');
+      ProfileDto profile = ProfileDto.fromUserModel(user);
+      await ProfileDBHelper().insertProfile(profile);
+      context.read<ProfileNotifier>().setProfile(profile);
+      context.read<UserInteractiveNotifier>().clearProfileUiChangeModel();
+      //连接融云
+      Application.rongCloud.connect();
+      //TODO 处理登录完成后的数据加载
+      MessageManager.loadConversationListFromDatabase(context);
+      //一些非关键数据获取
+      _getMoreInfo();
+      //页面跳转至登录前的页面
+      AppRouter.popToBeforeLogin(context);
+    }else{
+      print('------------------用户信息请求失败');
+    }
 
-    //一些非关键数据获取
-    _getMoreInfo();
-
-    //页面跳转至登录前的页面
-    AppRouter.popToBeforeLogin(context);
   }
 
   _getMoreInfo() async {
@@ -401,8 +418,7 @@ class _SmsCounterWidgetState extends State<SmsCounterWidget> {
   ///初始状态常量
   final _resendText = Text(
     "重新获取",
-    style: TextStyle(
-        color: Color.fromRGBO(17, 17, 17, 1), fontSize: 13, decoration: TextDecoration.none),
+    style: TextStyle(color: Color.fromRGBO(17, 17, 17, 1), fontSize: 13, decoration: TextDecoration.none),
   );
 
   final BoxDecoration _initialBorderStyle = BoxDecoration(
@@ -432,10 +448,7 @@ class _SmsCounterWidgetState extends State<SmsCounterWidget> {
   Text _countText() {
     return Text(
       '${_getTimeGap()}s',
-      style: TextStyle(
-          color: Color.fromRGBO(204, 204, 204, 1),
-          fontSize: 13,
-          decoration: TextDecoration.none),
+      style: TextStyle(color: Color.fromRGBO(204, 204, 204, 1), fontSize: 13, decoration: TextDecoration.none),
     );
   }
 

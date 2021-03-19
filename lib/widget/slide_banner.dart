@@ -45,7 +45,6 @@ class SlideBanner extends StatefulWidget {
 
 class _SlideBannerState extends State<SlideBanner> {
   int zindex = 0; //要移入的下标
-  Timer timer;
 
   // 图片张数
   int imageCount = 0;

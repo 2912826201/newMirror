@@ -6,10 +6,12 @@ import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/training/live_api.dart';
+import 'package:mirror/api/user_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_message_profile_notifier.dart';
 import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/loading_status.dart';
+import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
@@ -667,11 +669,16 @@ class LiveBroadcastItemPageState extends State<LiveBroadcastItemPage>
     }
   }
 
+  void getRelation(LiveVideoModel value)async{
+    UserModel userModel = await getUserInfo(uid: value.coachId);
+    value.coachDto.relation=userModel.relation;
+  }
 
   //点击item按钮判断怎么响应
-  void onClickItem(LiveVideoModel value, int index,bool isOld) {
+  void onClickItem(LiveVideoModel value, int index,bool isOld){
     print("index$index,liveModelArray.length：${liveModelArray.length},isOld:$isOld");
     gotoNavigateToLiveDetail(value, index+(isOld?liveModelArray!=null?liveModelArray.length:0:0));
+    getRelation(value);
   }
 
   void gotoNavigateToLiveDetail(LiveVideoModel value, int index) {

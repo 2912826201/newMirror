@@ -211,10 +211,10 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
         addFeedNum++;
       }
     });
-    context.read<FeedMapNotifier>().setUnReadFeedCount(0);
     if (addFeedNum != 0) {
       ToastShow.show(msg: "更新了${context.read<FeedMapNotifier>().value.unReadFeedCount}条动态", context: context, gravity:
       Toast.CENTER);
+      context.read<FeedMapNotifier>().setUnReadFeedCount(0);
       print('--------------------------------------------addFeedNum != 0');
     }
     // 更新全局监听
@@ -277,7 +277,7 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
   backToTheTop() {
     // 判定滑动控制器是否绑定
     if (_controller.hasClients) {
-      _controller.jumpTo(0);
+      _controller.animateTo(0,duration: Duration(milliseconds: 1),curve: Curves.easeInOut);
     }
   }
 

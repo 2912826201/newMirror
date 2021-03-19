@@ -520,8 +520,9 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
   Widget _emojiGridTop(double keyboardHeight) {
     return Container(
       height: keyboardHeight-45.0,
-      padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+      padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10,top: 0),
       child: GridView.builder(
+        padding: const EdgeInsets.only(top: 10),
         physics: BouncingScrollPhysics(),
         itemCount: emojiModelList.length,
         gridDelegate:
@@ -539,7 +540,6 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
       fontSize: 24,
     );
     return Material(
-        color: Colors.white,
         child: new InkWell(
           child: Container(
             alignment: Alignment.center,
@@ -870,6 +870,7 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
     if(_focusNode.hasFocus){
       _focusNode.unfocus();
     }
+    isShowEmojiBtn=true;
     isShowEditPlan=false;
     if(_emojiState){
       _emojiState=!_emojiState;

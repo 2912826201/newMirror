@@ -15,6 +15,9 @@ class ReleaseProgressNotifier extends ChangeNotifier {
   // 是否可以发布动态
   bool isPublish = true;
 
+  bool showPulishView = false;
+
+  double contaiHight = 60;
   // 发布数据需要的model
   void setPublishFeedModel(PostFeedModel model) {
     this._postFeedModel = model;
@@ -28,6 +31,11 @@ class ReleaseProgressNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  // 是否显示发布视图
+  setShowPublishView(bool b) {
+    this.showPulishView = b;
+    notifyListeners();
+  }
 
 // 更新发布动态进度
   getPostPlannedSpeed(double plannedSpeed) {
