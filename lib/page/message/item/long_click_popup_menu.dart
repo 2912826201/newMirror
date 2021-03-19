@@ -281,6 +281,7 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                             child: SizedBox(
                               height: menuHeight + _triangleHeight,
                               child: Material(
+                                color: Colors.transparent,
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: <Widget>[
