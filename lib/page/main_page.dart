@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:core';
 
 import 'package:flutter/material.dart';
@@ -62,14 +61,12 @@ class MainPageState extends XCState {
     });
   }
 
-
   @override
   void dispose() {
     // controller.dispose();
     super.dispose();
     /* EventBus.getDefault().unRegister(registerName:EVENTBUS_POSTFEED_CALLBACK,pageName:EVENTBUS_MAIN_PAGE);*/
   }
-
 
   _getFollowCount() async {
     ProfileFollowCount().then((attentionModel) {
