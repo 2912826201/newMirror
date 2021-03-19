@@ -251,6 +251,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
       setState(() {
         animalHeight = 60;
       });
+      context.watch<ReleaseProgressNotifier>().setShowPublishView(true);
       // 关注页回到顶部
       if (attentionKey.currentState != null) {
         attentionKey.currentState.backToTheTop();
@@ -337,7 +338,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
               children: [
                 AnimatedContainer(
                   duration: Duration(milliseconds: 1000),
-                  curve: Curves.fastOutSlowIn,
+                  curve: Curves.linear,
                   height: animalHeight,
                   child: Container(
                     height: animalHeight,

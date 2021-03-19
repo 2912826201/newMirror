@@ -36,7 +36,7 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
         // context.watch<FeedMapNotifier>().value.postFeedModel != null
         ? AnimatedOpacity(
       opacity: context.select((ReleaseProgressNotifier value) => value.postFeedModel) != null?1:0,
-      duration: Duration(milliseconds: 2000),
+      duration: Duration(milliseconds: 1000),
       curve: Curves.ease,
       child: _publishView(),
       onEnd:(){
@@ -48,6 +48,7 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
 
 
   _publishView(){
+    print('-----------------------￥￥￥￥发布视图');
     if(context.select((ReleaseProgressNotifier value) => value.postFeedModel)!=null&&context.select(
             (ReleaseProgressNotifier value) => value.postFeedModel.selectedMediaFiles)!=null){
       type = context.select((ReleaseProgressNotifier value) =>
