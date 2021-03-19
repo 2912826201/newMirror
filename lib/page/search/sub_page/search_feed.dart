@@ -35,6 +35,7 @@ import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.da
 import 'package:mirror/widget/feed_video_player.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/slide_banner.dart';
+import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
@@ -113,7 +114,9 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
     _scrollController.dispose();
 
     ///取消延时任务
-    timer.cancel();
+    if(timer != null) {
+      timer.cancel();
+    }
     super.dispose();
   }
 
@@ -160,92 +163,108 @@ class SearchFeedState extends State<SearchFeed> with AutomaticKeepAliveClientMix
     if (feedList.isNotEmpty) {
       return Container(
           margin: EdgeInsets.only(top: 12),
-          child:ScrollConfiguration(
-          behavior: OverScrollBehavior(),
-          child: RefreshIndicator(
-              onRefresh: () async {
-                feedList.clear();
-                lastTime = null;
-                hasNext = null;
-                loadStatus = LoadingStatus.STATUS_LOADING;
-                loadText = "加载中...";
-                requestFeednIterface();
-              },
-              child:
-                  CustomScrollView(controller: _scrollController, physics: AlwaysScrollableScrollPhysics(), slivers: [
-                // SliverToBoxAdapter(
-                //     child: Container(
-                //   margin: EdgeInsets.only(left: 16, right: 16),
-                //   child: MediaQuery.removePadding(
-                //       removeTop: true,
-                //       context: context,
-                //       // 瀑布流
-                //       child: WaterfallFlow.builder(
-                //         primary: false,
-                //         shrinkWrap: true,
-                //         // controller: _scrollController,
-                //         gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-                //           crossAxisCount: 2,
-                //           // 上下间隔
-                //           mainAxisSpacing: 4.0,
-                //           //   // 左右间隔
-                //           crossAxisSpacing: 8.0,
-                //         ),
-                //         itemBuilder: (context, index) {
-                //           // 获取动态id
-                //           int id;
-                //           // 获取动态id指定model
-                //           HomeFeedModel model;
-                //           if (index < feedList.length) {
-                //             id = feedList[index].id;
-                //             model = context.read<FeedMapNotifier>().feedMap[id];
-                //           }
-                //           if (index == feedList.length) {
-                //             return LoadingView(
-                //               loadText: loadText,
-                //               loadStatus: loadStatus,
-                //             );
-                //           } else if (index == feedList.length + 1) {
-                //             return Container();
-                //           } else {
-                //             return SearchFeeditem(
-                //               model: model,
-                //               list: feedList,
-                //               index: index,
-                //               focusNode: widget.focusNode,
-                //               pageName: "searchFeed",
-                //               feedLastTime: lastTime,
-                //               searchKeyWords: widget.textController.text,
-                //               feedHasNext: hasNext,
-                //             );
-                //           }
-                //         },
-                //         itemCount: feedList.length + 1,
-                //       )
-                //      ),
-                // )),
-                SliverList(
-                    delegate: SliverChildBuilderDelegate((content, index) {
-                  if (index == feedList.length) {
-                    return LoadingView(
-                      loadText: loadText,
-                      loadStatus: loadStatus,
-                    );
-                  } else if (index == feedList.length + 1) {
-                    return Container();
-                  } else {
-                    return DynamicListLayout(
-                      index: index,
-                      isShowConcern: false,
-                      pageName: "searchFeed",
-                      isShowRecommendUser: false,
-                      model: feedList[index],
-                      // 可选参数 子Item的个数
-                      key: GlobalObjectKey("attention$index"),
-                    );
-                  }
-                }, childCount: feedList.length + 1))
-              ]))));
+          child: ScrollConfiguration(
+              behavior: OverScrollBehavior(),
+              child: RefreshIndicator(
+                  onRefresh: () async {
+                    feedList.clear();
+                    lastTime = null;
+                    hasNext = null;
+                    loadStatus = LoadingStatus.STATUS_LOADING;
+                    loadText = "加载中...";
+                    requestFeednIterface();
+                  },
+                  child: CustomScrollView(
+                      controller: _scrollController,
+                      physics: AlwaysScrollableScrollPhysics(),
+                      slivers: [
+                        // SliverToBoxAdapter(
+                        //     child: Container(
+                        //   margin: EdgeInsets.only(left: 16, right: 16),
+                        //   child: MediaQuery.removePadding(
+                        //       removeTop: true,
+                        //       context: context,
+                        //       // 瀑布流
+                        //       child: WaterfallFlow.builder(
+                        //         primary: false,
+                        //         shrinkWrap: true,
+                        //         // controller: _scrollController,
+                        //         gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+                        //           crossAxisCount: 2,
+                        //           // 上下间隔
+                        //           mainAxisSpacing: 4.0,
+                        //           //   // 左右间隔
+                        //           crossAxisSpacing: 8.0,
+                        //         ),
+                        //         itemBuilder: (context, index) {
+                        //           // 获取动态id
+                        //           int id;
+                        //           // 获取动态id指定model
+                        //           HomeFeedModel model;
+                        //           if (index < feedList.length) {
+                        //             id = feedList[index].id;
+                        //             model = context.read<FeedMapNotifier>().feedMap[id];
+                        //           }
+                        //           if (index == feedList.length) {
+                        //             return LoadingView(
+                        //               loadText: loadText,
+                        //               loadStatus: loadStatus,
+                        //             );
+                        //           } else if (index == feedList.length + 1) {
+                        //             return Container();
+                        //           } else {
+                        //             return SearchFeeditem(
+                        //               model: model,
+                        //               list: feedList,
+                        //               index: index,
+                        //               focusNode: widget.focusNode,
+                        //               pageName: "searchFeed",
+                        //               feedLastTime: lastTime,
+                        //               searchKeyWords: widget.textController.text,
+                        //               feedHasNext: hasNext,
+                        //             );
+                        //           }
+                        //         },
+                        //         itemCount: feedList.length + 1,
+                        //       )
+                        //      ),
+                        // )),
+                        SliverList(
+                            delegate: SliverChildBuilderDelegate((content, index) {
+                          if (index == feedList.length) {
+                            return LoadingView(
+                              loadText: loadText,
+                              loadStatus: loadStatus,
+                            );
+                          } else if (index == feedList.length + 1) {
+                            return Container();
+                          } else {
+                            return ExposureDetector(
+                                key: Key('search_feed_${feedList[index].id}'),
+                                child: DynamicListLayout(
+                                  index: index,
+                                  isShowConcern: false,
+                                  pageName: "searchFeed",
+                                  isShowRecommendUser: false,
+                                  model: feedList[index],
+                                  // 可选参数 子Item的个数
+                                  key: GlobalObjectKey("attention$index"),
+                                ),
+                              onExposure: (visibilityInfo) {
+                                // 如果没有显示
+                                if (context
+                                    .read<FeedMapNotifier>()
+                                    .value
+                                    .feedMap[feedList[index].id]
+                                    .isShowInputBox) {
+                                  context.read<FeedMapNotifier>().showInputBox(feedList[index].id);
+                                }
+                                print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
+                              },
+                            );
+                          }
+                        }, childCount: feedList.length + 1))
+                      ]))));
     } else {
       return Container(
         child: Column(
