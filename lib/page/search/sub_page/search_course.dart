@@ -85,7 +85,9 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
     _scrollController.dispose();
 
     ///取消延时任务
-    timer.cancel();
+    if(timer != null) {
+      timer.cancel();
+    }
     super.dispose();
   }
 
