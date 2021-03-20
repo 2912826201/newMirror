@@ -337,7 +337,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
             Column(
               children: [
                 AnimatedContainer(
-                  duration: Duration(milliseconds: 1000),
+                  duration: Duration(milliseconds: 500),
                   curve: Curves.linear,
                   height: animalHeight,
                   child: Container(

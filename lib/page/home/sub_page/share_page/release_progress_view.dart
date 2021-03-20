@@ -36,7 +36,7 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
         // context.watch<FeedMapNotifier>().value.postFeedModel != null
         ? AnimatedOpacity(
       opacity: context.select((ReleaseProgressNotifier value) => value.postFeedModel) != null?1:0,
-      duration: Duration(milliseconds: 1000),
+      duration: Duration(milliseconds: 1500),
       curve: Curves.ease,
       child: _publishView(),
       onEnd:(){

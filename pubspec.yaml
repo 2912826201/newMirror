@@ -138,6 +138,9 @@ dependencies:
   reorderables: ^0.3.2
 
 
+  #底部tab测试
+  bottom_bars: ^1.1.0
+
   #安装包升级测试
   r_upgrade: ^0.3.2+3
 
