@@ -52,6 +52,8 @@ const String GETTERMINALLEARNEDCOURSE = "/sport/web/videoCourse/getTerminalLearn
 
 //获取直播地址
 const String GETPULLSTREAMURL = "/third/web/tencentcloud/getPullStreamUrl";
+//获取直播课的回放地址
+const String GETPLAYBACKURL = "/sport/web/liveCourse/getPlaybackUrl";
 
 
 

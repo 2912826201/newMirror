@@ -347,6 +347,7 @@ class _ImagePreviewViewState extends State<ImagePreviewView> with SingleTickerPr
   }
 
   _onScaleStateChanged(PhotoViewScaleState scaleState) {
+    print("_onScaleStateChanged");
     if (_translationPosition != Offset.zero) {
       return;
     }
@@ -492,7 +493,9 @@ class _ImagePreviewViewState extends State<ImagePreviewView> with SingleTickerPr
             child: PhotoViewGallery.builder(
               itemCount: widget.images.length,
               scrollDirection: Axis.horizontal,
-              enableRotation: true,
+
+              //禁用旋转
+              enableRotation: false,
               gaplessPlayback: true,
               backgroundDecoration: BoxDecoration(
                 color: CupertinoColors.black.withOpacity(0.0),
@@ -500,7 +503,7 @@ class _ImagePreviewViewState extends State<ImagePreviewView> with SingleTickerPr
               pageController: _pageController,
               onPageChanged: _onPageChanged,
               loadingBuilder: widget.loadingBuilder,
-              // scaleStateChangedCallback: _onScaleStateChanged,
+              scaleStateChangedCallback: _onScaleStateChanged,
               builder: _buildPageOptions,
             ),
           ),

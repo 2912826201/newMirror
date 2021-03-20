@@ -6,6 +6,7 @@ import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/message/item/long_click_popup_menu.dart';
 import 'package:mirror/page/message/message_view/message_item_height_util.dart';
+import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -162,7 +163,7 @@ class TextMsg extends StatelessWidget {
       contentType: ChatTypeModel.MESSAGE_TYPE_TEXT,
       isMySelf: isMyself,
       actions: longClickStringList,
-      contentWidth: getTextSize(text, textStyle, 10).width + 22.0,
+      contentWidth: getTextSize(text, textStyle, 10,ScreenUtil.instance.width - (16 + 7 + 38 + 2) * 2).width + 22.0,
       contentHeight: MessageItemHeightUtil.init().
         getTextMsgHeight(text, isShowChatUserName,isOnlyContentHeight: true),
       child: textContentBox(context),

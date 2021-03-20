@@ -1,5 +1,3 @@
-import 'dart:async';
-import 'dart:core';
 import 'dart:core';
 
 import 'package:flutter/material.dart';
@@ -7,15 +5,11 @@ import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/message_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/data/model/profile/profile_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/data/notifier/release_progress_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/home/home_page.dart';
-import 'package:mirror/page/if_page.dart';
-import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/page/profile/profile_page.dart';
 import 'package:mirror/page/message/message_page.dart';
 import 'package:mirror/page/search/sub_page/should_build.dart';
@@ -23,6 +17,7 @@ import 'package:mirror/route/router.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:provider/provider.dart';
 
 import 'profile/profile_page.dart';
@@ -36,23 +31,23 @@ class MainPageState extends XCState {
   int currentIndex;
   bool isInit = false;
   List titles = ["首页", "训练", "消息", "我的"];
-  List normalImgUrls = [
-    "images/test/home-filling1.png",
-    "images/test/work-filling.png",
-    'images/test/comment-filling.png',
-    'images/test/user-filling.png'
-  ];
-  List selectedImgUrls = [
-    "images/test/home-filling.png",
-    "images/test/work-filling1.png",
-    "images/test/comment-filling1.png",
-    "images/test/user-filling1.png",
-  ];
+  List<Widget> normalIcons = [];
+  List<Widget> selectedIcons = [];
   double _start = 0;
 
   @override
   void initState() {
     super.initState();
+    normalIcons.add(AppIcon.getAppIcon(AppIcon.if_home, 24));
+    normalIcons.add(AppIcon.getAppIcon(AppIcon.if_training, 24));
+    normalIcons.add(AppIcon.getAppIcon(AppIcon.if_message, 24));
+    normalIcons.add(AppIcon.getAppIcon(AppIcon.if_profile, 24));
+
+    selectedIcons.add(AppIcon.getAppIcon(AppIcon.if_home, 24, color: AppColor.white));
+    selectedIcons.add(AppIcon.getAppIcon(AppIcon.if_training, 24, color: AppColor.white));
+    selectedIcons.add(AppIcon.getAppIcon(AppIcon.if_message, 24, color: AppColor.white));
+    selectedIcons.add(AppIcon.getAppIcon(AppIcon.if_profile, 24, color: AppColor.white));
+
     currentIndex = 0;
     _start = (ScreenUtil.instance.width / 5) / 7;
     EventBus.getDefault().register(_postFeedCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POSTFEED_CALLBACK);
@@ -93,12 +88,15 @@ class MainPageState extends XCState {
   // 自定义BottomAppBar
   Widget tabbar(int index, BuildContext context, double itemWidth) {
     //设置默认未选中的状态
-    TextStyle style = TextStyle(fontSize: 15, color: Colors.black);
-    String imgUrl = normalImgUrls[index];
+    TextStyle style;
+    Widget icon;
     if (currentIndex == index) {
       //选中的话
       style = TextStyle(fontSize: 15, color: Colors.white);
-      imgUrl = selectedImgUrls[index];
+      icon = selectedIcons[index];
+    } else {
+      style = TextStyle(fontSize: 15, color: Colors.black);
+      icon = normalIcons[index];
     }
     //构造返回的Widget
     Widget item(BuildContext context) {
@@ -107,17 +105,19 @@ class MainPageState extends XCState {
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             child: Container(
-              padding: EdgeInsets.only(top: 2, bottom: 2, left: 7.5, right: 7.5),
+              height: 32,
+              width: 90,
+              alignment: Alignment.center,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Spacer(),
                   Container(
-                    width: 28,
-                    height: 28,
+                    width: 24,
+                    height: 24,
                     child: Stack(
                       children: [
-                        Image.asset(imgUrl),
+                        icon,
                         Consumer<FeedMapNotifier>(builder: (context, notifier, child) {
                           return Positioned(
                               top: 0,
@@ -136,7 +136,7 @@ class MainPageState extends XCState {
                     ),
                   ),
                   Container(
-                      margin: const EdgeInsets.only(left: 6),
+                      margin: const EdgeInsets.only(left: 8),
                       child: Offstage(
                         offstage: currentIndex != index,
                         child: Text(

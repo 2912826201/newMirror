@@ -107,7 +107,7 @@ dependencies:
   # 解决NestedScroll和瀑布流滑动冲突的问题
   #  extended_nested_scroll_view: ^2.0.0
   # 更好的播放器
-  better_player: ^0.0.44
+  better_player: ^0.0.61
   # 绘制扩展 本打算画虚线用的
   # path_drawing: ^0.4.1+1
   # 获取视频的缩略图
@@ -171,6 +171,10 @@ dependencies:
 
   #  视频编辑器
   #  video_editor: ^ 1.0.3+1
+  #  纯Dart的音频/视频/图像选择器，与微信相同，支持多重选择。
+  #  wechat_assets_picker
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
