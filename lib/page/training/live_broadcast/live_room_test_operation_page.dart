@@ -5,10 +5,12 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
+import 'package:mirror/api/training/live_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/message/emoji_model.dart';
+import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/page/message/item/emoji_manager.dart';
 import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/date_util.dart';
@@ -21,6 +23,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:text_span_field/text_span_field.dart';
 
 import 'dialog/live_room_setting_dialog.dart';
+import 'dialog/live_room_online_man_number_dialog.dart';
 import 'live_room_page_common.dart';
 
 
@@ -70,15 +73,20 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
 
   ///表情的列表
   List<EmojiModel> emojiModelList = <EmojiModel>[];
+  List<BuddyModel> onlineManList = <BuddyModel>[];
 
   bool _emojiState=false;
 
 
   int cursorIndexPr=-1;
 
-
+  int onlineUserNumber=2;
   Timer timer;
   Widget timeText;
+  Widget onlineMenNumberText;
+  Widget otherOnlineUserUi;
+
+  List<String> urlImageList= <String>[];
 
   @override
   void initState() {
@@ -90,8 +98,13 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
     EventBus.getDefault().register(receiveBarrageMessage,EVENTBUS_ROOM_OPERATION_PAGE,
         registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
 
-    timeText=Text(DateUtil.getSpecifyDateTimeDifferenceMinutesAndSeconds(widget.startTime)
-        ,style: TextStyle(fontSize: 18,color: AppColor.white.withOpacity(0.85)));
+    urlImageList.add("");
+    urlImageList.add(widget.coachUrl);
+    urlImageList.add(Application.profile.avatarUri);
+
+    timeText=LiveRoomPageCommon.init().getLiveRoomShowTimeUi(widget.startTime);
+    onlineMenNumberText=LiveRoomPageCommon.init().getLiveOnlineMenNumberUi(onlineUserNumber);
+    otherOnlineUserUi=LiveRoomPageCommon.init().getOtherOnlineUserImageUi(urlImageList);
 
     messageChatList.add(UserMessageModel(messageContent: "请遵守直播间规则"*10));
     messageChatList.insert(0, UserMessageModel(
@@ -143,7 +156,11 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
             visible: !isCleaningMode,
             child: GestureDetector(
               child: otherUserUi(),
-              onTap: getBottomDialog,
+              onTap: ()=>openBottomOnlineManNumberDialog(
+                buildContext:context,
+                liveRoomId: widget.coachId,
+                onlineManList:onlineManList,
+              ),
             ),
           )
         ],
@@ -196,26 +213,7 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
       child: Row(
         children: [
           Expanded(child: SizedBox()),
-          Container(
-            width: 21.0*3-12.0,
-            height: 21.0,
-            child: Stack(
-              children: [
-                Positioned(
-                  child: LiveRoomPageCommon.init().getUserImage(null,21,21),
-                  right: 0,
-                ),
-                Positioned(
-                  child: LiveRoomPageCommon.init().getUserImage(null,21,21),
-                  right: 12,
-                ),
-                Positioned(
-                  child: LiveRoomPageCommon.init().getUserImage(null,21,21),
-                  right: 24,
-                ),
-              ],
-            ),
-          ),
+          otherOnlineUserUi,
           SizedBox(width: 6),
           Text("一起运动",style: TextStyle(fontSize: 10,color: AppColor.white.withOpacity(0.85))),
           SizedBox(width: 16),
@@ -257,7 +255,7 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(widget.coachName,style: TextStyle(fontSize: 11,color: AppColor.white.withOpacity(0.85))),
-                Text("在线人数8524.2万",style: TextStyle(fontSize: 9,color: AppColor.white.withOpacity(0.65))),
+                onlineMenNumberText,
               ],
             ),
             SizedBox(width: 8),
@@ -751,33 +749,6 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
 
 
 
-
-  void getBottomDialog(){
-
-    if(_focusNode.hasFocus){
-      _focusNode.unfocus();
-    }
-    isShowEditPlan=false;
-    if(_emojiState){
-      setState(() {
-        _emojiState=!_emojiState;
-      });
-    }
-    List<String> list = [];
-    list.add("回复");
-    list.add("举报");
-    list.add("复制");
-    openMoreBottomSheet(
-      context: context,
-      isFillet: true,
-      lists: list,
-      onItemClickListener: (index) {
-        print("value${list[index]}");
-      },
-    );
-  }
-
-
   //获取底部评论列表的高度
   double getBottomMessageHeight(){
     return (ScreenUtil.instance.height-
@@ -789,6 +760,17 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
   void initData()async{
     //获取表情的数据
     emojiModelList = await EmojiManager.getEmojiModelList();
+    Map<String, dynamic> map = await roomInfo(widget.coachId);
+    if(null!=map["data"]["total"]){
+      resetOnlineUserNumber(map["data"]["total"]);
+    }
+    if(null!=map["data"]["userList"]){
+      map["data"]["userList"].forEach((v) {
+        onlineManList.add(BuddyModel.fromJson(v));
+      });
+    }
+    resetOnlineUserImage();
+
   }
 
   //监听动画是否开始
@@ -797,14 +779,83 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
       if(mounted) {
         Element e = findChild(context as Element, timeText);
         if (e != null) {
-          timeText = Text(DateUtil.getSpecifyDateTimeDifferenceMinutesAndSeconds(widget.startTime)
-              , style: TextStyle(fontSize: 18, color: AppColor.white.withOpacity(0.85)));
+          timeText=LiveRoomPageCommon.init().getLiveRoomShowTimeUi(widget.startTime);
           e.owner.lockState(() {
             e.update(timeText);
           });
         }
       }
     });
+  }
+
+  //刷新人数
+  void resetOnlineUserNumber(number){
+    if(null==number||!(number is int)||number<2){
+      return;
+    }
+    onlineUserNumber=number;
+    if(mounted) {
+      Element e = findChild(context as Element, onlineMenNumberText);
+      if (e != null) {
+        onlineMenNumberText=LiveRoomPageCommon.init().getLiveOnlineMenNumberUi(number);
+        e.owner.lockState(() {
+          e.update(onlineMenNumberText);
+        });
+      }
+    }
+  }
+
+  //加入直播间
+  void addLiveRoom(TextMessage textMessage){
+    BuddyModel buddyModel=new BuddyModel();
+    buddyModel.uid=int.parse(textMessage.sendUserInfo.userId);
+    buddyModel.avatarUri=textMessage.sendUserInfo.portraitUri;
+    buddyModel.nickName=textMessage.sendUserInfo.name;
+    buddyModel.time=new DateTime.now().microsecondsSinceEpoch;
+    onlineManList.add(buddyModel);
+    resetOnlineUserImage();
+  }
+
+
+  //离开直播间
+  void subLiveRoom(TextMessage textMessage){
+    for(int i=0;i<onlineManList.length;i++){
+      if(onlineManList[i].uid.toString()==textMessage.sendUserInfo.userId.toString()){
+        onlineManList.removeAt(i);
+        break;
+      }
+    }
+    resetOnlineUserImage();
+  }
+
+
+
+  //刷新头像
+  void resetOnlineUserImage(){
+
+    if(onlineManList.length>0){
+      urlImageList.clear();
+      if(onlineManList.length>2){
+        for(int i=0;i<3;i++){
+          urlImageList.add(onlineManList[i].avatarUri);
+        }
+      }else{
+        onlineManList.forEach((element) {
+          urlImageList.add(element.avatarUri);
+        });
+        urlImageList.add(widget.coachUrl);
+        for(int i=0;i<3;i++){
+          urlImageList.add("");
+        }
+      }
+      print("11111:${urlImageList.toString()}");
+      if(mounted) {
+        otherOnlineUserUi=LiveRoomPageCommon.init().getOtherOnlineUserImageUi(urlImageList);
+        setState(() {
+
+        });
+      }
+    }
   }
 
 
@@ -865,9 +916,13 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
       switch (contentMap["subObjectName"]) {
         case ChatTypeModel.MESSAGE_TYPE_SYS_BARRAGE:
           if(null!=contentMap["name"]&&contentMap["name"]=="joinLiveRoom"){
+            resetOnlineUserNumber(++onlineUserNumber);
             _onSubmitJoinLiveRoomMessage(textMessage.sendUserInfo.name,textMessage.sendUserInfo.userId);
+            addLiveRoom(textMessage);
           }else if(null!=contentMap["name"]&&contentMap["name"]=="quitLiveRoom"){
+            resetOnlineUserNumber(--onlineUserNumber);
             print("${textMessage.sendUserInfo.name}退出了直播间");
+            subLiveRoom(textMessage);
           }
           break;
         case ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE:
@@ -951,6 +1006,7 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
     });
   }
 
+  //发送直播聊天信息
   _sendChatRoomMsg(text) async {
     TextMessage msg = TextMessage();
     UserInfo userInfo = UserInfo();
