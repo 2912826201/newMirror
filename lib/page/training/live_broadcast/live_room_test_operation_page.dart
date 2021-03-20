@@ -819,6 +819,7 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
     showAppDialog(context,
         info: "课程还未结束,确认退出吗？",
         topImageUrl: "",
+        barrierDismissible:false,
         cancel: AppDialogButton("仍要退出", () {
           EventBus.getDefault().post(registerName: EVENTBUS_LIVEROOM_EXIT);
           EventBus.getDefault().unRegister(
@@ -863,7 +864,11 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
     if(null!=contentMap){
       switch (contentMap["subObjectName"]) {
         case ChatTypeModel.MESSAGE_TYPE_SYS_BARRAGE:
-          _onSubmitJoinLiveRoomMessage(textMessage.sendUserInfo.name,textMessage.sendUserInfo.userId);
+          if(null!=contentMap["name"]&&contentMap["name"]=="joinLiveRoom"){
+            _onSubmitJoinLiveRoomMessage(textMessage.sendUserInfo.name,textMessage.sendUserInfo.userId);
+          }else if(null!=contentMap["name"]&&contentMap["name"]=="quitLiveRoom"){
+            print("${textMessage.sendUserInfo.name}退出了直播间");
+          }
           break;
         case ChatTypeModel.MESSAGE_TYPE_USER_BARRAGE:
           _onSubmitLiveRoomMessage(textMessage.sendUserInfo.name,textMessage.sendUserInfo.userId,contentMap["data"]);
