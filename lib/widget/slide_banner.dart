@@ -51,7 +51,14 @@ class _SlideBannerState extends State<SlideBanner> {
 
   // 图片宽度
   int imageWidth = 0;
-
+  //小圆点
+  final double smallDotsSize = 2;
+  //中号圆点
+  final double mediumDotsSize = 4;
+  //大号圆点
+  final double bigDotsSize = 6;
+  //中间间隔
+  final double spacingWidth= 4;
   // scroll_to_index定位
   AutoScrollController controller;
   SwiperController swiperController = SwiperController();
@@ -100,84 +107,9 @@ class _SlideBannerState extends State<SlideBanner> {
 
   // 滑动回调
   autoPlay(int index) {
-    slidingPosition(index);
     print("轮播图回调");
     pagingIndicatorStreamController.sink.add(index);
     paginationTabStreamController.sink.add(index);
-  }
-
-  // 返回指示器的总宽度
-  double getWidth(int zindex) {
-    var num = imageCount;
-    if (num <= 5) {
-      return 3 * 8.0 + 6 + 10;
-    } else {
-      if (zindex == 0 || zindex == 1 || zindex == 2 || zindex == num - 1 || zindex == num - 2 || zindex == num - 3) {
-        return 3 * 8.0 + 6 + 10;
-      }
-      if (zindex >= 3 && zindex + 3 < num) {
-        return 2 * 8.0 + 2 * 5.0 + 10 + 2;
-      }
-    }
-    return 5 * 8.0;
-  }
-
-  // 通过代码滑动指示器位置。
-  slidingPosition(int index) async {
-    print("索引$index");
-    if (imageCount > 5) {
-      if (index >= 3 && index + 2 < imageCount) {
-        await controller.scrollToIndex(index - 2, preferPosition: AutoScrollPosition.begin);
-        controller.highlight(index - 2);
-      }
-      if (index == 2) {
-        await controller.scrollToIndex(index, preferPosition: AutoScrollPosition.end);
-        controller.highlight(index);
-      }
-    }
-  }
-
-  // 返回指示器内部元素size。
-  double elementSize(int index, int zindex) {
-    if (imageCount <= 5) {
-      if (index == zindex) {
-        return 7;
-      } else {
-        return 5;
-      }
-    } else {
-      if (zindex == 0 || zindex == 1 || zindex == 2) {
-        if (index == zindex) {
-          return 7;
-        } else if (index == 4) {
-          return 3;
-        } else {
-          return 5;
-        }
-      }
-      if (zindex >= 3 && zindex + 3 < imageCount) {
-        if (index == zindex) {
-          return 7;
-        } else if (zindex - index == 2 || index - zindex == 2) {
-          return 3;
-        } else {
-          return 5;
-        }
-      }
-      if (zindex == imageCount - 1 || zindex == imageCount - 2 || zindex == imageCount - 3) {
-        if (index == zindex) {
-          return 7;
-        } else if (index + 2 == zindex && zindex == imageCount - 3) {
-          return 3;
-        } else if (index + 3 == zindex && zindex == imageCount - 2) {
-          return 3;
-        } else if (index + 4 == zindex && zindex == imageCount - 1) {
-          return 3;
-        } else {
-          return 5;
-        }
-      }
-    }
   }
 
   // 轮播图设置预览设置
@@ -322,6 +254,50 @@ class _SlideBannerState extends State<SlideBanner> {
     }
   }
 
+
+  Size getDotsSize(int choseIndex,index){
+    if(index!=choseIndex){
+      if(imageCount<6){
+        return Size(mediumDotsSize, mediumDotsSize);
+      }
+    if(choseIndex<3){
+      if(index==4){
+        return Size(smallDotsSize, smallDotsSize);
+      }
+        return Size(mediumDotsSize, mediumDotsSize);
+      }else{
+       if(choseIndex<imageCount-3){
+         if(index==choseIndex-2||index==choseIndex+2){
+           return Size(smallDotsSize, smallDotsSize);
+         }else{
+           return Size(mediumDotsSize, mediumDotsSize);
+         }
+       }else{
+         if(index==imageCount-5){
+           return Size(smallDotsSize, smallDotsSize);
+         }else{
+           return Size(mediumDotsSize, mediumDotsSize);
+         }
+       }
+      }
+    }else{
+      return Size(bigDotsSize, bigDotsSize);
+    }
+  }
+
+  double getDotsWidth(int choseIndex){
+    if(imageCount<6){
+      return (imageCount-1)*mediumDotsSize+bigDotsSize+(imageCount-1)*spacingWidth.toDouble();
+    }else if(imageCount>6){
+      if(choseIndex<3||choseIndex>=imageCount-3){
+        return mediumDotsSize*3+bigDotsSize+smallDotsSize+spacingWidth*4.toDouble();
+      }else{
+        return smallDotsSize*2+mediumDotsSize*2+bigDotsSize+spacingWidth*4.toDouble();
+      }
+    }else{
+     return  mediumDotsSize*3+bigDotsSize+smallDotsSize+spacingWidth*4.toDouble();
+    }
+  }
   @override
   Widget build(BuildContext context) {
     final width = ScreenUtil.instance.screenWidthDp;
@@ -331,13 +307,6 @@ class _SlideBannerState extends State<SlideBanner> {
       cupertinoButtonList = buildShowItemContainer(setAspectRatio(widget.height));
     } else if (widget.model != null && widget.model.selectedMediaFiles != null) {
       cupertinoButtonList = localPicture(setAspectRatio(widget.height));
-    }
-    double indexWidth;
-    if(imageCount>4){
-      //三个间距+三个小圆点加一个大圆点
-      indexWidth  = (3*4)+7+(3*4).toDouble();
-    }else{
-      indexWidth  = ((imageCount-1)*4)+7+((imageCount-1)*4).toDouble();
     }
     return Container(
       child: Column(
@@ -364,7 +333,8 @@ class _SlideBannerState extends State<SlideBanner> {
                       onIndexChanged: (index) {
                         autoPlay(index);
                         if(index>1){
-                         controller.animateTo(((index-2)*(4+4)).toDouble(), duration: Duration(milliseconds: 250),
+                         controller.animateTo(((index-2)*(mediumDotsSize+spacingWidth)).toDouble(), duration: Duration
+                           (milliseconds: 200),
                              curve:Cubic(1.0, 1.0, 1.0, 1.0));
                         }
 
@@ -405,7 +375,7 @@ class _SlideBannerState extends State<SlideBanner> {
                   initialData: zindex, //初始值
                   builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
                     return Container(
-                      width: indexWidth,
+                      width: getDotsWidth(snapshot.data),
                       height: 10,
                       margin: const EdgeInsets.only(top: 5),
                       child: ListView.separated(
@@ -415,10 +385,10 @@ class _SlideBannerState extends State<SlideBanner> {
                         itemBuilder: (context, index) {
                           return  AnimatedContainer(
                                   duration: Duration(milliseconds: 250),
-                                  height: snapshot.data!=index?4:7,
-                                  width:snapshot.data!=index?4:7,
+                                  height:getDotsSize(snapshot.data, index).height,
+                                  width: getDotsSize(snapshot.data, index).width,
                                   decoration: BoxDecoration(
-                                      color: snapshot.data==index?Colors.black:Colors.transparent,
+                                      color: snapshot.data==index?AppColor.black:AppColor.textPrimary1.withOpacity(0.12),
                                       shape: BoxShape.circle),
                                 );
                         },
@@ -428,28 +398,7 @@ class _SlideBannerState extends State<SlideBanner> {
                               color: Color(0xFFFFFFFF),
                             ),
                         itemCount: imageCount,
-
-                      )/*ListView.builder(
-                          scrollDirection: scrollDirection,
-                          controller: controller,
-                          itemCount: imageCount,
-                          // 禁止手动滑动
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            return AutoScrollTag(
-                                key: ValueKey(index),
-                                controller: controller,
-                                index: index,
-                                child: Container(
-                                    width: elementSize(index, snapshot.data),
-                                    height: elementSize(index, snapshot.data),
-                                    margin: const EdgeInsets.only(right: 3),
-                                    decoration: BoxDecoration(
-                                        color: index == snapshot.data
-                                            ? AppColor.black
-                                            : AppColor.textPrimary1.withOpacity(0.12),
-                                        shape: BoxShape.circle)));
-                          }),*/
+                      )
                     );
                   }))
         ],
