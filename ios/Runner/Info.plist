@@ -26,7 +26,7 @@
 		<true/>
 	</dict>
 	<key>NSCalendarsUsageDescription</key>
-	<string>App正在征用日历，快点同意，否则自爆</string>
+	<string>"IFITNESS"想访问您的日历,才能添加提醒事项,以便开播前的提醒</string>
 	<key>NSCameraUsageDescription</key>
 	<string>App正在征用相机，快点同意，否则自爆</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
