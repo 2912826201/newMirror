@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/data/notifier/token_notifier.dart';
+import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
@@ -193,6 +195,10 @@ class _IFTabBarState extends State<IFTabBar> {
   }
 
   _onClickListener(int index) {
+    if ((index == 2 || index == 3) && !context.read<TokenNotifier>().isLoggedIn) {
+      AppRouter.navigateToLoginPage(context);
+      return;
+    }
     print('------------------------点击');
     streamController.sink.add(index);
     widget.tabBarClickListener(index);
@@ -329,7 +335,6 @@ class _IFTabBarState extends State<IFTabBar> {
 
   Widget _textRow(AsyncSnapshot<int> snapshot) {
     print('------------------------------textRow');
-    print('---$leftMarginText1--$leftMarginText2--$leftMarginText3--$leftMarginText4');
     return Container(
       height: selectedButtonTextHeight,
       width: screenWidth,

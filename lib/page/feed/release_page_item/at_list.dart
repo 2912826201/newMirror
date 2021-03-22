@@ -288,10 +288,11 @@ class AtListState extends State<AtList> {
                   // 存储规则
                   context.read<ReleaseFeedInputNotifier>().addRules(Rule(
                       atIndex - 1, atIndex + AtLength, "@" + list[index].nickName, index, true, list[index].uid));
-
+                  print('----------------------关闭视图开始');
                   context.read<ReleaseFeedInputNotifier>().setAtSearchStr("");
                   // 关闭视图
                   context.read<ReleaseFeedInputNotifier>().changeCallback("");
+                  print('----------------------关闭视图结束');
                 },
                 child: Container(
                   height: 48,

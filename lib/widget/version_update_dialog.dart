@@ -132,7 +132,7 @@ class _VersionDialogState extends State<VersionUpdateDialog> {
       print('==taskId$taskId====================progress${received / total}');
     }).then((value) {
       if (value.filePath != null) {
-        Future.delayed(Duration(milliseconds: 100), () async {
+        Future.delayed(Duration.zero, () async {
           _installApk();
         });
       }
