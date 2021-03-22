@@ -1,8 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/page/message/message_view/currency_msg.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 typedef FriendsCallback = void Function(String name, int userId, int type, BuildContext context);

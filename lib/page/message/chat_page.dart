@@ -43,6 +43,7 @@ import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/interactiveviewer/interactive_video_item.dart';
 import 'package:mirror/widget/interactiveviewer/interactiveview_video_or_image_demo.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
@@ -299,7 +300,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
           print("关闭键盘");
         } else {
           print("显示键盘");
-          if (Application.keyboardHeight <= MediaQuery.of(this.context).viewInsets.bottom) {
+          if (Application.keyboardHeight < MediaQuery.of(this.context).viewInsets.bottom) {
+            print("-----------------------------------------");
             Application.keyboardHeight = MediaQuery.of(this.context).viewInsets.bottom;
             reload(() {});
           }
@@ -337,10 +339,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     if (conversation.getType() != RCConversationType.System) {
       bodyArray.add(getMessageInputBar());
       bodyArray.add(bottomSettingBox());
-      // bodyArray.add(Container(
-      //   height: MediaQuery.of(this.context).viewInsets.bottom>0?0.0:ScreenUtil.instance.bottomBarHeight,
-      //   color: AppColor.white,
-      // ));
+      bodyArray.add(Container(
+        height: ScreenUtil.instance.bottomBarHeight,
+        color: AppColor.white,
+      ));
     }
 
     //接收当前会话的新的消息
@@ -604,12 +606,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       child: Container(
         height: _emojiState ? keyboardHeight : 0.0,
         width: double.infinity,
-        decoration: BoxDecoration(
-          color: AppColor.white,
-          border: Border(
-            top: BorderSide(color: Colors.grey, width: 0.2),
-          ),
-        ),
+        color: AppColor.white,
         child: emojiList(keyboardHeight),
       ),
     );
@@ -630,6 +627,12 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
             behavior: NoBlueEffectBehavior(),
             child: CustomScrollView(
               slivers: [
+                SliverToBoxAdapter(
+                  child: Container(
+                    height: 0.2,
+                    color: Colors.grey,
+                  ),
+                ),
                 SliverToBoxAdapter(
                   child: _emojiGridTop(keyboardHeight),
                 ),
@@ -679,29 +682,22 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       height: 44,
       child: Row(
         children: [
-          Container(
-            height: 44,
-            width: 44,
-            child: Center(
-              child: Text(
-                emojiModelList[64].emoji,
-                style: textStyle,
-              ),
-            ),
+          AppIconButton(
+            iconSize: 24,
+            svgName: AppIcon.message_emotion,
+            buttonWidth: 44,
+            buttonHeight: 44,
+            onTap: () {},
           ),
           Spacer(),
-          Container(
-            height: 44,
-            width: 44,
-            child: Center(
-              child: IconButton(
-                icon: Icon(
-                  Icons.send,
-                  size: 24,
-                ),
-                onPressed: () => _onSubmitClick(),
-              ),
-            ),
+          AppIconButton(
+            iconSize: 24,
+            svgName: _textController.text == null || _textController.text.isEmpty
+                ? AppIcon.message_cant_send
+                : AppIcon.message_send,
+            buttonWidth: 44,
+            buttonHeight: 44,
+            onTap: () => _onSubmitClick(),
           ),
         ],
       ),
@@ -1612,6 +1608,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     }
     print("插入数据后sourceList：：${sourceList.length} ____ ${sourceList.toString()}");
   }
+
   //获取数据库内的messageUId
   void getHistoryMessage(ChatDataModel model) async {
     if (null == model.msg.messageUId || model.msg.messageUId.length < 1) {
@@ -2245,7 +2242,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   // 打开大图预览
   _openGallery(int position) {
     sourceList.clear();
-    for(int  i =  chatDataList.length - 1; i >= 0; i--) {
+    for (int i = chatDataList.length - 1; i >= 0; i--) {
       ChatDataModel v = chatDataList[i];
       if (v.msg != null) {
         String msgType = v.msg.objectName;
@@ -2265,7 +2262,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
               sourceList.add(demoSourceEntity);
             }
           } catch (e) {
-              // ToastShow.show(msg: "版本过低请升级版本!", context: context,gravity: Toast.CENTER);
+            // ToastShow.show(msg: "版本过低请升级版本!", context: context,gravity: Toast.CENTER);
             // return getTextMsg(text: "2版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo);
           }
         }
@@ -2275,9 +2272,9 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     int initIndex = 0;
     print("position::$position");
     print("当前点击的messageID：${chatDataList[position].msg.messageId}");
-    for(int i = sourceList.length -1 ; i >= 0; i--) {
-      DemoSourceEntity source =  sourceList[i];
-      if( int.parse(source.heroId)  == chatDataList[position].msg.messageId) {
+    for (int i = sourceList.length - 1; i >= 0; i--) {
+      DemoSourceEntity source = sourceList[i];
+      if (int.parse(source.heroId) == chatDataList[position].msg.messageId) {
         initIndex = i;
       }
     }
@@ -2285,10 +2282,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     Navigator.of(context).push(
       HeroDialogRoute<void>(
         builder: (BuildContext context) => InteractiveviewerGallery<DemoSourceEntity>(
-          sources: sourceList,
-          initIndex: initIndex,
-          itemBuilder: itemBuilder
-        ),
+            sources: sourceList, initIndex: initIndex, itemBuilder: itemBuilder),
       ),
     );
   }

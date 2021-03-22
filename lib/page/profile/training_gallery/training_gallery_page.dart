@@ -304,11 +304,7 @@ class _TrainingGalleryState extends State<TrainingGalleryPage> {
                   padding: const EdgeInsets.all(6),
                   alignment: Alignment.bottomRight,
                   color: AppColor.textPrimary2.withOpacity(0.35),
-                  child: Icon(
-                    Icons.check_circle,
-                    color: AppColor.mainRed,
-                    size: 24,
-                  ),
+                  child: AppIcon.getAppIcon(AppIcon.selection_selected, 24),
                 )
               : Container()
         ],
