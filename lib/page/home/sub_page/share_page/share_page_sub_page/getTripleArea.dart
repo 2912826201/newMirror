@@ -1,10 +1,12 @@
 //  点赞，转发，评论三连区域
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
+import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/message/chat_type_model.dart';
@@ -41,7 +43,7 @@ class GetTripleArea extends StatefulWidget {
   GetTripleAreaState createState() => GetTripleAreaState();
 }
 
-class GetTripleAreaState extends State<GetTripleArea> {
+class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     // print("打印model的值￥${widget.model}");
@@ -52,16 +54,26 @@ class GetTripleAreaState extends State<GetTripleArea> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Selector<FeedMapNotifier, List<String>>(builder: (context, laudUserInfo, child) {
-              return laudUserInfo.length == 0 ? Container() : avatarOverlap(laudUserInfo.length, context, laudUserInfo);
+              return Container(
+                  width: laudUserInfo.length == 1
+                      ? 21
+                      : laudUserInfo.length == 2
+                          ? 31
+                          : laudUserInfo.length >= 3
+                              ? 41
+                              : 21,
+                  margin: EdgeInsets.only(left: 16),
+                  // color: AppColor.mainRed,
+                  child: Stack(
+                    overflow: Overflow.visible,
+                    alignment: const FractionalOffset(0, 0.5),
+                    children: avatarOverlap(laudUserInfo.length, context, laudUserInfo),
+                  ));
             }, selector: (context, notifier) {
-              return (notifier.value.feedMap == null ||
-                      notifier.value.feedMap[widget.model.id] == null ||
-                      notifier.value.feedMap[widget.model.id].laudUserInfo == null)
+              return (notifier.value.feedMap == null || notifier.value.feedMap[widget.model.id] == null)
                   ? <String>[]
                   : notifier.value.feedMap[widget.model.id].laudUserInfo;
             }),
-            // context
-            // widget.model.laudUserInfo.length > 0 ? avatarOverlap(widget.model.laudUserInfo.length, context,widget.model.laudUserInfo) : Container(),
             SizedBox(width: 5),
             Selector<FeedMapNotifier, List<String>>(builder: (context, laudUserInfo, child) {
               return laudUserInfo.length == 0 ? Container() : roundedLikeNum(context);
@@ -85,43 +97,70 @@ class GetTripleAreaState extends State<GetTripleArea> {
 
   // 横排重叠头像
   avatarOverlap(int num, BuildContext context, List<String> laudUserInfo) {
-    // print("num:$num");
-    if (num == 1) {
-      return Container(
-        width: 37,
-        child: Stack(
-          overflow: Overflow.clip,
-          children: [
-            Positioned(left: 16, top: 13.5, child: roundedAvatar(context, laudUserInfo[0])),
-          ],
-        ),
-      );
-    } else if (num == 2) {
-      return Container(
-          width: 48,
-          child: Stack(
-            overflow: Overflow.clip,
-            children: [
-              Positioned(left: 16, top: 13.5, child: roundedAvatar(context, laudUserInfo[0])),
-              Positioned(
-                child: roundedAvatar(context, laudUserInfo[1]),
-                left: 27,
-                top: 13.5,
-              ),
-            ],
-          ));
-    } else {
-      return Container(
-          width: 59,
-          child: Stack(
-            overflow: Overflow.clip,
-            children: [
-              Positioned(top: 13.5, left: 16, child: roundedAvatar(context, laudUserInfo[0])),
-              Positioned(child: roundedAvatar(context, laudUserInfo[1]), top: 13.5, left: 27),
-              Positioned(child: roundedAvatar(context, laudUserInfo[2]), top: 13.5, left: 38),
-            ],
-          ));
+    List<Widget> avatarList = [];
+    List<String> userInfo = [];
+    for (int i = 0; i < laudUserInfo.length; i++) {
+      if (i < 4) {
+        userInfo.add(laudUserInfo[i]);
+      }
     }
+    // 默认用户的头像
+    if (context.select((TokenNotifier tokenNotifier) => tokenNotifier.isLoggedIn)) {
+      avatarList.add(
+        AnimatedContainer(
+            height:
+                context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 0 ? 0 : 21,
+            width: context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 0 ? 0 : 21,
+            alignment: Alignment.center,
+            child: roundedAvatar(
+                context, context.select((ProfileNotifier profileNotifier) => profileNotifier.profile.avatarUri)),
+            duration: Duration(milliseconds: 200)),
+      );
+    }
+    // 其他用户点赞的头像
+    for (String item in userInfo) {
+      int index = userInfo.indexOf(item);
+      // 这里判断去掉了用户本人的显示
+      if (index <= 3 &&
+          item != context.select((ProfileNotifier profileNotifier) => profileNotifier.profile.avatarUri)) {
+        avatarList.add(AnimatedPositioned(
+            left: avatarOffset(userInfo, index, item: item),
+            duration: Duration(milliseconds: 200),
+            child: animatedZoom(userInfo, index, item: item)));
+      }
+    }
+    return avatarList;
+  }
+
+  // 内部缩放动画
+  animatedZoom(List<String> userInfo, int index, {String item}) {
+    // 当存在用户本人点赞时，第4个头像缩放
+    if (userInfo.contains(context.read<ProfileNotifier>().profile.avatarUri) && index == 3) {
+      return AnimatedContainer(
+          height: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
+          width: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
+          alignment: Alignment.center,
+          child: roundedAvatar(context, userInfo[index]),
+          duration: Duration(milliseconds: 200));
+      // 不存在用户本人点赞时，第3个头像缩放
+    } else if (!userInfo.contains(context.read<ProfileNotifier>().profile.avatarUri) && index == 2) {
+      return AnimatedContainer(
+          height: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
+          width: context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud == 0 ? 21 : 0,
+          alignment: Alignment.center,
+          child: roundedAvatar(context, userInfo[index]),
+          duration: Duration(milliseconds: 200));
+    } // 只展示前三个头像
+    else if (index < 3) {
+      return roundedAvatar(context, item);
+    } else {
+      return Container();
+    }
+  }
+
+  // 头像动画偏移位置
+  avatarOffset(List<String> userInfo, int index, {String item}) {
+    return 10.5 + (index - 1) * 10.0;
   }
 
   // 跳转点赞页
@@ -165,14 +204,14 @@ class GetTripleAreaState extends State<GetTripleArea> {
   }
 
   // 横排头像默认值
-  roundedAvatar(BuildContext context, String url) {
+  roundedAvatar(BuildContext context, String url, {double radius = 10.5}) {
     return GestureDetector(
       onTap: () {
         jumpLike(context);
       },
       child: CircleAvatar(
         backgroundImage: NetworkImage(url) ?? AssetImage("images/test/yxlm9.jpeg"),
-        maxRadius: 10.5,
+        maxRadius: radius,
       ),
     );
   }
