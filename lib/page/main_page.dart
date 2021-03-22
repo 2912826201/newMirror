@@ -76,120 +76,6 @@ class MainPageState extends XCState {
     }
   }
 
-  // 自定义BottomAppBar
-  Widget tabbar(int index, BuildContext context, double itemWidth) {
-    //设置默认未选中的状态
-    TextStyle style;
-    Widget icon;
-    if (currentIndex == index) {
-      //选中的话
-      style = TextStyle(fontSize: 15, color: Colors.white);
-      icon = selectedIcons[index];
-    } else {
-      style = TextStyle(fontSize: 15, color: Colors.black);
-      icon = normalIcons[index];
-    }
-    //构造返回的Widget
-    Widget item(BuildContext context) {
-      return Container(
-        child: Center(
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            child: Container(
-              height: 32,
-              width: 90,
-              alignment: Alignment.center,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Spacer(),
-                  Container(
-                    width: 24,
-                    height: 24,
-                    child: Stack(
-                      children: [
-                        icon,
-                        Consumer<FeedMapNotifier>(builder: (context, notifier, child) {
-                          return Positioned(
-                              top: 0,
-                              right: 0,
-                              child: notifier.value.unReadFeedCount != 0 && index == 0
-                                  ? ClipOval(
-                                      child: Container(
-                                        height: 10,
-                                        width: 10,
-                                        color: AppColor.mainRed,
-                                      ),
-                                    )
-                                  : Container());
-                        })
-                      ],
-                    ),
-                  ),
-                  Container(
-                      margin: const EdgeInsets.only(left: 8),
-                      child: Offstage(
-                        offstage: currentIndex != index,
-                        child: Text(
-                          titles[index],
-                          style: style,
-                        ),
-                      )),
-                  Spacer(),
-                ],
-              ),
-              // ),
-            ),
-            onTap: () {
-              if (!ClickUtil.isFastClick()) {
-                if ((index == 2 || index == 3) && !context.read<TokenNotifier>().isLoggedIn) {
-                  AppRouter.navigateToLoginPage(context);
-                } else {
-                  context.read<SelectedbottomNavigationBarNotifier>().changeIndex(index);
-                  if (currentIndex != index) {
-                    reload(() {
-                      currentIndex = index;
-                      if (index == 0) {
-                        if (context.read<FeedMapNotifier>().value.unReadFeedCount == 0) {
-                          _getUnReadFeedCount();
-                        }
-                        _start = itemWidth / 7;
-                      }
-                      if (index == 1) {
-                        if (context.read<FeedMapNotifier>().value.unReadFeedCount == 0) {
-                          _getUnReadFeedCount();
-                        }
-                        _start = itemWidth + itemWidth * 0.4;
-                      }
-                      if (index == 2) {
-                        //在切换到消息页时 请求未读互动通知数
-                        getUnReads();
-                        if (context.read<FeedMapNotifier>().value.unReadFeedCount == 0) {
-                          _getUnReadFeedCount();
-                        }
-                        _start = 2 * itemWidth + itemWidth * 0.64;
-                      }
-                      if (index == 3) {
-                        //切换到我的页时刷新关注数
-                        _getFollowCount();
-                        if (context.read<FeedMapNotifier>().value.unReadFeedCount == 0) {
-                          _getUnReadFeedCount();
-                        }
-                        _start = 3 * itemWidth + itemWidth * 0.9;
-                      }
-                    });
-                  }
-                }
-              }
-            },
-          ),
-        ),
-      );
-    }
-
-    return item(context);
-  }
-
   @override
   Widget shouldBuild(BuildContext context) {
     print("MainPage_____________________________________________build");
@@ -208,6 +94,9 @@ class MainPageState extends XCState {
       // resizeToAvoidBottomInset: true,
       bottomNavigationBar: IFTabBar(
         tabBarClickListener: (index) {
+          if(currentIndex==index){
+            return;
+          }
           print('------------------------点击回调$index');
           reload(() {
             currentIndex = index;

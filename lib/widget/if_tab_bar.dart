@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/icon.dart';
@@ -94,6 +95,7 @@ class _IFTabBarState extends State<IFTabBar> {
   @override
   void initState() {
     super.initState();
+    EventBus.getDefault().register(_postFeedCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POSTFEED_CALLBACK);
     normalIcons.add(AppIcon.getAppIcon(AppIcon.if_home, 24));
     normalIcons.add(AppIcon.getAppIcon(AppIcon.if_training, 24));
     normalIcons.add(AppIcon.getAppIcon(AppIcon.if_message, 24));
@@ -157,6 +159,9 @@ class _IFTabBarState extends State<IFTabBar> {
     onClickWidthList4.add(selectedButtonWidth + selectedButtonMargin);
   }
 
+  _postFeedCallBack(result){
+    streamController.sink.add(0);
+  }
   @override
   Widget build(BuildContext context) {
     //用各get方法来获取当前index时的位置
