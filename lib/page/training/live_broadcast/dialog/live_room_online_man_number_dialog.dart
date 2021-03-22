@@ -1,24 +1,15 @@
 
 
-import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
-import 'package:mirror/constant/style.dart';
-import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/page/training/common/common_course_page.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/util/toast_util.dart';
-import 'package:mirror/widget/seekbar.dart';
-import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:volume_watcher/volume_watcher.dart';
 
 //底部设置面板
 Future openBottomOnlineManNumberDialog({
@@ -170,7 +161,7 @@ class _BottomUserPanelState extends State<BottomUserPanel> {
   }
 
 
-  void resetPage(name){
+  void resetPage(){
     if(mounted){
       setState(() {
 

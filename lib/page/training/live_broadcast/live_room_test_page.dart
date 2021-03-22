@@ -62,7 +62,7 @@ class _LiveRoomTestPageState extends XCState {
   }
 
   //退出界面
-  void exit(name){
+  void exit(){
     Future.delayed(Duration(milliseconds: 100),(){
       EventBus.getDefault().unRegister(pageName:EVENTBUS_LIVEROOM_TESTPAGE,registerName: EVENTBUS_LIVEROOM_EXIT);
       //退出聊天室

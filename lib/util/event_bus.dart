@@ -37,6 +37,8 @@ class EventBus{
   final Map<String,Map<String,StreamController>> _registerMap = new Map<String,Map<String,StreamController>>();
   //默认的广播类型
   final String defName = "default";
+  final String defMsg="no_data_msg_even_bus";
+  dynamic listener;
 
   EventBus._();
 
@@ -62,7 +64,13 @@ class EventBus{
       print('--------------_registerMap[registerName][pageName]==null');
       _registerMap[registerName][pageName]=StreamController.broadcast();
     }
-    _registerMap[registerName][pageName].stream.listen(listener);
+    _registerMap[registerName][pageName].stream.listen((msg){
+      if(msg==defMsg){
+        listener();
+      }else{
+        listener(msg);
+      }
+    });
   }
 
 
@@ -86,7 +94,7 @@ class EventBus{
   }
 
   //发送广播-msg消息-广播的类型
-  void post({dynamic msg,String registerName}){
+  void post({dynamic msg="no_data_msg_even_bus",String registerName}){
     print('--------------//进入post方法');
     if(null ==registerName){
       print('--------------registerName为空');
