@@ -18,6 +18,7 @@ import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/if_tab_bar.dart';
 import 'package:provider/provider.dart';
 
 import 'profile/profile_page.dart';
@@ -38,16 +39,6 @@ class MainPageState extends XCState {
   @override
   void initState() {
     super.initState();
-    normalIcons.add(AppIcon.getAppIcon(AppIcon.if_home, 24));
-    normalIcons.add(AppIcon.getAppIcon(AppIcon.if_training, 24));
-    normalIcons.add(AppIcon.getAppIcon(AppIcon.if_message, 24));
-    normalIcons.add(AppIcon.getAppIcon(AppIcon.if_profile, 24));
-
-    selectedIcons.add(AppIcon.getAppIcon(AppIcon.if_home, 24, color: AppColor.white));
-    selectedIcons.add(AppIcon.getAppIcon(AppIcon.if_training, 24, color: AppColor.white));
-    selectedIcons.add(AppIcon.getAppIcon(AppIcon.if_message, 24, color: AppColor.white));
-    selectedIcons.add(AppIcon.getAppIcon(AppIcon.if_profile, 24, color: AppColor.white));
-
     currentIndex = 0;
     _start = (ScreenUtil.instance.width / 5) / 7;
     EventBus.getDefault().register(_postFeedCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POSTFEED_CALLBACK);
@@ -215,39 +206,33 @@ class MainPageState extends XCState {
       // 此属性是重新计算布局空间大小
       // 内部元素要监听键盘高度必需要设置为false,
       // resizeToAvoidBottomInset: true,
-      bottomNavigationBar: BottomAppBar(
-          child: Stack(
-        children: <Widget>[
-          AnimatedPositionedDirectional(
-            top: 9,
-            start: _start,
-            width: itemWidth,
-            height: 32,
-            duration: Duration(milliseconds: 300),
-            child: Container(
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: AppColor.black),
-            ),
-          ),
-          Row(children: [
-            Expanded(
-              child: SizedBox(height: 51, width: itemWidth, child: tabbar(0, context, itemWidth)),
-              flex: 1,
-            ),
-            Expanded(
-              child: SizedBox(height: 51, width: itemWidth, child: tabbar(1, context, itemWidth)),
-              flex: 1,
-            ),
-            Expanded(
-              child: SizedBox(height: 51, width: itemWidth, child: tabbar(2, context, itemWidth)),
-              flex: 1,
-            ),
-            Expanded(
-              child: SizedBox(height: 51, width: itemWidth, child: tabbar(3, context, itemWidth)),
-              flex: 1,
-            )
-          ])
-        ],
-      )),
+      bottomNavigationBar: IFTabBar(
+        tabBarClickListener: (index) {
+          print('------------------------点击回调$index');
+          reload(() {
+            currentIndex = index;
+          });
+          if ((index == 2 || index == 3) && !context.read<TokenNotifier>().isLoggedIn) {
+            AppRouter.navigateToLoginPage(context);
+            return;
+          }
+          if (context.read<FeedMapNotifier>().value.unReadFeedCount == 0) {
+            _getUnReadFeedCount();
+          }
+          switch (index) {
+            case 0:
+              break;
+            case 1:
+              break;
+            case 2:
+              getUnReads();
+              break;
+            case 3:
+              _getFollowCount();
+              break;
+          }
+        },
+      ),
       // SlidingUpPanel
       body:
           // pages[currentIndex]
