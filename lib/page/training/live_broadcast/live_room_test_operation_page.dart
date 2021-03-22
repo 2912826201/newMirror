@@ -602,29 +602,22 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
       height: 44,
       child: Row(
         children: [
-          Container(
-            height: 44,
-            width: 44,
-            child: Center(
-              child: Text(
-                emojiModelList[64].emoji,
-                style: textStyle,
-              ),
-            ),
+          AppIconButton(
+            iconSize: 24,
+            svgName: AppIcon.message_emotion,
+            buttonWidth: 44,
+            buttonHeight: 44,
+            onTap: () {},
           ),
           Spacer(),
-          Container(
-            height: 44,
-            width: 44,
-            child: Center(
-              child: IconButton(
-                icon: Icon(
-                  Icons.send,
-                  size: 24,
-                ),
-                onPressed: () => _onSubmitClick(_textController.text),
-              ),
-            ),
+          AppIconButton(
+            iconSize: 24,
+            svgName: _textController.text == null || _textController.text.isEmpty
+                ? AppIcon.message_cant_send
+                : AppIcon.message_send,
+            buttonWidth: 44,
+            buttonHeight: 44,
+            onTap: () => _onSubmitClick(_textController.text),
           ),
         ],
       ),
