@@ -131,23 +131,28 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
       DataResponseModel topicModel = results[1];
       DataResponseModel feedModel = results[2];
       DataResponseModel courseModel = results[3];
-      if (courseModel != null && courseModel.list != null) {
+     /* print('-------------------------${courseModel.list}');
+      print('-------------------------${userModel.list}');
+      print('-------------------------${topicModel.list}');
+      print('-------------------------${feedModel.list}');*/
+      if (courseModel != null && courseModel.list.length!=0) {
         courseModel.list.forEach((v) {
           liveVideoList.add(LiveVideoModel.fromJson(v));
         });
       }
-      if (userModel != null && userModel.list.isNotEmpty) {
+
+      if (userModel != null && userModel.list.length!=0) {
         userModel.list.forEach((element) {
           print('model================ ${element.relation}');
         });
         userList.addAll(userModel.list);
       }
-      if (topicModel != null && topicModel.list.isNotEmpty) {
+      if (topicModel != null && topicModel.list.length!=0) {
         topicModel.list.forEach((v) {
           topicList.add(TopicDtoModel.fromJson(v));
         });
       }
-      if (feedModel != null && feedModel.list.isNotEmpty) {
+      if (feedModel != null && feedModel.list.length!=0) {
         feedModel.list.forEach((v) {
           feedList.add(HomeFeedModel.fromJson(v));
           lastTime = feedModel.lastTime;
