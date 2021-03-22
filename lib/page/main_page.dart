@@ -101,10 +101,6 @@ class MainPageState extends XCState {
           reload(() {
             currentIndex = index;
           });
-          if ((index == 2 || index == 3) && !context.read<TokenNotifier>().isLoggedIn) {
-            AppRouter.navigateToLoginPage(context);
-            return;
-          }
           if (context.read<FeedMapNotifier>().value.unReadFeedCount == 0) {
             _getUnReadFeedCount();
           }

@@ -332,7 +332,13 @@ class _SlideBannerState extends State<SlideBanner> {
     } else if (widget.model != null && widget.model.selectedMediaFiles != null) {
       cupertinoButtonList = localPicture(setAspectRatio(widget.height));
     }
-
+    double indexWidth;
+    if(imageCount>4){
+      //三个间距+三个小圆点加一个大圆点
+      indexWidth  = (3*4)+7+(3*4).toDouble();
+    }else{
+      indexWidth  = ((imageCount-1)*4)+7+((imageCount-1)*4).toDouble();
+    }
     return Container(
       child: Column(
         children: [
@@ -357,6 +363,11 @@ class _SlideBannerState extends State<SlideBanner> {
                       loop: false,
                       onIndexChanged: (index) {
                         autoPlay(index);
+                        if(index>1){
+                         controller.animateTo(((index-2)*(4+4)).toDouble(), duration: Duration(milliseconds: 250),
+                             curve:Cubic(1.0, 1.0, 1.0, 1.0));
+                        }
+
                       },
                       onTap: (index) {},
                     )),
@@ -394,11 +405,31 @@ class _SlideBannerState extends State<SlideBanner> {
                   initialData: zindex, //初始值
                   builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
                     return Container(
-                      width: getWidth(snapshot.data),
+                      width: indexWidth,
                       height: 10,
                       margin: const EdgeInsets.only(top: 5),
-                      // color: Colors.orange,
-                      child: ListView.builder(
+                      child: ListView.separated(
+                        physics: NeverScrollableScrollPhysics(),
+                        controller: controller,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          return  AnimatedContainer(
+                                  duration: Duration(milliseconds: 250),
+                                  height: snapshot.data!=index?4:7,
+                                  width:snapshot.data!=index?4:7,
+                                  decoration: BoxDecoration(
+                                      color: snapshot.data==index?Colors.black:Colors.transparent,
+                                      shape: BoxShape.circle),
+                                );
+                        },
+                        separatorBuilder: (BuildContext context, int index) =>
+                            VerticalDivider(
+                              width: 4,
+                              color: Color(0xFFFFFFFF),
+                            ),
+                        itemCount: imageCount,
+
+                      )/*ListView.builder(
                           scrollDirection: scrollDirection,
                           controller: controller,
                           itemCount: imageCount,
@@ -418,7 +449,7 @@ class _SlideBannerState extends State<SlideBanner> {
                                             ? AppColor.black
                                             : AppColor.textPrimary1.withOpacity(0.12),
                                         shape: BoxShape.circle)));
-                          }),
+                          }),*/
                     );
                   }))
         ],

@@ -14,7 +14,6 @@ import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/data/notifier/conversation_notifier.dart';
 import 'package:mirror/page/message/message_chat_page_manager.dart';
-import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/icon.dart';
@@ -245,8 +244,8 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
           SizedBox(
             width: 20,
           ),
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
+          AppIconButton(
+            iconSize: 24,
             onTap: () {
               if (_selectedUidList.contains(_friendList[index].uid)) {
                 _selectedUidList.remove(_friendList[index].uid);
@@ -260,32 +259,10 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
                 }
               }
             },
-            child: _selectedUidList.contains(_friendList[index].uid)
-                ? Container(
-                    height: 20,
-                    width: 20,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: AppColor.mainRed,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: AppColor.mainRed, width: 1),
-                    ),
-                    child: Icon(
-                      Icons.check,
-                      color: AppColor.white,
-                      size: 16,
-                    ),
-                  )
-                : Container(
-                    height: 20,
-                    width: 20,
-                    decoration: BoxDecoration(
-                      color: AppColor.transparent,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: AppColor.textHint, width: 1),
-                    ),
-                  ),
-          )
+            svgName: _selectedUidList.contains(_friendList[index].uid)
+                ? AppIcon.selection_selected
+                : AppIcon.selection_not_selected,
+          ),
         ],
       ),
     );
@@ -374,9 +351,9 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
                 SizedBox(
                   width: 12,
                 ),
-                Icon(
-                  Icons.group,
-                  size: 24,
+                AppIcon.getAppIcon(
+                  AppIcon.group_chat_24,
+                  24,
                   color: AppColor.textPrimary1,
                 ),
                 SizedBox(
@@ -387,9 +364,9 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
                   style: AppStyle.textRegular16,
                 ),
                 Spacer(),
-                Icon(
-                  Icons.chevron_right,
-                  size: 18,
+                AppIcon.getAppIcon(
+                  AppIcon.arrow_right_18,
+                  18,
                   color: AppColor.textHint,
                 ),
               ],
@@ -579,9 +556,9 @@ class _CreateGroupPopupState extends State<_CreateGroupPopup> {
             SizedBox(
               width: 26,
             ),
-            Icon(
-              Icons.chevron_right,
-              size: 18,
+            AppIcon.getAppIcon(
+              AppIcon.arrow_right_18,
+              18,
               color: AppColor.textHint,
             ),
           ],

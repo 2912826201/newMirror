@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 import 'package:connectivity/connectivity.dart';
@@ -24,6 +23,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_share_popups.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:mirror/api/training/live_api.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -330,7 +330,7 @@ class LiveDetailPageState extends XCState {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.headset),
+          AppIcon.getAppIcon(AppIcon.headset, 24),
           Text((liveModel.playType == 3 ? liveModel.getGetPlayType() : "试听")),
         ],
       ),
