@@ -300,7 +300,8 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
           print("关闭键盘");
         } else {
           print("显示键盘");
-          if (Application.keyboardHeight <= MediaQuery.of(this.context).viewInsets.bottom) {
+          if (Application.keyboardHeight < MediaQuery.of(this.context).viewInsets.bottom) {
+            print("-----------------------------------------");
             Application.keyboardHeight = MediaQuery.of(this.context).viewInsets.bottom;
             reload(() {});
           }
@@ -338,10 +339,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     if (conversation.getType() != RCConversationType.System) {
       bodyArray.add(getMessageInputBar());
       bodyArray.add(bottomSettingBox());
-      // bodyArray.add(Container(
-      //   height: MediaQuery.of(this.context).viewInsets.bottom>0?0.0:ScreenUtil.instance.bottomBarHeight,
-      //   color: AppColor.white,
-      // ));
+      bodyArray.add(Container(
+        height: ScreenUtil.instance.bottomBarHeight,
+        color: AppColor.white,
+      ));
     }
 
     //接收当前会话的新的消息
@@ -605,12 +606,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       child: Container(
         height: _emojiState ? keyboardHeight : 0.0,
         width: double.infinity,
-        decoration: BoxDecoration(
-          color: AppColor.white,
-          border: Border(
-            top: BorderSide(color: Colors.grey, width: 0.2),
-          ),
-        ),
+        color: AppColor.white,
         child: emojiList(keyboardHeight),
       ),
     );
@@ -631,6 +627,12 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
             behavior: NoBlueEffectBehavior(),
             child: CustomScrollView(
               slivers: [
+                SliverToBoxAdapter(
+                  child: Container(
+                    height: 0.2,
+                    color: Colors.grey,
+                  ),
+                ),
                 SliverToBoxAdapter(
                   child: _emojiGridTop(keyboardHeight),
                 ),

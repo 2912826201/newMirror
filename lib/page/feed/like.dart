@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
@@ -9,6 +8,7 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 
@@ -20,22 +20,13 @@ class Like extends StatefulWidget {
 }
 
 class LikeState extends State<Like> {
-  String text = "赞";
   List<FeedLaudListModel> laudListModel = [];
-
-  double offset(String texts) {
-    // 屏幕宽度减去文字宽度对半分
-    double half = (ScreenUtil.instance.screenWidthDp - getTextSize(texts, TextStyle(fontSize: 16), 1).width) / 2.0;
-
-    double offsetWidth = half - 16 - 28;
-    return offsetWidth;
-  }
 
   @override
   void initState() {
     requestFeedLuadList();
   }
-
+  // 请求点赞列表
   requestFeedLuadList() async {
     DataResponseModel model = await getFeedLaudList(targetId: widget.model.id);
     if (mounted) {
@@ -52,43 +43,14 @@ class LikeState extends State<Like> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Scaffold(
+        appBar: CustomAppBar(
+          titleString: "赞",
+        ),
+        body: Container(
       decoration: BoxDecoration(color: Colors.white),
       child: Column(
         children: [
-          Container(
-            height: 44.0,
-            width: ScreenUtil.instance.screenWidthDp,
-            margin: EdgeInsets.only(top: ScreenUtil.instance.statusBarHeight),
-            padding: EdgeInsets.only(left: 16),
-            decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                MyIconBtn(
-                  width: 28,
-                  height: 28,
-                  iconSting: "images/resource/2.0x/return2x.png",
-                  onPressed: () {
-                    Navigator.of(context).pop(true);
-                  },
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: offset(text)),
-                  child: Text(
-                    text,
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: AppColor.textPrimary1,
-                        fontWeight: FontWeight.w500,
-                        decoration: TextDecoration.none),
-                  ),
-                ),
-              ],
-            ),
-          ),
           Expanded(
               child: AnimationLimiter(
                   child: MediaQuery.removePadding(
@@ -117,7 +79,7 @@ class LikeState extends State<Like> {
                       ))))
         ],
       ),
-    );
+    ));
   }
 }
 
@@ -155,18 +117,25 @@ class LikeListViewItem extends StatelessWidget {
               Text(
                 "${model.nickName}",
                 // '用户昵称显示',
-                style: TextStyle(color: AppColor.textPrimary1, fontSize: 15, decoration: TextDecoration.none),
+                style: TextStyle(
+                  color: AppColor.textPrimary1,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
               Container(height: 2),
               Offstage(
                 offstage: model.description == null,
-                child:  Container(
+                child: Container(
                   width: ScreenUtil.instance.screenWidthDp - 32 - 38 - 38 - 12,
                   child: Text(
                     "${model.description}",
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: AppColor.textSecondary, fontSize: 12, decoration: TextDecoration.none),
+                    style: TextStyle(
+                      color: AppColor.textSecondary,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               )
