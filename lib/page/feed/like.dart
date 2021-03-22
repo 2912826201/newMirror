@@ -1,16 +1,15 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/data_response_model.dart';
 import 'package:mirror/data/model/home/feed_laud_list.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
-import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/util/text_util.dart';
-import 'package:mirror/widget/custom_button.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class Like extends StatefulWidget {
   Like({Key key, this.model}) : super(key: key);
@@ -20,104 +19,113 @@ class Like extends StatefulWidget {
 }
 
 class LikeState extends State<Like> {
-  String text = "赞";
   List<FeedLaudListModel> laudListModel = [];
 
-  double offset(String texts) {
-    // 屏幕宽度减去文字宽度对半分
-    double half = (ScreenUtil.instance.screenWidthDp - getTextSize(texts, TextStyle(fontSize: 16), 1).width) / 2.0;
+  // 请求下一页参数
+  int lastTime;
 
-    double offsetWidth = half - 16 - 28;
-    return offsetWidth;
-  }
+  // 是否存在下一页
+  int feedLuadHasNext;
+  RefreshController refreshController = RefreshController();
 
   @override
   void initState() {
     requestFeedLuadList();
   }
 
+  // 请求点赞列表
   requestFeedLuadList() async {
-    DataResponseModel model = await getFeedLaudList(targetId: widget.model.id);
+    if (feedLuadHasNext != 0) {
+      DataResponseModel model = await getFeedLaudList(targetId: widget.model.id, size: 20, lastTime: lastTime);
+      if (model != null && model.list.isNotEmpty) {
+        feedLuadHasNext = model.hasNext;
+        lastTime = model.lastTime;
+        model.list.forEach((v) {
+          laudListModel.add(FeedLaudListModel.fromJson(v));
+        });
+        refreshController.loadComplete();
+      } else {
+        refreshController.loadFailed();
+      }
+    }
+    if (feedLuadHasNext == 0) {
+      refreshController.loadNoData();
+    }
+    if(laudListModel.isNotEmpty) {
+      if(laudListModel.first.uid != null) {
+        laudListModel.insert(0, FeedLaudListModel());
+      }
+    }
     if (mounted) {
-      setState(() {
-        if (model.list.isNotEmpty) {
-          model.list.forEach((v) {
-            laudListModel.add(FeedLaudListModel.fromJson(v));
-          });
-          laudListModel.insert(0, FeedLaudListModel());
-        }
-      });
+      setState(() {});
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(color: Colors.white),
-      child: Column(
-        children: [
-          Container(
-            height: 44.0,
-            width: ScreenUtil.instance.screenWidthDp,
-            margin: EdgeInsets.only(top: ScreenUtil.instance.statusBarHeight),
-            padding: EdgeInsets.only(left: 16),
-            decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                MyIconBtn(
-                  width: 28,
-                  height: 28,
-                  iconSting: "images/resource/2.0x/return2x.png",
-                  onPressed: () {
-                    Navigator.of(context).pop(true);
-                  },
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: offset(text)),
-                  child: Text(
-                    text,
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: AppColor.textPrimary1,
-                        fontWeight: FontWeight.w500,
-                        decoration: TextDecoration.none),
-                  ),
-                ),
-              ],
-            ),
+    return Scaffold(
+        appBar: CustomAppBar(
+          titleString: "赞",
+        ),
+        body: Container(
+          decoration: BoxDecoration(color: Colors.white),
+          child: Column(
+            children: [
+              Expanded(
+                  child: AnimationLimiter(
+                      child: MediaQuery.removePadding(
+                          removeTop: true,
+                          context: context,
+                          child: ScrollConfiguration(
+                              behavior: NoBlueEffectBehavior(),
+                              child: SmartRefresher(
+                                enablePullUp: true,
+                                enablePullDown: false,
+                                controller: refreshController,
+                                footer: CustomFooter(
+                                  builder: (BuildContext context, LoadStatus mode) {
+                                    Widget body;
+                                    if (mode == LoadStatus.loading) {
+                                      body = Text("正在加载");
+                                    } else if (mode == LoadStatus.idle) {
+                                      body = Text("上拉加载更多");
+                                    } else if (mode == LoadStatus.failed) {
+                                      body = Text("加载失败,请重试");
+                                    } else {
+                                      body = Text("没有更多了");
+                                    }
+                                    return Container(
+                                      child: Center(
+                                        child: body,
+                                      ),
+                                    );
+                                  },
+                                ),
+                                onLoading: () {
+                                  requestFeedLuadList();
+                                },
+                                child: ListView.builder(
+                                  itemCount: laudListModel.length,
+                                  itemBuilder: (context, index) {
+                                    return AnimationConfiguration.staggeredList(
+                                      position: index,
+                                      duration: const Duration(milliseconds: 375),
+                                      child: SlideAnimation(
+                                        //滑动动画
+                                        verticalOffset: 50.0,
+                                        child: FadeInAnimation(
+                                            //渐隐渐现动画
+                                            child: index == 0
+                                                ? Container(height: 14)
+                                                : LikeListViewItem(model: laudListModel[index])),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              )))))
+            ],
           ),
-          Expanded(
-              child: AnimationLimiter(
-                  child: MediaQuery.removePadding(
-                      removeTop: true,
-                      context: context,
-                      child: ScrollConfiguration(
-                        behavior: NoBlueEffectBehavior(),
-                        child: ListView.builder(
-                          itemCount: laudListModel.length,
-                          itemBuilder: (context, index) {
-                            return AnimationConfiguration.staggeredList(
-                              position: index,
-                              duration: const Duration(milliseconds: 375),
-                              child: SlideAnimation(
-                                //滑动动画
-                                verticalOffset: 50.0,
-                                child: FadeInAnimation(
-                                    //渐隐渐现动画
-                                    child: index == 0
-                                        ? Container(height: 14)
-                                        : LikeListViewItem(model: laudListModel[index])),
-                              ),
-                            );
-                          },
-                        ),
-                      ))))
-        ],
-      ),
-    );
+        ));
   }
 }
 
@@ -142,7 +150,6 @@ class LikeListViewItem extends StatelessWidget {
               child: ClipOval(
                 child: Image.network(
                   model.avatarUrl,
-                  // "https://pic2.zhimg.com/v2-639b49f2f6578eabddc458b84eb3c6a1.jpg",
                   fit: BoxFit.cover,
                 ),
               ),
@@ -155,18 +162,25 @@ class LikeListViewItem extends StatelessWidget {
               Text(
                 "${model.nickName}",
                 // '用户昵称显示',
-                style: TextStyle(color: AppColor.textPrimary1, fontSize: 15, decoration: TextDecoration.none),
+                style: TextStyle(
+                  color: AppColor.textPrimary1,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
               Container(height: 2),
               Offstage(
                 offstage: model.description == null,
-                child:  Container(
+                child: Container(
                   width: ScreenUtil.instance.screenWidthDp - 32 - 38 - 38 - 12,
                   child: Text(
                     "${model.description}",
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: AppColor.textSecondary, fontSize: 12, decoration: TextDecoration.none),
+                    style: TextStyle(
+                      color: AppColor.textSecondary,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               )

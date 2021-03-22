@@ -12,6 +12,7 @@ import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
+import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/scale_view.dart';
 
 import 'training_gallery_page.dart';
@@ -75,7 +76,7 @@ class _TrainingGalleryDetailState extends State<TrainingGalleryDetailPage> {
           },
           actions: [
             CustomAppBarIconButton(
-                icon: Icons.more_horiz,
+                svgName: AppIcon.nav_more,
                 iconColor: AppColor.black,
                 onTap: () {
                   _showMorePopup(context, _imageList[_currentIndex]);
