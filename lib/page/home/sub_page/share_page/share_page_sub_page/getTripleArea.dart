@@ -108,9 +108,14 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
     if (context.select((TokenNotifier tokenNotifier) => tokenNotifier.isLoggedIn)) {
       avatarList.add(
         AnimatedContainer(
-            height:
-                context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 0 ? 0 : 21,
-            width: context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 0 ? 0 : 21,
+            height: (context.select((FeedMapNotifier value) => value.value.feedMap) != null &&
+                context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id]) != null &&
+                context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) != null &&
+                context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 1) ? 21 : 0,
+            width: (context.select((FeedMapNotifier value) => value.value.feedMap) != null &&
+                context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id]) != null &&
+                context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) != null &&
+                context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 1) ? 21 : 0,
             alignment: Alignment.center,
             child: roundedAvatar(
                 context, context.select((ProfileNotifier profileNotifier) => profileNotifier.profile.avatarUri)),
