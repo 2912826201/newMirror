@@ -12,6 +12,7 @@ class AppIcon {
   static const String nav_search = "assets/svg/nav_search.svg";
   static const String nav_share = "assets/svg/nav_share.svg";
   static const String nav_add_favorites = "assets/svg/nav_add_favorites.svg";
+  static const String nav_more = "assets/svg/nav_more.svg";
   static const String input_at = "assets/svg/input_at.svg";
   static const String input_keyboard = "assets/svg/input_keyboard.svg";
   static const String input_voice = "assets/svg/input_voice.svg";

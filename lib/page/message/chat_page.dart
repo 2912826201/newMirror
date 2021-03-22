@@ -403,14 +403,14 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         titleString: chatName ?? "",
         subtitleString: userNumber > 0 ? "($userNumber)" : null,
         actions: [
-          CustomAppBarIconButton(icon: Icons.more_horiz, iconColor: AppColor.black, onTap: _topMoreBtnClick),
+          CustomAppBarIconButton(svgName: AppIcon.nav_more, iconColor: AppColor.black, onTap: _topMoreBtnClick),
         ],
       );
     } else {
       return CustomAppBar(
         titleString: chatName ?? "",
         actions: [
-          CustomAppBarIconButton(icon: Icons.more_horiz, iconColor: AppColor.black, onTap: _topMoreBtnClick),
+          CustomAppBarIconButton(svgName: AppIcon.nav_more, iconColor: AppColor.black, onTap: _topMoreBtnClick),
         ],
       );
     }
