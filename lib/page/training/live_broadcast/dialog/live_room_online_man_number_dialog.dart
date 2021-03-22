@@ -1,18 +1,23 @@
 
 
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
+import 'package:mirror/data/model/message/chat_type_model.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/page/training/common/common_course_page.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/seekbar.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:volume_watcher/volume_watcher.dart';
 
 //底部设置面板
@@ -50,6 +55,19 @@ class _BottomUserPanelState extends State<BottomUserPanel> {
   @override
   void initState() {
     super.initState();
+    EventBus.getDefault().register(
+        resetPage,
+        EVENTBUS_BOTTOM_USER_PANEL_DIALOG,
+        registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    EventBus.getDefault().unRegister(
+        pageName:EVENTBUS_BOTTOM_USER_PANEL_DIALOG,
+        registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET
+    );
   }
 
   @override
@@ -60,7 +78,7 @@ class _BottomUserPanelState extends State<BottomUserPanel> {
         color: AppColor.white,
       ),
       constraints: BoxConstraints(
-        maxHeight: 48.0*max(1, min(7, widget.onlineManList.length))+44+10+ScreenUtil.instance.bottomBarHeight,
+        maxHeight: 48.0*7+44+10+ScreenUtil.instance.bottomBarHeight,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -105,7 +123,7 @@ class _BottomUserPanelState extends State<BottomUserPanel> {
   Widget getListView(){
     return Container(
       constraints: BoxConstraints(
-        maxHeight: 48.0*max(1, min(7, widget.onlineManList.length)),
+        maxHeight: 48.0*7,
       ),
       child: ListView.builder(
         physics: BouncingScrollPhysics(),
@@ -121,14 +139,14 @@ class _BottomUserPanelState extends State<BottomUserPanel> {
   Widget getListViewItem(BuddyModel buddyModel,int index){
     return Container(
       height: 48.0,
-      padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
           getUserImage(buddyModel.avatarUri,28,28),
           SizedBox(width: 12),
           Expanded(child: SizedBox(child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 buddyModel.nickName,
@@ -136,9 +154,10 @@ class _BottomUserPanelState extends State<BottomUserPanel> {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
+              SizedBox(height: 1),
               Text(
                 DateUtil.formatTimeString(DateUtil.getDateTimeByMs(buddyModel.time))+
-                "进入了直播间",
+                " 进入了直播间",
                 style: TextStyle(fontSize: 10,color: AppColor.textSecondary),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -148,6 +167,15 @@ class _BottomUserPanelState extends State<BottomUserPanel> {
         ],
       ),
     );
+  }
+
+
+  void resetPage(name){
+    if(mounted){
+      setState(() {
+
+      });
+    }
   }
 }
 

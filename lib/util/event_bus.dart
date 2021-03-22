@@ -99,6 +99,7 @@ class EventBus{
  const String  EVENTBUS_MAIN_PAGE = "main_page";
  const String  EVENTBUS_LIVEROOM_TESTPAGE = "LiveRoomTestPage";
  const String  EVENTBUS_ROOM_OPERATION_PAGE = "LiveRoomTestOperationPage";
+ const String  EVENTBUS_BOTTOM_USER_PANEL_DIALOG = "BottomUserPanelDialog";
 
 
  ///广播类型
@@ -107,3 +108,5 @@ class EventBus{
  const String  EVENTBUS_LIVEROOM_EXIT = "liveRoomTestPage_exit";
  //直播界面接收弹幕功能
  const String  EVENTBUS_ROOM_RECEIVE_BARRAGE = "LiveRoomTestOperationPage_receive_barrage";
+ //直播在线人数dailog刷新界面
+ const String  EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET = "BottomUserPanelDialogReset";

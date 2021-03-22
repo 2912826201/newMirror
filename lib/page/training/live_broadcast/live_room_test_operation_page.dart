@@ -19,6 +19,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:text_span_field/text_span_field.dart';
 
@@ -74,6 +75,7 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
   ///表情的列表
   List<EmojiModel> emojiModelList = <EmojiModel>[];
   List<BuddyModel> onlineManList = <BuddyModel>[];
+  List<int> onlineManUidList = <int>[];
 
   bool _emojiState=false;
 
@@ -84,7 +86,6 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
   Timer timer;
   Widget timeText;
   Widget onlineMenNumberText;
-  Widget otherOnlineUserUi;
 
   List<String> urlImageList= <String>[];
 
@@ -104,7 +105,6 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
 
     timeText=LiveRoomPageCommon.init().getLiveRoomShowTimeUi(widget.startTime);
     onlineMenNumberText=LiveRoomPageCommon.init().getLiveOnlineMenNumberUi(onlineUserNumber);
-    otherOnlineUserUi=LiveRoomPageCommon.init().getOtherOnlineUserImageUi(urlImageList);
 
     messageChatList.add(UserMessageModel(messageContent: "请遵守直播间规则"*10));
     messageChatList.insert(0, UserMessageModel(
@@ -213,7 +213,26 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
       child: Row(
         children: [
           Expanded(child: SizedBox()),
-          otherOnlineUserUi,
+          Container(
+            width: 21.0*3-12.0,
+            height: 21.0,
+            child: Stack(
+              children: [
+                Positioned(
+                  child: LiveRoomPageCommon.init().getUserImage(urlImageList[2],21,21),
+                  right: 0,
+                ),
+                Positioned(
+                  child: LiveRoomPageCommon.init().getUserImage(urlImageList[1],21,21),
+                  right: 12,
+                ),
+                Positioned(
+                  child: LiveRoomPageCommon.init().getUserImage(urlImageList[0],21,21),
+                  right: 24,
+                ),
+              ],
+            ),
+          ),
           SizedBox(width: 6),
           Text("一起运动",style: TextStyle(fontSize: 10,color: AppColor.white.withOpacity(0.85))),
           SizedBox(width: 16),
@@ -499,15 +518,18 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
         child: Container(
           width: double.infinity,
           color: AppColor.transparent,
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: _emojiGridTop(keyboardHeight),
-              ),
-              SliverToBoxAdapter(
-                child: _emojiBottomBox(),
-              ),
-            ],
+          child: ScrollConfiguration(
+            behavior: NoBlueEffectBehavior(),
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: _emojiGridTop(keyboardHeight),
+                ),
+                SliverToBoxAdapter(
+                  child: _emojiBottomBox(),
+                ),
+              ],
+            ),
           ),
         ),
         onTap: () {},
@@ -760,18 +782,37 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
   void initData()async{
     //获取表情的数据
     emojiModelList = await EmojiManager.getEmojiModelList();
-    Map<String, dynamic> map = await roomInfo(widget.coachId);
+    Map<String, dynamic> map = await roomInfo(widget.coachId,count: 1);
     if(null!=map["data"]["total"]){
       resetOnlineUserNumber(map["data"]["total"]);
     }
     if(null!=map["data"]["userList"]){
       map["data"]["userList"].forEach((v) {
+        BuddyModel buddyModel=BuddyModel.fromJson(v);
         onlineManList.add(BuddyModel.fromJson(v));
+        onlineManUidList.add(buddyModel.uid);
       });
     }
+    getAllOnlineUserNumber(onlineUserNumber);
     resetOnlineUserImage();
-
   }
+
+  //获取所有的在线人数
+  void getAllOnlineUserNumber(int number)async{
+    print("number:$number");
+    Map<String, dynamic> map = await roomInfo(widget.coachId,count: number);
+    if(null!=map["data"]["userList"]){
+      map["data"]["userList"].forEach((v) {
+        BuddyModel buddyModel=BuddyModel.fromJson(v);
+        if(!onlineManUidList.contains(buddyModel.uid)){
+          onlineManList.add(buddyModel);
+          onlineManUidList.add(buddyModel.uid);
+        }
+      });
+      EventBus.getDefault().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
+    }
+  }
+
 
   //监听动画是否开始
   void _initTimeDuration() {
@@ -811,9 +852,13 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
     buddyModel.uid=int.parse(textMessage.sendUserInfo.userId);
     buddyModel.avatarUri=textMessage.sendUserInfo.portraitUri;
     buddyModel.nickName=textMessage.sendUserInfo.name;
-    buddyModel.time=new DateTime.now().microsecondsSinceEpoch;
-    onlineManList.add(buddyModel);
-    resetOnlineUserImage();
+    buddyModel.time=new DateTime.now().millisecondsSinceEpoch;
+    onlineManList.insert(0,buddyModel);
+    onlineManUidList.insert(0,buddyModel.uid);
+    EventBus.getDefault().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
+    if(onlineManList.length<3){
+      resetOnlineUserImage();
+    }
   }
 
 
@@ -825,14 +870,22 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
         break;
       }
     }
-    resetOnlineUserImage();
+    for(int i=0;i<onlineManUidList.length;i++){
+      if(onlineManUidList[i].toString()==textMessage.sendUserInfo.userId.toString()){
+        onlineManUidList.removeAt(i);
+        break;
+      }
+    }
+    EventBus.getDefault().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
+    if(onlineManList.length<3){
+      resetOnlineUserImage();
+    }
   }
 
 
 
   //刷新头像
   void resetOnlineUserImage(){
-
     if(onlineManList.length>0){
       urlImageList.clear();
       if(onlineManList.length>2){
@@ -850,7 +903,6 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
       }
       print("11111:${urlImageList.toString()}");
       if(mounted) {
-        otherOnlineUserUi=LiveRoomPageCommon.init().getOtherOnlineUserImageUi(urlImageList);
         setState(() {
 
         });
