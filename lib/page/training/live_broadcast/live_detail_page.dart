@@ -785,6 +785,7 @@ class LiveDetailPageState extends XCState {
       });
     } else {
       liveModel = LiveVideoModel.fromJson(model);
+      print("liveCourseState:${liveModel.liveCourseState}");
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
       if(mounted){
         reload(() {});
@@ -815,6 +816,7 @@ class LiveDetailPageState extends XCState {
       showAppDialog(context,
           title: "取消预约",
           info: "确认取消预约吗？",
+          barrierDismissible:false,
           cancel: AppDialogButton("取消", () {
             print("点了取消");
             return true;
