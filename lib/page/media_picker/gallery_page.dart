@@ -589,7 +589,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                           shape: BoxShape.circle,
                           border: Border.all(color: AppColor.mainRed, width: 1),
                         ),
-                        child: widget.maxImageAmount == 1
+                        child: widget.maxImageAmount == 1 && widget.startCount == 0
                             ? Icon(
                                 Icons.check,
                                 color: AppColor.white,
