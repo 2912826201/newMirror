@@ -1,10 +1,8 @@
 //  点赞，转发，评论三连区域
-import 'package:animate_do/animate_do.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mirror/api/api.dart';
 import 'package:mirror/api/home/home_feed_api.dart';
-import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/data/model/base_response_model.dart';
@@ -16,10 +14,6 @@ import 'package:mirror/data/notifier/profile_notifier.dart';
 import 'package:mirror/data/notifier/release_progress_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
-import 'package:mirror/page/feed/like.dart';
-import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
-import 'package:mirror/page/if_page.dart';
-import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -54,21 +48,26 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Selector<FeedMapNotifier, List<String>>(builder: (context, laudUserInfo, child) {
-              return Container(
-                  width: laudUserInfo.length == 1
-                      ? 21
-                      : laudUserInfo.length == 2
-                          ? 31
-                          : laudUserInfo.length >= 3
-                              ? 41
-                              : 21,
-                  margin: EdgeInsets.only(left: 16),
-                  // color: AppColor.mainRed,
-                  child: Stack(
-                    overflow: Overflow.visible,
-                    alignment: const FractionalOffset(0, 0.5),
-                    children: avatarOverlap(laudUserInfo.length, context, laudUserInfo),
-                  ));
+              return GestureDetector(
+                onTap: () {
+                  jumpLike(context);
+                },
+                child: Container(
+                    width: laudUserInfo.length == 1
+                        ? 21
+                        : laudUserInfo.length == 2
+                            ? 31
+                            : laudUserInfo.length >= 3
+                                ? 41
+                                : 21,
+                    height: 21,
+                    margin: EdgeInsets.only(left: 16),
+                    child: Stack(
+                      overflow: Overflow.visible,
+                      alignment: const FractionalOffset(0, 0.5),
+                      children: avatarOverlap(laudUserInfo.length, context, laudUserInfo),
+                    )),
+              );
             }, selector: (context, notifier) {
               return (notifier.value.feedMap == null || notifier.value.feedMap[widget.model.id] == null)
                   ? <String>[]
@@ -109,13 +108,17 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
       avatarList.add(
         AnimatedContainer(
             height: (context.select((FeedMapNotifier value) => value.value.feedMap) != null &&
-                context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id]) != null &&
-                context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) != null &&
-                context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 1) ? 21 : 0,
+                    context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id]) != null &&
+                    context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) != null &&
+                    context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 1)
+                ? 21
+                : 0,
             width: (context.select((FeedMapNotifier value) => value.value.feedMap) != null &&
-                context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id]) != null &&
-                context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) != null &&
-                context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 1) ? 21 : 0,
+                    context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id]) != null &&
+                    context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) != null &&
+                    context.select((FeedMapNotifier value) => value.value.feedMap[widget.model.id].isLaud) == 1)
+                ? 21
+                : 0,
             alignment: Alignment.center,
             child: roundedAvatar(
                 context, context.select((ProfileNotifier profileNotifier) => profileNotifier.profile.avatarUri)),
@@ -165,7 +168,7 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
 
   // 头像动画偏移位置
   avatarOffset(List<String> userInfo, int index, {String item}) {
-    if(index == 3) {
+    if (index == 3) {
       return 20.5 + (index - 1) * 10.0;
     } else {
       return 10.5 + (index - 1) * 10.0;
@@ -214,14 +217,9 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
 
   // 横排头像默认值
   roundedAvatar(BuildContext context, String url, {double radius = 10.5}) {
-    return GestureDetector(
-      onTap: () {
-        jumpLike(context);
-      },
-      child: CircleAvatar(
-        backgroundImage: NetworkImage(url) ?? AssetImage("images/test/yxlm9.jpeg"),
-        maxRadius: radius,
-      ),
+    return CircleAvatar(
+      backgroundImage: NetworkImage(url) ?? AssetImage("images/test/yxlm9.jpeg"),
+      maxRadius: radius,
     );
   }
 
