@@ -110,7 +110,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
               elevation: 0.5,
               brightness: Brightness.light,
               backgroundColor: AppColor.white,
-              expandedHeight: CustomAppBar.appBarHeight + ScreenUtil.instance.statusBarHeight + 12,
+              expandedHeight: CustomAppBar.appBarHeight + ScreenUtil.instance.statusBarHeight +36.0,
               flexibleSpace: buildFlexibleSpaceBar(),
               bottom: buildTabBar(),
             ),

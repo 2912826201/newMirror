@@ -776,7 +776,7 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
   void initData()async{
     //获取表情的数据
     emojiModelList = await EmojiManager.getEmojiModelList();
-    Map<String, dynamic> map = await roomInfo(widget.coachId,count: 1);
+    Map<String, dynamic> map = await roomInfo(widget.coachId,count: 3);
     if(null!=map["data"]["total"]){
       resetOnlineUserNumber(map["data"]["total"]);
     }
@@ -796,12 +796,12 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
     print("number:$number");
     Map<String, dynamic> map = await roomInfo(widget.coachId,count: number);
     if(null!=map["data"]["userList"]){
+      onlineManList.clear();
+      onlineManUidList.clear();
       map["data"]["userList"].forEach((v) {
         BuddyModel buddyModel=BuddyModel.fromJson(v);
-        if(!onlineManUidList.contains(buddyModel.uid)){
-          onlineManList.add(buddyModel);
-          onlineManUidList.add(buddyModel.uid);
-        }
+        onlineManList.add(buddyModel);
+        onlineManUidList.add(buddyModel.uid);
       });
       EventBus.getDefault().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
     }
