@@ -150,7 +150,6 @@ class LikeListViewItem extends StatelessWidget {
               child: ClipOval(
                 child: Image.network(
                   model.avatarUrl,
-                  // "https://pic2.zhimg.com/v2-639b49f2f6578eabddc458b84eb3c6a1.jpg",
                   fit: BoxFit.cover,
                 ),
               ),
