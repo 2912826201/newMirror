@@ -45,6 +45,7 @@ import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:mirror/widget/interactiveviewer/interactive_video_item.dart';
 import 'package:mirror/widget/interactiveviewer/interactiveview_video_or_image_demo.dart';
+import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:text_span_field/text_span_field.dart';
@@ -625,15 +626,18 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         child: Container(
           width: double.infinity,
           color: AppColor.transparent,
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: _emojiGridTop(keyboardHeight),
-              ),
-              SliverToBoxAdapter(
-                child: _emojiBottomBox(),
-              ),
-            ],
+          child: ScrollConfiguration(
+            behavior: NoBlueEffectBehavior(),
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: _emojiGridTop(keyboardHeight),
+                ),
+                SliverToBoxAdapter(
+                  child: _emojiBottomBox(),
+                ),
+              ],
+            ),
           ),
         ),
         onTap: () {},

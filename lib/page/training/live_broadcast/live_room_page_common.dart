@@ -140,7 +140,7 @@ class LiveRoomPageCommon{
     if(null==userMessageModel.messageContent||userMessageModel.messageContent.length<1){
       return;
     }
-    print("userMessageModel.isJoinLiveRoomMessage:${userMessageModel.isJoinLiveRoomMessage}");
+    // print("userMessageModel.isJoinLiveRoomMessage:${userMessageModel.isJoinLiveRoomMessage}");
     if(null!=userMessageModel.name&&userMessageModel.name.length>0){
       textArray.add("${userMessageModel.name} : ");
       if(userMessageModel.uId.toString()==Application.profile.uid.toString()){
@@ -150,7 +150,7 @@ class LiveRoomPageCommon{
       }
     }
     if(userMessageModel.isJoinLiveRoomMessage!=null&&userMessageModel.isJoinLiveRoomMessage){
-      textArray.add(userMessageModel.messageContent+"-自定义加入直播间");
+      textArray.add(userMessageModel.messageContent);
     }else{
       textArray.add(userMessageModel.messageContent);
     }
