@@ -254,7 +254,7 @@ class SliverCustomHeaderDelegateVideo extends SliverPersistentHeaderDelegate {
                             },
                           ),
                           CustomAppBarIconButton(
-                            icon: Icons.share,
+                            svgName: AppIcon.nav_share,
                             iconColor: AppColor.white,
                             onTap: shareBtnClick,
                           ),

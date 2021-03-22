@@ -10,6 +10,8 @@ class AppIcon {
   static const String nav_close = "assets/svg/nav_close.svg";
   static const String nav_camera = "assets/svg/nav_camera.svg";
   static const String nav_search = "assets/svg/nav_search.svg";
+  static const String nav_share = "assets/svg/nav_share.svg";
+  static const String nav_add_favorites = "assets/svg/nav_add_favorites.svg";
   static const String input_at = "assets/svg/input_at.svg";
   static const String input_keyboard = "assets/svg/input_keyboard.svg";
   static const String input_voice = "assets/svg/input_voice.svg";
@@ -62,12 +64,21 @@ class AppIcon {
   static const String volume = "assets/svg/volume.svg";
   static const String luminance = "assets/svg/luminance.svg";
   static const String filter = "assets/svg/filter.svg";
+  static const String play_48 = "assets/svg/play_48.svg";
   static const String pause_28 = "assets/svg/pause_28.svg";
+  static const String pause_48 = "assets/svg/pause_48.svg";
   static const String skip_previous_28 = "assets/svg/skip_previous_28.svg";
+  static const String skip_previous_60 = "assets/svg/skip_previous_60.svg";
   static const String skip_next_28 = "assets/svg/skip_next_28.svg";
+  static const String skip_next_60 = "assets/svg/skip_next_60.svg";
   static const String settings_24 = "assets/svg/settings_24.svg";
   static const String danmaku_on = "assets/svg/danmaku_on.svg";
   static const String danmaku_off = "assets/svg/danmaku_off.svg";
+  static const String camera_24 = "assets/svg/camera_24.svg";
+  static const String score_16 = "assets/svg/score_16.svg";
+  static const String calorie_16 = "assets/svg/calorie_16.svg";
+  static const String time_16 = "assets/svg/time_16.svg";
+  static const String headset = "assets/svg/headset.svg";
 
   static const String qrcode_scan = "assets/svg/qrcode_scan.svg";
 
