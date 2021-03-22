@@ -334,7 +334,8 @@ class _SlideBannerState extends State<SlideBanner> {
     }
     double indexWidth;
     if(imageCount>4){
-      indexWidth  = (3*4)+7+(4*4).toDouble();
+      //三个间距+三个小圆点加一个大圆点
+      indexWidth  = (3*4)+7+(3*4).toDouble();
     }else{
       indexWidth  = ((imageCount-1)*4)+7+((imageCount-1)*4).toDouble();
     }
@@ -408,6 +409,7 @@ class _SlideBannerState extends State<SlideBanner> {
                       height: 10,
                       margin: const EdgeInsets.only(top: 5),
                       child: ListView.separated(
+                        physics: NeverScrollableScrollPhysics(),
                         controller: controller,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index) {

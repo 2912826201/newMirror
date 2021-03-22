@@ -103,7 +103,7 @@ class SearchCourseState extends State<SearchCourse> with AutomaticKeepAliveClien
       DataResponseModel model = await searchCourse(key: widget.keyWord, size: 20, lastTime: lastTime);
       lastTime = model.lastTime;
       hasNext = model.hasNext;
-      if (model.list.isNotEmpty) {
+      if (model.list.length!=0) {
         model.list.forEach((v) {
           liveVideoList.add(LiveVideoModel.fromJson(v));
         });
