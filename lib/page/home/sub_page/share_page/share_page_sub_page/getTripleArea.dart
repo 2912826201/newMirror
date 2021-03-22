@@ -160,7 +160,11 @@ class GetTripleAreaState extends State<GetTripleArea> with TickerProviderStateMi
 
   // 头像动画偏移位置
   avatarOffset(List<String> userInfo, int index, {String item}) {
-    return 10.5 + (index - 1) * 10.0;
+    if(index == 3) {
+      return 20.5 + (index - 1) * 10.0;
+    } else {
+      return 10.5 + (index - 1) * 10.0;
+    }
   }
 
   // 跳转点赞页
