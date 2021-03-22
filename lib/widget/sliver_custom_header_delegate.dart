@@ -224,7 +224,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
                         ),
                       )),
                       CustomAppBarIconButton(
-                        icon: Icons.share,
+                        svgName: AppIcon.nav_share,
                         iconColor: this.makeStickyHeaderTextColor(shrinkOffset, true),
                         onTap: shareBtnClick,
                       ),

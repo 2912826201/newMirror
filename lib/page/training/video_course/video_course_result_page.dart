@@ -7,15 +7,11 @@ import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
 import 'package:mirror/constant/style.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
-import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/data/notifier/user_interactive_notifier.dart';
-import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
-import 'package:provider/provider.dart';
 
 /// video_course_result_page
 /// Created by yangjiayi on 2021/1/14.
@@ -93,7 +89,7 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 AppIcon.getAppIcon(
-                  AppIcon.nav_camera,
+                  AppIcon.camera_24,
                   24,
                   color: AppColor.white,
                 ),
@@ -185,10 +181,9 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Icon(
-                                    Icons.watch_later_outlined,
-                                    color: AppColor.textHint,
-                                    size: 12,
+                                  AppIcon.getAppIcon(AppIcon.score_16, 16),
+                                  SizedBox(
+                                    width: 2,
                                   ),
                                   Text(
                                     "动作匹配得分",
@@ -210,8 +205,11 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                                 crossAxisAlignment: CrossAxisAlignment.baseline,
                                 children: [
                                   Text(
-                                    "${IntegerUtil.formationCalorie(widget.result.calorie,isHaveCompany: false)}",
+                                    "${IntegerUtil.formationCalorie(widget.result.calorie, isHaveCompany: false)}",
                                     style: TextStyle(color: AppColor.textPrimary2, fontSize: 23),
+                                  ),
+                                  SizedBox(
+                                    width: 2,
                                   ),
                                   Text(
                                     "千卡",
@@ -226,10 +224,9 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Icon(
-                                    Icons.watch_later_outlined,
-                                    color: AppColor.textHint,
-                                    size: 12,
+                                  AppIcon.getAppIcon(AppIcon.calorie_16, 16),
+                                  SizedBox(
+                                    width: 2,
                                   ),
                                   Text(
                                     "累计消耗热量",
@@ -254,6 +251,9 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                                     "${widget.result.mseconds ~/ 60000}",
                                     style: TextStyle(color: AppColor.textPrimary2, fontSize: 23),
                                   ),
+                                  SizedBox(
+                                    width: 2,
+                                  ),
                                   Text(
                                     "分钟",
                                     style: TextStyle(color: AppColor.textPrimary3, fontSize: 12),
@@ -267,10 +267,9 @@ class _VideoCourseResultState extends State<VideoCourseResultPage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Icon(
-                                    Icons.watch_later_outlined,
-                                    color: AppColor.textHint,
-                                    size: 12,
+                                  AppIcon.getAppIcon(AppIcon.time_16, 16),
+                                  SizedBox(
+                                    width: 2,
                                   ),
                                   Text(
                                     "训练时长",

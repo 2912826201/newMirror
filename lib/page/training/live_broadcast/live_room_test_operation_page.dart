@@ -16,6 +16,7 @@ import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
+import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:mirror/widget/icon.dart';
@@ -184,16 +185,14 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
       margin: EdgeInsets.symmetric(horizontal: 16),
       alignment: Alignment.centerRight,
       child: UnconstrainedBox(
-        child: GestureDetector(
-          child: Container(
-            width: 32.0,
-            height: 32.0,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(16)),
-              color: AppColor.white.withOpacity(0.06),
-            ),
-            child: Icon(Icons.close,color: AppColor.white,size: 12),
-          ),
+        child: AppIconButton(
+          svgName: AppIcon.close_24,
+          iconColor: AppColor.white,
+          iconSize: 24,
+          bgColor: AppColor.white.withOpacity(0.06),
+          isCircle: true,
+          buttonWidth: 32,
+          buttonHeight: 32,
           onTap: _exitPageListener,
         ),
       ),
@@ -681,16 +680,14 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
       child: Row(
         children: [
           Expanded(child: SizedBox(child: getTextEditUi())),
-          GestureDetector(
-            child: Container(
-              width: 32.0,
-              height: 32.0,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(16)),
-                color: AppColor.white.withOpacity(0.06),
-              ),
-              child: Icon(Icons.closed_caption_disabled_outlined,color: AppColor.white,size: 12),
-            ),
+          AppIconButton(
+            svgName: isCleaningMode?AppIcon.danmaku_on:AppIcon.danmaku_off,
+            iconColor: AppColor.white,
+            iconSize: 24,
+            bgColor: AppColor.white.withOpacity(0.06),
+            isCircle: true,
+            buttonWidth: 32,
+            buttonHeight: 32,
             onTap: (){
               setState(() {
                 isCleaningMode=!isCleaningMode;
@@ -698,31 +695,28 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
             },
           ),
           SizedBox(width: 12),
-          GestureDetector(
-            child: Container(
-              width: 32.0,
-              height: 32.0,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(16)),
-                color: AppColor.white.withOpacity(0.06),
-              ),
-              child: Icon(Icons.settings,color: AppColor.white,size: 12),
-            ),
-            onTap:(){
+
+          AppIconButton(
+            svgName: AppIcon.settings_24,
+            iconColor: AppColor.white,
+            iconSize: 24,
+            bgColor: AppColor.white.withOpacity(0.06),
+            isCircle: true,
+            buttonWidth: 32,
+            buttonHeight: 32,
+            onTap: (){
               openBottomSetDialog(buildContext:context,voidCallback:_isCleaningMode);
             },
           ),
           SizedBox(width: 12),
-          GestureDetector(
-            child: Container(
-              width: 32.0,
-              height: 32.0,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(16)),
-                color: AppColor.white.withOpacity(0.06),
-              ),
-              child: Icon(Icons.close,color: AppColor.white,size: 12),
-            ),
+          AppIconButton(
+            svgName: AppIcon.close_24,
+            iconColor: AppColor.white,
+            iconSize: 24,
+            bgColor: AppColor.white.withOpacity(0.06),
+            isCircle: true,
+            buttonWidth: 32,
+            buttonHeight: 32,
             onTap: _exitPageListener,
           ),
         ],

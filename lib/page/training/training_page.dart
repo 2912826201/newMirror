@@ -222,12 +222,7 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    //TODO 之后替换图标
-                    Icon(
-                      Icons.link,
-                      size: 16,
-                      color: AppColor.black,
-                    ),
+                    AppIcon.getAppIcon(AppIcon.machine_connection, 16),
                     SizedBox(
                       width: 4,
                     ),
@@ -291,12 +286,12 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
                           ),
                           notifier.machine.status == 0
                               ? AppIcon.getAppIcon(
-                                  AppIcon.machine_disconnected,
+                                  AppIcon.machine_disconnected_18,
                                   18,
                                   color: AppColor.textPrimary2,
                                 )
                               : AppIcon.getAppIcon(
-                                  AppIcon.machine_connected,
+                                  AppIcon.machine_connected_18,
                                   18,
                                   color: AppColor.textPrimary2,
                                 ),
@@ -477,11 +472,9 @@ class _TrainingState extends State<TrainingPage> with AutomaticKeepAliveClientMi
                 SizedBox(
                   width: 4,
                 ),
-                //TODO 之后替换图标
-                Icon(
-                  Icons.add_circle_outline,
-                  size: 16,
-                  color: AppColor.textPrimary1,
+                AppIcon.getAppIcon(
+                  AppIcon.add_circle_white,
+                  16,
                 ),
               ],
             ),
