@@ -328,9 +328,13 @@ Future<int> laudComment({@required int commentId, @required int laud}) async {
 }
 
 //   动态点赞列表  GETFEEDLAUDLIST
-Future<DataResponseModel> getFeedLaudList({@required int targetId}) async {
+Future<DataResponseModel> getFeedLaudList({@required int targetId,  @required int size,int lastTime}) async {
   Map<String, dynamic> params = {};
   params["targetId"] = targetId;
+  params["size"] = size;
+  if(lastTime != null) {
+    params["lastTime"] = lastTime;
+  }
   BaseResponseModel responseModel = await requestApi(GETFEEDLAUDLIST, params);
   if (responseModel.isSuccess) {
     DataResponseModel dataResponseModel;
