@@ -602,29 +602,22 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
       height: 44,
       child: Row(
         children: [
-          Container(
-            height: 44,
-            width: 44,
-            child: Center(
-              child: Text(
-                emojiModelList[64].emoji,
-                style: textStyle,
-              ),
-            ),
+          AppIconButton(
+            iconSize: 24,
+            svgName: AppIcon.message_emotion,
+            buttonWidth: 44,
+            buttonHeight: 44,
+            onTap: () {},
           ),
           Spacer(),
-          Container(
-            height: 44,
-            width: 44,
-            child: Center(
-              child: IconButton(
-                icon: Icon(
-                  Icons.send,
-                  size: 24,
-                ),
-                onPressed: () => _onSubmitClick(_textController.text),
-              ),
-            ),
+          AppIconButton(
+            iconSize: 24,
+            svgName: _textController.text == null || _textController.text.isEmpty
+                ? AppIcon.message_cant_send
+                : AppIcon.message_send,
+            buttonWidth: 44,
+            buttonHeight: 44,
+            onTap: () => _onSubmitClick(_textController.text),
           ),
         ],
       ),
@@ -776,7 +769,7 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
   void initData()async{
     //获取表情的数据
     emojiModelList = await EmojiManager.getEmojiModelList();
-    Map<String, dynamic> map = await roomInfo(widget.coachId,count: 1);
+    Map<String, dynamic> map = await roomInfo(widget.coachId,count: 3);
     if(null!=map["data"]["total"]){
       resetOnlineUserNumber(map["data"]["total"]);
     }
@@ -796,12 +789,12 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
     print("number:$number");
     Map<String, dynamic> map = await roomInfo(widget.coachId,count: number);
     if(null!=map["data"]["userList"]){
+      onlineManList.clear();
+      onlineManUidList.clear();
       map["data"]["userList"].forEach((v) {
         BuddyModel buddyModel=BuddyModel.fromJson(v);
-        if(!onlineManUidList.contains(buddyModel.uid)){
-          onlineManList.add(buddyModel);
-          onlineManUidList.add(buddyModel.uid);
-        }
+        onlineManList.add(buddyModel);
+        onlineManUidList.add(buddyModel.uid);
       });
       EventBus.getDefault().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
     }
