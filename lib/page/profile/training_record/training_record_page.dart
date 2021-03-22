@@ -110,7 +110,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
               elevation: 0.5,
               brightness: Brightness.light,
               backgroundColor: AppColor.white,
-              expandedHeight: CustomAppBar.appBarHeight + ScreenUtil.instance.statusBarHeight +36.0,
+              expandedHeight: CustomAppBar.appBarHeight+36.0+16.0,
               flexibleSpace: buildFlexibleSpaceBar(),
               bottom: buildTabBar(),
             ),
@@ -937,7 +937,7 @@ class _TrainingRecordPageState extends State<TrainingRecordPage> with SingleTick
     allDataMap = await getTrainingRecords();
     if (mounted) {
       setState(() {
-        if (dayModelList.length > 0) {
+        if (null!=dayModelList&&dayModelList.length > 0) {
           loadingStatus = LoadingStatus.STATUS_COMPLETED;
         } else {
           loadingStatus = LoadingStatus.STATUS_IDEL;
