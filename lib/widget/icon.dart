@@ -43,6 +43,7 @@ class AppIcon {
   static const String arrow_right_16 = "assets/svg/arrow_right_16.svg";
   static const String arrow_right_18 = "assets/svg/arrow_right_18.svg";
   static const String close_18 = "assets/svg/close_18.svg";
+  static const String close_24 = "assets/svg/close_24.svg";
   static const String add_avatar_big = "assets/svg/add_avatar_big.svg";
   static const String add_gallery = "assets/svg/add_gallery.svg";
   static const String add_follow = "assets/svg/add_follow.svg";
@@ -64,6 +65,9 @@ class AppIcon {
   static const String pause_28 = "assets/svg/pause_28.svg";
   static const String skip_previous_28 = "assets/svg/skip_previous_28.svg";
   static const String skip_next_28 = "assets/svg/skip_next_28.svg";
+  static const String settings_24 = "assets/svg/settings_24.svg";
+  static const String danmaku_on = "assets/svg/danmaku_on.svg";
+  static const String danmaku_off = "assets/svg/danmaku_off.svg";
 
   static const String qrcode_scan = "assets/svg/qrcode_scan.svg";
 
