@@ -18,6 +18,7 @@ import 'package:mirror/util/click_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/icon.dart';
+import 'package:mirror/widget/if_tab_bar.dart';
 import 'package:provider/provider.dart';
 
 import 'profile/profile_page.dart';
@@ -38,16 +39,6 @@ class MainPageState extends XCState {
   @override
   void initState() {
     super.initState();
-    normalIcons.add(AppIcon.getAppIcon(AppIcon.if_home, 24));
-    normalIcons.add(AppIcon.getAppIcon(AppIcon.if_training, 24));
-    normalIcons.add(AppIcon.getAppIcon(AppIcon.if_message, 24));
-    normalIcons.add(AppIcon.getAppIcon(AppIcon.if_profile, 24));
-
-    selectedIcons.add(AppIcon.getAppIcon(AppIcon.if_home, 24, color: AppColor.white));
-    selectedIcons.add(AppIcon.getAppIcon(AppIcon.if_training, 24, color: AppColor.white));
-    selectedIcons.add(AppIcon.getAppIcon(AppIcon.if_message, 24, color: AppColor.white));
-    selectedIcons.add(AppIcon.getAppIcon(AppIcon.if_profile, 24, color: AppColor.white));
-
     currentIndex = 0;
     _start = (ScreenUtil.instance.width / 5) / 7;
     EventBus.getDefault().register(_postFeedCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POSTFEED_CALLBACK);
@@ -85,120 +76,6 @@ class MainPageState extends XCState {
     }
   }
 
-  // 自定义BottomAppBar
-  Widget tabbar(int index, BuildContext context, double itemWidth) {
-    //设置默认未选中的状态
-    TextStyle style;
-    Widget icon;
-    if (currentIndex == index) {
-      //选中的话
-      style = TextStyle(fontSize: 15, color: Colors.white);
-      icon = selectedIcons[index];
-    } else {
-      style = TextStyle(fontSize: 15, color: Colors.black);
-      icon = normalIcons[index];
-    }
-    //构造返回的Widget
-    Widget item(BuildContext context) {
-      return Container(
-        child: Center(
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            child: Container(
-              height: 32,
-              width: 90,
-              alignment: Alignment.center,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Spacer(),
-                  Container(
-                    width: 24,
-                    height: 24,
-                    child: Stack(
-                      children: [
-                        icon,
-                        Consumer<FeedMapNotifier>(builder: (context, notifier, child) {
-                          return Positioned(
-                              top: 0,
-                              right: 0,
-                              child: notifier.value.unReadFeedCount != 0 && index == 0
-                                  ? ClipOval(
-                                      child: Container(
-                                        height: 10,
-                                        width: 10,
-                                        color: AppColor.mainRed,
-                                      ),
-                                    )
-                                  : Container());
-                        })
-                      ],
-                    ),
-                  ),
-                  Container(
-                      margin: const EdgeInsets.only(left: 8),
-                      child: Offstage(
-                        offstage: currentIndex != index,
-                        child: Text(
-                          titles[index],
-                          style: style,
-                        ),
-                      )),
-                  Spacer(),
-                ],
-              ),
-              // ),
-            ),
-            onTap: () {
-              if (!ClickUtil.isFastClick()) {
-                if ((index == 2 || index == 3) && !context.read<TokenNotifier>().isLoggedIn) {
-                  AppRouter.navigateToLoginPage(context);
-                } else {
-                  context.read<SelectedbottomNavigationBarNotifier>().changeIndex(index);
-                  if (currentIndex != index) {
-                    reload(() {
-                      currentIndex = index;
-                      if (index == 0) {
-                        if (context.read<FeedMapNotifier>().value.unReadFeedCount == 0) {
-                          _getUnReadFeedCount();
-                        }
-                        _start = itemWidth / 7;
-                      }
-                      if (index == 1) {
-                        if (context.read<FeedMapNotifier>().value.unReadFeedCount == 0) {
-                          _getUnReadFeedCount();
-                        }
-                        _start = itemWidth + itemWidth * 0.4;
-                      }
-                      if (index == 2) {
-                        //在切换到消息页时 请求未读互动通知数
-                        getUnReads();
-                        if (context.read<FeedMapNotifier>().value.unReadFeedCount == 0) {
-                          _getUnReadFeedCount();
-                        }
-                        _start = 2 * itemWidth + itemWidth * 0.64;
-                      }
-                      if (index == 3) {
-                        //切换到我的页时刷新关注数
-                        _getFollowCount();
-                        if (context.read<FeedMapNotifier>().value.unReadFeedCount == 0) {
-                          _getUnReadFeedCount();
-                        }
-                        _start = 3 * itemWidth + itemWidth * 0.9;
-                      }
-                    });
-                  }
-                }
-              }
-            },
-          ),
-        ),
-      );
-    }
-
-    return item(context);
-  }
-
   @override
   Widget shouldBuild(BuildContext context) {
     print("MainPage_____________________________________________build");
@@ -215,39 +92,32 @@ class MainPageState extends XCState {
       // 此属性是重新计算布局空间大小
       // 内部元素要监听键盘高度必需要设置为false,
       // resizeToAvoidBottomInset: true,
-      bottomNavigationBar: BottomAppBar(
-          child: Stack(
-        children: <Widget>[
-          AnimatedPositionedDirectional(
-            top: 9,
-            start: _start,
-            width: itemWidth,
-            height: 32,
-            duration: Duration(milliseconds: 300),
-            child: Container(
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: AppColor.black),
-            ),
-          ),
-          Row(children: [
-            Expanded(
-              child: SizedBox(height: 51, width: itemWidth, child: tabbar(0, context, itemWidth)),
-              flex: 1,
-            ),
-            Expanded(
-              child: SizedBox(height: 51, width: itemWidth, child: tabbar(1, context, itemWidth)),
-              flex: 1,
-            ),
-            Expanded(
-              child: SizedBox(height: 51, width: itemWidth, child: tabbar(2, context, itemWidth)),
-              flex: 1,
-            ),
-            Expanded(
-              child: SizedBox(height: 51, width: itemWidth, child: tabbar(3, context, itemWidth)),
-              flex: 1,
-            )
-          ])
-        ],
-      )),
+      bottomNavigationBar: IFTabBar(
+        tabBarClickListener: (index) {
+          if(currentIndex==index){
+            return;
+          }
+          print('------------------------点击回调$index');
+          reload(() {
+            currentIndex = index;
+          });
+          if (context.read<FeedMapNotifier>().value.unReadFeedCount == 0) {
+            _getUnReadFeedCount();
+          }
+          switch (index) {
+            case 0:
+              break;
+            case 1:
+              break;
+            case 2:
+              getUnReads();
+              break;
+            case 3:
+              _getFollowCount();
+              break;
+          }
+        },
+      ),
       // SlidingUpPanel
       body:
           // pages[currentIndex]

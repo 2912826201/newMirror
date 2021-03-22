@@ -40,8 +40,9 @@ class BuddyModel with ISuspensionBean {
   String description;
   int relation;
   String tagIndex;
+  int time;
 
-  BuddyModel({this.uid, this.avatarUri, this.nickName, this.description, this.relation, this.tagIndex});
+  BuddyModel({this.uid, this.avatarUri, this.nickName, this.description, this.relation, this.tagIndex, this.time});
 
   BuddyModel.fromJson(Map<String, dynamic> json) {
     uid = json["uid"];
@@ -49,6 +50,7 @@ class BuddyModel with ISuspensionBean {
     nickName = json["nickName"];
     description = json["description"];
     relation = json["relation"];
+    time = json["time"];
   }
 
   Map<String, dynamic> toJson() {
@@ -58,6 +60,7 @@ class BuddyModel with ISuspensionBean {
     map["nickName"] = nickName;
     map["description"] = description;
     map["relation"] = relation;
+    map["time"] = time;
     return map;
   }
 

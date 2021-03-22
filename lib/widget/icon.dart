@@ -10,6 +10,8 @@ class AppIcon {
   static const String nav_close = "assets/svg/nav_close.svg";
   static const String nav_camera = "assets/svg/nav_camera.svg";
   static const String nav_search = "assets/svg/nav_search.svg";
+  static const String nav_share = "assets/svg/nav_share.svg";
+  static const String nav_add_favorites = "assets/svg/nav_add_favorites.svg";
   static const String input_at = "assets/svg/input_at.svg";
   static const String input_keyboard = "assets/svg/input_keyboard.svg";
   static const String input_voice = "assets/svg/input_voice.svg";
@@ -38,24 +40,47 @@ class AppIcon {
   static const String check_follow = "assets/svg/check_follow.svg";
   static const String topic = "assets/svg/topic.svg";
   static const String trash_bucket = "assets/svg/trash_bucket.svg";
-  static const String add_circle_black = "assets/svg/add_circle_black.svg";
   static const String clear_circle_grey = "assets/svg/clear_circle_grey.svg";
   static const String arrow_right_12 = "assets/svg/arrow_right_12.svg";
   static const String arrow_right_16 = "assets/svg/arrow_right_16.svg";
   static const String arrow_right_18 = "assets/svg/arrow_right_18.svg";
   static const String close_18 = "assets/svg/close_18.svg";
+  static const String close_24 = "assets/svg/close_24.svg";
   static const String add_avatar_big = "assets/svg/add_avatar_big.svg";
   static const String add_gallery = "assets/svg/add_gallery.svg";
   static const String add_follow = "assets/svg/add_follow.svg";
+  static const String add_circle_white = "assets/svg/add_circle_white.svg";
+  static const String add_circle_black = "assets/svg/add_circle_black.svg";
   static const String delete = "assets/svg/delete.svg";
   static const String if_home = "assets/svg/if_home.svg";
   static const String if_training = "assets/svg/if_training.svg";
   static const String if_message = "assets/svg/if_message.svg";
   static const String if_profile = "assets/svg/if_profile.svg";
+  static const String machine_connection = "assets/svg/machine_connection.svg";
+  static const String machine_connected_18 = "assets/svg/machine_connected_18.svg";
+  static const String machine_disconnected_18 = "assets/svg/machine_disconnected_18.svg";
+  static const String machine_connected_28 = "assets/svg/machine_connected_28.svg";
+  static const String machine_disconnected_28 = "assets/svg/machine_disconnected_28.svg";
+  static const String volume = "assets/svg/volume.svg";
+  static const String luminance = "assets/svg/luminance.svg";
+  static const String filter = "assets/svg/filter.svg";
+  static const String play_48 = "assets/svg/play_48.svg";
+  static const String pause_28 = "assets/svg/pause_28.svg";
+  static const String pause_48 = "assets/svg/pause_48.svg";
+  static const String skip_previous_28 = "assets/svg/skip_previous_28.svg";
+  static const String skip_previous_60 = "assets/svg/skip_previous_60.svg";
+  static const String skip_next_28 = "assets/svg/skip_next_28.svg";
+  static const String skip_next_60 = "assets/svg/skip_next_60.svg";
+  static const String settings_24 = "assets/svg/settings_24.svg";
+  static const String danmaku_on = "assets/svg/danmaku_on.svg";
+  static const String danmaku_off = "assets/svg/danmaku_off.svg";
+  static const String camera_24 = "assets/svg/camera_24.svg";
+  static const String score_16 = "assets/svg/score_16.svg";
+  static const String calorie_16 = "assets/svg/calorie_16.svg";
+  static const String time_16 = "assets/svg/time_16.svg";
+  static const String headset = "assets/svg/headset.svg";
 
   static const String qrcode_scan = "assets/svg/qrcode_scan.svg";
-  static const String machine_connected = "assets/svg/machine_connected.svg";
-  static const String machine_disconnected = "assets/svg/machine_disconnected.svg";
 
   static Widget getAppIcon(String svgName, double iconSize,
       {double containerHeight, double containerWidth, Color color, Color bgColor, bool isCircle}) {

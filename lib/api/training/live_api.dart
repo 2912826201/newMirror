@@ -54,6 +54,8 @@ const String GETTERMINALLEARNEDCOURSE = "/sport/web/videoCourse/getTerminalLearn
 const String GETPULLSTREAMURL = "/third/web/tencentcloud/getPullStreamUrl";
 //获取直播课的回放地址
 const String GETPLAYBACKURL = "/sport/web/liveCourse/getPlaybackUrl";
+//获取直播间信息
+const String ROOMINFO = "/sport/web/liveCourse/roomInfo";
 
 
 
@@ -362,6 +364,20 @@ Future<Map> getPullStreamUrl(int courseId,{String type="RTMP"}) async {
   params["courseId"] = courseId;
   params["type"] = type;
   BaseResponseModel responseModel = await requestApi(GETPULLSTREAMURL, params);
+  params["code"]=responseModel.code;
+  params["data"]=responseModel.data;
+  return params;
+}
+
+
+///获取直播间信息
+///liveRoomId：课程id
+///count：一次性获取多少个人数
+Future<Map> roomInfo(int liveRoomId,{int count=50}) async {
+  Map<String, dynamic> params = {};
+  params["liveRoomId"] = liveRoomId;
+  params["count"] = count;
+  BaseResponseModel responseModel = await requestApi(ROOMINFO, params);
   params["code"]=responseModel.code;
   params["data"]=responseModel.data;
   return params;

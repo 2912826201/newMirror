@@ -37,6 +37,8 @@ class EventBus{
   final Map<String,Map<String,StreamController>> _registerMap = new Map<String,Map<String,StreamController>>();
   //默认的广播类型
   final String defName = "default";
+  final String defMsg="no_data_msg_even_bus";
+  dynamic listener;
 
   EventBus._();
 
@@ -50,25 +52,27 @@ class EventBus{
   //加广播的方法-回调的方法-需要广播的界面-广播的类型
   void register(listener,String pageName ,{String registerName}){
     if(null ==registerName){
-      print('-------------------null ==registerName');
       registerName = defName;
     }
     if(_registerMap[registerName]==null){
-      print('--------------_registerMap[registerName]==null');
       Map<String,StreamController> map=Map();
       map[pageName]=StreamController.broadcast();
       _registerMap[registerName]=map;
     }else if(_registerMap[registerName][pageName]==null){
-      print('--------------_registerMap[registerName][pageName]==null');
       _registerMap[registerName][pageName]=StreamController.broadcast();
     }
-    _registerMap[registerName][pageName].stream.listen(listener);
+    _registerMap[registerName][pageName].stream.listen((msg){
+      if(msg==defMsg){
+        listener();
+      }else{
+        listener(msg);
+      }
+    });
   }
 
 
   //移除广播的方法-广播的类型-需要广播的界面
   void unRegister({String registerName,String pageName}){
-    print('-----------------------广播移除');
     if(null ==registerName){
       registerName =defName;
     }
@@ -86,17 +90,13 @@ class EventBus{
   }
 
   //发送广播-msg消息-广播的类型
-  void post({dynamic msg,String registerName}){
-    print('--------------//进入post方法');
+  void post({dynamic msg="no_data_msg_even_bus",String registerName}){
     if(null ==registerName){
-      print('--------------registerName为空');
       registerName =defName;
     }
     if(_registerMap.containsKey(registerName)){
-      print('----------------------存在registerName');
       _registerMap[registerName].forEach((key, value) {
         if(_registerMap[registerName][key]!=null){
-          print('-------------------------eventbus__add');
           _registerMap[registerName][key].add(msg);
         }
       });
@@ -105,12 +105,20 @@ class EventBus{
 }
   ///页面名称
  const String  EVENTBUS_MAIN_PAGE = "main_page";
+ //直播界面-播放界面
  const String  EVENTBUS_LIVEROOM_TESTPAGE = "LiveRoomTestPage";
+ //直播界面-功能界面
  const String  EVENTBUS_ROOM_OPERATION_PAGE = "LiveRoomTestOperationPage";
+ //直播在线人数dialog面板
+ const String  EVENTBUS_BOTTOM_USER_PANEL_DIALOG = "BottomUserPanelDialog";
 
 
  ///广播类型
+//发布动态
  const String  EVENTBUS_POSTFEED_CALLBACK = "mainpage_postFeedCallBack";
+ //直播界面的退出
  const String  EVENTBUS_LIVEROOM_EXIT = "liveRoomTestPage_exit";
  //直播界面接收弹幕功能
  const String  EVENTBUS_ROOM_RECEIVE_BARRAGE = "LiveRoomTestOperationPage_receive_barrage";
+ //直播在线人数dailog刷新界面
+ const String  EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET = "BottomUserPanelDialogReset";
