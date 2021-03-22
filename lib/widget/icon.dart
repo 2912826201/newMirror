@@ -38,7 +38,6 @@ class AppIcon {
   static const String check_follow = "assets/svg/check_follow.svg";
   static const String topic = "assets/svg/topic.svg";
   static const String trash_bucket = "assets/svg/trash_bucket.svg";
-  static const String add_circle_black = "assets/svg/add_circle_black.svg";
   static const String clear_circle_grey = "assets/svg/clear_circle_grey.svg";
   static const String arrow_right_12 = "assets/svg/arrow_right_12.svg";
   static const String arrow_right_16 = "assets/svg/arrow_right_16.svg";
@@ -47,15 +46,26 @@ class AppIcon {
   static const String add_avatar_big = "assets/svg/add_avatar_big.svg";
   static const String add_gallery = "assets/svg/add_gallery.svg";
   static const String add_follow = "assets/svg/add_follow.svg";
+  static const String add_circle_white = "assets/svg/add_circle_white.svg";
+  static const String add_circle_black = "assets/svg/add_circle_black.svg";
   static const String delete = "assets/svg/delete.svg";
   static const String if_home = "assets/svg/if_home.svg";
   static const String if_training = "assets/svg/if_training.svg";
   static const String if_message = "assets/svg/if_message.svg";
   static const String if_profile = "assets/svg/if_profile.svg";
+  static const String machine_connection = "assets/svg/machine_connection.svg";
+  static const String machine_connected_18 = "assets/svg/machine_connected_18.svg";
+  static const String machine_disconnected_18 = "assets/svg/machine_disconnected_18.svg";
+  static const String machine_connected_28 = "assets/svg/machine_connected_28.svg";
+  static const String machine_disconnected_28 = "assets/svg/machine_disconnected_28.svg";
+  static const String volume = "assets/svg/volume.svg";
+  static const String luminance = "assets/svg/luminance.svg";
+  static const String filter = "assets/svg/filter.svg";
+  static const String pause_28 = "assets/svg/pause_28.svg";
+  static const String skip_previous_28 = "assets/svg/skip_previous_28.svg";
+  static const String skip_next_28 = "assets/svg/skip_next_28.svg";
 
   static const String qrcode_scan = "assets/svg/qrcode_scan.svg";
-  static const String machine_connected = "assets/svg/machine_connected.svg";
-  static const String machine_disconnected = "assets/svg/machine_disconnected.svg";
 
   static Widget getAppIcon(String svgName, double iconSize,
       {double containerHeight, double containerWidth, Color color, Color bgColor, bool isCircle}) {

@@ -183,7 +183,7 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
 
   Widget _buildPanel(MachineNotifier notifier) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(40.5, 16, 40.5, 0),
+      padding: const EdgeInsets.fromLTRB(40, 16, 40, 0),
       child: Column(
         children: [
           SizedBox(
@@ -191,15 +191,11 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                      alignment: Alignment.center,
-                      height: 28,
-                      width: 28,
-                      child: Icon(
-                        Icons.volume_up,
-                        color: notifier.machine.status != 0 ? AppColor.textPrimary2 : AppColor.textHint,
-                        size: 24,
-                      )),
+                  AppIcon.getAppIcon(
+                    AppIcon.volume,
+                    28,
+                    color: notifier.machine.status != 0 ? AppColor.textPrimary2 : AppColor.textHint,
+                  ),
                   Expanded(
                       child: Container(
                     //slider会将handler的大小算在组件宽度 所以间距要减去handler的宽度的一半 才是进度条本体的间距
@@ -240,15 +236,11 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                      alignment: Alignment.center,
-                      height: 28,
-                      width: 28,
-                      child: Icon(
-                        Icons.wb_sunny,
-                        color: notifier.machine.status != 0 ? AppColor.textPrimary2 : AppColor.textHint,
-                        size: 24,
-                      )),
+                  AppIcon.getAppIcon(
+                    AppIcon.luminance,
+                    28,
+                    color: notifier.machine.status != 0 ? AppColor.textPrimary2 : AppColor.textHint,
+                  ),
                   Expanded(
                       child: Container(
                     //slider会将handler的大小算在组件宽度 所以间距要减去handler的宽度的一半 才是进度条本体的间距
@@ -291,12 +283,12 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                 children: [
                   notifier.machine.status == 0
                       ? AppIcon.getAppIcon(
-                          AppIcon.machine_disconnected,
+                          AppIcon.machine_disconnected_28,
                           28,
                           color: AppColor.textPrimary2,
                         )
                       : AppIcon.getAppIcon(
-                          AppIcon.machine_connected,
+                          AppIcon.machine_connected_28,
                           28,
                           color: AppColor.textPrimary2,
                         ),
@@ -335,10 +327,10 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                             ),
                           ),
                         ),
-                        Icon(
-                          Icons.chevron_right,
+                        AppIcon.getAppIcon(
+                          AppIcon.arrow_right_16,
+                          16,
                           color: AppColor.textHint,
-                          size: 16,
                         ),
                       ],
                     ),
@@ -358,48 +350,32 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                GestureDetector(
-                  behavior: HitTestBehavior.opaque,
+                AppIconButton(
+                  iconSize: 28,
+                  svgName: AppIcon.skip_previous_28,
                   onTap: () {
                     print("上一段");
                   },
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.skip_previous,
-                      color: AppColor.white,
-                      size: 32,
-                    ),
-                  ),
+                  buttonHeight: 44,
+                  buttonWidth: (ScreenUtil.instance.screenWidthDp - 40 * 2) / 3,
                 ),
-                GestureDetector(
-                  behavior: HitTestBehavior.opaque,
+                AppIconButton(
+                  iconSize: 28,
+                  svgName: AppIcon.pause_28,
                   onTap: () {
                     print("暂停");
-                    _showPauseDialog();
                   },
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.pause,
-                      color: AppColor.white,
-                      size: 32,
-                    ),
-                  ),
+                  buttonHeight: 44,
+                  buttonWidth: (ScreenUtil.instance.screenWidthDp - 40 * 2) / 3,
                 ),
-                GestureDetector(
-                  behavior: HitTestBehavior.opaque,
+                AppIconButton(
+                  iconSize: 28,
+                  svgName: AppIcon.skip_next_28,
                   onTap: () {
                     print("下一段");
                   },
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.skip_next,
-                      color: AppColor.white,
-                      size: 32,
-                    ),
-                  ),
+                  buttonHeight: 44,
+                  buttonWidth: (ScreenUtil.instance.screenWidthDp - 40 * 2) / 3,
                 ),
               ],
             ),

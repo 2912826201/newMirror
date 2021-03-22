@@ -161,6 +161,7 @@ class VideoCourseListPageState extends XCState {
             height: 48,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   _titleItemString[i],
@@ -169,11 +170,13 @@ class VideoCourseListPageState extends XCState {
                 SizedBox(
                   width: 1,
                 ),
-                Icon(
-                  i == _titleItemString.length - 1 ? Icons.filter_alt_outlined : Icons.arrow_drop_down_sharp,
-                  color: AppColor.textHint,
-                  size: 16,
-                ),
+                i == _titleItemString.length - 1
+                    ? AppIcon.getAppIcon(AppIcon.filter, 24)
+                    : Icon(
+                        Icons.arrow_drop_down_sharp,
+                        color: AppColor.textHint,
+                        size: 12,
+                      ),
               ],
             ),
           ),
@@ -743,8 +746,7 @@ class VideoCourseListPageState extends XCState {
       level: _level,
     );
     if (model != null && model["list"] != null) {
-
-      if(isRefreshOrLoad){
+      if (isRefreshOrLoad) {
         videoModelArray.clear();
       }
 
@@ -753,7 +755,6 @@ class VideoCourseListPageState extends XCState {
       model["list"].forEach((v) {
         videoModelArray.add(LiveVideoModel.fromJson(v));
       });
-
 
       Future.delayed(Duration(milliseconds: 500), () {
         if (isRefreshOrLoad) {
@@ -972,8 +973,9 @@ Widget buildVideoCourseItemRightDataUi(LiveVideoModel value, int imageHeight, bo
                                     .toString(),
                             style: textStyleBold),
                         TextSpan(text: (value.times ~/ 1000) ~/ 60 > 0 ? "分钟 · " : "秒 · ", style: textStyleNormal),
-                        TextSpan(text: IntegerUtil.formationCalorie(value.calories,isHaveCompany: false),
-                              style: textStyleBold),
+                        TextSpan(
+                            text: IntegerUtil.formationCalorie(value.calories, isHaveCompany: false),
+                            style: textStyleBold),
                         TextSpan(text: "千卡", style: textStyleNormal),
                       ]),
                     ),
