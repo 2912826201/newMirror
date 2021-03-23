@@ -334,12 +334,16 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                         !widget.cropOnlySquare &&
                         context.select((SelectedMapNotifier notifier) => notifier.selectedImageSize == null)
                     ? Positioned(
-                        top: context.watch<PreviewHeightNotifier>().previewHeight - 36,
+                        top: context.watch<PreviewHeightNotifier>().previewHeight - 12 - 36,
                         left: 12,
                         child: AppIconButton(
+                          isCircle: true,
+                          bgColor: AppColor.textPrimary2.withOpacity(0.65),
                           onTap: _changeCurrentRatio,
                           iconSize: 24,
                           svgName: AppIcon.gallery_fullsize,
+                          buttonWidth: 36,
+                          buttonHeight: 36,
                         ),
                       )
                     : Container(),
