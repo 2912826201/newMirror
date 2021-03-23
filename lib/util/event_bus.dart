@@ -7,12 +7,16 @@ import 'dart:async';
 ///
 /// 广播类型参数可以不写-不写是默认广播
 ///
+/// 发送广播
+/// EventBus.getDefault().post(回调的参数-看回调的方法,registerName: "广播类型");
+///
 /// 注册广播
 /// @override
 /// void initState() {
 ///   super.initState();
 ///   EventBus.getDefault().register(回调的方法,"界面名称-保证独一无二",registerName: "广播类型");
 /// }
+///
 /// 取消广播
 /// @override
 /// void dispose() {
@@ -20,13 +24,18 @@ import 'dart:async';
 ///   EventBus.getDefault().unRegister(pageName:"界面名称-保证独一无二",registerName: "广播类型");
 /// }
 ///
-/// 当有参数时,不写类型，直接写参数名---写定义类型要报错-原因呆找
+/// 参数类型：dynamic
+/// 参数个数：一个
+/// 多个参数：请使用 dynamic map 自行强转
 /// 回调的方法(可以有参数-也可以没有参数-post发送广播一致){
 ///
 /// }
 ///
-/// 发送广播
-/// EventBus.getDefault().post(回调的参数-看回调的方法,registerName: "广播类型");
+/// 回调的方法
+/// 当有参数时：参数类型是dynamic在接收参数的地方需要强转，多个参数请使用map
+/// 当没有参数时:为空就好
+/// 注意：有参数时-一定要传参不然会报错，无参数时-一定不要传参不然会报错
+/// -------错误原因，目前还有找到一个可以鉴别方法内是否有参数
 ///
 
 class EventBus {
@@ -35,8 +44,7 @@ class EventBus {
 
   //默认的广播类型
   final String defName = "default";
-  final String defMsg = "no_data_msg_even_bus";
-  dynamic listener;
+  final String defMsg="no_data_msg_even_bus";
 
   EventBus._();
 

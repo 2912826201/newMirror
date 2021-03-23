@@ -73,21 +73,43 @@ class FriendsCell extends StatelessWidget {
 
   //item-ui
   Widget itemUi(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      height: 48,
-      margin: EdgeInsets.only(bottom: noBottomIndex == 0 ? 10 : 0, left: 16, right: 16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          getSingleChoiceUi(), //单选
+    if(!(isShowSingleChoice && groupTitle != "群成员")){
+      return Opacity(
+        opacity: 0.2,
+        child: Container(
+          color: Colors.white,
+          height: 48,
+          margin: EdgeInsets.only(bottom: noBottomIndex == 0 ? 10 : 0, left: 16, right: 16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              getSingleChoiceUi(), //单选
 
-          getUserImagePr(), //用户头像
+              getUserImagePr(), //用户头像
 
-          getUserName(context), //昵称
-        ],
-      ),
-    );
+              getUserName(context), //昵称
+            ],
+          ),
+        ),
+      );
+    }else{
+      return Container(
+        color: Colors.white,
+        height: 48,
+        margin: EdgeInsets.only(bottom: noBottomIndex == 0 ? 10 : 0, left: 16, right: 16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            getSingleChoiceUi(), //单选
+
+            getUserImagePr(), //用户头像
+
+            getUserName(context), //昵称
+          ],
+        ),
+      );
+    }
+
   }
 
   //单选按钮
@@ -101,9 +123,7 @@ class FriendsCell extends StatelessWidget {
         height: 24,
         decoration: !isSelectSingleChoice
             ? BoxDecoration(
-          color: isShowSingleChoice && groupTitle != "群成员"
-              ? AppColor.white
-              : AppColor.textSecondary.withOpacity(0.65),
+          color: AppColor.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(width: 0.5, color: AppColor.textHint),
         )
