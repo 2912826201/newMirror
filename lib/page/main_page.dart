@@ -44,7 +44,7 @@ class MainPageState extends XCState {
     EventBus.getDefault().register(_postFeedCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POSTFEED_CALLBACK);
   }
 
-  void _postFeedCallBack(result) {
+  void _postFeedCallBack() {
     print('--------------广播监听回调');
     reload(() {
       _start = (ScreenUtil.instance.width / 5) / 7;

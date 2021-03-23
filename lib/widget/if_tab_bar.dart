@@ -161,7 +161,7 @@ class _IFTabBarState extends State<IFTabBar> {
     onClickWidthList4.add(selectedButtonWidth + selectedButtonMargin);
   }
 
-  _postFeedCallBack(result){
+  _postFeedCallBack(){
     streamController.sink.add(0);
   }
   @override

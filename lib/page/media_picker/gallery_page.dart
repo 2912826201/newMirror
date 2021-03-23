@@ -701,7 +701,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                     .setIsAlbumListShow(!context.read<SelectedMapNotifier>().isAlbumListShow);
               })
           : CustomAppBarIconButton(
-              svgName: AppIcon.nav_return,
+              svgName: AppIcon.nav_close,
               iconColor: AppColor.white,
               onTap: () {
                 Navigator.pop(context);
