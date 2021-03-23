@@ -47,9 +47,9 @@ import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/interactiveviewer/interactive_video_item.dart';
 import 'package:mirror/widget/interactiveviewer/interactiveview_video_or_image_demo.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
+import 'package:mirror/widget/text_span_field/text_span_field.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:text_span_field/text_span_field.dart';
 import 'package:toast/toast.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'chat_details_body.dart';
@@ -522,6 +522,13 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
               : ScreenUtil.instance.screenWidthDp - 32 - 32 - 64 - 52 - 12),
       child: TextSpanField(
         onTap: () {
+          if (_emojiState) {
+            reload(() {
+              _emojiState = !_emojiState;
+            });
+          }
+        },
+        onLongTap: (){
           if (_emojiState) {
             reload(() {
               _emojiState = !_emojiState;
