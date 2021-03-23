@@ -191,35 +191,35 @@ class _SlideBannerState extends State<SlideBanner> {
   }
 
   // 本地图片
-  List<Widget> localPicture(double height) {
-    List<Widget> localImages = [];
-    for (MediaFileModel item in widget.model.selectedMediaFiles.list) {
-      int indexs = widget.model.selectedMediaFiles.list.indexOf(item);
-      localImages.add(widget.isDynamicDetails || (!widget.isHero)
-          ? Container(
-              width: ScreenUtil.instance.width,
-              height: height,
-              child: widget.model.selectedMediaFiles.list[indexs].file != null
-                  ? Image.file(
-                      widget.model.selectedMediaFiles.list[indexs].file,
-                      fit: BoxFit.cover,
-                    )
-                  : Container())
-          : Hero(
-              tag: widget.pageName + "${widget.model.id}${widget.index}",
-              child: Container(
-                  width: ScreenUtil.instance.width,
-                  height: height,
-                  child: widget.model.selectedMediaFiles.list[indexs].file != null
-                      ? Image.file(
-                          widget.model.selectedMediaFiles.list[indexs].file,
-                          fit: BoxFit.cover,
-                        )
-                      : Container()),
-            ));
-    }
-    return localImages;
-  }
+  // List<Widget> localPicture(double height) {
+  //   List<Widget> localImages = [];
+  //   for (MediaFileModel item in widget.model.selectedMediaFiles.list) {
+  //     int indexs = widget.model.selectedMediaFiles.list.indexOf(item);
+  //     localImages.add(widget.isDynamicDetails || (!widget.isHero)
+  //         ? Container(
+  //             width: ScreenUtil.instance.width,
+  //             height: height,
+  //             child: widget.model.selectedMediaFiles.list[indexs].file != null
+  //                 ? Image.file(
+  //                     widget.model.selectedMediaFiles.list[indexs].file,
+  //                     fit: BoxFit.cover,
+  //                   )
+  //                 : Container())
+  //         : Hero(
+  //             tag: widget.pageName + "${widget.model.id}${widget.index}",
+  //             child: Container(
+  //                 width: ScreenUtil.instance.width,
+  //                 height: height,
+  //                 child: widget.model.selectedMediaFiles.list[indexs].file != null
+  //                     ? Image.file(
+  //                         widget.model.selectedMediaFiles.list[indexs].file,
+  //                         fit: BoxFit.cover,
+  //                       )
+  //                     : Container()),
+  //           ));
+  //   }
+  //   return localImages;
+  // }
 
   // 宽高比
   double setAspectRatio(double height) {
@@ -234,24 +234,24 @@ class _SlideBannerState extends State<SlideBanner> {
   setUpLuad() async {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     if (isLoggedIn) {
-      if (context.read<ReleaseProgressNotifier>().postFeedModel != null &&
-          context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id != Application.insertFeedId) {
-        // ToastShow.show(msg: "不响应", context: context);
+      // if (context.read<ReleaseProgressNotifier>().postFeedModel != null &&
+      //     context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id != Application.insertFeedId) {
+      //   // ToastShow.show(msg: "不响应", context: context);
+      // } else {
+      BaseResponseModel model = await laud(id: widget.model.id, laud: widget.model.isLaud == 0 ? 1 : 0);
+      print('===================================model.code==${model.code}');
+      // 点赞/取消赞成功
+      if (model.code == CODE_BLACKED) {
+        ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
       } else {
-        BaseResponseModel model = await laud(id: widget.model.id, laud: widget.model.isLaud == 0 ? 1 : 0);
-        print('===================================model.code==${model.code}');
-        // 点赞/取消赞成功
-        if (model.code == CODE_BLACKED) {
-          ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
-        } else {
-          context
-              .read<FeedMapNotifier>()
-              .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
-          context
-              .read<UserInteractiveNotifier>()
-              .laudedChange(widget.model.pushId, context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud);
-        }
+        context
+            .read<FeedMapNotifier>()
+            .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
+        context
+            .read<UserInteractiveNotifier>()
+            .laudedChange(widget.model.pushId, context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud);
       }
+      // }
     } else {
       // 去登录
       AppRouter.navigateToLoginPage(context);
@@ -309,9 +309,10 @@ class _SlideBannerState extends State<SlideBanner> {
     List<Widget> cupertinoButtonList = [];
     if (widget.model.picUrls.isNotEmpty) {
       cupertinoButtonList = buildShowItemContainer(setAspectRatio(widget.height));
-    } else if (widget.model != null && widget.model.selectedMediaFiles != null) {
-      cupertinoButtonList = localPicture(setAspectRatio(widget.height));
     }
+    // else if (widget.model != null && widget.model.selectedMediaFiles != null) {
+    //   cupertinoButtonList = localPicture(setAspectRatio(widget.height));
+    // }
     return Container(
       child: Column(
         children: [
