@@ -69,11 +69,12 @@ class MainPageState extends XCState {
     });
   }
 
-  _getUnReadFeedCount() async {
-    int count = await getUnReadFeedCount();
-    if (count != null) {
-      context.read<FeedMapNotifier>().setUnReadFeedCount(count);
-    }
+  _getUnReadFeedCount() {
+    getUnReadFeedCount().then((value) {
+      if (value != null) {
+        context.read<FeedMapNotifier>().setUnReadFeedCount(value);
+      }
+    });
   }
 
   @override
@@ -94,7 +95,7 @@ class MainPageState extends XCState {
       // resizeToAvoidBottomInset: true,
       bottomNavigationBar: IFTabBar(
         tabBarClickListener: (index) {
-          if(currentIndex==index){
+          if (currentIndex == index) {
             return;
           }
           print('------------------------点击回调$index');

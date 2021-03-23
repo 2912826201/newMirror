@@ -78,7 +78,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
   @override
   void dispose() {
     _scrollController.dispose();
-    if(timer != null) {
+    if (timer != null) {
       timer.cancel();
     }
     super.dispose();
@@ -116,7 +116,7 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
 
   // 合并请求
   mergeRequest() async {
-    Future.wait([
+    var result = await Future.wait([
       // 请求相关用户
       ProfileSearchUser(widget.keyWord, 3),
       // 请求相关话题
@@ -125,55 +125,49 @@ class SearchComplexState extends State<SearchComplex> with AutomaticKeepAliveCli
       searchFeed(key: widget.keyWord, size: 20),
       // 请求相关课程
       searchCourse(key: widget.keyWord, size: 2),
-    ]).then((results) {
-      SearchUserModel userModel;
-      userModel = results[0];
-      DataResponseModel topicModel = results[1];
-      DataResponseModel feedModel = results[2];
-      DataResponseModel courseModel = results[3];
-     /* print('-------------------------${courseModel.list}');
-      print('-------------------------${userModel.list}');
-      print('-------------------------${topicModel.list}');
-      print('-------------------------${feedModel.list}');*/
-      if (courseModel != null && courseModel.list.length!=0) {
-        courseModel.list.forEach((v) {
+    ]);
+    SearchUserModel userModel;
+    userModel = result[0];
+    DataResponseModel topicModel = result[1];
+    DataResponseModel feedModel = result[2];
+    DataResponseModel courseModel = result[3];
+    if (courseModel != null && courseModel.list.length != 0) {
+      courseModel.list.forEach((v) {
+        if (v != null) {
           liveVideoList.add(LiveVideoModel.fromJson(v));
-        });
-      }
+        }
+      });
+    }
 
-      if (userModel != null && userModel.list.length!=0) {
-        userModel.list.forEach((element) {
-          print('model================ ${element.relation}');
-        });
-        userList.addAll(userModel.list);
-      }
-      if (topicModel != null && topicModel.list.length!=0) {
-        topicModel.list.forEach((v) {
-          topicList.add(TopicDtoModel.fromJson(v));
-        });
-      }
-      if (feedModel != null && feedModel.list.length!=0) {
-        feedModel.list.forEach((v) {
-          feedList.add(HomeFeedModel.fromJson(v));
-          lastTime = feedModel.lastTime;
-          hasNext = feedModel.hasNext;
-          if (hasNext == 0) {
-            // 加载完毕
-            loadText = "已加载全部动态";
-            loadStatus = LoadingStatus.STATUS_COMPLETED;
-          }
-        });
-        // 更新全局监听
+    if (userModel != null && userModel.list.length != 0) {
+      userModel.list.forEach((element) {
+        print('model================ ${element.relation}');
+      });
+      userList.addAll(userModel.list);
+    }
+    if (topicModel != null && topicModel.list.length != 0) {
+      topicModel.list.forEach((v) {
+        topicList.add(TopicDtoModel.fromJson(v));
+      });
+    }
+    if (feedModel != null && feedModel.list.length != 0) {
+      feedModel.list.forEach((v) {
+        feedList.add(HomeFeedModel.fromJson(v));
+        lastTime = feedModel.lastTime;
+        hasNext = feedModel.hasNext;
+        if (hasNext == 0) {
+          // 加载完毕
+          loadText = "已加载全部动态";
+          loadStatus = LoadingStatus.STATUS_COMPLETED;
+        }
+      });
+      // 更新全局监听
 
-        context.read<FeedMapNotifier>().updateFeedMap(feedList);
-      }
-      if (mounted) {
-        setState(() {});
-      }
-    }).catchError((e) {
-      print("报错了");
-      print(e);
-    });
+      context.read<FeedMapNotifier>().updateFeedMap(feedList);
+    }
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   // 请求动态接口
