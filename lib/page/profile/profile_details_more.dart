@@ -29,24 +29,26 @@ class ProfileDetailsMore extends StatefulWidget {
 
 class _detailsMoreState extends State<ProfileDetailsMore> {
   bool isBlack = false;
+
   @override
   void initState() {
     super.initState();
-     _checkBlackStatus();
+    _checkBlackStatus();
   }
+
   ///请求黑名单关系
   _checkBlackStatus() async {
     BlackModel model = await ProfileCheckBlack(widget.userId);
     if (model != null) {
       if (model.inYouBlack == 1) {
         isBlack = true;
-        if(mounted){
-          setState(() {
-          });
+        if (mounted) {
+          setState(() {});
         }
       }
     }
   }
+
   @override
   Widget build(BuildContext context) {
     double width = ScreenUtil.instance.screenWidthDp;
@@ -90,8 +92,7 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
               _showDialog(2);
             }
           },
-          child: _itemSelect(width, AppStyle.textRegular16,
-              isBlack ? "取消拉黑" : "拉黑"),
+          child: _itemSelect(width, AppStyle.textRegular16, isBlack ? "取消拉黑" : "拉黑"),
         ),
         Container(
           width: width,
@@ -136,8 +137,7 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
               _showDialog(2);
             }
           },
-          child: _itemSelect(width, AppStyle.textRegular16,
-              isBlack ? "取消拉黑" : "拉黑"),
+          child: _itemSelect(width, AppStyle.textRegular16, isBlack ? "取消拉黑" : "拉黑"),
         ),
         Container(
           width: width,
@@ -165,12 +165,17 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
   void _showDialog(int type) {
     showAppDialog(
       context,
-      confirm: AppDialogButton(type==1?"必须举报!":type==2?"确认拉黑":"取消拉黑", () {
-        if(type==1){
+      confirm: AppDialogButton(
+          type == 1
+              ? "必须举报!"
+              : type == 2
+                  ? "确认拉黑"
+                  : "取消拉黑", () {
+        if (type == 1) {
           _denounceUser();
-        }else if(type==2){
+        } else if (type == 2) {
           _pullBlack();
-        }else{
+        } else {
           _cancelBlack();
         }
         return true;
@@ -178,8 +183,12 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
       cancel: AppDialogButton("再想想", () {
         return true;
       }),
-      title: type==1?"提交举报":type==2?"确认加入黑名单吗":"取消拉黑",
-      info: type==1?"确认举报用户":"",
+      title: type == 1
+          ? "提交举报"
+          : type == 2
+              ? "确认加入黑名单吗"
+              : "取消拉黑",
+      info: type == 1 ? "确认举报用户" : "",
     );
   }
 
@@ -202,7 +211,6 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
     print('取消关注监听==============================$cancelResult');
     if (cancelResult == 0 || cancelResult == 2) {
       ToastShow.show(msg: "已取消关注该用户", context: context);
-      context.read<UserInteractiveNotifier>().changeFollowCount(widget.userId, false);
       context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.userId);
       Navigator.pop(context);
     }
@@ -214,8 +222,7 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
     print('拉黑是否成功====================================$blackStatus');
     if (blackStatus == true) {
       isBlack = true;
-      setState(() {
-      });
+      setState(() {});
       context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.userId);
       context.read<UserInteractiveNotifier>().removeListId(null);
       ToastShow.show(msg: "拉黑成功", context: context);
@@ -232,8 +239,7 @@ class _detailsMoreState extends State<ProfileDetailsMore> {
       if (blackStatus == true) {
         ToastShow.show(msg: "解除拉黑成功", context: context);
         isBlack = false;
-        setState(() {
-        });
+        setState(() {});
         context.read<UserInteractiveNotifier>().removeListId(widget.userId);
       } else {
         ToastShow.show(msg: "操作失败", context: context);

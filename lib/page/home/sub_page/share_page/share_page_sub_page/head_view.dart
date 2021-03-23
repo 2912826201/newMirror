@@ -15,6 +15,7 @@ import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/custom_button.dart';
 import 'package:mirror/widget/dialog.dart';
@@ -64,9 +65,12 @@ class HeadViewState extends State<HeadView> {
   deleteFeed() async {
     Map<String, dynamic> map = await deletefeed(id: widget.model.id);
     if (map["state"]) {
+      print('---------------------------------------删除动态');
+      EventBus.getDefault().post(msg: widget.model.id.toString(), registerName: EVENTBUS_PROFILE_DELETE_FEED);
       widget.deleteFeedChanged(widget.model.id);
       if (widget.isShowConcern) {
-        context.read<FeedMapNotifier>().deleteContent(widget.model.id);
+        EventBus.getDefault()
+            .post(msg: widget.model.id.toString(), registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
         Navigator.pop(context);
       }
     } else {
@@ -102,7 +106,8 @@ class HeadViewState extends State<HeadView> {
           widget.removeFollowChanged(widget.model);
         }
         context.read<UserInteractiveNotifier>().changeIsFollow(true, true, widget.model.pushId);
-        context.read<UserInteractiveNotifier>().changeFollowCount( widget.model.pushId,false);
+        context.read<UserInteractiveNotifier>().changeFollowCount(widget.model.pushId, false);
+
         ToastShow.show(msg: "取消关注成功", context: context);
       } else {
         ToastShow.show(msg: "取消关注失败,请重试", context: context);
@@ -112,6 +117,7 @@ class HeadViewState extends State<HeadView> {
       if (relation != null) {
         if (relation == 1 || relation == 3) {
           context.read<UserInteractiveNotifier>().changeIsFollow(true, false, widget.model.pushId);
+          context.read<UserInteractiveNotifier>().changeFollowCount(widget.model.pushId, true);
           ToastShow.show(msg: "关注成功!", context: context);
           opacity = 1;
           Future.delayed(Duration(milliseconds: 1000), () {
@@ -127,57 +133,18 @@ class HeadViewState extends State<HeadView> {
 
   // 是否显示关注按钮
   isShowFollowButton(BuildContext context) {
-    if (widget.isShowConcern &&
-        context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.model.pushId].isFollow == true &&
-        widget.model.pushId != context.watch<ProfileNotifier>().profile.uid) {
-      return GestureDetector(
-        onTap: () {
-          if (!context.read<TokenNotifier>().isLoggedIn) {
-            AppRouter.navigateToLoginPage(context);
-          }
-          _checkBlackStatus(widget.model.pushId, context, false);
-        },
-        child: Container(
-          margin: EdgeInsets.only(right: 6),
-          height: 28,
-          width: 64,
-          decoration: BoxDecoration(
-            border: new Border.all(color: AppColor.textPrimary1, width: 1),
-            borderRadius: BorderRadius.circular((14.0)),
-          ),
-          child: Center(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Spacer(),
-                Icon(
-                  Icons.add,
-                  color: AppColor.textPrimary1,
-                  size: 16,
-                ),
-                SizedBox(
-                  width: 4,
-                ),
-                Container(
-                  child: Text(
-                    "关注",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColor.textPrimary1,
-                    ),
-                  ),
-                ),
-                Spacer(),
-              ],
-            ),
-          ),
-        ),
-      );
-    } else {
-      return AnimatedOpacity(
-        opacity: opacity,
-        duration: Duration(milliseconds: 2000),
-        child: Container(
+    return Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
+      if (widget.isShowConcern &&
+          notifier.profileUiChangeModel[widget.model.pushId].isFollow == true &&
+          widget.model.pushId != context.watch<ProfileNotifier>().profile.uid) {
+        return GestureDetector(
+          onTap: () {
+            if (!context.read<TokenNotifier>().isLoggedIn) {
+              AppRouter.navigateToLoginPage(context);
+            }
+            _checkBlackStatus(widget.model.pushId, context, false);
+          },
+          child: Container(
             margin: EdgeInsets.only(right: 6),
             height: 28,
             width: 64,
@@ -186,14 +153,55 @@ class HeadViewState extends State<HeadView> {
               borderRadius: BorderRadius.circular((14.0)),
             ),
             child: Center(
-              child: Text(
-                "已关注",
-                style: AppStyle.textRegular12,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Spacer(),
+                  Icon(
+                    Icons.add,
+                    color: AppColor.textPrimary1,
+                    size: 16,
+                  ),
+                  SizedBox(
+                    width: 4,
+                  ),
+                  Container(
+                    child: Text(
+                      "关注",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColor.textPrimary1,
+                      ),
+                    ),
+                  ),
+                  Spacer(),
+                ],
               ),
-            )),
-        onEnd: () {},
-      );
-    }
+            ),
+          ),
+        );
+      } else {
+        return AnimatedOpacity(
+          opacity: opacity,
+          duration: Duration(milliseconds: 2000),
+          child: Container(
+              margin: EdgeInsets.only(right: 6),
+              height: 28,
+              width: 64,
+              decoration: BoxDecoration(
+                border: new Border.all(color: AppColor.textPrimary1, width: 1),
+                borderRadius: BorderRadius.circular((14.0)),
+              ),
+              child: Center(
+                child: Text(
+                  "已关注",
+                  style: AppStyle.textRegular12,
+                ),
+              )),
+          onEnd: () {},
+        );
+      }
+    });
   }
 
   @override
@@ -273,41 +281,43 @@ class HeadViewState extends State<HeadView> {
                   ],
                 )),
                 isShowFollowButton(context),
-                Container(
-                  margin: EdgeInsets.only(right: 16),
-                  child: AppIconButton(
-                    svgName: AppIcon.more_feed,
-                    iconSize: 24,
-                    onTap: () {
-                      if (context.read<ReleaseProgressNotifier>().postFeedModel != null && context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id != Application.insertFeedId) {
-                        // ToastShow.show(msg: "不响应", context: context);
-                      } else {
-                        openMoreBottomSheet(
-                            context: context,
-                            lists: context
-                                .read<UserInteractiveNotifier>()
-                                .profileUiChangeModel[widget.model.pushId]
-                                .feedStringList,
-                            onItemClickListener: (index) {
-                              switch (context
-                                  .read<UserInteractiveNotifier>()
-                                  .profileUiChangeModel[widget.model.pushId]
-                                  .feedStringList[index]) {
-                                case "删除":
-                                  deleteFeed();
-                                  break;
-                                case "取消关注":
-                                  _checkBlackStatus(widget.model.pushId, context, true);
-                                  break;
-                                case "举报":
-                                  _showDialog();
-                                  break;
-                              }
-                            });
-                      }
-                    },
-                  ),
-                )
+                Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
+                  return Container(
+                    margin: EdgeInsets.only(right: 16),
+                    child: AppIconButton(
+                      svgName: AppIcon.more_feed,
+                      iconSize: 24,
+                      onTap: () {
+                        if (context.read<ReleaseProgressNotifier>().postFeedModel != null &&
+                            context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id !=
+                                Application.insertFeedId) {
+                          // ToastShow.show(msg: "不响应", context: context);
+                        } else {
+                          // ignore: missing_return
+                          openMoreBottomSheet(
+                              context: context,
+                              lists: notifier.profileUiChangeModel[widget.model.pushId].feedStringList,
+                              onItemClickListener: (index) {
+                                switch (notifier
+                                    .profileUiChangeModel[widget.model.pushId]
+                                    // ignore: missing_return
+                                    .feedStringList[index]) {
+                                  case "删除":
+                                    deleteFeed();
+                                    break;
+                                  case "取消关注":
+                                    _checkBlackStatus(widget.model.pushId, context, true);
+                                    break;
+                                  case "举报":
+                                    _showDialog();
+                                    break;
+                                }
+                              });
+                        }
+                      },
+                    ),
+                  );
+                })
               ],
             )));
   }

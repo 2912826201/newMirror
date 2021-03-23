@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +16,7 @@ import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/text_util.dart';
 import 'package:mirror/widget/custom_appbar.dart';
@@ -44,6 +47,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   bool haveData = false;
   String hintText;
   int timeStamp;
+  StreamController<List<QueryModel>> streamController = StreamController<List<QueryModel>>();
 
   ///获取互动通知列表
   _getMsgList(int type, {bool isRefreash = false}) async {
@@ -58,7 +62,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
       if (model != null) {
         lastTime = model.lastTime;
         msgList.clear();
-        if( model.list != null){
+        if (model.list != null) {
           haveData = true;
           model.list.forEach((element) {
             if (isRefreash) {
@@ -111,8 +115,30 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   void initState() {
     hintText = "这里什么都没有呢";
     timeStamp = DateTime.now().millisecondsSinceEpoch;
+    EventBus.getDefault().register(_commentOrFeedDetailCallBack, EVENTBUS_INTERACTIVE_NOTICE_PAGE,
+        registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
     super.initState();
     _getMsgList(widget.type);
+  }
+
+  _commentOrFeedDetailCallBack(result) {
+    List<QueryModel> list = [];
+    int deleteId = int.parse(result);
+    for (int i = 0; i < msgList.length; i++) {
+      if (msgList[i].refType == 0 && msgList[i].refId != deleteId.toString()) {
+        list.add(msgList[i]);
+      } else if (msgList[i].refType == 2) {
+        if (msgList[i].refData != null) {
+          CommentDtoModel fatherComment = CommentDtoModel.fromJson(msgList[i].refData);
+          if (fatherComment.targetId != deleteId && fatherComment.id != deleteId) {
+            list.add(msgList[i]);
+          }
+        }
+      }
+    }
+    msgList.clear();
+    msgList.addAll(list);
+    streamController.sink.add(msgList);
   }
 
   @override
@@ -124,121 +150,104 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
         Navigator.pop(context, timeStamp);
         return false;
       },
-      child: Consumer<FeedMapNotifier>(builder: (context, notifier, child) {
-        if (notifier.deleteId != null) {
-          List<QueryModel> list = [];
-          for (int i = 0; i < msgList.length; i++) {
-            if (msgList[i].refType == 0 && msgList[i].refId != notifier.deleteId.toString()) {
-              list.add(msgList[i]);
-            } else if (msgList[i].refType == 2) {
-              if (msgList[i].refData != null) {
-                CommentDtoModel fatherComment = CommentDtoModel.fromJson(msgList[i].refData);
-                if (fatherComment.targetId != notifier.deleteId && fatherComment.id != notifier.deleteId) {
-                  list.add(msgList[i]);
-                }
-              }
-            }
-          }
-          msgList.clear();
-          msgList.addAll(list);
-          notifier.deleteId = null;
-          /*if(mounted){
-            setState(() {});
-          }*/
-        }
-        return Scaffold(
-          backgroundColor: AppColor.white,
-          appBar: CustomAppBar(
-            leadingOnTap: () {
-              Navigator.pop(context, timeStamp);
-            },
-            titleString: widget.type == 0
-                ? "评论"
-                : widget.type == 1
-                    ? "@我"
-                    : "点赞",
-          ),
-          body: Container(
-            width: width,
-            height: height,
-            child: msgList.isNotEmpty
-                ?  ScrollConfiguration(
-              behavior: OverScrollBehavior(),
-              child:SmartRefresher(
-                    controller: controller,
-                    enablePullUp: true,
-                    enablePullDown: true,
-                    footer: CustomFooter(
-                      builder: (BuildContext context, LoadStatus mode) {
-                        Widget body;
-                        if (mode == LoadStatus.loading) {
-                          body = CircularProgressIndicator();
-                        } else if (mode == LoadStatus.noMore) {
-                          body = Text("没有更多了");
-                        } else if (mode == LoadStatus.failed) {
-                          body = Text("加载错误,请重试");
-                        } else {
-                          body = Text(" ");
-                        }
-                        return Container(
-                          child: Center(
-                            child: body,
+      child: StreamBuilder<List<QueryModel>>(
+          initialData: msgList,
+          stream: streamController.stream,
+          builder: (BuildContext stramContext, AsyncSnapshot<List<QueryModel>> snapshot) {
+            return Scaffold(
+              backgroundColor: AppColor.white,
+              appBar: CustomAppBar(
+                leadingOnTap: () {
+                  Navigator.pop(context, timeStamp);
+                },
+                titleString: widget.type == 0
+                    ? "评论"
+                    : widget.type == 1
+                        ? "@我"
+                        : "点赞",
+              ),
+              body: Container(
+                width: width,
+                height: height,
+                child: snapshot.data.isNotEmpty
+                    ? ScrollConfiguration(
+                        behavior: OverScrollBehavior(),
+                        child: SmartRefresher(
+                          controller: controller,
+                          enablePullUp: true,
+                          enablePullDown: true,
+                          footer: CustomFooter(
+                            builder: (BuildContext context, LoadStatus mode) {
+                              Widget body;
+                              if (mode == LoadStatus.loading) {
+                                body = CircularProgressIndicator();
+                              } else if (mode == LoadStatus.noMore) {
+                                body = Text("没有更多了");
+                              } else if (mode == LoadStatus.failed) {
+                                body = Text("加载错误,请重试");
+                              } else {
+                                body = Text(" ");
+                              }
+                              return Container(
+                                child: Center(
+                                  child: body,
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
-                    header: WaterDropHeader(
-                      complete: Text("刷新完成"),
-                      failed: Text("刷新失败"),
-                    ),
-                    onRefresh: _onRefresh,
-                    onLoading: _onLoading,
-                    child: ListView.builder(
-                        shrinkWrap: true, //解决无限高度问题
-                        physics: AlwaysScrollableScrollPhysics(),
-                        itemCount: msgList.length,
-                        itemBuilder: (context, index) {
-                          return InteractiveNoticeItem(
-                              type: widget.type,
-                              msgModel: msgList[index],
-                              index: index,);
-                        }),
-                  ))
-                : Center(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          height: height * 0.22,
+                          header: WaterDropHeader(
+                            complete: Text("刷新完成"),
+                            failed: Text("刷新失败"),
+                          ),
+                          onRefresh: _onRefresh,
+                          onLoading: _onLoading,
+                          child: ListView.builder(
+                              shrinkWrap: true, //解决无限高度问题
+                              physics: AlwaysScrollableScrollPhysics(),
+                              itemCount: snapshot.data.length,
+                              itemBuilder: (context, index) {
+                                return InteractiveNoticeItem(
+                                  type: widget.type,
+                                  msgModel: snapshot.data[index],
+                                  index: index,
+                                );
+                              }),
+                        ))
+                    : Center(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              height: height * 0.22,
+                            ),
+                            Container(
+                              height: width * 0.59,
+                              width: width * 0.59,
+                              color: AppColor.bgWhite,
+                            ),
+                            SizedBox(
+                              height: 16,
+                            ),
+                            Text(
+                              "这里什么都没有呢",
+                              style: AppStyle.textPrimary3Regular14,
+                            )
+                          ],
                         ),
-                        Container(
-                          height: width * 0.59,
-                          width: width * 0.59,
-                          color: AppColor.bgWhite,
-                        ),
-                        SizedBox(
-                          height: 16,
-                        ),
-                        Text(
-                          "这里什么都没有呢",
-                          style: AppStyle.textPrimary3Regular14,
-                        )
-                      ],
-                    ),
-                  ),
-          ),
-        );
-      }),
+                      ),
+              ),
+            );
+          }),
     );
   }
 }
-
 
 class InteractiveNoticeItem extends StatefulWidget {
   int type;
   QueryModel msgModel;
   bool isFrist = true;
   int index;
+
   InteractiveNoticeItem({this.type, this.msgModel, this.index});
 
   @override
@@ -270,6 +279,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
   bool commentIsDelete = false;
   String commentState;
   CommentDtoModel feedData;
+
   _getRefData(BuildContext context) {
     print('=======================${widget.msgModel.refType}');
     if (widget.type == 0) {
@@ -279,20 +289,20 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
         atUserList = widget.msgModel.commentData.atUsers;
         comment = widget.msgModel.commentData.content;
       }
-    } else if(widget.type == 2){
-      if(widget.msgModel.commentData!=null){
+    } else if (widget.type == 2) {
+      if (widget.msgModel.commentData != null) {
         comment = "赞了你的评论";
-      }else{
+      } else {
         comment = "赞了你的动态";
       }
-    }else{
-      if(widget.msgModel.commentData!=null){
+    } else {
+      if (widget.msgModel.commentData != null) {
         atUserList = widget.msgModel.commentData.atUsers;
         comment = widget.msgModel.commentData.content;
-      }else if(widget.msgModel.refData!=null){
+      } else if (widget.msgModel.refData != null) {
         atUserList = HomeFeedModel.fromJson(widget.msgModel.refData).atUsers;
-        comment =HomeFeedModel.fromJson(widget.msgModel.refData).content;
-      }else{
+        comment = HomeFeedModel.fromJson(widget.msgModel.refData).content;
+      } else {
         commentIsDelete = true;
       }
     }
@@ -333,7 +343,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     super.initState();
     print('===============================itemInit   index${widget.index}');
     Future.delayed(Duration.zero, () {
-      if(widget.msgModel.refData!=null){
+      if (widget.msgModel.refData != null) {
         if (widget.msgModel.refType == 0 || widget.msgModel.refType == 1 || widget.msgModel.refType == 3) {
           getCommentFristPage(int.parse(widget.msgModel.refId), widget.msgModel.refType);
         } else if (widget.msgModel.refType == 2 && CommentDtoModel.fromJson(widget.msgModel.refData) != null) {
@@ -510,16 +520,15 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       return;
     }
     try {
-      if (widget.msgModel.commentData!=null&&context.read<FeedMapNotifier>().value.courseCommentHot[widget.msgModel
-          .commentData
-        .id].list != null) {
+      if (widget.msgModel.commentData != null &&
+          context.read<FeedMapNotifier>().value.courseCommentHot[widget.msgModel.commentData.id].list != null) {
         context.read<FeedMapNotifier>().value.courseCommentHot[widget.msgModel.commentData.id].list.forEach((element) {
           if (element.replys.isNotEmpty) {
             element.replys.clear();
           }
         });
       }
-      if (widget.msgModel.refType == 0||(widget.type==3&&widget.msgModel.commentData==null)) {
+      if (widget.msgModel.refType == 0 || (widget.type == 3 && widget.msgModel.commentData == null)) {
         getFeedDetail(context, feedModel.id, comment: widget.msgModel.commentData);
       } else if (widget.msgModel.refType == 2) {
         if (fatherCommentModel.type == 0) {
@@ -572,14 +581,14 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
     // 跳转动态详情页
     if (feedModel.code == CODE_SUCCESS || feedModel.code == CODE_NO_DATA) {
       AppRouter.navigateFeedDetailPage(
-          context: context,
-          model: feedModel.data != null ? HomeFeedModel.fromJson(feedModel.data) : null,
-          comment: comment,
-          type: 2,
-          fatherModel: fatherModel,
-          errorCode: feedModel.code,
-          isInteractive: true,
-          );
+        context: context,
+        model: feedModel.data != null ? HomeFeedModel.fromJson(feedModel.data) : null,
+        comment: comment,
+        type: 2,
+        fatherModel: fatherModel,
+        errorCode: feedModel.code,
+        isInteractive: true,
+      );
     }
   }
 }

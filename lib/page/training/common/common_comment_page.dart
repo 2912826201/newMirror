@@ -19,6 +19,7 @@ import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/date_util.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/integer_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:mirror/widget/comment_input_bottom_bar.dart';
@@ -206,7 +207,8 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         courseCommentHot != null &&
         context.watch<FeedMapNotifier>().value.feedMap[widget.targetId].comments != null &&
         context.watch<FeedMapNotifier>().value.feedMap[widget.targetId].comments.length > 0) {
-      if (context.watch<FeedMapNotifier>().value.feedMap[widget.targetId].comments.length != courseCommentHot.list.length ||
+      if (context.watch<FeedMapNotifier>().value.feedMap[widget.targetId].comments.length !=
+              courseCommentHot.list.length ||
           courseCommentHot.list.length != commentListSubSettingList.length) {
         List<CommentDtoModel> list = <CommentDtoModel>[];
         list.addAll(context.watch<FeedMapNotifier>().value.feedMap[widget.targetId].comments);
@@ -597,7 +599,9 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
             .read<FeedMapNotifier>()
             .commensAssignment(widget.targetId, courseCommentHot.list, courseCommentHot.totalCount);
       }
-      context.read<FeedMapNotifier>().deleteContent(commentId);
+
+      ///TODO 这里是修改的删除评论的eventbus
+      EventBus.getDefault().post(msg: commentId.toString(), registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
       if (context.read<FeedMapNotifier>().value.feedMap[widget.targetId] != null &&
           !widget.isShowHotOrTime &&
           context.read<FeedMapNotifier>().value.feedMap[widget.targetId].hotComment.isNotEmpty) {
@@ -921,7 +925,13 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                       if (!widget.isShowHotOrTime &&
                           context.read<FeedMapNotifier>().value.feedMap[widget.targetId].comments != null &&
                           context.read<FeedMapNotifier>().value.feedMap[widget.targetId].comments.length > 0) {
-                        context.read<FeedMapNotifier>().value.feedMap[widget.targetId].comments[i].screenOutIds.add(model.id);
+                        context
+                            .read<FeedMapNotifier>()
+                            .value
+                            .feedMap[widget.targetId]
+                            .comments[i]
+                            .screenOutIds
+                            .add(model.id);
                       }
                     }
                   }
@@ -942,7 +952,8 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                           context.watch<FeedMapNotifier>().value.feedMap[widget.targetId].comments != null &&
                           context.watch<FeedMapNotifier>().value.feedMap[widget.targetId].comments.length > 0) {
                         context
-                            .watch<FeedMapNotifier>().value
+                            .watch<FeedMapNotifier>()
+                            .value
                             .feedMap[widget.targetId]
                             .comments[i]
                             .screenOutIds
@@ -1083,7 +1094,8 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         context.read<FeedMapNotifier>().value.courseCommentHot[widget.commentDtoModel.id].list.forEach((element) {
           courseCommentHot.list.add(element);
         });
-        courseCommentHot.lastId = context.read<FeedMapNotifier>().value.courseCommentHot[widget.commentDtoModel.id].lastId;
+        courseCommentHot.lastId =
+            context.read<FeedMapNotifier>().value.courseCommentHot[widget.commentDtoModel.id].lastId;
         courseCommentHot.totalCount =
             context.read<FeedMapNotifier>().value.courseCommentHot[widget.commentDtoModel.id].totalCount;
       } else {

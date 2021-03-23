@@ -39,48 +39,6 @@ class UserInteractiveNotifier extends ChangeNotifier {
     }
   }
 
-  void setFeedIdList(int id, List<int> feedIdList, int type) {
-    if (type == 2) {
-      if (profileUiChangeModel[id].profileFeedListId.isEmpty) {
-        profileUiChangeModel[id].profileFeedListId.insert(0, -1);
-      }
-      profileUiChangeModel[id].profileFeedListId.addAll(feedIdList);
-    } else {
-      if (profileUiChangeModel[id].profileLikeListId.isEmpty) {
-        profileUiChangeModel[id].profileLikeListId.insert(0, -1);
-      }
-      profileUiChangeModel[id].profileLikeListId.addAll(feedIdList);
-    }
-    notifyListeners();
-  }
-
-  void idListClear(int id, {int type}) {
-    if (type != null) {
-      if (type == 2) {
-        profileUiChangeModel[id].profileFeedListId.clear();
-      } else {
-        profileUiChangeModel[id].profileLikeListId.clear();
-      }
-    } else {
-      profileUiChangeModel[id].profileFeedListId.clear();
-      profileUiChangeModel[id].profileLikeListId.clear();
-    }
-  }
-
-  void synchronizeIdList(int id, int deleteId) {
-    for (int i = 0; i < profileUiChangeModel[id].profileFeedListId.length; i++) {
-      if (profileUiChangeModel[id].profileFeedListId[i] == deleteId) {
-        profileUiChangeModel[id].profileFeedListId.removeAt(i);
-      }
-    }
-    for (int i = 0; i < profileUiChangeModel[id].profileLikeListId.length; i++) {
-      if (profileUiChangeModel[id].profileLikeListId[i] == deleteId) {
-        profileUiChangeModel[id].profileLikeListId.removeAt(i);
-      }
-    }
-    notifyListeners();
-  }
-
   void clearProfileUiChangeModel() {
     profileUiChangeModel = {};
     notifyListeners();
@@ -128,6 +86,4 @@ class ProfileUiChangeModel {
   bool isFollow = false;
   ProfileModel attentionModel = ProfileModel();
   List<String> feedStringList = [];
-  List<int> profileFeedListId = [];
-  List<int> profileLikeListId = [];
 }

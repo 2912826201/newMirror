@@ -1,5 +1,3 @@
-
-
 import 'dart:async';
 
 ///2021-3-5---shipk
@@ -31,58 +29,57 @@ import 'dart:async';
 /// EventBus.getDefault().post(回调的参数-看回调的方法,registerName: "广播类型");
 ///
 
-
-class EventBus{
+class EventBus {
   static EventBus _eventBus;
-  final Map<String,Map<String,StreamController>> _registerMap = new Map<String,Map<String,StreamController>>();
+  final Map<String, Map<String, StreamController>> _registerMap = new Map<String, Map<String, StreamController>>();
+
   //默认的广播类型
   final String defName = "default";
-  final String defMsg="no_data_msg_even_bus";
+  final String defMsg = "no_data_msg_even_bus";
   dynamic listener;
 
   EventBus._();
 
-  static EventBus getDefault(){
-    if(_eventBus == null){
+  static EventBus getDefault() {
+    if (_eventBus == null) {
       _eventBus = new EventBus._();
     }
     return _eventBus;
   }
 
   //加广播的方法-回调的方法-需要广播的界面-广播的类型
-  void register(listener,String pageName ,{String registerName}){
-    if(null ==registerName){
+  void register(listener, String pageName, {String registerName}) {
+    if (null == registerName) {
       registerName = defName;
     }
-    if(_registerMap[registerName]==null){
-      Map<String,StreamController> map=Map();
-      map[pageName]=StreamController.broadcast();
-      _registerMap[registerName]=map;
-    }else if(_registerMap[registerName][pageName]==null){
-      _registerMap[registerName][pageName]=StreamController.broadcast();
+    if (_registerMap[registerName] == null) {
+      Map<String, StreamController> map = Map();
+      map[pageName] = StreamController.broadcast();
+      _registerMap[registerName] = map;
+    } else if (_registerMap[registerName][pageName] == null) {
+      _registerMap[registerName][pageName] = StreamController.broadcast();
     }
-    _registerMap[registerName][pageName].stream.listen((msg){
-      if(msg==defMsg){
+    _registerMap[registerName][pageName].stream.listen((msg) {
+      if (msg == defMsg) {
         listener();
-      }else{
+      } else {
         listener(msg);
       }
     });
   }
 
-
   //移除广播的方法-广播的类型-需要广播的界面
-  void unRegister({String registerName,String pageName}){
-    if(null ==registerName){
-      registerName =defName;
+  void unRegister({String registerName, String pageName}) {
+    if (null == registerName) {
+      registerName = defName;
     }
-    if(null==pageName){
-      if( _registerMap[registerName]!=null) {
+    if (null == pageName) {
+      if (_registerMap[registerName] != null) {
         _registerMap[registerName].clear();
         _registerMap.remove(registerName);
       }
-    }else{
-      if(_registerMap[registerName][pageName]!=null) {
+    } else {
+      if (_registerMap[registerName][pageName] != null) {
         _registerMap[registerName][pageName].close();
         _registerMap[registerName].remove(pageName);
       }
@@ -90,35 +87,43 @@ class EventBus{
   }
 
   //发送广播-msg消息-广播的类型
-  void post({dynamic msg="no_data_msg_even_bus",String registerName}){
-    if(null ==registerName){
-      registerName =defName;
+  void post({dynamic msg = "no_data_msg_even_bus", String registerName}) {
+    if (null == registerName) {
+      registerName = defName;
     }
-    if(_registerMap.containsKey(registerName)){
+    if (_registerMap.containsKey(registerName)) {
       _registerMap[registerName].forEach((key, value) {
-        if(_registerMap[registerName][key]!=null){
+        if (_registerMap[registerName][key] != null) {
           _registerMap[registerName][key].add(msg);
         }
       });
     }
   }
 }
-  ///页面名称
- const String  EVENTBUS_MAIN_PAGE = "main_page";
- //直播界面-播放界面
- const String  EVENTBUS_LIVEROOM_TESTPAGE = "LiveRoomTestPage";
- //直播界面-功能界面
- const String  EVENTBUS_ROOM_OPERATION_PAGE = "LiveRoomTestOperationPage";
- //直播在线人数dialog面板
- const String  EVENTBUS_BOTTOM_USER_PANEL_DIALOG = "BottomUserPanelDialog";
 
+///页面名称
+const String EVENTBUS_MAIN_PAGE = "main_page";
+//直播界面-播放界面
+const String EVENTBUS_LIVEROOM_TESTPAGE = "LiveRoomTestPage";
+//直播界面-功能界面
+const String EVENTBUS_ROOM_OPERATION_PAGE = "LiveRoomTestOperationPage";
+//直播在线人数dialog面板
+const String EVENTBUS_BOTTOM_USER_PANEL_DIALOG = "BottomUserPanelDialog";
+//个人主页
+const String EVENTBUS_PROFILE_PAGE = "profilePage";
+//互动通知页
+const String EVENTBUS_INTERACTIVE_NOTICE_PAGE = "interactiveNoticePage";
 
- ///广播类型
+///广播类型
 //发布动态
- const String  EVENTBUS_POSTFEED_CALLBACK = "mainpage_postFeedCallBack";
- //直播界面的退出
- const String  EVENTBUS_LIVEROOM_EXIT = "liveRoomTestPage_exit";
- //直播界面接收弹幕功能
- const String  EVENTBUS_ROOM_RECEIVE_BARRAGE = "LiveRoomTestOperationPage_receive_barrage";
- //直播在线人数dailog刷新界面
- const String  EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET = "BottomUserPanelDialogReset";
+const String EVENTBUS_POSTFEED_CALLBACK = "mainpage_postFeedCallBack";
+//直播界面的退出
+const String EVENTBUS_LIVEROOM_EXIT = "liveRoomTestPage_exit";
+//直播界面接收弹幕功能
+const String EVENTBUS_ROOM_RECEIVE_BARRAGE = "LiveRoomTestOperationPage_receive_barrage";
+//直播在线人数dailog刷新界面
+const String EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET = "BottomUserPanelDialogReset";
+//个人主页删除动态
+const String EVENTBUS_PROFILE_DELETE_FEED = "profileUserDetailDeleteFeed";
+//互动通知删除评论动态
+const String EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT = "interactiveNoticeDelete";
