@@ -939,6 +939,7 @@ class _LiveRoomVideoOperationPageState extends State<LiveRoomVideoOperationPage>
 
   //接收直播间弹幕消息
   void receiveBarrageMessage(message){
+
     Message msg=(message as Message);
     print("message:${msg.targetId},${widget.coachId}");
     if(msg.targetId!=widget.coachId.toString()){
