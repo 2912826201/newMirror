@@ -844,7 +844,7 @@ class _LiveRoomVideoOperationPageState extends State<LiveRoomVideoOperationPage>
 
 
   //离开直播间
-  void subLiveRoom(TextMessage textMessage){
+  void subLiveRoom(TextMessage textMessage,{bool isReset=true}){
     for(int i=0;i<onlineManList.length;i++){
       if(onlineManList[i].uid.toString()==textMessage.sendUserInfo.userId.toString()){
         onlineManList.removeAt(i);
@@ -857,9 +857,11 @@ class _LiveRoomVideoOperationPageState extends State<LiveRoomVideoOperationPage>
         break;
       }
     }
-    EventBus.getDefault().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
-    if(onlineManList.length<3){
-      resetOnlineUserImage();
+    if(isReset) {
+      EventBus.getDefault().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
+      if (onlineManList.length < 3) {
+        resetOnlineUserImage();
+      }
     }
   }
 
@@ -949,7 +951,11 @@ class _LiveRoomVideoOperationPageState extends State<LiveRoomVideoOperationPage>
       switch (contentMap["subObjectName"]) {
         case ChatTypeModel.MESSAGE_TYPE_SYS_BARRAGE:
           if(null!=contentMap["name"]&&contentMap["name"]=="joinLiveRoom"){
-            resetOnlineUserNumber(++onlineUserNumber);
+            if(onlineManUidList.contains(int.parse(textMessage.sendUserInfo.userId))){
+              subLiveRoom(textMessage,isReset: false);
+            }else {
+              resetOnlineUserNumber(++onlineUserNumber);
+            }
             _onSubmitJoinLiveRoomMessage(textMessage.sendUserInfo.name,textMessage.sendUserInfo.userId);
             addLiveRoom(textMessage);
           }else if(null!=contentMap["name"]&&contentMap["name"]=="quitLiveRoom"){
