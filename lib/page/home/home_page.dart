@@ -221,8 +221,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
             // 设置可发布
             context.read<ReleaseProgressNotifier>().isPublish = true;
           });
-          // 数据更新
-          attentionKey.currentState.replaceData(HomeFeedModel.fromJson(feedModel));
+          // 插入接口更新
+          attentionKey.currentState.insertData(HomeFeedModel.fromJson(feedModel));
         } else {
           // 发布失败
           print('================================发布失败');
@@ -243,7 +243,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
         context.select((ReleaseProgressNotifier value) => value.isPublish)) {
       print("疯狂)))))))))))))))))))))");
       PostFeedModel postFeedModel = context.select((ReleaseProgressNotifier value) => value.postFeedModel);
-      HomeFeedModel homeFeedModel = HomeFeedModel().conversionModel(postFeedModel, context);
+
       // 定位到main_page页
       Application.ifPageController.index = Application.ifPageController.length - 1;
       // 定位到关注页
@@ -256,11 +256,12 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
       if (attentionKey.currentState != null) {
         attentionKey.currentState.backToTheTop();
       }
-      // 插入数据
-      if (context.select((FeedMapNotifier value) => value.value.buildIsOver)) {
-        print('========================insertData====2');
-        attentionKey.currentState.insertData(homeFeedModel);
-      }
+      // 需求修改不要插入本地数据了
+      // HomeFeedModel homeFeedModel = HomeFeedModel().conversionModel(postFeedModel, context);
+      // if (context.select((FeedMapNotifier value) => value.value.buildIsOver)) {
+      //   print('========================insertData====2');
+      //   attentionKey.currentState.insertData(homeFeedModel);
+      // }
       // 设置不可发布
       context.watch<ReleaseProgressNotifier>().isPublish = false;
       // 发布动态
@@ -370,13 +371,13 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                     // 清空发布model
                     context.read<ReleaseProgressNotifier>().setPublishFeedModel(null);
                     // 删除本地插入数据
-                    if (attentionKey.currentState != null) {
-                      attentionKey.currentState.deleteData();
-                    } else {
-                      new Future.delayed(Duration(milliseconds: 500), () {
-                        attentionKey.currentState.deleteData();
-                      });
-                    }
+                    // if (attentionKey.currentState != null) {
+                    //   attentionKey.currentState.deleteData();
+                    // } else {
+                    //   new Future.delayed(Duration(milliseconds: 500), () {
+                    //     attentionKey.currentState.deleteData();
+                    //   });
+                    // }
                     //还原进度条
                     _process = 0.0;
                     context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(_process);

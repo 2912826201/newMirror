@@ -144,7 +144,7 @@ class Application {
   static String cityId = "targetCityId";
 
   // 发布中临时插入的动态Id
-  static final int insertFeedId = -2;
+  // static final int insertFeedId = -2;
 
   // 话题model的map
   static Map<int, TopicDtoModel> topicMap= {};

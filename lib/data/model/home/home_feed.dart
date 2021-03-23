@@ -87,7 +87,7 @@ class HomeFeedModel {
     homeFeedModel.content = postFeedModel.content;
     homeFeedModel.address = postFeedModel.address;
     homeFeedModel.cityCode = postFeedModel.cityCode;
-    homeFeedModel.id = Application.insertFeedId;
+    // homeFeedModel.id = Application.insertFeedId;
     homeFeedModel.type = 0;
     homeFeedModel.courseDto = null;
     homeFeedModel.commentCount = 0;

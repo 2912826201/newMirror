@@ -288,32 +288,32 @@ class HeadViewState extends State<HeadView> {
                       svgName: AppIcon.more_feed,
                       iconSize: 24,
                       onTap: () {
-                        if (context.read<ReleaseProgressNotifier>().postFeedModel != null &&
-                            context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id !=
-                                Application.insertFeedId) {
-                          // ToastShow.show(msg: "不响应", context: context);
-                        } else {
-                          // ignore: missing_return
-                          openMoreBottomSheet(
-                              context: context,
-                              lists: notifier.profileUiChangeModel[widget.model.pushId].feedStringList,
-                              onItemClickListener: (index) {
-                                switch (notifier
-                                    .profileUiChangeModel[widget.model.pushId]
-                                    // ignore: missing_return
-                                    .feedStringList[index]) {
-                                  case "删除":
-                                    deleteFeed();
-                                    break;
-                                  case "取消关注":
-                                    _checkBlackStatus(widget.model.pushId, context, true);
-                                    break;
-                                  case "举报":
-                                    _showDialog();
-                                    break;
-                                }
-                              });
-                        }
+                        // if (context.read<ReleaseProgressNotifier>().postFeedModel != null &&
+                        //     context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id !=
+                        //         Application.insertFeedId) {
+                        //   // ToastShow.show(msg: "不响应", context: context);
+                        // } else {
+                        // ignore: missing_return
+                        openMoreBottomSheet(
+                            context: context,
+                            lists: notifier.profileUiChangeModel[widget.model.pushId].feedStringList,
+                            onItemClickListener: (index) {
+                              switch (notifier
+                                  .profileUiChangeModel[widget.model.pushId]
+                                  // ignore: missing_return
+                                  .feedStringList[index]) {
+                                case "删除":
+                                  deleteFeed();
+                                  break;
+                                case "取消关注":
+                                  _checkBlackStatus(widget.model.pushId, context, true);
+                                  break;
+                                case "举报":
+                                  _showDialog();
+                                  break;
+                              }
+                            });
+                        // }
                       },
                     ),
                   );
