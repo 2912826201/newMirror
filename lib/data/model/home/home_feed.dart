@@ -47,10 +47,6 @@ class HomeFeedModel {
   // 添加字段
   int totalCount = -1;
   bool isShowInputBox = true;
-  // 头部偏移值
-  double headOffset;
-  // 尾部偏移值
-  double bottomOffset;
   SelectedMediaFiles selectedMediaFiles;
   HomeFeedModel({
     this.id,
@@ -78,8 +74,6 @@ class HomeFeedModel {
     this.comments,
     this.address,
     this.isShowInputBox,
-    this.bottomOffset,
-    this.headOffset,
     this.selectedMediaFiles,
   });
   // 转换model
@@ -226,8 +220,6 @@ class HomeFeedModel {
     map["comments"] = comments;
     map["address"] = address;
     map['isShowInputBox'] = isShowInputBox;
-    map['headOffset'] = headOffset;
-    map['bottomOffset'] = bottomOffset;
     map['selectedMediaFiles'] = selectedMediaFiles;
     return map;
   }

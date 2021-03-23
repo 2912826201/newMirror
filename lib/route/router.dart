@@ -781,8 +781,8 @@ class AppRouter {
       return LiveRoomVideoPage(liveCourseId:liveModel.id,coachId: liveModel.coachId.toString());
     }));
     Navigator.of(context).push(SimpleRoute(
-      name: liveModel.title,
-      title: liveModel.description,
+      name: liveModel.title ?? "",
+      title: liveModel.description ?? "",
       builder: (_) {
         return LiveRoomVideoOperationPage(
             liveCourseId:liveModel.id,
