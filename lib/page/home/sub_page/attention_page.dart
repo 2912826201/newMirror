@@ -91,19 +91,19 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       status = Status.notLoggedIn;
     } else {
       getRecommendFeed();
-      new Future.delayed(Duration.zero, () {
-        print("AttentionPage发布失败数据");
-        // 取出发布动态数据
-        PostFeedModel feedModel = PostFeedModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
-            "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")));
-        if (feedModel != null) {
-          feedModel.selectedMediaFiles.list.forEach((v) {
-            v.file = File(v.filePath);
-          });
-          // 插入数据
-          insertData(HomeFeedModel().conversionModel(feedModel, context, isRefresh: true));
-        }
-      });
+      // new Future.delayed(Duration.zero, () {
+      //   print("AttentionPage发布失败数据");
+      //   // 取出发布动态数据
+      //   PostFeedModel feedModel = PostFeedModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
+      //       "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")));
+      //   if (feedModel != null) {
+      //     feedModel.selectedMediaFiles.list.forEach((v) {
+      //       v.file = File(v.filePath);
+      //     });
+      //     // 插入数据
+      //     insertData(HomeFeedModel().conversionModel(feedModel, context, isRefresh: true));
+      //   }
+      // });
     }
 
     // 上拉加载
@@ -490,17 +490,17 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             loadText = "";
             // 清空曝光过的listKey
             ExposureDetectorController.instance.signOutClearHistory();
-            if (context.read<ReleaseProgressNotifier>().postFeedModel != null) {
-              attentionIdList.insert(
-                  0,
-                  HomeFeedModel()
-                      .conversionModel(context.read<ReleaseProgressNotifier>().postFeedModel, context, isRefresh: true)
-                      .id);
-              attentionModelList.insert(
-                  0,
-                  HomeFeedModel()
-                      .conversionModel(context.read<ReleaseProgressNotifier>().postFeedModel, context, isRefresh: true));
-            }
+            // if (context.read<ReleaseProgressNotifier>().postFeedModel != null) {
+            //   attentionIdList.insert(
+            //       0,
+            //       HomeFeedModel()
+            //           .conversionModel(context.read<ReleaseProgressNotifier>().postFeedModel, context, isRefresh: true)
+            //           .id);
+            //   attentionModelList.insert(
+            //       0,
+            //       HomeFeedModel()
+            //           .conversionModel(context.read<ReleaseProgressNotifier>().postFeedModel, context, isRefresh: true));
+            // }
             getRecommendFeed();
           },
           child: CustomScrollView(controller: _controller, physics: AlwaysScrollableScrollPhysics(), slivers: [
