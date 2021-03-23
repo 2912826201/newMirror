@@ -67,11 +67,11 @@ class EventBus {
     } else if (_registerMap[registerName][pageName] == null) {
       _registerMap[registerName][pageName] = StreamController.broadcast();
     }
-    _registerMap[registerName][pageName].stream.listen((msg) {
-      if (msg == defMsg) {
-        listener();
+    _registerMap[registerName][pageName].stream.listen((list) {
+      if ((list as List).length>0) {
+        listener(list[0]);
       } else {
-        listener(msg);
+        listener();
       }
     });
   }
@@ -95,14 +95,18 @@ class EventBus {
   }
 
   //发送广播-msg消息-广播的类型
-  void post({dynamic msg = "no_data_msg_even_bus", String registerName}) {
+  void post<T>({T msg, String registerName}) {
     if (null == registerName) {
       registerName = defName;
+    }
+    List list=[];
+    if(msg!=null){
+      list.add(msg);
     }
     if (_registerMap.containsKey(registerName)) {
       _registerMap[registerName].forEach((key, value) {
         if (_registerMap[registerName][key] != null) {
-          _registerMap[registerName][key].add(msg);
+          _registerMap[registerName][key].add(list);
         }
       });
     }

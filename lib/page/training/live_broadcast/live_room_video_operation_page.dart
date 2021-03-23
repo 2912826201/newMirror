@@ -947,8 +947,7 @@ class _LiveRoomVideoOperationPageState extends State<LiveRoomVideoOperationPage>
   }
 
   //接收直播间弹幕消息
-  void receiveBarrageMessage(message){
-    Message msg=(message as Message);
+  void receiveBarrageMessage(Message msg){
     print("message:${msg.targetId},${widget.coachId}");
     if(msg.targetId!=widget.coachId.toString()){
       Application.rongCloud.quitChatRoom(msg.targetId);
