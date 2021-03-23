@@ -16,10 +16,9 @@ import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/message/item/emoji_manager.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
-import 'package:mirror/widget/expression_team_delete_Formatter.dart';
+import 'package:mirror/widget/text_span_field/range_style.dart';
+import 'package:mirror/widget/text_span_field/text_span_field.dart';
 import 'package:provider/provider.dart';
-import 'package:text_span_field/range_style.dart';
-import 'package:text_span_field/text_span_field.dart';
 import 'package:toast/toast.dart';
 
 import 'feed/release_feed_input_formatter.dart';
