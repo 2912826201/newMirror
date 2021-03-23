@@ -35,8 +35,8 @@ import '../../../widget/sliver_custom_header_delegate.dart';
 import 'package:provider/provider.dart';
 
 import 'live_room_page_common.dart';
-import 'live_room_test_page.dart';
-import 'live_room_test_operation_page.dart';
+import 'live_room_video_page.dart';
+import 'live_room_video_operation_page.dart';
 
 /// 直播详情页
 class LiveDetailPage extends StatefulWidget {
@@ -834,28 +834,14 @@ class LiveDetailPageState extends XCState {
     if (liveModel.playType == 3) {
       ToastShow.show(msg: "回放", context: context);
     } else {
+      print("点击了试听按钮");
       gotoLiveVideoRoomPage();
     }
   }
 
   //去直播页
   void gotoLiveVideoRoomPage(){
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return LiveRoomTestPage(liveCourseId:liveCourseId,coachId: liveModel.coachId.toString());
-    }));
-    Navigator.of(context).push(SimpleRoute(
-      name: liveModel.title,
-      title: liveModel.coachDto.nickName+"直播间",
-      builder: (_) {
-        return LiveRoomTestOperationPage(
-            liveCourseId:liveCourseId,
-            coachName:liveModel.coachDto.nickName,
-            coachUrl:liveModel.coachDto.avatarUri,
-            coachRelation:liveModel.coachDto.relation,
-            startTime:liveModel.startTime,
-            coachId: liveModel.coachId);
-      },
-    ));
+    AppRouter.navigateLiveRoomPage(context,liveModel);
   }
 
 

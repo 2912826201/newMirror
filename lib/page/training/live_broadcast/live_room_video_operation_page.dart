@@ -13,12 +13,9 @@ import 'package:mirror/data/model/message/emoji_model.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/page/message/item/emoji_manager.dart';
 import 'package:mirror/util/click_util.dart';
-import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
-import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -29,7 +26,7 @@ import 'dialog/live_room_online_man_number_dialog.dart';
 import 'live_room_page_common.dart';
 
 
-class LiveRoomTestOperationPage extends StatefulWidget {
+class LiveRoomVideoOperationPage extends StatefulWidget {
   final int liveCourseId;
   final int coachId;
   final String coachUrl;
@@ -37,7 +34,7 @@ class LiveRoomTestOperationPage extends StatefulWidget {
   final String startTime;
   final int coachRelation;
 
-  const LiveRoomTestOperationPage({
+  const LiveRoomVideoOperationPage({
     Key key,
     @required this.liveCourseId,
     @required this.coachName,
@@ -47,12 +44,12 @@ class LiveRoomTestOperationPage extends StatefulWidget {
     @required this.coachId,}) : super(key: key);
 
   @override
-  _LiveRoomTestOperationPageState createState() => _LiveRoomTestOperationPageState(coachRelation);
+  _LiveRoomVideoOperationPageState createState() => _LiveRoomVideoOperationPageState(coachRelation);
 }
 
-class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
+class _LiveRoomVideoOperationPageState extends State<LiveRoomVideoOperationPage> {
 
-  _LiveRoomTestOperationPageState(this.coachRelation);
+  _LiveRoomVideoOperationPageState(this.coachRelation);
 
   //与教练的关系
   int coachRelation;
@@ -587,9 +584,6 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
 
   //表情的bar
   Widget _emojiBottomBox() {
-    TextStyle textStyle = const TextStyle(
-      fontSize: 24,
-    );
     return Container(
       decoration: BoxDecoration(
         color: Colors.transparent,
