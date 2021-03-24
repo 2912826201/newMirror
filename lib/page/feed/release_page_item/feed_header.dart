@@ -245,9 +245,9 @@ class FeedHeader extends StatelessWidget {
               var uid = context.read<ProfileNotifier>().profile.uid;
               pulishFeed(context, inputText, uid, rules, poi);
             },
-            // child: IgnorePointer(
+            child: IgnorePointer(
             // 监听输入框的值==""使外层点击不生效。非""手势生效。
-            // ignoring: context.watch<ReleaseFeedInputNotifier>().inputText == "",
+            ignoring: !context.watch<ReleaseFeedInputNotifier>().isPostFeed ,
             child: Container(
               // padding: EdgeInsets.only(top: 6,left: 12,bottom: 6,right: 12),
                 height: 28,
@@ -267,7 +267,7 @@ class FeedHeader extends StatelessWidget {
                     style: TextStyle(color: AppColor.white, fontSize: 14, decoration: TextDecoration.none),
                   ),
                 )),
-            // )
+            )
           ),
           SizedBox(
             width: 16,

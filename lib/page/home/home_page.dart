@@ -277,6 +277,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                 iconColor: AppColor.black,
                 onTap: () {
                   print("${FluroRouter.appRouter.hashCode}");
+                  print(postprogressModel.toString());
                   if (postprogressModel != null && postprogressModel.postFeedModel != null) {
                     if (postprogressModel.plannedSpeed != -1) {
                       ToastShow.show(msg: "你有动态正在发送中，请稍等", context: context, gravity: Toast.CENTER);
