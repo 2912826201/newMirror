@@ -104,7 +104,6 @@ class ReleaseProgressViewState extends State<ReleaseProgressView> {
                       Offstage(
                           offstage: widget.postprogressModel.plannedSpeed != -1,
                           child: Container(
-                            margin: EdgeInsets.only(right: 16),
                             child: Row(
                               children: [
                                 AppIconButton(
