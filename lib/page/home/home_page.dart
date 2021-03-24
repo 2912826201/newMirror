@@ -52,6 +52,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
   initState() {
     super.initState();
     controller = TabController(length: 2, vsync: this, initialIndex: 1);
+    // EventBus.getDefault().register(_postFeedCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POSTFEED_CALLBACK);
     if (AppPrefs.getPublishFeedLocalInsertData(
             "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}") !=
         null) {
@@ -203,6 +204,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
 
         if (feedModel != null) {
           // 发布完成
+          // 插入接口更新
+          attentionKey.currentState.insertData(HomeFeedModel.fromJson(feedModel));
           // 延迟器:
           new Future.delayed(Duration(seconds: 3), () {
             // 重新赋值存入
@@ -221,8 +224,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
             // 设置可发布
             context.read<ReleaseProgressNotifier>().isPublish = true;
           });
-          // 插入接口更新
-          attentionKey.currentState.insertData(HomeFeedModel.fromJson(feedModel));
+
         } else {
           // 发布失败
           print('================================发布失败');

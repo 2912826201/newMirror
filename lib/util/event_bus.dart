@@ -139,6 +139,12 @@ const String EVENTBUS_BOTTOM_USER_PANEL_DIALOG = "BottomUserPanelDialog";
 const String EVENTBUS_PROFILE_PAGE = "profilePage";
 //互动通知页
 const String EVENTBUS_INTERACTIVE_NOTICE_PAGE = "interactiveNoticePage";
+// 发布动态页
+const String EVENTBUS_POST_FEED_HEADER = "postFeedHeader";
+// homePage页
+const String EVENTBUS_HOME_PAGE = "homePage";
+// 发布进度视图页
+const String EVENTBUS_POST_PROGRESS_VIEW = "releaseProgressView";
 
 ///广播类型
 //发布动态
@@ -153,3 +159,5 @@ const String EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET = "BottomUserPanelDialogRes
 const String EVENTBUS_PROFILE_DELETE_FEED = "profileUserDetailDeleteFeed";
 //互动通知删除评论动态
 const String EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT = "interactiveNoticeDelete";
+// 是否可发布动态和展示进度视图
+const String EVENTBUS_POST_PORGRESS_VIEW = "postporgressview";

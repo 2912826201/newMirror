@@ -289,16 +289,17 @@ class _SlideBannerState extends State<SlideBanner> {
   }
 
   double getDotsWidth(int choseIndex) {
-    if (imageCount < 6) {
-      return (imageCount - 1) * mediumDotsSize + bigDotsSize + (imageCount - 1) * spacingWidth.toDouble();
+    if (imageCount < 6) {                                                                       //多加一点边距
+      return (imageCount - 1) * mediumDotsSize + bigDotsSize + (imageCount - 1) * spacingWidth+mediumDotsSize
+          .toDouble();
     } else if (imageCount > 6) {
       if (choseIndex < 3 || choseIndex >= imageCount - 3) {
-        return mediumDotsSize * 3 + bigDotsSize + smallDotsSize + spacingWidth * 4.toDouble();
+        return mediumDotsSize * 3 + bigDotsSize + smallDotsSize + spacingWidth * 4+mediumDotsSize.toDouble();
       } else {
-        return smallDotsSize * 2 + mediumDotsSize * 2 + bigDotsSize + spacingWidth * 4.toDouble();
+        return smallDotsSize * 2 + mediumDotsSize * 2 + bigDotsSize + spacingWidth * 4+mediumDotsSize.toDouble();
       }
     } else {
-      return mediumDotsSize * 3 + bigDotsSize + smallDotsSize + spacingWidth * 4.toDouble();
+      return mediumDotsSize * 3 + bigDotsSize + smallDotsSize + spacingWidth * 4+mediumDotsSize.toDouble();
     }
   }
 
@@ -338,8 +339,13 @@ class _SlideBannerState extends State<SlideBanner> {
                       onIndexChanged: (index) {
                         autoPlay(index);
                         if (index > 1) {
-                          controller.animateTo(((index - 2) * (mediumDotsSize + spacingWidth)).toDouble(),
-                              duration: Duration(milliseconds: 200), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                          if(index<imageCount-3){
+                            controller.animateTo(((index - 2) * (mediumDotsSize + spacingWidth)).toDouble(),
+                                duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                          }else if(index==imageCount-3){
+                            controller.animateTo(controller.position.maxScrollExtent,
+                                duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                          }
                         }
                       },
                       onTap: (index) {},
@@ -378,6 +384,7 @@ class _SlideBannerState extends State<SlideBanner> {
                   initialData: zindex, //初始值
                   builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
                     return Container(
+                        padding: EdgeInsets.only(left: 2,right: 2),
                         width: getDotsWidth(snapshot.data),
                         height: 10,
                         margin: const EdgeInsets.only(top: 5),
@@ -401,7 +408,8 @@ class _SlideBannerState extends State<SlideBanner> {
                             color: Color(0xFFFFFFFF),
                           ),
                           itemCount: imageCount,
-                        ));
+                        ),)
+                    ;
                   }))
         ],
       ),

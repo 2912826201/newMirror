@@ -65,6 +65,8 @@ class FeedHeader extends StatelessWidget {
     // 获取当前时间戳
     int currentTimestamp = DateTime.now().millisecondsSinceEpoch;
     PostFeedModel feedModel = PostFeedModel();
+    PostprogressModel postprogressModel = PostprogressModel();
+    postprogressModel.plannedSpeed = 0.0;
     List<AtUsersModel> atUsersModel = [];
     String address;
     String cityCode;
@@ -117,15 +119,16 @@ class FeedHeader extends StatelessWidget {
         feedModel.topics = topics;
 
         feedModel.selectedMediaFiles = selectedMediaFiles;
+        postprogressModel.postFeedModel = feedModel;
         print("打印一下￥￥${(feedModel.selectedMediaFiles.list.length)}");
         // 存入数据
         AppPrefs.setPublishFeedLocalInsertData(
             "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}",
             jsonEncode(feedModel.toJson()));
-        context.read<ReleaseProgressNotifier>().setPublishFeedModel(feedModel);
         context.read<ReleaseFeedInputNotifier>().rules.clear();
         context.read<ReleaseFeedInputNotifier>().selectAddress = null;
         EventBus.getDefault().post(registerName:EVENTBUS_POSTFEED_CALLBACK);
+        EventBus.getDefault().post(msg: postprogressModel,registerName:EVENTBUS_POST_PORGRESS_VIEW);
         print('--------------Navigator------Navigator-------------Navigator------');
         Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
         print("打印结束");
@@ -173,12 +176,13 @@ class FeedHeader extends StatelessWidget {
       feedModel.longitude = longitude;
       feedModel.topics = topics;
       feedModel.selectedMediaFiles = selectedMediaFiles;
+      postprogressModel.postFeedModel = feedModel;
       // 存入数据
       AppPrefs.setPublishFeedLocalInsertData(
           "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}",
           jsonEncode(feedModel.toJson()));
       // 传入发布动态model
-      context.read<ReleaseProgressNotifier>().setPublishFeedModel(feedModel);
+      EventBus.getDefault().post(msg: postprogressModel,registerName:EVENTBUS_POST_PORGRESS_VIEW);
       context.read<ReleaseFeedInputNotifier>().rules.clear();
       context.read<ReleaseFeedInputNotifier>().selectAddress = null;
       FocusScope.of(context).requestFocus(FocusNode());
