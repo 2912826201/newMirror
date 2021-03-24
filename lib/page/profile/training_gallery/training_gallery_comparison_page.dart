@@ -45,8 +45,7 @@ class _TrainingGalleryComparisonState extends State<TrainingGalleryComparisonPag
         titleString: "制作对比图",
         actions: [
           Container(
-            alignment: Alignment.center,
-            padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding),
+            padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
             child: CustomRedButton(
               "完成",
               CustomRedButton.buttonStateNormal,

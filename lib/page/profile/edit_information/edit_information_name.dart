@@ -90,8 +90,7 @@ class _EditInformationNameState extends State<EditInformationName> {
         titleString: widget.title??"编辑昵称",
         actions: [
           Container(
-            alignment: Alignment.center,
-            padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding),
+            padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
             child: CustomRedButton(
               "确定",
               CustomRedButton.buttonStateNormal,
