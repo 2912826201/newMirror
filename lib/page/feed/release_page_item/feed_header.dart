@@ -247,7 +247,7 @@ class FeedHeader extends StatelessWidget {
             },
             child: IgnorePointer(
             // 监听输入框的值==""使外层点击不生效。非""手势生效。
-            ignoring: !context.watch<ReleaseFeedInputNotifier>().isPostFeed ,
+            ignoring: context.watch<ReleaseFeedInputNotifier>().isPostFeed == false,
             child: Container(
               // padding: EdgeInsets.only(top: 6,left: 12,bottom: 6,right: 12),
                 height: 28,
@@ -256,10 +256,10 @@ class FeedHeader extends StatelessWidget {
                     borderRadius: BorderRadius.all(Radius.circular(14)),
                     // 监听输入框的值动态改变样式
                     color:
-                    // context.watch<ReleaseFeedInputNotifier>().inputText != ""
-                    //     ?
+                    context.watch<ReleaseFeedInputNotifier>().isPostFeed
+                        ?
                     AppColor.mainRed
-                  // : AppColor.mainRed.withOpacity(0.65),
+                  : AppColor.mainRed.withOpacity(0.65),
                 ),
                 child: Center(
                   child: Text(

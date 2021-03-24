@@ -66,9 +66,27 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
         // 取出发布动态数据
         postprogressModel = PostprogressModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
             "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")));
+        print("取出失败数据postprogressModel：${postprogressModel.toString()}");
         if (postprogressModel != null && postprogressModel.postFeedModel != null) {
+          print("1111111111111");
           postprogressModel.postFeedModel.selectedMediaFiles.list.forEach((v) {
-            v.file = File(v.filePath);
+            try{
+              v.file = File(v.filePath);
+            }catch(error) {
+              // 重新赋值存入
+              AppPrefs.setPublishFeedLocalInsertData(
+                  "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}", null);
+              // todo 清除图片路径
+
+              // 清空发布model
+              postprogressModel.postFeedModel = null;
+              //还原进度条
+              postprogressModel.plannedSpeed = 0.0;
+              streamController.sink.add(0.0);
+              postprogressModel.isPublish = true;
+              streamProgress.sink.add(postprogressModel);
+              return;
+            }
           });
           postprogressModel.plannedSpeed = -1.0;
           postprogressModel.showPulishView = true;
@@ -86,12 +104,14 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
     postprogressModel = PostprogressModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
         "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")));
     if (postprogressModel != null && postprogressModel.postFeedModel != null) {
+
       postprogressModel.postFeedModel.selectedMediaFiles.list.forEach((v) {
         v.file = File(v.filePath);
       });
+      postprogressModel.showPulishView = true;
+      print("断网重发数据postprogressModel：${postprogressModel.toString()}");
+      streamProgress.sink.add(postprogressModel);
     }
-    postprogressModel.showPulishView = true;
-    streamProgress.sink.add(postprogressModel);
     return postprogressModel;
   }
 
@@ -277,7 +297,6 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                 iconColor: AppColor.black,
                 onTap: () {
                   print("${FluroRouter.appRouter.hashCode}");
-                  print(postprogressModel.toString());
                   if (postprogressModel != null && postprogressModel.postFeedModel != null) {
                     if (postprogressModel.plannedSpeed != -1) {
                       ToastShow.show(msg: "你有动态正在发送中，请稍等", context: context, gravity: Toast.CENTER);

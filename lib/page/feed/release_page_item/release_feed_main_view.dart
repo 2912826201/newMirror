@@ -226,8 +226,10 @@ class SeletedPhotoState extends State<SeletedPhoto> {
         Uint8List picBytes = byteData.buffer.asUint8List();
         model.croppedImageData = picBytes;
       }
-      setState(() {});
     }
+    // 设置可发布
+    context.read<ReleaseFeedInputNotifier>().setIsPostFeed(true);
+    setState(() {});
   }
 
   @override

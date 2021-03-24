@@ -37,11 +37,9 @@ class AppPrefs {
   // 获取发布动态本地插入数据
   static String getPublishFeedLocalInsertData(String key) {
     String value = _instance.getString(key);
-    print(value);
     if(value == null) {
       value = null;
     }
    return  value;
   }
-
 }
