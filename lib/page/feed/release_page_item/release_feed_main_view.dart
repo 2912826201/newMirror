@@ -1,4 +1,3 @@
-
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:app_settings/app_settings.dart';
@@ -198,8 +197,8 @@ class ReleaseFeedMainViewState extends State<ReleaseFeedMainView> {
       children: [
         widget.selectedMediaFiles != null && widget.selectedMediaFiles.list != null
             ? SeletedPhoto(
-          selectedMediaFiles: widget.selectedMediaFiles,
-        )
+                selectedMediaFiles: widget.selectedMediaFiles,
+              )
             : Container(),
         seletedAddress(context),
         widget.pois.isNotEmpty ? Offstage(offstage: isShowList == false, child: recommendAddress()) : Container()
@@ -227,8 +226,10 @@ class SeletedPhotoState extends State<SeletedPhoto> {
         Uint8List picBytes = byteData.buffer.asUint8List();
         model.croppedImageData = picBytes;
       }
-      setState(() {});
     }
+    // 设置可发布
+    context.read<ReleaseFeedInputNotifier>().setIsPostFeed(true);
+    setState(() {});
   }
 
   @override
@@ -279,6 +280,8 @@ class SeletedPhotoState extends State<SeletedPhoto> {
             }
             widget.selectedMediaFiles.list.addAll(files.list);
             context.read<ReleaseFeedInputNotifier>().setSelectedMediaFiles(widget.selectedMediaFiles);
+            // 设置可发布
+            context.read<ReleaseFeedInputNotifier>().setIsPostFeed(true);
             setState(() {});
           }, fixedWidth: fixedWidth, fixedHeight: fixedHeight, startCount: widget.selectedMediaFiles.list.length);
         },
@@ -332,7 +335,7 @@ class SeletedPhotoState extends State<SeletedPhoto> {
       scrollController: scrollController,
       children: List<Widget>.generate(
         widget.selectedMediaFiles.list.length,
-            (int index) {
+        (int index) {
           return Container(
             key: ValueKey(index),
             width: 92,
@@ -352,26 +355,34 @@ class SeletedPhotoState extends State<SeletedPhoto> {
                   left: 0,
                   child: widget.selectedMediaFiles.type == mediaTypeKeyVideo
                       ? Image.memory(
-                    widget.selectedMediaFiles.list[index].thumb,
-                    fit: BoxFit.cover,
-                    width: 86,
-                    height: 86,
-                  )
+                          widget.selectedMediaFiles.list[index].thumb,
+                          fit: BoxFit.cover,
+                          width: 86,
+                          height: 86,
+                        )
                       : widget.selectedMediaFiles.list[index].croppedImageData != null
-                      ? Image.memory(
-                    widget.selectedMediaFiles.list[index].croppedImageData,
-                    fit: BoxFit.cover,
-                    width: 86,
-                    height: 86,
-                  )
-                      : widget.selectedMediaFiles.list[index].file != null
-                      ? Image.file(
-                    widget.selectedMediaFiles.list[index].file,
-                    fit: BoxFit.cover,
-                    width: 86,
-                    height: 86,
-                  )
-                      : Container(),
+                          ? Image.memory(
+                              widget.selectedMediaFiles.list[index].croppedImageData,
+                              fit: BoxFit.cover,
+                              width: 86,
+                              height: 86,
+                            )
+                          : widget.selectedMediaFiles.list[index].file != null
+                              ? Image.file(
+                                  widget.selectedMediaFiles.list[index].file,
+                                  fit: BoxFit.cover,
+                                  width: 86,
+                                  height: 86,
+                                )
+                              : Container(
+                                  width: 86,
+                                  height: 86,
+                                  child: Center(
+                                    child: CupertinoActivityIndicator(
+                                      radius: 10,
+                                    ),
+                                  ),
+                                ),
                 ),
                 Positioned(
                   right: 0,
