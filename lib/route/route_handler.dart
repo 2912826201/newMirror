@@ -377,7 +377,7 @@ var handlerChatPage = Handler(handlerFunc: (BuildContext context, Map<String, Li
   ConversationDto conversation = ConversationDto.fromMap(data["conversation"]);
   Message shareMessage = Application.shareMessage;
   Application.shareMessage = null;
-  return ChatPage(conversation: conversation, shareMessage: shareMessage);
+  return ChatPage(conversation: conversation, shareMessage: shareMessage,context:context);
 });
 
 //群聊二维码界面
