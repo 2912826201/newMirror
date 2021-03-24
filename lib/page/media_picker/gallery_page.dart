@@ -749,8 +749,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
           : Container(),
       actions: [
         Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding),
+          padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
           child: CustomRedButton(
             "下一步",
             context.select((SelectedMapNotifier value) => value.selectedMap.isEmpty && value.currentEntity == null)

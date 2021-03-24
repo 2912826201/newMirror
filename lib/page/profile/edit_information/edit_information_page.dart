@@ -129,8 +129,7 @@ class _EditInformationState extends State<EditInformation> {
           titleString: "编辑资料",
           actions: [
             Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding),
+              padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
               child: CustomRedButton(
                 "确定",
                 buttonState,
