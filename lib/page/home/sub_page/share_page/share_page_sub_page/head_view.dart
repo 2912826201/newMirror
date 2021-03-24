@@ -287,6 +287,7 @@ class HeadViewState extends State<HeadView> {
                       svgName: AppIcon.more_feed,
                       iconSize: 24,
                       onTap: () {
+                        print("点击更多按钮了");
                         // if (context.read<ReleaseProgressNotifier>().postFeedModel != null &&
                         //     context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id !=
                         //         Application.insertFeedId) {

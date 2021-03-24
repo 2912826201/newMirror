@@ -73,6 +73,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
           postprogressModel.plannedSpeed = -1.0;
           postprogressModel.showPulishView = true;
           postprogressModel.isPublish = false;
+          streamController.sink.add(60.0);
           streamProgress.sink.add(postprogressModel);
         }
       }
@@ -143,9 +144,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
       Application.ifPageController.index = Application.ifPageController.length - 1;
       // 定位到关注页
       controller.index = 0;
-      setState(() {
-        animalHeight = 60;
-      });
+      streamController.sink.add(60.0);
       postprogressModel.showPulishView = true;
       // 关注页回到顶部
       if (attentionKey.currentState != null) {

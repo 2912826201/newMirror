@@ -246,6 +246,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     new Future.delayed(Duration.zero, () {
       context.read<FeedMapNotifier>().insertFeedMap(model);
     });
+    setState(() {
+    });
     status = Status.concern;
   }
 
