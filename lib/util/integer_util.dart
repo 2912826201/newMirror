@@ -31,4 +31,5 @@ class IntegerUtil {
     }
     return "${calorie/1000}${isHaveCompany?"千卡":""}";
   }
+
 }

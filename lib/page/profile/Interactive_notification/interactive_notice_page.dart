@@ -47,6 +47,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   bool haveData = false;
   String hintText;
   int timeStamp;
+  ScrollController scrollController  = ScrollController();
   StreamController<List<QueryModel>> streamController = StreamController<List<QueryModel>>();
 
   ///获取互动通知列表
@@ -119,6 +120,15 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
         registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
     super.initState();
     _getMsgList(widget.type);
+    /*WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      RenderBox renderBox = refreshFooterKey.currentContext.findRenderObject();
+      var offset =  renderBox.localToGlobal(Offset.zero);
+      if(offset.dy>ScreenUtil.instance.height){
+        showFooter  = true;
+        setState(() {
+        });
+      }
+    });*/
   }
 
   _commentOrFeedDetailCallBack(result) {
@@ -177,6 +187,13 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                           enablePullUp: true,
                           enablePullDown: true,
                           footer: CustomFooter(
+                            loadStyle: LoadStyle.ShowAlways,
+                            onOffsetChange: (offset){
+                              print('---------------onOffsetChange${offset}');
+                              scrollController.addListener(() {
+                                print('-----------------------scrollController${scrollController.offset}');
+                              });
+                            },
                             builder: (BuildContext context, LoadStatus mode) {
                               Widget body;
                               if (mode == LoadStatus.loading) {
@@ -202,6 +219,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                           onRefresh: _onRefresh,
                           onLoading: _onLoading,
                           child: ListView.builder(
+                              controller: scrollController,
                               shrinkWrap: true, //解决无限高度问题
                               physics: AlwaysScrollableScrollPhysics(),
                               itemCount: snapshot.data.length,
@@ -247,8 +265,8 @@ class InteractiveNoticeItem extends StatefulWidget {
   QueryModel msgModel;
   bool isFrist = true;
   int index;
-
-  InteractiveNoticeItem({this.type, this.msgModel, this.index});
+  GlobalKey globalKey;
+  InteractiveNoticeItem({this.type, this.msgModel, this.index,this.globalKey});
 
   @override
   State<StatefulWidget> createState() {
@@ -378,6 +396,7 @@ class InteractiveNoticeItemState extends State<InteractiveNoticeItem> {
       textHeight = testSize.height;
     }
     return Container(
+      key: widget.globalKey,
       width: ScreenUtil.instance.screenWidthDp,
       height: 59.5 + textHeight + 16,
       color: AppColor.white,

@@ -5,6 +5,7 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/Input_method_rules/pin_yin_text_edit_controller.dart';
 import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/custom_button.dart';
+import 'package:mirror/widget/expression_team_delete_Formatter.dart';
 
 class EditInformationIntroduction extends StatefulWidget {
   final String introduction;
@@ -149,6 +150,9 @@ class _IntroductionState extends State<EditInformationIntroduction> {
               hintStyle: TextStyle(fontSize: 16, color: AppColor.textHint),
               border: InputBorder.none,
             ),
+            inputFormatters: [
+              ExpressionTeamDeleteFormatter(maxLength: 15)
+            ],
           ),
           Container(
             alignment: Alignment.bottomRight,
