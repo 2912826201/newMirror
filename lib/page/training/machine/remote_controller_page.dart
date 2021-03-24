@@ -164,10 +164,16 @@ class _RemoteControllerState extends State<RemoteControllerPage> {
                 child: VideoCourseCircleProgressBar(testPartList, _currentPartIndex, _partProgress),
               ),
               Center(
-                  child: Text(
-                DateUtil.formatMillisecondToMinuteAndSecond(_remainingPartTime * 1000),
-                style: TextStyle(color: AppColor.textPrimary1, fontSize: 32, fontWeight: FontWeight.w500),
-              )),
+                child: Text(
+                  DateUtil.formatMillisecondToMinuteAndSecond(_remainingPartTime * 1000),
+                  style: TextStyle(
+                    color: AppColor.textPrimary1,
+                    fontSize: 32,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: "BebasNeue",
+                  ),
+                ),
+              ),
             ],
           ),
         ),

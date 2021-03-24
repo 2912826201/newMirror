@@ -1003,7 +1003,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
   //滚动界面到指定的item
   void startAnimationScroll(int targetId) {
     print("滚动界面到指定的item--targetId：$targetId------------------------------------------------------------------------");
-    Future.delayed(Duration.zero, () {
+    Future.delayed(Duration(milliseconds: 100), () {
       if (widget.scrollController != null) {
         double scrollHeight = 0;
         int index = 0;
@@ -1072,7 +1072,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
           widget.scrollController.animateTo(
             scrollHeight,
             duration: Duration(milliseconds: 300),
-            curve: Curves.easeIn,
+            curve: Curves.linear,
           );
         }
       }

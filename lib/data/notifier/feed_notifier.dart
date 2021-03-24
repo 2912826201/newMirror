@@ -200,6 +200,7 @@ class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
   // 更新
   void updateTotalCount(int totalCount, int id) {
     value._feedMap[id].totalCount =totalCount;
+    value._feedMap[id].commentCount =totalCount;
     notifyListeners();
   }
 

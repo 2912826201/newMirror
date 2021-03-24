@@ -48,6 +48,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   String hintText;
   int timeStamp;
   ScrollController scrollController  = ScrollController();
+  String footerText = "没有更多了";
   StreamController<List<QueryModel>> streamController = StreamController<List<QueryModel>>();
 
   ///获取互动通知列表
@@ -65,12 +66,12 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
         msgList.clear();
         if (model.list != null) {
           haveData = true;
-          model.list.forEach((element) {
-            if (isRefreash) {
-              element.isRead = 1;
-            }
-            msgList.add(element);
-          });
+            model.list.forEach((element) {
+              if (isRefreash) {
+                element.isRead = 1;
+              }
+              msgList.add(element);
+            });
         }
         controller.refreshCompleted();
       } else {
@@ -186,19 +187,23 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
                           enablePullUp: true,
                           enablePullDown: true,
                           footer: CustomFooter(
-                            loadStyle: LoadStyle.ShowAlways,
                             onOffsetChange: (offset){
                               print('---------------onOffsetChange${offset}');
-                              scrollController.addListener(() {
                                 print('-----------------------scrollController${scrollController.offset}');
-                              });
+                                if(footerText!=""&&scrollController.offset>0&&offset>=scrollController.offset){
+                                  print('---------------------------页面数据不够多,不展示文字');
+                                  setState(() {
+                                    footerText = "";
+                                  });
+                                }
+
                             },
                             builder: (BuildContext context, LoadStatus mode) {
                               Widget body;
                               if (mode == LoadStatus.loading) {
                                 body = CircularProgressIndicator();
                               } else if (mode == LoadStatus.noMore) {
-                                body = Text("没有更多了");
+                                body = Text("$footerText");
                               } else if (mode == LoadStatus.failed) {
                                 body = Text("加载错误,请重试");
                               } else {
