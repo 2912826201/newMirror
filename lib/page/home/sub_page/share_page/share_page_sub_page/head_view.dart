@@ -65,11 +65,11 @@ class HeadViewState extends State<HeadView> {
     Map<String, dynamic> map = await deletefeed(id: widget.model.id);
     if (map["state"]) {
       print('---------------------------------------删除动态');
-      EventBus.getDefault().post(msg: widget.model.id.toString(), registerName: EVENTBUS_PROFILE_DELETE_FEED);
+      EventBus.getDefault().post(msg: widget.model.id, registerName: EVENTBUS_PROFILE_DELETE_FEED);
       widget.deleteFeedChanged(widget.model.id);
       if (widget.isShowConcern) {
         EventBus.getDefault()
-            .post(msg: widget.model.id.toString(), registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
+            .post(msg: widget.model.id, registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
         Navigator.pop(context);
       }
     } else {

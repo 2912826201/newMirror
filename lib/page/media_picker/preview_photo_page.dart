@@ -55,8 +55,7 @@ class _PreviewPhotoState extends State<PreviewPhotoPage> {
           ),
           actions: [
             Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding),
+              padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
               child: CustomRedButton(
                 "继续",
                 CustomRedButton.buttonStateNormal,

@@ -46,6 +46,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
 
   double animalHeight = 0;
   StreamSubscription<ConnectivityResult> connectivityListener;
+  StreamController<double> streamController = StreamController<double>();
 
   // 进度监听
   StreamController<PostprogressModel> streamProgress = StreamController<PostprogressModel>();
@@ -245,9 +246,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
             postprogressModel.postFeedModel = null;
             //还原进度条
             postprogressModel.plannedSpeed = 0.0;
-            setState(() {
-              animalHeight = 0;
-            });
+            streamController.sink.add(0.0);
             postprogressModel.isPublish = true;
             streamProgress.sink.add(postprogressModel);
           });
@@ -338,14 +337,19 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
         children: [
           Column(
             children: [
-              AnimatedContainer(
-                duration: Duration(milliseconds: 500),
-                curve: Curves.linear,
-                height: animalHeight,
-                child: Container(
-                  height: animalHeight,
-                ),
-              ),
+              StreamBuilder<double>(
+                  initialData: animalHeight,
+                  stream: streamController.stream,
+                  builder: (BuildContext stramContext, AsyncSnapshot<double> snapshot) {
+                    return AnimatedContainer(
+                      duration: Duration(milliseconds: 500),
+                      curve: Curves.linear,
+                      height: snapshot.data,
+                      child: Container(
+                        height: snapshot.data,
+                      ),
+                    );
+                  }),
               Expanded(
                 child: UnionInnerTabBarView(
                   controller: controller,

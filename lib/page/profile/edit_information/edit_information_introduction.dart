@@ -81,8 +81,7 @@ class _IntroductionState extends State<EditInformationIntroduction> {
           titleString: "编辑简介",
           actions: [
             Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding),
+              padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
               child: CustomRedButton(
                 "确定",
                 CustomRedButton.buttonStateNormal,
