@@ -47,7 +47,7 @@ class _BottomUserPanelState extends State<BottomUserPanel> {
   @override
   void initState() {
     super.initState();
-    EventBus.getDefault().register(
+    EventBus.getDefault().registerNoParameter(
         resetPage,
         EVENTBUS_BOTTOM_USER_PANEL_DIALOG,
         registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);

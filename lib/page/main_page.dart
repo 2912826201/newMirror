@@ -41,7 +41,7 @@ class MainPageState extends XCState {
     super.initState();
     currentIndex = 0;
     _start = (ScreenUtil.instance.width / 5) / 7;
-    EventBus.getDefault().register(_postFeedCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POSTFEED_CALLBACK);
+    EventBus.getDefault().registerNoParameter(_postFeedCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POSTFEED_CALLBACK);
   }
 
   void _postFeedCallBack() {

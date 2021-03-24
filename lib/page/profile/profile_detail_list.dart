@@ -116,7 +116,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     super.initState();
     print('-----------------------------profileDetailsListInit');
     EventBus.getDefault()
-        .register(_deleteFeedCallBack, EVENTBUS_PROFILE_PAGE, registerName: EVENTBUS_PROFILE_DELETE_FEED);
+        .registerSingleParameter(_deleteFeedCallBack, EVENTBUS_PROFILE_PAGE, registerName: EVENTBUS_PROFILE_DELETE_FEED);
     widget.type == 3
         ? hintText = "这个人很懒，什么都没发"
         : widget.type == 2
@@ -130,16 +130,15 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     });
   }
 
-  _deleteFeedCallBack(result) {
-    print('--------${feedIdList}------------------删除回调${int.parse(result)}');
-    int id = int.parse(result);
+  _deleteFeedCallBack(int id) {
+    print('--------$feedIdList------------------删除回调$id');
     if (feedIdList.contains(id)) {
       feedIdList.removeWhere((element) {
         return element == id;
       });
     }
-    if (context.read<FeedMapNotifier>().value.feedMap.containsKey(int.parse(result))) {
-      context.read<FeedMapNotifier>().deleteFeed(int.parse(result));
+    if (context.read<FeedMapNotifier>().value.feedMap.containsKey(id)) {
+      context.read<FeedMapNotifier>().deleteFeed(id);
     }
     feedIdListController.sink.add(feedIdList);
   }

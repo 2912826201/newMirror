@@ -96,7 +96,7 @@ class _LiveRoomVideoOperationPageState extends State<LiveRoomVideoOperationPage>
     print("开播时间是:${widget.startTime}");
 
 
-    EventBus.getDefault().register(receiveBarrageMessage,EVENTBUS_ROOM_OPERATION_PAGE,
+    EventBus.getDefault().registerSingleParameter(receiveBarrageMessage,EVENTBUS_ROOM_OPERATION_PAGE,
         registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
 
     urlImageList.add("");
