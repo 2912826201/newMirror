@@ -20,7 +20,7 @@ class PostprogressModel {
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
     map["plannedSpeed"] = plannedSpeed;
-    map["postFeedModel"] = postFeedModel;
+    map["postFeedModel"] = postFeedModel.toJson();
     map["isPublish"] = isPublish;
     map["showPulishView"] = showPulishView;
     return map;
@@ -28,7 +28,9 @@ class PostprogressModel {
 
   PostprogressModel.fromJson(Map<String, dynamic> json) {
     plannedSpeed = json["plannedSpeed"];
-    postFeedModel = json["postFeedModel"];
+    if (json["postFeedModel"] != null) {
+      postFeedModel = PostFeedModel.fromJson(json["postFeedModel"]);
+    }
     isPublish = json["isPublish"];
     showPulishView = json["showPulishView"];
   }

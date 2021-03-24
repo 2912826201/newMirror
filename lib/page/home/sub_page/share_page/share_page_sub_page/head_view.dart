@@ -9,7 +9,6 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/data/notifier/release_progress_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
@@ -66,11 +65,11 @@ class HeadViewState extends State<HeadView> {
     Map<String, dynamic> map = await deletefeed(id: widget.model.id);
     if (map["state"]) {
       print('---------------------------------------删除动态');
-      EventBus.getDefault().post(msg: widget.model.id.toString(), registerName: EVENTBUS_PROFILE_DELETE_FEED);
+      EventBus.getDefault().post(msg: widget.model.id, registerName: EVENTBUS_PROFILE_DELETE_FEED);
       widget.deleteFeedChanged(widget.model.id);
       if (widget.isShowConcern) {
         EventBus.getDefault()
-            .post(msg: widget.model.id.toString(), registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
+            .post(msg: widget.model.id, registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
         Navigator.pop(context);
       }
     } else {
@@ -288,6 +287,7 @@ class HeadViewState extends State<HeadView> {
                       svgName: AppIcon.more_feed,
                       iconSize: 24,
                       onTap: () {
+                        print("点击更多按钮了");
                         // if (context.read<ReleaseProgressNotifier>().postFeedModel != null &&
                         //     context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id !=
                         //         Application.insertFeedId) {

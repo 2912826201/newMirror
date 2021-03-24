@@ -401,7 +401,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                               //安卓的禁止且之后不提示
                               AppSettings.openAppSettings();
                             } else {
-                              //安卓重新请求 iOS跳设置页
+                              //安卓或者从未请求过权限则重新请求 iOS跳设置页
                               if (Application.platform == 0) {
                                 status = await Permission.storage.request();
                                 if (status.isGranted) {
@@ -409,7 +409,15 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                                   _fetchGalleryData(true);
                                 }
                               } else {
-                                AppSettings.openAppSettings();
+                                if (status.isUndetermined) {
+                                  status = await Permission.photos.status;
+                                  if (status.isGranted) {
+                                    _permissionGranted = true;
+                                    _fetchGalleryData(true);
+                                  }
+                                } else {
+                                  AppSettings.openAppSettings();
+                                }
                               }
                             }
                           },
@@ -749,8 +757,7 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
           : Container(),
       actions: [
         Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding),
+          padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
           child: CustomRedButton(
             "下一步",
             context.select((SelectedMapNotifier value) => value.selectedMap.isEmpty && value.currentEntity == null)

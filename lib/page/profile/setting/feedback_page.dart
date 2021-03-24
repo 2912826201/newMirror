@@ -44,8 +44,7 @@ class _feedBackPage extends State<FeedBackPage> {
         titleString: "意见反馈",
         actions: [
           Container(
-            alignment: Alignment.center,
-            padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding),
+            padding: const EdgeInsets.only(right: CustomAppBar.appBarIconPadding - CustomAppBar.appBarHorizontalPadding),
             child: CustomRedButton(
               "提交",
               CustomRedButton.buttonStateNormal,

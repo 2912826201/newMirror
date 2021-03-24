@@ -60,6 +60,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         followlastTime = model.lastTime;
         followModel.clear();
         feedIdList.clear();
+        feedIdList.insert(0, -1);
         if (model.list.isNotEmpty) {
           model.list.forEach((result) {
             followModel.add(HomeFeedModel.fromJson(result));
@@ -177,10 +178,9 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return  Container(
       width: ScreenUtil.instance.screenWidthDp,
       color: AppColor.white,
-
       ///刷新控件
       child: StreamBuilder<List<int>>(
           initialData: feedIdList,

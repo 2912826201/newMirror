@@ -100,6 +100,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             Expanded(
               flex: 1,
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: actions == null ? [] : actions,
               ),

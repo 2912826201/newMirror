@@ -24,7 +24,6 @@ import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/data/notifier/release_progress_notifier.dart';
 import 'package:mirror/page/feed/release_page_item/at_list.dart';
 import 'package:mirror/page/feed/release_page_item/feed_header.dart';
 import 'package:mirror/page/feed/release_page_item/keyboard_input.dart';
