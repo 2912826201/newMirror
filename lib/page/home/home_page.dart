@@ -393,6 +393,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                         postprogressModel.plannedSpeed = 0.0;
                         // 设置可发布
                         postprogressModel.isPublish = true;
+                        streamController.sink.add(0.0);
                         streamProgress.sink.add(postprogressModel);
                       },
                       // 重新发送
