@@ -16,13 +16,13 @@ import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/upload/upload_result_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/data/notifier/release_progress_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/page/home/sub_page/attention_page.dart';
 import 'package:mirror/page/home/sub_page/recommend_page.dart';
 import 'package:mirror/page/home/sub_page/share_page/release_progress_view.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
@@ -41,52 +41,56 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
   // taBar和TabBarView必要的
   TabController controller;
 
-  // @override
-  // bool get wantKeepAlive => true; //必须重写
-  // 发布进度
-  double _process = 0.0;
+  // 发布动态model
+  PostprogressModel postprogressModel = PostprogressModel();
+
   double animalHeight = 0;
   StreamSubscription<ConnectivityResult> connectivityListener;
+
+  // 进度监听
+  StreamController<PostprogressModel> streamProgress = StreamController<PostprogressModel>();
 
   @override
   initState() {
     super.initState();
     controller = TabController(length: 2, vsync: this, initialIndex: 1);
-    // EventBus.getDefault().register(_postFeedCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POSTFEED_CALLBACK);
-    if (AppPrefs.getPublishFeedLocalInsertData(
-            "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}") !=
-        null) {
-      new Future.delayed(Duration.zero, () {
+    EventBus.getDefault().registerSingleParameter(
+        (postprogress) => pulishFeed(postprogress, isBackToTheTop: true), EVENTBUS_HOME_PAGE,
+        registerName: EVENTBUS_POST_PORGRESS_VIEW);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (AppPrefs.getPublishFeedLocalInsertData(
+              "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}") !=
+          null) {
         print("HomePageState发布失败数据");
         // 取出发布动态数据
-        PostFeedModel feedModel = PostFeedModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
+        postprogressModel = PostprogressModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
             "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")));
-        if (feedModel != null) {
-          feedModel.selectedMediaFiles.list.forEach((v) {
+        if (postprogressModel != null && postprogressModel.postFeedModel != null) {
+          postprogressModel.postFeedModel.selectedMediaFiles.list.forEach((v) {
             v.file = File(v.filePath);
           });
-          context.read<ReleaseProgressNotifier>().setPublishFeedModel(feedModel);
-          context.read<ReleaseProgressNotifier>().setShowPublishView(true);
-          context.read<ReleaseProgressNotifier>().setPublish(false);
-          _process = -1.0;
-          context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(_process);
+          postprogressModel.plannedSpeed = -1.0;
+          postprogressModel.showPulishView = true;
+          postprogressModel.isPublish = false;
+          streamProgress.sink.add(postprogressModel);
         }
-      });
-    }
-
+      }
+    });
     _initConnectivity();
   }
 
   // 取出发布动态数据
-  PostFeedModel getPublishFeedData() {
-    PostFeedModel feedModel = PostFeedModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
+  PostprogressModel getPublishFeedData() {
+    postprogressModel = PostprogressModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
         "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")));
-    if (feedModel != null) {
-      feedModel.selectedMediaFiles.list.forEach((v) {
+    if (postprogressModel != null && postprogressModel.postFeedModel != null) {
+      postprogressModel.postFeedModel.selectedMediaFiles.list.forEach((v) {
         v.file = File(v.filePath);
       });
     }
-    return feedModel;
+    postprogressModel.showPulishView = true;
+    streamProgress.sink.add(postprogressModel);
+    return postprogressModel;
   }
 
   //获取网络连接状态
@@ -125,17 +129,39 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
   }
 
   // 发布动态
-  pulishFeed(PostFeedModel postFeedModel) async {
+  pulishFeed(PostprogressModel postprogress, {isBackToTheTop = false}) async {
+    postprogressModel = postprogress;
+    // 不可发布时
+    if (!postprogress.isPublish) {
+      return;
+    }
+
+    // 才从发布动态页跳转回来时
+    if (isBackToTheTop) {
+      // 定位到main_page页
+      Application.ifPageController.index = Application.ifPageController.length - 1;
+      // 定位到关注页
+      controller.index = 0;
+      setState(() {
+        animalHeight = 60;
+      });
+      postprogressModel.showPulishView = true;
+      // 关注页回到顶部
+      if (attentionKey.currentState != null) {
+        attentionKey.currentState.backToTheTop();
+      }
+      // 设置不可发布
+      postprogressModel.isPublish = false;
+    }
+
     List<File> fileList = [];
     UploadResults results;
     List<PicUrlsModel> picUrls = [];
     List<VideosModel> videos = [];
     print("发布1111111111111111111");
-    // // 设置不可发布
-    // context.watch<FeedMapNotifier>().setPublish(false);
     print("发布2222222222222222222");
-    if (postFeedModel != null) {
-      PostFeedModel postModel = postFeedModel;
+    if (postprogressModel != null) {
+      PostFeedModel postModel = postprogressModel.postFeedModel;
       print(postModel.atUsersModel);
       print("掉发布数据");
       print(postModel.selectedMediaFiles.type == mediaTypeKeyImage);
@@ -148,14 +174,15 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
         });
 
         results = await FileUtil().uploadPics(fileList, (percent) {
-          context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(percent);
+          postprogressModel.plannedSpeed = percent;
+          streamProgress.sink.add(postprogressModel);
         });
         if (results.isSuccess == false) {
           print('================================上传七牛云失败');
           // 设置不可发布
-          context.read<ReleaseProgressNotifier>().setPublish(false);
-          _process = -1.0;
-          context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(_process);
+          postprogressModel.isPublish = false;
+          postprogressModel.plannedSpeed = -1.0;
+          streamProgress.sink.add(postprogressModel);
           return;
         }
         for (int i = 0; i < results.resultMap.length; i++) {
@@ -176,7 +203,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
         });
         results = await FileUtil().uploadMedias(fileList, (percent) {
           print("percent：${percent}");
-          context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(percent);
+          postprogressModel.plannedSpeed = percent;
+          streamProgress.sink.add(postprogressModel);
           print("percent结束了:");
         });
         print("resultsErroe:${results.isSuccess}");
@@ -214,24 +242,22 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
             // todo 清除图片路径
 
             // 清空发布model
-            context.read<ReleaseProgressNotifier>().setPublishFeedModel(null);
+            postprogressModel.postFeedModel = null;
             //还原进度条
-            _process = 0.0;
+            postprogressModel.plannedSpeed = 0.0;
             setState(() {
               animalHeight = 0;
             });
-            context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(_process);
-            // 设置可发布
-            context.read<ReleaseProgressNotifier>().isPublish = true;
+            postprogressModel.isPublish = true;
+            streamProgress.sink.add(postprogressModel);
           });
-
         } else {
           // 发布失败
           print('================================发布失败');
-          // 设置不可发布
-          context.read<ReleaseProgressNotifier>().setPublish(false);
-          _process = -1.0;
-          context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(_process);
+          postprogressModel.isPublish = false;
+          postprogressModel.plannedSpeed = -1.0;
+          postprogressModel.showPulishView = true;
+          streamProgress.sink.add(postprogressModel);
         }
       }
     }
@@ -240,160 +266,142 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
   @override
   Widget build(BuildContext context) {
     print("HomePage_____________________________________________build");
-    // 发布动态
-    if (context.select((ReleaseProgressNotifier value) => value.postFeedModel) != null &&
-        context.select((ReleaseProgressNotifier value) => value.isPublish)) {
-      print("疯狂)))))))))))))))))))))");
-      PostFeedModel postFeedModel = context.select((ReleaseProgressNotifier value) => value.postFeedModel);
-
-      // 定位到main_page页
-      Application.ifPageController.index = Application.ifPageController.length - 1;
-      // 定位到关注页
-      controller.index = 0;
-      setState(() {
-        animalHeight = 60;
-      });
-      context.watch<ReleaseProgressNotifier>().setShowPublishView(true);
-      // 关注页回到顶部
-      if (attentionKey.currentState != null) {
-        attentionKey.currentState.backToTheTop();
-      }
-      // 需求修改不要插入本地数据了
-      // HomeFeedModel homeFeedModel = HomeFeedModel().conversionModel(postFeedModel, context);
-      // if (context.select((FeedMapNotifier value) => value.value.buildIsOver)) {
-      //   print('========================insertData====2');
-      //   attentionKey.currentState.insertData(homeFeedModel);
-      // }
-      // 设置不可发布
-      context.watch<ReleaseProgressNotifier>().isPublish = false;
-      // 发布动态
-      pulishFeed(postFeedModel);
-    }
     return Scaffold(
-        backgroundColor: AppColor.white,
-        appBar: CustomAppBar(
-          leading: CustomAppBarIconButton(
-              svgName: AppIcon.nav_camera,
-              iconColor: AppColor.black,
-              // isLeading: true,
-              onTap: () {
-                print("${FluroRouter.appRouter.hashCode}");
-                if (context.read<ReleaseProgressNotifier>().postFeedModel != null) {
-                  if (context.read<ReleaseProgressNotifier>().plannedSpeed != -1) {
-                    ToastShow.show(msg: "你有动态正在发送中，请稍等", context: context, gravity: Toast.CENTER);
-                  } else {
-                    ToastShow.show(msg: "动态发送失败", context: context, gravity: Toast.CENTER);
-                  }
-                } else {
-                  // 从打开新页面改成滑到负一屏
-                  if (context.read<TokenNotifier>().isLoggedIn) {
-                    // 暂时屏蔽负一屏
-                    AppRouter.navigateToMediaPickerPage(
-                        context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
-                        publishMode: 1);
-                    // Application.ifPageController.animateTo(0);
-                  } else {
-                    AppRouter.navigateToLoginPage(context);
-                  }
-                }
-              }),
-          titleWidget: Container(
-            width: 140,
-            child: TabBar(
-              controller: controller,
-              tabs: [
-                Text("关注"),
-                Text(
-                  "推荐",
-                )
-              ],
-              labelStyle: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-              labelColor: Colors.black,
-              unselectedLabelStyle: TextStyle(fontSize: 16),
-              indicator: RoundUnderlineTabIndicator(
-                borderSide: BorderSide(
-                  width: 3,
-                  color: Color.fromRGBO(253, 137, 140, 1),
-                ),
-                insets: EdgeInsets.only(bottom: -6),
-                wantWidth: 16,
-              ),
-            ),
-          ),
-          actions: [
+      backgroundColor: AppColor.white,
+      appBar: CustomAppBar(
+        leading:
+            // StreamBuilder<PostprogressModel>(
+            //     initialData: postprogressModel,
+            //     stream: streamCustomAppBar.stream,
+            //     builder: (BuildContext stramContext, AsyncSnapshot<PostprogressModel> snapshot) {
             CustomAppBarIconButton(
-                svgName: AppIcon.nav_search,
+                svgName: AppIcon.nav_camera,
                 iconColor: AppColor.black,
                 onTap: () {
-                  AppRouter.navigateSearchPage(context);
+                  print("${FluroRouter.appRouter.hashCode}");
+                  if (postprogressModel != null && postprogressModel.postFeedModel != null) {
+                    if (postprogressModel.plannedSpeed != -1) {
+                      ToastShow.show(msg: "你有动态正在发送中，请稍等", context: context, gravity: Toast.CENTER);
+                    } else {
+                      ToastShow.show(msg: "动态发送失败", context: context, gravity: Toast.CENTER);
+                    }
+                  } else {
+                    // 从打开新页面改成滑到负一屏
+                    if (context.read<TokenNotifier>().isLoggedIn) {
+                      // 暂时屏蔽负一屏
+                      AppRouter.navigateToMediaPickerPage(
+                          context, 9, typeImageAndVideo, true, startPageGallery, false, (result) {},
+                          publishMode: 1);
+                      // Application.ifPageController.animateTo(0);
+                    } else {
+                      AppRouter.navigateToLoginPage(context);
+                    }
+                  }
                 }),
-          ],
-        ),
-        body: Stack(
-          children: [
-            // context.watch<FeedMapNotifier>().postFeedModel != null
-            //     ? Offstage(
-            //         offstage: context.watch<FeedMapNotifier>().postFeedModel == null, child: createdPostPromptView()
-            Column(
-              children: [
-                AnimatedContainer(
-                  duration: Duration(milliseconds: 500),
-                  curve: Curves.linear,
-                  height: animalHeight,
-                  child: Container(
-                    height: animalHeight,
-                  ),
-                ),
-                Expanded(
-                  child: UnionInnerTabBarView(
-                    controller: controller,
-                    children: [
-                      AttentionPage(
-                        key: attentionKey,
-                      ),
-                      RecommendPage()
-                      // RecommendPage()
-                    ],
-                  ),
-                ),
-              ],
+        // }),
+        titleWidget: Container(
+          width: 140,
+          child: TabBar(
+            controller: controller,
+            tabs: [
+              Text("关注"),
+              Text(
+                "推荐",
+              )
+            ],
+            labelStyle: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
             ),
-            Positioned(
-                top: 0,
-                child: ReleaseProgressView(
-                  deleteReleaseFeedChanged: () {
-                    // 重新赋值存入
-                    AppPrefs.setPublishFeedLocalInsertData(
-                        "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}", null);
-                    // todo 清除图片路径
+            labelColor: Colors.black,
+            unselectedLabelStyle: TextStyle(fontSize: 16),
+            indicator: RoundUnderlineTabIndicator(
+              borderSide: BorderSide(
+                width: 3,
+                color: Color.fromRGBO(253, 137, 140, 1),
+              ),
+              insets: EdgeInsets.only(bottom: -6),
+              wantWidth: 16,
+            ),
+          ),
+        ),
+        actions: [
+          CustomAppBarIconButton(
+              svgName: AppIcon.nav_search,
+              iconColor: AppColor.black,
+              onTap: () {
+                AppRouter.navigateSearchPage(context);
+              }),
+        ],
+      ),
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              AnimatedContainer(
+                duration: Duration(milliseconds: 500),
+                curve: Curves.linear,
+                height: animalHeight,
+                child: Container(
+                  height: animalHeight,
+                ),
+              ),
+              Expanded(
+                child: UnionInnerTabBarView(
+                  controller: controller,
+                  children: [
+                    AttentionPage(
+                      key: attentionKey,
+                    ),
+                    RecommendPage()
+                    // RecommendPage()
+                  ],
+                ),
+              ),
+            ],
+          ),
+          Positioned(
+              top: 0,
+              child: StreamBuilder<PostprogressModel>(
+                  initialData: postprogressModel,
+                  stream: streamProgress.stream,
+                  builder: (BuildContext stramContext, AsyncSnapshot<PostprogressModel> snapshot) {
+                    return ReleaseProgressView(
+                      postprogressModel: snapshot.data,
+                      deleteReleaseFeedChanged: () {
+                        // 重新赋值存入
+                        AppPrefs.setPublishFeedLocalInsertData(
+                            "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}", null);
+                        // todo 清除图片路径
 
-                    // 清空发布model
-                    context.read<ReleaseProgressNotifier>().setPublishFeedModel(null);
-                    // 删除本地插入数据
-                    // if (attentionKey.currentState != null) {
-                    //   attentionKey.currentState.deleteData();
-                    // } else {
-                    //   new Future.delayed(Duration(milliseconds: 500), () {
-                    //     attentionKey.currentState.deleteData();
-                    //   });
-                    // }
-                    //还原进度条
-                    _process = 0.0;
-                    context.read<ReleaseProgressNotifier>().getPostPlannedSpeed(_process);
-                    // 设置可发布
-                    context.read<ReleaseProgressNotifier>().isPublish = true;
-                  },
-                  resendFeedChanged: () {
-                    pulishFeed(context.read<ReleaseProgressNotifier>().postFeedModel);
-                  },
-                )),
-            //     )
-            // : Container(),
-          ],
-        ),);
+                        // 清空发布model
+                        postprogressModel.postFeedModel = null;
+                        // context.read<ReleaseProgressNotifier>().setPublishFeedModel(null);
+                        // 删除本地插入数据
+                        // if (attentionKey.currentState != null) {
+                        //   attentionKey.currentState.deleteData();
+                        // } else {
+                        //   new Future.delayed(Duration(milliseconds: 500), () {
+                        //     attentionKey.currentState.deleteData();
+                        //   });
+                        // }
+                        //还原进度条
+                        postprogressModel.plannedSpeed = 0.0;
+                        // 设置可发布
+                        postprogressModel.isPublish = true;
+                        streamProgress.sink.add(postprogressModel);
+                      },
+                      // 重新发送
+                      resendFeedChanged: () {
+                        pulishFeed(getPublishFeedData());
+                      },
+                    );
+                  })),
+          //     )
+          // : Container(),
+        ],
+      ),
+    );
     // });
   }
 }

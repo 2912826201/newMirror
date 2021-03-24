@@ -10,7 +10,6 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/peripheral_information_entity/peripheral_information_entify.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/data/notifier/release_progress_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/file_util.dart';
@@ -66,6 +65,8 @@ class FeedHeader extends StatelessWidget {
     int currentTimestamp = DateTime.now().millisecondsSinceEpoch;
     PostFeedModel feedModel = PostFeedModel();
     PostprogressModel postprogressModel = PostprogressModel();
+    postprogressModel.isPublish = true;
+    postprogressModel.showPulishView = false;
     postprogressModel.plannedSpeed = 0.0;
     List<AtUsersModel> atUsersModel = [];
     String address;
@@ -124,7 +125,7 @@ class FeedHeader extends StatelessWidget {
         // 存入数据
         AppPrefs.setPublishFeedLocalInsertData(
             "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}",
-            jsonEncode(feedModel.toJson()));
+            jsonEncode(postprogressModel.toJson()));
         context.read<ReleaseFeedInputNotifier>().rules.clear();
         context.read<ReleaseFeedInputNotifier>().selectAddress = null;
         EventBus.getDefault().post(registerName:EVENTBUS_POSTFEED_CALLBACK);
@@ -180,14 +181,15 @@ class FeedHeader extends StatelessWidget {
       // 存入数据
       AppPrefs.setPublishFeedLocalInsertData(
           "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}",
-          jsonEncode(feedModel.toJson()));
-      // 传入发布动态model
-      EventBus.getDefault().post(msg: postprogressModel,registerName:EVENTBUS_POST_PORGRESS_VIEW);
+          jsonEncode(postprogressModel.toJson()));
+
       context.read<ReleaseFeedInputNotifier>().rules.clear();
       context.read<ReleaseFeedInputNotifier>().selectAddress = null;
       FocusScope.of(context).requestFocus(FocusNode());
       EventBus.getDefault().post(registerName:EVENTBUS_POSTFEED_CALLBACK);
       print('--------------Navigator------Navigator-------------Navigator------');
+      // 传入发布动态model
+      EventBus.getDefault().post(msg: postprogressModel,registerName:EVENTBUS_POST_PORGRESS_VIEW);
       Navigator.of(context).popUntil(ModalRoute.withName(AppRouter.pathIfPage));
     }
   }

@@ -50,7 +50,6 @@ import 'data/model/message/top_chat_model.dart';
 import 'data/model/message/voice_alert_date_model.dart';
 import 'data/model/token_model.dart';
 import 'data/notifier/machine_notifier.dart';
-import 'data/notifier/release_progress_notifier.dart';
 import 'data/notifier/token_notifier.dart';
 import 'data/notifier/profile_notifier.dart';
 import 'data/notifier/unread_message_notifier.dart';
@@ -93,8 +92,6 @@ void main() {
             ChangeNotifierProvider(create: (_) => UnreadMessageNotifier()),
             ChangeNotifierProvider(create: (_) => FeedFlowDataNotifier()),
             ChangeNotifierProvider(create: (_)=>AddressPickerNotifier()),
-            // 发布动态进度
-            ChangeNotifierProvider(create: (_)=> ReleaseProgressNotifier(plannedSpeed: 0.0))
           ],
           child: MyApp(),
         ),
