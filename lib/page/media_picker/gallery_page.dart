@@ -402,14 +402,22 @@ class _GalleryPageState extends State<GalleryPage> with WidgetsBindingObserver {
                               AppSettings.openAppSettings();
                             } else {
                               //安卓或者从未请求过权限则重新请求 iOS跳设置页
-                              if (Application.platform == 0 || status.isUndetermined) {
+                              if (Application.platform == 0) {
                                 status = await Permission.storage.request();
                                 if (status.isGranted) {
                                   _permissionGranted = true;
                                   _fetchGalleryData(true);
                                 }
                               } else {
-                                AppSettings.openAppSettings();
+                                if (status.isUndetermined) {
+                                  status = await Permission.photos.status;
+                                  if (status.isGranted) {
+                                    _permissionGranted = true;
+                                    _fetchGalleryData(true);
+                                  }
+                                } else {
+                                  AppSettings.openAppSettings();
+                                }
                               }
                             }
                           },
