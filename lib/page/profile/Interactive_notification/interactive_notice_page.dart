@@ -116,7 +116,7 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
   void initState() {
     hintText = "这里什么都没有呢";
     timeStamp = DateTime.now().millisecondsSinceEpoch;
-    EventBus.getDefault().register(_commentOrFeedDetailCallBack, EVENTBUS_INTERACTIVE_NOTICE_PAGE,
+    EventBus.getDefault().registerSingleParameter(_commentOrFeedDetailCallBack, EVENTBUS_INTERACTIVE_NOTICE_PAGE,
         registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
     super.initState();
     _getMsgList(widget.type);
@@ -131,9 +131,8 @@ class _InteractiveNoticeState extends State<InteractiveNoticePage> {
     });*/
   }
 
-  _commentOrFeedDetailCallBack(result) {
+  _commentOrFeedDetailCallBack(int deleteId) {
     List<QueryModel> list = [];
-    int deleteId = int.parse(result);
     for (int i = 0; i < msgList.length; i++) {
       if (msgList[i].refType == 0 && msgList[i].refId != deleteId.toString()) {
         list.add(msgList[i]);

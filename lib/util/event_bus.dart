@@ -6,15 +6,21 @@ import 'dart:async';
 /// 列子
 ///
 /// 广播类型参数可以不写-不写是默认广播
+/// 需要参数返回时:请使用有参数的注册方法
+/// 不需要参数返回时：请使用无参数注册方法
+/// 在发送广播时请注意自己注册的方法是否有参数
 ///
 /// 发送广播
-/// EventBus.getDefault().post(回调的参数-看回调的方法,registerName: "广播类型");
+/// EventBus.getDefault().post(回调的参数-看回调的方法是否有参数,registerName: "广播类型");
 ///
 /// 注册广播
 /// @override
 /// void initState() {
 ///   super.initState();
-///   EventBus.getDefault().register(回调的方法,"界面名称-保证独一无二",registerName: "广播类型");
+///   有一个返回参数 任意类型
+///   EventBus.getDefault().registerSingleParameter(Function(T event),"界面名称-保证独一无二",registerName: "广播类型");
+///   没有返回参数
+///   EventBus.getDefault().registerNoParameter(Function(),"界面名称-保证独一无二",registerName: "广播类型");
 /// }
 ///
 /// 取消广播
@@ -25,9 +31,6 @@ import 'dart:async';
 /// }
 ///
 ///
-/// 注意：有参数时-一定要传参不然会报错，无参数时-一定不要传参不然会报错
-///
-/// -------错误原因，目前还有找到一个可以鉴别方法内是否有参数
 ///
 
 class EventBus {
@@ -36,7 +39,6 @@ class EventBus {
 
   //默认的广播类型
   final String defName = "default";
-  final String defMsg = "no_data_msg_even_bus";
 
   EventBus._();
 
@@ -47,8 +49,9 @@ class EventBus {
     return _eventBus;
   }
 
-  //加广播的方法-回调的方法-需要广播的界面-广播的类型
-  void register(listener, String pageName, {String registerName}) {
+  //注册广播的方法-回调的方法-需要广播的界面-广播的类型
+  //单个参数
+  void registerSingleParameter<T>(Function(T event) listener,String pageName, {String registerName}) {
     if (null == registerName) {
       registerName = defName;
     }
@@ -59,15 +62,34 @@ class EventBus {
     } else if (_registerMap[registerName][pageName] == null) {
       _registerMap[registerName][pageName] = StreamController.broadcast();
     }
-    _registerMap[registerName][pageName].stream.listen((list) {
-      try {
-        if ((list as List).length > 0) {
-          listener(list[0]);
-        } else {
-          listener();
-        }
-      } catch (e) {
-        print("无参数");
+    _registerMap[registerName][pageName].stream.listen((msg) {
+      if(null == msg){
+        print("EventBus:post广播需要一个参数!!!--目前没有参数,不进行广播");
+      }else{
+        listener(msg);
+      }
+    });
+  }
+
+  //注册广播的方法-回调的方法-需要广播的界面-广播的类型
+  //无参数
+  void registerNoParameter(Function() listener,String pageName, {String registerName}) {
+    if (null == registerName) {
+      registerName = defName;
+    }
+    if (_registerMap[registerName] == null) {
+      Map<String, StreamController> map = Map();
+      map[pageName] = StreamController.broadcast();
+      _registerMap[registerName] = map;
+    } else if (_registerMap[registerName][pageName] == null) {
+      _registerMap[registerName][pageName] = StreamController.broadcast();
+    }
+    _registerMap[registerName][pageName].stream.listen((msg) {
+      if(null == msg){
+        listener();
+      }else{
+        print("EventBus:post广播不需要参数!!!--请不要传参进入");
+        listener();
       }
     });
   }
@@ -95,14 +117,10 @@ class EventBus {
     if (null == registerName) {
       registerName = defName;
     }
-    List list = [];
-    if (msg != null) {
-      list.add(msg);
-    }
     if (_registerMap.containsKey(registerName)) {
       _registerMap[registerName].forEach((key, value) {
         if (_registerMap[registerName][key] != null) {
-          _registerMap[registerName][key].add(list);
+          _registerMap[registerName][key].add(msg);
         }
       });
     }

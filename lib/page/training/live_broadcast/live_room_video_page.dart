@@ -45,7 +45,7 @@ class _LiveRoomVideoPageState extends XCState {
     //加入聊天室
     Application.rongCloud.joinChatRoom(coachId);
     // player.setDataSource(url, autoPlay: true);
-    EventBus.getDefault().register(exit,EVENTBUS_LIVEROOM_TESTPAGE,registerName: EVENTBUS_LIVEROOM_EXIT);
+    EventBus.getDefault().registerNoParameter(exit,EVENTBUS_LIVEROOM_TESTPAGE,registerName: EVENTBUS_LIVEROOM_EXIT);
     loadingStatus=LoadingStatus.STATUS_LOADING;
     getLiveVideoUrl();
 

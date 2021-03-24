@@ -97,7 +97,7 @@ class _IFTabBarState extends State<IFTabBar> {
   @override
   void initState() {
     super.initState();
-    EventBus.getDefault().register(_postFeedCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POSTFEED_CALLBACK);
+    EventBus.getDefault().registerNoParameter(_postFeedCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POSTFEED_CALLBACK);
     normalIcons.add(AppIcon.getAppIcon(AppIcon.if_home, 24));
     normalIcons.add(AppIcon.getAppIcon(AppIcon.if_training, 24));
     normalIcons.add(AppIcon.getAppIcon(AppIcon.if_message, 24));
