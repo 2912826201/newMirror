@@ -63,7 +63,6 @@ class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
     notifyListeners();
   }
 
-  int deleteId;
 
   void interacticeNoticeChange({CommentModel courseCommentHots, int commentId}) {
     value.courseCommentHot[commentId] = courseCommentHots;
@@ -74,10 +73,6 @@ class FeedMapNotifier extends ValueNotifier<FeedMap> // ChangeNotifier
     notifyListeners();
   }
 
-  void deleteContent(int dtId) {
-    deleteId = dtId;
-    notifyListeners();
-  }
 
   void showInputBox(int id) {
     print("id::${id}");

@@ -84,6 +84,7 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   GlobalKey<PrimaryScrollContainerState> leftKey = GlobalKey();
   GlobalKey<PrimaryScrollContainerState> rightKey = GlobalKey();
   StreamController<Color> streamController = StreamController<Color>();
+
   @override
   void initState() {
     super.initState();
@@ -195,8 +196,6 @@ class _ProfileDetailState extends State<ProfileDetailPage> with TickerProviderSt
   void deactivate() {
     // TODO: implement deactivate
     super.deactivate();
-    print('=======================================个人主页deactivate');
-    context.read<UserInteractiveNotifier>().idListClear(widget.userId);
   }
 
   @override

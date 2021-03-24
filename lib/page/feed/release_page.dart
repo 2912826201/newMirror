@@ -46,8 +46,6 @@ import 'package:mirror/widget/icon.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:reorderables/reorderables.dart';
-import 'package:text_span_field/range_style.dart';
-import 'package:text_span_field/text_span_field.dart';
 import 'package:toast/toast.dart';
 
 /** 搜索关注用户和搜索全局用户比较

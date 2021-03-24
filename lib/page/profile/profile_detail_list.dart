@@ -10,6 +10,7 @@ import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/home/sub_page/share_page/dynamic_list.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/string_util.dart';
 import 'package:mirror/widget/sliding_element_exposure/exposure_detector.dart';
@@ -23,8 +24,9 @@ class ProfileDetailsList extends StatefulWidget {
   int type;
   int id;
   bool isMySelf;
+  Key key;
 
-  ProfileDetailsList({this.type, this.id, this.isMySelf});
+  ProfileDetailsList({this.key, this.type, this.id, this.isMySelf});
 
   @override
   State<StatefulWidget> createState() {
@@ -36,31 +38,32 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   ///动态model
   List<HomeFeedModel> followModel = [];
+  List<int> feedIdList = [];
   String hintText;
   int followDataPage = 1;
   int followlastTime;
   RefreshController _refreshController = RefreshController();
   ScrollController scrollController = ScrollController();
   bool refreshOver = false;
+  StreamController<List<int>> feedIdListController = StreamController<List<int>>();
 
   _getDynamicData() async {
     if (followDataPage > 1 && followlastTime == null) {
       _refreshController.loadNoData();
       return;
     }
-    List<int> idList = [];
     DataResponseModel model =
         await getPullList(type: widget.type, size: 20, targetId: widget.id, lastTime: followlastTime);
     if (followDataPage == 1) {
       _refreshController.loadComplete();
       if (model != null) {
         followlastTime = model.lastTime;
-        context.read<UserInteractiveNotifier>().idListClear(widget.id, type: widget.type);
         followModel.clear();
+        feedIdList.clear();
         if (model.list.isNotEmpty) {
           model.list.forEach((result) {
             followModel.add(HomeFeedModel.fromJson(result));
-            idList.add(HomeFeedModel.fromJson(result).id);
+            feedIdList.add(HomeFeedModel.fromJson(result).id);
           });
         }
         _refreshController.refreshCompleted();
@@ -75,7 +78,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         if (model.list.isNotEmpty) {
           model.list.forEach((result) {
             followModel.add(HomeFeedModel.fromJson(result));
-            idList.add(HomeFeedModel.fromJson(result).id);
+            feedIdList.add(HomeFeedModel.fromJson(result).id);
           });
         }
         _refreshController.loadComplete();
@@ -88,7 +91,6 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
     }
     Future.delayed(Duration.zero, () {
       List<HomeFeedModel> feedList = [];
-      context.read<UserInteractiveNotifier>().setFeedIdList(widget.id, idList, widget.type);
       context.read<FeedMapNotifier>().value.feedMap.forEach((key, value) {
         feedList.add(value);
       });
@@ -112,6 +114,9 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
   @override
   void initState() {
     super.initState();
+    print('-----------------------------profileDetailsListInit');
+    EventBus.getDefault()
+        .registerSingleParameter(_deleteFeedCallBack, EVENTBUS_PROFILE_PAGE, registerName: EVENTBUS_PROFILE_DELETE_FEED);
     widget.type == 3
         ? hintText = "这个人很懒，什么都没发"
         : widget.type == 2
@@ -123,6 +128,19 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
         _getDynamicData();
       });
     });
+  }
+
+  _deleteFeedCallBack(int id) {
+    print('--------$feedIdList------------------删除回调$id');
+    if (feedIdList.contains(id)) {
+      feedIdList.removeWhere((element) {
+        return element == id;
+      });
+    }
+    if (context.read<FeedMapNotifier>().value.feedMap.containsKey(id)) {
+      context.read<FeedMapNotifier>().deleteFeed(id);
+    }
+    feedIdListController.sink.add(feedIdList);
   }
 
   @override
@@ -164,60 +182,60 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
       color: AppColor.white,
 
       ///刷新控件
-      child: ScrollConfiguration(
-          behavior: OverScrollBehavior(),
-          child: SmartRefresher(
-            enablePullUp: true,
-            enablePullDown: true,
-            footer: CustomFooter(
-              builder: (BuildContext context, LoadStatus mode) {
-                Widget body;
-                if (mode == LoadStatus.loading) {
-                  body = Text("正在加载");
-                } else if (mode == LoadStatus.idle) {
-                  body = Text("上拉加载更多");
-                } else if (mode == LoadStatus.failed) {
-                  body = Text("加载失败,请重试");
-                } else {
-                  body = Text("没有更多了");
-                }
-                return Container(
-                  child: Center(
-                    child: body,
-                  ),
-                );
-              },
-            ),
-            header: WaterDropHeader(
-              complete: Text("刷新完成"),
-              failed: Text("刷新失败"),
-            ),
-            controller: _refreshController,
-            onLoading: () {
-              if (refreshOver) {
-                _onLoadding();
-              }
-            },
-            onRefresh: _onRefresh,
-            child: _showDataUi(),
-          )),
+      child: StreamBuilder<List<int>>(
+          initialData: feedIdList,
+          stream: feedIdListController.stream,
+          builder: (BuildContext stramContext, AsyncSnapshot<List<int>> snapshot) {
+            return ScrollConfiguration(
+                behavior: OverScrollBehavior(),
+                child: SmartRefresher(
+                    enablePullUp: true,
+                    enablePullDown: true,
+                    footer: CustomFooter(
+                      builder: (BuildContext context, LoadStatus mode) {
+                        Widget body;
+                        if (mode == LoadStatus.loading) {
+                          body = Text("正在加载");
+                        } else if (mode == LoadStatus.idle) {
+                          body = Text("上拉加载更多");
+                        } else if (mode == LoadStatus.failed) {
+                          body = Text("加载失败,请重试");
+                        } else {
+                          body = Text("没有更多了");
+                        }
+                        return Container(
+                          child: Center(
+                            child: body,
+                          ),
+                        );
+                      },
+                    ),
+                    header: WaterDropHeader(
+                      complete: Text("刷新完成"),
+                      failed: Text("刷新失败"),
+                    ),
+                    controller: _refreshController,
+                    onLoading: () {
+                      if (refreshOver) {
+                        _onLoadding();
+                      }
+                    },
+                    onRefresh: _onRefresh,
+                    child: _showDataUi(snapshot)));
+          }),
     );
   }
 
-  Widget _showDataUi() {
+  Widget _showDataUi(AsyncSnapshot<List<int>> snapshot) {
     var list = ListView.builder(
         shrinkWrap: true, //解决无限高度问题
         physics: AlwaysScrollableScrollPhysics(),
-        itemCount: widget.type == 2
-            ? context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].profileFeedListId.length
-            : context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].profileLikeListId.length,
+        itemCount: snapshot.data.length,
         itemBuilder: (context, index) {
           HomeFeedModel model;
           if (index > 0) {
             try {
-              int id = widget.type == 2
-                  ? context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].profileFeedListId[index]
-                  : context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].profileLikeListId[index];
+              int id = snapshot.data[index];
               model = context.read<FeedMapNotifier>().value.feedMap[id];
             } catch (e) {
               print(e);
@@ -229,10 +247,10 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             );
           } else {
             return ExposureDetector(
-                key:  widget.type == 2
-                    ? Key('profile_feed_${context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].profileFeedListId[index]}')
-                    : Key('profile_like_${ context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].profileLikeListId[index]}'),
-                child: DynamicListLayout(
+              key: widget.type == 2
+                  ? Key('profile_feed_${snapshot.data[index]}')
+                  : Key('profile_like_${snapshot.data[index]}'),
+              child: DynamicListLayout(
                   index: index,
                   pageName: "profileDetails",
                   isShowRecommendUser: false,
@@ -242,16 +260,10 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
                   mineDetailId: widget.id,
                   key: GlobalObjectKey("attention$index"),
                   removeFollowChanged: (model) {},
-                  deleteFeedChanged: (feedId) {
-                    context.read<UserInteractiveNotifier>().synchronizeIdList(widget.id, feedId);
-                    if (context.read<FeedMapNotifier>().value.feedMap.containsKey(feedId)) {
-                      context.read<FeedMapNotifier>().deleteFeed(feedId);
-                    }
-                  },
-                ),
+                  deleteFeedChanged: (feedId) {}),
               onExposure: (visibilityInfo) {
                 // 如果没有显示
-                if ( model.isShowInputBox) {
+                if (model.isShowInputBox) {
                   context.read<FeedMapNotifier>().showInputBox(model.id);
                 }
                 print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
@@ -282,10 +294,7 @@ class ProfileDetailsListState extends State<ProfileDetailsList>
             )
           ],
         ));
-    if (((widget.type == 6 || widget.type == 3) &&
-            context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].profileLikeListId.length < 2) ||
-        (widget.type == 2 &&
-            context.watch<UserInteractiveNotifier>().profileUiChangeModel[widget.id].profileFeedListId.length < 2)) {
+    if (snapshot.data.length < 2) {
       return noDataUi;
     } else {
       return list;

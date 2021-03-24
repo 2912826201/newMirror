@@ -12,8 +12,12 @@ import 'package:mirror/data/model/training/live_video_model.dart';
 import 'package:mirror/data/model/media_file_model.dart';
 import 'package:mirror/data/model/training/training_complete_result_model.dart';
 import 'package:mirror/data/model/training/training_gallery_model.dart';
+import 'package:mirror/data/model/user_model.dart';
 import 'package:mirror/page/media_picker/media_picker_page.dart';
 import 'package:mirror/page/scan_code/scan_result_page.dart';
+import 'package:mirror/page/training/live_broadcast/live_room_page_common.dart';
+import 'package:mirror/page/training/live_broadcast/live_room_video_operation_page.dart';
+import 'package:mirror/page/training/live_broadcast/live_room_video_page.dart';
 import 'package:mirror/route/route_handler.dart';
 import 'package:mirror/widget/feed/release_feed_input_formatter.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -769,5 +773,26 @@ class AppRouter {
     map['checkIndex'] = checkIndex;
     map['selectAddress'] = selectAddress.toJson();
     _navigateToPage(context, pathSearchOrLocationPage, map, callback: callback);
+  }
+
+  //去直播间
+  static void navigateLiveRoomPage(BuildContext context,LiveVideoModel liveModel){
+
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return LiveRoomVideoPage(liveCourseId:liveModel.id,coachId: liveModel.coachId.toString());
+    }));
+    Navigator.of(context).push(SimpleRoute(
+      name: liveModel.title ?? "",
+      title: liveModel.description ?? "",
+      builder: (_) {
+        return LiveRoomVideoOperationPage(
+            liveCourseId:liveModel.id,
+            coachName:liveModel.coachDto.nickName,
+            coachUrl:liveModel.coachDto.avatarUri,
+            coachRelation:liveModel.coachDto.relation,
+            startTime:liveModel.startTime,
+            coachId: liveModel.coachDto.uid);
+      },
+    ));
   }
 }

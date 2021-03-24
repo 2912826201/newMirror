@@ -1,5 +1,3 @@
-
-
 import 'dart:async';
 
 ///2021-3-5---shipk
@@ -8,15 +6,21 @@ import 'dart:async';
 /// 列子
 ///
 /// 广播类型参数可以不写-不写是默认广播
+/// 需要参数返回时:请使用有参数的注册方法
+/// 不需要参数返回时：请使用无参数注册方法
+/// 在发送广播时请注意自己注册的方法是否有参数
 ///
 /// 发送广播
-/// EventBus.getDefault().post(回调的参数-看回调的方法,registerName: "广播类型");
+/// EventBus.getDefault().post(回调的参数-看回调的方法是否有参数,registerName: "广播类型");
 ///
 /// 注册广播
 /// @override
 /// void initState() {
 ///   super.initState();
-///   EventBus.getDefault().register(回调的方法,"界面名称-保证独一无二",registerName: "广播类型");
+///   有一个返回参数 任意类型
+///   EventBus.getDefault().registerSingleParameter(Function(T event),"界面名称-保证独一无二",registerName: "广播类型");
+///   没有返回参数
+///   EventBus.getDefault().registerNoParameter(Function(),"界面名称-保证独一无二",registerName: "广播类型");
 /// }
 ///
 /// 取消广播
@@ -26,71 +30,82 @@ import 'dart:async';
 ///   EventBus.getDefault().unRegister(pageName:"界面名称-保证独一无二",registerName: "广播类型");
 /// }
 ///
-/// 参数类型：dynamic
-/// 参数个数：一个
-/// 多个参数：请使用 dynamic map 自行强转
-/// 回调的方法(可以有参数-也可以没有参数-post发送广播一致){
 ///
-/// }
-///
-/// 回调的方法
-/// 当有参数时：参数类型是dynamic在接收参数的地方需要强转，多个参数请使用map
-/// 当没有参数时:为空就好
-/// 注意：有参数时-一定要传参不然会报错，无参数时-一定不要传参不然会报错
-/// -------错误原因，目前还有找到一个可以鉴别方法内是否有参数
 ///
 
-
-class EventBus{
+class EventBus {
   static EventBus _eventBus;
-  final Map<String,Map<String,StreamController>> _registerMap = new Map<String,Map<String,StreamController>>();
+  final Map<String, Map<String, StreamController>> _registerMap = new Map<String, Map<String, StreamController>>();
+
   //默认的广播类型
   final String defName = "default";
-  final String defMsg="no_data_msg_even_bus";
 
   EventBus._();
 
-  static EventBus getDefault(){
-    if(_eventBus == null){
+  static EventBus getDefault() {
+    if (_eventBus == null) {
       _eventBus = new EventBus._();
     }
     return _eventBus;
   }
 
-  //加广播的方法-回调的方法-需要广播的界面-广播的类型
-  void register(listener,String pageName ,{String registerName}){
-    if(null ==registerName){
+  //注册广播的方法-回调的方法-需要广播的界面-广播的类型
+  //单个参数
+  void registerSingleParameter<T>(Function(T event) listener,String pageName, {String registerName}) {
+    if (null == registerName) {
       registerName = defName;
     }
-    if(_registerMap[registerName]==null){
-      Map<String,StreamController> map=Map();
-      map[pageName]=StreamController.broadcast();
-      _registerMap[registerName]=map;
-    }else if(_registerMap[registerName][pageName]==null){
-      _registerMap[registerName][pageName]=StreamController.broadcast();
+    if (_registerMap[registerName] == null) {
+      Map<String, StreamController> map = Map();
+      map[pageName] = StreamController.broadcast();
+      _registerMap[registerName] = map;
+    } else if (_registerMap[registerName][pageName] == null) {
+      _registerMap[registerName][pageName] = StreamController.broadcast();
     }
-    _registerMap[registerName][pageName].stream.listen((msg){
-      if(msg==defMsg){
-        listener();
+    _registerMap[registerName][pageName].stream.listen((msg) {
+      if(null == msg){
+        print("EventBus:post广播需要一个参数!!!--目前没有参数,不进行广播");
       }else{
         listener(msg);
       }
     });
   }
 
+  //注册广播的方法-回调的方法-需要广播的界面-广播的类型
+  //无参数
+  void registerNoParameter(Function() listener,String pageName, {String registerName}) {
+    if (null == registerName) {
+      registerName = defName;
+    }
+    if (_registerMap[registerName] == null) {
+      Map<String, StreamController> map = Map();
+      map[pageName] = StreamController.broadcast();
+      _registerMap[registerName] = map;
+    } else if (_registerMap[registerName][pageName] == null) {
+      _registerMap[registerName][pageName] = StreamController.broadcast();
+    }
+    _registerMap[registerName][pageName].stream.listen((msg) {
+      if(null == msg){
+        listener();
+      }else{
+        print("EventBus:post广播不需要参数!!!--请不要传参进入");
+        listener();
+      }
+    });
+  }
 
   //移除广播的方法-广播的类型-需要广播的界面
-  void unRegister({String registerName,String pageName}){
-    if(null ==registerName){
-      registerName =defName;
+  void unRegister({String registerName, String pageName}) {
+    if (null == registerName) {
+      registerName = defName;
     }
-    if(null==pageName){
-      if( _registerMap[registerName]!=null) {
+    if (null == pageName) {
+      if (_registerMap[registerName] != null) {
         _registerMap[registerName].clear();
         _registerMap.remove(registerName);
       }
-    }else{
-      if(_registerMap[registerName][pageName]!=null) {
+    } else {
+      if (_registerMap[registerName][pageName] != null) {
         _registerMap[registerName][pageName].close();
         _registerMap[registerName].remove(pageName);
       }
@@ -98,35 +113,51 @@ class EventBus{
   }
 
   //发送广播-msg消息-广播的类型
-  void post({dynamic msg="no_data_msg_even_bus",String registerName}){
-    if(null ==registerName){
-      registerName =defName;
+  void post<T>({T msg, String registerName}) {
+    if (null == registerName) {
+      registerName = defName;
     }
-    if(_registerMap.containsKey(registerName)){
+    if (_registerMap.containsKey(registerName)) {
       _registerMap[registerName].forEach((key, value) {
-        if(_registerMap[registerName][key]!=null){
+        if (_registerMap[registerName][key] != null) {
           _registerMap[registerName][key].add(msg);
         }
       });
     }
   }
 }
-  ///页面名称
- const String  EVENTBUS_MAIN_PAGE = "main_page";
- //直播界面-播放界面
- const String  EVENTBUS_LIVEROOM_TESTPAGE = "LiveRoomTestPage";
- //直播界面-功能界面
- const String  EVENTBUS_ROOM_OPERATION_PAGE = "LiveRoomTestOperationPage";
- //直播在线人数dialog面板
- const String  EVENTBUS_BOTTOM_USER_PANEL_DIALOG = "BottomUserPanelDialog";
 
+///页面名称
+const String EVENTBUS_MAIN_PAGE = "main_page";
+//直播界面-播放界面
+const String EVENTBUS_LIVEROOM_TESTPAGE = "LiveRoomTestPage";
+//直播界面-功能界面
+const String EVENTBUS_ROOM_OPERATION_PAGE = "LiveRoomTestOperationPage";
+//直播在线人数dialog面板
+const String EVENTBUS_BOTTOM_USER_PANEL_DIALOG = "BottomUserPanelDialog";
+//个人主页
+const String EVENTBUS_PROFILE_PAGE = "profilePage";
+//互动通知页
+const String EVENTBUS_INTERACTIVE_NOTICE_PAGE = "interactiveNoticePage";
+// 发布动态页
+const String EVENTBUS_POST_FEED_HEADER = "postFeedHeader";
+// homePage页
+const String EVENTBUS_HOME_PAGE = "homePage";
+// 发布进度视图页
+const String EVENTBUS_POST_PROGRESS_VIEW = "releaseProgressView";
 
- ///广播类型
+///广播类型
 //发布动态
- const String  EVENTBUS_POSTFEED_CALLBACK = "mainpage_postFeedCallBack";
- //直播界面的退出
- const String  EVENTBUS_LIVEROOM_EXIT = "liveRoomTestPage_exit";
- //直播界面接收弹幕功能
- const String  EVENTBUS_ROOM_RECEIVE_BARRAGE = "LiveRoomTestOperationPage_receive_barrage";
- //直播在线人数dailog刷新界面
- const String  EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET = "BottomUserPanelDialogReset";
+const String EVENTBUS_POSTFEED_CALLBACK = "mainpage_postFeedCallBack";
+//直播界面的退出
+const String EVENTBUS_LIVEROOM_EXIT = "liveRoomTestPage_exit";
+//直播界面接收弹幕功能
+const String EVENTBUS_ROOM_RECEIVE_BARRAGE = "LiveRoomTestOperationPage_receive_barrage";
+//直播在线人数dailog刷新界面
+const String EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET = "BottomUserPanelDialogReset";
+//个人主页删除动态
+const String EVENTBUS_PROFILE_DELETE_FEED = "profileUserDetailDeleteFeed";
+//互动通知删除评论动态
+const String EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT = "interactiveNoticeDelete";
+// 是否可发布动态和展示进度视图
+const String EVENTBUS_POST_PORGRESS_VIEW = "postporgressview";

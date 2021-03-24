@@ -20,6 +20,7 @@ import 'package:mirror/page/image_preview/image_preview_page.dart';
 import 'package:mirror/page/image_preview/image_preview_view.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
 import 'package:mirror/route/router.dart';
+import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
@@ -35,7 +36,6 @@ class SlideBanner extends StatefulWidget {
   double height;
   String pageName;
   int index;
-
   bool isDynamicDetails;
   bool isHero;
 
@@ -51,14 +51,19 @@ class _SlideBannerState extends State<SlideBanner> {
 
   // 图片宽度
   int imageWidth = 0;
+
   //小圆点
   final double smallDotsSize = 2;
+
   //中号圆点
   final double mediumDotsSize = 4;
+
   //大号圆点
   final double bigDotsSize = 6;
+
   //中间间隔
-  final double spacingWidth= 4;
+  final double spacingWidth = 4;
+
   // scroll_to_index定位
   AutoScrollController controller;
   SwiperController swiperController = SwiperController();
@@ -186,39 +191,38 @@ class _SlideBannerState extends State<SlideBanner> {
   }
 
   // 本地图片
-  List<Widget> localPicture(double height) {
-    List<Widget> localImages = [];
-    for (MediaFileModel item in widget.model.selectedMediaFiles.list) {
-      int indexs = widget.model.selectedMediaFiles.list.indexOf(item);
-      localImages.add(widget.isDynamicDetails || (!widget.isHero)
-          ? Container(
-              width: ScreenUtil.instance.width,
-              height: height,
-              child: widget.model.selectedMediaFiles.list[indexs].file != null
-                  ? Image.file(
-                      widget.model.selectedMediaFiles.list[indexs].file,
-                      fit: BoxFit.cover,
-                    )
-                  : Container())
-          : Hero(
-              tag: widget.pageName + "${widget.model.id}${widget.index}",
-              child: Container(
-                  width: ScreenUtil.instance.width,
-                  height: height,
-                  child: widget.model.selectedMediaFiles.list[indexs].file != null
-                      ? Image.file(
-                          widget.model.selectedMediaFiles.list[indexs].file,
-                          fit: BoxFit.cover,
-                        )
-                      : Container()),
-            ));
-    }
-    return localImages;
-  }
+  // List<Widget> localPicture(double height) {
+  //   List<Widget> localImages = [];
+  //   for (MediaFileModel item in widget.model.selectedMediaFiles.list) {
+  //     int indexs = widget.model.selectedMediaFiles.list.indexOf(item);
+  //     localImages.add(widget.isDynamicDetails || (!widget.isHero)
+  //         ? Container(
+  //             width: ScreenUtil.instance.width,
+  //             height: height,
+  //             child: widget.model.selectedMediaFiles.list[indexs].file != null
+  //                 ? Image.file(
+  //                     widget.model.selectedMediaFiles.list[indexs].file,
+  //                     fit: BoxFit.cover,
+  //                   )
+  //                 : Container())
+  //         : Hero(
+  //             tag: widget.pageName + "${widget.model.id}${widget.index}",
+  //             child: Container(
+  //                 width: ScreenUtil.instance.width,
+  //                 height: height,
+  //                 child: widget.model.selectedMediaFiles.list[indexs].file != null
+  //                     ? Image.file(
+  //                         widget.model.selectedMediaFiles.list[indexs].file,
+  //                         fit: BoxFit.cover,
+  //                       )
+  //                     : Container()),
+  //           ));
+  //   }
+  //   return localImages;
+  // }
 
   // 宽高比
   double setAspectRatio(double height) {
-
     if (height == 0) {
       return ScreenUtil.instance.width;
     } else {
@@ -230,74 +234,75 @@ class _SlideBannerState extends State<SlideBanner> {
   setUpLuad() async {
     bool isLoggedIn = context.read<TokenNotifier>().isLoggedIn;
     if (isLoggedIn) {
-      if (context.read<ReleaseProgressNotifier>().postFeedModel != null &&
-          context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id != Application.insertFeedId) {
-        // ToastShow.show(msg: "不响应", context: context);
+      // if (context.read<ReleaseProgressNotifier>().postFeedModel != null &&
+      //     context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id != Application.insertFeedId) {
+      //   // ToastShow.show(msg: "不响应", context: context);
+      // } else {
+      BaseResponseModel model = await laud(id: widget.model.id, laud: widget.model.isLaud == 0 ? 1 : 0);
+      print('===================================model.code==${model.code}');
+      // 点赞/取消赞成功
+      if (model.code == CODE_BLACKED) {
+        ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
       } else {
-        BaseResponseModel model = await laud(id: widget.model.id, laud: widget.model.isLaud == 0 ? 1 : 0);
-        print('===================================model.code==${model.code}');
-        // 点赞/取消赞成功
-        if (model.code == CODE_BLACKED) {
-          ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
-        } else {
-          context
-              .read<FeedMapNotifier>()
-              .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
-          context
-              .read<UserInteractiveNotifier>()
-              .laudedChange(widget.model.pushId, context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud);
-        }
+        context
+            .read<FeedMapNotifier>()
+            .setLaud(widget.model.isLaud, context.read<ProfileNotifier>().profile.avatarUri, widget.model.id);
+        context
+            .read<UserInteractiveNotifier>()
+            .laudedChange(widget.model.pushId, context.read<FeedMapNotifier>().value.feedMap[widget.model.id].isLaud);
       }
+      // }
     } else {
       // 去登录
       AppRouter.navigateToLoginPage(context);
     }
   }
 
-
-  Size getDotsSize(int choseIndex,index){
-    if(index!=choseIndex){
-      if(imageCount<6){
+  Size getDotsSize(int choseIndex, index) {
+    if (index != choseIndex) {
+      if (imageCount < 6) {
         return Size(mediumDotsSize, mediumDotsSize);
       }
-    if(choseIndex<3){
-      if(index==4){
-        return Size(smallDotsSize, smallDotsSize);
-      }
+      if (choseIndex < 3) {
+        if (index == 4) {
+          return Size(smallDotsSize, smallDotsSize);
+        }
         return Size(mediumDotsSize, mediumDotsSize);
-      }else{
-       if(choseIndex<imageCount-3){
-         if(index==choseIndex-2||index==choseIndex+2){
-           return Size(smallDotsSize, smallDotsSize);
-         }else{
-           return Size(mediumDotsSize, mediumDotsSize);
-         }
-       }else{
-         if(index==imageCount-5){
-           return Size(smallDotsSize, smallDotsSize);
-         }else{
-           return Size(mediumDotsSize, mediumDotsSize);
-         }
-       }
+      } else {
+        if (choseIndex < imageCount - 3) {
+          if (index == choseIndex - 2 || index == choseIndex + 2) {
+            return Size(smallDotsSize, smallDotsSize);
+          } else {
+            return Size(mediumDotsSize, mediumDotsSize);
+          }
+        } else {
+          if (index == imageCount - 5) {
+            return Size(smallDotsSize, smallDotsSize);
+          } else {
+            return Size(mediumDotsSize, mediumDotsSize);
+          }
+        }
       }
-    }else{
+    } else {
       return Size(bigDotsSize, bigDotsSize);
     }
   }
 
-  double getDotsWidth(int choseIndex){
-    if(imageCount<6){
-      return (imageCount-1)*mediumDotsSize+bigDotsSize+(imageCount-1)*spacingWidth.toDouble();
-    }else if(imageCount>6){
-      if(choseIndex<3||choseIndex>=imageCount-3){
-        return mediumDotsSize*3+bigDotsSize+smallDotsSize+spacingWidth*4.toDouble();
-      }else{
-        return smallDotsSize*2+mediumDotsSize*2+bigDotsSize+spacingWidth*4.toDouble();
+  double getDotsWidth(int choseIndex) {
+    if (imageCount < 6) {                                                                       //多加一点边距
+      return (imageCount - 1) * mediumDotsSize + bigDotsSize + (imageCount - 1) * spacingWidth+mediumDotsSize
+          .toDouble();
+    } else if (imageCount > 6) {
+      if (choseIndex < 3 || choseIndex >= imageCount - 3) {
+        return mediumDotsSize * 3 + bigDotsSize + smallDotsSize + spacingWidth * 4+mediumDotsSize.toDouble();
+      } else {
+        return smallDotsSize * 2 + mediumDotsSize * 2 + bigDotsSize + spacingWidth * 4+mediumDotsSize.toDouble();
       }
-    }else{
-     return  mediumDotsSize*3+bigDotsSize+smallDotsSize+spacingWidth*4.toDouble();
+    } else {
+      return mediumDotsSize * 3 + bigDotsSize + smallDotsSize + spacingWidth * 4+mediumDotsSize.toDouble();
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final width = ScreenUtil.instance.screenWidthDp;
@@ -305,9 +310,10 @@ class _SlideBannerState extends State<SlideBanner> {
     List<Widget> cupertinoButtonList = [];
     if (widget.model.picUrls.isNotEmpty) {
       cupertinoButtonList = buildShowItemContainer(setAspectRatio(widget.height));
-    } else if (widget.model != null && widget.model.selectedMediaFiles != null) {
-      cupertinoButtonList = localPicture(setAspectRatio(widget.height));
     }
+    // else if (widget.model != null && widget.model.selectedMediaFiles != null) {
+    //   cupertinoButtonList = localPicture(setAspectRatio(widget.height));
+    // }
     return Container(
       child: Column(
         children: [
@@ -332,12 +338,15 @@ class _SlideBannerState extends State<SlideBanner> {
                       loop: false,
                       onIndexChanged: (index) {
                         autoPlay(index);
-                        if(index>1){
-                         controller.animateTo(((index-2)*(mediumDotsSize+spacingWidth)).toDouble(), duration: Duration
-                           (milliseconds: 200),
-                             curve:Cubic(1.0, 1.0, 1.0, 1.0));
+                        if (index > 1) {
+                          if(index<imageCount-3){
+                            controller.animateTo(((index - 2) * (mediumDotsSize + spacingWidth)).toDouble(),
+                                duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                          }else if(index==imageCount-3){
+                            controller.animateTo(controller.position.maxScrollExtent,
+                                duration: Duration(milliseconds: 250), curve: Cubic(1.0, 1.0, 1.0, 1.0));
+                          }
                         }
-
                       },
                       onTap: (index) {},
                     )),
@@ -375,35 +384,35 @@ class _SlideBannerState extends State<SlideBanner> {
                   initialData: zindex, //初始值
                   builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
                     return Container(
-                      width: getDotsWidth(snapshot.data),
-                      height: 10,
-                      margin: const EdgeInsets.only(top: 5),
-                      child: ListView.separated(
-                        physics: NeverScrollableScrollPhysics(),
-                        controller: controller,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return  AnimatedContainer(
-                                  duration: Duration(milliseconds: 250),
-                                  height:getDotsSize(snapshot.data, index).height,
-                                  width: getDotsSize(snapshot.data, index).width,
-                                  decoration: BoxDecoration(
-                                      color: snapshot.data==index?AppColor.black:AppColor.textPrimary1.withOpacity(0.12),
-                                      shape: BoxShape.circle),
-                                );
-                        },
-                        separatorBuilder: (BuildContext context, int index) =>
-                            VerticalDivider(
-                              width: 4,
-                              color: Color(0xFFFFFFFF),
-                            ),
-                        itemCount: imageCount,
-                      )
-                    );
+                        padding: EdgeInsets.only(left: 2,right: 2),
+                        width: getDotsWidth(snapshot.data),
+                        height: 10,
+                        margin: const EdgeInsets.only(top: 5),
+                        child: ListView.separated(
+                          physics: NeverScrollableScrollPhysics(),
+                          controller: controller,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            return AnimatedContainer(
+                              duration: Duration(milliseconds: 250),
+                              height: getDotsSize(snapshot.data, index).height,
+                              width: getDotsSize(snapshot.data, index).width,
+                              decoration: BoxDecoration(
+                                  color:
+                                      snapshot.data == index ? AppColor.black : AppColor.textPrimary1.withOpacity(0.12),
+                                  shape: BoxShape.circle),
+                            );
+                          },
+                          separatorBuilder: (BuildContext context, int index) => VerticalDivider(
+                            width: 4,
+                            color: Color(0xFFFFFFFF),
+                          ),
+                          itemCount: imageCount,
+                        ),)
+                    ;
                   }))
         ],
       ),
     );
   }
-
 }

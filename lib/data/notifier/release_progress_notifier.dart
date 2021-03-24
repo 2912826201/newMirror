@@ -17,7 +17,6 @@ class ReleaseProgressNotifier extends ChangeNotifier {
 
   bool showPulishView = false;
 
-  double contaiHight = 60;
   // 发布数据需要的model
   void setPublishFeedModel(PostFeedModel model) {
     this._postFeedModel = model;

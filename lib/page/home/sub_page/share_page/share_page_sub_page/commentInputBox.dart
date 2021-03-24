@@ -43,12 +43,17 @@ class CommentInputBoxState extends State<CommentInputBox> {
     return Offstage(
       offstage:
           // false,
-          widget.isUnderline ? false :
-          (context.select((FeedMapNotifier value) => value.value.feedMap) != null &&
-              context.select((FeedMapNotifier value) => value.value.feedMap[widget.feedModel.id]) != null &&
-              context.select((FeedMapNotifier value) => value.value.feedMap[widget.feedModel.id].isShowInputBox) != null) ? context.select((FeedMapNotifier value) => value.value.feedMap[widget.feedModel.id].isShowInputBox) : true,
-          // context
-          //     .select((FeedMapNotifier feedNotifier) => feedNotifier.value.feedMap[widget.feedModel.id].isShowInputBox),
+          widget.isUnderline
+              ? false
+              : (context.select((FeedMapNotifier value) => value.value.feedMap) != null &&
+                      context.select((FeedMapNotifier value) => value.value.feedMap[widget.feedModel.id]) != null &&
+                      context.select(
+                              (FeedMapNotifier value) => value.value.feedMap[widget.feedModel.id].isShowInputBox) !=
+                          null)
+                  ? context.select((FeedMapNotifier value) => value.value.feedMap[widget.feedModel.id].isShowInputBox)
+                  : true,
+      // context
+      //     .select((FeedMapNotifier feedNotifier) => feedNotifier.value.feedMap[widget.feedModel.id].isShowInputBox),
       child: Container(
         height: widget.isFeedDetail ? 48 + ScreenUtil.instance.bottomBarHeight : 48,
         width: ScreenUtil.instance.width,
@@ -100,71 +105,71 @@ class CommentInputBoxState extends State<CommentInputBox> {
               ),
               onTap: () {
                 if (context.read<TokenNotifier>().isLoggedIn) {
-                  if (context.read<ReleaseProgressNotifier>().postFeedModel != null) {
-                    // ToastShow.show(msg: "不响应", context: context);
-                  } else {
-                    openInputBottomSheet(
-                      buildContext: context,
-                      hintText:
-                          // widget.isUnderline ?
-                          "说点什么吧~",
-                      // : "喜欢就评论吧~",
-                      voidCallback: (String text, List<Rule> rules) {
-                        List<AtUsersModel> atListModel = [];
-                        for (Rule rule in rules) {
-                          AtUsersModel atModel = AtUsersModel();
-                          atModel.index = rule.startIndex;
-                          atModel.len = rule.endIndex;
-                          atModel.uid = rule.id;
-                          atListModel.add(atModel);
-                        }
-                        // 发布评论
-                        postComments(
-                            targetId: widget.feedModel.id,
-                            targetType: 0,
-                            contentext: text,
-                            atUsers: jsonEncode(atListModel),
-                            commentModelCallback: (BaseResponseModel commentModel) {
-                              CommentDtoModel comModel;
-                              if (commentModel != null) {
-                                if (commentModel.code == CODE_BLACKED) {
-                                  ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
-                                } else if (commentModel.code == CODE_NO_DATA) {
-                                  String alertString = commentModel.message;
-                                  ToastShow.show(msg: alertString, context: context, gravity: Toast.CENTER);
-                                } else {
-                                  if (commentModel.data != null) {
-                                    comModel = (CommentDtoModel.fromJson(commentModel.data));
-                                    print("发布成功：${comModel.toString()}");
-                                    print("1111111");
-                                      context.read<FeedMapNotifier>().feedPublishComment(comModel, widget.feedModel.id);
+                  // if (context.read<ReleaseProgressNotifier>().postFeedModel != null) {
+                  //   // ToastShow.show(msg: "不响应", context: context);
+                  // } else {
+                  openInputBottomSheet(
+                    buildContext: context,
+                    hintText:
+                        // widget.isUnderline ?
+                        "说点什么吧~",
+                    // : "喜欢就评论吧~",
+                    voidCallback: (String text, List<Rule> rules) {
+                      List<AtUsersModel> atListModel = [];
+                      for (Rule rule in rules) {
+                        AtUsersModel atModel = AtUsersModel();
+                        atModel.index = rule.startIndex;
+                        atModel.len = rule.endIndex;
+                        atModel.uid = rule.id;
+                        atListModel.add(atModel);
+                      }
+                      // 发布评论
+                      postComments(
+                          targetId: widget.feedModel.id,
+                          targetType: 0,
+                          contentext: text,
+                          atUsers: jsonEncode(atListModel),
+                          commentModelCallback: (BaseResponseModel commentModel) {
+                            CommentDtoModel comModel;
+                            if (commentModel != null) {
+                              if (commentModel.code == CODE_BLACKED) {
+                                ToastShow.show(msg: "你已被对方加入黑名单，成为好友才能互动哦~", context: context, gravity: Toast.CENTER);
+                              } else if (commentModel.code == CODE_NO_DATA) {
+                                String alertString = commentModel.message;
+                                ToastShow.show(msg: alertString, context: context, gravity: Toast.CENTER);
+                              } else {
+                                if (commentModel.data != null) {
+                                  comModel = (CommentDtoModel.fromJson(commentModel.data));
+                                  print("发布成功：${comModel.toString()}");
+                                  print("1111111");
+                                  context.read<FeedMapNotifier>().feedPublishComment(comModel, widget.feedModel.id);
 
-                                    print(
-                                        '==========hotComment=====${context.read<FeedMapNotifier>().value.feedMap[widget.feedModel.id].hotComment.hashCode}');
-                                    print(
-                                        '=======comments========${context.read<FeedMapNotifier>().value.feedMap[widget.feedModel.id].comments.hashCode}');
-                                    if (context
-                                            .read<FeedMapNotifier>()
-                                            .value
-                                            .feedMap[widget.feedModel.id]
-                                            .hotComment
-                                            .length <
-                                        2) {
-                                      print("{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{小于二");
-                                      context.read<FeedMapNotifier>().updateHotComment(widget.feedModel.id,
-                                          commentDtoModel: comModel, isDelete: false);
-                                    }
-                                    print(
-                                        '=======updateHotComment}}}}}}}}}}}}}}}}}}}}}}}}}${context.read<FeedMapNotifier>().value.feedMap[widget.feedModel.id].hotComment.toString()}');
+                                  print(
+                                      '==========hotComment=====${context.read<FeedMapNotifier>().value.feedMap[widget.feedModel.id].hotComment.hashCode}');
+                                  print(
+                                      '=======comments========${context.read<FeedMapNotifier>().value.feedMap[widget.feedModel.id].comments.hashCode}');
+                                  if (context
+                                          .read<FeedMapNotifier>()
+                                          .value
+                                          .feedMap[widget.feedModel.id]
+                                          .hotComment
+                                          .length <
+                                      2) {
+                                    print("{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{小于二");
+                                    context.read<FeedMapNotifier>().updateHotComment(widget.feedModel.id,
+                                        commentDtoModel: comModel, isDelete: false);
                                   }
+                                  print(
+                                      '=======updateHotComment}}}}}}}}}}}}}}}}}}}}}}}}}${context.read<FeedMapNotifier>().value.feedMap[widget.feedModel.id].hotComment.toString()}');
                                 }
                               }
-                              // 关闭评论输入框
-                              // Navigator.of(context).pop(1);
-                            });
-                      },
-                    );
-                  }
+                            }
+                            // 关闭评论输入框
+                            // Navigator.of(context).pop(1);
+                          });
+                    },
+                  );
+                  // }
                 } else {
                   // 去登录
                   AppRouter.navigateToLoginPage(context);

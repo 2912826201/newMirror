@@ -174,7 +174,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
               loadStatus = LoadingStatus.STATUS_COMPLETED;
               loadText = "";
             }
-            recommendModelList = StringUtil.getFeedItemHeight(initHeight, recommendModelList);
           } else {
             isRequestData = false;
           }
@@ -231,7 +230,6 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
     if (mounted) {
       setState(() {});
     }
-    recommendModelList = StringUtil.getFeedItemHeight(initHeight, recommendModelList);
     // 更新全局监听
     context.read<FeedMapNotifier>().updateFeedMap(recommendModelList);
   }
@@ -314,7 +312,11 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                                         onExposure: (visibilityInfo) {
                                           print("回调看数据:${recommendIdList.toString()}");
                                           // 如果没有显示
-                                          if ( context.read<FeedMapNotifier>().value.feedMap[recommendIdList[index]].isShowInputBox) {
+                                          if (context
+                                              .read<FeedMapNotifier>()
+                                              .value
+                                              .feedMap[recommendIdList[index]]
+                                              .isShowInputBox) {
                                             context.read<FeedMapNotifier>().showInputBox(recommendIdList[index]);
                                           }
                                           print('第$index 块曝光,展示比例为${visibilityInfo.visibleFraction}');
@@ -367,7 +369,7 @@ class RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCli
                 if (liveVideoModel[index].coachDto.isLiving == 0) {
                   AppRouter.navigateToMineDetail(context, liveVideoModel[index].coachDto.uid);
                 } else {
-                  ToastShow.show(msg: "直播页", context: context, gravity: Toast.CENTER);
+                  AppRouter.navigateLiveRoomPage(context, liveVideoModel[index]);
                 }
               } else {
                 AppRouter.navigateToLoginPage(context);

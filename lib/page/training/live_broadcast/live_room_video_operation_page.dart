@@ -13,23 +13,20 @@ import 'package:mirror/data/model/message/emoji_model.dart';
 import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/page/message/item/emoji_manager.dart';
 import 'package:mirror/util/click_util.dart';
-import 'package:mirror/util/date_util.dart';
 import 'package:mirror/util/event_bus.dart';
 import 'package:mirror/util/screen_util.dart';
-import 'package:mirror/widget/custom_appbar.dart';
 import 'package:mirror/widget/dialog.dart';
-import 'package:mirror/widget/feed/feed_more_popups.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
+import 'package:mirror/widget/text_span_field/text_span_field.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:text_span_field/text_span_field.dart';
 
 import 'dialog/live_room_setting_dialog.dart';
 import 'dialog/live_room_online_man_number_dialog.dart';
 import 'live_room_page_common.dart';
 
 
-class LiveRoomTestOperationPage extends StatefulWidget {
+class LiveRoomVideoOperationPage extends StatefulWidget {
   final int liveCourseId;
   final int coachId;
   final String coachUrl;
@@ -37,7 +34,7 @@ class LiveRoomTestOperationPage extends StatefulWidget {
   final String startTime;
   final int coachRelation;
 
-  const LiveRoomTestOperationPage({
+  const LiveRoomVideoOperationPage({
     Key key,
     @required this.liveCourseId,
     @required this.coachName,
@@ -47,12 +44,12 @@ class LiveRoomTestOperationPage extends StatefulWidget {
     @required this.coachId,}) : super(key: key);
 
   @override
-  _LiveRoomTestOperationPageState createState() => _LiveRoomTestOperationPageState(coachRelation);
+  _LiveRoomVideoOperationPageState createState() => _LiveRoomVideoOperationPageState(coachRelation);
 }
 
-class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
+class _LiveRoomVideoOperationPageState extends State<LiveRoomVideoOperationPage> {
 
-  _LiveRoomTestOperationPageState(this.coachRelation);
+  _LiveRoomVideoOperationPageState(this.coachRelation);
 
   //与教练的关系
   int coachRelation;
@@ -90,6 +87,8 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
 
   List<String> urlImageList= <String>[];
 
+  bool bottomBarHeightColorIsWhite=false;
+
   @override
   void initState() {
     super.initState();
@@ -97,7 +96,7 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
     print("开播时间是:${widget.startTime}");
 
 
-    EventBus.getDefault().register(receiveBarrageMessage,EVENTBUS_ROOM_OPERATION_PAGE,
+    EventBus.getDefault().registerSingleParameter(receiveBarrageMessage,EVENTBUS_ROOM_OPERATION_PAGE,
         registerName: EVENTBUS_ROOM_RECEIVE_BARRAGE);
 
     urlImageList.add("");
@@ -358,7 +357,8 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
         emojiPlan(),
         Container(
           height: ScreenUtil.instance.bottomBarHeight,
-          color: AppColor.transparent,
+          color: (_focusNode.hasFocus||isShowEditPlan||_emojiState||bottomBarHeightColorIsWhite)
+              ?AppColor.white:AppColor.transparent,
         ),
       ],
     );
@@ -495,12 +495,7 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
       child: Container(
         height: _emojiState?keyboardHeight:0.0,
         width: double.infinity,
-        decoration: BoxDecoration(
-          color: AppColor.white,
-          border: Border(
-            top: BorderSide(color: Colors.grey, width: 0.2),
-          ),
-        ),
+        color: AppColor.white,
         child: emojiList(keyboardHeight),
       ),
     );
@@ -521,6 +516,12 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
             behavior: NoBlueEffectBehavior(),
             child: CustomScrollView(
               slivers: [
+                SliverToBoxAdapter(
+                  child: Container(
+                    height: 0.2,
+                    color: Colors.grey,
+                  ),
+                ),
                 SliverToBoxAdapter(
                   child: _emojiGridTop(keyboardHeight),
                 ),
@@ -587,9 +588,6 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
 
   //表情的bar
   Widget _emojiBottomBox() {
-    TextStyle textStyle = const TextStyle(
-      fontSize: 24,
-    );
     return Container(
       decoration: BoxDecoration(
         color: Colors.transparent,
@@ -629,6 +627,11 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
   Widget edit() {
     return TextSpanField(
       onTap: (){
+        isShowEmojiBtn=true;
+        _emojiState=false;
+        setState(() {});
+      },
+      onLongTap: (){
         isShowEmojiBtn=true;
         _emojiState=false;
         setState(() {});
@@ -850,7 +853,7 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
 
 
   //离开直播间
-  void subLiveRoom(TextMessage textMessage){
+  void subLiveRoom(TextMessage textMessage,{bool isReset=true}){
     for(int i=0;i<onlineManList.length;i++){
       if(onlineManList[i].uid.toString()==textMessage.sendUserInfo.userId.toString()){
         onlineManList.removeAt(i);
@@ -863,9 +866,11 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
         break;
       }
     }
-    EventBus.getDefault().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
-    if(onlineManList.length<3){
-      resetOnlineUserImage();
+    if(isReset) {
+      EventBus.getDefault().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
+      if (onlineManList.length < 3) {
+        resetOnlineUserImage();
+      }
     }
   }
 
@@ -942,8 +947,7 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
   }
 
   //接收直播间弹幕消息
-  void receiveBarrageMessage(message){
-    Message msg=(message as Message);
+  void receiveBarrageMessage(Message msg){
     print("message:${msg.targetId},${widget.coachId}");
     if(msg.targetId!=widget.coachId.toString()){
       Application.rongCloud.quitChatRoom(msg.targetId);
@@ -955,7 +959,11 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
       switch (contentMap["subObjectName"]) {
         case ChatTypeModel.MESSAGE_TYPE_SYS_BARRAGE:
           if(null!=contentMap["name"]&&contentMap["name"]=="joinLiveRoom"){
-            resetOnlineUserNumber(++onlineUserNumber);
+            if(onlineManUidList.contains(int.parse(textMessage.sendUserInfo.userId))){
+              subLiveRoom(textMessage,isReset: false);
+            }else {
+              resetOnlineUserNumber(++onlineUserNumber);
+            }
             _onSubmitJoinLiveRoomMessage(textMessage.sendUserInfo.name,textMessage.sendUserInfo.userId);
             addLiveRoom(textMessage);
           }else if(null!=contentMap["name"]&&contentMap["name"]=="quitLiveRoom"){
@@ -982,14 +990,25 @@ class _LiveRoomTestOperationPageState extends State<LiveRoomTestOperationPage> {
       });
       return;
     }
+    bottomBarHeightColorIsWhite=false;
     if(_focusNode.hasFocus){
       _focusNode.unfocus();
+      bottomBarHeightColorIsWhite=true;
     }
     isShowEmojiBtn=true;
     isShowEditPlan=false;
     if(_emojiState){
       _emojiState=!_emojiState;
       setState(() {});
+      bottomBarHeightColorIsWhite=true;
+    }
+    if(bottomBarHeightColorIsWhite){
+      Future.delayed(Duration(milliseconds: 100),(){
+        bottomBarHeightColorIsWhite=false;
+        if(mounted){
+          setState(() {});
+        }
+      });
     }
   }
 

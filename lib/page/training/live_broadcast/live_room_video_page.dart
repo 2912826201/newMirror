@@ -12,24 +12,24 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/util/toast_util.dart';
 
 
-class LiveRoomTestPage extends StatefulWidget {
+class LiveRoomVideoPage extends StatefulWidget {
   final int liveCourseId;
   final String coachId;
 
-  const LiveRoomTestPage({
+  const LiveRoomVideoPage({
     Key key,
     @required this.liveCourseId,
     @required this.coachId,}) : super(key: key);
 
 
   @override
-  _LiveRoomTestPageState createState() => _LiveRoomTestPageState(liveCourseId,coachId);
+  _LiveRoomVideoPageState createState() => _LiveRoomVideoPageState(liveCourseId,coachId);
 }
 
-class _LiveRoomTestPageState extends XCState {
+class _LiveRoomVideoPageState extends XCState {
 
 
-  _LiveRoomTestPageState(this.liveCourseId, this.coachId);
+  _LiveRoomVideoPageState(this.liveCourseId, this.coachId);
 
   final int liveCourseId;
   final String coachId;
@@ -45,7 +45,7 @@ class _LiveRoomTestPageState extends XCState {
     //加入聊天室
     Application.rongCloud.joinChatRoom(coachId);
     // player.setDataSource(url, autoPlay: true);
-    EventBus.getDefault().register(exit,EVENTBUS_LIVEROOM_TESTPAGE,registerName: EVENTBUS_LIVEROOM_EXIT);
+    EventBus.getDefault().registerNoParameter(exit,EVENTBUS_LIVEROOM_TESTPAGE,registerName: EVENTBUS_LIVEROOM_EXIT);
     loadingStatus=LoadingStatus.STATUS_LOADING;
     getLiveVideoUrl();
 
