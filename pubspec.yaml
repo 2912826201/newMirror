@@ -66,7 +66,7 @@ dependencies:
   union_tabs: ^1.0.0+7
   #  extended_tabs
   # 输入框内富文本显示
-  text_span_field: ^1.0.0
+  #text_span_field: ^1.0.0
   # 文件路径
   path_provider: ^1.6.24
   # 视频播放器 暂时先用着系统自带的这个

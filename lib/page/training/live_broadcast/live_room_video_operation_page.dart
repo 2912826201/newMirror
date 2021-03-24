@@ -18,8 +18,8 @@ import 'package:mirror/util/screen_util.dart';
 import 'package:mirror/widget/dialog.dart';
 import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
+import 'package:mirror/widget/text_span_field/text_span_field.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:text_span_field/text_span_field.dart';
 
 import 'dialog/live_room_setting_dialog.dart';
 import 'dialog/live_room_online_man_number_dialog.dart';
@@ -86,6 +86,8 @@ class _LiveRoomVideoOperationPageState extends State<LiveRoomVideoOperationPage>
   Widget onlineMenNumberText;
 
   List<String> urlImageList= <String>[];
+
+  bool bottomBarHeightColorIsWhite=false;
 
   @override
   void initState() {
@@ -355,7 +357,8 @@ class _LiveRoomVideoOperationPageState extends State<LiveRoomVideoOperationPage>
         emojiPlan(),
         Container(
           height: ScreenUtil.instance.bottomBarHeight,
-          color: AppColor.transparent,
+          color: (_focusNode.hasFocus||isShowEditPlan||_emojiState||bottomBarHeightColorIsWhite)
+              ?AppColor.white:AppColor.transparent,
         ),
       ],
     );
@@ -492,12 +495,7 @@ class _LiveRoomVideoOperationPageState extends State<LiveRoomVideoOperationPage>
       child: Container(
         height: _emojiState?keyboardHeight:0.0,
         width: double.infinity,
-        decoration: BoxDecoration(
-          color: AppColor.white,
-          border: Border(
-            top: BorderSide(color: Colors.grey, width: 0.2),
-          ),
-        ),
+        color: AppColor.white,
         child: emojiList(keyboardHeight),
       ),
     );
@@ -518,6 +516,12 @@ class _LiveRoomVideoOperationPageState extends State<LiveRoomVideoOperationPage>
             behavior: NoBlueEffectBehavior(),
             child: CustomScrollView(
               slivers: [
+                SliverToBoxAdapter(
+                  child: Container(
+                    height: 0.2,
+                    color: Colors.grey,
+                  ),
+                ),
                 SliverToBoxAdapter(
                   child: _emojiGridTop(keyboardHeight),
                 ),
@@ -623,6 +627,11 @@ class _LiveRoomVideoOperationPageState extends State<LiveRoomVideoOperationPage>
   Widget edit() {
     return TextSpanField(
       onTap: (){
+        isShowEmojiBtn=true;
+        _emojiState=false;
+        setState(() {});
+      },
+      onLongTap: (){
         isShowEmojiBtn=true;
         _emojiState=false;
         setState(() {});
@@ -844,7 +853,7 @@ class _LiveRoomVideoOperationPageState extends State<LiveRoomVideoOperationPage>
 
 
   //离开直播间
-  void subLiveRoom(TextMessage textMessage){
+  void subLiveRoom(TextMessage textMessage,{bool isReset=true}){
     for(int i=0;i<onlineManList.length;i++){
       if(onlineManList[i].uid.toString()==textMessage.sendUserInfo.userId.toString()){
         onlineManList.removeAt(i);
@@ -857,9 +866,11 @@ class _LiveRoomVideoOperationPageState extends State<LiveRoomVideoOperationPage>
         break;
       }
     }
-    EventBus.getDefault().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
-    if(onlineManList.length<3){
-      resetOnlineUserImage();
+    if(isReset) {
+      EventBus.getDefault().post(registerName: EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET);
+      if (onlineManList.length < 3) {
+        resetOnlineUserImage();
+      }
     }
   }
 
@@ -936,8 +947,7 @@ class _LiveRoomVideoOperationPageState extends State<LiveRoomVideoOperationPage>
   }
 
   //接收直播间弹幕消息
-  void receiveBarrageMessage(message){
-    Message msg=(message as Message);
+  void receiveBarrageMessage(Message msg){
     print("message:${msg.targetId},${widget.coachId}");
     if(msg.targetId!=widget.coachId.toString()){
       Application.rongCloud.quitChatRoom(msg.targetId);
@@ -949,7 +959,11 @@ class _LiveRoomVideoOperationPageState extends State<LiveRoomVideoOperationPage>
       switch (contentMap["subObjectName"]) {
         case ChatTypeModel.MESSAGE_TYPE_SYS_BARRAGE:
           if(null!=contentMap["name"]&&contentMap["name"]=="joinLiveRoom"){
-            resetOnlineUserNumber(++onlineUserNumber);
+            if(onlineManUidList.contains(int.parse(textMessage.sendUserInfo.userId))){
+              subLiveRoom(textMessage,isReset: false);
+            }else {
+              resetOnlineUserNumber(++onlineUserNumber);
+            }
             _onSubmitJoinLiveRoomMessage(textMessage.sendUserInfo.name,textMessage.sendUserInfo.userId);
             addLiveRoom(textMessage);
           }else if(null!=contentMap["name"]&&contentMap["name"]=="quitLiveRoom"){
@@ -976,14 +990,25 @@ class _LiveRoomVideoOperationPageState extends State<LiveRoomVideoOperationPage>
       });
       return;
     }
+    bottomBarHeightColorIsWhite=false;
     if(_focusNode.hasFocus){
       _focusNode.unfocus();
+      bottomBarHeightColorIsWhite=true;
     }
     isShowEmojiBtn=true;
     isShowEditPlan=false;
     if(_emojiState){
       _emojiState=!_emojiState;
       setState(() {});
+      bottomBarHeightColorIsWhite=true;
+    }
+    if(bottomBarHeightColorIsWhite){
+      Future.delayed(Duration(milliseconds: 100),(){
+        bottomBarHeightColorIsWhite=false;
+        if(mounted){
+          setState(() {});
+        }
+      });
     }
   }
 

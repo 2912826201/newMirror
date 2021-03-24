@@ -777,12 +777,13 @@ class AppRouter {
 
   //去直播间
   static void navigateLiveRoomPage(BuildContext context,LiveVideoModel liveModel){
+
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return LiveRoomVideoPage(liveCourseId:liveModel.id,coachId: liveModel.coachId.toString());
     }));
     Navigator.of(context).push(SimpleRoute(
-      name: liveModel.title,
-      title: liveModel.description,
+      name: liveModel.title ?? "",
+      title: liveModel.description ?? "",
       builder: (_) {
         return LiveRoomVideoOperationPage(
             liveCourseId:liveModel.id,

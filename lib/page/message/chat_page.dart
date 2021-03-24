@@ -47,9 +47,9 @@ import 'package:mirror/widget/icon.dart';
 import 'package:mirror/widget/interactiveviewer/interactive_video_item.dart';
 import 'package:mirror/widget/interactiveviewer/interactiveview_video_or_image_demo.dart';
 import 'package:mirror/widget/no_blue_effect_behavior.dart';
+import 'package:mirror/widget/text_span_field/text_span_field.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:text_span_field/text_span_field.dart';
 import 'package:toast/toast.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'chat_details_body.dart';
@@ -70,20 +70,22 @@ import 'package:mirror/page/search/sub_page/should_build.dart';
 class ChatPage extends StatefulWidget {
   final ConversationDto conversation;
   final Message shareMessage;
+  final BuildContext context;
 
-  ChatPage({Key key, @required this.conversation, this.shareMessage}) : super(key: key);
+  ChatPage({Key key, @required this.conversation, this.shareMessage, this.context}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return ChatPageState(conversation, shareMessage);
+    return ChatPageState(conversation, shareMessage,context);
   }
 }
 
 class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindingObserver {
   ConversationDto conversation;
   Message shareMessage;
+  BuildContext _context;
 
-  ChatPageState(this.conversation, this.shareMessage);
+  ChatPageState(this.conversation, this.shareMessage,this._context);
 
   ///所有的会话消息
   List<ChatDataModel> chatDataList = <ChatDataModel>[];
@@ -522,6 +524,13 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
               : ScreenUtil.instance.screenWidthDp - 32 - 32 - 64 - 52 - 12),
       child: TextSpanField(
         onTap: () {
+          if (_emojiState) {
+            reload(() {
+              _emojiState = !_emojiState;
+            });
+          }
+        },
+        onLongTap: (){
           if (_emojiState) {
             reload(() {
               _emojiState = !_emojiState;
@@ -1118,7 +1127,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   //发送文字消息
   _postText(String text) {
     if (text == null || text.isEmpty || text.length < 1) {
-      ToastShow.show(msg: "消息为空,请输入消息！", context: context);
+      ToastShow.show(msg: "消息为空,请输入消息！", context: _context);
       return;
     }
 
@@ -1257,7 +1266,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   void recallMessage(Message message, int position) async {
     RecallNotificationMessage recallNotificationMessage = await RongCloud.init().recallMessage(message);
     if (recallNotificationMessage == null) {
-      ToastShow.show(msg: "撤回失败", context: context);
+      ToastShow.show(msg: "撤回失败", context: _context);
     } else {
       chatDataList[position].msg.objectName = RecallNotificationMessage.objectName;
       chatDataList[position].msg.content = recallNotificationMessage;
@@ -1354,7 +1363,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
           chatDataList[position].type == ChatTypeModel.MESSAGE_TYPE_VIDEO) {
         _resetPostTemporaryImageVideo(position);
       } else {
-        ToastShow.show(msg: "未处理：${chatDataList[position].type}", context: context);
+        ToastShow.show(msg: "未处理：${chatDataList[position].type}", context: _context);
       }
     } else if (chatDataList[position].msg.objectName == ChatTypeModel.MESSAGE_TYPE_TEXT) {
       TextMessage textMessage = ((chatDataList[position].msg.content) as TextMessage);
@@ -1778,13 +1787,18 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
 
   //检查黑名单状态
   void profileCheckBlack() async {
+    print("-------------------------");
     if (conversation.type == PRIVATE_TYPE) {
+      print("22222222222222222");
       BlackModel blackModel = await ProfileCheckBlack(int.parse(chatId));
+      print("blackModel:${blackModel?.toJson().toString()}");
       if (blackModel != null) {
         if (blackModel.inYouBlack == 1) {
-          ToastShow.show(msg: "发送失败，你已将对方加入黑名单", context: context);
+          print("发送失败，你已将对方加入黑名单");
+          ToastShow.show(msg: "发送失败，你已将对方加入黑名单", context: _context);
         } else if (blackModel.inThisBlack == 1) {
-          ToastShow.show(msg: "发送失败，你已被对方加入黑名单", context: context);
+          print("发送失败，你已被对方加入黑名单");
+          ToastShow.show(msg: "发送失败，你已被对方加入黑名单", context: _context);
         }
       }
     }
@@ -1858,7 +1872,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     }
     String text = _textController.text;
     if (text == null || text.isEmpty || text.length < 1) {
-      ToastShow.show(msg: "消息为空,请输入消息！", context: context);
+      ToastShow.show(msg: "消息为空,请输入消息！", context: _context);
       return;
     }
     _postText(text);
@@ -1882,7 +1896,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
   //头部-更多按钮的点击事件
   _topMoreBtnClick() {
     _focusNode.unfocus();
-    // ToastShow.show(msg: "点击了更多按钮", context: context);
+    // ToastShow.show(msg: "点击了更多按钮", context: _context);
     judgeJumpPage(
         chatTypeId, this.chatId, conversation.type, context, chatName, _morePageOnClick, _moreOnClickExitChatPage);
   }
@@ -1946,7 +1960,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         }
       }
       if (text != null && text.length > 0) {
-        ToastShow.show(msg: text, context: context);
+        ToastShow.show(msg: text, context: _context);
       }
     } else {
       isShowTopAttentionUi = false;
@@ -1968,7 +1982,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     if (rules.isNotEmpty) {
       for (Rule rule in rules) {
         if (rule.clickIndex == userModel.uid && rule.isAt == true) {
-          ToastShow.show(msg: "你已经@过Ta啦！", context: context, gravity: Toast.CENTER);
+          ToastShow.show(msg: "你已经@过Ta啦！", context: _context, gravity: Toast.CENTER);
           //print("你已经@过Ta啦！");
           return;
         }
@@ -2141,13 +2155,13 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
           });
         }
       });
-      // ToastShow.show(msg: "删除-第$position个", context: context);
+      // ToastShow.show(msg: "删除-第$position个", context: _context);
     } else if (settingType == "撤回") {
       recallMessage(chatDataList[position].msg, position);
     } else if (settingType == "复制") {
       if (context != null && content != null) {
         Clipboard.setData(ClipboardData(text: content));
-        ToastShow.show(msg: "复制成功", context: context);
+        ToastShow.show(msg: "复制成功", context: _context);
       }
     } else {
       //print("暂无此配置");
@@ -2167,7 +2181,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
       //print("暂无此配置");
     }
     if (contentType == ChatTypeModel.MESSAGE_TYPE_TEXT && isUrl) {
-      ToastShow.show(msg: "跳转网页地址: $content", context: context);
+      ToastShow.show(msg: "跳转网页地址: $content", context: _context);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_FEED) {
       // ToastShow.show(msg: "跳转动态详情页", context: context);
       getFeedDetail(map["id"], context);
@@ -2176,19 +2190,19 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_IMAGE) {
       _openGallery(position);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_USER) {
-      // ToastShow.show(msg: "跳转用户界面", context: context);
+      // ToastShow.show(msg: "跳转用户界面", context: _context);
       AppRouter.navigateToMineDetail(context, map["uid"]);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_LIVE_COURSE) {
-      // ToastShow.show(msg: "跳转直播课详情界面", context: context);
+      // ToastShow.show(msg: "跳转直播课详情界面", context: _context);
       LiveVideoModel liveModel = LiveVideoModel.fromJson(map);
       AppRouter.navigateToLiveDetail(context, liveModel.id,
           heroTag: msgId, liveModel: liveModel, isHaveStartTime: false);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VIDEO_COURSE) {
-      // ToastShow.show(msg: "跳转视频课详情界面", context: context);
+      // ToastShow.show(msg: "跳转视频课详情界面", context: _context);
       LiveVideoModel videoModel = LiveVideoModel.fromJson(map);
       AppRouter.navigateToVideoDetail(context, videoModel.id, heroTag: msgId, videoModel: videoModel);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_VOICE) {
-      // ToastShow.show(msg: "播放录音", context: context);
+      // ToastShow.show(msg: "播放录音", context: _context);
       updateMessage(chatDataList[position], (code) {
         if (mounted) {
           reload(() {
@@ -2199,7 +2213,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     } else if (contentType == RecallNotificationMessage.objectName) {
       recallNotificationMessagePosition = -2;
       print("position:$position");
-      // ToastShow.show(msg: "重新编辑消息", context: context);
+      // ToastShow.show(msg: "重新编辑消息", context: _context);
       // FocusScope.of(context).requestFocus(_focusNode);
       _textController.text += json.decode(map["content"])["data"];
       Future.delayed(Duration(milliseconds: 100), () {
@@ -2218,10 +2232,10 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
         });
       }
     } else if (contentType == ChatTypeModel.CHAT_SYSTEM_BOTTOM_BAR) {
-      ToastShow.show(msg: "管家界面-底部点击了：$content", context: context);
+      ToastShow.show(msg: "管家界面-底部点击了：$content", context: _context);
       _postSelectMessage(content);
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_SELECT) {
-      ToastShow.show(msg: "选择列表选择了-底部点击了：$content", context: context);
+      ToastShow.show(msg: "选择列表选择了-底部点击了：$content", context: _context);
       if (ClickUtil.isFastClick(time: 200)) {
         return;
       }
@@ -2230,7 +2244,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
     } else if (contentType == ChatTypeModel.MESSAGE_TYPE_CLICK_ERROR_BTN) {
       print("点击了发送失败的按钮-重新发送：$position");
 
-      profileCheckBlack();
+      // profileCheckBlack();
       _resetPostMessage(position);
       // _textController.text=content;
       // _postText(content);
@@ -2262,7 +2276,7 @@ class ChatPageState extends XCState with TickerProviderStateMixin, WidgetsBindin
               sourceList.add(demoSourceEntity);
             }
           } catch (e) {
-            // ToastShow.show(msg: "版本过低请升级版本!", context: context,gravity: Toast.CENTER);
+            // ToastShow.show(msg: "版本过低请升级版本!", context: _context,gravity: Toast.CENTER);
             // return getTextMsg(text: "2版本过低请升级版本!", mentionedInfo: msg.content.mentionedInfo);
           }
         }

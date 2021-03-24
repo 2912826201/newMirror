@@ -91,19 +91,19 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
       status = Status.notLoggedIn;
     } else {
       getRecommendFeed();
-      new Future.delayed(Duration.zero, () {
-        print("AttentionPage发布失败数据");
-        // 取出发布动态数据
-        PostFeedModel feedModel = PostFeedModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
-            "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")));
-        if (feedModel != null) {
-          feedModel.selectedMediaFiles.list.forEach((v) {
-            v.file = File(v.filePath);
-          });
-          // 插入数据
-          insertData(HomeFeedModel().conversionModel(feedModel, context, isRefresh: true));
-        }
-      });
+      // new Future.delayed(Duration.zero, () {
+      //   print("AttentionPage发布失败数据");
+      //   // 取出发布动态数据
+      //   PostFeedModel feedModel = PostFeedModel.fromJson(jsonDecode(AppPrefs.getPublishFeedLocalInsertData(
+      //       "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}")));
+      //   if (feedModel != null) {
+      //     feedModel.selectedMediaFiles.list.forEach((v) {
+      //       v.file = File(v.filePath);
+      //     });
+      //     // 插入数据
+      //     insertData(HomeFeedModel().conversionModel(feedModel, context, isRefresh: true));
+      //   }
+      // });
     }
 
     // 上拉加载
@@ -222,56 +222,47 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
     print("本地存储的数据长度1:${context.read<FeedMapNotifier>().value.feedMap.length}");
   }
 
-  // 删除本地插入数据
-  deleteData() {
-    attentionIdList.removeWhere((v) => v == Application.insertFeedId);
-    attentionModelList.removeWhere((element) => element.id == Application.insertFeedId);
-    if (attentionIdList.length == 1 && attentionIdList.first == -1) {
-      loadStatus = LoadingStatus.STATUS_IDEL;
-      loadText = "";
-      attentionIdList.clear();
-      attentionModelList.clear();
-      status = Status.noConcern;
-    }
-  }
+  // // 删除本地插入数据
+  // deleteData() {
+  //   attentionIdList.removeWhere((v) => v == Application.insertFeedId);
+  //   attentionModelList.removeWhere((element) => element.id == Application.insertFeedId);
+  //   if (attentionIdList.length == 1 && attentionIdList.first == -1) {
+  //     loadStatus = LoadingStatus.STATUS_IDEL;
+  //     loadText = "";
+  //     attentionIdList.clear();
+  //     attentionModelList.clear();
+  //     status = Status.noConcern;
+  //   }
+  // }
 
-  // 本地插入发布数据
+  // 插入发布数据
   insertData(HomeFeedModel model) {
-    print("发布插入model:${model.toString()}");
-    print("插入数据");
     if (attentionIdList.isEmpty) {
       attentionIdList.insert(0, -1);
     }
     attentionIdList.insert(1, model.id);
     attentionModelList.insert(0, model);
     print(attentionIdList.toString());
-    // // 重新计算
-    // attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList, isShowRecommendUser: true);
     // // 更新全局监听
     new Future.delayed(Duration.zero, () {
       context.read<FeedMapNotifier>().insertFeedMap(model);
-      // context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
     });
     status = Status.concern;
-    print("插入结束");
   }
 
-  // 接口请求返回替换数据
-  replaceData(HomeFeedModel model) {
-    print("更新model");
-    attentionIdList.removeWhere((element) => element == Application.insertFeedId);
-    attentionModelList.removeWhere((element) => element.id == Application.insertFeedId);
-    context.read<FeedMapNotifier>().deleteFeed(Application.insertFeedId);
-    attentionIdList.insert(1, model.id);
-    attentionModelList.insert(0, model);
-    // // 重新计算
-    // attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList, isShowRecommendUser: true);
-    // // 更新全局监听
-    context.read<FeedMapNotifier>().insertFeedMap(model);
-    // context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
-    print(attentionIdList.toString());
-    print("更新结束");
-  }
+  // 需求修改 不插入本地数据所以不需要替换了  接口请求返回替换数据
+  // replaceData(HomeFeedModel model) {
+  //   print("更新model");
+  //   attentionIdList.removeWhere((element) => element == Application.insertFeedId);
+  //   attentionModelList.removeWhere((element) => element.id == Application.insertFeedId);
+  //   context.read<FeedMapNotifier>().deleteFeed(Application.insertFeedId);
+  //   attentionIdList.insert(1, model.id);
+  //   attentionModelList.insert(0, model);
+  //   // // 更新全局监听
+  //   context.read<FeedMapNotifier>().insertFeedMap(model);
+  //   print(attentionIdList.toString());
+  //   print("更新结束");
+  // }
 
   // 回到顶部
   backToTheTop() {
@@ -340,9 +331,8 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
               attentionIdList = arrayDate(attentionIdList, themList);
               loadStatus = LoadingStatus.STATUS_IDEL;
               loadText = "";
+              // 去重
               attentionModelList = StringUtil.followModelFilterDeta(attentionModelList, feedList);
-              // 重新计算
-              // attentionModelList = StringUtil.getFeedItemHeight(14.0, attentionModelList, isShowRecommendUser: true);
               // 更新全局监听
               context.read<FeedMapNotifier>().updateFeedMap(attentionModelList);
             });
@@ -500,17 +490,17 @@ class AttentionPageState extends State<AttentionPage> with AutomaticKeepAliveCli
             loadText = "";
             // 清空曝光过的listKey
             ExposureDetectorController.instance.signOutClearHistory();
-            if (context.read<ReleaseProgressNotifier>().postFeedModel != null) {
-              attentionIdList.insert(
-                  0,
-                  HomeFeedModel()
-                      .conversionModel(context.read<ReleaseProgressNotifier>().postFeedModel, context, isRefresh: true)
-                      .id);
-              attentionModelList.insert(
-                  0,
-                  HomeFeedModel()
-                      .conversionModel(context.read<ReleaseProgressNotifier>().postFeedModel, context, isRefresh: true));
-            }
+            // if (context.read<ReleaseProgressNotifier>().postFeedModel != null) {
+            //   attentionIdList.insert(
+            //       0,
+            //       HomeFeedModel()
+            //           .conversionModel(context.read<ReleaseProgressNotifier>().postFeedModel, context, isRefresh: true)
+            //           .id);
+            //   attentionModelList.insert(
+            //       0,
+            //       HomeFeedModel()
+            //           .conversionModel(context.read<ReleaseProgressNotifier>().postFeedModel, context, isRefresh: true));
+            // }
             getRecommendFeed();
           },
           child: CustomScrollView(controller: _controller, physics: AlwaysScrollableScrollPhysics(), slivers: [

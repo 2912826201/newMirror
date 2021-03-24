@@ -281,81 +281,81 @@ class StringUtil {
   }
 
   //计算每一个动态流的item的高度区间
-  static List<HomeFeedModel> getFeedItemHeight(double initHeight, List<HomeFeedModel>  models,{bool isShowRecommendUser = false}) {
-    double itemHeight = initHeight;
-    for(int i = 0; i < models.length; i ++) {
-      HomeFeedModel v =  models[i];
-      v.headOffset = itemHeight;
-      if(i== 2 && isShowRecommendUser) {
-        itemHeight += 233;
-      }
-      // 头部
-      itemHeight += 62;
-      if (v.selectedMediaFiles == null) {
-        // 图片
-        if (v.picUrls.isNotEmpty) {
-          if (v.picUrls.first.height == 0) {
-            itemHeight += ScreenUtil.instance.width;
-          } else {
-            itemHeight += (ScreenUtil.instance.width / v.picUrls[0].width) * v.picUrls[0].height;
-          }
-        }
-        // 视频
-        if (v.videos.isNotEmpty) {
-          itemHeight += calculateHeight(feedModel: v);
-        }
-      } else {
-        // 图片
-        if(v.selectedMediaFiles.type == mediaTypeKeyImage ) {
-          if (v.selectedMediaFiles.list.first.sizeInfo.height == 0) {
-            itemHeight += ScreenUtil.instance.width;
-          } else {
-            itemHeight += (ScreenUtil.instance.width / v.selectedMediaFiles.list.first.sizeInfo.width) * v.selectedMediaFiles.list.first.sizeInfo.height;
-          }
-        }
-        // 视频
-        if (v.selectedMediaFiles.type == mediaTypeKeyVideo) {
-          itemHeight += calculateHeight(selectedMediaFiles: v.selectedMediaFiles);
-        }
-      }
-      // 转发评论点赞
-      itemHeight += 48;
-
-      //地址和课程
-      if (v.address != null || v.courseDto != null) {
-        itemHeight += 7;
-        itemHeight += getTextSize("123", TextStyle(fontSize: 12), 1).height;
-      }
-
-      //文本
-      if (v.content.length > 0) {
-        itemHeight += 12;
-        itemHeight += getTextSize(v.content, TextStyle(fontSize: 14), 2, ScreenUtil.instance.width - 32).height;
-      }
-
-      //评论文本
-      if (v.comments != null && v.comments.length != 0) {
-        itemHeight += 8;
-        itemHeight += 6;
-        itemHeight += getTextSize("共0条评论", AppStyle.textHintRegular12, 1).height;
-        itemHeight += getTextSize("第一条评论", AppStyle.textHintRegular13, 1).height;
-        if (v.comments.length > 1) {
-          itemHeight += 8;
-          itemHeight += getTextSize("第二条评论", AppStyle.textHintRegular13, 1).height;
-        }
-      }
-
-      // 输入框
-      itemHeight += 48;
-
-      //分割块
-      itemHeight += 18;
-      v.bottomOffset = itemHeight - 1;
-      print("v.headOffset::::${v.headOffset}");
-      print("v.bottomOffset::::${v.bottomOffset}");
-    }
-    return models;
-  }
+  // static List<HomeFeedModel> getFeedItemHeight(double initHeight, List<HomeFeedModel>  models,{bool isShowRecommendUser = false}) {
+  //   double itemHeight = initHeight;
+  //   for(int i = 0; i < models.length; i ++) {
+  //     HomeFeedModel v =  models[i];
+  //     v.headOffset = itemHeight;
+  //     if(i== 2 && isShowRecommendUser) {
+  //       itemHeight += 233;
+  //     }
+  //     // 头部
+  //     itemHeight += 62;
+  //     if (v.selectedMediaFiles == null) {
+  //       // 图片
+  //       if (v.picUrls.isNotEmpty) {
+  //         if (v.picUrls.first.height == 0) {
+  //           itemHeight += ScreenUtil.instance.width;
+  //         } else {
+  //           itemHeight += (ScreenUtil.instance.width / v.picUrls[0].width) * v.picUrls[0].height;
+  //         }
+  //       }
+  //       // 视频
+  //       if (v.videos.isNotEmpty) {
+  //         itemHeight += calculateHeight(feedModel: v);
+  //       }
+  //     } else {
+  //       // 图片
+  //       if(v.selectedMediaFiles.type == mediaTypeKeyImage ) {
+  //         if (v.selectedMediaFiles.list.first.sizeInfo.height == 0) {
+  //           itemHeight += ScreenUtil.instance.width;
+  //         } else {
+  //           itemHeight += (ScreenUtil.instance.width / v.selectedMediaFiles.list.first.sizeInfo.width) * v.selectedMediaFiles.list.first.sizeInfo.height;
+  //         }
+  //       }
+  //       // 视频
+  //       if (v.selectedMediaFiles.type == mediaTypeKeyVideo) {
+  //         itemHeight += calculateHeight(selectedMediaFiles: v.selectedMediaFiles);
+  //       }
+  //     }
+  //     // 转发评论点赞
+  //     itemHeight += 48;
+  //
+  //     //地址和课程
+  //     if (v.address != null || v.courseDto != null) {
+  //       itemHeight += 7;
+  //       itemHeight += getTextSize("123", TextStyle(fontSize: 12), 1).height;
+  //     }
+  //
+  //     //文本
+  //     if (v.content.length > 0) {
+  //       itemHeight += 12;
+  //       itemHeight += getTextSize(v.content, TextStyle(fontSize: 14), 2, ScreenUtil.instance.width - 32).height;
+  //     }
+  //
+  //     //评论文本
+  //     if (v.comments != null && v.comments.length != 0) {
+  //       itemHeight += 8;
+  //       itemHeight += 6;
+  //       itemHeight += getTextSize("共0条评论", AppStyle.textHintRegular12, 1).height;
+  //       itemHeight += getTextSize("第一条评论", AppStyle.textHintRegular13, 1).height;
+  //       if (v.comments.length > 1) {
+  //         itemHeight += 8;
+  //         itemHeight += getTextSize("第二条评论", AppStyle.textHintRegular13, 1).height;
+  //       }
+  //     }
+  //
+  //     // 输入框
+  //     itemHeight += 48;
+  //
+  //     //分割块
+  //     itemHeight += 18;
+  //     v.bottomOffset = itemHeight - 1;
+  //     print("v.headOffset::::${v.headOffset}");
+  //     print("v.bottomOffset::::${v.bottomOffset}");
+  //   }
+  //   return models;
+  // }
   // 计算视屏的高度
   static calculateHeight({HomeFeedModel feedModel, SelectedMediaFiles selectedMediaFiles}) {
     double containerWidth = ScreenUtil.instance.width;

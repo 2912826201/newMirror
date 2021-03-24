@@ -24,17 +24,9 @@ import 'dart:async';
 ///   EventBus.getDefault().unRegister(pageName:"界面名称-保证独一无二",registerName: "广播类型");
 /// }
 ///
-/// 参数类型：dynamic
-/// 参数个数：一个
-/// 多个参数：请使用 dynamic map 自行强转
-/// 回调的方法(可以有参数-也可以没有参数-post发送广播一致){
 ///
-/// }
-///
-/// 回调的方法
-/// 当有参数时：参数类型是dynamic在接收参数的地方需要强转，多个参数请使用map
-/// 当没有参数时:为空就好
 /// 注意：有参数时-一定要传参不然会报错，无参数时-一定不要传参不然会报错
+///
 /// -------错误原因，目前还有找到一个可以鉴别方法内是否有参数
 ///
 
@@ -44,7 +36,7 @@ class EventBus {
 
   //默认的广播类型
   final String defName = "default";
-  final String defMsg="no_data_msg_even_bus";
+  final String defMsg = "no_data_msg_even_bus";
 
   EventBus._();
 
@@ -67,11 +59,15 @@ class EventBus {
     } else if (_registerMap[registerName][pageName] == null) {
       _registerMap[registerName][pageName] = StreamController.broadcast();
     }
-    _registerMap[registerName][pageName].stream.listen((msg) {
-      if (msg == defMsg) {
-        listener();
-      } else {
-        listener(msg);
+    _registerMap[registerName][pageName].stream.listen((list) {
+      try {
+        if ((list as List).length > 0) {
+          listener(list[0]);
+        } else {
+          listener();
+        }
+      } catch (e) {
+        print("无参数");
       }
     });
   }
@@ -95,14 +91,18 @@ class EventBus {
   }
 
   //发送广播-msg消息-广播的类型
-  void post({dynamic msg = "no_data_msg_even_bus", String registerName}) {
+  void post<T>({T msg, String registerName}) {
     if (null == registerName) {
       registerName = defName;
+    }
+    List list = [];
+    if (msg != null) {
+      list.add(msg);
     }
     if (_registerMap.containsKey(registerName)) {
       _registerMap[registerName].forEach((key, value) {
         if (_registerMap[registerName][key] != null) {
-          _registerMap[registerName][key].add(msg);
+          _registerMap[registerName][key].add(list);
         }
       });
     }
@@ -121,6 +121,12 @@ const String EVENTBUS_BOTTOM_USER_PANEL_DIALOG = "BottomUserPanelDialog";
 const String EVENTBUS_PROFILE_PAGE = "profilePage";
 //互动通知页
 const String EVENTBUS_INTERACTIVE_NOTICE_PAGE = "interactiveNoticePage";
+// 发布动态页
+const String EVENTBUS_POST_FEED_HEADER = "postFeedHeader";
+// homePage页
+const String EVENTBUS_HOME_PAGE = "homePage";
+// 发布进度视图页
+const String EVENTBUS_POST_PROGRESS_VIEW = "releaseProgressView";
 
 ///广播类型
 //发布动态
@@ -135,3 +141,5 @@ const String EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET = "BottomUserPanelDialogRes
 const String EVENTBUS_PROFILE_DELETE_FEED = "profileUserDetailDeleteFeed";
 //互动通知删除评论动态
 const String EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT = "interactiveNoticeDelete";
+// 是否可发布动态和展示进度视图
+const String EVENTBUS_POST_PORGRESS_VIEW = "postporgressview";
