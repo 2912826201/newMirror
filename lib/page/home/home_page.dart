@@ -70,9 +70,11 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
         if (postprogressModel != null && postprogressModel.postFeedModel != null) {
           print("1111111111111");
           postprogressModel.postFeedModel.selectedMediaFiles.list.forEach((v) {
+            // 这里是之前未处理发布页图片和视频数据未解析成功直接发布过来时的情况
             try{
               v.file = File(v.filePath);
             }catch(error) {
+              // 当成功处理清空数据
               // 重新赋值存入
               AppPrefs.setPublishFeedLocalInsertData(
                   "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}", null);
@@ -227,6 +229,14 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
           streamProgress.sink.add(postprogressModel);
           print("percent结束了:");
         });
+        if (results.isSuccess == false) {
+          print('================================上传七牛云失败');
+          // 设置不可发布
+          postprogressModel.isPublish = false;
+          postprogressModel.plannedSpeed = -1.0;
+          streamProgress.sink.add(postprogressModel);
+          return;
+        }
         print("resultsErroe:${results.isSuccess}");
         for (int i = 0; i < results.resultMap.length; i++) {
           print("打印一下视频索引值￥$i");
