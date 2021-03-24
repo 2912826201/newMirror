@@ -601,7 +601,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
       }
 
       ///TODO 这里是修改的删除评论的eventbus
-      EventBus.getDefault().post(msg: commentId.toString(), registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
+      EventBus.getDefault().post(msg: commentId, registerName: EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT);
       if (context.read<FeedMapNotifier>().value.feedMap[widget.targetId] != null &&
           !widget.isShowHotOrTime &&
           context.read<FeedMapNotifier>().value.feedMap[widget.targetId].hotComment.isNotEmpty) {
