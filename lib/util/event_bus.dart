@@ -36,7 +36,7 @@ class EventBus {
 
   //默认的广播类型
   final String defName = "default";
-  final String defMsg="no_data_msg_even_bus";
+  final String defMsg = "no_data_msg_even_bus";
 
   EventBus._();
 
@@ -60,10 +60,14 @@ class EventBus {
       _registerMap[registerName][pageName] = StreamController.broadcast();
     }
     _registerMap[registerName][pageName].stream.listen((list) {
-      if ((list as List).length>0) {
-        listener(list[0]);
-      } else {
-        listener();
+      try {
+        if ((list as List).length > 0) {
+          listener(list[0]);
+        } else {
+          listener();
+        }
+      } catch (e) {
+        print("无参数");
       }
     });
   }
@@ -91,8 +95,8 @@ class EventBus {
     if (null == registerName) {
       registerName = defName;
     }
-    List list=[];
-    if(msg!=null){
+    List list = [];
+    if (msg != null) {
       list.add(msg);
     }
     if (_registerMap.containsKey(registerName)) {
@@ -123,6 +127,7 @@ const String EVENTBUS_POST_FEED_HEADER = "postFeedHeader";
 const String EVENTBUS_HOME_PAGE = "homePage";
 // 发布进度视图页
 const String EVENTBUS_POST_PROGRESS_VIEW = "releaseProgressView";
+
 ///广播类型
 //发布动态
 const String EVENTBUS_POSTFEED_CALLBACK = "mainpage_postFeedCallBack";
@@ -136,4 +141,5 @@ const String EVENTBUS_BOTTOM_USER_PANEL_DIALOG_RESET = "BottomUserPanelDialogRes
 const String EVENTBUS_PROFILE_DELETE_FEED = "profileUserDetailDeleteFeed";
 //互动通知删除评论动态
 const String EVENTBUS_INTERACTIVE_NOTICE_DELETE_COMMENT = "interactiveNoticeDelete";
-// 展示视图
+// 是否可发布动态和展示进度视图
+const String EVENTBUS_POST_PORGRESS_VIEW = "postporgressview";

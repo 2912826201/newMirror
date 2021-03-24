@@ -52,6 +52,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
   initState() {
     super.initState();
     controller = TabController(length: 2, vsync: this, initialIndex: 1);
+    // EventBus.getDefault().register(_postFeedCallBack, EVENTBUS_MAIN_PAGE, registerName: EVENTBUS_POSTFEED_CALLBACK);
     if (AppPrefs.getPublishFeedLocalInsertData(
             "${Application.postFailurekey}_${context.read<ProfileNotifier>().profile.uid}") !=
         null) {
