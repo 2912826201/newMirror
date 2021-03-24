@@ -666,7 +666,7 @@ class VideoDetailPageState extends XCState {
                 child: getBtnUi(false, "使用终端训练", textStyle, double.infinity, 40, margin_32),
                 onTap: () {
                   print("绑定了终端");
-                  ToastShow.show(msg: "使用终端训练", context: context);
+                  // ToastShow.show(msg: "使用终端训练", context: context);
                   startVideoCourse(Application.machine.machineId, videoCourseId);
                 },
               ),
@@ -676,10 +676,7 @@ class VideoDetailPageState extends XCState {
                 child: SizedBox(
               child: GestureDetector(
                 child: getBtnUi(false, "登陆终端使用终端播放", textStyle, double.infinity, 40, margin_32),
-                onTap: () {
-                  print("没有绑定终端");
-                  ToastShow.show(msg: "登陆终端", context: context);
-                },
+                onTap: _loginTerminalBtn,
               ),
             )));
           }
@@ -704,10 +701,7 @@ class VideoDetailPageState extends XCState {
                 child: SizedBox(
               child: GestureDetector(
                 child: getBtnUi(false, "登陆终端使用终端播放", textStyle, double.infinity, 40, margin_32),
-                onTap: () {
-                  print("没有绑定终端");
-                  ToastShow.show(msg: "登陆终端", context: context);
-                },
+                onTap: _loginTerminalBtn,
               ),
             )));
           }
@@ -733,10 +727,7 @@ class VideoDetailPageState extends XCState {
                 child: SizedBox(
               child: GestureDetector(
                 child: getBtnUi(false, "登陆终端使用终端播放", textStyle, double.infinity, 40, margin_32),
-                onTap: () {
-                  print("没有绑定终端");
-                  ToastShow.show(msg: "登陆终端", context: context);
-                },
+                onTap: _loginTerminalBtn,
               ),
             )));
           }
@@ -868,6 +859,17 @@ class VideoDetailPageState extends XCState {
     double scrollHeight = specifyItemHeight(onClickPosition);
     AppRouter.navigateToOtherCompleteCoursePage(context, videoModel.id, 7, scrollHeight, pageName, duration: 1000);
   }
+
+  //登陆终端按钮
+  void _loginTerminalBtn(){
+    if (Application.token.anonymous == 0) {
+      AppRouter.navigateToScanCodePage(context);
+    } else {
+      AppRouter.navigateToLoginPage(context);
+    }
+  }
+
+
 
   bool isOfflineBool=false;
   Future<bool> isOffline()async{
