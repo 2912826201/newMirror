@@ -213,6 +213,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         List<CommentDtoModel> list = <CommentDtoModel>[];
         list.addAll(context.watch<FeedMapNotifier>().value.feedMap[widget.targetId].comments);
         courseCommentHot.list = list;
+        courseCommentHot.totalCount=context.watch<FeedMapNotifier>().value.feedMap[widget.targetId].totalCount;
         resetSubSetting(courseCommentHot);
       }
     }
@@ -632,6 +633,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
         for (int j = 0; j < commentModel.list[i].replys.length; j++) {
           if (commentModel.list[i].replys[j].id == commentId) {
             commentModel.list[i].replys.removeAt(j);
+            commentModel.totalCount--;
             (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].replyCount--;
             if ((isHotOrTime ? courseCommentHot : courseCommentTime).list[i].pullNumber > 0) {
               (isHotOrTime ? courseCommentHot : courseCommentTime).list[i].replyCount +=
@@ -918,13 +920,16 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                       courseCommentHot.list[i].replys.add(model);
                       courseCommentHot.list[i].screenOutIds.add(model.id);
                       courseCommentHot.list[i].pullNumber++;
+                      courseCommentHot.totalCount++;
                       if (isHotOrTime) {
                         commentListSubSettingList[i].isFold = false;
                       }
                       commentListSubSettingList[i].subCommentAllHeight = null;
+
                       if (!widget.isShowHotOrTime &&
                           context.read<FeedMapNotifier>().value.feedMap[widget.targetId].comments != null &&
                           context.read<FeedMapNotifier>().value.feedMap[widget.targetId].comments.length > 0) {
+
                         context
                             .read<FeedMapNotifier>()
                             .value
@@ -932,7 +937,13 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                             .comments[i]
                             .screenOutIds
                             .add(model.id);
+
+                        print("courseCommentHot.totalCount${courseCommentHot.totalCount}");
+                        context
+                            .read<FeedMapNotifier>().updateTotalCount
+                          (courseCommentHot.totalCount, widget.targetId);
                       }
+
                     }
                   }
                 }
@@ -943,6 +954,7 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                       courseCommentTime.list[i].replys.add(model);
                       courseCommentTime.list[i].screenOutIds.add(model.id);
                       courseCommentTime.list[i].pullNumber++;
+                      courseCommentTime.totalCount++;
                       commentListSubSettingList[i].subCommentAllHeight = null;
                       if (!isHotOrTime) {
                         commentListSubSettingList[i].isFold = false;
@@ -958,6 +970,9 @@ class CommonCommentPageState extends State<CommonCommentPage> with TickerProvide
                             .comments[i]
                             .screenOutIds
                             .add(model.id);
+                        context
+                            .read<FeedMapNotifier>().updateTotalCount
+                          (courseCommentTime.totalCount, widget.targetId);
                       }
                     }
                   }

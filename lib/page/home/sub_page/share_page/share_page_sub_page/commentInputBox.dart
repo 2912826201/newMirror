@@ -10,7 +10,6 @@ import 'package:mirror/data/model/base_response_model.dart';
 import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/data/notifier/release_progress_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/route/router.dart';
 import 'package:mirror/util/screen_util.dart';
@@ -40,22 +39,23 @@ class CommentInputBox extends StatefulWidget {
 class CommentInputBoxState extends State<CommentInputBox> {
   @override
   Widget build(BuildContext context) {
-    return Offstage(
-      offstage:
-          // false,
-          widget.isUnderline
-              ? false
+    return AnimatedContainer(
+      height: widget.isFeedDetail
+          ? 48 + ScreenUtil.instance.bottomBarHeight
+          : widget.isUnderline
+              ? 48
               : (context.select((FeedMapNotifier value) => value.value.feedMap) != null &&
                       context.select((FeedMapNotifier value) => value.value.feedMap[widget.feedModel.id]) != null &&
                       context.select(
                               (FeedMapNotifier value) => value.value.feedMap[widget.feedModel.id].isShowInputBox) !=
-                          null)
-                  ? context.select((FeedMapNotifier value) => value.value.feedMap[widget.feedModel.id].isShowInputBox)
-                  : true,
-      // context
-      //     .select((FeedMapNotifier feedNotifier) => feedNotifier.value.feedMap[widget.feedModel.id].isShowInputBox),
+                          true)
+                  ? 48
+                  : 0,
+      width: ScreenUtil.instance.width,
+      curve: Cubic(0.25, 0.25, 0.25, 0.25),
+      duration: Duration(milliseconds: 250),
       child: Container(
-        height: widget.isFeedDetail ? 48 + ScreenUtil.instance.bottomBarHeight : 48,
+        height: widget.isUnderline ? 48 + ScreenUtil.instance.bottomBarHeight : 48,
         width: ScreenUtil.instance.width,
         decoration: BoxDecoration(
           color: AppColor.white,

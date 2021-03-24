@@ -71,32 +71,6 @@ class LiveRoomPageCommon {
     return Text("在线人数$number", style: TextStyle(fontSize: 9, color: AppColor.white.withOpacity(0.65)));
   }
 
-  //获取直播间在线人数ui
-  Widget getOtherOnlineUserImageUi(List<String> urlImageList) {
-    print(urlImageList[0]);
-    print(urlImageList[1]);
-    print(urlImageList[2]);
-    return Container(
-      width: 21.0 * 3 - 12.0,
-      height: 21.0,
-      child: Stack(
-        children: [
-          Positioned(
-            child: getUserImage(urlImageList[0], 21, 21),
-            right: 0,
-          ),
-          Positioned(
-            child: getUserImage(urlImageList[1], 21, 21),
-            right: 12,
-          ),
-          Positioned(
-            child: getUserImage(urlImageList[2], 21, 21),
-            right: 24,
-          ),
-        ],
-      ),
-    );
-  }
 
   //获取消息
   Widget _liveRoomMessageText() {

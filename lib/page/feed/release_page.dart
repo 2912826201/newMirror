@@ -24,7 +24,6 @@ import 'package:mirror/data/model/profile/buddy_list_model.dart';
 import 'package:mirror/data/model/profile/searchuser_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/data/notifier/release_progress_notifier.dart';
 import 'package:mirror/page/feed/release_page_item/at_list.dart';
 import 'package:mirror/page/feed/release_page_item/feed_header.dart';
 import 'package:mirror/page/feed/release_page_item/keyboard_input.dart';
@@ -233,6 +232,7 @@ class ReleasePageState extends State<ReleasePage> with WidgetsBindingObserver {
             rules: topicRule == null ? [] : [topicRule],
             atSearchStr: "",
             topicSearchStr: "",
+            isPostFeed: false,
           ),
           builder: (context, _) {
             String str = context.watch<ReleaseFeedInputNotifier>().keyWord;
@@ -291,7 +291,8 @@ class ReleaseFeedInputNotifier extends ChangeNotifier {
       this.atCursorIndex,
       this.atSearchStr,
       this.topicSearchStr,
-      this.selectedMediaFiles});
+      this.selectedMediaFiles,
+      this.isPostFeed});
 
   // 监听输入框输入的值是否为@#切换视图的
   String keyWord = "";
@@ -373,6 +374,9 @@ class ReleaseFeedInputNotifier extends ChangeNotifier {
 
   // 话题滑动控制器
   ScrollController topScrollController;
+
+  // 是否可发布动态
+  bool isPostFeed;
 
   getAtCursorIndex(int atIndex) {
     this.atCursorIndex = atIndex;
@@ -497,4 +501,10 @@ class ReleaseFeedInputNotifier extends ChangeNotifier {
   setClickTopic(bool top) {
     this.isClickTopic = top;
   }
+
+  // 是否可发布动态
+   setIsPostFeed(bool isPost) {
+    this.isPostFeed = isPost;
+    notifyListeners();
+   }
 }

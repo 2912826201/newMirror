@@ -9,7 +9,6 @@ import 'package:mirror/data/model/home/home_feed.dart';
 import 'package:mirror/data/model/profile/black_model.dart';
 import 'package:mirror/data/notifier/feed_notifier.dart';
 import 'package:mirror/data/notifier/profile_notifier.dart';
-import 'package:mirror/data/notifier/release_progress_notifier.dart';
 import 'package:mirror/data/notifier/token_notifier.dart';
 import 'package:mirror/data/notifier/user_interactive_notifier.dart';
 import 'package:mirror/page/profile/profile_detail_page.dart';
@@ -133,7 +132,7 @@ class HeadViewState extends State<HeadView> {
 
   // 是否显示关注按钮
   isShowFollowButton(BuildContext context) {
-    return Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
+    return  Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
       if (widget.isShowConcern &&
           notifier.profileUiChangeModel[widget.model.pushId].isFollow == true &&
           widget.model.pushId != context.watch<ProfileNotifier>().profile.uid) {
@@ -208,20 +207,20 @@ class HeadViewState extends State<HeadView> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    if (widget.model.pushId == context.read<ProfileNotifier>().profile.uid) {
-      isMySelf = true;
-      context.read<UserInteractiveNotifier>().setFirstModel(widget.model.pushId);
-      if (!context
-          .read<UserInteractiveNotifier>()
-          .profileUiChangeModel[widget.model.pushId]
-          .feedStringList
-          .contains("删除")) {
-        context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.model.pushId].feedStringList.add("删除");
+      if (widget.model.pushId == context.read<ProfileNotifier>().profile.uid) {
+        isMySelf = true;
+        context.read<UserInteractiveNotifier>().setFirstModel(widget.model.pushId);
+        if (!context
+            .read<UserInteractiveNotifier>()
+            .profileUiChangeModel[widget.model.pushId]
+            .feedStringList
+            .contains("删除")) {
+          context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.model.pushId].feedStringList.add("删除");
+        }
+      } else {
+        context.read<UserInteractiveNotifier>().setFirstModel(widget.model.pushId,
+            isFollow: widget.model.isFollow == 1 || widget.model.isFollow == 3 ? false : true);
       }
-    } else {
-      context.read<UserInteractiveNotifier>().setFirstModel(widget.model.pushId,
-          isFollow: widget.model.isFollow == 1 || widget.model.isFollow == 3 ? false : true);
-    }
   }
 
   @override
@@ -229,6 +228,7 @@ class HeadViewState extends State<HeadView> {
     return GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {
+          print('头部点击响应-------头部点击响应--------------${widget.model.pushId}');
           if (widget.mineDetailId == widget.model.pushId) {
             return false;
           }
@@ -281,13 +281,13 @@ class HeadViewState extends State<HeadView> {
                   ],
                 )),
                 isShowFollowButton(context),
-                Consumer<UserInteractiveNotifier>(builder: (context, notifier, child) {
-                  return Container(
+               Container(
                     margin: EdgeInsets.only(right: 16),
                     child: AppIconButton(
                       svgName: AppIcon.more_feed,
                       iconSize: 24,
                       onTap: () {
+                        print("点击更多按钮了");
                         // if (context.read<ReleaseProgressNotifier>().postFeedModel != null &&
                         //     context.read<FeedMapNotifier>().value.feedMap[widget.model.id].id !=
                         //         Application.insertFeedId) {
@@ -296,9 +296,9 @@ class HeadViewState extends State<HeadView> {
                         // ignore: missing_return
                         openMoreBottomSheet(
                             context: context,
-                            lists: notifier.profileUiChangeModel[widget.model.pushId].feedStringList,
+                            lists: context.read<UserInteractiveNotifier>().profileUiChangeModel[widget.model.pushId].feedStringList,
                             onItemClickListener: (index) {
-                              switch (notifier
+                              switch (context.read<UserInteractiveNotifier>()
                                   .profileUiChangeModel[widget.model.pushId]
                                   // ignore: missing_return
                                   .feedStringList[index]) {
@@ -316,8 +316,7 @@ class HeadViewState extends State<HeadView> {
                         // }
                       },
                     ),
-                  );
-                })
+                  )
               ],
             )));
   }

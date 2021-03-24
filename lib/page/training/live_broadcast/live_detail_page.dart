@@ -4,6 +4,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mirror/api/machine_api.dart';
 import 'package:mirror/api/profile_page/profile_api.dart';
 import 'package:mirror/config/application.dart';
 import 'package:mirror/constant/color.dart';
@@ -124,9 +125,13 @@ class LiveDetailPageState extends XCState {
       loadingStatus = LoadingStatus.STATUS_LOADING;
     }else{
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
+      //如果已登录且有关联的机器 发送指令让机器跳转页面
+      if(isLoggedIn && Application.machine != null){
+        openLiveCourseDetailPage(Application.machine.machineId, liveCourseId,liveModel.startTime);
+      }
     }
     recommendLoadingStatus=LoadingStatus.STATUS_LOADING;
-    getDataAction();
+    getDataAction(openLiveCourse: liveModel==null);
   }
 
   @override
@@ -482,6 +487,11 @@ class LiveDetailPageState extends XCState {
             }
           });
           getDataAction();
+
+          //如果已登录且有关联的机器 发送指令让机器跳转页面
+          if(Application.machine != null){
+            openLiveCourseDetailPage(Application.machine.machineId, liveCourseId,liveModel.startTime);
+          }
         }
         isLoggedIn=notifier.isLoggedIn;
         return child;
@@ -761,17 +771,13 @@ class LiveDetailPageState extends XCState {
   }
 
   //加载网络数据
-  void getDataAction() async {
+  void getDataAction({bool openLiveCourse=false}) async {
     if(await isOffline()){
       recommendLoadingStatus=LoadingStatus.STATUS_COMPLETED;
       if(mounted){
         reload(() {});
       }
       return;
-    }
-    String startTime="";
-    if(liveModel!=null){
-      startTime=liveModel.startTime;
     }
     recommendLoadingStatus=LoadingStatus.STATUS_COMPLETED;
     //加载数据
@@ -785,6 +791,12 @@ class LiveDetailPageState extends XCState {
       });
     } else {
       liveModel = LiveVideoModel.fromJson(model);
+      if(openLiveCourse){
+        //如果已登录且有关联的机器 发送指令让机器跳转页面
+        if(isLoggedIn && Application.machine != null){
+          openLiveCourseDetailPage(Application.machine.machineId, liveCourseId,liveModel.startTime);
+        }
+      }
       print("liveCourseState:${liveModel.liveCourseState}");
       loadingStatus = LoadingStatus.STATUS_COMPLETED;
       if(mounted){
@@ -852,7 +864,12 @@ class LiveDetailPageState extends XCState {
 
   //登陆终端进行训练
   void _loginTerminal() {
-    ToastShow.show(msg: "登陆终端进行训练", context: context);
+    print("登陆终端进行训练");
+    if (Application.token.anonymous == 0) {
+      AppRouter.navigateToScanCodePage(context);
+    } else {
+      AppRouter.navigateToLoginPage(context);
+    }
   }
 
   //开通vip
