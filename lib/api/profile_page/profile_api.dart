@@ -75,8 +75,9 @@ const String FITNESS_ENTRY = "/appuser/web/user/saveBasicFitnessInfo";
 ///用户推送列表
 const String QUERY_MSG_LIST = "/appuser/web/message/queryMsgList";
 //关注
-Future<int> ProfileAddFollow(int id) async {
-  BaseResponseModel responseModel = await requestApi(ATTENTION, {"targetId": id});
+//0-普通场景1-直播中关注教练
+Future<int> ProfileAddFollow(int id,{int type=0}) async {
+  BaseResponseModel responseModel = await requestApi(ATTENTION, {"targetId": id,"type": type});
   int backCode;
   if (responseModel.isSuccess) {
     Map<String, dynamic> result = responseModel.data;
